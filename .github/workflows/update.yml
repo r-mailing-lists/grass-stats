@@ -1,0 +1,360 @@
+name: Update Archive
+
+on:
+  schedule:
+    # 01:17 UTC: off the hour, because GitHub starts runs scheduled on the hour hours
+    # late, and early enough for the data build (r-mailing-lists/data, 04:47 UTC) to
+    # read every archive's run of the night.
+    - cron: '17 1 * * *'
+  workflow_dispatch:
+    inputs:
+      force_redownload:
+        description: 'Force re-download all mbox files (not just current month)'
+        type: boolean
+        default: false
+      periods:
+        description: 'Periods to download again, space separated (for example: 2026-July 2026q2)'
+        type: string
+        default: ''
+      max_requests:
+        description: 'Source pages: requests this run may make, with no limit on periods. This is how history is fetched. Leave empty for an ordinary run. Used only where a sources/ directory exists.'
+        type: string
+        default: ''
+      max_scrubbed:
+        description: 'Scrubbed text: requests this run may make. Leave empty for 3000.'
+        type: string
+        default: ''
+
+# One run at a time: a run started by hand waits for the nightly, and the reverse, so
+# two runs never fetch at once or push over each other. Neither is cancelled.
+concurrency:
+  group: update-archive
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      # The branch as it is now: a run that waited behind another (see concurrency
+      # above) would otherwise check out the commit it was queued at, fetch again
+      # what the other run committed, and fail to push.
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Check source page inputs
+        env:
+          FORCE: ${{ inputs.force_redownload }}
+          PERIODS: ${{ inputs.periods }}
+          MAX_REQUESTS: ${{ inputs.max_requests }}
+        run: |
+          # This runs before anything is downloaded, so a refusal leaves nothing to commit.
+          # It is the one place that decides what a valid max_requests is.
+          if [ ! -d sources ]; then
+            exit 0
+          fi
+          case "$MAX_REQUESTS" in
+            *[!0-9]*) echo "::error::max_requests must be a whole number, got '$MAX_REQUESTS'"; exit 1 ;;
+          esac
+          if [ "${#MAX_REQUESTS}" -gt 4 ]; then
+            echo "::error::max_requests must have at most four digits, got '$MAX_REQUESTS'"; exit 1
+          fi
+          # A budget that is empty or all zeros indexes nothing, so it does not count as set.
+          if [ -z "${MAX_REQUESTS//0/}" ] && { [ "$FORCE" = "true" ] || [ -n "${PERIODS//[[:space:]]/}" ]; }; then
+            echo "::error::This repository has sources/. A run that downloads periods again must set max_requests to more than zero, so that the periods are indexed again before they are parsed."
+            exit 1
+          fi
+
+      - name: Download latest mbox files
+        env:
+          FORCE: ${{ inputs.force_redownload }}
+          PERIODS: ${{ inputs.periods }}
+          MAILMAN_USERNAME: ${{ secrets.MAILMAN_USERNAME }}
+          MAILMAN_PASSWORD: ${{ secrets.MAILMAN_PASSWORD }}
+        run: |
+          # Both secrets set: the archive is members-only, and the step logs in first.
+          # Neither set (a public archive): no login, no cookie, the requests are the same
+          # as ever. One of the two set is a mistake, caught before any request is made.
+          # Nothing secret is printed: no tracing, and curl is never verbose.
+          if [ -n "$MAILMAN_USERNAME" ] && [ -z "$MAILMAN_PASSWORD" ]; then
+            echo "::error::MAILMAN_USERNAME is set but MAILMAN_PASSWORD is not. Set both secrets to log in, or neither."; exit 1
+          fi
+          if [ -z "$MAILMAN_USERNAME" ] && [ -n "$MAILMAN_PASSWORD" ]; then
+            echo "::error::MAILMAN_PASSWORD is set but MAILMAN_USERNAME is not. Set both secrets to log in, or neither."; exit 1
+          fi
+
+          LIST_NAME=$(jq -r '.list' config.json)
+          BASE_URL=$(jq -r '.source_url' config.json)
+
+          # Extra curl options: empty for a public archive, the cookie jar for a members-only one.
+          # GZ is for gunzip. Mailman's private archive hands out the text of a .gz file, not
+          # the gzip bytes, so a logged-in download may be plain text; -f lets that through.
+          # The check below that the file starts with "From " still decides what is saved.
+          AUTH=(); GZ=()
+          if [ -n "$MAILMAN_USERNAME" ]; then
+            # The password goes to source_url, so it must not travel in clear.
+            case "$BASE_URL" in
+              https://*|http://127.0.0.1:*) ;;
+              *) echo "::error::source_url must start with https:// to log in, so that the password is not sent in clear."; exit 1 ;;
+            esac
+            JAR=$(mktemp)
+            trap 'rm -f "$JAR"' EXIT
+            # Mailman 2.1 answers a wrong password with the login form again and no cookie,
+            # so the jar is what tells a login from a failed one.
+            if ! curl -sS -o /dev/null -c "$JAR" \
+              --data-urlencode "username=$MAILMAN_USERNAME" \
+              --data-urlencode "password=$MAILMAN_PASSWORD" \
+              --data-urlencode "submit=Let me in..." "$BASE_URL"; then
+              echo "::error::Could not reach $BASE_URL to log in."
+              exit 1
+            fi
+            if ! awk -F'\t' 'NF >= 7 { found = 1 } END { exit !found }' "$JAR"; then
+              echo "::error::Could not log in to $BASE_URL: the server set no cookie. Check the MAILMAN_USERNAME and MAILMAN_PASSWORD secrets."
+              exit 1
+            fi
+            AUTH=(-b "$JAR"); GZ=(-cf)
+            # Shows in the log that the login ran. The name, the password and the cookie are never printed.
+            echo "Login: the server set a session cookie."
+          fi
+
+          mkdir -p raw
+
+          # Fetch the current and the previous period again (a message can reach the
+          # source after its period's last run), any period named in PERIODS, and any
+          # file we do not have yet. Handles monthly (2026-July), quarterly (2026q3),
+          # and annual (2026).
+          Y=$(date -u +%Y); MON=$((10#$(date -u +%m)))
+          MONTHS=(_ January February March April May June July August September October November December)
+          QUARTER=$(( (MON - 1) / 3 + 1 ))
+          CUR_MONTH="${Y}-${MONTHS[$MON]}"; CUR_QUARTER="${Y}q${QUARTER}"
+          PREV_Y=$((Y - 1))
+          if [ "$MON" -eq 1 ]; then PREV_MONTH="${PREV_Y}-December"; else PREV_MONTH="${Y}-${MONTHS[$((MON - 1))]}"; fi
+          if [ "$QUARTER" -eq 1 ]; then PREV_QUARTER="${PREV_Y}q4"; else PREV_QUARTER="${Y}q$((QUARTER - 1))"; fi
+          WANTED=" $(printf '%s' "$PERIODS" | tr -s '[:space:]' ' ') "
+
+          # The loop below runs in a pipeline subshell; the stems it sees are kept in a file.
+          LISTED=$(mktemp)
+          curl -sL "${AUTH[@]}" "$BASE_URL" | \
+            grep -oE 'href="[^"]*\.txt(\.gz)?"' | \
+            sed 's/href="//;s/"//' | \
+            while read -r archive; do
+              URL="${BASE_URL%/}/$archive"
+              BASENAME=$(basename "$archive")
+              MBOX_NAME="${BASENAME%.gz}"
+              MBOX_NAME="${MBOX_NAME%.txt}.mbox"
+              STEM="${BASENAME%.gz}"; STEM="${STEM%.txt}"
+              echo "$STEM" >> "$LISTED"
+
+              # A growing period: the current or the previous one, downloaded again on every run.
+              case "$STEM" in
+                "$CUR_MONTH"|"$PREV_MONTH"|"$CUR_QUARTER"|"$PREV_QUARTER"|"$Y"|"$PREV_Y") GROWING=true ;;
+                *) GROWING=false ;;
+              esac
+
+              if [ "$FORCE" != "true" ] && [ -f "raw/$MBOX_NAME" ] && [ "$GROWING" != true ]; then
+                case "$WANTED" in
+                  *" $STEM "*) ;;
+                  *) continue ;;
+                esac
+              fi
+
+              # Replace the existing file only with a complete download that starts like an mbox.
+              TMP=$(mktemp)
+              OK=false; READ_NAME="$BASENAME"
+              # Mailman appends each message to <period>.txt as it arrives, and makes the
+              # <period>.txt.gz that the listing names from it once a night. For a growing
+              # period the plain file is asked for first. Where it cannot be had, or does
+              # not start like an mbox, the .txt.gz is downloaded as before.
+              if [ "$GROWING" = true ] && [[ "$archive" == *.txt.gz ]]; then
+                echo "Downloading ${BASENAME%.gz}, the live file..."
+                if curl -fsSL "${AUTH[@]}" "${URL%.gz}" -o "$TMP" && [ -s "$TMP" ] && [ "$(head -c 5 "$TMP")" = "From " ]; then
+                  OK=true; READ_NAME="${BASENAME%.gz}"
+                else
+                  echo "Could not use ${BASENAME%.gz}, downloading $BASENAME instead..."
+                fi
+              else
+                echo "Downloading $BASENAME..."
+              fi
+              if [ "$OK" != true ]; then
+                if [[ "$archive" == *.gz ]]; then
+                  if ( set -o pipefail; curl -fsSL "${AUTH[@]}" "$URL" | gunzip "${GZ[@]}" > "$TMP" ) && [ -s "$TMP" ]; then OK=true; fi
+                else
+                  if curl -fsSL "${AUTH[@]}" "$URL" -o "$TMP" && [ -s "$TMP" ]; then OK=true; fi
+                fi
+              fi
+              if [ "$OK" = true ] && [ "$(head -c 5 "$TMP")" = "From " ]; then
+                # An earlier run may have taken the live file, which is ahead of the nightly
+                # .txt.gz and may be ahead of a later read of the live file. In an ordinary
+                # run, a growing period's copy that starts with all of what was read and
+                # holds more is newer than it, and is kept. A run that names the period or
+                # forces the download always replaces the copy: that is the repair path.
+                NAMED=false; case "$WANTED" in *" $STEM "*) NAMED=true ;; esac
+                KEEP=false
+                if [ "$GROWING" = true ] && [ "$NAMED" != true ] && [ "$FORCE" != "true" ] && [ -f "raw/$MBOX_NAME" ]; then
+                  HAVE=$(( $(wc -c < "raw/$MBOX_NAME") )); GOT=$(( $(wc -c < "$TMP") ))
+                  if [ "$HAVE" -gt "$GOT" ] && head -c "$GOT" "raw/$MBOX_NAME" | cmp -s - "$TMP"; then KEEP=true; fi
+                fi
+                if [ "$KEEP" = true ]; then
+                  rm -f "$TMP"
+                  echo "Kept raw/$MBOX_NAME as it was: it holds all of $READ_NAME and more"
+                else
+                  mv "$TMP" "raw/$MBOX_NAME"
+                fi
+              else
+                rm -f "$TMP"
+                if [ -f "raw/$MBOX_NAME" ]; then
+                  echo "::warning::Could not download $BASENAME, kept the existing raw/$MBOX_NAME as it was"
+                else
+                  echo "::warning::Could not download $BASENAME, raw/$MBOX_NAME was not created"
+                fi
+              fi
+            done
+
+          # A requested period that is not in the listing was probably mistyped.
+          set -f
+          for requested in $PERIODS; do
+            grep -qxF -- "$requested" "$LISTED" || echo "::warning::Period $requested is not in the listing at $BASE_URL"
+          done
+          set +f
+          # With a login, a listing that names no archive means the cookie gave no access.
+          # For a public archive an empty listing is left alone, as it always was.
+          if [ -n "$MAILMAN_USERNAME" ] && [ ! -s "$LISTED" ]; then
+            rm -f "$LISTED"
+            echo "::error::The listing at $BASE_URL names no .txt or .txt.gz file, so the login gave no access to the archive."
+            exit 1
+          fi
+          rm -f "$LISTED"
+
+      - name: Download rmail-parser
+        run: |
+          curl -sL -o rmail-parser \
+            "https://github.com/r-mailing-lists/rmail-parser/releases/latest/download/rmail-parser-linux-x86_64"
+          chmod +x rmail-parser
+
+      - name: Download aliases
+        run: |
+          curl -sL -o aliases.json \
+            "https://raw.githubusercontent.com/r-mailing-lists/rmail-parser/main/aliases.json" \
+            2>/dev/null || echo '{"aliases":[]}' > aliases.json
+
+      - name: Fetch source pages
+        env:
+          MAX_REQUESTS: ${{ inputs.max_requests }}
+        run: |
+          # Source pages are on only in a repository that has a sources/ directory.
+          # Committing that directory switches them on; removing it switches them off.
+          # They are for public archives only: the parser sends no cookie, so a
+          # members-only list must not have a sources/ directory.
+          if [ ! -d sources ]; then
+            exit 0
+          fi
+          BASE_URL=$(jq -r '.source_url' config.json)
+          if [ -z "$MAX_REQUESTS" ]; then
+            # An ordinary run: a small budget, and only the two newest periods,
+            # the ones downloaded again above. It never walks into history.
+            ./rmail-parser sources --raw raw/ --out sources/ --base-url "$BASE_URL" --max-requests 50 --max-periods 2
+          else
+            # Started by hand with a budget, already checked above: every period, newest
+            # first, until it is spent.
+            ./rmail-parser sources --raw raw/ --out sources/ --base-url "$BASE_URL" --max-requests "$MAX_REQUESTS"
+          fi
+
+      - name: Fetch scrubbed text
+        env:
+          MAX_SCRUBBED: ${{ inputs.max_scrubbed }}
+        run: |
+          # Mailman scrubs some text out of messages and leaves a link to it. This fetches
+          # that text, once, into attachments/, and parse puts it back. It runs for every
+          # public archive, with or without sources/, and checks its own input.
+          case "$MAX_SCRUBBED" in
+            *[!0-9]*) echo "::error::max_scrubbed must be a whole number, got '$MAX_SCRUBBED'"; exit 1 ;;
+          esac
+          if [ "${#MAX_SCRUBBED}" -gt 4 ]; then
+            echo "::error::max_scrubbed must have at most four digits, got '$MAX_SCRUBBED'"; exit 1
+          fi
+          BASE_URL=$(jq -r '.source_url' config.json)
+          # The parser sends no cookie, so it cannot fetch from a members-only archive.
+          case "$BASE_URL" in
+            */mailman/private/*) echo "Scrubbed text is not fetched for a members-only archive."; exit 0 ;;
+          esac
+          # The parser's report goes to the log as it is, and each of its lines that starts
+          # with "warning:" (a run that stopped early) is also shown as an annotation.
+          # pipefail keeps the parser's exit status rather than the loop's. A run that
+          # takes more than 75 minutes is stopped: what it stored by then is kept, and
+          # the run goes on to parse and commit it. Any other failure fails the step.
+          set -o pipefail
+          STATUS=0
+          timeout 75m ./rmail-parser attachments --raw raw/ --out attachments/ --base-url "$BASE_URL" --max-requests "${MAX_SCRUBBED:-3000}" 2>&1 \
+            | while IFS= read -r line; do
+                printf '%s\n' "$line"
+                case "$line" in
+                  warning:*) printf '::warning::Scrubbed text: %s\n' "${line#warning: }" ;;
+                esac
+              done || STATUS=$?
+          if [ "$STATUS" -eq 124 ]; then
+            echo "::warning::Fetching scrubbed text was stopped after 75 minutes. What it stored is kept, and the next run carries on."
+          elif [ "$STATUS" -ne 0 ]; then
+            exit "$STATUS"
+          fi
+
+      - name: Parse mbox files
+        run: |
+          LIST_NAME=$(jq -r '.list' config.json)
+          mkdir -p processed
+          # The messages of a members-only archive may be published, its addresses may not.
+          # An older parser that does not know the flag fails this step, so nothing unhidden
+          # is ever committed.
+          HIDE=()
+          case "$(jq -r '.source_url' config.json)" in
+            */mailman/private/*) HIDE=(--hide-addresses) ;;
+          esac
+          # Text fetched from Mailman's scrubbed-attachment links is put back where it was.
+          ATTACH=()
+          if [ -d attachments ]; then
+            ATTACH=(--attachments attachments/)
+          fi
+          if [ -d sources ]; then
+            BASE_URL=$(jq -r '.source_url' config.json)
+            ./rmail-parser parse --input raw/ --output processed/ --list "$LIST_NAME" --aliases aliases.json --sources sources/ --base-url "$BASE_URL" "${HIDE[@]}" "${ATTACH[@]}"
+          else
+            ./rmail-parser parse --input raw/ --output processed/ --list "$LIST_NAME" --aliases aliases.json "${HIDE[@]}" "${ATTACH[@]}"
+          fi
+          mv processed/meta.json meta.json
+          mv processed/index.json index.json
+          mv processed/message-order.json message-order.json
+          mv processed/contributors.json contributors.json
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add raw/ processed/ meta.json index.json message-order.json contributors.json
+          if [ -d sources ]; then
+            # A run that was cut off can leave a temporary file behind. It is never committed.
+            find sources -name '*.json.tmp' -delete
+            git add sources/
+          fi
+          if [ -d attachments ]; then
+            # A run that was cut off can leave a temporary file behind. It is never committed.
+            find attachments -name '*.tmp' -delete
+            git add attachments/
+          fi
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update archive $(date +%Y-%m-%d)"
+            git push
+          fi
+          # GitHub switches off the schedule of a public repository after 60 days without
+          # activity, and a quiet list can go that long without mail. When the newest
+          # commit is more than 30 days old, a one-line .heartbeat file with today's date
+          # (UTC) is committed and pushed with this run's own token. On any other day
+          # nothing more happens here.
+          LAST_COMMIT=$(git log -1 --format=%ct)
+          if [ $(( $(date -u +%s) - LAST_COMMIT )) -gt $(( 30 * 86400 )) ]; then
+            date -u +%F > .heartbeat
+            git add .heartbeat
+            git commit -m "chore: heartbeat $(date -u +%F)"
+            git push
+            echo "Heartbeat: the newest commit was more than 30 days old, so .heartbeat was committed"
+          fi
