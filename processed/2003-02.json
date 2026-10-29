@@ -1,0 +1,126 @@
+{
+  "list": "grass-stats",
+  "description": "",
+  "month": "2003-02",
+  "messages": [
+    {
+      "id": "msg-44c8781f63de",
+      "message_id": "<Pine.LNX.4.44.0302081130380.3791-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2003-02-08T05:40:47Z",
+      "subject": "[STATSGRASS] Re: [GRASS5] CygWIN: compilation of current CVS HEAD?",
+      "subject_clean": "[STATSGRASS] Re: [GRASS5] CygWIN: compilation of current CVS HEAD?",
+      "in_reply_to": "<Pine.LNX.4.44.0302070934430.2664-100000@reclus.nhh.no>",
+      "references": [],
+      "body_plain": "Further to my comments on compiling the R/GRASS interface under Windows, \nand after trying various routes, I'm inclined to think that Glynn is \nright. I think libgis.a and libdatetime.a really ought to be compiled \nusing the R build train (MinGW) - at present for a fresh CygWin install \nthere are version differences that raise errors when the DLL is being \ncreated. When compilation works, it is probably more luck than design. I'm \ngoing to look at trying to build an R binary package for Windows using \nlibgrass - has anyone tried this? I'm moving this thread to statgrass, as \nit is more relevant there.\n\nRoger\n\n\nOn Fri, 7 Feb 2003, Roger Bivand wrote:\n\n> On Fri, 7 Feb 2003, Glynn Clements wrote:\n> \n> > \n> > Roger Bivand wrote:\n> > \n> > > > If there exists a choice between Unix and Windows versions of R,\n> > > > choosing the Unix version is likely to result in better compatibility\n> > > > with GRASS.\n> > > \n> > > R on Windows will not build under CygWin. On the Windows platform, MinGW\n> > > is the chosen build train, following which R runs natively. One can\n> > > complain that it ought to be CygWin, but the reaction is to invite the\n> > > complainer to become R Windows maintainer.\n> > \n> > I'm just pointing out that the only way to use GRASS on Windows is via\n> > Cygwin. If R can't use Cygwin, and GRASS can only use Cygwin, that\n> > suggests that the GRASS/R combination may be inherently problematic.\n> > \n> If the CygWin gcc compiled lisgib.a makes other assumptions about its \n> environment (compile train setup etc.) than the MinGW compiled grassR.dll \n> to be dynamically loaded into R, yes, but experience (limited) so far \n> suggests that it is not a major issue. If there were major differences \n> between the two gcc header file trees, you would get unexpected and, yes, \n> problematic, results. R and its dlls will also use the underlying C \n> libraries of MinGW. But providing that the two gcc's present the same \n> API's to R and GRASS, experience (again limited) indicates that - against \n> my expectations - it does work. One advantage of the R package formalisms \n> is that the functions need to be able to run their examples to completion, \n> which they certainly wouldn't do if the two gcc's had diverged. \n> \n> Roger\n> \n> > \n> \n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 93 93\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "Further to my comments on compiling the R/GRASS interface under Windows, \nand after trying various routes, I'm inclined to think that Glynn is \nright. I think libgis.a and libdatetime.a really ought t",
+      "thread_id": "thread-44c8781f63de",
+      "thread_depth": 0,
+      "month": "2003-02"
+    },
+    {
+      "id": "msg-b73bafef990b",
+      "message_id": "<Pine.LNX.4.44.0302091406040.12638-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2003-02-09T08:36:38Z",
+      "subject": "[STATSGRASS] Re: [GRASS5] CygWIN: compilation of current CVS HEAD?",
+      "subject_clean": "[STATSGRASS] Re: [GRASS5] CygWIN: compilation of current CVS HEAD?",
+      "in_reply_to": "<15940.60994.811611.430826@cerise.nosuchdomain.co.uk>",
+      "references": [],
+      "body_plain": "On Sat, 8 Feb 2003, Glynn Clements wrote:\n\n> \n> Roger Bivand wrote:\n> \n> > Further to my comments on compiling the R/GRASS interface under Windows, \n> > and after trying various routes, I'm inclined to think that Glynn is \n> > right. I think libgis.a and libdatetime.a really ought to be compiled \n> > using the R build train (MinGW) - at present for a fresh CygWin install \n> > there are version differences that raise errors when the DLL is being \n> > created. When compilation works, it is probably more luck than design. I'm \n> > going to look at trying to build an R binary package for Windows using \n> > libgrass - has anyone tried this? I'm moving this thread to statgrass, as \n> > it is more relevant there.\n> \n> libgis uses the Unix API (open, read, write) for most of its file I/O,\n> as well as using several other Unix functions for other (mostly\n> peripheral) purposes. Presumably this means that the Cygwin DLL is\n> required.\n> \n> Specifically, libgis imports the following non-ANSI functions from\n> libc:\n> \n> \taccept access bind chmod close connect creat dup environ execl\n> \tfdopen fileno fork geteuid gethostname getlogin getpid\n> \tgetpwuid gettimeofday getuid ioctl isatty kill link listen\n> \tlseek mkdir open pipe read setlocale setpgrp setpriority\n> \tsetreuid setuid sleep socket system umask unlink wait write\n> \n> Mike Thomas <miketh@brisbane.paradigmgeo.com> has recently started\n> work on getting GRASS to compile with MinGW; however, I don't know how\n> far advanced this work is.\n> \n\nThis is useful. In fact I have no idea how the GRASS package for R can be \ncompiled and installed - it contains a configure file, and the \ninstallation scripts for R on Windows see it, issue a warning:\n\n\t@if test -f ${SPKG}/configure; then \\\n\t  echo ; \\\n\t  echo \"   **********************************************\" ; \\\n\t  echo \"   WARNING: this package has a configure script\" ; \\\n\t  echo \"         It probably needs manual configuration\" ; \\\n\t  echo \"   **********************************************\" ; \\\n\t  echo ; \\\n\tfi\n\nand proceed not compiling anything. For the INSTALL configure arguments to \nwork, some other scripts than that in rw10*/bin and rw10*/src/gnuwin32 are \nneeded - my guess is that the Unix INSTALL script is being run. \nConsequently, Markus' advice on the web page probably only applies to a \nvery special setup. For me with a recent CygWin, recent R, recent MinGW, \nGlynn's remarks about the Unix API apply, with unfulfilled references to \nlots of things in libgis.a, which could only be \"met\" by linking libc.a \nfrom CygWin, and creating a fictive global variable _impure_ptr - and the \nDLL still wouldn't load (this was after removing the configure process in \npackage installation, and hard-wiring -L and -l).\n\nCan I ask people who have got the R/GRASS interface installed with R for \nWindows to report on their CygWin version, MinGW version, R version, \ninterface version, and what you did with PATH settings and any other \nchanges that were needed? This information is needed to find out how to \nwrite a \"configure.win\" file, or how to modify the package in order to \nhave it compile cleanly with the current MinGW-based R package \ninstallation system. Then the package may be moved from Devel to the \nregular contrib package area, I hope.\n\nSince the interface only needs a subset of libgis.a and really doesn't \nneed libdatetime.a, it is possible that the files in src/libes/gis and \nsrc/libes/datetime could be put within #ifndef RGRASS_INTERFACE #endif\nto use an #ELSE /* RGRASS_INTERFACE */ to choose just the functions and \nvariables needed - to permit a subset of the files and headers to be \ndistributed with the package. I think this should be updated manually - \nthere is no good reason why the main source should be altered. I would \nwelcome advice on whether the CygWin GRASS / R / R interface user \ncommunity is sufficiently large for it to be sensible to use time on this!\n\nRoger\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 93 93\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Sat, 8 Feb 2003, Glynn Clements wrote:\n\n> \n> Roger Bivand wrote:\n> \n> > Further to my comments on compiling the R/GRASS interface under Windows, \n> > and after trying various routes, I'm inclined t",
+      "thread_id": "thread-b73bafef990b",
+      "thread_depth": 0,
+      "month": "2003-02"
+    },
+    {
+      "id": "msg-75715e4a4215",
+      "message_id": "<004a01c2d0e5$c5b72ec0$e6312fca@snowpea>",
+      "from_name": "Mike Thomas",
+      "from_email_hash": "193070faf19f55098c760cd28746e2930397be04c9c2d1b57c33b116ac279277",
+      "date": "2003-02-10T04:21:18Z",
+      "subject": "[STATSGRASS] Re: [GRASS5] CygWIN: compilation of current CVS HEAD?",
+      "subject_clean": "[STATSGRASS] Re: [GRASS5] CygWIN: compilation of current CVS HEAD?",
+      "in_reply_to": null,
+      "references": [
+        "<Pine.LNX.4.44.0302091406040.12638-100000@reclus.nhh.no>"
+      ],
+      "body_plain": "Hi Roger, Glynn, Markus.\n\n> > Mike Thomas <miketh@brisbane.paradigmgeo.com> has recently started\n> > work on getting GRASS to compile with MinGW; however, I don't know how\n> > far advanced this work is.\n\nI compiled substantial portions of Grass using MinGW32 hosted under MSYS for\nthe configuration and build tools, but in doing so skirted over a number of\nproblems in libgis, most notably the socket communications stuff and the\ndatabase locking.   My initial aim is to get libgis built with whatever\nparts are needed for external language/library bindings.\n\nThe reason for that limited initial aim is that Grass is tightly bound to\nshell scripts which would all need to be supplied under Windows presumably\nby Cygwin or by a complete rewrite of the scripting glue as batch files or\nTcl or whatever - a rather off-putting task.\n\nI am very tight for time at the moment due to the impending release of a\nGeolog beta at work and of Maxima and GCL at home, so I am not devoting the\ntime that Grass deserves at present, I'm sorry to say.\n\n> Since the interface only needs a subset of libgis.a and really doesn't\n> need libdatetime.a, it is possible that the files in src/libes/gis and\n> src/libes/datetime could be put within #ifndef RGRASS_INTERFACE #endif\n> to use an #ELSE /* RGRASS_INTERFACE */ to choose just the functions and\n> variables needed - to permit a subset of the files and headers to be\n> distributed with the package. I think this should be updated manually -\n> there is no good reason why the main source should be altered. I would\n> welcome advice on whether the CygWin GRASS / R / R interface user\n> community is sufficiently large for it to be sensible to use time on this!\n\nIf you couild tell me, Roger, which parts of libgis you need, I'll make sure\nthey are prioritised as I think that the Grass/R interface is a very worthy\ncause.  I suspect that you might already be OK unless the above two problem\nareas are important.\n\nCheers\n\nMike Thomas.",
+      "body_snippet": "Hi Roger, Glynn, Markus.\n\n> > Mike Thomas <miketh@brisbane.paradigmgeo.com> has recently started\n> > work on getting GRASS to compile with MinGW; however, I don't know how\n> > far advanced this work i",
+      "thread_id": "thread-b73bafef990b",
+      "thread_depth": 1,
+      "month": "2003-02"
+    },
+    {
+      "id": "msg-ca67a2975cd4",
+      "message_id": "<3E5DC6BD.8060902@deprem.gov.tr>",
+      "from_name": "orkun",
+      "from_email_hash": "83b090377313c56dfe857bd44bed271ea756fa3da7fa66ea07dd8387538a094b",
+      "date": "2003-02-27T03:05:17Z",
+      "subject": "[STATSGRASS] dependent variable",
+      "subject_clean": "[STATSGRASS] dependent variable",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello\n\nI try to create landslide hazard map using grass and R.\nHere are the commands I used:\n/\"r.stats -nNCc input=landslide_binary_map,geology_cat_map,slope_cat_map \nfs=\":\" output=land\"/\n\nit outputs something like: 0:13:2:3556\n1:5:3:7086\n.\n.\n.\n\nI imported land text file to R.\nNow I want to use multiple regression model.\nThe command I used:\n/\"r<-lm(V4~as.factor(V2)+as.factor(V3),data=dt)\"\n/\nyou know V4 is landslide pixel count. I used it as\ndependent variable as you see. But I hesitate whether it is correct \napproach. Is it true ? and What do you suggest ?\n\n\nkind regards\n\n-- \nAhmet Temiz\nGeological Engineer\nGeneral Directorate\nof Disaster Affairs\nTURKEY\n\n\n\n______________________________________\nScanned and protected by Inflex\nhttp://pldaniels.com/inflex\n\n______________________________________\nThe views and opinions expressed in this e-mail message are the sender's own\nand do not necessarily represent the views and the opinions of Earthquake Research Dept.\nof General Directorate of Disaster Affairs.\n\nBu e-postadaki fikir ve gorusler gonderenin sahsina ait olup, yasal olarak T.C.\nB.I.B. Afet Isleri Gn.Mud. Deprem Arastirma Dairesi'ni baglayici nitelikte degildir.",
+      "body_snippet": "Hello\n\nI try to create landslide hazard map using grass and R.\nHere are the commands I used:\n/\"r.stats -nNCc input=landslide_binary_map,geology_cat_map,slope_cat_map \nfs=\":\" output=land\"/\n\nit outputs ",
+      "thread_id": "thread-ca67a2975cd4",
+      "thread_depth": 0,
+      "month": "2003-02"
+    },
+    {
+      "id": "msg-38d41069214f",
+      "message_id": "<Pine.LNX.4.44.0302271006540.1653-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2003-02-27T04:39:33Z",
+      "subject": "[STATSGRASS] dependent variable",
+      "subject_clean": "[STATSGRASS] dependent variable",
+      "in_reply_to": "<3E5DC6BD.8060902@deprem.gov.tr>",
+      "references": [],
+      "body_plain": "Hi Ahmet,\n\nSorry I didn't get back to you yesterday.\n\nOn Thu, 27 Feb 2003, orkun wrote:\n\n> Hello\n> \n> I try to create landslide hazard map using grass and R.\n> Here are the commands I used:\n> /\"r.stats -nNCc input=landslide_binary_map,geology_cat_map,slope_cat_map \n> fs=\":\" output=land\"/\n> \n> it outputs something like: \n> 0:13:2:3556\n> 1:5:3:7086\n> .\n> .\n> .\n> \nOK. This is an interesting question, which I'll try to develop. r.stats \ngives you for each of the observed combinations of input map values, a \ncount of the number of cells with that combination, in fact a tabulation. \nYou can see this in spearfish:\n\nGRASS:~ > r.stats -nNCc input=landuse,vegcover,soils.ph\nr.stats:  100%\n1 1 0 91\n1 1 2 101\n1 1 3 331\n1 1 4 615\n1 1 5 16\n1 2 0 541\n1 2 1 44\n1 2 2 125\n1 2 3 557\n1 2 4 2564\n1 2 5 61\n1 3 0 10\n....\n\n\nIn R:\n\n> G <- gmeta()\n> dt <- rast.get(G, c(\"landuse\",\"vegcover\",\"soils.ph\"))\n> str(dt)\nList of 3\n $ landuse : num [1:302418] NA NA NA NA NA NA NA NA NA NA ...\n $ vegcover: num [1:302418] NA 2 2 2 6 6 6 6 6 6 ...\n $ soils.ph: num [1:302418] NA NA NA NA NA NA NA NA NA NA ...\n> table(dt$landuse,dt$vegcover,dt$soils.ph)\n, ,  = 0\n\n   \n     1   2  3  4  5   6\n  1 91 541 10 15 11 107\n  2  0  61  0  0  0  66\n  3 10  89  0  0  0  65\n  4  1 155  0  0  0   0\n  5  0   0  0  0  0   0\n  6  0   0  0  0  0   0\n  7  0 145  0  0  6 260\n  8 14  99  0  0  0  50\n\n...\n\nYou can read the first line in r.stats as [1,1,0] with a count of 91,\n[1,2.0] is 541, and so on. So, for each combination of factors, you have a\ncount, but of coursr only one count. This looks to me much more like\nlog-linear modelling than multiple regression, or possibly logit or probit\nin glm().\n\nA further issue is that the factor outcomes (landslip_binary) are likely \nto be autocorrelated, with clusters of 1's on the map, possibly related to \nthe slope and geology categories which are also autocorrelated. In \nlog-linear models (or chi-squared on a simple table) this isn't settled \nin the literature, because by using finer nsres and ewres - making more \ncells, you can make a bigger \"sample\" and make your result significant. \nThere is a loglin() function in R, but I would think it sensible to look \naround first to see whether this would be sensible for your table data. \nMaybe just tabularising them will throw up something?\n\nBest wishes,\n\nRoger \n\n> I imported land text file to R.\n> Now I want to use multiple regression model.\n> The command I used:\n> /\"r<-lm(V4~as.factor(V2)+as.factor(V3),data=dt)\"\n> /\n> you know V4 is landslide pixel count. I used it as\n> dependent variable as you see. But I hesitate whether it is correct \n> approach. Is it true ? and What do you suggest ?\n> \n> \n> kind regards\n> \n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 93 93\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "Hi Ahmet,\n\nSorry I didn't get back to you yesterday.\n\nOn Thu, 27 Feb 2003, orkun wrote:\n\n> Hello\n> \n> I try to create landslide hazard map using grass and R.\n> Here are the commands I used:\n> /\"r.stat",
+      "thread_id": "thread-ca67a2975cd4",
+      "thread_depth": 1,
+      "month": "2003-02"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-44c8781f63de",
+      "subject": "[STATSGRASS] Re: [GRASS5] CygWIN: compilation of current CVS HEAD?",
+      "message_count": 1,
+      "participants": [
+        "Roger Bivand"
+      ],
+      "started": "2003-02-08T05:40:47Z",
+      "last_reply": "2003-02-08T05:40:47Z",
+      "root_message_id": "msg-44c8781f63de"
+    },
+    {
+      "id": "thread-b73bafef990b",
+      "subject": "[STATSGRASS] Re: [GRASS5] CygWIN: compilation of current CVS HEAD?",
+      "message_count": 2,
+      "participants": [
+        "Mike Thomas",
+        "Roger Bivand"
+      ],
+      "started": "2003-02-09T08:36:38Z",
+      "last_reply": "2003-02-10T04:21:18Z",
+      "root_message_id": "msg-b73bafef990b"
+    },
+    {
+      "id": "thread-ca67a2975cd4",
+      "subject": "[STATSGRASS] dependent variable",
+      "message_count": 2,
+      "participants": [
+        "Roger Bivand",
+        "orkun"
+      ],
+      "started": "2003-02-27T03:05:17Z",
+      "last_reply": "2003-02-27T04:39:33Z",
+      "root_message_id": "msg-ca67a2975cd4"
+    }
+  ]
+}

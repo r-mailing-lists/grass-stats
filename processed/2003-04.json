@@ -1,0 +1,362 @@
+{
+  "list": "grass-stats",
+  "description": "",
+  "month": "2003-04",
+  "messages": [
+    {
+      "id": "msg-235724c02a2e",
+      "message_id": "<3E895640.A3B9740C@geog.uu.nl>",
+      "from_name": "Edzer J. Pebesma",
+      "from_email_hash": "a7fb0ca623e251a5aff6aa466eb7f50e3c643594fe03e3232d546a007043eef0",
+      "date": "2003-04-01T04:05:04Z",
+      "subject": "[STATSGRASS] Grass link to Gstat",
+      "subject_clean": "[STATSGRASS] Grass link to Gstat",
+      "in_reply_to": null,
+      "references": [
+        "<Pine.OSF.3.91.1030331193221.12539N-100000@paleo.ija.csic.es>"
+      ],
+      "body_plain": "Agustin Lobo wrote:\n> \n> Is there any info on actually how to use\n> Gstat on grass raster layers? The links in\n> the gstat and grass web pages are circular.\n\nJust use it from the grass prompt. Gstat will detect that\nthe environment variables set by starting up grass are set,\nand will then try to read any sites data or grid maps \nfrom the grass data base.\n\n> The gstat page indicates how to compile for\n> grass support but not how to use it. The pdf\n> manual does not include any mention to grass.\n\nThanks for mentioning; this manual indeed needs a thorough\nupdate.\n--\nEdzer",
+      "body_snippet": "Agustin Lobo wrote:\n> \n> Is there any info on actually how to use\n> Gstat on grass raster layers? The links in\n> the gstat and grass web pages are circular.\n\nJust use it from the grass prompt. Gstat w",
+      "thread_id": "thread-235724c02a2e",
+      "thread_depth": 0,
+      "month": "2003-04"
+    },
+    {
+      "id": "msg-564ace7fd243",
+      "message_id": "<20030401112346.E25404@itc.it>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "6699469fcb2a74ef796d0e883e27624d3663973e457278083d48e5b55c1da876",
+      "date": "2003-04-01T04:23:46Z",
+      "subject": "[STATSGRASS] Grass link to Gstat",
+      "subject_clean": "[STATSGRASS] Grass link to Gstat",
+      "in_reply_to": "<Pine.OSF.3.91.1030331193221.12539N-100000@paleo.ija.csic.es>; from alobo@ija.csic.es on Mon, Mar 31, 2003 at 07:34:59PM +0200",
+      "references": [
+        "<Pine.OSF.3.91.1030331193221.12539N-100000@paleo.ija.csic.es>"
+      ],
+      "body_plain": "On Mon, Mar 31, 2003 at 07:34:59PM +0200, Agustin Lobo wrote:\n> \n> Hi there!\n> Is there any info on actually how to use\n> Gstat on grass raster layers? The links in\n> the gstat and grass web pages are circular.\n> The gstat page indicates how to compile for\n> grass support but not how to use it. The pdf\n> manual does not include any mention to grass.\n\n\nYou need to run gstat from inside GRASS. The variables of interest need to\nbe floating point numbers (DOUBLE) in sites list or stored in a raster map.\nThe instructions for gstat are stored in an ASCII file (see gstat manual).\n\nWhen using GRASS sites lists as input, following column order conventions\nhave to be followed:\n\nEasting|Northing|#site_no %FP_data [%FP_data]\n\nThese are the same conventions as for standard GRASS sites lists.\n\ngstat reads GRASS site data from the current MAPSET with the \ndata()\nfunction. \n\nVariable positions are defined as:\n\nx=1: column 1 contains the x-coordinate\ny=2: column 2 contains the y-coordinate\nz=3: column 3 contains the z-coordinate (optional)\nv=1: column 1 contains the first data (measurement) variable,\n     when 0, a grid map (aka raster map) is read\n\nE.g. using the maas location:\nhttp://grass.itc.it/statsgrass/maas_grass_location.tar.gz\n\nCreate a file 'gstat.maas1.zn' with following contents:\n\ndata(zinc): 'Zn', x=1, y=2, v=1;\ndata(ln_zinc): 'Zn', x=1, y=2, v=1, log;\nvariogram(zinc): 10000 Nug() + 140000 Sph(800);\nvariogram(ln_zinc): 1 Nug() + 1 Sph(800);\n\nThen run\ngstat gstat.maas1.zn\n\nHope this helps,\n\n Markus\n\n-- \nMarkus Neteler\n\nITC-irst, Istituto per la Ricerca Scientifica e Tecnologica\n      Project on Predictive Models for the Environment    \nVia Sommarive, 18        -       38050 Povo (Trento), Italy\ntel +39 0461 314 520 (fax -591)           http://mpa.itc.it",
+      "body_snippet": "On Mon, Mar 31, 2003 at 07:34:59PM +0200, Agustin Lobo wrote:\n> \n> Hi there!\n> Is there any info on actually how to use\n> Gstat on grass raster layers? The links in\n> the gstat and grass web pages are",
+      "thread_id": "thread-564ace7fd243",
+      "thread_depth": 0,
+      "month": "2003-04"
+    },
+    {
+      "id": "msg-54831434e592",
+      "message_id": "<Pine.OSF.3.91.1030401111953.25192D-100000@paleo.ija.csic.es>",
+      "from_name": "Agustin Lobo",
+      "from_email_hash": "904afa1192b5c5769db5a1ae5b21005f96c837b5ba35a20a3116ee449d7827da",
+      "date": "2003-04-01T04:27:13Z",
+      "subject": "[STATSGRASS] Grass link to Gstat",
+      "subject_clean": "[STATSGRASS] Grass link to Gstat",
+      "in_reply_to": "<3E895640.A3B9740C@geog.uu.nl>",
+      "references": [],
+      "body_plain": "I've been succesful to get a variogram from\na sites file, but not from a raster file.\nI do: \nGRASS:~/grass/gavarres_gis/h21/cell > gstat -i\n\nand then:\n1. Select \n2. Choose identifier or enter new one []: a\n(where a is just a dummy name)\n3.Enter data file name [] : test \n(where test is a raster file in $LOCATION/cell\n4.Enter variable column number [0]:\n(I let it to be 0 as I don't know what to input, this\nis a raster file, not an x,y,(z),value file)\n5. Hit return for Log transf. and for Average dups.\n\nand the program quits with no comment or clue.\n\nI'm sure I'm doing something wrong,\nbut what? how can I actually tell gstats\nthat my file is a raster file and not a sites file?\n\nThanks,\n\nAgus\n\n\nDr. Agustin Lobo\nInstituto de Ciencias de la Tierra (CSIC)\nLluis Sole Sabaris s/n\n08028 Barcelona SPAIN\ntel 34 93409 5410\nfax 34 93411 0012\nalobo@ija.csic.es\n\n\nOn Tue, 1 Apr 2003, Edzer J. Pebesma wrote:\n\n> Agustin Lobo wrote:\n> > \n> > Is there any info on actually how to use\n> > Gstat on grass raster layers? The links in\n> > the gstat and grass web pages are circular.\n> \n> Just use it from the grass prompt. Gstat will detect that\n> the environment variables set by starting up grass are set,\n> and will then try to read any sites data or grid maps \n> from the grass data base.\n> \n> > The gstat page indicates how to compile for\n> > grass support but not how to use it. The pdf\n> > manual does not include any mention to grass.\n> \n> Thanks for mentioning; this manual indeed needs a thorough\n> update.\n> --\n> Edzer\n>",
+      "body_snippet": "I've been succesful to get a variogram from\na sites file, but not from a raster file.\nI do: \nGRASS:~/grass/gavarres_gis/h21/cell > gstat -i\n\nand then:\n1. Select \n2. Choose identifier or enter new one ",
+      "thread_id": "thread-235724c02a2e",
+      "thread_depth": 1,
+      "month": "2003-04"
+    },
+    {
+      "id": "msg-5318f53e26d1",
+      "message_id": "<3E8983CD.F9A347B2@geog.uu.nl>",
+      "from_name": "Edzer J. Pebesma",
+      "from_email_hash": "a7fb0ca623e251a5aff6aa466eb7f50e3c643594fe03e3232d546a007043eef0",
+      "date": "2003-04-01T07:19:25Z",
+      "subject": "[STATSGRASS] Grass link to Gstat",
+      "subject_clean": "[STATSGRASS] Grass link to Gstat",
+      "in_reply_to": null,
+      "references": [
+        "<Pine.OSF.3.91.1030401111953.25192D-100000@paleo.ija.csic.es>"
+      ],
+      "body_plain": "Agustin Lobo wrote:\n> \n> I've been succesful to get a variogram from\n> a sites file, but not from a raster file.\n> I do:\n> GRASS:~/grass/gavarres_gis/h21/cell > gstat -i\n> \n> and then:\n> 1. Select\n> 2. Choose identifier or enter new one []: a\n> (where a is just a dummy name)\n> 3.Enter data file name [] : test\n> (where test is a raster file in $LOCATION/cell\n> 4.Enter variable column number [0]:\n> (I let it to be 0 as I don't know what to input, this\n> is a raster file, not an x,y,(z),value file)\n> 5. Hit return for Log transf. and for Average dups.\n> \n> and the program quits with no comment or clue.\n> \n> I'm sure I'm doing something wrong,\n> but what? how can I actually tell gstats\n> that my file is a raster file and not a sites file?\n> \nI see what you mean -- gstat usually reads (point) data\nfrom both lists or from maps, but the grass version does\nnot; the actual error message is hidden when the interactive\nuser interfaces jumps back to normal screen.\n\nOne solution is to convert your raster data to a sites\nlist. The other solution is downloading gstat-2.4.2\nsources (now on gstat.org) which tries to do so; but \nplease configure with:\n\n./configure --with-grass --without-gdal\n\nas current, highly experimental, gdal support still seems \nto mess things up.\n--\nEdzer",
+      "body_snippet": "Agustin Lobo wrote:\n> \n> I've been succesful to get a variogram from\n> a sites file, but not from a raster file.\n> I do:\n> GRASS:~/grass/gavarres_gis/h21/cell > gstat -i\n> \n> and then:\n> 1. Select\n> 2",
+      "thread_id": "thread-235724c02a2e",
+      "thread_depth": 2,
+      "month": "2003-04"
+    },
+    {
+      "id": "msg-164865c253ec",
+      "message_id": "<Pine.OSF.3.91.1030401150256.5646A@paleo.ija.csic.es>",
+      "from_name": "Agustin Lobo",
+      "from_email_hash": "904afa1192b5c5769db5a1ae5b21005f96c837b5ba35a20a3116ee449d7827da",
+      "date": "2003-04-01T08:16:55Z",
+      "subject": "[STATSGRASS] Grass link to Gstat",
+      "subject_clean": "[STATSGRASS] Grass link to Gstat",
+      "in_reply_to": "<3E8983CD.F9A347B2@geog.uu.nl>",
+      "references": [],
+      "body_plain": "Great! thanks. I've downloaded http://gstat.geog.uu.nl/bin/gstat-2.4.2.tar.gz\nand configured with:\n\n./configure --with-grass --with-netcdf=/usr/local/netcdf-3.5.0 \n--without-gdal\n\nthen make;make install;make install -n\n\nAnd now it works with raster layers. I've tested\nwith an small one (50 x 100), now I'm testing a large\none (1000 x 1000).\n\nIs it possible to save the variogram from\nwithin  gstat -i and not just displaying it?\n\nAgus\n\nDr. Agustin Lobo\nInstituto de Ciencias de la Tierra (CSIC)\nLluis Sole Sabaris s/n\n08028 Barcelona SPAIN\ntel 34 93409 5410\nfax 34 93411 0012\nalobo@ija.csic.es\n\n\nOn Tue, 1 Apr 2003, Edzer J. Pebesma wrote:\n\n> Agustin Lobo wrote:\n> > \n> > I've been succesful to get a variogram from\n> > a sites file, but not from a raster file.\n> > I do:\n> > GRASS:~/grass/gavarres_gis/h21/cell > gstat -i\n> > \n> > and then:\n> > 1. Select\n> > 2. Choose identifier or enter new one []: a\n> > (where a is just a dummy name)\n> > 3.Enter data file name [] : test\n> > (where test is a raster file in $LOCATION/cell\n> > 4.Enter variable column number [0]:\n> > (I let it to be 0 as I don't know what to input, this\n> > is a raster file, not an x,y,(z),value file)\n> > 5. Hit return for Log transf. and for Average dups.\n> > \n> > and the program quits with no comment or clue.\n> > \n> > I'm sure I'm doing something wrong,\n> > but what? how can I actually tell gstats\n> > that my file is a raster file and not a sites file?\n> > \n> I see what you mean -- gstat usually reads (point) data\n> from both lists or from maps, but the grass version does\n> not; the actual error message is hidden when the interactive\n> user interfaces jumps back to normal screen.\n> \n> One solution is to convert your raster data to a sites\n> list. The other solution is downloading gstat-2.4.2\n> sources (now on gstat.org) which tries to do so; but \n> please configure with:\n> \n> ./configure --with-grass --without-gdal\n> \n> as current, highly experimental, gdal support still seems \n> to mess things up.\n> --\n> Edzer\n> \n> _______________________________________________\n> statsgrass mailing list\n> statsgrass@grass.itc.it\n> http://grass.itc.it/mailman/listinfo/statsgrass\n>",
+      "body_snippet": "Great! thanks. I've downloaded http://gstat.geog.uu.nl/bin/gstat-2.4.2.tar.gz\nand configured with:\n\n./configure --with-grass --with-netcdf=/usr/local/netcdf-3.5.0 \n--without-gdal\n\nthen make;make insta",
+      "thread_id": "thread-235724c02a2e",
+      "thread_depth": 3,
+      "month": "2003-04"
+    },
+    {
+      "id": "msg-39f125abea0f",
+      "message_id": "<Pine.OSF.3.91.1030404170848.4995G-100000@paleo.ija.csic.es>",
+      "from_name": "Agustin Lobo",
+      "from_email_hash": "904afa1192b5c5769db5a1ae5b21005f96c837b5ba35a20a3116ee449d7827da",
+      "date": "2003-04-04T11:26:21Z",
+      "subject": "[STATSGRASS] gstat and grass raster null values",
+      "subject_clean": "[STATSGRASS] gstat and grass raster null values",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Apparentely, gstat does not\nhandle grass null values. At least, \nI've found problems with gstat\nif null values are not masked out.\n\nTherefore,\nit's important to set a proper mask.\nSomething like:\nr.mapcalc \"MASK = if(isnull(raster),null(),1)\"\n\nwill create a MASK for null values\nor inlude them in the active mask.\n\nAlso, thanks to Edzer, Im using\nthe following line command style for gstat\nin grass scripts:\n\ngstat -e semivariogram -c $cut -i $wid dum > $nout\n\nHope this helps (and that I'm not wrong).\n\nAgus\n\nDr. Agustin Lobo\nInstituto de Ciencias de la Tierra (CSIC)\nLluis Sole Sabaris s/n\n08028 Barcelona SPAIN\ntel 34 93409 5410\nfax 34 93411 0012\nalobo@ija.csic.es",
+      "body_snippet": "Apparentely, gstat does not\nhandle grass null values. At least, \nI've found problems with gstat\nif null values are not masked out.\n\nTherefore,\nit's important to set a proper mask.\nSomething like:\nr.ma",
+      "thread_id": "thread-39f125abea0f",
+      "thread_depth": 0,
+      "month": "2003-04"
+    },
+    {
+      "id": "msg-9ef56a852e2d",
+      "message_id": "<3E9186FE.8080704@deprem.gov.tr>",
+      "from_name": "orkun",
+      "from_email_hash": "83b090377313c56dfe857bd44bed271ea756fa3da7fa66ea07dd8387538a094b",
+      "date": "2003-04-07T10:11:10Z",
+      "subject": "[STATSGRASS] help log-linear",
+      "subject_clean": "[STATSGRASS] help log-linear",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "hello\n\nI have spatial data which contain\nnumber of landslide presence cells with respect to landslide predictors and\nnumber of landslide absence cells with respect to same predictors.\n\npredictors are essentially categorical data.\n\nI tried logistic regression. But because of providing interaction \ncapability\nof predictors, I want to use log-linear method.\nI hesitate the way I should use landslide count as response variable.\nonly landslide presence data should be regarded ? or both landslide \npresence and absent data should be regarded as response variable ?\n\nI will appreciate if anyone can supply information\n\nthanks in advance\n\nAhmet Temiz\nGen Dir of Disaster of Affairs\n\nTURKEY\n\n\n______________________________________\nScanned and protected by Inflex\nhttp://pldaniels.com/inflex\n\n______________________________________\nThe views and opinions expressed in this e-mail message are the sender's own\nand do not necessarily represent the views and the opinions of Earthquake Research Dept.\nof General Directorate of Disaster Affairs.\n\nBu e-postadaki fikir ve gorusler gonderenin sahsina ait olup, yasal olarak T.C.\nB.I.B. Afet Isleri Gn.Mud. Deprem Arastirma Dairesi'ni baglayici nitelikte degildir.",
+      "body_snippet": "hello\n\nI have spatial data which contain\nnumber of landslide presence cells with respect to landslide predictors and\nnumber of landslide absence cells with respect to same predictors.\n\npredictors are ",
+      "thread_id": "thread-9ef56a852e2d",
+      "thread_depth": 0,
+      "month": "2003-04"
+    },
+    {
+      "id": "msg-3d6b91a8a60d",
+      "message_id": "<Pine.OSF.3.91.1030407175103.13908g-100000@paleo.ija.csic.es>",
+      "from_name": "Agustin Lobo",
+      "from_email_hash": "904afa1192b5c5769db5a1ae5b21005f96c837b5ba35a20a3116ee449d7827da",
+      "date": "2003-04-07T11:52:11Z",
+      "subject": "[STATSGRASS] Problems with raster map",
+      "subject_clean": "[STATSGRASS] Problems with raster map",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I'm finding problems at reading a\nfloat Grass raster in gstat.\n\nGstat:\ngstat -e semivariogram -c 20 -i 0.25 dum2\nncols 194\nnrows 175\n             dum2     (GRASS raster)\nattribute:               dum2     [x:] x (map)    : [     289.5,     \n482.5]\nn:                      33950     [y:] y (map)    : [     551.5,     \n725.5]\nsample mean:     -1.54972e+36     sample std.:       2.1673e+37\n100% done\n\nBut note the output of r.describe and r.univar:\n r.describe -r dum2\nREADING [dum2 in alobo] ... 100%\n-4.894597 thru 3.777469\n\n r.univar dum2\n\nThis module calculates univariate statistics...\nCalculation for full image dum2@alobo...\n(no base mask map set, ignoring NULL cells)\nReading raster map...\nr.stats:  100%\nCalculating statistics...\n\nNumber of cells: 33950\nMinimum: -4.8945974869\nMaximum: 3.7774692326\nRange:  8.67207\nArithmetic mean:  -1.74594e-06\nVariance:  0.997496\nStandard deviation: 0.998747\nVariation coefficient: -5.72041e+07 %\n\nAlso, I have imported the raster to R using the Grass interface\nand have checked it:\n> a <- rast.get(gmeta(),rlist=\"dum2\")\n> summary(a)\n     Length Class  Mode\ndum2 33950  -none- numeric\n> mean(a$dum2)\n[1] -1.745935e-06\n> any(!is.finite(a$dum2))\n[1] FALSE\n\nDo you want me to send you the raster?\nIt's quite small:\n > cat ../cellhd/dum2\nproj:       0\nzone:       0\nnorth:      726\nsouth:      551\neast:       483\nwest:       289\ncols:       194\nrows:       175\ne-w resol:  1\nn-s resol:  1\nformat:     -1\ncompressed: 1\n\n\nAgus\n\nDr. Agustin Lobo\nInstituto de Ciencias de la Tierra (CSIC)\nLluis Sole Sabaris s/n\n08028 Barcelona SPAIN\ntel 34 93409 5410\nfax 34 93411 0012\nalobo@ija.csic.es",
+      "body_snippet": "I'm finding problems at reading a\nfloat Grass raster in gstat.\n\nGstat:\ngstat -e semivariogram -c 20 -i 0.25 dum2\nncols 194\nnrows 175\n             dum2     (GRASS raster)\nattribute:               dum2 ",
+      "thread_id": "thread-3d6b91a8a60d",
+      "thread_depth": 0,
+      "month": "2003-04"
+    },
+    {
+      "id": "msg-223b14b674e2",
+      "message_id": "<3E928F95.F5304771@geog.uu.nl>",
+      "from_name": "Edzer J. Pebesma",
+      "from_email_hash": "a7fb0ca623e251a5aff6aa466eb7f50e3c643594fe03e3232d546a007043eef0",
+      "date": "2003-04-08T05:00:05Z",
+      "subject": "[STATSGRASS] Re: Problems with raster map",
+      "subject_clean": "[STATSGRASS] Re: Problems with raster map",
+      "in_reply_to": null,
+      "references": [
+        "<Pine.OSF.3.91.1030407175103.13908g-100000@paleo.ija.csic.es>"
+      ],
+      "body_plain": "Agustin, your message suggests that gstat addresses strange,\nlarge values in a map that other applications do not. Could\nthese be values that should be flagged as missing values?\n\nDid you set the null values properly, as you explained\nin the previous message:\n\nAgustin Lobo wrote:\n> \n> Therefore,\n> it's important to set a proper mask.\n> Something like:\n> r.mapcalc \"MASK = if(isnull(raster),null(),1)\"\n> \n\nI'm not a routine grass user. I know that when reading maps, gstat\nchecks the function G_is_null_value(), which should tell a map value\nfrom a null. Still, I cannot see why the if(isnull()... would be needed\nfor gstat and not for other apps, should this be the case.\n--\nEdzer",
+      "body_snippet": "Agustin, your message suggests that gstat addresses strange,\nlarge values in a map that other applications do not. Could\nthese be values that should be flagged as missing values?\n\nDid you set the null",
+      "thread_id": "thread-3d6b91a8a60d",
+      "thread_depth": 1,
+      "month": "2003-04"
+    },
+    {
+      "id": "msg-394bd337b9f9",
+      "message_id": "<3E953A52.6A35E20D@geog.uu.nl>",
+      "from_name": "Edzer J. Pebesma",
+      "from_email_hash": "a7fb0ca623e251a5aff6aa466eb7f50e3c643594fe03e3232d546a007043eef0",
+      "date": "2003-04-10T05:33:06Z",
+      "subject": "[STATSGRASS] Re: Problems with raster map",
+      "subject_clean": "[STATSGRASS] Re: Problems with raster map",
+      "in_reply_to": null,
+      "references": [
+        "<Pine.OSF.3.91.1030407175103.13908g-100000@paleo.ija.csic.es>",
+        "<3E928F95.F5304771@geog.uu.nl>"
+      ],
+      "body_plain": "FYI --\n\nIt turned out that the problems Agus had with gstat not reading \ngrass double (8-byte float) grid maps, were right, and did not\nhave to do with Null() values. I uploaded a corrected version\nof the 2.4.2 source tree to http://www.gstat.org/ .\n\nBest regards,\n--\nEdzer",
+      "body_snippet": "FYI --\n\nIt turned out that the problems Agus had with gstat not reading \ngrass double (8-byte float) grid maps, were right, and did not\nhave to do with Null() values. I uploaded a corrected version\nof",
+      "thread_id": "thread-3d6b91a8a60d",
+      "thread_depth": 2,
+      "month": "2003-04"
+    },
+    {
+      "id": "msg-b60abeb1f52d",
+      "message_id": "<5.1.0.14.0.20030414135717.0272a920@box.tin.it>",
+      "from_name": "Pelfer PG&G",
+      "from_email_hash": "be0a359ceb3e484d0b0b5666b61d7673d944b0e4a65c6e3c70b612964ed2e4a4",
+      "date": "2003-04-14T07:58:58Z",
+      "subject": "[STATSGRASS] Tables in PostgreSQL",
+      "subject_clean": "[STATSGRASS] Tables in PostgreSQL",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\nI am using GRASS and PostgreSQL for an Archaeological GIS about spatial \nanalysis and settlement pattern evolution in a case study of the South \nEtruria.\nI am writing the tables of the alphanumeric and textual data on PostgreSQL, \nit works well but I had these problems:\n\n1)- I can not cancel the single columns from an existing table.\n\nI tried with\n\nALTER TABLE tablename DROP COLUMN columnname datatype (es. int2);\n\nBut it indicated me syntax errors in string writing.\n\n2)- How it is possible to change in the tables the existing data types (es \nfrom text to smallint) of the single columns?\n\n\nThanks in advance for your help\n\n\nGiuliano Pelfer\nPh Student in Ancient Topography and Landscape Archaeology\nUniversity of Bologna/Roma",
+      "body_snippet": "Hello,\n\nI am using GRASS and PostgreSQL for an Archaeological GIS about spatial \nanalysis and settlement pattern evolution in a case study of the South \nEtruria.\nI am writing the tables of the alphanu",
+      "thread_id": "thread-b60abeb1f52d",
+      "thread_depth": 0,
+      "month": "2003-04"
+    },
+    {
+      "id": "msg-a452a4a044cf",
+      "message_id": "<5.1.0.14.0.20030423221944.00a992e0@box.tin.it>",
+      "from_name": "Pelfer PG&G",
+      "from_email_hash": "be0a359ceb3e484d0b0b5666b61d7673d944b0e4a65c6e3c70b612964ed2e4a4",
+      "date": "2003-04-23T16:29:44Z",
+      "subject": "[STATSGRASS] Urgent help: lost of link with PostgreSQL",
+      "subject_clean": "[STATSGRASS] Urgent help: lost of link with PostgreSQL",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\nDuring my work with PostgreSQL 7.1 tables this morning, computer shutted \ndown because electric power supply stopped.\n\nWhen I restarted computer, I could not restart postmaster using\n\n/etc/rc.d/init.d/postgresql start\n\nbecause the answer was FAILED (that is, NOT OK).\n\nMy PC is used like server and client for PostgreSQL at the same time. I \nlost any link with my databases.\nFor Postgres installation I get Redhat 7.2 and I use rpm file.\n\nDo you know what I need to do for restarting postmaster and recovering the \nlink with my databases?\n\nAny help will be highly appreciated!!!\n\nThank you in advance\n\nGiuliano Pelfer\nPhD Student in archaeology (Ancient Topography)\nItaly",
+      "body_snippet": "Hello,\n\nDuring my work with PostgreSQL 7.1 tables this morning, computer shutted \ndown because electric power supply stopped.\n\nWhen I restarted computer, I could not restart postmaster using\n\n/etc/rc.",
+      "thread_id": "thread-a452a4a044cf",
+      "thread_depth": 0,
+      "month": "2003-04"
+    },
+    {
+      "id": "msg-2b02e3a5391f",
+      "message_id": "<6A5934FC-768E-11D7-B585-0030656EF29C@eos.geog.utoronto.ca>",
+      "from_name": "Scott W Mitchell",
+      "from_email_hash": "1378959eb487c99dca9c0c3612d0dc43a33b587b6b93904b5de75b03acb8a2e7",
+      "date": "2003-04-24T15:53:27Z",
+      "subject": "[STATSGRASS] Fwd: Map Comparison...",
+      "subject_clean": "[STATSGRASS] Fwd: Map Comparison...",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear Stats/GRASS community members,\n\nSince R and GRASS are being used in the project described below, and \nmany of you will be interested in similar things, I hope you will find \nmy forwarding of this message appropriate:\n\nBegin forwarded message:\n\n> From: Ferko*Csillag <fcs@geog.utoronto.ca>\n> Date: Thu Apr 24, 2003  12:41:13 Canada/Eastern\n>\n\n> Subject: Map Comparison...\n> Reply-To: Ferko*Csillag <fcs@geog.utoronto.ca>\n>\n>\n> Do you work with visualizations of georeferenced data in the form of \n> maps,\n> images, sections through 3-dimensional material, or similar types of\n> representation? Do you ever have occasion to compare two or more of \n> these\n> visualizations with the intention of determining if they are \n> \"different\"\n> in some way?  If so, we need your help.\n>\n> As part of the background for a research project funded by the GEOIDE\n> Network (http://www.geoide.ulaval.ca/), we are attempting to identify\n> which characteristics of georeferenced data people use to determine if\n> there is a difference between representations of a given phenomenon.  \n> We\n> anticipate that the characteristics used, as well as their relative\n> importance, will depend on many variables including those relating to\n> features of the data, the analyst, and the context in which the \n> comparison\n> is made.  In order to help us identify the relevant characteristics, we\n> would like to learn the views of a wide range of those who undertake \n> such\n> comparisons.\n>\n> With this in mind, we invite you to take a simple map comparison test \n> that\n> can be found at the project website\n>\n> http://eratos.erin.utoronto.ca/fcs/PRES/2MAPS/2maps_index.html\n> (click on TEST).\n>\n> It should take about 20 minutes to complete the test.\n>\n> Feel free to forward this message and we apologize if you receive \n> multiple\n> copies.\n>\n> Thank you for your help.\n>\n> Ferko Csillag (Department of Geography, University of Toronto)\n> fcs@geog.utoronto.ca\n> Barry Boots (Department of Geography and Environmental Studies,\n> Wilfrid Laurier University)\n> bboots@wlu.ca\n\n------\nScott W. Mitchell\t\t\t\t\t\t\nDepartment of Geography\t\t\t\t\t\nUniversity of Toronto at Mississauga\t\n3359 Mississauga Road\t\t\t\t\t\nMississauga, ON L5L 1C6",
+      "body_snippet": "Dear Stats/GRASS community members,\n\nSince R and GRASS are being used in the project described below, and \nmany of you will be interested in similar things, I hope you will find \nmy forwarding of this",
+      "thread_id": "thread-2b02e3a5391f",
+      "thread_depth": 0,
+      "month": "2003-04"
+    },
+    {
+      "id": "msg-d61761a3fce7",
+      "message_id": "<200304290712.h3T7CAI31703@natura.cebas.csic.es>",
+      "from_name": "javier garcia",
+      "from_email_hash": "819134c67ae7bb4db8280a8587a262ba77ac5658097c5feee4b3ee74137c51a6",
+      "date": "2003-04-29T03:23:40Z",
+      "subject": "[STATSGRASS] R: east() north()",
+      "subject_clean": "[STATSGRASS] R: east() north()",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello;\nI'm learning to use R along with GRASS (Versions: R 1.6.2  GRASS 5.0.2   \nR-GRASS 0.2.8) \nTrying to understand the use of \neast() and north(), I've done:\n-------------------------------------------\n\n> summary(east(G))\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.\n 632200  647200  662100  662100  677000  692000\n> summary(north(G))\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.\n4164000 4172000 4181000 4181000 4190000 4199000\n> system(\"g.region -p\")\nprojection: 1 (UTM)\nzone:       30\ndatum:      ** unknown (default: WGS84) **\nellipsoid:  international\nnorth:      4198600\nsouth:      4163700\nwest:       632200\neast:       692000\nnsres:      50\newres:      50\nrows:       698\ncols:       1196\n--------------------------------------------------------\nI can't see the meaning of north() and east().\nIf east were the east of each cell in the grid, the result should be \nsomething like:\n> summary(east(G))\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.\n 632250  ...                                            692000\nIn other hand, if north() and east() are referring to coordinates of cell in \nthe selected region. What's the matter with the summary of north()? It hasn't \nanything to do with the boundaries of the region, not like east().\n\nCould you help with this?\n\nThanks and regards;\n\nJavier",
+      "body_snippet": "Hello;\nI'm learning to use R along with GRASS (Versions: R 1.6.2  GRASS 5.0.2   \nR-GRASS 0.2.8) \nTrying to understand the use of \neast() and north(), I've done:\n---------------------------------------",
+      "thread_id": "thread-d61761a3fce7",
+      "thread_depth": 0,
+      "month": "2003-04"
+    },
+    {
+      "id": "msg-794e80acb60a",
+      "message_id": "<Pine.LNX.4.44.0304290955020.15672-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2003-04-29T04:04:20Z",
+      "subject": "[STATSGRASS] R: east() north()",
+      "subject_clean": "[STATSGRASS] R: east() north()",
+      "in_reply_to": "<200304290712.h3T7CAI31703@natura.cebas.csic.es>",
+      "references": [],
+      "body_plain": "On Tue, 29 Apr 2003, javier garcia wrote:\n\n> Hello;\n> I'm learning to use R along with GRASS (Versions: R 1.6.2  GRASS 5.0.2   \n> R-GRASS 0.2.8) \n> Trying to understand the use of \n> east() and north(), I've done:\n> -------------------------------------------\n> \n> > summary(east(G))\n>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.\n>  632200  647200  662100  662100  677000  692000\n> > summary(north(G))\n>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.\n> 4164000 4172000 4181000 4181000 4190000 4199000\n> > system(\"g.region -p\")\n> projection: 1 (UTM)\n> zone:       30\n> datum:      ** unknown (default: WGS84) **\n> ellipsoid:  international\n> north:      4198600\n> south:      4163700\n> west:       632200\n> east:       692000\n> nsres:      50\n> ewres:      50\n> rows:       698\n> cols:       1196\n> --------------------------------------------------------\n> I can't see the meaning of north() and east().\n> If east were the east of each cell in the grid, the result should be \n> something like:\n> > summary(east(G))\n>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.\n>  632250  ...                                            692000\n\n\nAnd indeed it (almost) is!! summary.default(), the function you are\ncalling in summary(east(G)), has a digits= argument. Increase the digits,\nand you see it (in fact east() and north() return raster cell midpoints):\n\n> summary(G)\nData from GRASS 5.0 LOCATION maas with 259 columns and 232 rows;\nUTM, zone: 32\nThe west-east range is: 269870, 272460, and the south-north: 5650610, 5652930;\nWest-east cell sizes are 10 units, and south-north 10 units.\n> system(\"g.region -p\")\nprojection: 1 (UTM)\nzone:       32\ndatum:      ** unknown (default: WGS84) **\nellipsoid:  wgs84\nnorth:      5652930\nsouth:      5650610\nwest:       269870\neast:       272460\nnsres:      10\newres:      10\nrows:       232\ncols:       259\n> summary(north(G))\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n5651000 5651000 5652000 5652000 5652000 5653000 \n> summary(north(G), digits=7)\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n5650615 5651193 5651770 5651770 5652348 5652925 \n\nso north() runs from south + nsres/2 to north - nsres/2.\n\nThis is a numerical representation thing - statisticians are often \nconcerned with the \"big picture\", in which 5 meters in 5 million really do \nnot matter, so the default number of digits *printed to the screen* is at \nleast 3. For spatial position, cm can matter in millions of meters, so we \nneed to set the digits= argument. The values in the variables are correct, \nits the values being displayed that are rounded.\n\nRoger\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 93 93\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Tue, 29 Apr 2003, javier garcia wrote:\n\n> Hello;\n> I'm learning to use R along with GRASS (Versions: R 1.6.2  GRASS 5.0.2   \n> R-GRASS 0.2.8) \n> Trying to understand the use of \n> east() and north(",
+      "thread_id": "thread-d61761a3fce7",
+      "thread_depth": 1,
+      "month": "2003-04"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-235724c02a2e",
+      "subject": "[STATSGRASS] Grass link to Gstat",
+      "message_count": 4,
+      "participants": [
+        "Agustin Lobo",
+        "Edzer J. Pebesma"
+      ],
+      "started": "2003-04-01T04:05:04Z",
+      "last_reply": "2003-04-01T08:16:55Z",
+      "root_message_id": "msg-235724c02a2e"
+    },
+    {
+      "id": "thread-564ace7fd243",
+      "subject": "[STATSGRASS] Grass link to Gstat",
+      "message_count": 1,
+      "participants": [
+        "Markus Neteler"
+      ],
+      "started": "2003-04-01T04:23:46Z",
+      "last_reply": "2003-04-01T04:23:46Z",
+      "root_message_id": "msg-564ace7fd243"
+    },
+    {
+      "id": "thread-39f125abea0f",
+      "subject": "[STATSGRASS] gstat and grass raster null values",
+      "message_count": 1,
+      "participants": [
+        "Agustin Lobo"
+      ],
+      "started": "2003-04-04T11:26:21Z",
+      "last_reply": "2003-04-04T11:26:21Z",
+      "root_message_id": "msg-39f125abea0f"
+    },
+    {
+      "id": "thread-9ef56a852e2d",
+      "subject": "[STATSGRASS] help log-linear",
+      "message_count": 1,
+      "participants": [
+        "orkun"
+      ],
+      "started": "2003-04-07T10:11:10Z",
+      "last_reply": "2003-04-07T10:11:10Z",
+      "root_message_id": "msg-9ef56a852e2d"
+    },
+    {
+      "id": "thread-3d6b91a8a60d",
+      "subject": "[STATSGRASS] Problems with raster map",
+      "message_count": 3,
+      "participants": [
+        "Agustin Lobo",
+        "Edzer J. Pebesma"
+      ],
+      "started": "2003-04-07T11:52:11Z",
+      "last_reply": "2003-04-10T05:33:06Z",
+      "root_message_id": "msg-3d6b91a8a60d"
+    },
+    {
+      "id": "thread-b60abeb1f52d",
+      "subject": "[STATSGRASS] Tables in PostgreSQL",
+      "message_count": 1,
+      "participants": [
+        "Pelfer PG&G"
+      ],
+      "started": "2003-04-14T07:58:58Z",
+      "last_reply": "2003-04-14T07:58:58Z",
+      "root_message_id": "msg-b60abeb1f52d"
+    },
+    {
+      "id": "thread-a452a4a044cf",
+      "subject": "[STATSGRASS] Urgent help: lost of link with PostgreSQL",
+      "message_count": 1,
+      "participants": [
+        "Pelfer PG&G"
+      ],
+      "started": "2003-04-23T16:29:44Z",
+      "last_reply": "2003-04-23T16:29:44Z",
+      "root_message_id": "msg-a452a4a044cf"
+    },
+    {
+      "id": "thread-2b02e3a5391f",
+      "subject": "[STATSGRASS] Fwd: Map Comparison...",
+      "message_count": 1,
+      "participants": [
+        "Scott W Mitchell"
+      ],
+      "started": "2003-04-24T15:53:27Z",
+      "last_reply": "2003-04-24T15:53:27Z",
+      "root_message_id": "msg-2b02e3a5391f"
+    },
+    {
+      "id": "thread-d61761a3fce7",
+      "subject": "[STATSGRASS] R: east() north()",
+      "message_count": 2,
+      "participants": [
+        "Roger Bivand",
+        "javier garcia"
+      ],
+      "started": "2003-04-29T03:23:40Z",
+      "last_reply": "2003-04-29T04:04:20Z",
+      "root_message_id": "msg-d61761a3fce7"
+    }
+  ]
+}

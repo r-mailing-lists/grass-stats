@@ -1,0 +1,71 @@
+{
+  "list": "grass-stats",
+  "description": "",
+  "month": "2007-05",
+  "messages": [
+    {
+      "id": "msg-0f31fc1a726c",
+      "message_id": "<46435BC1.4030700@amu.edu.pl>",
+      "from_name": "Jarekj Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2007-05-10T13:52:01Z",
+      "subject": "[STATSGRASS] spatstat: trend to spatialgriddataframe - help needed",
+      "subject_clean": "[STATSGRASS] spatstat: trend to spatialgriddataframe - help needed",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi\n\nIt seems very simple but I cannot pass throuh one step:\n\nI computed trend (ppm) in spatstat package:\n\n    ppm_2=ppm(unmark(pp), ~polynom(x,y,2))\n\nnext I found, that I can convert that  object to  \"something almost \nlike  <<im>> object\" :\n\n    k=plot(ppm_2, ngrid=c(gmeta6()$cols, gmeta6()$rows), \nsuperimpose=FALSE, how=\"image\", pause=FALSE, plot.it=FALSE)\n\nbut: it is not im object. It is object which only contains im inside. \nHere is its structure:\n\nstr(k)\nList of 1\n $ trend:List of 1\n  ..$ :List of 11     ##here is something like \"unnamed atribute\" I \ncannot pass this\n  .. ..$ v     : num [1:986, 1:1051] 1.06e-09 1.07e-09 1.08e-09 1.10e-09 \n1.11e-09 ...\n  .. ..$ dim   : int [1:2] 986 1051\n  .. ..$ xrange: num [1:2] 3684409 3713995\n  .. ..$ yrange: num [1:2] 5649780 5681325\n  .. ..$ xstep : num 28.2\n  .. ..$ ystep : num 32\n  .. ..$ xcol  : num [1:1051] 3684423 3684451 3684479 3684507 3684535 ...\n  .. ..$ yrow  : num [1:986] 5649796 5649828 5649860 5649892 5649924 ...\n  .. ..$ lev   : NULL\n  .. ..$ type  : chr \"real\"\n  .. ..$ units :List of 3\n  .. .. ..$ singular  : chr \"unit\"\n  .. .. ..$ plural    : chr \"units\"\n  .. .. ..$ multiplier: num 1\n  .. .. ..- attr(*, \"class\")= chr \"units\"\n  .. ..- attr(*, \"class\")= chr \"im\"\n - attr(*, \"class\")= chr \"plotppm\"\n - attr(*, \"mrkvals\")= num 1\n\n\nI simply don't know how extract that part which is im object (to convert \nit next to spatialgriddataframe) or even only v (v I can insert to any \nim object and next to convert it)\n\nI hope that problem is trivial to more advanced R users\n\nJarek",
+      "body_snippet": "Hi\n\nIt seems very simple but I cannot pass throuh one step:\n\nI computed trend (ppm) in spatstat package:\n\n    ppm_2=ppm(unmark(pp), ~polynom(x,y,2))\n\nnext I found, that I can convert that  object to  ",
+      "thread_id": "thread-0f31fc1a726c",
+      "thread_depth": 0,
+      "month": "2007-05"
+    },
+    {
+      "id": "msg-7925a0290a39",
+      "message_id": "<Pine.LNX.4.44.0705102054070.13067-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2007-05-10T15:00:18Z",
+      "subject": "[STATSGRASS] spatstat: trend to spatialgriddataframe - help needed",
+      "subject_clean": "[STATSGRASS] spatstat: trend to spatialgriddataframe - help needed",
+      "in_reply_to": "<46435BC1.4030700@amu.edu.pl>",
+      "references": [],
+      "body_plain": "On Thu, 10 May 2007, Jarekj Jasiewicz wrote:\n\n> Hi\n> \n> It seems very simple but I cannot pass throuh one step:\n> \n> I computed trend (ppm) in spatstat package:\n> \n>     ppm_2=ppm(unmark(pp), ~polynom(x,y,2))\n> \n> next I found, that I can convert that  object to  \"something almost \n> like  <<im>> object\" :\n> \n>     k=plot(ppm_2, ngrid=c(gmeta6()$cols, gmeta6()$rows), \n> superimpose=FALSE, how=\"image\", pause=FALSE, plot.it=FALSE)\n> \n> but: it is not im object. It is object which only contains im inside. \n> Here is its structure:\n> \n> str(k)\n> List of 1\n>  $ trend:List of 1\n>   ..$ :List of 11     ##here is something like \"unnamed atribute\" I \n> cannot pass this\n\nTry str(k$trend[[1]]$v) - if this accesses the matrix with the [[ operator\n(first unnamed component of trend), then the other bits ought to follow.\nPlease note that polynom() does not protect the powered coordinates from\nnumerical overflow, so I'd be cautious unless you know that x and y are\nonly small numbers.\n\nRoger\n\n>   .. ..$ v     : num [1:986, 1:1051] 1.06e-09 1.07e-09 1.08e-09 1.10e-09 \n> 1.11e-09 ...\n>   .. ..$ dim   : int [1:2] 986 1051\n>   .. ..$ xrange: num [1:2] 3684409 3713995\n>   .. ..$ yrange: num [1:2] 5649780 5681325\n>   .. ..$ xstep : num 28.2\n>   .. ..$ ystep : num 32\n>   .. ..$ xcol  : num [1:1051] 3684423 3684451 3684479 3684507 3684535 ...\n>   .. ..$ yrow  : num [1:986] 5649796 5649828 5649860 5649892 5649924 ...\n>   .. ..$ lev   : NULL\n>   .. ..$ type  : chr \"real\"\n>   .. ..$ units :List of 3\n>   .. .. ..$ singular  : chr \"unit\"\n>   .. .. ..$ plural    : chr \"units\"\n>   .. .. ..$ multiplier: num 1\n>   .. .. ..- attr(*, \"class\")= chr \"units\"\n>   .. ..- attr(*, \"class\")= chr \"im\"\n>  - attr(*, \"class\")= chr \"plotppm\"\n>  - attr(*, \"mrkvals\")= num 1\n> \n> \n> I simply don't know how extract that part which is im object (to convert \n> it next to spatialgriddataframe) or even only v (v I can insert to any \n> im object and next to convert it)\n> \n> I hope that problem is trivial to more advanced R users\n> \n> Jarek\n> \n> \n> \n> \n> _______________________________________________\n> statsgrass mailing list\n> statsgrass@grass.itc.it\n> http://grass.itc.it/mailman/listinfo/statsgrass\n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Thu, 10 May 2007, Jarekj Jasiewicz wrote:\n\n> Hi\n> \n> It seems very simple but I cannot pass throuh one step:\n> \n> I computed trend (ppm) in spatstat package:\n> \n>     ppm_2=ppm(unmark(pp), ~polynom",
+      "thread_id": "thread-0f31fc1a726c",
+      "thread_depth": 1,
+      "month": "2007-05"
+    },
+    {
+      "id": "msg-b2194f1552fe",
+      "message_id": "<46437505.2000600@amu.edu.pl>",
+      "from_name": "Jarekj Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2007-05-10T15:39:49Z",
+      "subject": "[STATSGRASS] spatstat: trend to spatialgriddataframe - help needed",
+      "subject_clean": "[STATSGRASS] spatstat: trend to spatialgriddataframe - help needed",
+      "in_reply_to": "<Pine.LNX.4.44.0705102054070.13067-100000@reclus.nhh.no>",
+      "references": [
+        "<Pine.LNX.4.44.0705102054070.13067-100000@reclus.nhh.no>"
+      ],
+      "body_plain": "Roger Bivand napisa?(a):\n> On Thu, 10 May 2007, Jarekj Jasiewicz wrote:\n>\n>   \n>> Hi\n>>\n>> It seems very simple but I cannot pass throuh one step:\n>>\n>> I computed trend (ppm) in spatstat package:\n>>\n>>     ppm_2=ppm(unmark(pp), ~polynom(x,y,2))\n>>\n>> next I found, that I can convert that  object to  \"something almost \n>> like  <<im>> object\" :\n>>\n>>     k=plot(ppm_2, ngrid=c(gmeta6()$cols, gmeta6()$rows), \n>> superimpose=FALSE, how=\"image\", pause=FALSE, plot.it=FALSE)\n>>\n>> but: it is not im object. It is object which only contains im inside. \n>> Here is its structure:\n>>\n>> str(k)\n>> List of 1\n>>  $ trend:List of 1\n>>   ..$ :List of 11     ##here is something like \"unnamed atribute\" I \n>> cannot pass this\n>>     \n>\n> Try str(k$trend[[1]]$v) - if this accesses the matrix with the [[ operator\n> (first unnamed component of trend), then the other bits ought to follow.\n> Please note that polynom() does not protect the powered coordinates from\n> numerical overflow, so I'd be cautious unless you know that x and y are\n> only small numbers.\n>\n> Roger\n>\n>   \n>>   .. ..$ v     : num [1:986, 1:1051] 1.06e-09 1.07e-09 1.08e-09 1.10e-09 \n>> 1.11e-09 ...\n>>   .. ..$ dim   : int [1:2] 986 1051\n>>   .. ..$ xrange: num [1:2] 3684409 3713995\n>>   .. ..$ yrange: num [1:2] 5649780 5681325\n>>   .. ..$ xstep : num 28.2\n>>   .. ..$ ystep : num 32\n>>   .. ..$ xcol  : num [1:1051] 3684423 3684451 3684479 3684507 3684535 ...\n>>   .. ..$ yrow  : num [1:986] 5649796 5649828 5649860 5649892 5649924 ...\n>>   .. ..$ lev   : NULL\n>>   .. ..$ type  : chr \"real\"\n>>   .. ..$ units :List of 3\n>>   .. .. ..$ singular  : chr \"unit\"\n>>   .. .. ..$ plural    : chr \"units\"\n>>   .. .. ..$ multiplier: num 1\n>>   .. .. ..- attr(*, \"class\")= chr \"units\"\n>>   .. ..- attr(*, \"class\")= chr \"im\"\n>>  - attr(*, \"class\")= chr \"plotppm\"\n>>  - attr(*, \"mrkvals\")= num 1\n>>\n>>\n>> I simply don't know how extract that part which is im object (to convert \n>> it next to spatialgriddataframe) or even only v (v I can insert to any \n>> im object and next to convert it)\n>>\n>> I hope that problem is trivial to more advanced R users\n>>\n>> Jarek\n>>\n>>\n>>\n>>\n>> _______________________________________________\n>> statsgrass mailing list\n>> statsgrass@grass.itc.it\n>> http://grass.itc.it/mailman/listinfo/statsgrass\n>>\n>>     \n>\n>   \nthanks, it works. As I thought It was trivial :)\n\nthanks also for informations of overflow. as you see x and y are rather \nhuge, I tested trend up to fourth polynominal, without overflow, the \nnumbers rather are in double number range\n\n\nJarek",
+      "body_snippet": "Roger Bivand napisa?(a):\n> On Thu, 10 May 2007, Jarekj Jasiewicz wrote:\n>\n>   \n>> Hi\n>>\n>> It seems very simple but I cannot pass throuh one step:\n>>\n>> I computed trend (ppm) in spatstat package:\n>>\n",
+      "thread_id": "thread-0f31fc1a726c",
+      "thread_depth": 2,
+      "month": "2007-05"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-0f31fc1a726c",
+      "subject": "[STATSGRASS] spatstat: trend to spatialgriddataframe - help needed",
+      "message_count": 3,
+      "participants": [
+        "Jarekj Jasiewicz",
+        "Roger Bivand"
+      ],
+      "started": "2007-05-10T13:52:01Z",
+      "last_reply": "2007-05-10T15:39:49Z",
+      "root_message_id": "msg-0f31fc1a726c"
+    }
+  ]
+}

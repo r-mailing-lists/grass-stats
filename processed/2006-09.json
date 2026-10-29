@@ -1,0 +1,658 @@
+{
+  "list": "grass-stats",
+  "description": "",
+  "month": "2006-09",
+  "messages": [
+    {
+      "id": "msg-d68f3a60fbdf",
+      "message_id": "<44F883FF.3020102@amu.edu.pl>",
+      "from_name": "Jarek Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2006-09-01T15:03:27Z",
+      "subject": "[STATSGRASS] problem with kriging not solved but new qestions arise",
+      "subject_clean": "[STATSGRASS] problem with kriging not solved but new qestions arise",
+      "in_reply_to": "<44F73C0C.1080100@amu.edu.pl>",
+      "references": [
+        "<44F73C0C.1080100@amu.edu.pl>"
+      ],
+      "body_plain": "Jarek Jasiewicz napisa?(a):\n> I try to krige some data, I do following grass wiki tutorial (that \n> with gaiciture)\n>\n/cut\n\n\nJarek Jasiewicz napisa?(a):\n> I try to krige some data, I do following grass wiki tutorial (that \n> with gaiciture)\n/cut\n\n\n > And I recive the error:\n\n > Error in predict.gstat(g, newdata = newdata, block = block, nsim = \nnsim,  :\n >  data items in gstat object and newdata have different coordinate\n > reference systems\n\n\nAfter 20 hours of fighting with R I partially solved that problem \nremoving projection information (proj4) from both spatial data frames (I \nset roj4string:Formal class 'CRS' [package \"sp\"] with 1 slots\n  .. .. ..@ projargs: chr NA)\n\nAnd all works well\n\nso - projection information (EPSG 2173 - Polish, 1965 zone IV) makes \nproblem?\n why?\nor eny projection makes problem - in fact, tutorial data has no proj4 \ninformation\n\nmayby sombody know???\n regards\nJarek",
+      "body_snippet": "Jarek Jasiewicz napisa?(a):\n> I try to krige some data, I do following grass wiki tutorial (that \n> with gaiciture)\n>\n/cut\n\n\nJarek Jasiewicz napisa?(a):\n> I try to krige some data, I do following gras",
+      "thread_id": "thread-d68f3a60fbdf",
+      "thread_depth": 0,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-2a097367da6e",
+      "message_id": "<Pine.LNX.4.44.0609012119590.4409-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2006-09-01T15:29:17Z",
+      "subject": "[STATSGRASS] problem with kriging not solved but new qestions arise",
+      "subject_clean": "[STATSGRASS] problem with kriging not solved but new qestions arise",
+      "in_reply_to": "<44F883FF.3020102@amu.edu.pl>",
+      "references": [],
+      "body_plain": "On Fri, 1 Sep 2006, Jarek Jasiewicz wrote:\n\n> Jarek Jasiewicz napisa?(a):\n> > I try to krige some data, I do following grass wiki tutorial (that \n> > with gaiciture)\n> >\n> /cut\n> \n> \n> Jarek Jasiewicz napisa?(a):\n> > I try to krige some data, I do following grass wiki tutorial (that \n> > with gaiciture)\n> /cut\n> \n> \n>  > And I recive the error:\n> \n>  > Error in predict.gstat(g, newdata = newdata, block = block, nsim = \n> nsim,  :\n>  >  data items in gstat object and newdata have different coordinate\n>  > reference systems\n> \n> \n> After 20 hours of fighting with R I partially solved that problem \n> removing projection information (proj4) from both spatial data frames (I \n> set roj4string:Formal class 'CRS' [package \"sp\"] with 1 slots\n>   .. .. ..@ projargs: chr NA)\n> \n> And all works well\n> \n> so - projection information (EPSG 2173 - Polish, 1965 zone IV) makes \n> problem?\n>  why?\n> or eny projection makes problem - in fact, tutorial data has no proj4 \n> information\n\nThis has just bitten me too!\n\npredict.gstat() tries to be fussy and check that the projections are \nequal, but they are not always represented the same way even though they \nare the same. In my case for Meuse bank I had:\n\n> proj4string(BMcD_grid)\n[1] \"+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.999908 +x_0=155000 +y_0=463000 +no_defs +a=6377397.155 \n+rf=299.1528128 +towgs84=565.036,49.914,465.839,-0.4094,0.3597,-1.86854,-4.0772\"\n> proj4string(BMcD)\n[1] \"+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.999908 +x_0=155000 +y_0=463000 +ellps=bessel +units=m +no_defs\"\n\nSo I simply assigned from one to the other to have the same \nrepresentation before calling gstat():\n\n> proj4string(BMcD) <- CRS(proj4string(BMcD_grid))\n\nI hope the same will work for you.\n\nRoger\n\n> \n> mayby sombody know???\n>  regards\n> Jarek\n> \n> _______________________________________________\n> statsgrass mailing list\n> statsgrass@grass.itc.it\n> http://grass.itc.it/mailman/listinfo/statsgrass\n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Fri, 1 Sep 2006, Jarek Jasiewicz wrote:\n\n> Jarek Jasiewicz napisa?(a):\n> > I try to krige some data, I do following grass wiki tutorial (that \n> > with gaiciture)\n> >\n> /cut\n> \n> \n> Jarek Jasiewicz",
+      "thread_id": "thread-d68f3a60fbdf",
+      "thread_depth": 1,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-24ab0b812e7c",
+      "message_id": "<44F91430.7060607@amu.edu.pl>",
+      "from_name": "Jarek Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2006-09-02T01:18:40Z",
+      "subject": "[STATSGRASS] problem with kriging not solved but new qestions arise",
+      "subject_clean": "[STATSGRASS] problem with kriging not solved but new qestions arise",
+      "in_reply_to": "<Pine.LNX.4.44.0609012119590.4409-100000@reclus.nhh.no>",
+      "references": [
+        "<Pine.LNX.4.44.0609012119590.4409-100000@reclus.nhh.no>"
+      ],
+      "body_plain": "Roger Bivand napisa?(a):\n> On Fri, 1 Sep 2006, Jarek Jasiewicz wrote:\n>\n>   \n>> Jarek Jasiewicz napisa?(a):\n>>     \n>>> I try to krige some data, I do following grass wiki tutorial (that \n>>> with gaiciture)\n>>>\n>>>       \n>> /cut\n>>\n>>\n>> Jarek Jasiewicz napisa?(a):\n>>     \n>>> I try to krige some data, I do following grass wiki tutorial (that \n>>> with gaiciture)\n>>>       \n>> /cut\n>>\n>>\n>>  > And I recive the error:\n>>\n>>  > Error in predict.gstat(g, newdata = newdata, block = block, nsim = \n>> nsim,  :\n>>  >  data items in gstat object and newdata have different coordinate\n>>  > reference systems\n>>\n>>\n>> After 20 hours of fighting with R I partially solved that problem \n>> removing projection information (proj4) from both spatial data frames (I \n>> set roj4string:Formal class 'CRS' [package \"sp\"] with 1 slots\n>>   .. .. ..@ projargs: chr NA)\n>>\n>> And all works well\n>>\n>> so - projection information (EPSG 2173 - Polish, 1965 zone IV) makes \n>> problem?\n>>  why?\n>> or eny projection makes problem - in fact, tutorial data has no proj4 \n>> information\n>>     \n>\n> This has just bitten me too!\n>\n> predict.gstat() tries to be fussy and check that the projections are \n> equal, but they are not always represented the same way even though they \n> are the same. In my case for Meuse bank I had:\n>\n>   \n>> proj4string(BMcD_grid)\n>>     \n> [1] \"+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.999908 +x_0=155000 +y_0=463000 +no_defs +a=6377397.155 \n> +rf=299.1528128 +towgs84=565.036,49.914,465.839,-0.4094,0.3597,-1.86854,-4.0772\"\n>   \n>> proj4string(BMcD)\n>>     \n> [1] \"+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.999908 +x_0=155000 +y_0=463000 +ellps=bessel +units=m +no_defs\"\n>\n> So I simply assigned from one to the other to have the same \n> representation before calling gstat():\n>\n>   \n>> proj4string(BMcD) <- CRS(proj4string(BMcD_grid))\n>>     \n>\n> I hope the same will work for you.\n>\n> Roger\n>\n>   \n>> mayby sombody know???\n>>  regards\n>> Jarek\n>>\n>> _______________________________________________\n>> statsgrass mailing list\n>> statsgrass@grass.itc.it\n>> http://grass.itc.it/mailman/listinfo/statsgrass\n>>\n>>     \n>\n>   \nYes, work!\n\nthanks a lot\nJarek",
+      "body_snippet": "Roger Bivand napisa?(a):\n> On Fri, 1 Sep 2006, Jarek Jasiewicz wrote:\n>\n>   \n>> Jarek Jasiewicz napisa?(a):\n>>     \n>>> I try to krige some data, I do following grass wiki tutorial (that \n>>> with gai",
+      "thread_id": "thread-d68f3a60fbdf",
+      "thread_depth": 2,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-7a9498afd0d6",
+      "message_id": "<44F9EB8B.5000202@amu.edu.pl>",
+      "from_name": "Jarek Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2006-09-02T16:37:31Z",
+      "subject": "[STATSGRASS] Another problem with kriging (gstat)",
+      "subject_clean": "[STATSGRASS] Another problem with kriging (gstat)",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "After kriging (in fact, with strongly chaotic data) I recived atrefacts \n(noisy elipses with values far from data range) in some places.\n\nFor now I can't place image on www but if somebody is intersting, I can \nsend image with addational patameters about kriging made\n\nregards\nJarek",
+      "body_snippet": "After kriging (in fact, with strongly chaotic data) I recived atrefacts \n(noisy elipses with values far from data range) in some places.\n\nFor now I can't place image on www but if somebody is intersti",
+      "thread_id": "thread-7a9498afd0d6",
+      "thread_depth": 0,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-2b11a6e3bcfc",
+      "message_id": "<44FACC07.9090404@geo.uu.nl>",
+      "from_name": "Edzer J. Pebesma",
+      "from_email_hash": "dc9c0d99e64732fb3b0f9ed04046937206c628f39b3a0556850153cb8eb34ebc",
+      "date": "2006-09-03T08:35:19Z",
+      "subject": "[STATSGRASS] Another problem with kriging (gstat)",
+      "subject_clean": "[STATSGRASS] Another problem with kriging (gstat)",
+      "in_reply_to": "<44F9EB8B.5000202@amu.edu.pl>",
+      "references": [
+        "<44F9EB8B.5000202@amu.edu.pl>"
+      ],
+      "body_plain": "Jarek Jasiewicz wrote:\n\n> After kriging (in fact, with strongly chaotic data) I recived \n> atrefacts (noisy elipses with values far from data range) in some places.\n>\n> For now I can't place image on www but if somebody is intersting, I \n> can send image with addational patameters about kriging made\n\nThis may be caused by several factors; without more knowledge about your \nanalysis we can't say anything. One possible reason is observations that \nare very close in space (in combination with no nugget effect).\n\nBest regards,\n--\nEdzer",
+      "body_snippet": "Jarek Jasiewicz wrote:\n\n> After kriging (in fact, with strongly chaotic data) I recived \n> atrefacts (noisy elipses with values far from data range) in some places.\n>\n> For now I can't place image on ",
+      "thread_id": "thread-7a9498afd0d6",
+      "thread_depth": 1,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-a512f6cc4317",
+      "message_id": "<44FC2EE7.9080809@amu.edu.pl>",
+      "from_name": "Jarek Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2006-09-04T09:49:27Z",
+      "subject": "[STATSGRASS] Another problem with kriging (gstat)",
+      "subject_clean": "[STATSGRASS] Another problem with kriging (gstat)",
+      "in_reply_to": "<44FACC07.9090404@geo.uu.nl>",
+      "references": [
+        "<44F9EB8B.5000202@amu.edu.pl>",
+        "<44FACC07.9090404@geo.uu.nl>"
+      ],
+      "body_plain": "Edzer J. Pebesma napisa?(a):\n> Jarek Jasiewicz wrote:\n>\n>> After kriging (in fact, with strongly chaotic data) I recived \n>> atrefacts (noisy elipses with values far from data range) in some \n>> places.\n>>\n>> For now I can't place image on www but if somebody is intersting, I \n>> can send image with addational patameters about kriging made\n>\n> This may be caused by several factors; without more knowledge about \n> your analysis we can't say anything. One possible reason is \n> observations that are very close in space (in combination with no \n> nugget effect).\n>\n> Best regards,\n> -- \n> Edzer\nno, nugget is very LARGE (data are chaotic, almost random), in my \nopinion data are not to do kriging, the aim is slighty different, I only \ninterested in reasons of such element like in attachment\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: krig.jpg\nType: image/jpeg\nSize: 53382 bytes\nDesc: not available\nUrl : http://lists.osgeo.org/pipermail/grass-stats/attachments/20060904/039230ba/krig.jpg",
+      "body_snippet": "Edzer J. Pebesma napisa?(a):\n> Jarek Jasiewicz wrote:\n>\n>> After kriging (in fact, with strongly chaotic data) I recived \n>> atrefacts (noisy elipses with values far from data range) in some \n>> place",
+      "thread_id": "thread-7a9498afd0d6",
+      "thread_depth": 2,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-6132361d83f3",
+      "message_id": "<44FC9555.3080506@geo.uu.nl>",
+      "from_name": "Edzer J. Pebesma",
+      "from_email_hash": "dc9c0d99e64732fb3b0f9ed04046937206c628f39b3a0556850153cb8eb34ebc",
+      "date": "2006-09-04T17:06:29Z",
+      "subject": "[STATSGRASS] Another problem with kriging (gstat)",
+      "subject_clean": "[STATSGRASS] Another problem with kriging (gstat)",
+      "in_reply_to": "<44FC2EE7.9080809@amu.edu.pl>",
+      "references": [
+        "<44F9EB8B.5000202@amu.edu.pl>",
+        "<44FACC07.9090404@geo.uu.nl>",
+        "<44FC2EE7.9080809@amu.edu.pl>"
+      ],
+      "body_plain": "Jarek, thanks for the picture. Is it possible that data locations \nsometimes coincide with grid cell centres, and sometimes not? Is the \nwhite oval meant to be there, and is it missing valued? We still know \nvery little about your problem and setup.\n--\nEdzer\n\nJarek Jasiewicz wrote:\n> Edzer J. Pebesma napisa?(a):\n>> Jarek Jasiewicz wrote:\n>>\n>>> After kriging (in fact, with strongly chaotic data) I recived \n>>> atrefacts (noisy elipses with values far from data range) in some \n>>> places.\n>>>\n>>> For now I can't place image on www but if somebody is intersting, I \n>>> can send image with addational patameters about kriging made\n>>\n>> This may be caused by several factors; without more knowledge about \n>> your analysis we can't say anything. One possible reason is \n>> observations that are very close in space (in combination with no \n>> nugget effect).\n>>\n>> Best regards,\n>> -- \n>> Edzer\n> no, nugget is very LARGE (data are chaotic, almost random), in my \n> opinion data are not to do kriging, the aim is slighty different, I \n> only interested in reasons of such element like in attachment\n>\n> ------------------------------------------------------------------------\n>\n> ------------------------------------------------------------------------\n>\n> _______________________________________________\n> statsgrass mailing list\n> statsgrass@grass.itc.it\n> http://grass.itc.it/mailman/listinfo/statsgrass\n>",
+      "body_snippet": "Jarek, thanks for the picture. Is it possible that data locations \nsometimes coincide with grid cell centres, and sometimes not? Is the \nwhite oval meant to be there, and is it missing valued? We stil",
+      "thread_id": "thread-7a9498afd0d6",
+      "thread_depth": 3,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-bb1d39016f18",
+      "message_id": "<44FD4509.7090906@amu.edu.pl>",
+      "from_name": "Jarosław Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2006-09-05T05:36:09Z",
+      "subject": "[STATSGRASS] problem with installing rgdal (to Roger, I thing)",
+      "subject_clean": "[STATSGRASS] problem with installing rgdal (to Roger, I thing)",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I try to install rgdal 0.4-10 on another computer (ubuntu 6.06, R 2.3.1 \nfrom sources)\n\nand I recive massage:\n\n> checking proj_api.h presence... yes\n> checking for proj_api.h... yes\n> checking for pj_init_plus in -lproj... no\n> libproj.a and/or proj_api.h not found.\n> If the PROJ.4 library is installed in a non-standard location,\n> use --configure-args='--with-proj-include=/opt/local/include\n> --with-proj-lib=/opt/local/lib' for example, replacing /opt/local/*\n> with appropriate values for your installation.\n> If PROJ.4 is not installed, install it.\n> ERROR: configuration failed for package 'rgdal'\n> ** Removing '/usr/local/lib/R/library/rgdal'\nOf course, I cannot add, I have proj4 installed porertly in: \nusr/local/share/proj4, usr/local/lib and usr/local/include\n\n(to avoid questions - beleve me, I know how proj4 shall be installed \npropertly)\n\nthe proj_api.h is in usr/local/include and libproj.a is in usr/local lib\n\nnext according message I try\ninstall.packages(\"rgdal\", repos=\"http://...\", \nconfigure.args=c('--with-proj-lib=/usr/local/lib', \n'--with-proj-include=/usr/local/include'))\n\nI recived the same message\n\nBecause /usr/local/... for some programs are not standard instalation \npath (in spite of it it is on PATH) i have installed proj4 from ubuntu \nrepository to /usr/lib, usr/share/proj4 and /usr/include\n\nand I recived the same message\n\nIn my home compurer, where I had installed rgdal 0.4-8 before  \ninstallation was without problems (problems are with sperfish60 and \nother unprojected locations but it isn't a theme of that post)\n\n\nI know that configure.args is not proper. It shall be with variables but \nI don't know which (LD_LIBRARY_PATH LD_INCLUDE_PATH taht not work??)\n\nAnd in addition. I don't know it is connected - but few second after \nmentioned error computers resources going to 0 (I cannot try which \napplication) and R stops with message: cannot allocate 27 bytes... \nothers libraries (include PgSQL was instaslled without problems)",
+      "body_snippet": "I try to install rgdal 0.4-10 on another computer (ubuntu 6.06, R 2.3.1 \nfrom sources)\n\nand I recive massage:\n\n> checking proj_api.h presence... yes\n> checking for proj_api.h... yes\n> checking for pj_",
+      "thread_id": "thread-bb1d39016f18",
+      "thread_depth": 0,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-f0a688a6918e",
+      "message_id": "<Pine.LNX.4.44.0609051212240.5665-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2006-09-05T06:28:08Z",
+      "subject": "[STATSGRASS] problem with installing rgdal (to Roger, I thing)",
+      "subject_clean": "[STATSGRASS] problem with installing rgdal (to Roger, I thing)",
+      "in_reply_to": "<44FD4509.7090906@amu.edu.pl>",
+      "references": [],
+      "body_plain": "On Tue, 5 Sep 2006, [ISO-8859-2] Jaros?aw Jasiewicz wrote:\n\n> \n> I try to install rgdal 0.4-10 on another computer (ubuntu 6.06, R 2.3.1 \n> from sources)\n> \n> and I recive massage:\n> \n> > checking proj_api.h presence... yes\n> > checking for proj_api.h... yes\n> > checking for pj_init_plus in -lproj... no\n> > libproj.a and/or proj_api.h not found.\n> > If the PROJ.4 library is installed in a non-standard location,\n> > use --configure-args='--with-proj-include=/opt/local/include\n> > --with-proj-lib=/opt/local/lib' for example, replacing /opt/local/*\n> > with appropriate values for your installation.\n> > If PROJ.4 is not installed, install it.\n> > ERROR: configuration failed for package 'rgdal'\n> > ** Removing '/usr/local/lib/R/library/rgdal'\n> Of course, I cannot add, I have proj4 installed porertly in: \n> usr/local/share/proj4, usr/local/lib and usr/local/include\n> \n> (to avoid questions - beleve me, I know how proj4 shall be installed \n> propertly)\n> \n> the proj_api.h is in usr/local/include and libproj.a is in usr/local lib\n> \n> next according message I try\n> install.packages(\"rgdal\", repos=\"http://...\", \n> configure.args=c('--with-proj-lib=/usr/local/lib', \n> '--with-proj-include=/usr/local/include'))\n> \n> I recived the same message\n> \n> Because /usr/local/... for some programs are not standard instalation \n> path (in spite of it it is on PATH) i have installed proj4 from ubuntu \n> repository to /usr/lib, usr/share/proj4 and /usr/include\n> \n> and I recived the same message\n> \n> In my home compurer, where I had installed rgdal 0.4-8 before  \n> installation was without problems (problems are with sperfish60 and \n> other unprojected locations but it isn't a theme of that post)\n> \n> \n> I know that configure.args is not proper. It shall be with variables but \n> I don't know which (LD_LIBRARY_PATH LD_INCLUDE_PATH taht not work??)\n\nPlease do things step by step, it will be easier to help.\n\nPlease download the rgdal_0.4-10.tar.gz file to a suitable temporary\ndirectory. Change to that directory and run \n\nR CMD INSTALL -l <your R_LIBS> rgdal_0.4-10.tar.gz\n\nfrom the shell prompt by hand. If the same error occurs, follow:\n\nhttp://www.sal.uiuc.edu/tools/tools-sum/rgeo/rgeo-detail/map-packages-on-cran\n\nand \n\nhttp://cran.r-project.org/doc/manuals/R-exts.html#Configure-example\n\ncarefully in building up the --configure-args='' to suit your \ninstallation, probably:\n\n--configure-args='--with-proj-lib=/usr/local/lib'\n\nI do not know how Ubuntu sets up the environment for ./configure, in your \ncase the headers are being found but not the lib*.a file, which is \npuzzling, because /usr/local is a usual place to look by default. Does \nGDAL find the PROJ.4 headers and libraries without help?\n\nHope this helps.\n\nRoger\n\n\n> \n> And in addition. I don't know it is connected - but few second after \n> mentioned error computers resources going to 0 (I cannot try which \n> application) and R stops with message: cannot allocate 27 bytes... \n> others libraries (include PgSQL was instaslled without problems)\n\nProblems are known to occur when the archive address is wrong, etc. \n\n> \n> _______________________________________________\n> statsgrass mailing list\n> statsgrass@grass.itc.it\n> http://grass.itc.it/mailman/listinfo/statsgrass\n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Tue, 5 Sep 2006, [ISO-8859-2] Jaros?aw Jasiewicz wrote:\n\n> \n> I try to install rgdal 0.4-10 on another computer (ubuntu 6.06, R 2.3.1 \n> from sources)\n> \n> and I recive massage:\n> \n> > checking pro",
+      "thread_id": "thread-bb1d39016f18",
+      "thread_depth": 1,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-f92d19fa0f74",
+      "message_id": "<44FE98CA.5060101@amu.edu.pl>",
+      "from_name": "Jaros?aw Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2006-09-06T05:45:46Z",
+      "subject": "[STATSGRASS] problem with installing rgdal FAIL",
+      "subject_clean": "[STATSGRASS] problem with installing rgdal FAIL",
+      "in_reply_to": "<Pine.LNX.4.44.0609051212240.5665-100000@reclus.nhh.no>",
+      "references": [
+        "<Pine.LNX.4.44.0609051212240.5665-100000@reclus.nhh.no>"
+      ],
+      "body_plain": "well.... failed\n\n\nI did folowing step-by step, and always I receved the mentioned message\n\n\nthe last command was:\n\n sudo R CMD INSTALL -l /usr/local/lib/R/library/ \n--configure-args='--with-proj-include=/usr/local/include \n--with-proj-lib=/usr/local/lib' rgdal_0.4-10.tar.gz\n\nand here a full listing of my /usr/local/lib folder, Is something missing?\n\n-rw-r--r--  1 root root  5865748 2006-09-04 11:13 libgdal.a\n-rwxr-xr-x  1 root root     1117 2006-09-04 11:13 libgdal.la\nlrwxrwxrwx  1 root root       17 2006-09-04 11:13 libgdal.so -> \nlibgdal.so.1.10.0\nlrwxrwxrwx  1 root root       17 2006-09-04 11:13 libgdal.so.1 -> \nlibgdal.so.1.10.0\n-rwxr-xr-x  1 root root  4368728 2006-09-04 11:13 libgdal.so.1.10.0\n-rw-r--r--  1 root root  1182320 2006-09-05 09:48 libproj.a\n-rwxr-xr-x  1 root root      794 2006-09-05 09:48 libproj.la\nlrwxrwxrwx  1 root root       16 2006-09-05 09:48 libproj.so -> \nlibproj.so.0.5.0lrwxrwxrwx  1 root root       16 2006-09-05 09:48 \nlibproj.so.0 -> libproj.so.0.5.0\n-rwxr-xr-x  1 root root   671206 2006-09-05 09:48 libproj.so.0.5.0\ndrwxrwsr-x  3 root staff    4096 2006-08-06 01:19 python2.4\ndrwxr-xr-x 10 root root     4096 2006-09-04 11:44 R\n\n\nof course gdal, and geos has been instaled without help, only simple \n./configure\n\ngrass has need some help but concering tcltk and postgres (and cxx motif \nand readline)\n\nregards\nJarek",
+      "body_snippet": "well.... failed\n\n\nI did folowing step-by step, and always I receved the mentioned message\n\n\nthe last command was:\n\n sudo R CMD INSTALL -l /usr/local/lib/R/library/ \n--configure-args='--with-proj-inclu",
+      "thread_id": "thread-bb1d39016f18",
+      "thread_depth": 2,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-1d87c9e793cd",
+      "message_id": "<Pine.LNX.4.44.0609061821290.6843-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2006-09-06T12:28:11Z",
+      "subject": "[STATSGRASS] problem with installing rgdal FAIL",
+      "subject_clean": "[STATSGRASS] problem with installing rgdal FAIL",
+      "in_reply_to": "<44FE98CA.5060101@amu.edu.pl>",
+      "references": [],
+      "body_plain": "On Wed, 6 Sep 2006, [windows-1252] Jaros?aw Jasiewicz wrote:\n\n> well.... failed\n> \n> \n> I did folowing step-by step, and always I receved the mentioned message\n> \n\nYour /usr/local/lib is identical with mine, and for me no \n--configure-args='' are needed in any case. I cannot debug your setup \ndirectly, so you'll need to unpack rgdal_0.4-10.tar.gz, and edit \nconfigure.in (putting in echo of shell variables of interest), run \nautoconf, and see how you go. You can try sh -x configure as well as \n./configure. I'm sorry I can't help more, but I don't have a system like \nyours, so cannot replicate. \n\nRoger\n\n> \n> the last command was:\n> \n>  sudo R CMD INSTALL -l /usr/local/lib/R/library/ \n> --configure-args='--with-proj-include=/usr/local/include \n> --with-proj-lib=/usr/local/lib' rgdal_0.4-10.tar.gz\n> \n> and here a full listing of my /usr/local/lib folder, Is something missing?\n> \n> -rw-r--r--  1 root root  5865748 2006-09-04 11:13 libgdal.a\n> -rwxr-xr-x  1 root root     1117 2006-09-04 11:13 libgdal.la\n> lrwxrwxrwx  1 root root       17 2006-09-04 11:13 libgdal.so -> \n> libgdal.so.1.10.0\n> lrwxrwxrwx  1 root root       17 2006-09-04 11:13 libgdal.so.1 -> \n> libgdal.so.1.10.0\n> -rwxr-xr-x  1 root root  4368728 2006-09-04 11:13 libgdal.so.1.10.0\n> -rw-r--r--  1 root root  1182320 2006-09-05 09:48 libproj.a\n> -rwxr-xr-x  1 root root      794 2006-09-05 09:48 libproj.la\n> lrwxrwxrwx  1 root root       16 2006-09-05 09:48 libproj.so -> \n> libproj.so.0.5.0lrwxrwxrwx  1 root root       16 2006-09-05 09:48 \n> libproj.so.0 -> libproj.so.0.5.0\n> -rwxr-xr-x  1 root root   671206 2006-09-05 09:48 libproj.so.0.5.0\n> drwxrwsr-x  3 root staff    4096 2006-08-06 01:19 python2.4\n> drwxr-xr-x 10 root root     4096 2006-09-04 11:44 R\n> \n> \n> of course gdal, and geos has been instaled without help, only simple \n> ./configure\n> \n> grass has need some help but concering tcltk and postgres (and cxx motif \n> and readline)\n> \n> regards\n> Jarek\n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Wed, 6 Sep 2006, [windows-1252] Jaros?aw Jasiewicz wrote:\n\n> well.... failed\n> \n> \n> I did folowing step-by step, and always I receved the mentioned message\n> \n\nYour /usr/local/lib is identical wit",
+      "thread_id": "thread-bb1d39016f18",
+      "thread_depth": 3,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-d024d35eef74",
+      "message_id": "<Pine.LNX.4.44.0609071114090.7556-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2006-09-07T05:25:15Z",
+      "subject": "[STATSGRASS] Is R package GRASS for GRASS 5 needed for Windows?",
+      "subject_clean": "[STATSGRASS] Is R package GRASS for GRASS 5 needed for Windows?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "NOTE: only applies to GRASS 5\n-----------------------------\n\nIn upcoming R 2.4.0, Windows entry points for compression and storage of \nGRASS 5 rasters have been hidden - CHANGES reads:\n\n\"Entry points which are hidden in libR.so on Unix are now also hidden\nin R.dll.  (Just over half the entry points are hidden, which speeds up\nloading.)\"\n\nOn Linux/Unix/OSX, ./configure finds and uses external libraries for xdr \nand zlib, but on Windows the GRASS package had used the fact that the \nR.dll had open entry points for xdr and zlib. These are now hidden, so \nthe GRASS package will not build for Windows for the new release due in \nearly October 2006.\n\nIs this a problem for anyone? It can be got round by including local\ncopies of the library sources from the R source tree, but if there are no\nusers of the GRASS interface package on Windows who are planning to\nupgrade to R >= 2.4, I would prefer simply to retire the Windows port.\n\nIf you use GRASS 5 on Windows with the GRASS R interface package, and are\nplanning to upgrade to R >= 2.4, please let me know.\n\nRoger\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "NOTE: only applies to GRASS 5\n-----------------------------\n\nIn upcoming R 2.4.0, Windows entry points for compression and storage of \nGRASS 5 rasters have been hidden - CHANGES reads:\n\n\"Entry points ",
+      "thread_id": "thread-d024d35eef74",
+      "thread_depth": 0,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-75d3408b61ff",
+      "message_id": "<45056D74.2070701@geo.uu.nl>",
+      "from_name": "Edzer J. Pebesma",
+      "from_email_hash": "dc9c0d99e64732fb3b0f9ed04046937206c628f39b3a0556850153cb8eb34ebc",
+      "date": "2006-09-11T10:06:44Z",
+      "subject": "[STATSGRASS] Another problem with kriging (gstat)",
+      "subject_clean": "[STATSGRASS] Another problem with kriging (gstat)",
+      "in_reply_to": "<44FD839A.3020800@amu.edu.pl>",
+      "references": [
+        "<44F9EB8B.5000202@amu.edu.pl>",
+        "<44FACC07.9090404@geo.uu.nl>",
+        "<44FC2EE7.9080809@amu.edu.pl>",
+        "<44FC9555.3080506@geo.uu.nl>",
+        "<44FD839A.3020800@amu.edu.pl>"
+      ],
+      "body_plain": "Jarek,\n\nEight of your data are collocated:\n\n > zerodist(rf)\n     [,1] [,2]\n[1,]   46   47\n[2,]  136  142\n[3,]  145  147\n[4,]  150  152\n[5,]  200  201\n[6,]  213  214\n[7,]  328  333\n[8,]  332  334\n\nRemoving them solves the problem. Try for example:\n\nkrig=krige(cs~1, loc=rf[-zerodist(rf)[,1],], newdata=sg, model=frfit)\nspplot(krig[1],col.regions=bpy.colors())\n\nin which case you (arbitrarily) remove the first of each colocated pair.\n--\nEdzer\n\nJarek Jasiewicz wrote:\n> Hi\n> It is outside statgrass because of attachment\n>\n> here are data and what I did (only simple model, without anisotropy \n> spherical variogram etc) but I tested it on other variograms and with \n> anisotropy, distance and so on, as well\n>\n>\n> first data:\n> rf  - with two slots: l (lenght) and cs (cosine) of the feature\n> sg - spatial grid dataframe on witch I try to do prediction\n>\n> first variogram:\n>\n> vr=variogram(cs~1, locations=rf)\n>\n> next fitting\n> frfit=fit.variogram(vr, vgm(1650, \"Sph\", 7000, 11000))\n>\n> and the last kriging\n> krig=krige(cs~1, loc=rf, newdata=sg, model=vrfit)\n>\n> after imaging\n> image(krig) the artefact will be visible well\n>\n> by the way: I aware that that data are not well suitable for kriging\n>\n> regards\n> Jarek Jasiewicz",
+      "body_snippet": "Jarek,\n\nEight of your data are collocated:\n\n > zerodist(rf)\n     [,1] [,2]\n[1,]   46   47\n[2,]  136  142\n[3,]  145  147\n[4,]  150  152\n[5,]  200  201\n[6,]  213  214\n[7,]  328  333\n[8,]  332  334\n\nRemo",
+      "thread_id": "thread-75d3408b61ff",
+      "thread_depth": 0,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-7e5700d5b331",
+      "message_id": "<200609120957.k8C9vo5q004006@grass.itc.it>",
+      "from_name": "Eduardo Hdo. Izcara",
+      "from_email_hash": "4bab97c5a194c76b83c89cff5b6880d163f8896fc53c34540cdcd14c954e635c",
+      "date": "2006-09-12T06:06:38Z",
+      "subject": "[STATSGRASS] gstat: missing values in GRASS attribute table",
+      "subject_clean": "[STATSGRASS] gstat: missing values in GRASS attribute table",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\nI'm using gstat from within GRASS 6.2; I?ve imported a table with many attributes in it using v.in.ascii, and a sqlite table has been created attached to the sites vector file. The problem is that the table has some missing values for some of the attributes, that gstat seems not to deal with (it is useless to set a ?mv? value). After inspection of the \"data.c\" source file, I?ve seen that gstat don?t check for missing values at all when working with GRASS data.\n\nAny help would be appreciated if someone could indicate me how actually GRASS deal with this kind of missing data (in the attribute tables), or how could it be managed (if possible) from within gstat.\n\nEduardo H. Izcara\n----------------------\nAgronomist\n09003 ? Burgos, Spain\n+34 947 278 872",
+      "body_snippet": "Hi all,\n\nI'm using gstat from within GRASS 6.2; I?ve imported a table with many attributes in it using v.in.ascii, and a sqlite table has been created attached to the sites vector file. The problem is",
+      "thread_id": "thread-7e5700d5b331",
+      "thread_depth": 0,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-ba24acf046a5",
+      "message_id": "<4507F610.2060505@amu.edu.pl>",
+      "from_name": "Jarek Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2006-09-13T08:14:08Z",
+      "subject": "[STATSGRASS] Another problem with kriging (gstat)",
+      "subject_clean": "[STATSGRASS] Another problem with kriging (gstat)",
+      "in_reply_to": "<45056D74.2070701@geo.uu.nl>",
+      "references": [
+        "<44F9EB8B.5000202@amu.edu.pl>",
+        "<44FACC07.9090404@geo.uu.nl>",
+        "<44FC2EE7.9080809@amu.edu.pl>",
+        "<44FC9555.3080506@geo.uu.nl>",
+        "<44FD839A.3020800@amu.edu.pl>",
+        "<45056D74.2070701@geo.uu.nl>"
+      ],
+      "body_plain": "Edzer J. Pebesma napisa?(a):\n> Jarek,\n>\n> Eight of your data are collocated:\n>\n> > zerodist(rf)\n>     [,1] [,2]\n> [1,]   46   47\n> [2,]  136  142\n> [3,]  145  147\n> [4,]  150  152\n> [5,]  200  201\n> [6,]  213  214\n> [7,]  328  333\n> [8,]  332  334\n>\n> Removing them solves the problem. Try for example:\n>\n> krig=krige(cs~1, loc=rf[-zerodist(rf)[,1],], newdata=sg, model=frfit)\n> spplot(krig[1],col.regions=bpy.colors())\n>\n> in which case you (arbitrarily) remove the first of each colocated pair.\n> -- \n> Edzer\n>\n> Jarek Jasiewicz wrote:\n>> Hi\n>> It is outside statgrass because of attachment\n>>\n>> here are data and what I did (only simple model, without anisotropy \n>> spherical variogram etc) but I tested it on other variograms and with \n>> anisotropy, distance and so on, as well\n>>\n>>\n>> first data:\n>> rf  - with two slots: l (lenght) and cs (cosine) of the feature\n>> sg - spatial grid dataframe on witch I try to do prediction\n>>\n>> first variogram:\n>>\n>> vr=variogram(cs~1, locations=rf)\n>>\n>> next fitting\n>> frfit=fit.variogram(vr, vgm(1650, \"Sph\", 7000, 11000))\n>>\n>> and the last kriging\n>> krig=krige(cs~1, loc=rf, newdata=sg, model=vrfit)\n>>\n>> after imaging\n>> image(krig) the artefact will be visible well\n>>\n>> by the way: I aware that that data are not well suitable for kriging\n>>\n>> regards\n>> Jarek Jasiewicz\nthanks a lot\n\nJarek",
+      "body_snippet": "Edzer J. Pebesma napisa?(a):\n> Jarek,\n>\n> Eight of your data are collocated:\n>\n> > zerodist(rf)\n>     [,1] [,2]\n> [1,]   46   47\n> [2,]  136  142\n> [3,]  145  147\n> [4,]  150  152\n> [5,]  200  201\n> [",
+      "thread_id": "thread-75d3408b61ff",
+      "thread_depth": 1,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-0f872811a12d",
+      "message_id": "<200609250946.k8P9kAkJ016694@grass.itc.it>",
+      "from_name": "ehizcara@agrogex.com",
+      "from_email_hash": "4bab97c5a194c76b83c89cff5b6880d163f8896fc53c34540cdcd14c954e635c",
+      "date": "2006-09-25T05:45:28Z",
+      "subject": "[STATSGRASS] RE: [GRASS-user] kriging",
+      "subject_clean": "[STATSGRASS] RE: [GRASS-user] kriging",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": ">\n>Eduardo, thanks a lot. Before I decide what will I use - what about applying\n>fault lines? Is it possible to incorporate those as lines where stops\n>interpolations?\n>\n\nActually, I don?t now how exactly GRASS deals with missing values (mv) in their\nattribute tables, but you should be able to achieve that whit the R packages. On\nthe other hand, you can specify a value to be equal to mv in Gstat (for example\n-9999); the default is the NA string. In Gstat, the interpolation locations are\ncontrolled via a mask map.\n\nYou can read the Gstat  user?s manual for details. An introduction to the use of\nR with GRASS for spatial data analysis in\nhttp://grass.itc.it/statsgrass/grass_geostats.html.\nThere is also a statgrass mailing list:\nhttp://grass.itc.it/mailman/listinfo/statsgrass.\n\nEduardo",
+      "body_snippet": ">\n>Eduardo, thanks a lot. Before I decide what will I use - what about applying\n>fault lines? Is it possible to incorporate those as lines where stops\n>interpolations?\n>\n\nActually, I don?t now how exa",
+      "thread_id": "thread-0f872811a12d",
+      "thread_depth": 0,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-533121cc29fa",
+      "message_id": "<4517AB89.5080501@o2.pl>",
+      "from_name": "Maciej Sieczka",
+      "from_email_hash": "618714a62eb13dd3ac649983020b3715dd9f1d648ae6f25af7a09fb8b3c809a0",
+      "date": "2006-09-25T06:12:25Z",
+      "subject": "[STATSGRASS] RE: [GRASS-user] kriging",
+      "subject_clean": "[STATSGRASS] RE: [GRASS-user] kriging",
+      "in_reply_to": "<200609250946.k8P9kAkJ016694@grass.itc.it>",
+      "references": [
+        "<200609250946.k8P9kAkJ016694@grass.itc.it>"
+      ],
+      "body_plain": "ehizcara@agrogex.com wrote:\n>> Eduardo, thanks a lot. Before I decide what will I use - what about applying\n>> fault lines? Is it possible to incorporate those as lines where stops\n>> interpolations?\n\nThe only FOSS I know that supports fault lines (if that's what you\nmean) is Surfit http://surfit.sourceforge.net\n\nExamples: http://surfit.sourceforge.net/surfit/examples.html.\n\nMaciek",
+      "body_snippet": "ehizcara@agrogex.com wrote:\n>> Eduardo, thanks a lot. Before I decide what will I use - what about applying\n>> fault lines? Is it possible to incorporate those as lines where stops\n>> interpolations?\n",
+      "thread_id": "thread-0f872811a12d",
+      "thread_depth": 1,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-0ac1fcf28bdd",
+      "message_id": "<4517C69B.6020305@itc.it>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "6699469fcb2a74ef796d0e883e27624d3663973e457278083d48e5b55c1da876",
+      "date": "2006-09-25T08:07:55Z",
+      "subject": "[STATSGRASS] RE: [GRASS-user] kriging",
+      "subject_clean": "[STATSGRASS] RE: [GRASS-user] kriging",
+      "in_reply_to": "<4517AB89.5080501@o2.pl>",
+      "references": [
+        "<200609250946.k8P9kAkJ016694@grass.itc.it>",
+        "<4517AB89.5080501@o2.pl>"
+      ],
+      "body_plain": "Maciej Sieczka wrote on 09/25/2006 12:12 PM:\n> ehizcara@agrogex.com wrote:\n>   \n>>> Eduardo, thanks a lot. Before I decide what will I use - what about applying\n>>> fault lines? Is it possible to incorporate those as lines where stops\n>>> interpolations?\n>>>       \n>\n> The only FOSS I know that supports fault lines (if that's what you\n> mean) is Surfit http://surfit.sourceforge.net\n>\n> Examples: http://surfit.sourceforge.net/surfit/examples.html.\n>\n> Maciek\n>\n>   \nLuckily GRASS can do that, too:\n\nhttp://mpa.itc.it/markus/grass61/demos/gully_surf_rst.jpg\n... taken from our GRASS book,\n section 7.3.5 Surfaces with faults.\n\n(if you have the 1st edition, see also related erratum:\n http://mpa.itc.it/grasstutor/errata_menu.phtml)\n\nCheers\nMarkus",
+      "body_snippet": "Maciej Sieczka wrote on 09/25/2006 12:12 PM:\n> ehizcara@agrogex.com wrote:\n>   \n>>> Eduardo, thanks a lot. Before I decide what will I use - what about applying\n>>> fault lines? Is it possible to inco",
+      "thread_id": "thread-0f872811a12d",
+      "thread_depth": 2,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-bf78b81f578c",
+      "message_id": "<4517CD14.3000000@o2.pl>",
+      "from_name": "Maciej Sieczka",
+      "from_email_hash": "618714a62eb13dd3ac649983020b3715dd9f1d648ae6f25af7a09fb8b3c809a0",
+      "date": "2006-09-25T08:35:32Z",
+      "subject": "[STATSGRASS] RE: [GRASS-user] kriging",
+      "subject_clean": "[STATSGRASS] RE: [GRASS-user] kriging",
+      "in_reply_to": "<4517C69B.6020305@itc.it>",
+      "references": [
+        "<200609250946.k8P9kAkJ016694@grass.itc.it>",
+        "<4517AB89.5080501@o2.pl>",
+        "<4517C69B.6020305@itc.it>"
+      ],
+      "body_plain": "Markus Neteler wrote:\n> Maciej Sieczka wrote on 09/25/2006 12:12 PM:\n>> ehizcara@agrogex.com wrote:\n>>   \n>>>> Eduardo, thanks a lot. Before I decide what will I use - what about applying\n>>>> fault lines? Is it possible to incorporate those as lines where stops\n>>>> interpolations?\n>>>>       \n>> The only FOSS I know that supports fault lines (if that's what you\n>> mean) is Surfit http://surfit.sourceforge.net\n>>\n>> Examples: http://surfit.sourceforge.net/surfit/examples.html.\n>>\n>> Maciek\n>>\n>>   \n> Luckily GRASS can do that, too:\n> \n> http://mpa.itc.it/markus/grass61/demos/gully_surf_rst.jpg\n> .. taken from our GRASS book,\n>  section 7.3.5 Surfaces with faults.\n\nMarkus,\n\nThat's not the same. I don't you can achieve this:\n\nhttp://surfit.sourceforge.net/surfit/fault_8tcl-example.html\nhttp://surfit.sourceforge.net/surfit/fault__approx_8tcl-example.html\n\nusing Grass. In Grass you can't use lines as interpolation faults. The\nmethod you refer to uses area masking, and it can't reproduce the\nSurfit examples.\n\nMaciek",
+      "body_snippet": "Markus Neteler wrote:\n> Maciej Sieczka wrote on 09/25/2006 12:12 PM:\n>> ehizcara@agrogex.com wrote:\n>>   \n>>>> Eduardo, thanks a lot. Before I decide what will I use - what about applying\n>>>> fault l",
+      "thread_id": "thread-0f872811a12d",
+      "thread_depth": 3,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-1a98a9246a2f",
+      "message_id": "<bd07447b0609270837mf876c52gc502b6b97c6cfa1b@mail.gmail.com>",
+      "from_name": "Carlos \"Guâno\" Grohmann",
+      "from_email_hash": "0dc1a0fe57d97a7d47d9d6217fc2e30fc11fcf678f8fdb32cabaecaffa4e291b",
+      "date": "2006-09-27T11:37:17Z",
+      "subject": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "subject_clean": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello all\n\nSince the new sp and spGRASS6 packages, I haven't done any trand\nsurface analysis yet, so I'm a little lost here..\n\nin the old day, I would do this:\n\ng1r<-surf.ls(1,gradiente$east,gradiente$north,gradiente$num1);\n g1g<-trmat.G(G,g1r);\n rast.put(G,lname=\"gradiente.trend1\",layer=g1g);\n\nnow that trmat.G doesen't exists anymore, how do I do to send my trend\nsufaces back to GRASS?\n\nthanks\n\nCarlos\n\n-- \n+-----------------------------------------------------------+\n              Carlos Henrique Grohmann - Guano\n  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil\nLinux User #89721  - carlos dot grohmann at gmail dot com\n+-----------------------------------------------------------+\n_________________\n\"Good morning, doctors. I have taken the liberty of removing Windows\n95 from my hard drive.\"\n--The winning entry in a \"What were HAL's first words\" contest judged\nby 2001: A SPACE ODYSSEY creator Arthur C. Clarke",
+      "body_snippet": "Hello all\n\nSince the new sp and spGRASS6 packages, I haven't done any trand\nsurface analysis yet, so I'm a little lost here..\n\nin the old day, I would do this:\n\ng1r<-surf.ls(1,gradiente$east,gradiente",
+      "thread_id": "thread-1a98a9246a2f",
+      "thread_depth": 0,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-1b1b506ced88",
+      "message_id": "<Pine.LNX.4.44.0609271754230.1314-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2006-09-27T11:57:07Z",
+      "subject": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "subject_clean": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "in_reply_to": "<bd07447b0609270837mf876c52gc502b6b97c6cfa1b@mail.gmail.com>",
+      "references": [],
+      "body_plain": "On Wed, 27 Sep 2006, Carlos \"Gu?no\" Grohmann wrote:\n\n> Hello all\n> \n> Since the new sp and spGRASS6 packages, I haven't done any trand\n> surface analysis yet, so I'm a little lost here..\n> \n> in the old day, I would do this:\n> \n> g1r<-surf.ls(1,gradiente$east,gradiente$north,gradiente$num1);\n>  g1g<-trmat.G(G,g1r);\n>  rast.put(G,lname=\"gradiente.trend1\",layer=g1g);\n> \n> now that trmat.G doesen't exists anymore, how do I do to send my trend\n> sufaces back to GRASS?\n\nUse the standard gstat() approach, with the degree= argument. The gstat \npackage and surf.ls() in MASS use the same coordinate shrinking approach \nand give the same results.\n\nRoger\n\n> \n> thanks\n> \n> Carlos\n> \n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Wed, 27 Sep 2006, Carlos \"Gu?no\" Grohmann wrote:\n\n> Hello all\n> \n> Since the new sp and spGRASS6 packages, I haven't done any trand\n> surface analysis yet, so I'm a little lost here..\n> \n> in the o",
+      "thread_id": "thread-1a98a9246a2f",
+      "thread_depth": 1,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-292deb645cce",
+      "message_id": "<bd07447b0609280948l52759f85v9886e741637bd38b@mail.gmail.com>",
+      "from_name": "Carlos \"Guâno\" Grohmann",
+      "from_email_hash": "0dc1a0fe57d97a7d47d9d6217fc2e30fc11fcf678f8fdb32cabaecaffa4e291b",
+      "date": "2006-09-28T12:48:11Z",
+      "subject": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "subject_clean": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "in_reply_to": "<Pine.LNX.4.44.0609271754230.1314-100000@reclus.nhh.no>",
+      "references": [
+        "<bd07447b0609270837mf876c52gc502b6b97c6cfa1b@mail.gmail.com>",
+        "<Pine.LNX.4.44.0609271754230.1314-100000@reclus.nhh.no>"
+      ],
+      "body_plain": "Roger, I'm still lost :)\n\nlet's see:\n\n\n>library(spgrass6) ; library(spatial); library(gstat); library(lattice);\n>G <- gmeta6();\n>grd <- GridTopology(cellcentre.offset=c(G$west+(G$ewres/2),\nG$south+(G$nsres/2)), cellsize=c(G$ewres, G$nsres),\ncells.dim=c(G$cols, G$rows));\n>mask_SG <- SpatialGridDataFrame(grd, data=list(k=rep(1,\nG$cols*G$rows)), proj4string=CRS(G$proj4));\n\n>pts_trend<- getSites6sp(\"points_trend2\");\n\n> summary(pts_trend)\nObject of class SpatialPointsDataFrame\nCoordinates:\n                min       max\ncoords.x1  293529.5  297411.7\ncoords.x2 8873992.2 8878313.7\nIs projected: TRUE\nproj4string : [+proj=utm +south +zone=24 +a=6378160 +rf=298.25\n+no_defs +towgs84=-60.0,-2.0,-41.0]\nNumber of points: 31\nData attributes:\n      cat             x                y                alt\n Min.   : 1.0   Min.   :293530   Min.   :8873992   Min.   :514.4\n 1st Qu.: 8.5   1st Qu.:294619   1st Qu.:8874820   1st Qu.:522.8\n Median :16.0   Median :295493   Median :8875555   Median :533.0\n Mean   :16.0   Mean   :295542   Mean   :8875925   Mean   :536.8\n 3rd Qu.:23.5   3rd Qu.:296673   3rd Qu.:8877029   3rd Qu.:550.4\n Max.   :31.0   Max.   :297412   Max.   :8878314   Max.   :571.3\n\n******************************************************************\nnow gstat:\n\n>tbv_trend2_gstat <- gstat(id=\"tr2\", formula = alt ~ 1, data =\npts_trend2, degree=2);\n\n> names(tbv_trend2_gstat)\n[1] \"data\"  \"model\" \"call\"\n\n\nAnd I am here... I don't know how to display the results or how to get\nit back in GRASS, how to do analysis of variance among trend surfaces\nof different degrees... If I use surf.ls(), I can get the anova table\nbut I don't know how to get the image or anything else..\n\n\nCarlos\n\n\n\n\n\n\nOn 9/27/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:\n> On Wed, 27 Sep 2006, Carlos \"Gu?no\" Grohmann wrote:\n>\n> > Hello all\n> >\n> > Since the new sp and spGRASS6 packages, I haven't done any trand\n> > surface analysis yet, so I'm a little lost here..\n> >\n> > in the old day, I would do this:\n> >\n> > g1r<-surf.ls(1,gradiente$east,gradiente$north,gradiente$num1);\n> >  g1g<-trmat.G(G,g1r);\n> >  rast.put(G,lname=\"gradiente.trend1\",layer=g1g);\n> >\n> > now that trmat.G doesen't exists anymore, how do I do to send my trend\n> > sufaces back to GRASS?\n>\n> Use the standard gstat() approach, with the degree= argument. The gstat\n> package and surf.ls() in MASS use the same coordinate shrinking approach\n> and give the same results.\n>\n> Roger\n>\n> >\n> > thanks\n> >\n> > Carlos\n> >\n> >\n>\n> --\n> Roger Bivand\n> Economic Geography Section, Department of Economics, Norwegian School of\n> Economics and Business Administration, Helleveien 30, N-5045 Bergen,\n> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43\n> e-mail: Roger.Bivand@nhh.no\n>\n>\n\n\n-- \n+-----------------------------------------------------------+\n              Carlos Henrique Grohmann - Guano\n  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil\nLinux User #89721  - carlos dot grohmann at gmail dot com\n+-----------------------------------------------------------+\n_________________\n\"Good morning, doctors. I have taken the liberty of removing Windows\n95 from my hard drive.\"\n--The winning entry in a \"What were HAL's first words\" contest judged\nby 2001: A SPACE ODYSSEY creator Arthur C. Clarke",
+      "body_snippet": "Roger, I'm still lost :)\n\nlet's see:\n\n\n>library(spgrass6) ; library(spatial); library(gstat); library(lattice);\n>G <- gmeta6();\n>grd <- GridTopology(cellcentre.offset=c(G$west+(G$ewres/2),\nG$south+(G$",
+      "thread_id": "thread-1a98a9246a2f",
+      "thread_depth": 2,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-45d815e486d6",
+      "message_id": "<Pine.LNX.4.44.0609282018130.1994-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2006-09-28T14:29:16Z",
+      "subject": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "subject_clean": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "in_reply_to": "<bd07447b0609280948l52759f85v9886e741637bd38b@mail.gmail.com>",
+      "references": [],
+      "body_plain": "On Thu, 28 Sep 2006, Carlos \"Gu?no\" Grohmann wrote:\n\n> Roger, I'm still lost :)\n> \n> let's see:\n> \n> \n> >library(spgrass6) ; library(spatial); library(gstat); library(lattice);\n> >G <- gmeta6();\n> >grd <- GridTopology(cellcentre.offset=c(G$west+(G$ewres/2),\n> G$south+(G$nsres/2)), cellsize=c(G$ewres, G$nsres),\n> cells.dim=c(G$cols, G$rows));\n> >mask_SG <- SpatialGridDataFrame(grd, data=list(k=rep(1,\n> G$cols*G$rows)), proj4string=CRS(G$proj4));\n> \n> >pts_trend<- getSites6sp(\"points_trend2\");\n> \n> > summary(pts_trend)\n> Object of class SpatialPointsDataFrame\n> Coordinates:\n>                 min       max\n> coords.x1  293529.5  297411.7\n> coords.x2 8873992.2 8878313.7\n> Is projected: TRUE\n> proj4string : [+proj=utm +south +zone=24 +a=6378160 +rf=298.25\n> +no_defs +towgs84=-60.0,-2.0,-41.0]\n> Number of points: 31\n> Data attributes:\n>       cat             x                y                alt\n>  Min.   : 1.0   Min.   :293530   Min.   :8873992   Min.   :514.4\n>  1st Qu.: 8.5   1st Qu.:294619   1st Qu.:8874820   1st Qu.:522.8\n>  Median :16.0   Median :295493   Median :8875555   Median :533.0\n>  Mean   :16.0   Mean   :295542   Mean   :8875925   Mean   :536.8\n>  3rd Qu.:23.5   3rd Qu.:296673   3rd Qu.:8877029   3rd Qu.:550.4\n>  Max.   :31.0   Max.   :297412   Max.   :8878314   Max.   :571.3\n> \n> ******************************************************************\n> now gstat:\n> \n> >tbv_trend2_gstat <- gstat(id=\"tr2\", formula = alt ~ 1, data =\n> pts_trend2, degree=2);\n> \n> > names(tbv_trend2_gstat)\n> [1] \"data\"  \"model\" \"call\"\n\n?predict.gstat\n\nOK, the Wiki uses the one-step krige() instead of gstat() then predict() \nof the output object, I guess in your case:\n\ntr2_pred <- predict(tbv_trend2_gstat, newdata=mask_SG)\nnames(tr2_pred)\n\nInstead of anova(), I suggest leave-one-out cross-validation:\n\npe <- gstat.cv(tbv_trend2_gstat, debug.level=0, random=FALSE)$residual\nsqrt(mean(pe^2)) # RMS_LOO_PE\n\nwhich may take more time for many points. Have a look at ?gstat.cv for \nsome alternatives.\n\nPlease let me know if this helps,\n\nRoger\n\n> \n> \n> And I am here... I don't know how to display the results or how to get\n> it back in GRASS, how to do analysis of variance among trend surfaces\n> of different degrees... If I use surf.ls(), I can get the anova table\n> but I don't know how to get the image or anything else..\n> \n> \n> Carlos\n> \n> \n> \n> \n> \n> \n> On 9/27/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:\n> > On Wed, 27 Sep 2006, Carlos \"Gu?no\" Grohmann wrote:\n> >\n> > > Hello all\n> > >\n> > > Since the new sp and spGRASS6 packages, I haven't done any trand\n> > > surface analysis yet, so I'm a little lost here..\n> > >\n> > > in the old day, I would do this:\n> > >\n> > > g1r<-surf.ls(1,gradiente$east,gradiente$north,gradiente$num1);\n> > >  g1g<-trmat.G(G,g1r);\n> > >  rast.put(G,lname=\"gradiente.trend1\",layer=g1g);\n> > >\n> > > now that trmat.G doesen't exists anymore, how do I do to send my trend\n> > > sufaces back to GRASS?\n> >\n> > Use the standard gstat() approach, with the degree= argument. The gstat\n> > package and surf.ls() in MASS use the same coordinate shrinking approach\n> > and give the same results.\n> >\n> > Roger\n> >\n> > >\n> > > thanks\n> > >\n> > > Carlos\n> > >\n> > >\n> >\n> > --\n> > Roger Bivand\n> > Economic Geography Section, Department of Economics, Norwegian School of\n> > Economics and Business Administration, Helleveien 30, N-5045 Bergen,\n> > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43\n> > e-mail: Roger.Bivand@nhh.no\n> >\n> >\n> \n> \n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Thu, 28 Sep 2006, Carlos \"Gu?no\" Grohmann wrote:\n\n> Roger, I'm still lost :)\n> \n> let's see:\n> \n> \n> >library(spgrass6) ; library(spatial); library(gstat); library(lattice);\n> >G <- gmeta6();\n> >gr",
+      "thread_id": "thread-1a98a9246a2f",
+      "thread_depth": 3,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-983d28f2bc0a",
+      "message_id": "<bd07447b0609281152s2d657884q6729bda263888389@mail.gmail.com>",
+      "from_name": "Carlos \"Guâno\" Grohmann",
+      "from_email_hash": "0dc1a0fe57d97a7d47d9d6217fc2e30fc11fcf678f8fdb32cabaecaffa4e291b",
+      "date": "2006-09-28T14:52:59Z",
+      "subject": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "subject_clean": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "in_reply_to": "<Pine.LNX.4.44.0609282018130.1994-100000@reclus.nhh.no>",
+      "references": [
+        "<bd07447b0609280948l52759f85v9886e741637bd38b@mail.gmail.com>",
+        "<Pine.LNX.4.44.0609282018130.1994-100000@reclus.nhh.no>"
+      ],
+      "body_plain": "Thanks Roger, that's what I needed (BTW, sorry for the other mail, I\nshould sent it to the list, not just for you).\n\nI guess I will user the surfaces from gstat and anova with surf.ls.\n\nthanks again\n\nCarlos\n\n\n\nOn 9/28/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:\n> On Thu, 28 Sep 2006, Carlos \"Gu?no\" Grohmann wrote:\n>\n> > Roger, I'm still lost :)\n> >\n> > let's see:\n> >\n> >\n> > >library(spgrass6) ; library(spatial); library(gstat); library(lattice);\n> > >G <- gmeta6();\n> > >grd <- GridTopology(cellcentre.offset=c(G$west+(G$ewres/2),\n> > G$south+(G$nsres/2)), cellsize=c(G$ewres, G$nsres),\n> > cells.dim=c(G$cols, G$rows));\n> > >mask_SG <- SpatialGridDataFrame(grd, data=list(k=rep(1,\n> > G$cols*G$rows)), proj4string=CRS(G$proj4));\n> >\n> > >pts_trend<- getSites6sp(\"points_trend2\");\n> >\n> > > summary(pts_trend)\n> > Object of class SpatialPointsDataFrame\n> > Coordinates:\n> >                 min       max\n> > coords.x1  293529.5  297411.7\n> > coords.x2 8873992.2 8878313.7\n> > Is projected: TRUE\n> > proj4string : [+proj=utm +south +zone=24 +a=6378160 +rf=298.25\n> > +no_defs +towgs84=-60.0,-2.0,-41.0]\n> > Number of points: 31\n> > Data attributes:\n> >       cat             x                y                alt\n> >  Min.   : 1.0   Min.   :293530   Min.   :8873992   Min.   :514.4\n> >  1st Qu.: 8.5   1st Qu.:294619   1st Qu.:8874820   1st Qu.:522.8\n> >  Median :16.0   Median :295493   Median :8875555   Median :533.0\n> >  Mean   :16.0   Mean   :295542   Mean   :8875925   Mean   :536.8\n> >  3rd Qu.:23.5   3rd Qu.:296673   3rd Qu.:8877029   3rd Qu.:550.4\n> >  Max.   :31.0   Max.   :297412   Max.   :8878314   Max.   :571.3\n> >\n> > ******************************************************************\n> > now gstat:\n> >\n> > >tbv_trend2_gstat <- gstat(id=\"tr2\", formula = alt ~ 1, data =\n> > pts_trend2, degree=2);\n> >\n> > > names(tbv_trend2_gstat)\n> > [1] \"data\"  \"model\" \"call\"\n>\n> ?predict.gstat\n>\n> OK, the Wiki uses the one-step krige() instead of gstat() then predict()\n> of the output object, I guess in your case:\n>\n> tr2_pred <- predict(tbv_trend2_gstat, newdata=mask_SG)\n> names(tr2_pred)\n>\n> Instead of anova(), I suggest leave-one-out cross-validation:\n>\n> pe <- gstat.cv(tbv_trend2_gstat, debug.level=0, random=FALSE)$residual\n> sqrt(mean(pe^2)) # RMS_LOO_PE\n>\n> which may take more time for many points. Have a look at ?gstat.cv for\n> some alternatives.\n>\n> Please let me know if this helps,\n>\n> Roger\n>\n> >\n> >\n> > And I am here... I don't know how to display the results or how to get\n> > it back in GRASS, how to do analysis of variance among trend surfaces\n> > of different degrees... If I use surf.ls(), I can get the anova table\n> > but I don't know how to get the image or anything else..\n> >\n> >\n> > Carlos\n> >\n> >\n> >\n> >\n> >\n> >\n> > On 9/27/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:\n> > > On Wed, 27 Sep 2006, Carlos \"Gu?no\" Grohmann wrote:\n> > >\n> > > > Hello all\n> > > >\n> > > > Since the new sp and spGRASS6 packages, I haven't done any trand\n> > > > surface analysis yet, so I'm a little lost here..\n> > > >\n> > > > in the old day, I would do this:\n> > > >\n> > > > g1r<-surf.ls(1,gradiente$east,gradiente$north,gradiente$num1);\n> > > >  g1g<-trmat.G(G,g1r);\n> > > >  rast.put(G,lname=\"gradiente.trend1\",layer=g1g);\n> > > >\n> > > > now that trmat.G doesen't exists anymore, how do I do to send my trend\n> > > > sufaces back to GRASS?\n> > >\n> > > Use the standard gstat() approach, with the degree= argument. The gstat\n> > > package and surf.ls() in MASS use the same coordinate shrinking approach\n> > > and give the same results.\n> > >\n> > > Roger\n> > >\n> > > >\n> > > > thanks\n> > > >\n> > > > Carlos\n> > > >\n> > > >\n> > >\n> > > --\n> > > Roger Bivand\n> > > Economic Geography Section, Department of Economics, Norwegian School of\n> > > Economics and Business Administration, Helleveien 30, N-5045 Bergen,\n> > > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43\n> > > e-mail: Roger.Bivand@nhh.no\n> > >\n> > >\n> >\n> >\n> >\n>\n> --\n> Roger Bivand\n> Economic Geography Section, Department of Economics, Norwegian School of\n> Economics and Business Administration, Helleveien 30, N-5045 Bergen,\n> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43\n> e-mail: Roger.Bivand@nhh.no\n>\n>\n\n\n-- \n+-----------------------------------------------------------+\n              Carlos Henrique Grohmann - Guano\n  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil\nLinux User #89721  - carlos dot grohmann at gmail dot com\n+-----------------------------------------------------------+\n_________________\n\"Good morning, doctors. I have taken the liberty of removing Windows\n95 from my hard drive.\"\n--The winning entry in a \"What were HAL's first words\" contest judged\nby 2001: A SPACE ODYSSEY creator Arthur C. Clarke",
+      "body_snippet": "Thanks Roger, that's what I needed (BTW, sorry for the other mail, I\nshould sent it to the list, not just for you).\n\nI guess I will user the surfaces from gstat and anova with surf.ls.\n\nthanks again\n\n",
+      "thread_id": "thread-1a98a9246a2f",
+      "thread_depth": 4,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-42f93468d5c4",
+      "message_id": "<bd07447b0609281208u7c93268pce83bc53cfe5b69d@mail.gmail.com>",
+      "from_name": "Carlos \"Guâno\" Grohmann",
+      "from_email_hash": "0dc1a0fe57d97a7d47d9d6217fc2e30fc11fcf678f8fdb32cabaecaffa4e291b",
+      "date": "2006-09-28T15:08:00Z",
+      "subject": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "subject_clean": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "in_reply_to": "<bd07447b0609281152s2d657884q6729bda263888389@mail.gmail.com>",
+      "references": [
+        "<bd07447b0609280948l52759f85v9886e741637bd38b@mail.gmail.com>",
+        "<Pine.LNX.4.44.0609282018130.1994-100000@reclus.nhh.no>",
+        "<bd07447b0609281152s2d657884q6729bda263888389@mail.gmail.com>"
+      ],
+      "body_plain": "Just another doubt? what the surface with degree=0 mean? it look like\na membrane that passes through all the points..\n\ncarlos\n\n\n\n\nOn 9/28/06, Carlos Gu?no Grohmann <carlos.grohmann@gmail.com> wrote:\n> Thanks Roger, that's what I needed (BTW, sorry for the other mail, I\n> should sent it to the list, not just for you).\n>\n> I guess I will user the surfaces from gstat and anova with surf.ls.\n>\n> thanks again\n>\n> Carlos\n>\n>\n>\n> On 9/28/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:\n> > On Thu, 28 Sep 2006, Carlos \"Gu?no\" Grohmann wrote:\n> >\n> > > Roger, I'm still lost :)\n> > >\n> > > let's see:\n> > >\n> > >\n> > > >library(spgrass6) ; library(spatial); library(gstat); library(lattice);\n> > > >G <- gmeta6();\n> > > >grd <- GridTopology(cellcentre.offset=c(G$west+(G$ewres/2),\n> > > G$south+(G$nsres/2)), cellsize=c(G$ewres, G$nsres),\n> > > cells.dim=c(G$cols, G$rows));\n> > > >mask_SG <- SpatialGridDataFrame(grd, data=list(k=rep(1,\n> > > G$cols*G$rows)), proj4string=CRS(G$proj4));\n> > >\n> > > >pts_trend<- getSites6sp(\"points_trend2\");\n> > >\n> > > > summary(pts_trend)\n> > > Object of class SpatialPointsDataFrame\n> > > Coordinates:\n> > >                 min       max\n> > > coords.x1  293529.5  297411.7\n> > > coords.x2 8873992.2 8878313.7\n> > > Is projected: TRUE\n> > > proj4string : [+proj=utm +south +zone=24 +a=6378160 +rf=298.25\n> > > +no_defs +towgs84=-60.0,-2.0,-41.0]\n> > > Number of points: 31\n> > > Data attributes:\n> > >       cat             x                y                alt\n> > >  Min.   : 1.0   Min.   :293530   Min.   :8873992   Min.   :514.4\n> > >  1st Qu.: 8.5   1st Qu.:294619   1st Qu.:8874820   1st Qu.:522.8\n> > >  Median :16.0   Median :295493   Median :8875555   Median :533.0\n> > >  Mean   :16.0   Mean   :295542   Mean   :8875925   Mean   :536.8\n> > >  3rd Qu.:23.5   3rd Qu.:296673   3rd Qu.:8877029   3rd Qu.:550.4\n> > >  Max.   :31.0   Max.   :297412   Max.   :8878314   Max.   :571.3\n> > >\n> > > ******************************************************************\n> > > now gstat:\n> > >\n> > > >tbv_trend2_gstat <- gstat(id=\"tr2\", formula = alt ~ 1, data =\n> > > pts_trend2, degree=2);\n> > >\n> > > > names(tbv_trend2_gstat)\n> > > [1] \"data\"  \"model\" \"call\"\n> >\n> > ?predict.gstat\n> >\n> > OK, the Wiki uses the one-step krige() instead of gstat() then predict()\n> > of the output object, I guess in your case:\n> >\n> > tr2_pred <- predict(tbv_trend2_gstat, newdata=mask_SG)\n> > names(tr2_pred)\n> >\n> > Instead of anova(), I suggest leave-one-out cross-validation:\n> >\n> > pe <- gstat.cv(tbv_trend2_gstat, debug.level=0, random=FALSE)$residual\n> > sqrt(mean(pe^2)) # RMS_LOO_PE\n> >\n> > which may take more time for many points. Have a look at ?gstat.cv for\n> > some alternatives.\n> >\n> > Please let me know if this helps,\n> >\n> > Roger\n> >\n> > >\n> > >\n> > > And I am here... I don't know how to display the results or how to get\n> > > it back in GRASS, how to do analysis of variance among trend surfaces\n> > > of different degrees... If I use surf.ls(), I can get the anova table\n> > > but I don't know how to get the image or anything else..\n> > >\n> > >\n> > > Carlos\n> > >\n> > >\n> > >\n> > >\n> > >\n> > >\n> > > On 9/27/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:\n> > > > On Wed, 27 Sep 2006, Carlos \"Gu?no\" Grohmann wrote:\n> > > >\n> > > > > Hello all\n> > > > >\n> > > > > Since the new sp and spGRASS6 packages, I haven't done any trand\n> > > > > surface analysis yet, so I'm a little lost here..\n> > > > >\n> > > > > in the old day, I would do this:\n> > > > >\n> > > > > g1r<-surf.ls(1,gradiente$east,gradiente$north,gradiente$num1);\n> > > > >  g1g<-trmat.G(G,g1r);\n> > > > >  rast.put(G,lname=\"gradiente.trend1\",layer=g1g);\n> > > > >\n> > > > > now that trmat.G doesen't exists anymore, how do I do to send my trend\n> > > > > sufaces back to GRASS?\n> > > >\n> > > > Use the standard gstat() approach, with the degree= argument. The gstat\n> > > > package and surf.ls() in MASS use the same coordinate shrinking approach\n> > > > and give the same results.\n> > > >\n> > > > Roger\n> > > >\n> > > > >\n> > > > > thanks\n> > > > >\n> > > > > Carlos\n> > > > >\n> > > > >\n> > > >\n> > > > --\n> > > > Roger Bivand\n> > > > Economic Geography Section, Department of Economics, Norwegian School of\n> > > > Economics and Business Administration, Helleveien 30, N-5045 Bergen,\n> > > > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43\n> > > > e-mail: Roger.Bivand@nhh.no\n> > > >\n> > > >\n> > >\n> > >\n> > >\n> >\n> > --\n> > Roger Bivand\n> > Economic Geography Section, Department of Economics, Norwegian School of\n> > Economics and Business Administration, Helleveien 30, N-5045 Bergen,\n> > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43\n> > e-mail: Roger.Bivand@nhh.no\n> >\n> >\n>\n>\n> --\n> +-----------------------------------------------------------+\n>               Carlos Henrique Grohmann - Guano\n>   Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil\n> Linux User #89721  - carlos dot grohmann at gmail dot com\n> +-----------------------------------------------------------+\n> _________________\n> \"Good morning, doctors. I have taken the liberty of removing Windows\n> 95 from my hard drive.\"\n> --The winning entry in a \"What were HAL's first words\" contest judged\n> by 2001: A SPACE ODYSSEY creator Arthur C. Clarke\n>\n\n\n-- \n+-----------------------------------------------------------+\n              Carlos Henrique Grohmann - Guano\n  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil\nLinux User #89721  - carlos dot grohmann at gmail dot com\n+-----------------------------------------------------------+\n_________________\n\"Good morning, doctors. I have taken the liberty of removing Windows\n95 from my hard drive.\"\n--The winning entry in a \"What were HAL's first words\" contest judged\nby 2001: A SPACE ODYSSEY creator Arthur C. Clarke",
+      "body_snippet": "Just another doubt? what the surface with degree=0 mean? it look like\na membrane that passes through all the points..\n\ncarlos\n\n\n\n\nOn 9/28/06, Carlos Gu?no Grohmann <carlos.grohmann@gmail.com> wrote:\n>",
+      "thread_id": "thread-1a98a9246a2f",
+      "thread_depth": 5,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-07737b0f2fa1",
+      "message_id": "<Pine.LNX.4.44.0609282142130.1994-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2006-09-28T15:42:44Z",
+      "subject": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "subject_clean": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "in_reply_to": "<bd07447b0609281208u7c93268pce83bc53cfe5b69d@mail.gmail.com>",
+      "references": [],
+      "body_plain": "On Thu, 28 Sep 2006, Carlos \"Gu?no\" Grohmann wrote:\n\n> Just another doubt? what the surface with degree=0 mean? it look like\n> a membrane that passes through all the points..\n\nA flat surface at the mean?\n\nRoger\n\n> \n> carlos\n> \n> \n> \n> \n> On 9/28/06, Carlos Gu?no Grohmann <carlos.grohmann@gmail.com> wrote:\n> > Thanks Roger, that's what I needed (BTW, sorry for the other mail, I\n> > should sent it to the list, not just for you).\n> >\n> > I guess I will user the surfaces from gstat and anova with surf.ls.\n> >\n> > thanks again\n> >\n> > Carlos\n> >\n> >\n> >\n> > On 9/28/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:\n> > > On Thu, 28 Sep 2006, Carlos \"Gu?no\" Grohmann wrote:\n> > >\n> > > > Roger, I'm still lost :)\n> > > >\n> > > > let's see:\n> > > >\n> > > >\n> > > > >library(spgrass6) ; library(spatial); library(gstat); library(lattice);\n> > > > >G <- gmeta6();\n> > > > >grd <- GridTopology(cellcentre.offset=c(G$west+(G$ewres/2),\n> > > > G$south+(G$nsres/2)), cellsize=c(G$ewres, G$nsres),\n> > > > cells.dim=c(G$cols, G$rows));\n> > > > >mask_SG <- SpatialGridDataFrame(grd, data=list(k=rep(1,\n> > > > G$cols*G$rows)), proj4string=CRS(G$proj4));\n> > > >\n> > > > >pts_trend<- getSites6sp(\"points_trend2\");\n> > > >\n> > > > > summary(pts_trend)\n> > > > Object of class SpatialPointsDataFrame\n> > > > Coordinates:\n> > > >                 min       max\n> > > > coords.x1  293529.5  297411.7\n> > > > coords.x2 8873992.2 8878313.7\n> > > > Is projected: TRUE\n> > > > proj4string : [+proj=utm +south +zone=24 +a=6378160 +rf=298.25\n> > > > +no_defs +towgs84=-60.0,-2.0,-41.0]\n> > > > Number of points: 31\n> > > > Data attributes:\n> > > >       cat             x                y                alt\n> > > >  Min.   : 1.0   Min.   :293530   Min.   :8873992   Min.   :514.4\n> > > >  1st Qu.: 8.5   1st Qu.:294619   1st Qu.:8874820   1st Qu.:522.8\n> > > >  Median :16.0   Median :295493   Median :8875555   Median :533.0\n> > > >  Mean   :16.0   Mean   :295542   Mean   :8875925   Mean   :536.8\n> > > >  3rd Qu.:23.5   3rd Qu.:296673   3rd Qu.:8877029   3rd Qu.:550.4\n> > > >  Max.   :31.0   Max.   :297412   Max.   :8878314   Max.   :571.3\n> > > >\n> > > > ******************************************************************\n> > > > now gstat:\n> > > >\n> > > > >tbv_trend2_gstat <- gstat(id=\"tr2\", formula = alt ~ 1, data =\n> > > > pts_trend2, degree=2);\n> > > >\n> > > > > names(tbv_trend2_gstat)\n> > > > [1] \"data\"  \"model\" \"call\"\n> > >\n> > > ?predict.gstat\n> > >\n> > > OK, the Wiki uses the one-step krige() instead of gstat() then predict()\n> > > of the output object, I guess in your case:\n> > >\n> > > tr2_pred <- predict(tbv_trend2_gstat, newdata=mask_SG)\n> > > names(tr2_pred)\n> > >\n> > > Instead of anova(), I suggest leave-one-out cross-validation:\n> > >\n> > > pe <- gstat.cv(tbv_trend2_gstat, debug.level=0, random=FALSE)$residual\n> > > sqrt(mean(pe^2)) # RMS_LOO_PE\n> > >\n> > > which may take more time for many points. Have a look at ?gstat.cv for\n> > > some alternatives.\n> > >\n> > > Please let me know if this helps,\n> > >\n> > > Roger\n> > >\n> > > >\n> > > >\n> > > > And I am here... I don't know how to display the results or how to get\n> > > > it back in GRASS, how to do analysis of variance among trend surfaces\n> > > > of different degrees... If I use surf.ls(), I can get the anova table\n> > > > but I don't know how to get the image or anything else..\n> > > >\n> > > >\n> > > > Carlos\n> > > >\n> > > >\n> > > >\n> > > >\n> > > >\n> > > >\n> > > > On 9/27/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:\n> > > > > On Wed, 27 Sep 2006, Carlos \"Gu?no\" Grohmann wrote:\n> > > > >\n> > > > > > Hello all\n> > > > > >\n> > > > > > Since the new sp and spGRASS6 packages, I haven't done any trand\n> > > > > > surface analysis yet, so I'm a little lost here..\n> > > > > >\n> > > > > > in the old day, I would do this:\n> > > > > >\n> > > > > > g1r<-surf.ls(1,gradiente$east,gradiente$north,gradiente$num1);\n> > > > > >  g1g<-trmat.G(G,g1r);\n> > > > > >  rast.put(G,lname=\"gradiente.trend1\",layer=g1g);\n> > > > > >\n> > > > > > now that trmat.G doesen't exists anymore, how do I do to send my trend\n> > > > > > sufaces back to GRASS?\n> > > > >\n> > > > > Use the standard gstat() approach, with the degree= argument. The gstat\n> > > > > package and surf.ls() in MASS use the same coordinate shrinking approach\n> > > > > and give the same results.\n> > > > >\n> > > > > Roger\n> > > > >\n> > > > > >\n> > > > > > thanks\n> > > > > >\n> > > > > > Carlos\n> > > > > >\n> > > > > >\n> > > > >\n> > > > > --\n> > > > > Roger Bivand\n> > > > > Economic Geography Section, Department of Economics, Norwegian School of\n> > > > > Economics and Business Administration, Helleveien 30, N-5045 Bergen,\n> > > > > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43\n> > > > > e-mail: Roger.Bivand@nhh.no\n> > > > >\n> > > > >\n> > > >\n> > > >\n> > > >\n> > >\n> > > --\n> > > Roger Bivand\n> > > Economic Geography Section, Department of Economics, Norwegian School of\n> > > Economics and Business Administration, Helleveien 30, N-5045 Bergen,\n> > > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43\n> > > e-mail: Roger.Bivand@nhh.no\n> > >\n> > >\n> >\n> >\n> > --\n> > +-----------------------------------------------------------+\n> >               Carlos Henrique Grohmann - Guano\n> >   Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil\n> > Linux User #89721  - carlos dot grohmann at gmail dot com\n> > +-----------------------------------------------------------+\n> > _________________\n> > \"Good morning, doctors. I have taken the liberty of removing Windows\n> > 95 from my hard drive.\"\n> > --The winning entry in a \"What were HAL's first words\" contest judged\n> > by 2001: A SPACE ODYSSEY creator Arthur C. Clarke\n> >\n> \n> \n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Thu, 28 Sep 2006, Carlos \"Gu?no\" Grohmann wrote:\n\n> Just another doubt? what the surface with degree=0 mean? it look like\n> a membrane that passes through all the points..\n\nA flat surface at the me",
+      "thread_id": "thread-1a98a9246a2f",
+      "thread_depth": 6,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-c0d8072bf9fc",
+      "message_id": "<007101c6e396$ced8ebc0$2101a8c0@tomas>",
+      "from_name": "Tomas Lanczos",
+      "from_email_hash": "9ae0777e3b2e6e7a9f529dba6fba60793af3d2aa8fc50e18dc4016a66513ecca",
+      "date": "2006-09-29T03:13:47Z",
+      "subject": "[STATSGRASS] a gstat newbie question",
+      "subject_clean": "[STATSGRASS] a gstat newbie question",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Where can I find documentation about how to work with the gstat/grass\ninterface?\n\nThanks a lot in advance\n\nTomas",
+      "body_snippet": "Where can I find documentation about how to work with the gstat/grass\ninterface?\n\nThanks a lot in advance\n\nTomas",
+      "thread_id": "thread-c0d8072bf9fc",
+      "thread_depth": 0,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-9eba250c1a2f",
+      "message_id": "<451CF5CC.2040406@amu.edu.pl>",
+      "from_name": "Jarosław Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2006-09-29T06:30:36Z",
+      "subject": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "subject_clean": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "in_reply_to": "<bd07447b0609281208u7c93268pce83bc53cfe5b69d@mail.gmail.com>",
+      "references": [
+        "<bd07447b0609280948l52759f85v9886e741637bd38b@mail.gmail.com>",
+        "<Pine.LNX.4.44.0609282018130.1994-100000@reclus.nhh.no>",
+        "<bd07447b0609281152s2d657884q6729bda263888389@mail.gmail.com>",
+        "<bd07447b0609281208u7c93268pce83bc53cfe5b69d@mail.gmail.com>"
+      ],
+      "body_plain": "Carlos \"Gu?no\" Grohmann napisa?(a):\n> Just another doubt? what the surface with degree=0 mean? it look like\n> a membrane that passes through all the points..\n>\n> carlos\n>\n>\nHi all\n\nI thing I found method which still allow to use ls.surface and trmat \nwith spgrass6\n\n1) first: prepare grass region as you know it must be quadratic (same nw \nnd se value)\n2) we need two files: raster nad vector points in the same region\n3) put the both to R with readRAST6 and readVECT6. The grid (raster \nobiect will be our dummy obiect to avoid creating new grid topology. \nSave raster as \"dummy\" //it's name not type\n\n4) Convert vector point obiect into \"simple\" data frame use:\nnewdata=data.frame(sppoint) - where sppoint SpatialDataFrame imported \nform grass\nnewdata1=data.frame(x=smdata$coords.x1, y=smdata$coords.x2, z=smdata$z) \n- to have x,y, z data frame. I assume z  is argument for which trend is \ncreated. x and y remains as it was in grass\n\n5) do surf.ls and trmat or any you want\n\nIf uou do trmat yu MUST use:\nsurface=trmat(trend, G$w, G$e, G$s, G$n, G$rows-1) where G  is obeict \nreturned by gmeta6() look on this: G$rows-1\n\n6) obiect surface is a matrix n x n we must transpose it:\nmatrix=surface$z[,nrow(surface$z):1] //I will not\n\n7) we must contaminate matrix to vector:\nvmatrix=c(matrix)\n\nnad know we going back to our \"dummy\" raster\nreplace:\ndummy$grassraster=vmatrix  - where grassraster is the name of the raster \nfrom grass\n\nnow we have  SpatialGridData frame which can be simply put back to grass:\nwriteRAST6(dummy, \"name_in_grass\", zcol=\"vmatrix\", NODATA=-9999.99, \nignore.stderr=TRUE)\n\nthat all. It works\n\nIf you don't want to convert spatial*dataframe to dataframe you can use \npostgreSQL to transport data from grass to R, but you will need raster \n\"dummy\" obiect\n\nregards\nJarek",
+      "body_snippet": "Carlos \"Gu?no\" Grohmann napisa?(a):\n> Just another doubt? what the surface with degree=0 mean? it look like\n> a membrane that passes through all the points..\n>\n> carlos\n>\n>\nHi all\n\nI thing I found met",
+      "thread_id": "thread-1a98a9246a2f",
+      "thread_depth": 6,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-295f6fa3b4ce",
+      "message_id": "<451CF99E.4070803@amu.edu.pl>",
+      "from_name": "Jarosław Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2006-09-29T06:46:54Z",
+      "subject": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "subject_clean": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "in_reply_to": "<451CF5CC.2040406@amu.edu.pl>",
+      "references": [
+        "<bd07447b0609280948l52759f85v9886e741637bd38b@mail.gmail.com>",
+        "<Pine.LNX.4.44.0609282018130.1994-100000@reclus.nhh.no>",
+        "<bd07447b0609281152s2d657884q6729bda263888389@mail.gmail.com>",
+        "<bd07447b0609281208u7c93268pce83bc53cfe5b69d@mail.gmail.com>",
+        "<451CF5CC.2040406@amu.edu.pl>"
+      ],
+      "body_plain": "there is an error in my previous mail\n\nis:\nwriteRAST6(dummy, \"name_in_grass\", zcol=\"vmatrix\", NODATA=-9999.99, \nignore.stderr=TRUE)\n\n\nshall be:\nwriteRAST6(dummy, \"new_name_in_grass\", zcol=\"grassraster\", \nNODATA=-9999.99, ignore.stderr=TRUE)",
+      "body_snippet": "there is an error in my previous mail\n\nis:\nwriteRAST6(dummy, \"name_in_grass\", zcol=\"vmatrix\", NODATA=-9999.99, \nignore.stderr=TRUE)\n\n\nshall be:\nwriteRAST6(dummy, \"new_name_in_grass\", zcol=\"grassraster",
+      "thread_id": "thread-1a98a9246a2f",
+      "thread_depth": 7,
+      "month": "2006-09"
+    },
+    {
+      "id": "msg-16be41bb2733",
+      "message_id": "<5383fa5e0609290906u678033ebk478a7e778c298770@mail.gmail.com>",
+      "from_name": "Matthew Perry",
+      "from_email_hash": "b7fa01890bf50d09cb89833e547a23b928a6c651944765ea8e65cc9033f56521",
+      "date": "2006-09-29T12:06:47Z",
+      "subject": "[STATSGRASS] a gstat newbie question",
+      "subject_clean": "[STATSGRASS] a gstat newbie question",
+      "in_reply_to": "<007101c6e396$ced8ebc0$2101a8c0@tomas>",
+      "references": [
+        "<007101c6e396$ced8ebc0$2101a8c0@tomas>"
+      ],
+      "body_plain": "Tomas,\n\nOn 9/29/06, Tomas Lanczos <lanczos@t-zones.sk> wrote:\n> Where can I find documentation about how to work with the gstat/grass\n> interface?\n\nNot  sure about formal documentation but there are some good examples\nat http://www.foss4g2006.org/contributionDisplay.py?contribId=46&sessionId=59&confId=1\n\nThe slides for unit c of the workshop would be of particular interest.\n-- \nMatthew T. Perry\nGIS Analyst / Software Engineer\nNational Center for Ecological Analysis and Synthesis (NCEAS)\nwork: perry@nceas.ucsb.edu\nweb: http://www.perrygeo.net",
+      "body_snippet": "Tomas,\n\nOn 9/29/06, Tomas Lanczos <lanczos@t-zones.sk> wrote:\n> Where can I find documentation about how to work with the gstat/grass\n> interface?\n\nNot  sure about formal documentation but there are s",
+      "thread_id": "thread-c0d8072bf9fc",
+      "thread_depth": 1,
+      "month": "2006-09"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-d68f3a60fbdf",
+      "subject": "[STATSGRASS] problem with kriging not solved but new qestions arise",
+      "message_count": 3,
+      "participants": [
+        "Jarek Jasiewicz",
+        "Roger Bivand"
+      ],
+      "started": "2006-09-01T15:03:27Z",
+      "last_reply": "2006-09-02T01:18:40Z",
+      "root_message_id": "msg-d68f3a60fbdf"
+    },
+    {
+      "id": "thread-7a9498afd0d6",
+      "subject": "[STATSGRASS] Another problem with kriging (gstat)",
+      "message_count": 4,
+      "participants": [
+        "Edzer J. Pebesma",
+        "Jarek Jasiewicz"
+      ],
+      "started": "2006-09-02T16:37:31Z",
+      "last_reply": "2006-09-04T17:06:29Z",
+      "root_message_id": "msg-7a9498afd0d6"
+    },
+    {
+      "id": "thread-bb1d39016f18",
+      "subject": "[STATSGRASS] problem with installing rgdal (to Roger, I thing)",
+      "message_count": 4,
+      "participants": [
+        "Jaros?aw Jasiewicz",
+        "Jarosław Jasiewicz",
+        "Roger Bivand"
+      ],
+      "started": "2006-09-05T05:36:09Z",
+      "last_reply": "2006-09-06T12:28:11Z",
+      "root_message_id": "msg-bb1d39016f18"
+    },
+    {
+      "id": "thread-d024d35eef74",
+      "subject": "[STATSGRASS] Is R package GRASS for GRASS 5 needed for Windows?",
+      "message_count": 1,
+      "participants": [
+        "Roger Bivand"
+      ],
+      "started": "2006-09-07T05:25:15Z",
+      "last_reply": "2006-09-07T05:25:15Z",
+      "root_message_id": "msg-d024d35eef74"
+    },
+    {
+      "id": "thread-75d3408b61ff",
+      "subject": "[STATSGRASS] Another problem with kriging (gstat)",
+      "message_count": 2,
+      "participants": [
+        "Edzer J. Pebesma",
+        "Jarek Jasiewicz"
+      ],
+      "started": "2006-09-11T10:06:44Z",
+      "last_reply": "2006-09-13T08:14:08Z",
+      "root_message_id": "msg-75d3408b61ff"
+    },
+    {
+      "id": "thread-7e5700d5b331",
+      "subject": "[STATSGRASS] gstat: missing values in GRASS attribute table",
+      "message_count": 1,
+      "participants": [
+        "Eduardo Hdo. Izcara"
+      ],
+      "started": "2006-09-12T06:06:38Z",
+      "last_reply": "2006-09-12T06:06:38Z",
+      "root_message_id": "msg-7e5700d5b331"
+    },
+    {
+      "id": "thread-0f872811a12d",
+      "subject": "[STATSGRASS] RE: [GRASS-user] kriging",
+      "message_count": 4,
+      "participants": [
+        "Maciej Sieczka",
+        "Markus Neteler",
+        "ehizcara@agrogex.com"
+      ],
+      "started": "2006-09-25T05:45:28Z",
+      "last_reply": "2006-09-25T08:35:32Z",
+      "root_message_id": "msg-0f872811a12d"
+    },
+    {
+      "id": "thread-1a98a9246a2f",
+      "subject": "[STATSGRASS] Trend surface analysis issue - sending results back to GRASS",
+      "message_count": 9,
+      "participants": [
+        "Carlos \"Guâno\" Grohmann",
+        "Jarosław Jasiewicz",
+        "Roger Bivand"
+      ],
+      "started": "2006-09-27T11:37:17Z",
+      "last_reply": "2006-09-29T06:46:54Z",
+      "root_message_id": "msg-1a98a9246a2f"
+    },
+    {
+      "id": "thread-c0d8072bf9fc",
+      "subject": "[STATSGRASS] a gstat newbie question",
+      "message_count": 2,
+      "participants": [
+        "Matthew Perry",
+        "Tomas Lanczos"
+      ],
+      "started": "2006-09-29T03:13:47Z",
+      "last_reply": "2006-09-29T12:06:47Z",
+      "root_message_id": "msg-c0d8072bf9fc"
+    }
+  ]
+}

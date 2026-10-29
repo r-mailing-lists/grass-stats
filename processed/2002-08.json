@@ -1,0 +1,225 @@
+{
+  "list": "grass-stats",
+  "description": "",
+  "month": "2002-08",
+  "messages": [
+    {
+      "id": "msg-674794907a8b",
+      "message_id": "<200208021011.g72ABvx23736@natura.cebas.csic.es>",
+      "from_name": "andres javier garcia garcia",
+      "from_email_hash": "5903a5bf55b2a7c124886158bfa4bb60845fdee0ab0e960528927066d20c615e",
+      "date": "2002-08-02T06:11:27Z",
+      "subject": "[STATSGRASS] R & GRASS inicialization.",
+      "subject_clean": "[STATSGRASS] R & GRASS inicialization.",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello all;\nI've just installed the R interface to GRASS. (I'm new to R), and I'm not \nsure if it is properly installed.",
+      "body_snippet": "Hello all;\nI've just installed the R interface to GRASS. (I'm new to R), and I'm not \nsure if it is properly installed.",
+      "thread_id": "thread-674794907a8b",
+      "thread_depth": 0,
+      "month": "2002-08"
+    },
+    {
+      "id": "msg-50d73d77b196",
+      "message_id": "<Pine.OSF.3.96.1020802123054.27123D-100000@paleo>",
+      "from_name": "Agustin Lobo",
+      "from_email_hash": "904afa1192b5c5769db5a1ae5b21005f96c837b5ba35a20a3116ee449d7827da",
+      "date": "2002-08-02T06:36:17Z",
+      "subject": "[STATSGRASS] R & GRASS inicialization.",
+      "subject_clean": "[STATSGRASS] R & GRASS inicialization.",
+      "in_reply_to": "<200208021011.g72ABvx23736@natura.cebas.csic.es>",
+      "references": [],
+      "body_plain": "Javier,\n\nNo way to skip the R tutorials. \nR is a great environment for statistics,\nprovided that you use it regularly. It is\nnot for an occasional use.\n\nLearning R basics will take you a short time,\nbut you really must devote it that time. \n\nGo to http://cran.r-project.org/other-docs.html and\ndownload one or more of the tutorials.\n\nGood luck,\n\nAgus\n\n\nDr. Agustin Lobo\nInstituto de Ciencias de la Tierra (CSIC)\nLluis Sole Sabaris s/n\n08028 Barcelona SPAIN\ntel 34 93409 5410\nfax 34 93411 0012\nalobo@ija.csic.es\n\n\nOn Fri, 2 Aug 2002, andres javier garcia garcia wrote:\n\n> Hello all;\n> I've just installed the R interface to GRASS. (I'm new to R), and I'm not \n> sure if it is properly installed.\n> >From GRASS y type R, and\n> >system(\"g.list rast\") shows my raster maps properly.\n> Then I've tried to follow the steps indicated in Bivand, (2000). And typed\n> >tapply(dem, cover,summary)\n> (where dem is a Digital Elevation Model, and cover is a map of different \n> clases of vegetal cover)\n> and the following message appears:\n>  Object \"cover\" not found.\n>   \n> I've tried the same with different location and mapsets and none works.\n> \n> \n> Am I missing something?\n> Any previous step is necessary?\n> \n> Javier Garcia\n> \n> _______________________________________________\n> statsgrass mailing list\n> statsgrass@grass.itc.it\n> http://grass.itc.it/mailman/listinfo/statsgrass\n>",
+      "body_snippet": "Javier,\n\nNo way to skip the R tutorials. \nR is a great environment for statistics,\nprovided that you use it regularly. It is\nnot for an occasional use.\n\nLearning R basics will take you a short time,\nb",
+      "thread_id": "thread-674794907a8b",
+      "thread_depth": 1,
+      "month": "2002-08"
+    },
+    {
+      "id": "msg-6d2a3c0eadb6",
+      "message_id": "<Pine.LNX.4.44.0208021248090.11549-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2002-08-02T06:56:40Z",
+      "subject": "[STATSGRASS] R & GRASS inicialization.",
+      "subject_clean": "[STATSGRASS] R & GRASS inicialization.",
+      "in_reply_to": "<200208021011.g72ABvx23736@natura.cebas.csic.es>",
+      "references": [],
+      "body_plain": "On Fri, 2 Aug 2002, andres javier garcia garcia wrote:\n\n> Hello all;\n> I've just installed the R interface to GRASS. (I'm new to R), and I'm not \n> sure if it is properly installed.\n> From GRASS y type R, and\n> >system(\"g.list rast\") shows my raster maps properly.\n> Then I've tried to follow the steps indicated in Bivand, (2000). And typed\n> >tapply(dem, cover,summary)\n> (where dem is a Digital Elevation Model, and cover is a map of different \n> clases of vegetal cover)\n> and the following message appears:\n>  Object \"cover\" not found.\n>   \n\nThe interface expects you first to collect the grass metadata (current \nregion):\n\nG <- gmeta()\n\nYou can then do\n\nsummary(G)\n\nto check that it is OK.\n\nI'm now assuming that you have a number of raster layers in GRASS, among \nthem dem and cover. I think you did:\n\ndem <- rast.get(G, rlist=c(\"dem\", \"cover\"), catlabels=c(FALSE, TRUE))\n\nand tried to work on dem. If you do\n\nstr(dem)\n\nyou will see that it is a list with two members, dem and cover. To get at \nthe actual data, you need say:\n\nmyrasts <- rast.get(G, rlist=c(\"dem\", \"cover\"), catlabels=c(FALSE, TRUE))\n\nthen\n\ntapply(myrasts$dem, myrasts$cover,summary)\n\nNB: for tapply() to work, cover needs to be a \"factor\" in R terminology. \nTo get some insight into the meaning of lists, factors, etc in R, Agus' \nadvice is the best way to go.\n\n> I've tried the same with different location and mapsets and none works.\n\nPlease let us know how you get on!\n\nRoger\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 93 93\ne-mail: Roger.Bivand@nhh.no\nand: Department of Geography and Regional Development, University of\nGdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.",
+      "body_snippet": "On Fri, 2 Aug 2002, andres javier garcia garcia wrote:\n\n> Hello all;\n> I've just installed the R interface to GRASS. (I'm new to R), and I'm not \n> sure if it is properly installed.\n> From GRASS y typ",
+      "thread_id": "thread-674794907a8b",
+      "thread_depth": 1,
+      "month": "2002-08"
+    },
+    {
+      "id": "msg-60d3709e4606",
+      "message_id": "<200208021222.g72CM5x24507@natura.cebas.csic.es>",
+      "from_name": "andres javier garcia garcia",
+      "from_email_hash": "5903a5bf55b2a7c124886158bfa4bb60845fdee0ab0e960528927066d20c615e",
+      "date": "2002-08-02T08:21:32Z",
+      "subject": "[STATSGRASS] R & GRASS inicialization.",
+      "subject_clean": "[STATSGRASS] R & GRASS inicialization.",
+      "in_reply_to": "<Pine.LNX.4.44.0208021248090.11549-100000@reclus.nhh.no>",
+      "references": [
+        "<Pine.LNX.4.44.0208021248090.11549-100000@reclus.nhh.no>"
+      ],
+      "body_plain": "Hi Roger, hi Agustin;\n\nThanks, I'll follow (just now) your advices about the tutorials.\n\nAnyway (because; first of all I'm impatient to check that this works in my \ncomputer):\nThe gmeta() function in not found by R. \nI'm installed the GRASS-R interface and it hasn't complained in the \ncompilation. The dir /usr/lib/R/library/GRASS/ has been created with the \ncorresponding library. And I run R from GRASS.\n\nAny suggestion?\nJavier",
+      "body_snippet": "Hi Roger, hi Agustin;\n\nThanks, I'll follow (just now) your advices about the tutorials.\n\nAnyway (because; first of all I'm impatient to check that this works in my \ncomputer):\nThe gmeta() function in ",
+      "thread_id": "thread-674794907a8b",
+      "thread_depth": 2,
+      "month": "2002-08"
+    },
+    {
+      "id": "msg-df4a4d1815d9",
+      "message_id": "<Pine.LNX.4.44.0208021440170.11755-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2002-08-02T08:42:33Z",
+      "subject": "[STATSGRASS] R & GRASS inicialization.",
+      "subject_clean": "[STATSGRASS] R & GRASS inicialization.",
+      "in_reply_to": "<200208021222.g72CM5x24507@natura.cebas.csic.es>",
+      "references": [],
+      "body_plain": "On Fri, 2 Aug 2002, andres javier garcia garcia wrote:\n\n> Hi Roger, hi Agustin;\n> \n> Thanks, I'll follow (just now) your advices about the tutorials.\n> \n> Anyway (because; first of all I'm impatient to check that this works in my \n> computer):\n> The gmeta() function in not found by R. \n> I'm installed the GRASS-R interface and it hasn't complained in the \n> compilation. The dir /usr/lib/R/library/GRASS/ has been created with the \n> corresponding library. And I run R from GRASS.\n> \n> Any suggestion?\n\nlibrary(GRASS)\n\nEven though a package is physically installed, it still needs to be loaded \ninto the R program (only the most standard functions are available by \ndefault).\n\nRoger\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 93 93\ne-mail: Roger.Bivand@nhh.no\nand: Department of Geography and Regional Development, University of\nGdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.",
+      "body_snippet": "On Fri, 2 Aug 2002, andres javier garcia garcia wrote:\n\n> Hi Roger, hi Agustin;\n> \n> Thanks, I'll follow (just now) your advices about the tutorials.\n> \n> Anyway (because; first of all I'm impatient t",
+      "thread_id": "thread-674794907a8b",
+      "thread_depth": 3,
+      "month": "2002-08"
+    },
+    {
+      "id": "msg-6496af036ad5",
+      "message_id": "<200208021305.g72D5Vx24663@natura.cebas.csic.es>",
+      "from_name": "andres javier garcia garcia",
+      "from_email_hash": "5903a5bf55b2a7c124886158bfa4bb60845fdee0ab0e960528927066d20c615e",
+      "date": "2002-08-02T09:05:03Z",
+      "subject": "[STATSGRASS] R & GRASS inicialization.",
+      "subject_clean": "[STATSGRASS] R & GRASS inicialization.",
+      "in_reply_to": "<1028298674.3065.2.camel@caribou.u-bourgogne.fr>",
+      "references": [
+        "<Pine.LNX.4.44.0208021248090.11549-100000@reclus.nhh.no>",
+        "<200208021222.g72CM5x24507@natura.cebas.csic.es>",
+        "<1028298674.3065.2.camel@caribou.u-bourgogne.fr>"
+      ],
+      "body_plain": "Hi all;\n\nNow it works (needed to run library(GRASS) first).\n\nAll the steps in Roger's mail works right.\n(Just a comment: I know what a factor is, but not how the map that I've used \nas a factor has become a one through the steps followed in Roger's)\n\nThanks all, and regards\n\nJavier\n\n\n-------------------------------------------------------------\nEl Vie 02 Ago 2002 16:31, escribi?:\n> You need to load the Grass-R library in R.\n>\n> Library(GRASS) if I remember well.\n>\n> Laurent\n>\n> On Fri, 2002-08-02 at 12:21, andres javier garcia garcia wrote:\n> > Hi Roger, hi Agustin;\n> >\n> > Thanks, I'll follow (just now) your advices about the tutorials.\n> >\n> > Anyway (because; first of all I'm impatient to check that this works in\n> > my computer):\n> > The gmeta() function in not found by R.\n> > I'm installed the GRASS-R interface and it hasn't complained in the\n> > compilation. The dir /usr/lib/R/library/GRASS/ has been created with the\n> > corresponding library. And I run R from GRASS.\n> >\n> > Any suggestion?\n> > Javier\n> >\n> >\n> >\n> > _______________________________________________\n> > statsgrass mailing list\n> > statsgrass@grass.itc.it\n> > http://grass.itc.it/mailman/listinfo/statsgrass",
+      "body_snippet": "Hi all;\n\nNow it works (needed to run library(GRASS) first).\n\nAll the steps in Roger's mail works right.\n(Just a comment: I know what a factor is, but not how the map that I've used \nas a factor has be",
+      "thread_id": "thread-6496af036ad5",
+      "thread_depth": 0,
+      "month": "2002-08"
+    },
+    {
+      "id": "msg-89cf1b507555",
+      "message_id": "<Pine.LNX.4.44.0208021519260.11755-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2002-08-02T09:22:03Z",
+      "subject": "[STATSGRASS] R & GRASS inicialization.",
+      "subject_clean": "[STATSGRASS] R & GRASS inicialization.",
+      "in_reply_to": "<200208021305.g72D5Vx24663@natura.cebas.csic.es>",
+      "references": [],
+      "body_plain": "On Fri, 2 Aug 2002, andres javier garcia garcia wrote:\n\n> Hi all;\n> \n> Now it works (needed to run library(GRASS) first).\n> \n> All the steps in Roger's mail works right.\n> (Just a comment: I know what a factor is, but not how the map that I've used \n> as a factor has become a one through the steps followed in Roger's)\n\nmyrasts <- rast.get(G, rlist=c(\"dem\", \"cover\"), catlabels=c(FALSE, TRUE))\n                                                ^^^^^^^^^^^^^^^^^^^^^^^\n\nThe catlabels argument tells rast.get() whether to make the raster an R \nfactor or numeric vector, using the GRASS category labels.\n\nRoger\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 93 93\ne-mail: Roger.Bivand@nhh.no\nand: Department of Geography and Regional Development, University of\nGdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.",
+      "body_snippet": "On Fri, 2 Aug 2002, andres javier garcia garcia wrote:\n\n> Hi all;\n> \n> Now it works (needed to run library(GRASS) first).\n> \n> All the steps in Roger's mail works right.\n> (Just a comment: I know what",
+      "thread_id": "thread-6496af036ad5",
+      "thread_depth": 1,
+      "month": "2002-08"
+    },
+    {
+      "id": "msg-ba00aac1f23c",
+      "message_id": "<F168nwpGR881Np7vXee000036d2@hotmail.com>",
+      "from_name": "Ivan Kautter",
+      "from_email_hash": "e8086758b0153b162f5627f51ec4ba04c219f98109065203f4cf8dd9b15058b9",
+      "date": "2002-08-29T23:02:49Z",
+      "subject": "[STATSGRASS] accessing the AI-Geostats.org server",
+      "subject_clean": "[STATSGRASS] accessing the AI-Geostats.org server",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "List subscribers,\n\nThe link to AI-Geostats.org server yields a pop-up window requiring the \ninput of a user and password.  Have others experienced this and would do I \ngain access to the site?  I have been on the site before, so I can't \nunderstand why I can't access it now.  Thanks.\n\nIvan\n\n\n\n_________________________________________________________________\nChat with friends online, try MSN Messenger: http://messenger.msn.com",
+      "body_snippet": "List subscribers,\n\nThe link to AI-Geostats.org server yields a pop-up window requiring the \ninput of a user and password.  Have others experienced this and would do I \ngain access to the site?  I have",
+      "thread_id": "thread-ba00aac1f23c",
+      "thread_depth": 0,
+      "month": "2002-08"
+    },
+    {
+      "id": "msg-c2dd88a35ce8",
+      "message_id": "<20020830083241.3628.qmail@uwdvg020.cms.usa.net>",
+      "from_name": "Gregoire Dubois",
+      "from_email_hash": "0d5571b48ce3e7593a5496cc6b502f7b387f3420d10ff6e4d326548a012cd8bb",
+      "date": "2002-08-30T04:32:41Z",
+      "subject": "[STATSGRASS] RE: Accessing AI-GEOSTATS",
+      "subject_clean": "[STATSGRASS] RE: Accessing AI-GEOSTATS",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear all,\n\nthe AI-GEOSTATS web site became recently randomly accessible due\nto problems with the network there. Since the web server is \nlocated around 800 miles away from my current working place, \nmaintenance is minimal not to say null.\n\nI'm very sorry for this problem.\n\nThe good news is that I will start another job in November\nand will have the web server on my desk. This should solve\nall the current problems.\n\nBest regards,\n\nGregoire (owner/moderator of AI-GEOSTATS)",
+      "body_snippet": "Dear all,\n\nthe AI-GEOSTATS web site became recently randomly accessible due\nto problems with the network there. Since the web server is \nlocated around 800 miles away from my current working place, \nm",
+      "thread_id": "thread-c2dd88a35ce8",
+      "thread_depth": 0,
+      "month": "2002-08"
+    },
+    {
+      "id": "msg-6dfe30b3bb73",
+      "message_id": "<3D6F31AA.3020802@science.uva.nl>",
+      "from_name": "Ulrich Leopold",
+      "from_email_hash": "e7371f06e5148aff82c815d8ea585018dc72143e6ca9811258a5a75de9d01247",
+      "date": "2002-08-30T04:49:46Z",
+      "subject": "[STATSGRASS] accessing the AI-Geostats.org server",
+      "subject_clean": "[STATSGRASS] accessing the AI-Geostats.org server",
+      "in_reply_to": null,
+      "references": [
+        "<F168nwpGR881Np7vXee000036d2@hotmail.com>"
+      ],
+      "body_plain": "It's due to a bad managed server. Gregoire Dubois sent already an email to \nthe ai-geostats list to announce that there are some problems like you \nmentioned. He will soon move the server to another place and will manage it \nhimself to avoid these kind of errors.\n\nUlrich\n\nIvan Kautter wrote:\n> List subscribers,\n> \n> The link to AI-Geostats.org server yields a pop-up window requiring the \n> input of a user and password.  Have others experienced this and would do \n> I gain access to the site?  I have been on the site before, so I can't \n> understand why I can't access it now.  Thanks.\n> \n> Ivan\n> \n> \n> \n> _________________________________________________________________\n> Chat with friends online, try MSN Messenger: http://messenger.msn.com\n> \n> _______________________________________________\n> statsgrass mailing list\n> statsgrass@grass.itc.it\n> http://grass.itc.it/mailman/listinfo/statsgrass\n\n-- \n__________________________________________________\n\nUlrich Leopold MSc.\n\nDepartment of Physical Geography\nInstitute for Biodiversity and Ecosystem Dynamics\nFaculty of Science\nUniversity of Amsterdam\nNieuwe Achtergracht 166\nNL-1018WV Amsterdam\n\nPhone: +31-(0)20-525-7456 (7451 Secretary)\nFax:   +31-(0)20-525-7431\nEmail: uleopold@science.uva.nl\nhttp://www.frw.uva.nl/soil/Welcome.html\n\nCheck us also out at:\nNetherlands Centre for Geo-ecological Research\nhttp://www.frw.uva.nl/icg",
+      "body_snippet": "It's due to a bad managed server. Gregoire Dubois sent already an email to \nthe ai-geostats list to announce that there are some problems like you \nmentioned. He will soon move the server to another p",
+      "thread_id": "thread-ba00aac1f23c",
+      "thread_depth": 1,
+      "month": "2002-08"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-674794907a8b",
+      "subject": "[STATSGRASS] R & GRASS inicialization.",
+      "message_count": 5,
+      "participants": [
+        "Agustin Lobo",
+        "Roger Bivand",
+        "andres javier garcia garcia"
+      ],
+      "started": "2002-08-02T06:11:27Z",
+      "last_reply": "2002-08-02T08:42:33Z",
+      "root_message_id": "msg-674794907a8b"
+    },
+    {
+      "id": "thread-6496af036ad5",
+      "subject": "[STATSGRASS] R & GRASS inicialization.",
+      "message_count": 2,
+      "participants": [
+        "Roger Bivand",
+        "andres javier garcia garcia"
+      ],
+      "started": "2002-08-02T09:05:03Z",
+      "last_reply": "2002-08-02T09:22:03Z",
+      "root_message_id": "msg-6496af036ad5"
+    },
+    {
+      "id": "thread-ba00aac1f23c",
+      "subject": "[STATSGRASS] accessing the AI-Geostats.org server",
+      "message_count": 2,
+      "participants": [
+        "Ivan Kautter",
+        "Ulrich Leopold"
+      ],
+      "started": "2002-08-29T23:02:49Z",
+      "last_reply": "2002-08-30T04:49:46Z",
+      "root_message_id": "msg-ba00aac1f23c"
+    },
+    {
+      "id": "thread-c2dd88a35ce8",
+      "subject": "[STATSGRASS] RE: Accessing AI-GEOSTATS",
+      "message_count": 1,
+      "participants": [
+        "Gregoire Dubois"
+      ],
+      "started": "2002-08-30T04:32:41Z",
+      "last_reply": "2002-08-30T04:32:41Z",
+      "root_message_id": "msg-c2dd88a35ce8"
+    }
+  ]
+}

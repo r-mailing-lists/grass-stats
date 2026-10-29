@@ -1,0 +1,90 @@
+{
+  "list": "grass-stats",
+  "description": "",
+  "month": "2004-01",
+  "messages": [
+    {
+      "id": "msg-698403f43968",
+      "message_id": "<401019D6.7040200@noaa.gov>",
+      "from_name": "Thomas Adams",
+      "from_email_hash": "b085140f078bba1fe91b1fa81de060da402d3cdfc3c161c4d24a62e922ea484b",
+      "date": "2004-01-22T13:43:34Z",
+      "subject": "[STATSGRASS] R-GRASS scripting question",
+      "subject_clean": "[STATSGRASS] R-GRASS scripting question",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Skipped content of type multipart/alternative-------------- next part --------------\n#---------------------------------------------------------\n# R.precip_bias.batch\n#---------------------------------------------------------\n#usage:\n# export R_BASIN_NAME=basinName\n# export R_YEAR=year\n# export R_INMAP_ANN=rastermap-1\n# export R_INMAP_JJA=rastermap-2\n# export R_INMAP_DJF=rastermap-3\n# R BATCH R.precip_bias.batch\n#---------------------------------------------------------\n\nlibrary(GRASS)\nG<-gmeta()\nlibrary(MASS)\n\n#read input map from environment variable $R_BASIN_NAME\nbasinname<-Sys.getenv(\"R_BASIN_NAME\")\nyear<-Sys.getenv(\"R_YEAR\")\nyear\n\n#---------------------------------------------------------\n#(1) read input map from environment variable $R_INMAP_ANN\n#---------------------------------------------------------\nmapname<-Sys.getenv(\"R_INMAP_ANN\")\nbias<-rast.get(G,rlist=c(Sys.getenv(\"R_INMAP_ANN\")))\nsummary(bias$mapname)\n\ntstr<-paste(c(basinname,\" Radar-Precipitation Bias - \",year),collapse=\"\")\n\n#Write Histogram to pdf\nfilename<-paste(c(basinname,\".\",year,\".annual.hist.pdf\"))\npdf(filename)\ntruehist(bias$mapname,xlab=\"XMRG Bias\",ylab=\"Frequency\",main=tstr,prob=F)\ndev.off()\n\n#Write Boxplot to pdf\nfilename<-paste(c(basinname,\".\",year,\".annual.boxplot.pdf\"),collapse=\"\")\npdf(filename)\nboxplot(bias$mapname,xlab=tstr,ylab=\"XMRG bias\")\ndev.off()\n\n.\n.\n.\n.\n\n#cleanup workspace\nrm(list = ls(all=TRUE))",
+      "body_snippet": "Skipped content of type multipart/alternative-------------- next part --------------\n#---------------------------------------------------------\n# R.precip_bias.batch\n#---------------------------------",
+      "thread_id": "thread-698403f43968",
+      "thread_depth": 0,
+      "month": "2004-01"
+    },
+    {
+      "id": "msg-a6c9b7374565",
+      "message_id": "<4010D506.2020704@geog.uu.nl>",
+      "from_name": "Edzer J. Pebesma",
+      "from_email_hash": "a7fb0ca623e251a5aff6aa466eb7f50e3c643594fe03e3232d546a007043eef0",
+      "date": "2004-01-23T03:02:14Z",
+      "subject": "[STATSGRASS] R-GRASS scripting question",
+      "subject_clean": "[STATSGRASS] R-GRASS scripting question",
+      "in_reply_to": "<401019D6.7040200@noaa.gov>",
+      "references": [
+        "<401019D6.7040200@noaa.gov>"
+      ],
+      "body_plain": "Thomas Adams wrote:\n\n> Roger (or anyone else),\n>\n> I am at an impasse attempting to write an R script to call from within \n> GRASS. Attached is a code fragment. Basically, I can not get beyond:\n>\n> summary(bias$mapname)\n\nYou want the value of mapname to be evaluated: the content is not in\nbias$mapname but bias$something, with something the value of the\nvariable mapname.\n\nTry:\n\nsummary(bias[[eval(mapname)]]\n--\nEdzer",
+      "body_snippet": "Thomas Adams wrote:\n\n> Roger (or anyone else),\n>\n> I am at an impasse attempting to write an R script to call from within \n> GRASS. Attached is a code fragment. Basically, I can not get beyond:\n>\n> su",
+      "thread_id": "thread-698403f43968",
+      "thread_depth": 1,
+      "month": "2004-01"
+    },
+    {
+      "id": "msg-a97dc7a3fdab",
+      "message_id": "<Pine.LNX.4.44.0401230914130.15718-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2004-01-23T03:20:38Z",
+      "subject": "[STATSGRASS] R-GRASS scripting question",
+      "subject_clean": "[STATSGRASS] R-GRASS scripting question",
+      "in_reply_to": "<4010D506.2020704@geog.uu.nl>",
+      "references": [],
+      "body_plain": "On Fri, 23 Jan 2004, Edzer J. Pebesma wrote:\n\n> \n> \n> Thomas Adams wrote:\n> \n> > Roger (or anyone else),\n> >\n> > I am at an impasse attempting to write an R script to call from within \n> > GRASS. Attached is a code fragment. Basically, I can not get beyond:\n> >\n> > summary(bias$mapname)\n> \n> You want the value of mapname to be evaluated: the content is not in\n> bias$mapname but bias$something, with something the value of the\n> variable mapname.\n> \n> Try:\n> \n> summary(bias[[eval(mapname)]]\n\nYes, this is right. There may be a short cut, if you know definitely for \nexample that there is just one raster in the bias list. Then you access it \nby number, for example:\n\nsummary(bias[[1]])\n\nThe same would apply if there were more, but then it would be easier to \nget mixed up.\n\n> a <- list(a=NA, b=Inf)\n> a\n$a\n[1] NA\n\n$b\n[1] Inf\n\n> a$a\n[1] NA\n> a[[1]]\n[1] NA\n> a[[\"a\"]]\n[1] NA\n> an <- \"a\"\n> a$an\nNULL\n\n(no such element in list)\n\n> a[[eval(an)]]\n[1] NA\n\nRoger\n\n> --\n> Edzer\n> \n> \n\n-- \nRoger Bivand\nEcononic Geography Section, Department of Economics, Norwegian School of \nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen, \nNorway, voice: +47-55959355, fax: +47-55959393; Roger.Bivand@nhh.no",
+      "body_snippet": "On Fri, 23 Jan 2004, Edzer J. Pebesma wrote:\n\n> \n> \n> Thomas Adams wrote:\n> \n> > Roger (or anyone else),\n> >\n> > I am at an impasse attempting to write an R script to call from within \n> > GRASS. Atta",
+      "thread_id": "thread-698403f43968",
+      "thread_depth": 2,
+      "month": "2004-01"
+    },
+    {
+      "id": "msg-b5c815b0d216",
+      "message_id": "<40113B04.4020000@noaa.gov>",
+      "from_name": "Thomas Adams",
+      "from_email_hash": "b085140f078bba1fe91b1fa81de060da402d3cdfc3c161c4d24a62e922ea484b",
+      "date": "2004-01-23T10:17:24Z",
+      "subject": "[STATSGRASS] R-GRASS scripting question",
+      "subject_clean": "[STATSGRASS] R-GRASS scripting question",
+      "in_reply_to": "<Pine.LNX.4.44.0401230914130.15718-100000@reclus.nhh.no>",
+      "references": [
+        "<Pine.LNX.4.44.0401230914130.15718-100000@reclus.nhh.no>"
+      ],
+      "body_plain": "Roger & Edzer,\n\nThanks for your help! That did the trick.\n\nRegards,\nTom\n\nRoger Bivand wrote:\n\n>On Fri, 23 Jan 2004, Edzer J. Pebesma wrote:\n>\n>  \n>\n>>Thomas Adams wrote:\n>>\n>>    \n>>\n>>>Roger (or anyone else),\n>>>\n>>>I am at an impasse attempting to write an R script to call from within \n>>>GRASS. Attached is a code fragment. Basically, I can not get beyond:\n>>>\n>>>summary(bias$mapname)\n>>>      \n>>>\n>>You want the value of mapname to be evaluated: the content is not in\n>>bias$mapname but bias$something, with something the value of the\n>>variable mapname.\n>>\n>>Try:\n>>\n>>summary(bias[[eval(mapname)]]\n>>    \n>>\n>\n>Yes, this is right. There may be a short cut, if you know definitely for \n>example that there is just one raster in the bias list. Then you access it \n>by number, for example:\n>\n>summary(bias[[1]])\n>\n>The same would apply if there were more, but then it would be easier to \n>get mixed up.\n>\n>  \n>\n>>a <- list(a=NA, b=Inf)\n>>a\n>>    \n>>\n>$a\n>[1] NA\n>\n>$b\n>[1] Inf\n>\n>  \n>\n>>a$a\n>>    \n>>\n>[1] NA\n>  \n>\n>>a[[1]]\n>>    \n>>\n>[1] NA\n>  \n>\n>>a[[\"a\"]]\n>>    \n>>\n>[1] NA\n>  \n>\n>>an <- \"a\"\n>>a$an\n>>    \n>>\n>NULL\n>\n>(no such element in list)\n>\n>  \n>\n>>a[[eval(an)]]\n>>    \n>>\n>[1] NA\n>\n>Roger\n>\n>  \n>\n>>--\n>>Edzer\n>>\n>>\n>>    \n>>\n>\n>  \n>\n\n-- \nThomas E Adams\nNational Weather Service\nOhio River Forecast Center\n1901 South State Route 134\nWilmington, OH 45177\n\nEMAIL:\tthomas.adams@noaa.gov\n\nVOICE:\t937-383-0528\nFAX:\t937-383-0033\n\n-------------- next part --------------\nAn HTML attachment was scrubbed...\nURL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20040123/af19068a/attachment.html",
+      "body_snippet": "Roger & Edzer,\n\nThanks for your help! That did the trick.\n\nRegards,\nTom\n\nRoger Bivand wrote:\n\n>On Fri, 23 Jan 2004, Edzer J. Pebesma wrote:\n>\n>  \n>\n>>Thomas Adams wrote:\n>>\n>>    \n>>\n>>>Roger (or anyo",
+      "thread_id": "thread-698403f43968",
+      "thread_depth": 3,
+      "month": "2004-01"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-698403f43968",
+      "subject": "[STATSGRASS] R-GRASS scripting question",
+      "message_count": 4,
+      "participants": [
+        "Edzer J. Pebesma",
+        "Roger Bivand",
+        "Thomas Adams"
+      ],
+      "started": "2004-01-22T13:43:34Z",
+      "last_reply": "2004-01-23T10:17:24Z",
+      "root_message_id": "msg-698403f43968"
+    }
+  ]
+}

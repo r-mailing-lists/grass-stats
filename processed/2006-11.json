@@ -1,0 +1,534 @@
+{
+  "list": "grass-stats",
+  "description": "",
+  "month": "2006-11",
+  "messages": [
+    {
+      "id": "msg-dd42af12dd32",
+      "message_id": "<4548CB55.8080504@o2.pl>",
+      "from_name": "Maciej Sieczka",
+      "from_email_hash": "618714a62eb13dd3ac649983020b3715dd9f1d648ae6f25af7a09fb8b3c809a0",
+      "date": "2006-11-01T11:29:09Z",
+      "subject": "[STATSGRASS] kriging results not within range of original data",
+      "subject_clean": "[STATSGRASS] kriging results not within range of original data",
+      "in_reply_to": "<4547B64D.8040909@geo.uu.nl>",
+      "references": [
+        "<bd07447b0610311227p3f80c1abuc780f28c274c783d@mail.gmail.com>",
+        "<4547B64D.8040909@geo.uu.nl>"
+      ],
+      "body_plain": "Edzer J. Pebesma wrote:\n> Hi Carlos,\n> \n> that is correct, and due to the fact that kriging weights are not\n> constrained to be in [0,1]. In fact, they do become negative and may be\n> larger than 1. Consider as alternatives either inverse distance weighted\n> interpolation, or some form of constrained kriging (although I wouldn't\n> know where to get the latter).\n\nI'd suggest the natural neighbor interpolation. A nice library is here:\nhttp://www.marine.csiro.au/~sakov/\n\nI have written a GRASS script wrapper for the nnbathy interpolation\nprogram that comes with nn lib, r.surf.nnbathy, available at:\nhttp://grass.gdf-hannover.de/wiki/GRASS_AddOns#Raster_add-ons\n\nMaciek",
+      "body_snippet": "Edzer J. Pebesma wrote:\n> Hi Carlos,\n> \n> that is correct, and due to the fact that kriging weights are not\n> constrained to be in [0,1]. In fact, they do become negative and may be\n> larger than 1. C",
+      "thread_id": "thread-dd42af12dd32",
+      "thread_depth": 0,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-2107dcfef99e",
+      "message_id": "<bd07447b0611031259i7ae1e05bw872035fef900c98b@mail.gmail.com>",
+      "from_name": "Carlos \"Guâno\" Grohmann",
+      "from_email_hash": "0dc1a0fe57d97a7d47d9d6217fc2e30fc11fcf678f8fdb32cabaecaffa4e291b",
+      "date": "2006-11-03T15:59:34Z",
+      "subject": "[STATSGRASS] fischer statistics",
+      "subject_clean": "[STATSGRASS] fischer statistics",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Can someone point me out if there is any package for R I can use to\nperform Fischer statistics for vector analysis? I am interesting in\ncalculating vectors dispersion, the K value of\n\nFischer RA, 1953 - dispersion on a sphere. Proc. Roy. Soc.\n\nthanks\n\n-- \n+-----------------------------------------------------------+\n              Carlos Henrique Grohmann - Guano\n  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil\nLinux User #89721  - carlos dot grohmann at gmail dot com\n+-----------------------------------------------------------+\n_________________\n\"Good morning, doctors. I have taken the liberty of removing Windows\n95 from my hard drive.\"\n--The winning entry in a \"What were HAL's first words\" contest judged\nby 2001: A SPACE ODYSSEY creator Arthur C. Clarke",
+      "body_snippet": "Can someone point me out if there is any package for R I can use to\nperform Fischer statistics for vector analysis? I am interesting in\ncalculating vectors dispersion, the K value of\n\nFischer RA, 1953",
+      "thread_id": "thread-2107dcfef99e",
+      "thread_depth": 0,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-ab432b5a4e2c",
+      "message_id": "<bd07447b0611031334j58181e07t3d7648c35d675c38@mail.gmail.com>",
+      "from_name": "Carlos \"Guâno\" Grohmann",
+      "from_email_hash": "0dc1a0fe57d97a7d47d9d6217fc2e30fc11fcf678f8fdb32cabaecaffa4e291b",
+      "date": "2006-11-03T16:34:28Z",
+      "subject": "[STATSGRASS] different kriging results with the same parameters",
+      "subject_clean": "[STATSGRASS] different kriging results with the same parameters",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I was kriging some SRTM DEMs, and I noticed that I get different\nresults with the same parameters!!\n check out:\n\nsummary(srtm) - original data\nData attributes:\n     band1\n Min.   : 634.0\n 1st Qu.: 759.0\n Median : 814.0\n Mean   : 856.5\n 3rd Qu.: 923.0\n Max.   :1312.0\n\nvrg.eye<-(vgm(psill=950, model=\"Gau\", range=245, nugget=6.2));\n\nOK_pred_md250 <- krige(srtm$band1 ~ 1, loc=srtm2, newdata=mask_SG,\nmodel=vrg.eye, maxdist=250);\n\n\nsummary(OK_pred_md250);\nData attributes:\n   var1.pred         var1.var\n Min.   : 632.8   Min.   :  8.054\n 1st Qu.: 759.2   1st Qu.:  8.576\n Median : 814.3   Median :  8.712\n Mean   : 856.4   Mean   :  9.052\n 3rd Qu.: 923.6   3rd Qu.:  8.865\n Max.   :1307.6   Max.   :395.609\n\nData attributes:\n   var1.pred         var1.var\n Min.   : 632.4   Min.   :  8.040\n 1st Qu.: 759.2   1st Qu.:  8.577\n Median : 814.3   Median :  8.711\n Mean   : 856.4   Mean   :  9.048\n 3rd Qu.: 923.6   3rd Qu.:  8.863\n Max.   :1306.2   Max.   :341.567\n\nData attributes:\n   var1.pred         var1.var\n Min.   : 632.9   Min.   :  8.039\n 1st Qu.: 759.2   1st Qu.:  8.576\n Median : 814.3   Median :  8.712\n Mean   : 856.4   Mean   :  9.052\n 3rd Qu.: 923.6   3rd Qu.:  8.865\n Max.   :1306.9   Max.   :345.084\n>\n\n\nSo, the minimum and maximum have changed each time. Why?\n\nthanks\n\n-- \n+-----------------------------------------------------------+\n              Carlos Henrique Grohmann - Guano\n  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil\nLinux User #89721  - carlos dot grohmann at gmail dot com\n+-----------------------------------------------------------+\n_________________\n\"Good morning, doctors. I have taken the liberty of removing Windows\n95 from my hard drive.\"\n--The winning entry in a \"What were HAL's first words\" contest judged\nby 2001: A SPACE ODYSSEY creator Arthur C. Clarke",
+      "body_snippet": "I was kriging some SRTM DEMs, and I noticed that I get different\nresults with the same parameters!!\n check out:\n\nsummary(srtm) - original data\nData attributes:\n     band1\n Min.   : 634.0\n 1st Qu.: 759",
+      "thread_id": "thread-ab432b5a4e2c",
+      "thread_depth": 0,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-280eef25d85a",
+      "message_id": "<454BB8C0.1040502@geo.uu.nl>",
+      "from_name": "Edzer J. Pebesma",
+      "from_email_hash": "dc9c0d99e64732fb3b0f9ed04046937206c628f39b3a0556850153cb8eb34ebc",
+      "date": "2006-11-03T16:46:40Z",
+      "subject": "[STATSGRASS] different kriging results with the same parameters",
+      "subject_clean": "[STATSGRASS] different kriging results with the same parameters",
+      "in_reply_to": "<bd07447b0611031334j58181e07t3d7648c35d675c38@mail.gmail.com>",
+      "references": [
+        "<bd07447b0611031334j58181e07t3d7648c35d675c38@mail.gmail.com>"
+      ],
+      "body_plain": "My only thought is try increasing the nugget variance; the Gaussian \nvariogram model always triggers some kind of alarm. Still, output \nshouldn't vary.\n\nHave you tried replacing srtm$band1~1 with band1~1 (in which case it is \ntaken from the second argument, srtm2)? Something like\n\nkrige(band1 ~ 1, srtm2, mask_SG, model=vrg.eye, maxdist=250);\n--\nEdzer\n\nCarlos \"Gu?no\" Grohmann wrote:\n> I was kriging some SRTM DEMs, and I noticed that I get different\n> results with the same parameters!!\n> check out:\n>\n> summary(srtm) - original data\n> Data attributes:\n>     band1\n> Min.   : 634.0\n> 1st Qu.: 759.0\n> Median : 814.0\n> Mean   : 856.5\n> 3rd Qu.: 923.0\n> Max.   :1312.0\n>\n> vrg.eye<-(vgm(psill=950, model=\"Gau\", range=245, nugget=6.2));\n>\n> OK_pred_md250 <- krige(srtm$band1 ~ 1, loc=srtm2, newdata=mask_SG,\n> model=vrg.eye, maxdist=250);\n>\n>\n> summary(OK_pred_md250);\n> Data attributes:\n>   var1.pred         var1.var\n> Min.   : 632.8   Min.   :  8.054\n> 1st Qu.: 759.2   1st Qu.:  8.576\n> Median : 814.3   Median :  8.712\n> Mean   : 856.4   Mean   :  9.052\n> 3rd Qu.: 923.6   3rd Qu.:  8.865\n> Max.   :1307.6   Max.   :395.609\n>\n> Data attributes:\n>   var1.pred         var1.var\n> Min.   : 632.4   Min.   :  8.040\n> 1st Qu.: 759.2   1st Qu.:  8.577\n> Median : 814.3   Median :  8.711\n> Mean   : 856.4   Mean   :  9.048\n> 3rd Qu.: 923.6   3rd Qu.:  8.863\n> Max.   :1306.2   Max.   :341.567\n>\n> Data attributes:\n>   var1.pred         var1.var\n> Min.   : 632.9   Min.   :  8.039\n> 1st Qu.: 759.2   1st Qu.:  8.576\n> Median : 814.3   Median :  8.712\n> Mean   : 856.4   Mean   :  9.052\n> 3rd Qu.: 923.6   3rd Qu.:  8.865\n> Max.   :1306.9   Max.   :345.084\n>>\n>\n>\n> So, the minimum and maximum have changed each time. Why?\n>\n> thanks\n>",
+      "body_snippet": "My only thought is try increasing the nugget variance; the Gaussian \nvariogram model always triggers some kind of alarm. Still, output \nshouldn't vary.\n\nHave you tried replacing srtm$band1~1 with band",
+      "thread_id": "thread-ab432b5a4e2c",
+      "thread_depth": 1,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-90acb35565f3",
+      "message_id": "<bd07447b0611031356v1d04e6d1re06e272d0e3d1ecf@mail.gmail.com>",
+      "from_name": "Carlos \"Guâno\" Grohmann",
+      "from_email_hash": "0dc1a0fe57d97a7d47d9d6217fc2e30fc11fcf678f8fdb32cabaecaffa4e291b",
+      "date": "2006-11-03T16:56:45Z",
+      "subject": "[STATSGRASS] different kriging results with the same parameters",
+      "subject_clean": "[STATSGRASS] different kriging results with the same parameters",
+      "in_reply_to": "<454BB8C0.1040502@geo.uu.nl>",
+      "references": [
+        "<bd07447b0611031334j58181e07t3d7648c35d675c38@mail.gmail.com>",
+        "<454BB8C0.1040502@geo.uu.nl>"
+      ],
+      "body_plain": "Tryed. didn't work..\n\n OK_pred_md250 <- krige(band1 ~ 1, srtm2, mask_SG, model=vrg.eye, maxdist=250);\n\nError in model.frame(formula, rownames, variables, varnames, extras,\nextranames,  :\n        invalid variable type for 'band1'\n\nWhy do you think that the nugget variance would change anything?\n\ntks\n\n\n\nOn 11/3/06, Edzer J. Pebesma <e.pebesma@geo.uu.nl> wrote:\n> My only thought is try increasing the nugget variance; the Gaussian\n> variogram model always triggers some kind of alarm. Still, output\n> shouldn't vary.\n>\n> Have you tried replacing srtm$band1~1 with band1~1 (in which case it is\n> taken from the second argument, srtm2)? Something like\n>\n> krige(band1 ~ 1, srtm2, mask_SG, model=vrg.eye, maxdist=250);\n> --\n> Edzer\n>\n> Carlos \"Gu?no\" Grohmann wrote:\n> > I was kriging some SRTM DEMs, and I noticed that I get different\n> > results with the same parameters!!\n> > check out:\n> >\n> > summary(srtm) - original data\n> > Data attributes:\n> >     band1\n> > Min.   : 634.0\n> > 1st Qu.: 759.0\n> > Median : 814.0\n> > Mean   : 856.5\n> > 3rd Qu.: 923.0\n> > Max.   :1312.0\n> >\n> > vrg.eye<-(vgm(psill=950, model=\"Gau\", range=245, nugget=6.2));\n> >\n> > OK_pred_md250 <- krige(srtm$band1 ~ 1, loc=srtm2, newdata=mask_SG,\n> > model=vrg.eye, maxdist=250);\n> >\n> >\n> > summary(OK_pred_md250);\n> > Data attributes:\n> >   var1.pred         var1.var\n> > Min.   : 632.8   Min.   :  8.054\n> > 1st Qu.: 759.2   1st Qu.:  8.576\n> > Median : 814.3   Median :  8.712\n> > Mean   : 856.4   Mean   :  9.052\n> > 3rd Qu.: 923.6   3rd Qu.:  8.865\n> > Max.   :1307.6   Max.   :395.609\n> >\n> > Data attributes:\n> >   var1.pred         var1.var\n> > Min.   : 632.4   Min.   :  8.040\n> > 1st Qu.: 759.2   1st Qu.:  8.577\n> > Median : 814.3   Median :  8.711\n> > Mean   : 856.4   Mean   :  9.048\n> > 3rd Qu.: 923.6   3rd Qu.:  8.863\n> > Max.   :1306.2   Max.   :341.567\n> >\n> > Data attributes:\n> >   var1.pred         var1.var\n> > Min.   : 632.9   Min.   :  8.039\n> > 1st Qu.: 759.2   1st Qu.:  8.576\n> > Median : 814.3   Median :  8.712\n> > Mean   : 856.4   Mean   :  9.052\n> > 3rd Qu.: 923.6   3rd Qu.:  8.865\n> > Max.   :1306.9   Max.   :345.084\n> >>\n> >\n> >\n> > So, the minimum and maximum have changed each time. Why?\n> >\n> > thanks\n> >\n>\n>\n\n\n-- \n+-----------------------------------------------------------+\n              Carlos Henrique Grohmann - Guano\n  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil\nLinux User #89721  - carlos dot grohmann at gmail dot com\n+-----------------------------------------------------------+\n_________________\n\"Good morning, doctors. I have taken the liberty of removing Windows\n95 from my hard drive.\"\n--The winning entry in a \"What were HAL's first words\" contest judged\nby 2001: A SPACE ODYSSEY creator Arthur C. Clarke",
+      "body_snippet": "Tryed. didn't work..\n\n OK_pred_md250 <- krige(band1 ~ 1, srtm2, mask_SG, model=vrg.eye, maxdist=250);\n\nError in model.frame(formula, rownames, variables, varnames, extras,\nextranames,  :\n        inval",
+      "thread_id": "thread-ab432b5a4e2c",
+      "thread_depth": 2,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-374b48b9925b",
+      "message_id": "<454BC027.1060808@geo.uu.nl>",
+      "from_name": "Edzer J. Pebesma",
+      "from_email_hash": "dc9c0d99e64732fb3b0f9ed04046937206c628f39b3a0556850153cb8eb34ebc",
+      "date": "2006-11-03T17:18:15Z",
+      "subject": "[STATSGRASS] different kriging results with the same parameters",
+      "subject_clean": "[STATSGRASS] different kriging results with the same parameters",
+      "in_reply_to": "<bd07447b0611031356v1d04e6d1re06e272d0e3d1ecf@mail.gmail.com>",
+      "references": [
+        "<bd07447b0611031334j58181e07t3d7648c35d675c38@mail.gmail.com>",
+        "<454BB8C0.1040502@geo.uu.nl>",
+        "<bd07447b0611031356v1d04e6d1re06e272d0e3d1ecf@mail.gmail.com>"
+      ],
+      "body_plain": "Carlos \"Gu?no\" Grohmann wrote:\n> Tryed. didn't work..\n>\n> OK_pred_md250 <- krige(band1 ~ 1, srtm2, mask_SG, model=vrg.eye, \n> maxdist=250);\n>\n> Error in model.frame(formula, rownames, variables, varnames, extras,\n> extranames,  :\n>        invalid variable type for 'band1'\n>\n> Why do you think that the nugget variance would change anything?\nBecause the Gaussian variogram model is known to often lead to \nnear-singular covariance matrices, meaning numerical instabilities, huge \nkriging weights etc.\n--\nEdzer\n>\n> tks\n>\n>\n>\n> On 11/3/06, Edzer J. Pebesma <e.pebesma@geo.uu.nl> wrote:\n>> My only thought is try increasing the nugget variance; the Gaussian\n>> variogram model always triggers some kind of alarm. Still, output\n>> shouldn't vary.\n>>\n>> Have you tried replacing srtm$band1~1 with band1~1 (in which case it is\n>> taken from the second argument, srtm2)? Something like\n>>\n>> krige(band1 ~ 1, srtm2, mask_SG, model=vrg.eye, maxdist=250);\n>> -- \n>> Edzer\n>>\n>> Carlos \"Gu?no\" Grohmann wrote:\n>> > I was kriging some SRTM DEMs, and I noticed that I get different\n>> > results with the same parameters!!\n>> > check out:\n>> >\n>> > summary(srtm) - original data\n>> > Data attributes:\n>> >     band1\n>> > Min.   : 634.0\n>> > 1st Qu.: 759.0\n>> > Median : 814.0\n>> > Mean   : 856.5\n>> > 3rd Qu.: 923.0\n>> > Max.   :1312.0\n>> >\n>> > vrg.eye<-(vgm(psill=950, model=\"Gau\", range=245, nugget=6.2));\n>> >\n>> > OK_pred_md250 <- krige(srtm$band1 ~ 1, loc=srtm2, newdata=mask_SG,\n>> > model=vrg.eye, maxdist=250);\n>> >\n>> >\n>> > summary(OK_pred_md250);\n>> > Data attributes:\n>> >   var1.pred         var1.var\n>> > Min.   : 632.8   Min.   :  8.054\n>> > 1st Qu.: 759.2   1st Qu.:  8.576\n>> > Median : 814.3   Median :  8.712\n>> > Mean   : 856.4   Mean   :  9.052\n>> > 3rd Qu.: 923.6   3rd Qu.:  8.865\n>> > Max.   :1307.6   Max.   :395.609\n>> >\n>> > Data attributes:\n>> >   var1.pred         var1.var\n>> > Min.   : 632.4   Min.   :  8.040\n>> > 1st Qu.: 759.2   1st Qu.:  8.577\n>> > Median : 814.3   Median :  8.711\n>> > Mean   : 856.4   Mean   :  9.048\n>> > 3rd Qu.: 923.6   3rd Qu.:  8.863\n>> > Max.   :1306.2   Max.   :341.567\n>> >\n>> > Data attributes:\n>> >   var1.pred         var1.var\n>> > Min.   : 632.9   Min.   :  8.039\n>> > 1st Qu.: 759.2   1st Qu.:  8.576\n>> > Median : 814.3   Median :  8.712\n>> > Mean   : 856.4   Mean   :  9.052\n>> > 3rd Qu.: 923.6   3rd Qu.:  8.865\n>> > Max.   :1306.9   Max.   :345.084\n>> >>\n>> >\n>> >\n>> > So, the minimum and maximum have changed each time. Why?\n>> >\n>> > thanks\n>> >\n>>\n>>\n>\n>",
+      "body_snippet": "Carlos \"Gu?no\" Grohmann wrote:\n> Tryed. didn't work..\n>\n> OK_pred_md250 <- krige(band1 ~ 1, srtm2, mask_SG, model=vrg.eye, \n> maxdist=250);\n>\n> Error in model.frame(formula, rownames, variables, varna",
+      "thread_id": "thread-ab432b5a4e2c",
+      "thread_depth": 3,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-de118a5fcadd",
+      "message_id": "<200611081002.54403.sisma66@tiscali.it>",
+      "from_name": "Pierluigi De Rosa",
+      "from_email_hash": "64f174999313840d4aa5cc9b9aca8c8072006a88e1efe0f63d5a2dc84490238f",
+      "date": "2006-11-08T04:02:53Z",
+      "subject": "[STATSGRASS] Plot a priori variance",
+      "subject_clean": "[STATSGRASS] Plot a priori variance",
+      "in_reply_to": "<e12429640610280308o160d04afmbb709a0f9e25b08f@mail.gmail.com>",
+      "references": [
+        "<e12429640610230950p6cfe48e7ma19403823b062a5a@mail.gmail.com>",
+        "<4542DBDA.20508@gmail.com>",
+        "<e12429640610280308o160d04afmbb709a0f9e25b08f@mail.gmail.com>"
+      ],
+      "body_plain": "Dear All R users,\n\nI have a simple question to do. I wont to add an horizontal line (tha a priori \nvariance) on a variogram plot.\nAfter plotting variogram I run the abline command;\nfor example \n> abline(h=23)\nIt seems work fine but I can see the line!\nCan anyone help me?\nThanking you in advance\ncheers\n\nPierluigi",
+      "body_snippet": "Dear All R users,\n\nI have a simple question to do. I wont to add an horizontal line (tha a priori \nvariance) on a variogram plot.\nAfter plotting variogram I run the abline command;\nfor example \n> abli",
+      "thread_id": "thread-de118a5fcadd",
+      "thread_depth": 0,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-268c6a4bb9c7",
+      "message_id": "<4555C1B2.3080704@amu.edu.pl>",
+      "from_name": "Jarek Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2006-11-11T07:27:30Z",
+      "subject": "[STATSGRASS] gstat - trend over 3th polinominal",
+      "subject_clean": "[STATSGRASS] gstat - trend over 3th polinominal",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi\nI found that result of formula:\n\ngs=gstat(id=\"x\", formula=zinc~(x+y)^2, data=meuse)\npgs=predict(gs, newdata, meuse.grid)\n\nis equvalent to:\n\n\ngs=gstat(id=\"x\", formula=zinc~x+y, data=meuse, degree=2)\npgs=predict(gs, newdata, meuse.grid)\n\n\nso I tried:\ngs=gstat(id=\"x\", formula=zinc~(x+y)^4, data=meuse)\npgs=predict(gs, newdata, meuse.grid)\n\nand it worked!\n\nso it is possible to calculate trend over 3th polynominal (now its not a \nmetter for what :))) in that way?\n\nregards\nJarek",
+      "body_snippet": "Hi\nI found that result of formula:\n\ngs=gstat(id=\"x\", formula=zinc~(x+y)^2, data=meuse)\npgs=predict(gs, newdata, meuse.grid)\n\nis equvalent to:\n\n\ngs=gstat(id=\"x\", formula=zinc~x+y, data=meuse, degree=2)",
+      "thread_id": "thread-268c6a4bb9c7",
+      "thread_depth": 0,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-13731d8e66d4",
+      "message_id": "<4555C216.1070506@amu.edu.pl>",
+      "from_name": "Jarek Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2006-11-11T07:29:10Z",
+      "subject": "[STATSGRASS] command with over 1000 chars",
+      "subject_clean": "[STATSGRASS] command with over 1000 chars",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I prepared set of commands to run in R but only commands up to 100th \ncharacter work, the rest is ommited. How to ommit this limatation?\n\nragards\nJarek",
+      "body_snippet": "I prepared set of commands to run in R but only commands up to 100th \ncharacter work, the rest is ommited. How to ommit this limatation?\n\nragards\nJarek",
+      "thread_id": "thread-13731d8e66d4",
+      "thread_depth": 0,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-b33e9992aa91",
+      "message_id": "<4555C3A4.7030606@geo.uu.nl>",
+      "from_name": "Edzer J. Pebesma",
+      "from_email_hash": "dc9c0d99e64732fb3b0f9ed04046937206c628f39b3a0556850153cb8eb34ebc",
+      "date": "2006-11-11T07:35:48Z",
+      "subject": "[STATSGRASS] command with over 1000 chars",
+      "subject_clean": "[STATSGRASS] command with over 1000 chars",
+      "in_reply_to": "<4555C216.1070506@amu.edu.pl>",
+      "references": [
+        "<4555C216.1070506@amu.edu.pl>"
+      ],
+      "body_plain": "Jarek Jasiewicz wrote:\n> I prepared set of commands to run in R but only commands up to 100th \n> character work, the rest is ommited. How to ommit this limatation?\nThis sounds unlikely to me. What command line did you use?\nDid you try R CMD BATCH commands.R\n?\n--\nEdzer\n>\n> ragards\n> Jarek\n>\n> _______________________________________________\n> statsgrass mailing list\n> statsgrass@grass.itc.it\n> http://grass.itc.it/mailman/listinfo/statsgrass",
+      "body_snippet": "Jarek Jasiewicz wrote:\n> I prepared set of commands to run in R but only commands up to 100th \n> character work, the rest is ommited. How to ommit this limatation?\nThis sounds unlikely to me. What com",
+      "thread_id": "thread-13731d8e66d4",
+      "thread_depth": 1,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-cdab9357616d",
+      "message_id": "<4555C57E.907@geo.uu.nl>",
+      "from_name": "Edzer J. Pebesma",
+      "from_email_hash": "dc9c0d99e64732fb3b0f9ed04046937206c628f39b3a0556850153cb8eb34ebc",
+      "date": "2006-11-11T07:43:42Z",
+      "subject": "[STATSGRASS] gstat - trend over 3th polinominal",
+      "subject_clean": "[STATSGRASS] gstat - trend over 3th polinominal",
+      "in_reply_to": "<4555C1B2.3080704@amu.edu.pl>",
+      "references": [
+        "<4555C1B2.3080704@amu.edu.pl>"
+      ],
+      "body_plain": "Jarek, we don't know what your \"newdata\" object is. It is a name of an \nargument, but passed as data; I would expect something like\n\npredict(g, newdata = meuse.grid)\n\nI didn't know of that form in formulas, so thanks! Pretty much shorter \nthan writing the 4th order polynomial out.\n\nIt might work \"in principle\" but you may expect increasing inaccuracies \nwith higher order trends due to the large difference between say x^4 and \nx. Rescaling the coordinates prior to the analysis (e.g. dividing by \n1000, going from m to km) might help. poly() doesn't help here, as it \nwill rescale differently for meuse and meuse.grid, afaik.\n\nI also wonder what, besides curiosity, the value of a 4-th or higher \norder trend surface might be.\n--\nEdzer\n\nJarek Jasiewicz wrote:\n> Hi\n> I found that result of formula:\n>\n> gs=gstat(id=\"x\", formula=zinc~(x+y)^2, data=meuse)\n> pgs=predict(gs, newdata, meuse.grid)\n>\n> is equvalent to:\n>\n>\n> gs=gstat(id=\"x\", formula=zinc~x+y, data=meuse, degree=2)\n> pgs=predict(gs, newdata, meuse.grid)\n>\n>\n> so I tried:\n> gs=gstat(id=\"x\", formula=zinc~(x+y)^4, data=meuse)\n> pgs=predict(gs, newdata, meuse.grid)\n>\n> and it worked!\n>\n> so it is possible to calculate trend over 3th polynominal (now its not \n> a metter for what :))) in that way?\n>\n> regards\n> Jarek\n>\n>\n>\n> _______________________________________________\n> statsgrass mailing list\n> statsgrass@grass.itc.it\n> http://grass.itc.it/mailman/listinfo/statsgrass",
+      "body_snippet": "Jarek, we don't know what your \"newdata\" object is. It is a name of an \nargument, but passed as data; I would expect something like\n\npredict(g, newdata = meuse.grid)\n\nI didn't know of that form in for",
+      "thread_id": "thread-268c6a4bb9c7",
+      "thread_depth": 1,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-5042e8c52171",
+      "message_id": "<Pine.LNX.4.44.0611111403310.13373-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2006-11-11T08:07:40Z",
+      "subject": "[STATSGRASS] gstat - trend over 3th polinominal",
+      "subject_clean": "[STATSGRASS] gstat - trend over 3th polinominal",
+      "in_reply_to": "<4555C57E.907@geo.uu.nl>",
+      "references": [],
+      "body_plain": "On Sat, 11 Nov 2006, Edzer J. Pebesma wrote:\n\n> Jarek, we don't know what your \"newdata\" object is. It is a name of an \n> argument, but passed as data; I would expect something like\n> \n> predict(g, newdata = meuse.grid)\n> \n> I didn't know of that form in formulas, so thanks! Pretty much shorter \n> than writing the 4th order polynomial out.\n> \n> It might work \"in principle\" but you may expect increasing inaccuracies \n> with higher order trends due to the large difference between say x^4 and \n> x. Rescaling the coordinates prior to the analysis (e.g. dividing by \n> 1000, going from m to km) might help. poly() doesn't help here, as it \n> will rescale differently for meuse and meuse.grid, afaik.\n\nI have tried with:\n\nunroll_trend <- function(np=1, x=\"x\", y=\"y\") {\n    ip <- 0\n    res <- character()\n    if (np > 0) {\n        for (i in (0:np)) {\n            for (j in (0:(np - i))) {\n                if ((i == 0) & (j == 0)) \n                    next\n                else if (i == 0) {\n                    ip <- ip + 1\n                    res[ip] <- paste(\"I(\", x, \"^\", j, \")\", sep = \"\")\n                } else if (j == 0) {\n                    ip <- ip + 1\n                    res[ip] <- paste(\"I(\", y, \"^\", i, \")\", sep = \"\")\n                } else {\n                    ip <- ip + 1\n                    res[ip] <- paste(\"I(\", x, \"^\", j, \"*\", \n                        y, \"^\", i, \")\", sep = \"\")\n                }\n            }\n        }\n    }\n    res\n}\n\nand:\n\n> coefficients(lm(as.formula(paste(\"zinc ~ \", paste(unroll_trend(1), \ncollapse=\"+\"))), meuse))\n  (Intercept)        I(x^1)        I(y^1) \n-2.244418e+04 -4.129057e-01  2.932104e-01 \n> coefficients(lm(as.formula(paste(\"zinc ~ \", paste(unroll_trend(2), \ncollapse=\"+\"))), meuse))\n  (Intercept)        I(x^1)        I(x^2)        I(y^1)  I(x^1 * y^1) \n 7.999712e+06  1.363638e+02  3.618219e-04 -1.223970e+02 -8.059965e-04 \n       I(y^2) \n 4.040368e-04 \n> coefficients(lm(as.formula(paste(\"zinc ~ \", paste(unroll_trend(3), \ncollapse=\"+\"))), meuse))\n  (Intercept)        I(x^1)        I(x^2)        I(x^3)        I(y^1) \n 7.999712e+06  1.363638e+02  3.618219e-04            NA -1.223970e+02 \n I(x^1 * y^1)  I(x^2 * y^1)        I(y^2)  I(x^1 * y^2)        I(y^3) \n-8.059965e-04            NA  4.040368e-04            NA            NA \n\nbut:\n\n> lm(zinc ~ (x+y)^2, meuse)\n\nCall:\nlm(formula = zinc ~ (x + y)^2, data = meuse)\n\nCoefficients:\n(Intercept)            x            y          x:y  \n -2.994e+06    1.608e+01    9.254e+00   -4.974e-05  \n\nRoger\n\n\n> \n> I also wonder what, besides curiosity, the value of a 4-th or higher \n> order trend surface might be.\n> --\n> Edzer\n> \n> Jarek Jasiewicz wrote:\n> > Hi\n> > I found that result of formula:\n> >\n> > gs=gstat(id=\"x\", formula=zinc~(x+y)^2, data=meuse)\n> > pgs=predict(gs, newdata, meuse.grid)\n> >\n> > is equvalent to:\n> >\n> >\n> > gs=gstat(id=\"x\", formula=zinc~x+y, data=meuse, degree=2)\n> > pgs=predict(gs, newdata, meuse.grid)\n> >\n> >\n> > so I tried:\n> > gs=gstat(id=\"x\", formula=zinc~(x+y)^4, data=meuse)\n> > pgs=predict(gs, newdata, meuse.grid)\n> >\n> > and it worked!\n> >\n> > so it is possible to calculate trend over 3th polynominal (now its not \n> > a metter for what :))) in that way?\n> >\n> > regards\n> > Jarek\n> >\n> >\n> >\n> > _______________________________________________\n> > statsgrass mailing list\n> > statsgrass@grass.itc.it\n> > http://grass.itc.it/mailman/listinfo/statsgrass\n> \n> _______________________________________________\n> statsgrass mailing list\n> statsgrass@grass.itc.it\n> http://grass.itc.it/mailman/listinfo/statsgrass\n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Sat, 11 Nov 2006, Edzer J. Pebesma wrote:\n\n> Jarek, we don't know what your \"newdata\" object is. It is a name of an \n> argument, but passed as data; I would expect something like\n> \n> predict(g, ne",
+      "thread_id": "thread-268c6a4bb9c7",
+      "thread_depth": 2,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-f4be7227cbd1",
+      "message_id": "<455602FC.3060201@amu.edu.pl>",
+      "from_name": "Jarek Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2006-11-11T12:06:04Z",
+      "subject": "[STATSGRASS] gstat - trend over 3th polinominal",
+      "subject_clean": "[STATSGRASS] gstat - trend over 3th polinominal",
+      "in_reply_to": "<4555C57E.907@geo.uu.nl>",
+      "references": [
+        "<4555C1B2.3080704@amu.edu.pl>",
+        "<4555C57E.907@geo.uu.nl>"
+      ],
+      "body_plain": "Edzer J. Pebesma napisa?(a):\n> Jarek, we don't know what your \"newdata\" object is. It is a name of an \n> argument, but passed as data; I would expect something like\n>\n> predict(g, newdata = meuse.grid)\nyes, it was an erorr during retyping command of course newdata=meuse.grid\n>\n> I didn't know of that form in formulas, so thanks! Pretty much shorter \n> than writing the 4th order polynomial out.\nI'm not shure if it really works (i.e it is mathematically proper) - I \nonly point formula which works\n>\n> It might work \"in principle\" but you may expect increasing \n> inaccuracies with higher order trends due to the large difference \n> between say x^4 and x. Rescaling the coordinates prior to the analysis \n> (e.g. dividing by 1000, going from m to km) might help. poly() doesn't \n> help here, as it will rescale differently for meuse and meuse.grid, \n> afaik.\n>\n> I also wonder what, besides curiosity, the value of a 4-th or higher \n> order trend surface might be.\n> -- \n> Edzer\n>\n> Jarek Jasiewicz wrote:\n>> Hi\n>> I found that result of formula:\n>>\n>> gs=gstat(id=\"x\", formula=zinc~(x+y)^2, data=meuse)\n>> pgs=predict(gs, newdata, meuse.grid)\n>>\n>> is equvalent to:\n>>\n>>\n>> gs=gstat(id=\"x\", formula=zinc~x+y, data=meuse, degree=2)\n>> pgs=predict(gs, newdata, meuse.grid)\n>>\n>>\n>> so I tried:\n>> gs=gstat(id=\"x\", formula=zinc~(x+y)^4, data=meuse)\n>> pgs=predict(gs, newdata, meuse.grid)\n>>\n>> and it worked!\n>>\n>> so it is possible to calculate trend over 3th polynominal (now its \n>> not a metter for what :))) in that way?\n>>\n>> regards\n>> Jarek\n>>\n>>\n>>\n>> _______________________________________________\n>> statsgrass mailing list\n>> statsgrass@grass.itc.it\n>> http://grass.itc.it/mailman/listinfo/statsgrass",
+      "body_snippet": "Edzer J. Pebesma napisa?(a):\n> Jarek, we don't know what your \"newdata\" object is. It is a name of an \n> argument, but passed as data; I would expect something like\n>\n> predict(g, newdata = meuse.grid",
+      "thread_id": "thread-268c6a4bb9c7",
+      "thread_depth": 2,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-999e41464c3b",
+      "message_id": "<4556F877.5080200@amu.edu.pl>",
+      "from_name": "Jarek Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2006-11-12T05:33:27Z",
+      "subject": "[STATSGRASS] command with over 1000 chars",
+      "subject_clean": "[STATSGRASS] command with over 1000 chars",
+      "in_reply_to": "<4555C3A4.7030606@geo.uu.nl>",
+      "references": [
+        "<4555C216.1070506@amu.edu.pl>",
+        "<4555C3A4.7030606@geo.uu.nl>"
+      ],
+      "body_plain": "Edzer J. Pebesma napisa?(a):\n> Jarek Jasiewicz wrote:\n>> I prepared set of commands to run in R but only commands up to 100th \n>> character work, the rest is ommited. How to ommit this limatation?\n> This sounds unlikely to me. What command line did you use?\ntcl/tk gui\n> Did you try R CMD BATCH commands.R\n> ?\n> -- \n> Edzer\nNo, I just tried and  it was what I need, thanks\n>>\n>> ragards\n>> Jarek\n>>\n>> _______________________________________________\n>> statsgrass mailing list\n>> statsgrass@grass.itc.it\n>> http://grass.itc.it/mailman/listinfo/statsgrass",
+      "body_snippet": "Edzer J. Pebesma napisa?(a):\n> Jarek Jasiewicz wrote:\n>> I prepared set of commands to run in R but only commands up to 100th \n>> character work, the rest is ommited. How to ommit this limatation?\n> T",
+      "thread_id": "thread-13731d8e66d4",
+      "thread_depth": 2,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-c7bfbc8bbfe1",
+      "message_id": "<4560970A.2040506@amu.edu.pl>",
+      "from_name": "Jarek Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2006-11-19T12:40:26Z",
+      "subject": "[STATSGRASS] spgrass6 - conversions \"zeros\"  to N/A?",
+      "subject_clean": "[STATSGRASS] spgrass6 - conversions \"zeros\"  to N/A?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi\n\nWhen I transferr map from grass to R with some values = 0 these valuses \nare converted to N/A. I can ommit this converting zeros to small number \nfor example 0.0000001, but it is not an solution - for example with \ncurvature\n\nregards\nJarek",
+      "body_snippet": "Hi\n\nWhen I transferr map from grass to R with some values = 0 these valuses \nare converted to N/A. I can ommit this converting zeros to small number \nfor example 0.0000001, but it is not an solution -",
+      "thread_id": "thread-c7bfbc8bbfe1",
+      "thread_depth": 0,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-89fd94b8c1e7",
+      "message_id": "<AD51AB79BC327C40AB2C7EB75D57A3C405128B@TOLAR.valuta.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2006-11-19T12:53:25Z",
+      "subject": "[STATSGRASS] spgrass6 - conversions \"zeros\"  to N/A?",
+      "subject_clean": "[STATSGRASS] spgrass6 - conversions \"zeros\"  to N/A?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "The most recent release of spgrass6 introduced a change in this - the underlying r.in.bin and r.out.bin use 0 as NA, and now the value can be set or -9999 used as default. If updating doesn't solve the problem, please let me know.\n\nBest wishes,\n\nRoger\n\n---\nRoger Bivand, NHH, Helleveien 30, N-5045 Bergen,\nRoger.Bivand@nhh.no\n\n\n\n-----Original Message-----\nFrom: statsgrass-bounces@grass.itc.it on behalf of Jarek Jasiewicz\nSent: Sun 19.11.2006 18:40\nTo: statsgrass@grass.itc.it\nSubject: [STATSGRASS] spgrass6 - conversions \"zeros\"  to N/A?\n \nHi\n\nWhen I transferr map from grass to R with some values = 0 these valuses \nare converted to N/A. I can ommit this converting zeros to small number \nfor example 0.0000001, but it is not an solution - for example with \ncurvature\n\nregards\nJarek\n\n_______________________________________________\nstatsgrass mailing list\nstatsgrass@grass.itc.it\nhttp://grass.itc.it/mailman/listinfo/statsgrass\n\n-------------- next part --------------\nAn HTML attachment was scrubbed...\nURL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20061119/805158d5/attachment.html",
+      "body_snippet": "The most recent release of spgrass6 introduced a change in this - the underlying r.in.bin and r.out.bin use 0 as NA, and now the value can be set or -9999 used as default. If updating doesn't solve th",
+      "thread_id": "thread-89fd94b8c1e7",
+      "thread_depth": 0,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-c13f524ee722",
+      "message_id": "<456194AE.60005@amu.edu.pl>",
+      "from_name": "Jarosław Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2006-11-20T06:42:38Z",
+      "subject": "[STATSGRASS] spgrass6 - conversions \"zeros\"  to N/A?",
+      "subject_clean": "[STATSGRASS] spgrass6 - conversions \"zeros\"  to N/A?",
+      "in_reply_to": "<AD51AB79BC327C40AB2C7EB75D57A3C405128B@TOLAR.valuta.nhh.no>",
+      "references": [
+        "<AD51AB79BC327C40AB2C7EB75D57A3C405128B@TOLAR.valuta.nhh.no>"
+      ],
+      "body_plain": "Roger Bivand napisa?(a):\n>\n> The most recent release of spgrass6 introduced a change in this - the \n> underlying r.in.bin and r.out.bin use 0 as NA, and now the value can \n> be set or -9999 used as default. If updating doesn't solve the \n> problem, please let me know.\n>\n> Best wishes,\n>\n> Roger\n>\n> ---\n> Roger Bivand, NHH, Helleveien 30, N-5045 Bergen,\n> Roger.Bivand@nhh.no\n>\n>\n>\n> -----Original Message-----\n> From: statsgrass-bounces@grass.itc.it on behalf of Jarek Jasiewicz\n> Sent: Sun 19.11.2006 18:40\n> To: statsgrass@grass.itc.it\n> Subject: [STATSGRASS] spgrass6 - conversions \"zeros\"  to N/A?\n>\n> Hi\n>\n> When I transferr map from grass to R with some values = 0 these valuses\n> are converted to N/A. I can ommit this converting zeros to small number\n> for example 0.0000001, but it is not an solution - for example with\n> curvature\n>\n> regards\n> Jarek\n>\n> _______________________________________________\n> statsgrass mailing list\n> statsgrass@grass.itc.it\n> http://grass.itc.it/mailman/listinfo/statsgrass\n>\nnow works, thanks\nJarek",
+      "body_snippet": "Roger Bivand napisa?(a):\n>\n> The most recent release of spgrass6 introduced a change in this - the \n> underlying r.in.bin and r.out.bin use 0 as NA, and now the value can \n> be set or -9999 used as de",
+      "thread_id": "thread-89fd94b8c1e7",
+      "thread_depth": 1,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-4e9868047883",
+      "message_id": "<4561A0F3.7070305@amu.edu.pl>",
+      "from_name": "Jarosław Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2006-11-20T07:34:59Z",
+      "subject": "[STATSGRASS] gstat: how to do something like this",
+      "subject_clean": "[STATSGRASS] gstat: how to do something like this",
+      "in_reply_to": "<456194AE.60005@amu.edu.pl>",
+      "references": [
+        "<AD51AB79BC327C40AB2C7EB75D57A3C405128B@TOLAR.valuta.nhh.no>",
+        "<456194AE.60005@amu.edu.pl>"
+      ],
+      "body_plain": "Hi\n\n\nIt means deffernts models for different areasin one grid. Now I can do \nthis with different areas (next merged in grass). As I look on meuse \ndataset it is probably connected with factor in meuse.grid data frame. I \nneed this to analize different geomorphological units.\n\nregards\nJarek\n \n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: zrzutekranu.png\nType: image/png\nSize: 11410 bytes\nDesc: not available\nUrl : http://lists.osgeo.org/pipermail/grass-stats/attachments/20061120/e1f3cded/zrzutekranu.png",
+      "body_snippet": "Hi\n\n\nIt means deffernts models for different areasin one grid. Now I can do \nthis with different areas (next merged in grass). As I look on meuse \ndataset it is probably connected with factor in meuse",
+      "thread_id": "thread-89fd94b8c1e7",
+      "thread_depth": 2,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-a074eaa2405e",
+      "message_id": "<4561AA50.9010902@geo.uu.nl>",
+      "from_name": "Edzer J. Pebesma",
+      "from_email_hash": "dc9c0d99e64732fb3b0f9ed04046937206c628f39b3a0556850153cb8eb34ebc",
+      "date": "2006-11-20T08:14:56Z",
+      "subject": "[STATSGRASS] gstat: how to do something like this",
+      "subject_clean": "[STATSGRASS] gstat: how to do something like this",
+      "in_reply_to": "<4561A0F3.7070305@amu.edu.pl>",
+      "references": [
+        "<AD51AB79BC327C40AB2C7EB75D57A3C405128B@TOLAR.valuta.nhh.no>",
+        "<456194AE.60005@amu.edu.pl>",
+        "<4561A0F3.7070305@amu.edu.pl>"
+      ],
+      "body_plain": "Jaroslaw, in R this example is obtained as follows. Assume part.a is a \nfield in meuse.grid that tells part a apart from part b:\n\nrequire(gstat)\ndata(meuse)\ncoordinates(meuse) = ~x+y\ndata(meuse.grid)\ngridded(meuse.grid) = ~x+y\n\n# now get the partitioning for meuse:\nmeuse$part.a = meuse.grid$part.a[overlay(meuse.grid, meuse)]\n\n# next do the kriging for each sub-region:\nx1 = krige(log(zinc)~1, meuse[meuse$part.a == 0,],\nmeuse.grid[meuse.grid$part.a == 0,], model = vgm(.548, \"Sph\", 900, .0654),\nnmin = 20, nmax = 40, maxdist = 1000)\n\n# next...\nx2 = krige(log(zinc)~1, meuse[meuse$part.a == 1,],\nmeuse.grid[meuse.grid$part.a == 1,], model = vgm(.716, \"Sph\", 900),\nnmin = 20, nmax = 40, maxdist = 1000)\n\n# combine results...\nx = rbind(as.data.frame(x1), as.data.frame(x2))\ngridded(x) = ~x+y\nspplot(x[\"var1.pred\"], main = \"stratified kriging predictions\")\n\nHth,\n--\nEdzer\n\n\nJaros?aw Jasiewicz wrote:\n> Hi\n>\n>\n> It means deffernts models for different areasin one grid. Now I can do \n> this with different areas (next merged in grass). As I look on meuse \n> dataset it is probably connected with factor in meuse.grid data frame. \n> I need this to analize different geomorphological units.\n>\n> regards\n> Jarek\n>\n>\n> ------------------------------------------------------------------------\n>\n> ------------------------------------------------------------------------\n>\n> _______________________________________________\n> statsgrass mailing list\n> statsgrass@grass.itc.it\n> http://grass.itc.it/mailman/listinfo/statsgrass\n>",
+      "body_snippet": "Jaroslaw, in R this example is obtained as follows. Assume part.a is a \nfield in meuse.grid that tells part a apart from part b:\n\nrequire(gstat)\ndata(meuse)\ncoordinates(meuse) = ~x+y\ndata(meuse.grid)\n",
+      "thread_id": "thread-89fd94b8c1e7",
+      "thread_depth": 3,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-467f5d50dd01",
+      "message_id": "<4561B475.60701@amu.edu.pl>",
+      "from_name": "Jarosław Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2006-11-20T08:58:13Z",
+      "subject": "[STATSGRASS] gstat: how to do something like this",
+      "subject_clean": "[STATSGRASS] gstat: how to do something like this",
+      "in_reply_to": "<4561AA50.9010902@geo.uu.nl>",
+      "references": [
+        "<AD51AB79BC327C40AB2C7EB75D57A3C405128B@TOLAR.valuta.nhh.no>",
+        "<456194AE.60005@amu.edu.pl>",
+        "<4561A0F3.7070305@amu.edu.pl>",
+        "<4561AA50.9010902@geo.uu.nl>"
+      ],
+      "body_plain": "Edzer J. Pebesma napisa?(a):\n> Jaroslaw, in R this example is obtained as follows. Assume part.a is a \n> field in meuse.grid that tells part a apart from part b:\n>\n> require(gstat)\n> data(meuse)\n> coordinates(meuse) = ~x+y\n> data(meuse.grid)\n> gridded(meuse.grid) = ~x+y\n>\n> # now get the partitioning for meuse:\n> meuse$part.a = meuse.grid$part.a[overlay(meuse.grid, meuse)]\n>\n> # next do the kriging for each sub-region:\n> x1 = krige(log(zinc)~1, meuse[meuse$part.a == 0,],\n> meuse.grid[meuse.grid$part.a == 0,], model = vgm(.548, \"Sph\", 900, \n> .0654),\n> nmin = 20, nmax = 40, maxdist = 1000)\n>\n> # next...\n> x2 = krige(log(zinc)~1, meuse[meuse$part.a == 1,],\n> meuse.grid[meuse.grid$part.a == 1,], model = vgm(.716, \"Sph\", 900),\n> nmin = 20, nmax = 40, maxdist = 1000)\n>\n> # combine results...\n> x = rbind(as.data.frame(x1), as.data.frame(x2))\n> gridded(x) = ~x+y\n> spplot(x[\"var1.pred\"], main = \"stratified kriging predictions\")\n>\n> Hth,\n> -- \n> Edzer\n>\n>\n> Jaros?aw Jasiewicz wrote:\n>> Hi\n>>\n>>\n>> It means deffernts models for different areasin one grid. Now I can \n>> do this with different areas (next merged in grass). As I look on \n>> meuse dataset it is probably connected with factor in meuse.grid data \n>> frame. I need this to analize different geomorphological units.\n>>\n>> regards\n>> Jarek\n>>\n>>\n>> ------------------------------------------------------------------------\n>>\n>> ------------------------------------------------------------------------\n>>\n>> _______________________________________________\n>> statsgrass mailing list\n>> statsgrass@grass.itc.it\n>> http://grass.itc.it/mailman/listinfo/statsgrass\n>>   \nthanks very much the key is: meuse[meuse$part.a == 0,],\nI didn't know how to do that\nJarek",
+      "body_snippet": "Edzer J. Pebesma napisa?(a):\n> Jaroslaw, in R this example is obtained as follows. Assume part.a is a \n> field in meuse.grid that tells part a apart from part b:\n>\n> require(gstat)\n> data(meuse)\n> coo",
+      "thread_id": "thread-89fd94b8c1e7",
+      "thread_depth": 4,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-908b45fb6a06",
+      "message_id": "<e12429640611201857r1e5e91f1k8625cded550807fa@mail.gmail.com>",
+      "from_name": "G. Allegri",
+      "from_email_hash": "dd5263002dcf447ab59295645838f78c381bfd94bf92aa5020880e9dde5c5d08",
+      "date": "2006-11-20T21:57:29Z",
+      "subject": "[STATSGRASS] Files not found on the repository",
+      "subject_clean": "[STATSGRASS] Files not found on the repository",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\nI'm installing my packages on Ubuntu Dapper. I've read I have to do the\nsequence of commands inside R environment to install all the required\npackages:\n\n1 - install.packages(c(\"sp\",\"rgdal\",\"maptools\"), dependencies=TRUE)\n\nrS <-\"http://r-spatial.sourceforge.net/R\"\n\n2 - install.packages(c(\"spgrass6\",\"spGDAL\",\"spmaptools\",\"spproj\"), repos=rS,\ndependencies=TRUE)\n\nAt this stage R raises an error telling me that it can't find the packages\non the repository... I went to the repository and, as expected, the packages\nweren't there. Why? Are the still required or something is changed and\nthey've been erased from the repository? I found old versions on this site:\nhttp://sourceforge.net/project/showfiles.php?group_id=84357...\n\n\n3 - install.packages(c(\"gstat\"), dependencies=TRUE)\n\nIs it the right and required sequence at \"state of art\"?\nThanks in advance,\n\nGiovanni\n-------------- next part --------------\nAn HTML attachment was scrubbed...\nURL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20061121/d8b40588/attachment.html",
+      "body_snippet": "Hi,\nI'm installing my packages on Ubuntu Dapper. I've read I have to do the\nsequence of commands inside R environment to install all the required\npackages:\n\n1 - install.packages(c(\"sp\",\"rgdal\",\"maptoo",
+      "thread_id": "thread-908b45fb6a06",
+      "thread_depth": 0,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-79d323870575",
+      "message_id": "<Pine.LNX.4.44.0611210933580.5894-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2006-11-21T03:50:26Z",
+      "subject": "[STATSGRASS] Files not found on the repository",
+      "subject_clean": "[STATSGRASS] Files not found on the repository",
+      "in_reply_to": "<e12429640611201857r1e5e91f1k8625cded550807fa@mail.gmail.com>",
+      "references": [],
+      "body_plain": "On Tue, 21 Nov 2006, G. Allegri wrote:\n\n> Hi,\n> I'm installing my packages on Ubuntu Dapper. I've read I have to do the\n> sequence of commands inside R environment to install all the required\n> packages:\n\nThese are based on the GRASS News note of mid-2005, and are now very \nout-of-date.\n\nAll the necessary functions for the GRASS 6 interface are now in packages\non CRAN, so that on Linux/Unix (or Mac OSX) installing rgdal from source\nwith PROJ4 and GDAL installed, or Windows installin binary, the required\npackages are:\n\nsp\n\nmaptools (now includes spmaptools)\n\nrgdal (now includes spGDAL, spproj)\n\nspgrass6\n\nnow all on CRAN.\n\nI have added a note to this effect to the Wiki.\n\nRoger\n\n> \n> 1 - install.packages(c(\"sp\",\"rgdal\",\"maptools\"), dependencies=TRUE)\n> \n> rS <-\"http://r-spatial.sourceforge.net/R\"\n> \n> 2 - install.packages(c(\"spgrass6\",\"spGDAL\",\"spmaptools\",\"spproj\"), repos=rS,\n> dependencies=TRUE)\n> \n> At this stage R raises an error telling me that it can't find the packages\n> on the repository... I went to the repository and, as expected, the packages\n> weren't there. Why? Are the still required or something is changed and\n> they've been erased from the repository? I found old versions on this site:\n> http://sourceforge.net/project/showfiles.php?group_id=84357...\n> \n> \n> 3 - install.packages(c(\"gstat\"), dependencies=TRUE)\n> \n> Is it the right and required sequence at \"state of art\"?\n> Thanks in advance,\n> \n> Giovanni\n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Tue, 21 Nov 2006, G. Allegri wrote:\n\n> Hi,\n> I'm installing my packages on Ubuntu Dapper. I've read I have to do the\n> sequence of commands inside R environment to install all the required\n> packag",
+      "thread_id": "thread-908b45fb6a06",
+      "thread_depth": 1,
+      "month": "2006-11"
+    },
+    {
+      "id": "msg-8ed521839329",
+      "message_id": "<200611231714.24355.sisma66@tiscali.it>",
+      "from_name": "Pierluigi De Rosa",
+      "from_email_hash": "64f174999313840d4aa5cc9b9aca8c8072006a88e1efe0f63d5a2dc84490238f",
+      "date": "2006-11-23T11:14:23Z",
+      "subject": "[STATSGRASS] updating kriging modules for grass 62",
+      "subject_clean": "[STATSGRASS] updating kriging modules for grass 62",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear User,\nI have updated on GRASS addons v.variogram anv v.krige run on spgrass6 >= 0.3 \nand sp >= 0.9\nI created a new one module v.krige.cv to perform leave-one-out- Cross \nValidation of variogram model. Obviously this modules have to be run before \nv.krige.\nI know my explanation is really short but if anyone is interested to this \nmodules and he wont to undestand better how they works please let me kwon it \nand I will write a better tutorial\nPierluigi\n\n-- \n\nPierluigi De Rosa\n\nDepartment of Enviromental & Civil engineering \nFaculty of Engineering \nPerugia (Italy)",
+      "body_snippet": "Dear User,\nI have updated on GRASS addons v.variogram anv v.krige run on spgrass6 >= 0.3 \nand sp >= 0.9\nI created a new one module v.krige.cv to perform leave-one-out- Cross \nValidation of variogram m",
+      "thread_id": "thread-8ed521839329",
+      "thread_depth": 0,
+      "month": "2006-11"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-dd42af12dd32",
+      "subject": "[STATSGRASS] kriging results not within range of original data",
+      "message_count": 1,
+      "participants": [
+        "Maciej Sieczka"
+      ],
+      "started": "2006-11-01T11:29:09Z",
+      "last_reply": "2006-11-01T11:29:09Z",
+      "root_message_id": "msg-dd42af12dd32"
+    },
+    {
+      "id": "thread-2107dcfef99e",
+      "subject": "[STATSGRASS] fischer statistics",
+      "message_count": 1,
+      "participants": [
+        "Carlos \"Guâno\" Grohmann"
+      ],
+      "started": "2006-11-03T15:59:34Z",
+      "last_reply": "2006-11-03T15:59:34Z",
+      "root_message_id": "msg-2107dcfef99e"
+    },
+    {
+      "id": "thread-ab432b5a4e2c",
+      "subject": "[STATSGRASS] different kriging results with the same parameters",
+      "message_count": 4,
+      "participants": [
+        "Carlos \"Guâno\" Grohmann",
+        "Edzer J. Pebesma"
+      ],
+      "started": "2006-11-03T16:34:28Z",
+      "last_reply": "2006-11-03T17:18:15Z",
+      "root_message_id": "msg-ab432b5a4e2c"
+    },
+    {
+      "id": "thread-de118a5fcadd",
+      "subject": "[STATSGRASS] Plot a priori variance",
+      "message_count": 1,
+      "participants": [
+        "Pierluigi De Rosa"
+      ],
+      "started": "2006-11-08T04:02:53Z",
+      "last_reply": "2006-11-08T04:02:53Z",
+      "root_message_id": "msg-de118a5fcadd"
+    },
+    {
+      "id": "thread-268c6a4bb9c7",
+      "subject": "[STATSGRASS] gstat - trend over 3th polinominal",
+      "message_count": 4,
+      "participants": [
+        "Edzer J. Pebesma",
+        "Jarek Jasiewicz",
+        "Roger Bivand"
+      ],
+      "started": "2006-11-11T07:27:30Z",
+      "last_reply": "2006-11-11T12:06:04Z",
+      "root_message_id": "msg-268c6a4bb9c7"
+    },
+    {
+      "id": "thread-13731d8e66d4",
+      "subject": "[STATSGRASS] command with over 1000 chars",
+      "message_count": 3,
+      "participants": [
+        "Edzer J. Pebesma",
+        "Jarek Jasiewicz"
+      ],
+      "started": "2006-11-11T07:29:10Z",
+      "last_reply": "2006-11-12T05:33:27Z",
+      "root_message_id": "msg-13731d8e66d4"
+    },
+    {
+      "id": "thread-c7bfbc8bbfe1",
+      "subject": "[STATSGRASS] spgrass6 - conversions \"zeros\"  to N/A?",
+      "message_count": 1,
+      "participants": [
+        "Jarek Jasiewicz"
+      ],
+      "started": "2006-11-19T12:40:26Z",
+      "last_reply": "2006-11-19T12:40:26Z",
+      "root_message_id": "msg-c7bfbc8bbfe1"
+    },
+    {
+      "id": "thread-89fd94b8c1e7",
+      "subject": "[STATSGRASS] spgrass6 - conversions \"zeros\"  to N/A?",
+      "message_count": 5,
+      "participants": [
+        "Edzer J. Pebesma",
+        "Jarosław Jasiewicz",
+        "Roger Bivand"
+      ],
+      "started": "2006-11-19T12:53:25Z",
+      "last_reply": "2006-11-20T08:58:13Z",
+      "root_message_id": "msg-89fd94b8c1e7"
+    },
+    {
+      "id": "thread-908b45fb6a06",
+      "subject": "[STATSGRASS] Files not found on the repository",
+      "message_count": 2,
+      "participants": [
+        "G. Allegri",
+        "Roger Bivand"
+      ],
+      "started": "2006-11-20T21:57:29Z",
+      "last_reply": "2006-11-21T03:50:26Z",
+      "root_message_id": "msg-908b45fb6a06"
+    },
+    {
+      "id": "thread-8ed521839329",
+      "subject": "[STATSGRASS] updating kriging modules for grass 62",
+      "message_count": 1,
+      "participants": [
+        "Pierluigi De Rosa"
+      ],
+      "started": "2006-11-23T11:14:23Z",
+      "last_reply": "2006-11-23T11:14:23Z",
+      "root_message_id": "msg-8ed521839329"
+    }
+  ]
+}

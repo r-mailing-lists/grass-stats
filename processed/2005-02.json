@@ -1,0 +1,403 @@
+{
+  "list": "grass-stats",
+  "description": "",
+  "month": "2005-02",
+  "messages": [
+    {
+      "id": "msg-816351be45ff",
+      "message_id": "<731a05d3df6c8a53f0fd054f13aba5a0@life.uiuc.edu>",
+      "from_name": "Steven T.Stoddard",
+      "from_email_hash": "26bae0f638dbe3a1fcbfb1545a5831e5524d7e76a1240e24f92d99a58e8af251",
+      "date": "2005-02-08T11:40:54Z",
+      "subject": "[STATSGRASS] Using GRASS/R interface with an xy location",
+      "subject_clean": "[STATSGRASS] Using GRASS/R interface with an xy location",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "I am using GRASS 5.7 and R 2.0 for OS X.  I have a simple xy location I \nam doing some theoretical work with and would like to import maps into \nR using the interface in order to do analyses.  Yet when I attempt to \ndo this, I get the following error:\n\n >G<-gmeta()\nError in gmeta() : region for current mapset is invalid\nline 11: <top:        100>\nrun \"g.region\"\n\nI traced the problem to the compiled C program that is called from the \ngmeta R function (i.e. > .C(\"gmeta\") gives me the same error). I \nhaven't been able to locate the source code on my volume.\n\nIf I use gmeta(interp = TRUE) there is no problem, until I want to \nactually try and import data from my locations.\n\nAny help is appreciated.\n\nSteve\n\n---\nSteven T. Stoddard\n\nProgram in Ecology, Evolution and Conservation Biology\nUniversity of Illinois at Urbana-Champaign\n\n(217) 333-2235\n302 Shelford Vivarium\n606 E. Healy Ave\nChampaign, IL  61820\nhttp://www.life.uiuc.edu/~sstoddar\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: not available\nType: text/enriched\nSize: 1029 bytes\nDesc: not available\nUrl : http://lists.osgeo.org/pipermail/grass-stats/attachments/20050208/910d3d7e/attachment.bin",
+      "body_snippet": "I am using GRASS 5.7 and R 2.0 for OS X.  I have a simple xy location I \nam doing some theoretical work with and would like to import maps into \nR using the interface in order to do analyses.  Yet whe",
+      "thread_id": "thread-816351be45ff",
+      "thread_depth": 0,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-572c9f31242a",
+      "message_id": "<Pine.LNX.4.44.0502081754560.21214-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2005-02-08T11:58:43Z",
+      "subject": "[STATSGRASS] Using GRASS/R interface with an xy location",
+      "subject_clean": "[STATSGRASS] Using GRASS/R interface with an xy location",
+      "in_reply_to": "<731a05d3df6c8a53f0fd054f13aba5a0@life.uiuc.edu>",
+      "references": [],
+      "body_plain": "On Tue, 8 Feb 2005, Steven T.Stoddard wrote:\n\n> I am using GRASS 5.7 and R 2.0 for OS X.  I have a simple xy location I \n> am doing some theoretical work with and would like to import maps into \n> R using the interface in order to do analyses.  Yet when I attempt to \n> do this, I get the following error:\n> \n>  >G<-gmeta()\n> Error in gmeta() : region for current mapset is invalid\n> line 11: <top:        100>\n> run \"g.region\"\n> \n> I traced the problem to the compiled C program that is called from the \n> gmeta R function (i.e. > .C(\"gmeta\") gives me the same error). I \n> haven't been able to locate the source code on my volume.\n> \n> If I use gmeta(interp = TRUE) there is no problem, until I want to \n> actually try and import data from my locations.\n\nThe current fix for 5.7 and 6.0.0beta is to use interp=TRUE. The cause of \nthe problem seems to be the use of the 3D WINDOW, which the older code in \nthe R-GRASS interface doesn't yet honour. I'm not at all sure what will \nhappen if your x,y locations are sites; the interface knows about \nold-style sites, not vector sites. You may be obliged to use system(\"\") to \nissue GRASS 5.7 commands to write out an ASCII file to read into R with \nread.table().\n\nRoger\n\n\n> \n> Any help is appreciated.\n> \n> Steve\n> \n> ---\n> Steven T. Stoddard\n> \n> Program in Ecology, Evolution and Conservation Biology\n> University of Illinois at Urbana-Champaign\n> \n> (217) 333-2235\n> 302 Shelford Vivarium\n> 606 E. Healy Ave\n> Champaign, IL  61820\n> http://www.life.uiuc.edu/~sstoddar\n> \n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 93 93\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Tue, 8 Feb 2005, Steven T.Stoddard wrote:\n\n> I am using GRASS 5.7 and R 2.0 for OS X.  I have a simple xy location I \n> am doing some theoretical work with and would like to import maps into \n> R u",
+      "thread_id": "thread-816351be45ff",
+      "thread_depth": 1,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-1cfb9ad146bb",
+      "message_id": "<de2edb75ef58f529d8cc2dfb48988ec2@life.uiuc.edu>",
+      "from_name": "Steven T.Stoddard",
+      "from_email_hash": "26bae0f638dbe3a1fcbfb1545a5831e5524d7e76a1240e24f92d99a58e8af251",
+      "date": "2005-02-08T12:13:41Z",
+      "subject": "[STATSGRASS] Using GRASS/R interface with an xy location & reverse(G) error",
+      "subject_clean": "[STATSGRASS] Using GRASS/R interface with an xy location & reverse(G) error",
+      "in_reply_to": "<Pine.LNX.4.44.0502081754560.21214-100000@reclus.nhh.no>",
+      "references": [
+        "<Pine.LNX.4.44.0502081754560.21214-100000@reclus.nhh.no>"
+      ],
+      "body_plain": "Ok.  The work-around I can grow accustomed to, or I might fall back on \nGRASS5.4 if that works.\n\nI wonder if another problem that cropped up is somehow related to the \nfirst.  Using interp=TRUE I managed to import a raster map to R.  But \nwhen trying to plot it, I get the following:\n\n > plot(G,tt$rb1)\nError in reverse(G) : cannot allocate vector of length 1086556160\n\n???\n\nThanks for the help,\nSteve\n\n\n---\nSteven T. Stoddard\n\nProgram in Ecology, Evolution and Conservation Biology\nUniversity of Illinois at Urbana-Champaign\n\n(217) 333-2235\n302 Shelford Vivarium\n606 E. Healy Ave\nChampaign, IL  61820\nhttp://www.life.uiuc.edu/~sstoddar\n\n\nOn Feb 8, 2005, at 10:58 AM, Roger Bivand wrote:\n\n> On Tue, 8 Feb 2005, Steven T.Stoddard wrote:\n>\n>> I am using GRASS 5.7 and R 2.0 for OS X.  I have a simple xy location \n>> I\n>> am doing some theoretical work with and would like to import maps into\n>> R using the interface in order to do analyses.  Yet when I attempt to\n>> do this, I get the following error:\n>>\n>>> G<-gmeta()\n>> Error in gmeta() : region for current mapset is invalid\n>> line 11: <top:        100>\n>> run \"g.region\"\n>>\n>> I traced the problem to the compiled C program that is called from the\n>> gmeta R function (i.e. > .C(\"gmeta\") gives me the same error). I\n>> haven't been able to locate the source code on my volume.\n>>\n>> If I use gmeta(interp = TRUE) there is no problem, until I want to\n>> actually try and import data from my locations.\n>\n> The current fix for 5.7 and 6.0.0beta is to use interp=TRUE. The cause \n> of\n> the problem seems to be the use of the 3D WINDOW, which the older code \n> in\n> the R-GRASS interface doesn't yet honour. I'm not at all sure what will\n> happen if your x,y locations are sites; the interface knows about\n> old-style sites, not vector sites. You may be obliged to use \n> system(\"\") to\n> issue GRASS 5.7 commands to write out an ASCII file to read into R with\n> read.table().\n>\n> Roger\n>\n>\n>>\n>> Any help is appreciated.\n>>\n>> Steve\n>>\n>> ---\n>> Steven T. Stoddard\n>>\n>> Program in Ecology, Evolution and Conservation Biology\n>> University of Illinois at Urbana-Champaign\n>>\n>> (217) 333-2235\n>> 302 Shelford Vivarium\n>> 606 E. Healy Ave\n>> Champaign, IL  61820\n>> http://www.life.uiuc.edu/~sstoddar\n>>\n>>\n>\n> -- \n> Roger Bivand\n> Economic Geography Section, Department of Economics, Norwegian School \n> of\n> Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,\n> Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93\n> e-mail: Roger.Bivand@nhh.no\n>\n>\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: not available\nType: text/enriched\nSize: 2592 bytes\nDesc: not available\nUrl : http://lists.osgeo.org/pipermail/grass-stats/attachments/20050208/9415d902/attachment.bin",
+      "body_snippet": "Ok.  The work-around I can grow accustomed to, or I might fall back on \nGRASS5.4 if that works.\n\nI wonder if another problem that cropped up is somehow related to the \nfirst.  Using interp=TRUE I mana",
+      "thread_id": "thread-816351be45ff",
+      "thread_depth": 2,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-90dc733ad8af",
+      "message_id": "<Pine.LNX.4.44.0502081816210.21214-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2005-02-08T12:18:34Z",
+      "subject": "[STATSGRASS] Using GRASS/R interface with an xy location &  reverse(G) error",
+      "subject_clean": "[STATSGRASS] Using GRASS/R interface with an xy location &  reverse(G) error",
+      "in_reply_to": "<de2edb75ef58f529d8cc2dfb48988ec2@life.uiuc.edu>",
+      "references": [],
+      "body_plain": "On Tue, 8 Feb 2005, Steven T.Stoddard wrote:\n\n> Ok.  The work-around I can grow accustomed to, or I might fall back on \n> GRASS5.4 if that works.\n> \n> I wonder if another problem that cropped up is somehow related to the \n> first.  Using interp=TRUE I managed to import a raster map to R.  But \n> when trying to plot it, I get the following:\n> \n>  > plot(G,tt$rb1)\n> Error in reverse(G) : cannot allocate vector of length 1086556160\n\nWhat does summary(G) say? It sounds as though the numbers of rows and/or \ncolumns have the wrong values.\n\nOver 1G cells is a bit extreme?\n\nRoger\n\n> \n> ???\n> \n> Thanks for the help,\n> Steve\n> \n> \n> ---\n> Steven T. Stoddard\n> \n> Program in Ecology, Evolution and Conservation Biology\n> University of Illinois at Urbana-Champaign\n> \n> (217) 333-2235\n> 302 Shelford Vivarium\n> 606 E. Healy Ave\n> Champaign, IL  61820\n> http://www.life.uiuc.edu/~sstoddar\n> \n> \n> On Feb 8, 2005, at 10:58 AM, Roger Bivand wrote:\n> \n> > On Tue, 8 Feb 2005, Steven T.Stoddard wrote:\n> >\n> >> I am using GRASS 5.7 and R 2.0 for OS X.  I have a simple xy location \n> >> I\n> >> am doing some theoretical work with and would like to import maps into\n> >> R using the interface in order to do analyses.  Yet when I attempt to\n> >> do this, I get the following error:\n> >>\n> >>> G<-gmeta()\n> >> Error in gmeta() : region for current mapset is invalid\n> >> line 11: <top:        100>\n> >> run \"g.region\"\n> >>\n> >> I traced the problem to the compiled C program that is called from the\n> >> gmeta R function (i.e. > .C(\"gmeta\") gives me the same error). I\n> >> haven't been able to locate the source code on my volume.\n> >>\n> >> If I use gmeta(interp = TRUE) there is no problem, until I want to\n> >> actually try and import data from my locations.\n> >\n> > The current fix for 5.7 and 6.0.0beta is to use interp=TRUE. The cause \n> > of\n> > the problem seems to be the use of the 3D WINDOW, which the older code \n> > in\n> > the R-GRASS interface doesn't yet honour. I'm not at all sure what will\n> > happen if your x,y locations are sites; the interface knows about\n> > old-style sites, not vector sites. You may be obliged to use \n> > system(\"\") to\n> > issue GRASS 5.7 commands to write out an ASCII file to read into R with\n> > read.table().\n> >\n> > Roger\n> >\n> >\n> >>\n> >> Any help is appreciated.\n> >>\n> >> Steve\n> >>\n> >> ---\n> >> Steven T. Stoddard\n> >>\n> >> Program in Ecology, Evolution and Conservation Biology\n> >> University of Illinois at Urbana-Champaign\n> >>\n> >> (217) 333-2235\n> >> 302 Shelford Vivarium\n> >> 606 E. Healy Ave\n> >> Champaign, IL  61820\n> >> http://www.life.uiuc.edu/~sstoddar\n> >>\n> >>\n> >\n> > -- \n> > Roger Bivand\n> > Economic Geography Section, Department of Economics, Norwegian School \n> > of\n> > Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,\n> > Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93\n> > e-mail: Roger.Bivand@nhh.no\n> >\n> >\n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 93 93\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Tue, 8 Feb 2005, Steven T.Stoddard wrote:\n\n> Ok.  The work-around I can grow accustomed to, or I might fall back on \n> GRASS5.4 if that works.\n> \n> I wonder if another problem that cropped up is so",
+      "thread_id": "thread-816351be45ff",
+      "thread_depth": 3,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-7a2d6e7ab616",
+      "message_id": "<79b65f0113e295c82432a7084c766e62@uiuc.edu>",
+      "from_name": "Steven Stoddard",
+      "from_email_hash": "97cc7bb20af5db0fef31a638df116330ef67cbf8fa45a46da5affea67ddfb897",
+      "date": "2005-02-08T13:21:30Z",
+      "subject": "[STATSGRASS] Using GRASS/R interface with an xy location &",
+      "subject_clean": "[STATSGRASS] Using GRASS/R interface with an xy location &",
+      "in_reply_to": "<Pine.LNX.4.44.0502081816210.21214-100000@reclus.nhh.no>",
+      "references": [
+        "<Pine.LNX.4.44.0502081816210.21214-100000@reclus.nhh.no>"
+      ],
+      "body_plain": "Ok, the issues all seem to derive from the region settings created by \nGRASS 5.7.  In order to work in this location with GRASS 5.4, I had to \nmodify the DEFAULT_WIND  file.  Just had to remove the extra lines 5.7 \nuses to get the following:\n\nGRASS 5.4.0 > cat DEFAULT_WIND\nproj:       0\nzone:       0\nnorth:      100\nsouth:      0\neast:       100\nwest:       0\ncols:       100\nrows:       100\ne-w resol:  1\nn-s resol:  1\n\n\nAfter modifying DEFAULT_WIND, I could connect GRASS 5.7 and R without \nany problems.  I don't know (yet!) if changing the default region \nsettings will have any implications for working in GRASS 5.7.\n\nFYI -- I attached a 5.7/R session prior to modifying DEFAULT_WIND, \nincluding the 'reverse(G)' error (below).  Maybe it will be of use for \nupdating the GRASS/R interface.\n\n > library(GRASS)\nGRASS environment variables in: /tmp/grass6-steve-3644/gisrc\n > G<-gmeta()\nError in gmeta() : region for current mapset is invalid\nline 11: <top:        100>\nrun \"g.region\"\n\n > G<-gmeta(interp=TRUE)\n > summary(G)\nData from GRASS 5.0 LOCATION NL1 with 100 columns and 100 rows;\nprojection: 0 (x,y); zone:       0\nThe west-east range is: 0, 100,\nand the south-north: 0, 100;\nWest-east cell sizes are 1 units,\nand south-north 1 units.\n\n > rb1<-rast.get(G, rlist=c(\"rb1\"),interp=T)\n > plot(G, rb1$rb1)\nError in reverse(G) : cannot allocate vector of length 1086556160\n\n\n---\nSteven T. Stoddard\n\nProgram in Ecology, Evolution and Conservation Biology\nUniversity of Illinois at Urbana-Champaign\n\n(217) 333-2235\n302 Shelford Vivarium\n606 E. Healy Ave\nChampaign, IL  61820\nhttp://www.life.uiuc.edu/~sstoddar\n\n\nOn Feb 8, 2005, at 11:18 AM, Roger Bivand wrote:\n\n> On Tue, 8 Feb 2005, Steven T.Stoddard wrote:\n>\n>> Ok.  The work-around I can grow accustomed to, or I might fall back on\n>> GRASS5.4 if that works.\n>>\n>> I wonder if another problem that cropped up is somehow related to the\n>> first.  Using interp=TRUE I managed to import a raster map to R.  But\n>> when trying to plot it, I get the following:\n>>\n>>> plot(G,tt$rb1)\n>> Error in reverse(G) : cannot allocate vector of length 1086556160\n>\n> What does summary(G) say? It sounds as though the numbers of rows \n> and/or\n> columns have the wrong values.\n>\n> Over 1G cells is a bit extreme?\n>\n> Roger\n>\n>>\n>> ???\n>>\n>> Thanks for the help,\n>> Steve\n>>\n>>\n>> ---\n>> Steven T. Stoddard\n>>\n>> Program in Ecology, Evolution and Conservation Biology\n>> University of Illinois at Urbana-Champaign\n>>\n>> (217) 333-2235\n>> 302 Shelford Vivarium\n>> 606 E. Healy Ave\n>> Champaign, IL  61820\n>> http://www.life.uiuc.edu/~sstoddar\n>>\n>>\n>> On Feb 8, 2005, at 10:58 AM, Roger Bivand wrote:\n>>\n>>> On Tue, 8 Feb 2005, Steven T.Stoddard wrote:\n>>>\n>>>> I am using GRASS 5.7 and R 2.0 for OS X.  I have a simple xy \n>>>> location\n>>>> I\n>>>> am doing some theoretical work with and would like to import maps \n>>>> into\n>>>> R using the interface in order to do analyses.  Yet when I attempt \n>>>> to\n>>>> do this, I get the following error:\n>>>>\n>>>>> G<-gmeta()\n>>>> Error in gmeta() : region for current mapset is invalid\n>>>> line 11: <top:        100>\n>>>> run \"g.region\"\n>>>>\n>>>> I traced the problem to the compiled C program that is called from \n>>>> the\n>>>> gmeta R function (i.e. > .C(\"gmeta\") gives me the same error). I\n>>>> haven't been able to locate the source code on my volume.\n>>>>\n>>>> If I use gmeta(interp = TRUE) there is no problem, until I want to\n>>>> actually try and import data from my locations.\n>>>\n>>> The current fix for 5.7 and 6.0.0beta is to use interp=TRUE. The \n>>> cause\n>>> of\n>>> the problem seems to be the use of the 3D WINDOW, which the older \n>>> code\n>>> in\n>>> the R-GRASS interface doesn't yet honour. I'm not at all sure what \n>>> will\n>>> happen if your x,y locations are sites; the interface knows about\n>>> old-style sites, not vector sites. You may be obliged to use\n>>> system(\"\") to\n>>> issue GRASS 5.7 commands to write out an ASCII file to read into R \n>>> with\n>>> read.table().\n>>>\n>>> Roger\n>>>\n>>>\n>>>>\n>>>> Any help is appreciated.\n>>>>\n>>>> Steve\n>>>>\n>>>> ---\n>>>> Steven T. Stoddard\n>>>>\n>>>> Program in Ecology, Evolution and Conservation Biology\n>>>> University of Illinois at Urbana-Champaign\n>>>>\n>>>> (217) 333-2235\n>>>> 302 Shelford Vivarium\n>>>> 606 E. Healy Ave\n>>>> Champaign, IL  61820\n>>>> http://www.life.uiuc.edu/~sstoddar\n>>>>\n>>>>\n>>>\n>>> -- \n>>> Roger Bivand\n>>> Economic Geography Section, Department of Economics, Norwegian School\n>>> of\n>>> Economics and Business Administration, Breiviksveien 40, N-5045 \n>>> Bergen,\n>>> Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93\n>>> e-mail: Roger.Bivand@nhh.no\n>>>\n>>>\n>>\n>\n> -- \n> Roger Bivand\n> Economic Geography Section, Department of Economics, Norwegian School \n> of\n> Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,\n> Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93\n> e-mail: Roger.Bivand@nhh.no\n>\n>\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: not available\nType: text/enriched\nSize: 4827 bytes\nDesc: not available\nUrl : http://lists.osgeo.org/pipermail/grass-stats/attachments/20050208/0d4813c5/attachment.bin",
+      "body_snippet": "Ok, the issues all seem to derive from the region settings created by \nGRASS 5.7.  In order to work in this location with GRASS 5.4, I had to \nmodify the DEFAULT_WIND  file.  Just had to remove the ex",
+      "thread_id": "thread-816351be45ff",
+      "thread_depth": 4,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-63de45d9a601",
+      "message_id": "<1107906044.11844.12.camel@lorien>",
+      "from_name": "Bob Cooper",
+      "from_email_hash": "905651edcb1e2fb199e0fd91afc8c07a4c75e9ea47df5c83e65a79831af5806c",
+      "date": "2005-02-08T18:40:45Z",
+      "subject": "[STATSGRASS] Masking",
+      "subject_clean": "[STATSGRASS] Masking",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\nIs there a way in R to \"mask\" off areas of a region from being included\nin a statistical analysis? I am presently looking at location data from\nan obligate aquatic, coastal animal. I use GRASS 5.4 and R 2.0.0.\nContours/densities from kde2d.G include, or cross over, areas of land\nthat the animals cannot occupy.  Any help or direction would be\nappreciated.\n\nBob Cooper\nSr. Biologist\nNew England Aquarium\nCentral Wharf\nBoston, MA 02110\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: not available\nType: application/pgp-signature\nSize: 189 bytes\nDesc: This is a digitally signed message part\nUrl : http://lists.osgeo.org/pipermail/grass-stats/attachments/20050208/b3ab9fe9/attachment.bin",
+      "body_snippet": "Hi all,\n\nIs there a way in R to \"mask\" off areas of a region from being included\nin a statistical analysis? I am presently looking at location data from\nan obligate aquatic, coastal animal. I use GRAS",
+      "thread_id": "thread-63de45d9a601",
+      "thread_depth": 0,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-f6acde0d4f79",
+      "message_id": "<Pine.LNX.4.44.0502091542160.22383-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2005-02-09T09:48:10Z",
+      "subject": "[STATSGRASS] Re: [GRASSLIST:5691] GRASS connection with R",
+      "subject_clean": "[STATSGRASS] Re: [GRASSLIST:5691] GRASS connection with R",
+      "in_reply_to": "<200502091517.56918.silvia.franceschi@ing.unitn.it>",
+      "references": [],
+      "body_plain": "I suggest moving this question for clarification to the STATSGRASS list.\n\nPlease state clearly which version of GRASS, which version of R and which\nversion of the interface package you are using on what platform. Saying R\ncrashed may mean that it terminated completely, but may also mean that it\nresponded correctly to your commands. Providing the commands and error\nmessages verbatim, especially with a simple, reproducible example, does\nhelp a great deal. As it is, no help can be given because too little is\nknown.\n\nRoger\n\n\nOn Wed, 9 Feb 2005, Silvia Franceschi wrote:\n\n> Hi all,\n> I tried to use the GRASS - R connection but I had some problems.\n> In particular following the tutorial given by Markus all is well until I make \n> the kriging.\n> On my pc the funcion krige.G crashes R, and on an other pc there are no \n> elements in the ...$zhat and $sehat fields.\n> Does someone know why?\n> \n> Thanks in advance,\n> \n> Silvia\n> \n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 93 93\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "I suggest moving this question for clarification to the STATSGRASS list.\n\nPlease state clearly which version of GRASS, which version of R and which\nversion of the interface package you are using on wh",
+      "thread_id": "thread-f6acde0d4f79",
+      "thread_depth": 0,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-d01641306b39",
+      "message_id": "<Pine.LNX.4.44.0502091641490.22383-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2005-02-09T10:50:03Z",
+      "subject": "[STATSGRASS] Re: [GRASSLIST:5691] GRASS connection with R",
+      "subject_clean": "[STATSGRASS] Re: [GRASSLIST:5691] GRASS connection with R",
+      "in_reply_to": "<200502091642.57647.silvia.franceschi@ing.unitn.it>",
+      "references": [],
+      "body_plain": "On Wed, 9 Feb 2005, Silvia Franceschi wrote:\n\n> Thanks,\n> on my pc I have GRASS 5.7 and R-2.0.1, I can not send any error because the \n> program crashes and do not write any error message.\n> The other pc has GRASS 6.0 and R-2.0.1, here all seems to be right but if you \n> want to plot the results there is an error message:\n\nOK. GRASS 5.7 and 6.0 are the answer. The R-GRASS interface works for \nGRASS <= 5.4. After GRASS 5.4, the WINDOW has been changed, meaning that \nyou have to use gmeta(interp=TRUE) until some way of accommodating the \nmajor change in WINDOW handling in GRASS has been found that doesn't break \nthe interface for <= 5.4. Please post the command you use to get the GRASS \nmetadata - is it:\n\nG <- gmeta()\n\nPlease also post summary(G).\n\nIn general I would suggest that you rather use the R gstat package, \nkrige.G() is just an illustration, not a proper function:\n\nbmd142 <- vgm(158232, \"Exp\", 361.6, 24803.4)\ng.zinc <- gstat(formula=Zn~1, location=~east+north, data=utm.maas,\n  model=bmd142)\nres <- predict(g.zinc, newdata=data.frame(east=east(G), north=north(G)),\n  mask=maasmask)\nplot(G, res$var1.pred)\n\nis an example using the utm.maas data set (not tried here).\n\nRoger\n\n> \n> > plot(G, surf.krig$zhat, col=grey(9:2/9))\n>    Error in xy.coords(x, y, xlabel, ylabel, log) :\n>    x and y lengths differ\n> > surf.krig\n> .....\n> .....\n> \n> $zhat\n> numeric(0)\n> \n> $sehat\n> numeric(0)\n> \n> \n> I use the data of maas and the commands to make kriging:\n> - first use the log of the data\n> - second make the point object\n> - third make the pair object\n> - fourth estimate the variogram\n> - fifth fit the variogram with the gaussian and the exponential models\n> - make the kriging with the comand:\n> surf.krig <- krige.G(logmaas.point, \"lz\", logmaas.varEmod, G)\n> \n> It could it be a problem of the region settings on the other pc but I don't \n> know on my pc what it could be...\n> \n> Thanks Silvia\n> \n> \n> > I suggest moving this question for clarification to the STATSGRASS list.\n> >\n> > Please state clearly which version of GRASS, which version of R and which\n> > version of the interface package you are using on what platform. Saying R\n> > crashed may mean that it terminated completely, but may also mean that it\n> > responded correctly to your commands. Providing the commands and error\n> > messages verbatim, especially with a simple, reproducible example, does\n> > help a great deal. As it is, no help can be given because too little is\n> > known.\n> >\n> > Roger\n> >\n> \n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 93 93\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Wed, 9 Feb 2005, Silvia Franceschi wrote:\n\n> Thanks,\n> on my pc I have GRASS 5.7 and R-2.0.1, I can not send any error because the \n> program crashes and do not write any error message.\n> The other",
+      "thread_id": "thread-d01641306b39",
+      "thread_depth": 0,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-a7273e64f0a1",
+      "message_id": "<1108653845.3729.27.camel@localhost.localdomain>",
+      "from_name": "William Hudspeth",
+      "from_email_hash": "e152728e611b7e0d38a92848e74a68bdb3c2d2e482d0c599082c602df5889f8c",
+      "date": "2005-02-17T10:24:05Z",
+      "subject": "[STATSGRASS] Problems understanding how to use Rpy ( a Python module) to access GRASS rasters in R",
+      "subject_clean": "[STATSGRASS] Problems understanding how to use Rpy ( a Python module) to access GRASS rasters in R",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello,\n\nI have previously used BASH shell scripts to successfully pass GRASS\nraster data sets to R, and then run basic statistics and plotting\nfunctions. Now, I am using Rpy 0.4.0 in an application that loads the\nGRASS GIS library. Prior to calling Rpy functions, I make sure to use\nPython to set up all of my environmental variables. I am then able to\nuse code such as you see below to load my GRASS location metadata into\nPython objects:\n\nr_results=r.library('GRASS')\nG=r.gmeta()\nmaps=r.get_mapsets()\nraster_layers=r.list_grass(type=\"cell\")\n\nI understand that the variables on the left are Python objects - I can\nprint out correct locational values to screen. However, if I want to\nsummarize and plot the values in a certain raster map layer, I know that\nI probably need to create an R object first. It is not clear to me how I\ngo about doing this given what I have read in the Rpy documentation. I\nhave tried to move a raster into a Python object as such:\n\nelev=r.rast_get(G,\"elevation\")\n\nbut, this fails with the error\n\nsh: line 1: rm command not found\n\nIn short, it is unclear how I go about using the GRASS R libary\nfunctions through Rpy. I can run some of the library functions and\ncreate Python objects, but don't get how to create analogous objects in\nR and work with them. I am ultimately interested in working with raster\nlayers and generating basic statistics and plots.\n\nAny sample code or guidance would help. \n\n\nBill",
+      "body_snippet": "Hello,\n\nI have previously used BASH shell scripts to successfully pass GRASS\nraster data sets to R, and then run basic statistics and plotting\nfunctions. Now, I am using Rpy 0.4.0 in an application th",
+      "thread_id": "thread-a7273e64f0a1",
+      "thread_depth": 0,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-ca12001e7398",
+      "message_id": "<Pine.LNX.4.44.0502171847550.20921-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2005-02-17T12:57:16Z",
+      "subject": "[STATSGRASS] Problems understanding how to use Rpy ( a Python  module) to accessGRASS rasters in R",
+      "subject_clean": "[STATSGRASS] Problems understanding how to use Rpy ( a Python  module) to accessGRASS rasters in R",
+      "in_reply_to": "<1108653845.3729.27.camel@localhost.localdomain>",
+      "references": [],
+      "body_plain": "On Thu, 17 Feb 2005, William Hudspeth wrote:\n\n> Hello,\n> \n> I have previously used BASH shell scripts to successfully pass GRASS\n> raster data sets to R, and then run basic statistics and plotting\n> functions. Now, I am using Rpy 0.4.0 in an application that loads the\n> GRASS GIS library. Prior to calling Rpy functions, I make sure to use\n> Python to set up all of my environmental variables. I am then able to\n> use code such as you see below to load my GRASS location metadata into\n> Python objects:\n> \n> r_results=r.library('GRASS')\n> G=r.gmeta()\n> maps=r.get_mapsets()\n> raster_layers=r.list_grass(type=\"cell\")\n> \n> I understand that the variables on the left are Python objects - I can\n> print out correct locational values to screen. However, if I want to\n> summarize and plot the values in a certain raster map layer, I know that\n> I probably need to create an R object first. It is not clear to me how I\n> go about doing this given what I have read in the Rpy documentation. I\n> have tried to move a raster into a Python object as such:\n> \n> elev=r.rast_get(G,\"elevation\")\n> \n> but, this fails with the error\n> \n> sh: line 1: rm command not found\n> \n\nSeeing that, I would back away quietly! I'm not sure that having the R \nPython interface try to delete files is a good idea!\n\nPlease try out Rpy on very simple examples first to see how the\nrepresentations work. Say try two numeric vectors from rnorm(), and try a\nt.test(). See if you can access the components in the htest object\nreturned. My guess would be, without ever having tried Rpy seriously, that\nthe arguments to rast.get() are not being passed correctly. Is there any\nway to run R debug from Rpy (probably not)? Could you try to write your\nown function to source into R from a file, that you know works without\nRpy, and that could avoid having to move anything but simple objects\nacross the R/Python interface - just single character strings and integer\nor numeric vectors?\n\nPlease report back if you make any progress!\n\nBest wishes,\n\nRoger\n\n> In short, it is unclear how I go about using the GRASS R libary\n> functions through Rpy. I can run some of the library functions and\n> create Python objects, but don't get how to create analogous objects in\n> R and work with them. I am ultimately interested in working with raster\n> layers and generating basic statistics and plots.\n> \n> Any sample code or guidance would help. \n> \n> \n> Bill\n> \n> _______________________________________________\n> statsgrass mailing list\n> statsgrass@grass.itc.it\n> http://grass.itc.it/mailman/listinfo/statsgrass\n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 93 93\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Thu, 17 Feb 2005, William Hudspeth wrote:\n\n> Hello,\n> \n> I have previously used BASH shell scripts to successfully pass GRASS\n> raster data sets to R, and then run basic statistics and plotting\n> f",
+      "thread_id": "thread-a7273e64f0a1",
+      "thread_depth": 1,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-4da9c1e4a3da",
+      "message_id": "<20050217194114.3c3fd813.twiens@interbaun.com>",
+      "from_name": "Trevor Wiens",
+      "from_email_hash": "f85465e55a92fe743bbb6fd3af0c89d930d1686fb36e5a1570e2397721130298",
+      "date": "2005-02-17T21:41:14Z",
+      "subject": "[STATSGRASS] Problems understanding how to use Rpy ( a Python module) to access GRASS rasters in R",
+      "subject_clean": "[STATSGRASS] Problems understanding how to use Rpy ( a Python module) to access GRASS rasters in R",
+      "in_reply_to": "<1108653845.3729.27.camel@localhost.localdomain>",
+      "references": [
+        "<1108653845.3729.27.camel@localhost.localdomain>"
+      ],
+      "body_plain": "On Thu, 17 Feb 2005 08:24:05 -0700\nWilliam Hudspeth <bhudspeth@edac.unm.edu> wrote:\n\n> Hello,\n> \n> I have previously used BASH shell scripts to successfully pass GRASS\n> raster data sets to R, and then run basic statistics and plotting\n> functions. Now, I am using Rpy 0.4.0 in an application that loads the\n> GRASS GIS library. Prior to calling Rpy functions, I make sure to use\n> Python to set up all of my environmental variables. I am then able to\n> use code such as you see below to load my GRASS location metadata into\n> Python objects:\n> \n> r_results=r.library('GRASS')\n> G=r.gmeta()\n> maps=r.get_mapsets()\n> raster_layers=r.list_grass(type=\"cell\")\n> \n> I understand that the variables on the left are Python objects - I can\n> print out correct locational values to screen. However, if I want to\n> summarize and plot the values in a certain raster map layer, I know that\n> I probably need to create an R object first. It is not clear to me how I\n> go about doing this given what I have read in the Rpy documentation. I\n> have tried to move a raster into a Python object as such:\n> \n> elev=r.rast_get(G,\"elevation\")\n> \n> but, this fails with the error\n> \n> sh: line 1: rm command not found\n> \n\nI've done some work with Rpy with varied success. What I have often found difficult is the translation betwen Python objects and R objects with can be controlled with\n\n    mode = get_default_mode()\n    set_default_mode(NO_CONVERSION)\n\nso you can set it back later. This is important for sum functions. I've not tried to use the GRASS library through Rpy. \n\nThere is also an Rpy mailing list which I read and their may be individuals on that list who may be able to help. Roger had suggested simple examples, and I have found those types of tasks, regression, AIC model selection and such work fine along with many plotting tasks in conjunction with pyPgSQL.\n\nT\n-- \nTrevor Wiens \ntwiens@interbaun.com\n\nThe significant problems that we face cannot be solved at the same \nlevel of thinking we were at when we created them. \n(Albert Einstein)",
+      "body_snippet": "On Thu, 17 Feb 2005 08:24:05 -0700\nWilliam Hudspeth <bhudspeth@edac.unm.edu> wrote:\n\n> Hello,\n> \n> I have previously used BASH shell scripts to successfully pass GRASS\n> raster data sets to R, and the",
+      "thread_id": "thread-a7273e64f0a1",
+      "thread_depth": 1,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-e9369ef79138",
+      "message_id": "<20050221111443.97897A7AC4@cebas.csic.es>",
+      "from_name": "javier garcia - CEBAS",
+      "from_email_hash": "819134c67ae7bb4db8280a8587a262ba77ac5658097c5feee4b3ee74137c51a6",
+      "date": "2005-02-21T05:15:27Z",
+      "subject": "[STATSGRASS] R-GRASS error in region changes",
+      "subject_clean": "[STATSGRASS] R-GRASS error in region changes",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all;\nI guess that Roger B. is the best person to answer this, anyway I send the \nquestion to everybody in the list (I think it is interesting):\nI'm trying to do an R script to do a statistical analysis over GRASS maps, \nand I obtain an error. Perhaps the link R-GRASS doesn't allow to do what I'm \ntrying?\n\nThrough my R script I'm changing the region in GRASS, and after this I get \nsome maps from GRASS into R, what gives an error:\n\n-----------------\n# R script\nlibrary(GRASS)\nfor (i in 33:1) {\n  g.region <- paste(\"g.region n=9.9 s=0 e=3.3 w=0 res=\",3.3/i,sep=\"\")\n  system(g.region)\n  system(paste(\"r.mapcalc template\",i,\"=1\",sep=\"\"))\n  rm(G)\n  G <- gmeta()\n  RGRASS <- rast.get(G, rlist=paste(\"template\",i,sep=\"\"), catlabels=FALSE)\n}\n-----------------\n\nThe R error message appears in the second loop:\nError in rast.get(G, rlist = paste(\"template\", i, sep = \"\"), catlabels = \nFALSE) :\n        Current GRASS region changed: ns_res\n\n\nCould be any possibility to succeed with this?\n\nThanks and best regards,\n\nJavier",
+      "body_snippet": "Hi all;\nI guess that Roger B. is the best person to answer this, anyway I send the \nquestion to everybody in the list (I think it is interesting):\nI'm trying to do an R script to do a statistical anal",
+      "thread_id": "thread-e9369ef79138",
+      "thread_depth": 0,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-9eb41ffec59f",
+      "message_id": "<Pine.LNX.4.44.0502211257080.2880-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2005-02-21T07:02:24Z",
+      "subject": "[STATSGRASS] Re: R-GRASS error in region changes",
+      "subject_clean": "[STATSGRASS] Re: R-GRASS error in region changes",
+      "in_reply_to": "<20050221111443.97897A7AC4@cebas.csic.es>",
+      "references": [],
+      "body_plain": "On Mon, 21 Feb 2005, javier garcia - CEBAS wrote:\n\n> Hi all;\n> I guess that Roger B. is the best person to answer this, anyway I send the \n> question to everybody in the list (I think it is interesting):\n> I'm trying to do an R script to do a statistical analysis over GRASS maps, \n> and I obtain an error. Perhaps the link R-GRASS doesn't allow to do what I'm \n> trying?\n> \n> Through my R script I'm changing the region in GRASS, and after this I get \n> some maps from GRASS into R, what gives an error:\n> \n> -----------------\n> # R script\n> library(GRASS)\n> for (i in 33:1) {\n>   g.region <- paste(\"g.region n=9.9 s=0 e=3.3 w=0 res=\",3.3/i,sep=\"\")\n>   system(g.region)\n>   system(paste(\"r.mapcalc template\",i,\"=1\",sep=\"\"))\n>   rm(G)\n>   G <- gmeta()\n>   RGRASS <- rast.get(G, rlist=paste(\"template\",i,sep=\"\"), catlabels=FALSE)\n> }\n> -----------------\n> \n> The R error message appears in the second loop:\n> Error in rast.get(G, rlist = paste(\"template\", i, sep = \"\"), catlabels = \n> FALSE) :\n>         Current GRASS region changed: ns_res\n> \n> \n> Could be any possibility to succeed with this?\n\nThere usually is, one way or another. But to find out, it would be useful \nto state your platform (OS, etc), which GRASS version you are using, which \nR version, and which R-GRASS interface version - that is, the usual \nroutine on R-help. Knowing the versions makes it easier to see what is \ngoing on. If you can also replicate this on Spearfish or another very \nstandard data set makes it even easier! If anyone else has insights, \nplease join in!\n\nBest wishes,\n\nRoger \n\n> \n> Thanks and best regards,\n> \n> Javier\n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 93 93\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Mon, 21 Feb 2005, javier garcia - CEBAS wrote:\n\n> Hi all;\n> I guess that Roger B. is the best person to answer this, anyway I send the \n> question to everybody in the list (I think it is interestin",
+      "thread_id": "thread-e9369ef79138",
+      "thread_depth": 1,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-3b4d04dd6618",
+      "message_id": "<Pine.LNX.4.44.0502211433390.2880-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2005-02-21T08:37:48Z",
+      "subject": "[STATSGRASS] Re: R-GRASS error in region changes",
+      "subject_clean": "[STATSGRASS] Re: R-GRASS error in region changes",
+      "in_reply_to": "<200502211401.46178.rn001@cebas.csic.es>",
+      "references": [],
+      "body_plain": "Hi Javier,\n\nOK, it's a bug, I'll push a new version out as soon as I've checked, the \nproblem is G_get_window() saving its previous read from disk instead of \nreading fresh. Until the new version reaches CRAN, please use interp=TRUE \nin rast.get() - this *is* fixed most places, like gmeta(), rast.put(), and \nthe sites functions, just not rast.get()!\n\nRoger\n\nOn Mon, 21 Feb 2005, javier garcia wrote:\n\n> Hi Roger and all the rest,\n> \n> I've tried this with two different computers:\n> \n> Linux Mandrake 10.0\n> GRASS version: 5.3.0\n> Package: R-GRASS Version: 0.2-20\n> R version: 1.9.1\n> \n> Linux Mandrake 8.2\n> GRASS version: 5. 0\n> Package: R-GRASS Version: 0.2-17\n> R version 1.9.1\n> \n> and the problem is identical.\n> \n> The exact error message is:\n> \n> \"Error in rast.get(G, rlist=paste(\"template\", i, sep= \"\"), catlabels = \n> FALSE) :\n> Current GRASS region changed: ns_res\"\n> \n> I supposed that \n> G <- meta would include the new region information and rast.get would not have \n> any problem then\n> \n> In Spearfish, the problem remains the same.\n> \n> Javier\n> ---------\n> El Lunes, 21 de Febrero de 2005 13:02, Roger Bivand escribi?:\n> > On Mon, 21 Feb 2005, javier garcia - CEBAS wrote:\n> > > Hi all;\n> > > I guess that Roger B. is the best person to answer this, anyway I send\n> > > the question to everybody in the list (I think it is interesting):\n> > > I'm trying to do an R script to do a statistical analysis over GRASS\n> > > maps, and I obtain an error. Perhaps the link R-GRASS doesn't allow to do\n> > > what I'm trying?\n> > >\n> > > Through my R script I'm changing the region in GRASS, and after this I\n> > > get some maps from GRASS into R, what gives an error:\n> > >\n> > > -----------------\n> > > # R script\n> > > library(GRASS)\n> > > for (i in 33:1) {\n> > >   g.region <- paste(\"g.region n=9.9 s=0 e=3.3 w=0 res=\",3.3/i,sep=\"\")\n> > >   system(g.region)\n> > >   system(paste(\"r.mapcalc template\",i,\"=1\",sep=\"\"))\n> > >   rm(G)\n> > >   G <- gmeta()\n> > >   RGRASS <- rast.get(G, rlist=paste(\"template\",i,sep=\"\"),\n> > > catlabels=FALSE) }\n> > > -----------------\n> > >\n> > > The R error message appears in the second loop:\n> > > Error in rast.get(G, rlist = paste(\"template\", i, sep = \"\"), catlabels =\n> > > FALSE) :\n> > >         Current GRASS region changed: ns_res\n> > >\n> > >\n> > > Could be any possibility to succeed with this?\n> >\n> > There usually is, one way or another. But to find out, it would be useful\n> > to state your platform (OS, etc), which GRASS version you are using, which\n> > R version, and which R-GRASS interface version - that is, the usual\n> > routine on R-help. Knowing the versions makes it easier to see what is\n> > going on. If you can also replicate this on Spearfish or another very\n> > standard data set makes it even easier! If anyone else has insights,\n> > please join in!\n> >\n> > Best wishes,\n> >\n> > Roger\n> >\n> > > Thanks and best regards,\n> > >\n> > > Javier\n> \n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 93 93\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "Hi Javier,\n\nOK, it's a bug, I'll push a new version out as soon as I've checked, the \nproblem is G_get_window() saving its previous read from disk instead of \nreading fresh. Until the new version reac",
+      "thread_id": "thread-3b4d04dd6618",
+      "thread_depth": 0,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-78259dc0d885",
+      "message_id": "<200502252309.57458.timmichelsen@gmx-topmail.de>",
+      "from_name": "Tim Michelsen",
+      "from_email_hash": "92eb4a15150c65c786484495307a83cdad5ed7a20934cd43550bf37f7bc533f5",
+      "date": "2005-02-25T17:09:57Z",
+      "subject": "[STATSGRASS] isolines",
+      "subject_clean": "[STATSGRASS] isolines",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\nI am new to this list. Does anyone know a package with I can use to plot \nisolines based on hydrologic triangles?\nI want to draw ground water isolines.\n\nThanks,\nTim\n-- \nKANOTIX BH 5 - HD-install [www.kanotix.de] / Debian unstable\nLinux hostname 2.4.26-mppe-ar #1 SMP Mi Apr 14 19:33:12 CEST 2004 i686 \nGNU/Linux\nVersion: 2.3.2.ds1-19\nGRASS 6.0\nLyx 1.3.4 [http://www.lyx.org]",
+      "body_snippet": "Hi,\nI am new to this list. Does anyone know a package with I can use to plot \nisolines based on hydrologic triangles?\nI want to draw ground water isolines.\n\nThanks,\nTim\n-- \nKANOTIX BH 5 - HD-install [",
+      "thread_id": "thread-78259dc0d885",
+      "thread_depth": 0,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-68dc96eab0d0",
+      "message_id": "<20050228111516.13f85149.hamish_nospam@yahoo.com>",
+      "from_name": "Hamish",
+      "from_email_hash": "a059a74df406c35b38844d3f17c947267964f4c8144d6390b1c6bac5a32de2a1",
+      "date": "2005-02-27T17:15:16Z",
+      "subject": "[STATSGRASS] isolines",
+      "subject_clean": "[STATSGRASS] isolines",
+      "in_reply_to": "<200502252309.57458.timmichelsen@gmx-topmail.de>",
+      "references": [
+        "<200502252309.57458.timmichelsen@gmx-topmail.de>"
+      ],
+      "body_plain": "> I am new to this list. Does anyone know a package with I can use to\n> plot isolines based on hydrologic triangles?\n> I want to draw ground water isolines.\n\n\nGRASS has limited support for TINs, you would have to extract values at\nthe nodes (v.in.ogr? -> vector points), interpolate to a raster map\nusing splines (v.surf.rst), then create vector isolines with r.contour.\n\nFWIW, this will probably give you better results than direct TIN->\nisolines. e.g. I think the way Arc does it is to overlay a raster grid\non the TIN and then interpolate (linear) the value at each grid point.\n\n\nGRASS NVIZ examples:\n  http://grass.ibiblio.org/grass60/screenshots/images/nviz_isosurf3d.jpg\n  http://skagit.meas.ncsu.edu/~helena/gmslab/\n\nsee also v.vol.rst module (3D grid raster support):\n  http://grass.ibiblio.org/grass60/manuals/html60_user/v.vol.rst.html\n\n\nsee also Vis5D+ software:\n  http://www.ssec.wisc.edu/~billh/vis5d.gif\n  http://vis5d.sourceforge.net\n\n\n\nHamish",
+      "body_snippet": "> I am new to this list. Does anyone know a package with I can use to\n> plot isolines based on hydrologic triangles?\n> I want to draw ground water isolines.\n\n\nGRASS has limited support for TINs, you w",
+      "thread_id": "thread-78259dc0d885",
+      "thread_depth": 1,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-7a80aa5ac219",
+      "message_id": "<200502280018.00614.timmichelsen@gmx-topmail.de>",
+      "from_name": "Tim Michelsen",
+      "from_email_hash": "92eb4a15150c65c786484495307a83cdad5ed7a20934cd43550bf37f7bc533f5",
+      "date": "2005-02-27T18:18:00Z",
+      "subject": "[STATSGRASS] isolines",
+      "subject_clean": "[STATSGRASS] isolines",
+      "in_reply_to": "<20050228111516.13f85149.hamish_nospam@yahoo.com>",
+      "references": [
+        "<200502252309.57458.timmichelsen@gmx-topmail.de>",
+        "<20050228111516.13f85149.hamish_nospam@yahoo.com>"
+      ],
+      "body_plain": "> GRASS has limited support for TINs, you would have to extract values at\n> the nodes (v.in.ogr? -> vector points), interpolate to a raster map\n> using splines (v.surf.rst), then create vector isolines with r.contour.\nDo you know any R package that might be able to do the job?\n\nThanks,\nTim",
+      "body_snippet": "> GRASS has limited support for TINs, you would have to extract values at\n> the nodes (v.in.ogr? -> vector points), interpolate to a raster map\n> using splines (v.surf.rst), then create vector isoline",
+      "thread_id": "thread-78259dc0d885",
+      "thread_depth": 2,
+      "month": "2005-02"
+    },
+    {
+      "id": "msg-7cfb13aaf557",
+      "message_id": "<Pine.LNX.4.44.0502280849060.21763-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2005-02-28T02:56:57Z",
+      "subject": "[STATSGRASS] isolines",
+      "subject_clean": "[STATSGRASS] isolines",
+      "in_reply_to": "<200502280018.00614.timmichelsen@gmx-topmail.de>",
+      "references": [],
+      "body_plain": "On Mon, 28 Feb 2005, Tim Michelsen wrote:\n\n> > GRASS has limited support for TINs, you would have to extract values at\n> > the nodes (v.in.ogr? -> vector points), interpolate to a raster map\n> > using splines (v.surf.rst), then create vector isolines with r.contour.\n> Do you know any R package that might be able to do the job?\n\nNo direct route from points to contours without interpolation in R. The\nnearest I can see would be to use GMT's pscontour, inputting an ASCII xyz\nfile, and dumping the contour line output to file.\n\nRoger\n\n> \n> Thanks,\n> Tim\n> \n> _______________________________________________\n> statsgrass mailing list\n> statsgrass@grass.itc.it\n> http://grass.itc.it/mailman/listinfo/statsgrass\n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 93 93\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Mon, 28 Feb 2005, Tim Michelsen wrote:\n\n> > GRASS has limited support for TINs, you would have to extract values at\n> > the nodes (v.in.ogr? -> vector points), interpolate to a raster map\n> > using",
+      "thread_id": "thread-78259dc0d885",
+      "thread_depth": 3,
+      "month": "2005-02"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-816351be45ff",
+      "subject": "[STATSGRASS] Using GRASS/R interface with an xy location",
+      "message_count": 5,
+      "participants": [
+        "Roger Bivand",
+        "Steven Stoddard",
+        "Steven T.Stoddard"
+      ],
+      "started": "2005-02-08T11:40:54Z",
+      "last_reply": "2005-02-08T13:21:30Z",
+      "root_message_id": "msg-816351be45ff"
+    },
+    {
+      "id": "thread-63de45d9a601",
+      "subject": "[STATSGRASS] Masking",
+      "message_count": 1,
+      "participants": [
+        "Bob Cooper"
+      ],
+      "started": "2005-02-08T18:40:45Z",
+      "last_reply": "2005-02-08T18:40:45Z",
+      "root_message_id": "msg-63de45d9a601"
+    },
+    {
+      "id": "thread-f6acde0d4f79",
+      "subject": "[STATSGRASS] Re: [GRASSLIST:5691] GRASS connection with R",
+      "message_count": 1,
+      "participants": [
+        "Roger Bivand"
+      ],
+      "started": "2005-02-09T09:48:10Z",
+      "last_reply": "2005-02-09T09:48:10Z",
+      "root_message_id": "msg-f6acde0d4f79"
+    },
+    {
+      "id": "thread-d01641306b39",
+      "subject": "[STATSGRASS] Re: [GRASSLIST:5691] GRASS connection with R",
+      "message_count": 1,
+      "participants": [
+        "Roger Bivand"
+      ],
+      "started": "2005-02-09T10:50:03Z",
+      "last_reply": "2005-02-09T10:50:03Z",
+      "root_message_id": "msg-d01641306b39"
+    },
+    {
+      "id": "thread-a7273e64f0a1",
+      "subject": "[STATSGRASS] Problems understanding how to use Rpy ( a Python module) to access GRASS rasters in R",
+      "message_count": 3,
+      "participants": [
+        "Roger Bivand",
+        "Trevor Wiens",
+        "William Hudspeth"
+      ],
+      "started": "2005-02-17T10:24:05Z",
+      "last_reply": "2005-02-17T21:41:14Z",
+      "root_message_id": "msg-a7273e64f0a1"
+    },
+    {
+      "id": "thread-e9369ef79138",
+      "subject": "[STATSGRASS] R-GRASS error in region changes",
+      "message_count": 2,
+      "participants": [
+        "Roger Bivand",
+        "javier garcia - CEBAS"
+      ],
+      "started": "2005-02-21T05:15:27Z",
+      "last_reply": "2005-02-21T07:02:24Z",
+      "root_message_id": "msg-e9369ef79138"
+    },
+    {
+      "id": "thread-3b4d04dd6618",
+      "subject": "[STATSGRASS] Re: R-GRASS error in region changes",
+      "message_count": 1,
+      "participants": [
+        "Roger Bivand"
+      ],
+      "started": "2005-02-21T08:37:48Z",
+      "last_reply": "2005-02-21T08:37:48Z",
+      "root_message_id": "msg-3b4d04dd6618"
+    },
+    {
+      "id": "thread-78259dc0d885",
+      "subject": "[STATSGRASS] isolines",
+      "message_count": 4,
+      "participants": [
+        "Hamish",
+        "Roger Bivand",
+        "Tim Michelsen"
+      ],
+      "started": "2005-02-25T17:09:57Z",
+      "last_reply": "2005-02-28T02:56:57Z",
+      "root_message_id": "msg-78259dc0d885"
+    }
+  ]
+}

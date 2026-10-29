@@ -1,0 +1,53 @@
+{
+  "list": "grass-stats",
+  "description": "",
+  "month": "2004-09",
+  "messages": [
+    {
+      "id": "msg-3d950509009a",
+      "message_id": "<1096139386.20056.28.camel@lorien>",
+      "from_name": "Bob Cooper",
+      "from_email_hash": "905651edcb1e2fb199e0fd91afc8c07a4c75e9ea47df5c83e65a79831af5806c",
+      "date": "2004-09-25T15:09:46Z",
+      "subject": "[STATSGRASS] rast.get and negative vectors",
+      "subject_clean": "[STATSGRASS] rast.get and negative vectors",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\nI am having a problem with rast.get and negative length vectors. First,\nI didn't know I had any (?). The only thing I can think of is I am\nworking on data from the southern hemisphere where I have negative\nvalues for latitude. Below is a summary of gmeta() and of the output\nfrom my rast.get command.\n\nsummary(G)\n> Data from GRASS 5.0 LOCATION hectorsll with 87845 columns and 76288 rows;\n> Latitude-Longitude\n> The west-east range is: 172.5666, 173.3308,\n> and the south-north: -44.11695, -43.45325;\n> West-east cell sizes are 8.7e-06 units,\n> and south-north 8.7e-06 units.\n\n\n\n> > topo <- rast.get(G, rlist=\"topo\")\n> Error in rast.get(G, rlist = \"topo\") : negative length vectors are not allowed\n> >\n\nAny hints would be greatly appreciated.\n\nBob Cooper\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: not available\nType: application/pgp-signature\nSize: 189 bytes\nDesc: This is a digitally signed message part\nUrl : http://lists.osgeo.org/pipermail/grass-stats/attachments/20040925/7a31057d/attachment.bin",
+      "body_snippet": "Hi,\nI am having a problem with rast.get and negative length vectors. First,\nI didn't know I had any (?). The only thing I can think of is I am\nworking on data from the southern hemisphere where I have",
+      "thread_id": "thread-3d950509009a",
+      "thread_depth": 0,
+      "month": "2004-09"
+    },
+    {
+      "id": "msg-ca6128a65818",
+      "message_id": "<Pine.LNX.4.44.0409261515580.3902-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2004-09-26T09:39:53Z",
+      "subject": "[STATSGRASS] rast.get and negative vectors",
+      "subject_clean": "[STATSGRASS] rast.get and negative vectors",
+      "in_reply_to": "<1096139386.20056.28.camel@lorien>",
+      "references": [],
+      "body_plain": "On 25 Sep 2004, Bob Cooper wrote:\n\n> Hi,\n> I am having a problem with rast.get and negative length vectors. First,\n> I didn't know I had any (?). The only thing I can think of is I am\n> working on data from the southern hemisphere where I have negative\n> values for latitude. Below is a summary of gmeta() and of the output\n> from my rast.get command.\n> \n> summary(G)\n> > Data from GRASS 5.0 LOCATION hectorsll with 87845 columns and 76288 rows;\n> > Latitude-Longitude\n> > The west-east range is: 172.5666, 173.3308,\n> > and the south-north: -44.11695, -43.45325;\n> > West-east cell sizes are 8.7e-06 units,\n> > and south-north 8.7e-06 units.\n> \n\nWell, a first guess would be that\n\n> 87845*76288\n[1] 6701519360\n\nwhich would be too large anyway even on top-end 64-bit platforms (6.5G * \nbytes per cell). As of now in rastget.c, all of GR_ncols, GR_nrows, and \nncells are declared as int, so cannot be larger than:\n\n> .Machine$integer.max\n[1] 2147483647\n\n(on my 32-bit machine)\n\nThe problem will hit you when ncells is used to allocate memory, and where \nncells has overflowed maximum integer. Since it seems unlikely that \nanalysing multi-gigabyte rasters in R is sensible, changing the ints to \nlongs is not a high priority, although compiled on a 64-bit machine, int \nmay already allow higher values. Your cells seem to be 0.03 seconds \nsquare, about 1 meter? Do you need this level of resolution for your \nanalysis, could you use g.region to choose a more manageable subset?\n\n> \n> \n> > > topo <- rast.get(G, rlist=\"topo\")\n> > Error in rast.get(G, rlist = \"topo\") : negative length vectors are not allowed\n> > >\n> \n> Any hints would be greatly appreciated.\n> \n> Bob Cooper\n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 93 93\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On 25 Sep 2004, Bob Cooper wrote:\n\n> Hi,\n> I am having a problem with rast.get and negative length vectors. First,\n> I didn't know I had any (?). The only thing I can think of is I am\n> working on dat",
+      "thread_id": "thread-3d950509009a",
+      "thread_depth": 1,
+      "month": "2004-09"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-3d950509009a",
+      "subject": "[STATSGRASS] rast.get and negative vectors",
+      "message_count": 2,
+      "participants": [
+        "Bob Cooper",
+        "Roger Bivand"
+      ],
+      "started": "2004-09-25T15:09:46Z",
+      "last_reply": "2004-09-26T09:39:53Z",
+      "root_message_id": "msg-3d950509009a"
+    }
+  ]
+}

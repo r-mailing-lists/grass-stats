@@ -1,0 +1,148 @@
+{
+  "list": "grass-stats",
+  "description": "",
+  "month": "2002-04",
+  "messages": [
+    {
+      "id": "msg-fadbb17b9068",
+      "message_id": "<Pine.LNX.4.21.0204021809510.22622-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2002-04-02T11:21:48Z",
+      "subject": "[STATSGRASS] R contour(): x,y output",
+      "subject_clean": "[STATSGRASS] R contour(): x,y output",
+      "in_reply_to": "<Pine.OSF.3.96.1020322094421.4540F-100000@ija.csic.es>",
+      "references": [],
+      "body_plain": "On Fri, 22 Mar 2002, Agustin Lobo wrote:\n\n> \n> I forward this message (with permission) \n> as I think that it is interesting for the \n> list.\n> \n\nI've had a shot at recovering the contour lines from inside contour; a\ntarball with modified: src/main/plot3d.c src/library/base/R/contour.R\nsrc/library/base/man/contour.Rd is on:\n\nftp://reclus.nhh.no/pub/R/contour.tar.gz\n\nI've checked them on a recent R-patched, and they seem to work so far. A\nnew argument to contour() called return.contours should be set equal to\nTRUE to return a list object - see the manual page. \n\nPaul - if you think they are OK, please use them as you wish. I  have\ncommented most changes (the ones I could find!), but draw your attention\nto my having commented out vmax[sg]et in do_contour() and contour(), they\nwere causing too much trouble. I've run a loop of 100 examples watching\ntop, and can't see any memory bloat caused by letting the garbage\ncollector take care of recouping memory. On my machine (RH7.1, PIII\n933MHz) the top RSS just stays at 20M.\n\nRoger\n\n> \n> \n> ---------- Forwarded message ----------\n> Date: Thu, 21 Mar 2002 10:37:08 +1200\n> From: Paul Murrell <p.murrell@auckland.ac.nz>\n> To: Agustin Lobo <alobo@ija.csic.es>\n> Subject: Re: suggestion\n> \n> Hi\n> \n> \n> > Paul,\n> > your TODO list in\n> > http://developer.r-project.org/paul-todo.html\n> > mentions\n> > \"* I am compiling a list of missing features or inconsistencies in R\n> > graphics that I'd like to get to...\"\n> >\n> > Related to this, would it be possible to get the x,y coordinates\n> > of the vertices in the contours() function? I mean a couple\n> > of vectors that could be plotted with lines(). Having this, it\n> > would be possible to write a a function to write these\n> > coordinates to a file in dxf format, which would be very\n> > useful for linking R to GIS packs.\n> \n> \n> I agree this is a good idea.  There is a plan to do just such a thing in\n> order to make contour plotting possible in the lattice package.  The bad\n> news:  I suspect the next time I'll get a chance to try and do this is\n> probably only for R1.6 (i.e., for around September some time I think).\n> Would that still be useful to you?\n> \n> Paul\n> \n> \n> \n> _______________________________________________\n> statsgrass mailing list\n> statsgrass@grass.itc.it\n> http://grass.itc.it/mailman/listinfo/statsgrass\n> \n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 93 93\ne-mail: Roger.Bivand@nhh.no\nand: Department of Geography and Regional Development, University of\nGdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.",
+      "body_snippet": "On Fri, 22 Mar 2002, Agustin Lobo wrote:\n\n> \n> I forward this message (with permission) \n> as I think that it is interesting for the \n> list.\n> \n\nI've had a shot at recovering the contour lines from i",
+      "thread_id": "thread-fadbb17b9068",
+      "thread_depth": 0,
+      "month": "2002-04"
+    },
+    {
+      "id": "msg-8ccce1d9fa02",
+      "message_id": "<Pine.OSF.3.96.1020412191550.9093A-100000@ija.csic.es>",
+      "from_name": "Agustin Lobo",
+      "from_email_hash": "904afa1192b5c5769db5a1ae5b21005f96c837b5ba35a20a3116ee449d7827da",
+      "date": "2002-04-12T13:35:53Z",
+      "subject": "[STATSGRASS] grass display using R to stretch",
+      "subject_clean": "[STATSGRASS] grass display using R to stretch",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "HI!,\n\nNot really stats, but as this merges grass and R and\nI'm not in the other grass lists, I send it here. Please\nforward to the other lists if you feel it's worthwhile.\n\nI've made 2 simple cshell scripts to display\ngrey and color images with d.rast and d.rgb\nbut using R to apply a 2% stretching to the\nhistogram. In this version the scripts do not\nkeep the new colr files, just use them for\ndisplay and then write back the original\nones. But modifying this would be trivial.\n\nAlso, perhaps 2% at each tail of the\nhistogram is too much, 1 or 1.5% might be\nbetter.\n\ngrstretch.scr raster.in\n- calculates the stretched LUT using R,\n- displays (using xv) an R graph with histogram info and\nthe 2% and 98% values of the histogram\nused to calculate the stretched LUT\n- displays the stretched image using d.rast\n- reverts the colr table to its original file\n\ngr.str.rgb.scr rasterR rasterG rasterB\n- calculates the stretched LUT using R for each\nraster.\n- displays the stretched image using d.rgb\n- reverts the colr tables to their original files\n\nHope they are useful and other people make \nthem better:\n\nGREY SCALE IMAGERY:\n\ngrstretch.scr:\n\n#!/bin/csh -f\n#set echo on\n#set verbose on\n\nif ($#argv == 0) then\n        echo \"### USO: grstretch.scr raster.in ###\"\n        exit\nendif\n\nr.support -r $argv[1]\nsetenv infile /cell_misc/$argv[1]/histogram\n\n#echo \"infile <- system('echo $infile\",intern=T)' > provi.in\n\necho \"gr.stretch()\" > provi.in\necho \"q()\" >> provi.in\n\nR -q --save < provi.in\n\ncp $LOCATION/colr/$argv[1] $LOCATION/colr/$argv[1].backup\ncp outfile $LOCATION/colr/$argv[1]\nd.rast $argv[1]\nrm $LOCATION/colr/$argv[1]\nmv $LOCATION/colr/$argv[1].backup $LOCATION/colr/$argv[1]\nrm outfile\nxv -rotate -90 Rplots.ps #si pongo &, borra antes de poder ejecutar xv\nrm Rplots.ps\nrm provi.in\nunsetenv infile\n\nCOLOR IMAGERY\n\ngr.str.rgb.scr:\n\n#!/bin/csh -f\n#set echo on\n#set verbose on\n\nif ($#argv == 0) then\n        echo \"### USO: gr.str.rgb.scr rasterR rasterG rasterB ###\"\n        exit\nendif\n\n##RED##\nr.support -r $argv[1]\nsetenv infile /cell_misc/$argv[1]/histogram\necho \"res <- gr.stretch()\" > provi.in\necho \"readline()\" >> provi.in\nR --no-save -q < provi.in\ncp $LOCATION/colr/$argv[1] $LOCATION/colr/$argv[1].backup\ncp outfile $LOCATION/colr/$argv[1]\nrm outfile\nunsetenv infile\n##GREEN##\nr.support -r $argv[2]\nsetenv infile /cell_misc/$argv[2]/histogram\necho \"res <- gr.stretch()\" > provi.in\necho \"readline()\" >> provi.in\nR --no-save -q < provi.in\ncp $LOCATION/colr/$argv[2] $LOCATION/colr/$argv[2].backup\ncp outfile $LOCATION/colr/$argv[2]\nrm outfile\nunsetenv infile\n##BLUE##\nr.support -r $argv[3]\nsetenv infile /cell_misc/$argv[3]/histogram\necho \"res <- gr.stretch()\" > provi.in\nR --no-save -q < provi.in\ncp $LOCATION/colr/$argv[3] $LOCATION/colr/$argv[3].backup\ncp outfile $LOCATION/colr/$argv[3]\nrm outfile\nunsetenv infile\n\nd.rgb red=$argv[1] green=$argv[2] blue=$argv[3]\n\nrm $LOCATION/colr/$argv[1]\nmv $LOCATION/colr/$argv[1].backup $LOCATION/colr/$argv[1]\nrm $LOCATION/colr/$argv[2]\nmv $LOCATION/colr/$argv[2].backup $LOCATION/colr/$argv[2]\nrm $LOCATION/colr/$argv[3]\nmv $LOCATION/colr/$argv[3].backup $LOCATION/colr/$argv[3]\nrm provi.in\n\n\nTHE R FUNCTION IS JUST:\n\n\"gr.stretch\" <- function()\n{\n        layout(matrix(c(1,1,2,3), ncol=2, byrow = TRUE))\n        infile.nom <-system(\"echo $infile\",intern=T)\n        print(infile.nom)\n        infile <- paste(system(\"echo\n$LOCATION\",intern=T),infile.nom,sep=\"\")\n        histog <- round(matrix(scan(infile,sep=\":\"),byrow=T,ncol=2))\n        cumfreq <- cumsum(histog[,2]*100/sum(histog[,2]))\n        plot(histog[,1],histog[,2]*100/sum(histog[,2]))\n        cumfreq[cumfreq<2.0] <- 200\n        minim.val <- histog[cumfreq==min(cumfreq),2]*100/sum(histog[,2])\n        minim <- histog[cumfreq==min(cumfreq),1]\n        cumfreq <- cumsum(histog[,2]*100/sum(histog[,2]))\n        cumfreq[cumfreq>98.0] <- -100\n        maxim.val <- histog[cumfreq==max(cumfreq),2]*100/sum(histog[,2])\n        maxim <- histog[cumfreq==max(cumfreq),1]\n        title(paste(\"2% MIN=\",minim,\"98% MAX=\",maxim))\n        points (c(minim,maxim),c(minim.val,maxim.val),col=\"red\")\n        cumfreq <- cumsum(histog[,2]*100/sum(histog[,2]))\n        plot(histog[,1],cumfreq)\n        minim.val <- cumfreq[histog[,1]==minim]\n        maxim.val <- cumfreq[histog[,1]==maxim]\n        points (c(minim,maxim),c(minim.val,maxim.val),col=\"red\")\n        colortable <- cbind(0:255,rep(0,256))\n        colortable[colortable[,1]<minim,2] <- 0\n        colortable[colortable[,1]>maxim,2] <- 255\n        colortable[(minim+1):(maxim+1),2] <-\nrescale(minim:maxim,minim,maxim,0,255)\n        plot(colortable[,1],colortable[,2])\n        points(colortable[c((minim+1),(maxim+1)),1],\ncolortable[c((minim+1),(maxim+1)),2],col=\"red\")\n        write(\"% 0 255\",file=\"outfile\")\n\nwrite(paste(colortable[,1],round(colortable[,2]),sep=\":\"),file=\"outfile\",ncol=1,append=T)\n}\n\n\n\nAgus\n\nDr. Agustin Lobo\nInstituto de Ciencias de la Tierra (CSIC)\nLluis Sole Sabaris s/n\n08028 Barcelona SPAIN\ntel 34 93409 5410\nfax 34 93411 0012\nalobo@ija.csic.es",
+      "body_snippet": "HI!,\n\nNot really stats, but as this merges grass and R and\nI'm not in the other grass lists, I send it here. Please\nforward to the other lists if you feel it's worthwhile.\n\nI've made 2 simple cshell s",
+      "thread_id": "thread-8ccce1d9fa02",
+      "thread_depth": 0,
+      "month": "2002-04"
+    },
+    {
+      "id": "msg-538d9d18fa9b",
+      "message_id": "<006401c1e9fc$75abac60$4e17253e@pochito>",
+      "from_name": "Javier",
+      "from_email_hash": "5903a5bf55b2a7c124886158bfa4bb60845fdee0ab0e960528927066d20c615e",
+      "date": "2002-04-22T08:35:07Z",
+      "subject": "[STATSGRASS] grass, gstat, and 3d maps",
+      "subject_clean": "[STATSGRASS] grass, gstat, and 3d maps",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hello all;\n\nWhen I try to use a site list with 3 dimensions, (and a couple of attributes also), with gstat, the file can't be read.\nI've tried to use it in the same way that I use the usual 2d maps of Grass with Gstat. I mean that in the first line of the \ncommand file to use as input for Gstat, I don't specify the row containing the data.\n\nI've tried to specify the columns in several ways with no success.\nIs it possible to read these maps directly from grass? If so, how do I specify the z column and the column of data of \nconcern?\n\nThank you in advance for any help\n---------------\nJavier Garcia\n\n-------------- next part --------------\nAn HTML attachment was scrubbed...\nURL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20020422/fcf72528/attachment.html",
+      "body_snippet": "Hello all;\n\nWhen I try to use a site list with 3 dimensions, (and a couple of attributes also), with gstat, the file can't be read.\nI've tried to use it in the same way that I use the usual 2d maps of",
+      "thread_id": "thread-538d9d18fa9b",
+      "thread_depth": 0,
+      "month": "2002-04"
+    },
+    {
+      "id": "msg-f71b32296c3b",
+      "message_id": "<3CC50C28.BCD123E3@geog.uu.nl>",
+      "from_name": "Edzer J. Pebesma",
+      "from_email_hash": "a7fb0ca623e251a5aff6aa466eb7f50e3c643594fe03e3232d546a007043eef0",
+      "date": "2002-04-23T03:24:24Z",
+      "subject": "[STATSGRASS] grass, gstat, and 3d maps",
+      "subject_clean": "[STATSGRASS] grass, gstat, and 3d maps",
+      "in_reply_to": null,
+      "references": [
+        "<006401c1e9fc$75abac60$4e17253e@pochito>"
+      ],
+      "body_plain": "I wrote grass support in gstat such that also the z-dimension was\nused; if the z-dimension is in column 3 of the site list, you should use:\n\ndata(something): 'sites', z=3;\n\ni.e., x- and y-coordinates are assumed to be in column 1 and 2.\n\nIt is not unlikely that you are the first one to test this feature, so\nplease bear with us. Could you send me the offending command file, the\nsites data (or part of it), and the output gstat gives you?\n--\nEdzer",
+      "body_snippet": "I wrote grass support in gstat such that also the z-dimension was\nused; if the z-dimension is in column 3 of the site list, you should use:\n\ndata(something): 'sites', z=3;\n\ni.e., x- and y-coordinates ",
+      "thread_id": "thread-538d9d18fa9b",
+      "thread_depth": 1,
+      "month": "2002-04"
+    },
+    {
+      "id": "msg-862f5980d239",
+      "message_id": "<000201c1ebac$e36a95c0$cb91253e@pochito>",
+      "from_name": "Javier",
+      "from_email_hash": "5903a5bf55b2a7c124886158bfa4bb60845fdee0ab0e960528927066d20c615e",
+      "date": "2002-04-24T04:53:06Z",
+      "subject": "[STATSGRASS] grass, gstat, and 3d maps",
+      "subject_clean": "[STATSGRASS] grass, gstat, and 3d maps",
+      "in_reply_to": null,
+      "references": [
+        "<006401c1e9fc$75abac60$4e17253e@pochito>",
+        "<3CC50C28.BCD123E3@geog.uu.nl>"
+      ],
+      "body_plain": "Hi Edzer;\nI've tried to save you a little of work. I send you the sites file, and in\nthe file \"paraEdzer.txt\", there are all the posibilities I've tried in the\ncommand file, followed by the corresponding answers.\n------\nJavier\n\n----- Original Message -----\nFrom: Edzer J. Pebesma <e.pebesma@geog.uu.nl>\nTo: Javier <andresjavier.garcia@wanadoo.es>\nCc: <statsgrass@grass.itc.it>\nSent: Tuesday, April 23, 2002 9:24 AM\nSubject: Re: [STATSGRASS] grass, gstat, and 3d maps\n\n\n> I wrote grass support in gstat such that also the z-dimension was\n> used; if the z-dimension is in column 3 of the site list, you should use:\n>\n> data(something): 'sites', z=3;\n>\n> i.e., x- and y-coordinates are assumed to be in column 1 and 2.\n>\n> It is not unlikely that you are the first one to test this feature, so\n> please bear with us. Could you send me the offending command file, the\n> sites data (or part of it), and the output gstat gives you?\n> --\n> Edzer\n>\n-------------- next part --------------\nIf I don't specify any coordinate or data, the first set of data is read, but only 2d are considered:\tdata(traz1):\"trazas1\";\n\ngstat: Linux version 2.3.6 (28 January 2002)\nCopyright (C) 1992, 2001 Edzer J. Pebesma\nname|trazas1\ndesc|s.in.ascii sites=trazas1\nGRASS site list trazas1: 0 cat, 3 dim, 0 str, 2 dbl.\nWarning: gstat/grass: specify z coordinate if you want to use it\n \ndata(traz1): gstat/grass: 547 sites read successfully.\n         trazas1     (GRASS site list)\nattribute:             col[1]     [x:] x_1        : [    686000,    711000]\nn:                        547     [y:] y_2        : [ 4.185e+06, 4.205e+06]\nsample mean:           1.4757     sample std.:         0.621017\n[starting interactive mode]\n--------------------------------------------------------------------------------------\nJust the same if I specify:\tdata(traz1):\"trazas1\",v=1;\n\ngstat: Linux version 2.3.6 (28 January 2002)\nCopyright (C) 1992, 2001 Edzer J. Pebesma\nname|trazas1\ndesc|s.in.ascii sites=trazas1\nGRASS site list trazas1: 0 cat, 3 dim, 0 str, 2 dbl.\nWarning: gstat/grass: specify z coordinate if you want to use it\n \ndata(traz1): gstat/grass: 547 sites read successfully.\n         trazas1     (GRASS site list)\nattribute:             col[1]     [x:] x_1        : [    686000,    711000]\nn:                        547     [y:] y_2        : [ 4.185e+06, 4.205e+06]\nsample mean:           1.4757     sample std.:         0.621017\n[starting interactive mode]\npress return to continue...\n-------------------\nIn this way, I can specify the second set of data, but still are considered 2d:\tdata(traz1):\"trazas1\",v=2;\n\nCopyright (C) 1992, 2001 Edzer J. Pebesma\nname|trazas1\ndesc|s.in.ascii sites=trazas1\nGRASS site list trazas1: 0 cat, 3 dim, 0 str, 2 dbl.\nWarning: gstat/grass: specify z coordinate if you want to use it\n \ndata(traz1): gstat/grass: 547 sites read successfully.\n         trazas1     (GRASS site list)\nattribute:             col[2]     [x:] x_1        : [    686000,    711000]\nn:                        547     [y:] y_2        : [ 4.185e+06, 4.205e+06]\nsample mean:          67.3692     sample std.:          36.3099\n[starting interactive mode]\npress return to continue...\n------------------------------------------------------------------------------------------\nIf I try to specify the first set of data in this way:\tdata(traz1):\"trazas1\",v=4;\n\ngstat: Linux version 2.3.6 (28 January 2002)\nCopyright (C) 1992, 2001 Edzer J. Pebesma\nname|trazas1\ndesc|s.in.ascii sites=trazas1\nGRASS site list trazas1: 0 cat, 3 dim, 0 str, 2 dbl.\nWarning: gstat/grass doubles in site list are ignored, check data v field!\nWarning: gstat/grass: specify z coordinate if you want to use it\n \ngstat: value not allowed for: data v field not found in sites list\n\n--------------------------------------------------------------\nIf I just specify the z column (as z=3), at last z column is read but now no set of data is established: data(traz1):\"trazas1\",z=3;\n\ngstat: Linux version 2.3.6 (28 January 2002)\nCopyright (C) 1992, 2001 Edzer J. Pebesma\nname|trazas1\ndesc|s.in.ascii sites=trazas1\nGRASS site list trazas1: 0 cat, 3 dim, 0 str, 2 dbl.\ndata(traz1): using coordinate column 3 as z-coordinategstat/grass: 547 sites read successfully.\n         trazas1     (GRASS site list)\nattribute:             col[1]\nn:                        547\nno v attribute set for data(traz1)\ngstat: variable not set: trazas1.cmd\n------------------------------------------------------------------------------------ \nJust the same if I specify:\tdata(traz1):\"trazas1\",z=3,v=1;\n\ngstat: Linux version 2.3.6 (28 January 2002)\nCopyright (C) 1992, 2001 Edzer J. Pebesma\nname|trazas1\ndesc|s.in.ascii sites=trazas1\nGRASS site list trazas1: 0 cat, 3 dim, 0 str, 2 dbl.\ndata(traz1): using coordinate column 3 as z-coordinategstat/grass: 547 sites read successfully.\n         trazas1     (GRASS site list)\nattribute:             col[1]\nn:                        547\nno v attribute set for data(traz1)\ngstat: variable not set: trazas1.cmd\n----------------------------------------------------------------------------------------\nA different message when I try:\tdata(traz1):\"trazas1\",z=3,v=4;\n\ngstat: Linux version 2.3.6 (28 January 2002)\nCopyright (C) 1992, 2001 Edzer J. Pebesma\nname|trazas1\ndesc|s.in.ascii sites=trazas1\nGRASS site list trazas1: 0 cat, 3 dim, 0 str, 2 dbl.\nWarning: gstat/grass doubles in site list are ignored, check data v field!\ngstat: value not allowed for: data v field not found in sites list\n----------------------------------\nI have also tried:\tdata(traz1):\"trazas1\",x=1,y=2,z=3,v=4;\n\ngstat: Linux version 2.3.6 (28 January 2002)\nCopyright (C) 1992, 2001 Edzer J. Pebesma\nname|trazas1\ndesc|s.in.ascii sites=trazas1\nGRASS site list trazas1: 0 cat, 3 dim, 0 str, 2 dbl.\nWarning: gstat/grass doubles in site list are ignored, check data v field!\ngstat: value not allowed for: data v field not found in sites list\n---------------------------------------------\nAnd:\tdata(traz1):\"trazas1\",x=1,y=2,z=3,v=5;\n\ngstat: Linux version 2.3.6 (28 January 2002)\nCopyright (C) 1992, 2001 Edzer J. Pebesma\nname|trazas1\ndesc|s.in.ascii sites=trazas1\nGRASS site list trazas1: 0 cat, 3 dim, 0 str, 2 dbl.\nWarning: gstat/grass doubles in site list are ignored, check data v field!\ngstat: value not allowed for: data v field not found in sites list\n\n\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: trazas1\nType: application/octet-stream\nSize: 21524 bytes\nDesc: not available\nUrl : http://lists.osgeo.org/pipermail/grass-stats/attachments/20020424/b7aaf13b/trazas1.obj",
+      "body_snippet": "Hi Edzer;\nI've tried to save you a little of work. I send you the sites file, and in\nthe file \"paraEdzer.txt\", there are all the posibilities I've tried in the\ncommand file, followed by the correspond",
+      "thread_id": "thread-538d9d18fa9b",
+      "thread_depth": 2,
+      "month": "2002-04"
+    },
+    {
+      "id": "msg-6261a8c3b6a7",
+      "message_id": "<3CC7FE02.CD65458D@geog.uu.nl>",
+      "from_name": "Edzer J. Pebesma",
+      "from_email_hash": "a7fb0ca623e251a5aff6aa466eb7f50e3c643594fe03e3232d546a007043eef0",
+      "date": "2002-04-25T09:00:50Z",
+      "subject": "[STATSGRASS] grass, gstat, and 3d maps",
+      "subject_clean": "[STATSGRASS] grass, gstat, and 3d maps",
+      "in_reply_to": null,
+      "references": [
+        "<006401c1e9fc$75abac60$4e17253e@pochito>",
+        "<3CC50C28.BCD123E3@geog.uu.nl>",
+        "<000201c1ebac$e36a95c0$cb91253e@pochito>"
+      ],
+      "body_plain": "Thanks for the test data set. I corrected two bugs in gstat, and z-coordinate\nreading now seems to work fine. Use:\n\n  data(traz1):\"trazas1\",z=3, v=2; \n\nto specify the second attribute column.\n\nThe updated source code is in the \"daily\" snapshot of 2.3.7, at the\ndownload are of http://www.gstat.org/\n\nBest regards,\n--\nEdzer",
+      "body_snippet": "Thanks for the test data set. I corrected two bugs in gstat, and z-coordinate\nreading now seems to work fine. Use:\n\n  data(traz1):\"trazas1\",z=3, v=2; \n\nto specify the second attribute column.\n\nThe upd",
+      "thread_id": "thread-538d9d18fa9b",
+      "thread_depth": 3,
+      "month": "2002-04"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-fadbb17b9068",
+      "subject": "[STATSGRASS] R contour(): x,y output",
+      "message_count": 1,
+      "participants": [
+        "Roger Bivand"
+      ],
+      "started": "2002-04-02T11:21:48Z",
+      "last_reply": "2002-04-02T11:21:48Z",
+      "root_message_id": "msg-fadbb17b9068"
+    },
+    {
+      "id": "thread-8ccce1d9fa02",
+      "subject": "[STATSGRASS] grass display using R to stretch",
+      "message_count": 1,
+      "participants": [
+        "Agustin Lobo"
+      ],
+      "started": "2002-04-12T13:35:53Z",
+      "last_reply": "2002-04-12T13:35:53Z",
+      "root_message_id": "msg-8ccce1d9fa02"
+    },
+    {
+      "id": "thread-538d9d18fa9b",
+      "subject": "[STATSGRASS] grass, gstat, and 3d maps",
+      "message_count": 4,
+      "participants": [
+        "Edzer J. Pebesma",
+        "Javier"
+      ],
+      "started": "2002-04-22T08:35:07Z",
+      "last_reply": "2002-04-25T09:00:50Z",
+      "root_message_id": "msg-538d9d18fa9b"
+    }
+  ]
+}

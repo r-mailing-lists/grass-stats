@@ -1,0 +1,107 @@
+{
+  "list": "grass-stats",
+  "description": "",
+  "month": "2002-12",
+  "messages": [
+    {
+      "id": "msg-f2c73f4b2e6a",
+      "message_id": "<200212121416.36605.Bodo.Ahrens@univie.ac.at>",
+      "from_name": "Bodo Ahrens",
+      "from_email_hash": "3f80838e6a84b1415b3176520d8b4efccdb37a20b0debca4d00d20f0b1dae986",
+      "date": "2002-12-12T08:16:36Z",
+      "subject": "[STATSGRASS] latlon",
+      "subject_clean": "[STATSGRASS] latlon",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\nthe GRASS-R interface does not allow me to apply gmeta in a lat lon domain:\n\nG<-gmeta(interp=FALSE)\nError in seq.default(from = G$w + (G$ewres/2), to = G$e - (G$ewres/2),  :\n        invalid (to - from)/by in seq(.)\nIn addition: Warning message:\nNAs introduced by coercion\n\newres is set to zero!\n\nI tried this with GRASS R-library 1.11. If I remember correctly it was \npossible in lat lon with an older lib.\n\nAny comments, hints (of course it works is something like lambert ...)\n\nThankyou \nBodo\n\n-- \nDr. Bodo Ahrens\nInstitut fuer Meteorologie und Geophysik, Universitaet Wien\nA-1090 Wien, Althanstrasse 14, AUSTRIA\nTel.: ++43-1-4277-51917 \nFax:  ++43-1-4277-9519\nE-mail: Bodo.Ahrens@univie.ac.at",
+      "body_snippet": "Hi,\nthe GRASS-R interface does not allow me to apply gmeta in a lat lon domain:\n\nG<-gmeta(interp=FALSE)\nError in seq.default(from = G$w + (G$ewres/2), to = G$e - (G$ewres/2),  :\n        invalid (to - ",
+      "thread_id": "thread-f2c73f4b2e6a",
+      "thread_depth": 0,
+      "month": "2002-12"
+    },
+    {
+      "id": "msg-f39644e03b0c",
+      "message_id": "<Pine.LNX.4.44.0212122126410.23075-100000@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2002-12-12T15:35:23Z",
+      "subject": "[STATSGRASS] latlon",
+      "subject_clean": "[STATSGRASS] latlon",
+      "in_reply_to": "<200212121416.36605.Bodo.Ahrens@univie.ac.at>",
+      "references": [],
+      "body_plain": "Hi Bodo,\n\nOn Thu, 12 Dec 2002, Bodo Ahrens wrote:\n\n> Hi,\n> the GRASS-R interface does not allow me to apply gmeta in a lat lon domain:\n> \n> G<-gmeta(interp=FALSE)\n> Error in seq.default(from = G$w + (G$ewres/2), to = G$e - (G$ewres/2),  :\n>         invalid (to - from)/by in seq(.)\n> In addition: Warning message:\n> NAs introduced by coercion\n> \n> ewres is set to zero!\n> \nThere is something strange going on here. Although you set interp=FALSE, \nthe test getting the function to use the compiled interface is failing, so \nthe interpreted gets used anyway. Please do:\n\n> debug(gmeta)\n> is.loaded(\"gmeta\", PACKAGE=\"grassR\")\n> G<-gmeta(interp=FALSE)\n\nand send the output. The R debugger lets you step through the function - \nyou'll see that it jumps to the interpreted code (in which seq() is used) \nif \"gmeta\" isn't loaded, then after META is assigned (when you see ML <- \nlength(META), enter print(META) - I guess that ll prints out fewer fields \nthan the others, and that the values are not being set correctly for this \ncase. The strangeness is why the interpreted code is being used - it looks \nas though library(GRASS) didn't find the current GRASS session.\n\n\n> I tried this with GRASS R-library 1.11. If I remember correctly it was \n> possible in lat lon with an older lib.\n> \n> Any comments, hints (of course it works is something like lambert ...)\n> \n\nThanks for this report - please tell us how you get on.\n\nRoger\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Breiviksveien 40, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 93 93\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "Hi Bodo,\n\nOn Thu, 12 Dec 2002, Bodo Ahrens wrote:\n\n> Hi,\n> the GRASS-R interface does not allow me to apply gmeta in a lat lon domain:\n> \n> G<-gmeta(interp=FALSE)\n> Error in seq.default(from = G$w + (",
+      "thread_id": "thread-f2c73f4b2e6a",
+      "thread_depth": 1,
+      "month": "2002-12"
+    },
+    {
+      "id": "msg-c6261a7f5406",
+      "message_id": "<3E06D12B.8080005@agric.uwa.edu.au>",
+      "from_name": "rohan sadler",
+      "from_email_hash": "867cd7f6774780eceb9adbc6cfa87d74c445f266f3f7fc2bbd3157286b8b2b2e",
+      "date": "2002-12-23T04:02:35Z",
+      "subject": "[STATSGRASS] re: calculating box counting dimension in R",
+      "subject_clean": "[STATSGRASS] re: calculating box counting dimension in R",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\nMy aim is to calculate the box counting dimension of a binary dimension.\n\nI had no luck installing r.boxcount with Grass5, and found no help \nsearching the regular GRASS mailing list.\n\nHowever, I will be writing my own simple box counting function in R \nbecause I am more familiar with it than general shell/C scripting \n(500x500 raster matrices).\n\nIf anybody has a solution that can save me some work then I will be \nhappy to hear it.\n\nRegards\n\nRohan Sadler\n\n\n-- \nPhD Student, Ecosystems Research Group (ERGO)\nSchool of Plant Biology (Botany), Faculty of Natural & Agricultural Sciences,\nThe University of Western Australia, 35 Stirling Highway, Crawley  WA  6009, Australia\n\nPh:  +61 8 9380 7914\nFax: +61 8 9380 7925\nemail: rsadler@agric.uwa.edu.au\nERGO's web site:<http://www.botany.uwa.edu.au/ergo>",
+      "body_snippet": "Hi all,\n\nMy aim is to calculate the box counting dimension of a binary dimension.\n\nI had no luck installing r.boxcount with Grass5, and found no help \nsearching the regular GRASS mailing list.\n\nHoweve",
+      "thread_id": "thread-c6261a7f5406",
+      "thread_depth": 0,
+      "month": "2002-12"
+    },
+    {
+      "id": "msg-2481c69a8309",
+      "message_id": "<3E06D647.2060609@agric.uwa.edu.au>",
+      "from_name": "rohan sadler",
+      "from_email_hash": "867cd7f6774780eceb9adbc6cfa87d74c445f266f3f7fc2bbd3157286b8b2b2e",
+      "date": "2002-12-23T04:24:23Z",
+      "subject": "[STATSGRASS] re: coxcounting in R",
+      "subject_clean": "[STATSGRASS] re: coxcounting in R",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi all,\n\nIgnore most of my message about box counting for a raster image.... Not \na well-composed question.\n\nAny advice on box-counting sets in either R or Grass5 will however be \ngreatly appreciated.\n\nRohan\n\n-- \nPhD Student, Ecosystems Research Group (ERGO)\nSchool of Plant Biology (Botany), Faculty of Natural & Agricultural Sciences,\nThe University of Western Australia, 35 Stirling Highway, Crawley  WA  6009, Australia\n\nPh:  +61 8 9380 7914\nFax: +61 8 9380 7925\nemail: rsadler@agric.uwa.edu.au\nERGO's web site:<http://www.botany.uwa.edu.au/ergo>",
+      "body_snippet": "Hi all,\n\nIgnore most of my message about box counting for a raster image.... Not \na well-composed question.\n\nAny advice on box-counting sets in either R or Grass5 will however be \ngreatly appreciated.",
+      "thread_id": "thread-2481c69a8309",
+      "thread_depth": 0,
+      "month": "2002-12"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-f2c73f4b2e6a",
+      "subject": "[STATSGRASS] latlon",
+      "message_count": 2,
+      "participants": [
+        "Bodo Ahrens",
+        "Roger Bivand"
+      ],
+      "started": "2002-12-12T08:16:36Z",
+      "last_reply": "2002-12-12T15:35:23Z",
+      "root_message_id": "msg-f2c73f4b2e6a"
+    },
+    {
+      "id": "thread-c6261a7f5406",
+      "subject": "[STATSGRASS] re: calculating box counting dimension in R",
+      "message_count": 1,
+      "participants": [
+        "rohan sadler"
+      ],
+      "started": "2002-12-23T04:02:35Z",
+      "last_reply": "2002-12-23T04:02:35Z",
+      "root_message_id": "msg-c6261a7f5406"
+    },
+    {
+      "id": "thread-2481c69a8309",
+      "subject": "[STATSGRASS] re: coxcounting in R",
+      "message_count": 1,
+      "participants": [
+        "rohan sadler"
+      ],
+      "started": "2002-12-23T04:24:23Z",
+      "last_reply": "2002-12-23T04:24:23Z",
+      "root_message_id": "msg-2481c69a8309"
+    }
+  ]
+}
