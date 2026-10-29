@@ -1,0 +1,356 @@
+From jacksonmrodrigues at gmail.com  Thu Dec  5 10:08:33 2019
+From: jacksonmrodrigues at gmail.com (Jackson Rodrigues)
+Date: Thu, 5 Dec 2019 15:08:33 -0300
+Subject: [GRASS-stats] =?utf-8?q?=28no_subject=29?=
+Message-ID: <CAPL76w8gK5hst6_MR_d1NCfy65FYfggzyG+dg6w_VVxuiu_OuA@mail.gmail.com>
+
+Dear all,
+
+I am trying to work with grass7 in R but I got the following error:
+
+Error in rgrass7::writeRAST(raster_image, "raster_image", flags =
+c("overwrite")) : no stars support yet
+
+Could anyone give me a support on this issue?
+
+I have searched for it elsewhere but no answer found so far.
+
+Reproducible exemple below from Rbloggers
+
+*#####################*
+*library(raster)*
+
+
+
+
+
+
+
+
+
+*raster_image <- raster::raster(system.file("external/test.grd", package =
+"raster"))raster_image <- as(raster_image,
+"SpatialGridDataFrame")plot(raster_image)loc <-
+rgrass7::initGRASS("C:/Program Files/GRASS GIS 7.4.4", home = tempdir(),
+override = TRUE)rgrass7::writeRAST(raster_image, "raster_image", flags =
+c("overwrite"))#Error in rgrass7::writeRAST(raster_image, "raster_image",
+flags = c("overwrite")) :#no stars support yet*
+*  ##################### *
+
+Best regards,
+
+Jackson
+
+--
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20191205/993e127c/attachment.html>
+
+From tea3rd at gmail.com  Thu Dec  5 10:20:01 2019
+From: tea3rd at gmail.com (Thomas Adams)
+Date: Thu, 5 Dec 2019 13:20:01 -0500
+Subject: [GRASS-stats] (no subject)
+In-Reply-To: <CAPL76w8gK5hst6_MR_d1NCfy65FYfggzyG+dg6w_VVxuiu_OuA@mail.gmail.com>
+References: <CAPL76w8gK5hst6_MR_d1NCfy65FYfggzyG+dg6w_VVxuiu_OuA@mail.gmail.com>
+Message-ID: <CAGxgkWgkc3BHFdE6K0FsTys5Vv9BzNvHrx7EXcE=m1FQGwLG+w@mail.gmail.com>
+
+Jackson,
+
+Did you first invoke R in your GRASS terminal window, then, at the R prompt:
+
+library(rgrass7)
+
+Tom
+
+On Thu, Dec 5, 2019 at 1:03 PM Jackson Rodrigues <
+jacksonmrodrigues at gmail.com> wrote:
+
+> Dear all,
+>
+> I am trying to work with grass7 in R but I got the following error:
+>
+> Error in rgrass7::writeRAST(raster_image, "raster_image", flags =
+> c("overwrite")) : no stars support yet
+>
+> Could anyone give me a support on this issue?
+>
+> I have searched for it elsewhere but no answer found so far.
+>
+> Reproducible exemple below from Rbloggers
+>
+> *#####################*
+> *library(raster)*
+>
+>
+>
+>
+>
+>
+>
+>
+>
+> *raster_image <- raster::raster(system.file("external/test.grd", package =
+> "raster"))raster_image <- as(raster_image,
+> "SpatialGridDataFrame")plot(raster_image)loc <-
+> rgrass7::initGRASS("C:/Program Files/GRASS GIS 7.4.4", home = tempdir(),
+> override = TRUE)rgrass7::writeRAST(raster_image, "raster_image", flags =
+> c("overwrite"))#Error in rgrass7::writeRAST(raster_image, "raster_image",
+> flags = c("overwrite")) :#no stars support yet*
+> *  ##################### *
+>
+> Best regards,
+>
+> Jackson
+>
+> --
+>
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+
+
+
+-- 
+Thomas E Adams, III
+1724 Sage Lane
+Blacksburg, VA 24060
+tea3rd at gmail.com (personal)
+tea at terrapredictions.org (work)
+
+1 (513) 739-9512 (cell)
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20191205/69830ba7/attachment.html>
+
+From veroandreo at gmail.com  Thu Dec  5 11:53:43 2019
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Thu, 5 Dec 2019 16:53:43 -0300
+Subject: [GRASS-stats] (no subject)
+In-Reply-To: <CAGxgkWgkc3BHFdE6K0FsTys5Vv9BzNvHrx7EXcE=m1FQGwLG+w@mail.gmail.com>
+References: <CAPL76w8gK5hst6_MR_d1NCfy65FYfggzyG+dg6w_VVxuiu_OuA@mail.gmail.com>
+ <CAGxgkWgkc3BHFdE6K0FsTys5Vv9BzNvHrx7EXcE=m1FQGwLG+w@mail.gmail.com>
+Message-ID: <CAAMki4Fqiev9TeFNxL85+MvHD6p2krUakF7wCS6i_6enX-NcQg@mail.gmail.com>
+
+You first need to type:
+use_sp()
+
+Then, read the raster from grass. For vector maps on the other hand, you
+can either set:
+
+use_sp()
+
+or
+
+use_sf()
+
+before the import.
+
+Best,
+Vero
+
+
+
+El jue., 5 dic. 2019 15:20, Thomas Adams <tea3rd at gmail.com> escribió:
+
+> Jackson,
+>
+> Did you first invoke R in your GRASS terminal window, then, at the R
+> prompt:
+>
+> library(rgrass7)
+>
+> Tom
+>
+> On Thu, Dec 5, 2019 at 1:03 PM Jackson Rodrigues <
+> jacksonmrodrigues at gmail.com> wrote:
+>
+>> Dear all,
+>>
+>> I am trying to work with grass7 in R but I got the following error:
+>>
+>> Error in rgrass7::writeRAST(raster_image, "raster_image", flags =
+>> c("overwrite")) : no stars support yet
+>>
+>> Could anyone give me a support on this issue?
+>>
+>> I have searched for it elsewhere but no answer found so far.
+>>
+>> Reproducible exemple below from Rbloggers
+>>
+>> *#####################*
+>> *library(raster)*
+>>
+>>
+>>
+>>
+>>
+>>
+>>
+>>
+>>
+>> *raster_image <- raster::raster(system.file("external/test.grd", package
+>> = "raster"))raster_image <- as(raster_image,
+>> "SpatialGridDataFrame")plot(raster_image)loc <-
+>> rgrass7::initGRASS("C:/Program Files/GRASS GIS 7.4.4", home = tempdir(),
+>> override = TRUE)rgrass7::writeRAST(raster_image, "raster_image", flags =
+>> c("overwrite"))#Error in rgrass7::writeRAST(raster_image, "raster_image",
+>> flags = c("overwrite")) :#no stars support yet*
+>> *  ##################### *
+>>
+>> Best regards,
+>>
+>> Jackson
+>>
+>> --
+>>
+>>
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats at lists.osgeo.org
+>> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+>
+> --
+> Thomas E Adams, III
+> 1724 Sage Lane
+> Blacksburg, VA 24060
+> tea3rd at gmail.com (personal)
+> tea at terrapredictions.org (work)
+>
+> 1 (513) 739-9512 (cell)
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20191205/acfae34b/attachment.html>
+
+From jacksonmrodrigues at gmail.com  Thu Dec  5 18:42:19 2019
+From: jacksonmrodrigues at gmail.com (Jackson Rodrigues)
+Date: Thu, 5 Dec 2019 23:42:19 -0300
+Subject: [GRASS-stats] (no subject)
+In-Reply-To: <CAAMki4Fqiev9TeFNxL85+MvHD6p2krUakF7wCS6i_6enX-NcQg@mail.gmail.com>
+References: <CAPL76w8gK5hst6_MR_d1NCfy65FYfggzyG+dg6w_VVxuiu_OuA@mail.gmail.com>
+ <CAGxgkWgkc3BHFdE6K0FsTys5Vv9BzNvHrx7EXcE=m1FQGwLG+w@mail.gmail.com>
+ <CAAMki4Fqiev9TeFNxL85+MvHD6p2krUakF7wCS6i_6enX-NcQg@mail.gmail.com>
+Message-ID: <CAPL76w-2oNygBgtOQ2PD9M=01w+tuNt4hXe5dF3cRzBHoBEzeQ@mail.gmail.com>
+
+Hi Verônica,
+
+Perfect!
+
+simply run use_sp() before and voilà.
+
+Thank you,
+
+Best
+
+Jackson
+
+Em qui, 5 de dez de 2019 16:53, Veronica Andreo <veroandreo at gmail.com>
+escreveu:
+
+> You first need to type:
+> use_sp()
+>
+> Then, read the raster from grass. For vector maps on the other hand, you
+> can either set:
+>
+> use_sp()
+>
+> or
+>
+> use_sf()
+>
+> before the import.
+>
+> Best,
+> Vero
+>
+>
+>
+> El jue., 5 dic. 2019 15:20, Thomas Adams <tea3rd at gmail.com> escribió:
+>
+>> Jackson,
+>>
+>> Did you first invoke R in your GRASS terminal window, then, at the R
+>> prompt:
+>>
+>> library(rgrass7)
+>>
+>> Tom
+>>
+>> On Thu, Dec 5, 2019 at 1:03 PM Jackson Rodrigues <
+>> jacksonmrodrigues at gmail.com> wrote:
+>>
+>>> Dear all,
+>>>
+>>> I am trying to work with grass7 in R but I got the following error:
+>>>
+>>> Error in rgrass7::writeRAST(raster_image, "raster_image", flags =
+>>> c("overwrite")) : no stars support yet
+>>>
+>>> Could anyone give me a support on this issue?
+>>>
+>>> I have searched for it elsewhere but no answer found so far.
+>>>
+>>> Reproducible exemple below from Rbloggers
+>>>
+>>> *#####################*
+>>> *library(raster)*
+>>>
+>>>
+>>>
+>>>
+>>>
+>>>
+>>>
+>>>
+>>>
+>>> *raster_image <- raster::raster(system.file("external/test.grd", package
+>>> = "raster"))raster_image <- as(raster_image,
+>>> "SpatialGridDataFrame")plot(raster_image)loc <-
+>>> rgrass7::initGRASS("C:/Program Files/GRASS GIS 7.4.4", home = tempdir(),
+>>> override = TRUE)rgrass7::writeRAST(raster_image, "raster_image", flags =
+>>> c("overwrite"))#Error in rgrass7::writeRAST(raster_image, "raster_image",
+>>> flags = c("overwrite")) :#no stars support yet*
+>>> *  ##################### *
+>>>
+>>> Best regards,
+>>>
+>>> Jackson
+>>>
+>>> --
+>>>
+>>>
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats at lists.osgeo.org
+>>> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>>
+>>
+>> --
+>> Thomas E Adams, III
+>> 1724 Sage Lane
+>> Blacksburg, VA 24060
+>> tea3rd at gmail.com (personal)
+>> tea at terrapredictions.org (work)
+>>
+>> 1 (513) 739-9512 (cell)
+>>
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats at lists.osgeo.org
+>> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20191205/9e3fff6d/attachment.html>
+

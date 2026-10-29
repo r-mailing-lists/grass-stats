@@ -1,0 +1,571 @@
+From jumanbar at gmail.com  Thu Apr 24 20:02:16 2008
+From: jumanbar at gmail.com (Juan Manuel Barreneche)
+Date: Thu Apr 24 20:02:17 2008
+Subject: [GRASS-stats] R-GRASS error: "all connections are in use"
+Message-ID: <a61be2750804241702u5859620n8081de9f1fbb66e4@mail.gmail.com>
+
+Hello list,
+
+I'm currently using R version 2.5.0 (2007-04-23) in conjunction with
+GRASS6.2.2.
+
+My goal is to use a loop to extract data from rasters created in grass
+(a different raster in each simulation, created with r.cost using a
+unique cost surface raster, which is deleted every time in order to
+free disk space).
+
+Percent complete:  100%
+r.out.bin complete.
+REMOVE [nombre]
+ raster
+ header
+ category
+ color    MISSING
+ history
+ misc
+ fcell    MISSING
+ g3dcell  MISSING
+Creating BIL support files ...
+Header File = /home/mastermind/GRASSDATA/prueba/wordlclim/.tmp/torre11b1-4/nombre.hdr
+World File = /home/mastermind/GRASSDATA/prueba/wordlclim/.tmp/torre11b1-4/nombre.wld
+Exporting Raster as integer values (bytes=2)
+Using the Current Region settings ...
+north=-34.474986
+south=-34.966653
+east=-55.866644
+west=-56.558311
+r=59
+c=83
+
+Porcentaje completado:  100%
+r.out.bin complete.
+Error in file(paste(fname, "wld", sep = "."), "r") :
+         all connections are in use
+
+In addition, after this message every time i try a help comand (such
+as ?file, ?rbind, etc...) i get the same message:
+Error in file(con, "r"): all connections are in use
+
+I've been working with R and GRASS for about 9 months and I'm not much
+of a specialist, so i'm really lost here, does anybody have a clue
+about the solution of this problem?
+
+many thanks,
+
+Juan Manuel
+From jarekj at amu.edu.pl  Fri Apr 25 02:18:35 2008
+From: jarekj at amu.edu.pl (=?UTF-8?B?SmFyb3PFgmF3IEphc2lld2ljeg==?=)
+Date: Fri Apr 25 02:27:00 2008
+Subject: [GRASS-stats] R-GRASS error: "all connections are in use"
+In-Reply-To: <a61be2750804241702u5859620n8081de9f1fbb66e4@mail.gmail.com>
+References: <a61be2750804241702u5859620n8081de9f1fbb66e4@mail.gmail.com>
+Message-ID: <481177BB.6080002@amu.edu.pl>
+
+Hi
+This message apeeared on the begining of the loop or in somewhere in the 
+iteration
+
+please type the full command (full loop) you have used
+
+
+
+uan Manuel Barreneche pisze:
+> Hello list,
+>
+> I'm currently using R version 2.5.0 (2007-04-23) in conjunction with
+> GRASS6.2.2.
+>
+> My goal is to use a loop to extract data from rasters created in grass
+> (a different raster in each simulation, created with r.cost using a
+> unique cost surface raster, which is deleted every time in order to
+> free disk space).
+>
+> Percent complete:  100%
+> r.out.bin complete.
+> REMOVE [nombre]
+>  raster
+>  header
+>  category
+>  color    MISSING
+>  history
+>  misc
+>  fcell    MISSING
+>  g3dcell  MISSING
+> Creating BIL support files ...
+> Header File = /home/mastermind/GRASSDATA/prueba/wordlclim/.tmp/torre11b1-4/nombre.hdr
+> World File = /home/mastermind/GRASSDATA/prueba/wordlclim/.tmp/torre11b1-4/nombre.wld
+> Exporting Raster as integer values (bytes=2)
+> Using the Current Region settings ...
+> north=-34.474986
+> south=-34.966653
+> east=-55.866644
+> west=-56.558311
+> r=59
+> c=83
+>
+> Porcentaje completado:  100%
+> r.out.bin complete.
+> Error in file(paste(fname, "wld", sep = "."), "r") :
+>          all connections are in use
+>
+> In addition, after this message every time i try a help comand (such
+> as ?file, ?rbind, etc...) i get the same message:
+> Error in file(con, "r"): all connections are in use
+>
+> I've been working with R and GRASS for about 9 months and I'm not much
+> of a specialist, so i'm really lost here, does anybody have a clue
+> about the solution of this problem?
+>
+> many thanks,
+>
+> Juan Manuel
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>   
+
+From Roger.Bivand at nhh.no  Fri Apr 25 02:52:46 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri Apr 25 02:53:54 2008
+Subject: [GRASS-stats] R-GRASS error: "all connections are in use"
+In-Reply-To: <481177BB.6080002@amu.edu.pl>
+References: <a61be2750804241702u5859620n8081de9f1fbb66e4@mail.gmail.com>
+	<481177BB.6080002@amu.edu.pl>
+Message-ID: <Pine.LNX.4.64.0804250847110.10289@reclus.nhh.no>
+
+On Fri, 25 Apr 2008, Jarosaw Jasiewicz wrote:
+
+> Hi
+> This message apeeared on the begining of the loop or in somewhere in the 
+> iteration
+>
+> please type the full command (full loop) you have used
+>
+>
+>
+> uan Manuel Barreneche pisze:
+>>  Hello list,
+>>
+>>  I'm currently using R version 2.5.0 (2007-04-23) in conjunction with
+>>  GRASS6.2.2.
+
+Please always include the output of sessionInfo(), in addition to the R 
+version. spgrass6 is updated from time to time, so it may be that you are 
+- for example - using an obsolete route, although you are using BIL files, 
+so I guess that this is readRAST6() in a loop, as Jarek suggested.
+
+Specifically, I think that this problem was solved in R-2.6.0 - the 
+relevant news item is:
+
+     o	Connections will be closed if there is no R object referring to
+ 	them.  A warning is issued if this is done, either at garbage
+ 	collection or if all the connection slots are in use.
+
+which means that functions do not need to close them explicitly.
+
+Roger
+
+>>
+>>  My goal is to use a loop to extract data from rasters created in grass
+>>  (a different raster in each simulation, created with r.cost using a
+>>  unique cost surface raster, which is deleted every time in order to
+>>  free disk space).
+>>
+>>  Percent complete:  100%
+>>  r.out.bin complete.
+>>  REMOVE [nombre]
+>>   raster
+>>   header
+>>   category
+>>   color    MISSING
+>>   history
+>>   misc
+>>   fcell    MISSING
+>>   g3dcell  MISSING
+>>  Creating BIL support files ...
+>>  Header File =
+>>  /home/mastermind/GRASSDATA/prueba/wordlclim/.tmp/torre11b1-4/nombre.hdr
+>>  World File =
+>>  /home/mastermind/GRASSDATA/prueba/wordlclim/.tmp/torre11b1-4/nombre.wld
+>>  Exporting Raster as integer values (bytes=2)
+>>  Using the Current Region settings ...
+>>  north=-34.474986
+>>  south=-34.966653
+>>  east=-55.866644
+>>  west=-56.558311
+>>  r=59
+>>  c=83
+>>
+>>  Porcentaje completado:  100%
+>>  r.out.bin complete.
+>>  Error in file(paste(fname, "wld", sep = "."), "r") :
+>>           all connections are in use
+>>
+>>  In addition, after this message every time i try a help comand (such
+>>  as ?file, ?rbind, etc...) i get the same message:
+>>  Error in file(con, "r"): all connections are in use
+>>
+>>  I've been working with R and GRASS for about 9 months and I'm not much
+>>  of a specialist, so i'm really lost here, does anybody have a clue
+>>  about the solution of this problem?
+>>
+>>  many thanks,
+>>
+>>  Juan Manuel
+>>  _______________________________________________
+>>  grass-stats mailing list
+>>  grass-stats@lists.osgeo.org
+>>  http://lists.osgeo.org/mailman/listinfo/grass-stats
+>> 
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From Seppo.Kaitala at fimr.fi  Fri Apr 25 15:12:11 2008
+From: Seppo.Kaitala at fimr.fi (Seppo.Kaitala@fimr.fi)
+Date: Fri Apr 25 15:49:54 2008
+Subject: [GRASS-stats] Seppo Kaitala/FIMR/FI is out of the office.
+Message-ID: <OFC11BC7B8.0A85A82B-ONC2257436.00697C4E-C2257436.00697C4E@fimr.fi>
+
+
+I will be out of the office starting  19.04.2008 and will not return until
+30.04.2008.
+
+I will respond to your message when I return.
+
+From Carlo.Rondinini at uniroma1.it  Fri Apr 25 16:02:06 2008
+From: Carlo.Rondinini at uniroma1.it (Carlo.Rondinini@uniroma1.it)
+Date: Fri Apr 25 16:18:38 2008
+Subject: [GRASS-stats] Carlo Rondinini is out of office until Apr 28
+Message-ID: <OF722F4D27.E0FBD899-ONC1257436.006E0E62-C1257436.006E0E62@Uniroma1.it>
+
+
+Risposta automatica dal 20/4/08 fino al 28/4/08
+
+I will be out of office and only sporadically
+on email until Apr 28.
+
+Ciao!
+
+Carlo
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20080425/1ac8ec9f/attachment.html
+From jumanbar at gmail.com  Fri Apr 25 17:02:34 2008
+From: jumanbar at gmail.com (Juan Manuel Barreneche)
+Date: Fri Apr 25 17:02:37 2008
+Subject: [GRASS-stats] R-GRASS error: "all connections are in use"
+In-Reply-To: <Pine.LNX.4.64.0804250847110.10289@reclus.nhh.no>
+References: <a61be2750804241702u5859620n8081de9f1fbb66e4@mail.gmail.com>
+	<481177BB.6080002@amu.edu.pl>
+	<Pine.LNX.4.64.0804250847110.10289@reclus.nhh.no>
+Message-ID: <a61be2750804251402w4c64df94m1e754140110b3c55@mail.gmail.com>
+
+Well, thanks to you all, the problem was fixed. It turned out that
+RB's suggestion was right (i updated R, only). I apologize for sending
+only partial information (in fact it was because of a distraction that
+i didn't put all the script, etc. in the email).
+
+One thing caugth my attention though: every time i call readRAST6 a
+warning message apears, saying:
+
+> warnings()
+$`closing unused connection 3 (gsub(" ", ":", l8))`
+NULL
+
+I suppose this is exactly the improvement that Roger B. pointed out in
+his reply, and i just didn't give much importance to it. Please let me
+know if there is something important to take into consideration...
+
+Thanks again,
+
+JM
+
+
+
+On Fri, Apr 25, 2008 at 3:52 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Fri, 25 Apr 2008, Jarosaw Jasiewicz wrote:
+>
+>
+> > Hi
+> > This message apeeared on the begining of the loop or in somewhere in the
+> iteration
+> >
+> > please type the full command (full loop) you have used
+> >
+> >
+> >
+> > uan Manuel Barreneche pisze:
+> >
+> > >  Hello list,
+> > >
+> > >  I'm currently using R version 2.5.0 (2007-04-23) in conjunction with
+> > >  GRASS6.2.2.
+> > >
+> >
+>
+>  Please always include the output of sessionInfo(), in addition to the R
+> version. spgrass6 is updated from time to time, so it may be that you are -
+> for example - using an obsolete route, although you are using BIL files, so
+> I guess that this is readRAST6() in a loop, as Jarek suggested.
+>
+>  Specifically, I think that this problem was solved in R-2.6.0 - the
+> relevant news item is:
+>
+>     o   Connections will be closed if there is no R object referring to
+>         them.  A warning is issued if this is done, either at garbage
+>         collection or if all the connection slots are in use.
+>
+>  which means that functions do not need to close them explicitly.
+>
+>  Roger
+>
+>
+>
+>
+> >
+> > >
+> > >  My goal is to use a loop to extract data from rasters created in grass
+> > >  (a different raster in each simulation, created with r.cost using a
+> > >  unique cost surface raster, which is deleted every time in order to
+> > >  free disk space).
+> > >
+> > >  Percent complete:  100%
+> > >  r.out.bin complete.
+> > >  REMOVE [nombre]
+> > >  raster
+> > >  header
+> > >  category
+> > >  color    MISSING
+> > >  history
+> > >  misc
+> > >  fcell    MISSING
+> > >  g3dcell  MISSING
+> > >  Creating BIL support files ...
+> > >  Header File =
+> > >  /home/mastermind/GRASSDATA/prueba/wordlclim/.tmp/torre11b1-4/nombre.hdr
+> > >  World File =
+> > >  /home/mastermind/GRASSDATA/prueba/wordlclim/.tmp/torre11b1-4/nombre.wld
+> > >  Exporting Raster as integer values (bytes=2)
+> > >  Using the Current Region settings ...
+> > >  north=-34.474986
+> > >  south=-34.966653
+> > >  east=-55.866644
+> > >  west=-56.558311
+> > >  r=59
+> > >  c=83
+> > >
+> > >  Porcentaje completado:  100%
+> > >  r.out.bin complete.
+> > >  Error in file(paste(fname, "wld", sep = "."), "r") :
+> > >          all connections are in use
+> > >
+> > >  In addition, after this message every time i try a help comand (such
+> > >  as ?file, ?rbind, etc...) i get the same message:
+> > >  Error in file(con, "r"): all connections are in use
+> > >
+> > >  I've been working with R and GRASS for about 9 months and I'm not much
+> > >  of a specialist, so i'm really lost here, does anybody have a clue
+> > >  about the solution of this problem?
+> > >
+> > >  many thanks,
+> > >
+> > >  Juan Manuel
+> > >  _______________________________________________
+> > >  grass-stats mailing list
+> > >  grass-stats@lists.osgeo.org
+> > >  http://lists.osgeo.org/mailman/listinfo/grass-stats
+> > >
+> > >
+> >
+> > _______________________________________________
+> > grass-stats mailing list
+> > grass-stats@lists.osgeo.org
+> > http://lists.osgeo.org/mailman/listinfo/grass-stats
+> >
+> >
+> >
+>
+>  --
+>  Roger Bivand
+>  Economic Geography Section, Department of Economics, Norwegian School of
+>  Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+>  Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+>  e-mail: Roger.Bivand@nhh.no
+>
+>
+From Roger.Bivand at nhh.no  Sat Apr 26 14:14:43 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sat Apr 26 14:14:46 2008
+Subject: [GRASS-stats] R-GRASS error: "all connections are in use"
+In-Reply-To: <a61be2750804251402w4c64df94m1e754140110b3c55@mail.gmail.com>
+References: <a61be2750804241702u5859620n8081de9f1fbb66e4@mail.gmail.com> 
+	<481177BB.6080002@amu.edu.pl>
+	<Pine.LNX.4.64.0804250847110.10289@reclus.nhh.no>
+	<a61be2750804251402w4c64df94m1e754140110b3c55@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0804262009140.15631@reclus.nhh.no>
+
+On Fri, 25 Apr 2008, Juan Manuel Barreneche wrote:
+
+> Well, thanks to you all, the problem was fixed. It turned out that
+> RB's suggestion was right (i updated R, only). I apologize for sending
+> only partial information (in fact it was because of a distraction that
+> i didn't put all the script, etc. in the email).
+>
+> One thing caugth my attention though: every time i call readRAST6 a
+> warning message apears, saying:
+>
+>> warnings()
+> $`closing unused connection 3 (gsub(" ", ":", l8))`
+> NULL
+>
+> I suppose this is exactly the improvement that Roger B. pointed out in
+> his reply, and i just didn't give much importance to it. Please let me
+> know if there is something important to take into consideration...
+
+It is just a warning message, nothing more, but in future releases I will 
+try to get it to go away by opening and closing the connections 
+explicitly. I had though that more recent versions had fixed the problem, 
+I don't think that we know what version of spgrass6 you are using.
+
+Roger
+
+>
+> Thanks again,
+>
+> JM
+>
+>
+>
+> On Fri, Apr 25, 2008 at 3:52 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> On Fri, 25 Apr 2008, Jarosaw Jasiewicz wrote:
+>>
+>>
+>>> Hi
+>>> This message apeeared on the begining of the loop or in somewhere in the
+>> iteration
+>>>
+>>> please type the full command (full loop) you have used
+>>>
+>>>
+>>>
+>>> uan Manuel Barreneche pisze:
+>>>
+>>>>  Hello list,
+>>>>
+>>>>  I'm currently using R version 2.5.0 (2007-04-23) in conjunction with
+>>>>  GRASS6.2.2.
+>>>>
+>>>
+>>
+>>  Please always include the output of sessionInfo(), in addition to the R
+>> version. spgrass6 is updated from time to time, so it may be that you are -
+>> for example - using an obsolete route, although you are using BIL files, so
+>> I guess that this is readRAST6() in a loop, as Jarek suggested.
+>>
+>>  Specifically, I think that this problem was solved in R-2.6.0 - the
+>> relevant news item is:
+>>
+>>     o   Connections will be closed if there is no R object referring to
+>>         them.  A warning is issued if this is done, either at garbage
+>>         collection or if all the connection slots are in use.
+>>
+>>  which means that functions do not need to close them explicitly.
+>>
+>>  Roger
+>>
+>>
+>>
+>>
+>>>
+>>>>
+>>>>  My goal is to use a loop to extract data from rasters created in grass
+>>>>  (a different raster in each simulation, created with r.cost using a
+>>>>  unique cost surface raster, which is deleted every time in order to
+>>>>  free disk space).
+>>>>
+>>>>  Percent complete:  100%
+>>>>  r.out.bin complete.
+>>>>  REMOVE [nombre]
+>>>>  raster
+>>>>  header
+>>>>  category
+>>>>  color    MISSING
+>>>>  history
+>>>>  misc
+>>>>  fcell    MISSING
+>>>>  g3dcell  MISSING
+>>>>  Creating BIL support files ...
+>>>>  Header File =
+>>>>  /home/mastermind/GRASSDATA/prueba/wordlclim/.tmp/torre11b1-4/nombre.hdr
+>>>>  World File =
+>>>>  /home/mastermind/GRASSDATA/prueba/wordlclim/.tmp/torre11b1-4/nombre.wld
+>>>>  Exporting Raster as integer values (bytes=2)
+>>>>  Using the Current Region settings ...
+>>>>  north=-34.474986
+>>>>  south=-34.966653
+>>>>  east=-55.866644
+>>>>  west=-56.558311
+>>>>  r=59
+>>>>  c=83
+>>>>
+>>>>  Porcentaje completado:  100%
+>>>>  r.out.bin complete.
+>>>>  Error in file(paste(fname, "wld", sep = "."), "r") :
+>>>>          all connections are in use
+>>>>
+>>>>  In addition, after this message every time i try a help comand (such
+>>>>  as ?file, ?rbind, etc...) i get the same message:
+>>>>  Error in file(con, "r"): all connections are in use
+>>>>
+>>>>  I've been working with R and GRASS for about 9 months and I'm not much
+>>>>  of a specialist, so i'm really lost here, does anybody have a clue
+>>>>  about the solution of this problem?
+>>>>
+>>>>  many thanks,
+>>>>
+>>>>  Juan Manuel
+>>>>  _______________________________________________
+>>>>  grass-stats mailing list
+>>>>  grass-stats@lists.osgeo.org
+>>>>  http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>
+>>>>
+>>>
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats@lists.osgeo.org
+>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>
+>>>
+>>>
+>>
+>>  --
+>>  Roger Bivand
+>>  Economic Geography Section, Department of Economics, Norwegian School of
+>>  Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+>>  Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>  e-mail: Roger.Bivand@nhh.no
+>>
+>>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+

@@ -1,0 +1,4255 @@
+From veroandreo at gmail.com  Tue Oct 10 11:43:47 2017
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Tue, 10 Oct 2017 20:43:47 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+	readVECT
+Message-ID: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+
+Hello all,
+
+Are SQLite and GML drivers disabled/broken in readVECT? I only get
+driver="ESRI Shapefile" to work, but in some cases with a lot of warnings.
+
+Here an example with NC location:
+grass73svn grassdata/nc_spm_08_grass7/PERMANENT/ --text
+...
+GRASS 7.3.svn (nc_spm_08_grass7):~ > R
+...
+>library(rgrass7)
+...
+> bla <- readVECT("firestations", driver="SQLite")
+Error: driver %in% candDrivers is not TRUE
+
+> bla <- readVECT("firestations", driver="GML")
+Error: driver %in% candDrivers is not TRUE
+
+> bla <- readVECT("firestations", driver="ESRI Shapefile")
+Exporting 71 features...
+ 100%
+v.out.ogr complete. 71 features (Point type) written to <firestat>
+(ESRI_Shapefile format).
+OGR data source with driver: ESRI Shapefile
+Source: "/home/veroandreo/grassdata/nc_spm_08_grass7/PERMANENT/.tmp/
+ipv6.dynamic.ziggo.nl", layer: "firestat"
+with 71 features
+It has 22 fields
+
+For some vectors, I get the following warnings (loss of data apparently):
+
+> bla2<-readVECT("census_wake2000")
+Exporting 105 areas (may take some time)...
+Warning 1: Value 120426752 of field AREA of feature 23 not successfully
+written. Possibly due to too larger number with respect to field width
+Warning 1: Value 108540592 of field AREA of feature 24 not successfully
+written. Possibly due to too larger number with respect to field width
+
+[...]
+
+Warning 1: Value 439922656 of field AREA of feature 102 not successfully
+written. Possibly due to too larger number with respect to field width
+Warning 1: Value 678758336 of field AREA of feature 103 not successfully
+written. Possibly due to too larger number with respect to field width
+ 100%
+Warning 1: Value 439045472 of field AREA of feature 104 not successfully
+written. Possibly due to too larger number with respect to field width
+v.out.ogr complete. 105 features (Polygon type) written to <census_w>
+(ESRI_Shapefile format).
+OGR data source with driver: ESRI Shapefile
+Source: "/home/veroandreo/grassdata/nc_spm_08_grass7/PERMANENT/.tmp/
+ipv6.dynamic.ziggo.nl", layer: "census_w"
+with 105 features
+It has 13 fields
+
+Thanks a lot in advance for any hint
+
+best,
+Vero
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20171010/1533928e/attachment.html>
+
+From hellik at web.de  Tue Oct 10 12:21:41 2017
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Tue, 10 Oct 2017 12:21:41 -0700 (MST)
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+	readVECT
+In-Reply-To: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+Message-ID: <1507663301897-0.post@n6.nabble.com>
+
+>Are SQLite and GML drivers disabled/broken in readVECT? I only get
+driver="ESRI Shapefile" to work,
+
+confirmed by:
+
+---
+> sessionInfo()
+R version 3.4.0 (2017-04-21)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 15063)
+
+Matrix products: default
+
+locale:
+[1] C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] rgrass7_0.1-9 XML_3.98-1.9  sp_1.2-5
+
+loaded via a namespace (and not attached):
+[1] compiler_3.4.0  rgdal_1.2-12    grid_3.4.0      lattice_0.20-35
+---
+
+only driver="ESRI Shapefile" works here.
+
+trying SQLite:
+
+> bla5 <- readVECT("firestations", driver="SQLite")
+Supported formats:
+Error: driver %in% candDrivers is not TRUE
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+
+From hellik at web.de  Tue Oct 10 12:24:37 2017
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Tue, 10 Oct 2017 12:24:37 -0700 (MST)
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+	readVECT
+In-Reply-To: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+Message-ID: <1507663477417-0.post@n6.nabble.com>
+
+>For some vectors, I get the following warnings (loss of data apparently): 
+>
+>> bla2<-readVECT("census_wake2000")
+>Exporting 105 areas (may take some time)...
+>Warning 1: Value 120426752 of field AREA of feature 23 not successfully
+written. Possibly due to too larger >number with respect to field width
+>Warning 1: Value 108540592 of field AREA of feature 24 not successfully
+written. Possibly due to too larger >number with respect to field width
+
+it seems to be a shapefile/(ogr) issue, see:
+
+v.out.ogr input=census_wake2000 at PERMANENT
+output=D:\wd\test\slkdf\census_wake2000.shp format=ESRI_Shapefile
+Exporting 105 areas (may take some time)...
+Warning 1: Value 120426752 of field AREA of feature 23 not
+successfully written. Possibly due to too larger number with
+respect to field width
+Warning 1: Value 108540592 of field AREA of feature 24 not
+successfully written. Possibly due to too larger number with
+respect to field width
+Warning 1: Value 136831232 of field AREA of feature 26 not
+successfully written. Possibly due to too larger number with
+respect to field width
+Warning 1: Value 133581472 of field AREA of feature 37 not
+successfully written. Possibly due to too larger number with
+respect to field width
+Warning 1: Value 186611808 of field AREA of feature 42 not
+successfully written. Possibly due to too larger number with
+respect to field width
+Warning 1: Value 645046656 of field AREA of feature 43 not
+successfully written. Possibly due to too larger number with
+respect to field width
+Warning 1: Value 550580288 of field AREA of feature 44 not
+successfully written. Possibly due to too larger number with
+respect to field width
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+
+From veroandreo at gmail.com  Tue Oct 10 12:29:24 2017
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Tue, 10 Oct 2017 21:29:24 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+	readVECT
+In-Reply-To: <1507663477417-0.post@n6.nabble.com>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <1507663477417-0.post@n6.nabble.com>
+Message-ID: <CAAMki4F64b6e0EfYWTo0SQSW3AgTJVcGaQ6LYO4XbGx9-kYDqA@mail.gmail.com>
+
+Hi Helli,
+
+2017-10-10 21:24 GMT+02:00 Helmut Kudrnovsky <hellik at web.de>:
+
+> >For some vectors, I get the following warnings (loss of data apparently):
+> >
+> >> bla2<-readVECT("census_wake2000")
+> >Exporting 105 areas (may take some time)...
+> >Warning 1: Value 120426752 of field AREA of feature 23 not successfully
+> written. Possibly due to too larger >number with respect to field width
+> >Warning 1: Value 108540592 of field AREA of feature 24 not successfully
+> written. Possibly due to too larger >number with respect to field width
+>
+> it seems to be a shapefile/(ogr) issue, see:
+>
+> v.out.ogr input=census_wake2000 at PERMANENT
+> output=D:\wd\test\slkdf\census_wake2000.shp format=ESRI_Shapefile
+> Exporting 105 areas (may take some time)...
+> Warning 1: Value 120426752 of field AREA of feature 23 not
+> successfully written. Possibly due to too larger number with
+> respect to field width
+> Warning 1: Value 108540592 of field AREA of feature 24 not
+> successfully written. Possibly due to too larger number with
+> respect to field width
+> Warning 1: Value 136831232 of field AREA of feature 26 not
+> successfully written. Possibly due to too larger number with
+> respect to field width
+> Warning 1: Value 133581472 of field AREA of feature 37 not
+> successfully written. Possibly due to too larger number with
+> respect to field width
+> Warning 1: Value 186611808 of field AREA of feature 42 not
+> successfully written. Possibly due to too larger number with
+> respect to field width
+> Warning 1: Value 645046656 of field AREA of feature 43 not
+> successfully written. Possibly due to too larger number with
+> respect to field width
+> Warning 1: Value 550580288 of field AREA of feature 44 not
+> successfully written. Possibly due to too larger number with
+> respect to field width
+>
+
+thanks for testing :)
+
+and yes, precisely because shapefile has that limitation, I would rather to
+use SQLite (which was working some months ago, say June, but in some months
+things might change)
+
+Vero
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20171010/95edcbdc/attachment.html>
+
+From hellik at web.de  Tue Oct 10 12:32:23 2017
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Tue, 10 Oct 2017 12:32:23 -0700 (MST)
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+	readVECT
+In-Reply-To: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+Message-ID: <1507663943657-0.post@n6.nabble.com>
+
+>> bla2<-readVECT("census_wake2000")
+>Exporting 105 areas (may take some time)...
+>Warning 1: Value 120426752 of field AREA of feature 23 not successfully
+written. Possibly due to too larger >number with respect to field width
+
+testing by:
+
+v.out.ogr input=census_wake2000 at PERMANENT
+output=D:\wd\test\slkdf\census_wake2000.sqlite format=SQLite
+
+D:\wd\test\slkdf>ogrinfo census_wake2000.sqlite
+INFO: Open of `census_wake2000.sqlite'
+      using driver `SQLite' successful.
+1: census_wake2000 (Polygon)
+
+D:\wd\test\slkdf>ogr2ogr test.shp census_wake2000.sqlite
+Warning 1: Value 120426752 of field area of feature 23 not successfully
+written. Possibly due to too larger number with respect to field width
+Warning 1: Value 108540592 of field area of feature 24 not successfully
+written. Possibly due to too larger number with respect to field width
+
+the same warning as in readVect.
+
+OTOH loading the test.shp in QGIS, it seems that the area value is
+successfully written into the shapefile dbf attribute table. maybe worth to
+ask in the GDAL ML for clarification for these warnings.
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+
+From hellik at web.de  Tue Oct 10 13:03:00 2017
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Tue, 10 Oct 2017 13:03:00 -0700 (MST)
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+	readVECT
+In-Reply-To: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+Message-ID: <1507665780575-0.post@n6.nabble.com>
+
+>Are SQLite and GML drivers disabled/broken in readVECT? 
+
+some earlier discussions I remembered:
+
+https://lists.osgeo.org/pipermail/grass-stats/2015-July/001561.html
+https://lists.osgeo.org/pipermail/grass-stats/2015-July/001562.html
+[...]
+https://lists.osgeo.org/pipermail/grass-stats/2015-June/date.html
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+
+From Roger.Bivand at nhh.no  Tue Oct 10 13:36:47 2017
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue, 10 Oct 2017 20:36:47 +0000
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working
+	for	readVECT
+In-Reply-To: <1507665780575-0.post@n6.nabble.com>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>,
+ <1507665780575-0.post@n6.nabble.com>
+Message-ID: <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+
+Please report sessionInfo() in R, and check the ogrDrivers() list.
+
+Roger Bivand
+Norwegian School of Economics
+Bergen, Norway
+
+
+
+
+On Tue, Oct 10, 2017 at 10:03 PM +0200, "Helmut Kudrnovsky" <hellik at web.de<mailto:hellik at web.de>> wrote:
+
+
+>Are SQLite and GML drivers disabled/broken in readVECT?
+
+some earlier discussions I remembered:
+
+https://lists.osgeo.org/pipermail/grass-stats/2015-July/001561.html
+https://lists.osgeo.org/pipermail/grass-stats/2015-July/001562.html
+[...]
+https://lists.osgeo.org/pipermail/grass-stats/2015-June/date.html
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+_______________________________________________
+grass-stats mailing list
+grass-stats at lists.osgeo.org
+https://lists.osgeo.org/mailman/listinfo/grass-stats
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20171010/aa33705b/attachment.html>
+
+From hellik at web.de  Tue Oct 10 13:42:38 2017
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Tue, 10 Oct 2017 22:42:38 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+ readVECT
+In-Reply-To: <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <1507665780575-0.post@n6.nabble.com>
+ <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+Message-ID: <trinity-218fc994-ed35-4d71-80e5-a56633e6b39a-1507668158734@3c-app-webde-bap21>
+
+>Von: "Roger Bivand" <Roger.Bivand at nhh.no>
+>Please report sessionInfo() in R, and check the ogrDrivers() list.
+
+sessionInfo() already posted in the mail before, here again:
+
+> sessionInfo()
+R version 3.4.0 (2017-04-21)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 15063)
+
+Matrix products: default
+
+locale:
+[1] C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+loaded via a namespace (and not attached):
+[1] compiler_3.4.0
+
+and
+
+> ogrDrivers()
+Error in ogrDrivers() : could not find function "ogrDrivers"
+
+From veroandreo at gmail.com  Tue Oct 10 13:52:36 2017
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Tue, 10 Oct 2017 22:52:36 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+	readVECT
+In-Reply-To: <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <1507665780575-0.post@n6.nabble.com>
+ <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+Message-ID: <CAAMki4ExcqkYrmRR+Z=J8bG4xHdhE4Gbjy6JFzJ7z2sMnz+Ueg@mail.gmail.com>
+
+Hello Roger,
+
+Sorry I forgot this info. Here, the outputs:
+
+> sessionInfo()
+R version 3.4.1 (2017-06-30)
+Platform: x86_64-redhat-linux-gnu (64-bit)
+Running under: Fedora 26 (Twenty Six)
+
+Matrix products: default
+BLAS/LAPACK: /usr/lib64/R/lib/libRblas.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+loaded via a namespace (and not attached):
+[1] compiler_3.4.1
+
+----
+> library(rgrass7)
+Loading required package: sp
+Loading required package: XML
+GRASS GIS interface loaded with GRASS version: GRASS 7.3.svn (2017)
+and location: nc_spm_08_grass7
+
+> library(rgdal)
+rgdal: version: 1.2-13, (SVN revision 686)
+ Geospatial Data Abstraction Library extensions to R successfully loaded
+ Loaded GDAL runtime: GDAL 2.1.3, released 2017/20/01
+ Path to GDAL shared files: /usr/share/gdal
+ Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]
+ Path to PROJ.4 shared files: (autodetected)
+ Linking to sp version: 1.2-5
+
+> ogrDrivers()
+             name
+long_name
+1      AeronavFAA                                                 Aeronav
+FAA
+2      AmigoCloud
+AmigoCloud
+3          ARCGEN                                           Arc/Info
+Generate
+4          AVCBin                                    Arc/Info Binary
+Coverage
+5          AVCE00                               Arc/Info E00 (ASCII)
+Coverage
+6             BNA                                                   Atlas
+BNA
+7           Carto
+Carto
+8        Cloudant                                          Cloudant /
+CouchDB
+9         CouchDB                                          CouchDB /
+GeoCouch
+10            CSV                                Comma Separated Value
+(.csv)
+11            CSW                      OGC CSW (Catalog  Service for the
+Web)
+12            DGN                                            Microstation
+DGN
+13            DXF                                                 AutoCAD
+DXF
+14         EDIGEO                               French EDIGEO exchange
+format
+15  ElasticSearch                                              Elastic
+Search
+16 ESRI Shapefile                                              ESRI
+Shapefile
+17     Geoconcept
+Geoconcept
+18        GeoJSON
+GeoJSON
+19       Geomedia                                               Geomedia
+.mdb
+20         GeoRSS
+GeoRSS
+21            GFT                                        Google Fusion
+Tables
+22            GML                             Geography Markup Language
+(GML)
+23           GPKG
+GeoPackage
+24       GPSBabel
+GPSBabel
+25  GPSTrackMaker
+GPSTrackMaker
+26            GPX
+GPX
+27            HTF                                Hydrographic Transfer
+Vector
+28           HTTP                                       HTTP Fetching
+Wrapper
+29         Idrisi                                        Idrisi Vector
+(.vct)
+30     Interlis 1                                                  Interlis
+1
+31     Interlis 2                                                  Interlis
+2
+32            JML                                                OpenJUMP
+JML
+33    JP2OpenJPEG                  JPEG-2000 driver based on OpenJPEG
+library
+34       JPEG2000 JPEG-2000 part 1 (ISO/IEC 15444-1), based on Jasper
+library
+35            KML                               Keyhole Markup Language
+(KML)
+36         LIBKML                            Keyhole Markup Language
+(LIBKML)
+37   MapInfo File                                                MapInfo
+File
+38         Memory
+Memory
+39   MSSQLSpatial                       Microsoft SQL Server Spatial
+Database
+40          MySQL
+MySQL
+41            NAS                                                 NAS -
+ALKIS
+42         netCDF                                  Network Common Data
+Format
+43           ODBC
+ODBC
+44            ODS        Open Document/ LibreOffice / OpenOffice
+Spreadsheet
+45       OGR_DODS
+OGR_DODS
+46        OGR_GMT                                    GMT ASCII Vectors
+(.gmt)
+47       OGR_OGDI                               OGDI Vectors (VPF, VMAP,
+DCW)
+48        OGR_PDS                                Planetary Data Systems
+TABLE
+49       OGR_SDTS
+SDTS
+50        OGR_VRT                                    VRT - Virtual
+Datasource
+51        OpenAir
+OpenAir
+52    OpenFileGDB                                                ESRI
+FileGDB
+53            OSM                                   OpenStreetMap XML and
+PBF
+54         PCIDSK                                        PCIDSK Database
+File
+55            PDF                                              Geospatial
+PDF
+56         PGDUMP                                         PostgreSQL SQL
+dump
+57           PGeo                                   ESRI Personal
+GeoDatabase
+58       PLSCENES                                      Planet Labs Scenes
+API
+59     PostgreSQL
+PostgreSQL/PostGIS
+60            REC                                               EPIInfo
+.REC
+61            S57                                              IHO S-57
+(ENC)
+62       SEGUKOOA                                        SEG-P1 / UKOOA
+P1/90
+63           SEGY
+SEG-Y
+64        Selafin
+Selafin
+65         SQLite                                         SQLite /
+Spatialite
+66            SUA             Tim Newport-Peace's Special Use Airspace
+Format
+67            SVG                                    Scalable Vector
+Graphics
+68            SXF                                 Storage and eXchange
+Format
+69          TIGER                                      U.S. Census
+TIGER/Line
+70        UK .NTF                                                     UK
+.NTF
+71            VDV                         VDV-451/VDV-452/INTREST Data
+Format
+72            VFK                        Czech Cadastral Exchange Data
+Format
+73           Walk
+Walk
+74           WAsP                                            WAsP .map
+format
+75            WFS                               OGC WFS (Web Feature
+Service)
+76            XLS                                             MS Excel
+format
+77           XLSX                              MS Office Open XML
+spreadsheet
+78         XPlane                        X-Plane/Flightgear aeronautical
+data
+   write  copy isVector
+1  FALSE FALSE     TRUE
+2   TRUE FALSE     TRUE
+3  FALSE FALSE     TRUE
+4  FALSE FALSE     TRUE
+5  FALSE FALSE     TRUE
+6   TRUE FALSE     TRUE
+7   TRUE FALSE     TRUE
+8   TRUE FALSE     TRUE
+9   TRUE FALSE     TRUE
+10  TRUE FALSE     TRUE
+11 FALSE FALSE     TRUE
+12  TRUE FALSE     TRUE
+13  TRUE FALSE     TRUE
+14 FALSE FALSE     TRUE
+15  TRUE FALSE     TRUE
+16  TRUE FALSE     TRUE
+17  TRUE FALSE     TRUE
+18  TRUE FALSE     TRUE
+19 FALSE FALSE     TRUE
+20  TRUE FALSE     TRUE
+21  TRUE FALSE     TRUE
+22  TRUE FALSE     TRUE
+23  TRUE  TRUE     TRUE
+24  TRUE FALSE     TRUE
+25  TRUE FALSE     TRUE
+26  TRUE FALSE     TRUE
+27 FALSE FALSE     TRUE
+28 FALSE FALSE     TRUE
+29 FALSE FALSE     TRUE
+30  TRUE FALSE     TRUE
+31  TRUE FALSE     TRUE
+32  TRUE FALSE     TRUE
+33 FALSE  TRUE     TRUE
+34 FALSE  TRUE     TRUE
+35  TRUE FALSE     TRUE
+36  TRUE FALSE     TRUE
+37  TRUE FALSE     TRUE
+38  TRUE FALSE     TRUE
+39  TRUE FALSE     TRUE
+40  TRUE FALSE     TRUE
+41 FALSE FALSE     TRUE
+42  TRUE  TRUE     TRUE
+43  TRUE FALSE     TRUE
+44  TRUE FALSE     TRUE
+45 FALSE FALSE     TRUE
+46  TRUE FALSE     TRUE
+47 FALSE FALSE     TRUE
+48 FALSE FALSE     TRUE
+49 FALSE FALSE     TRUE
+50 FALSE FALSE     TRUE
+51 FALSE FALSE     TRUE
+52 FALSE FALSE     TRUE
+53 FALSE FALSE     TRUE
+54  TRUE FALSE     TRUE
+55  TRUE  TRUE     TRUE
+56  TRUE FALSE     TRUE
+57 FALSE FALSE     TRUE
+58 FALSE FALSE     TRUE
+59  TRUE FALSE     TRUE
+60 FALSE FALSE     TRUE
+61  TRUE FALSE     TRUE
+62 FALSE FALSE     TRUE
+63 FALSE FALSE     TRUE
+64  TRUE FALSE     TRUE
+65  TRUE FALSE     TRUE
+66 FALSE FALSE     TRUE
+67 FALSE FALSE     TRUE
+68 FALSE FALSE     TRUE
+69  TRUE FALSE     TRUE
+70 FALSE FALSE     TRUE
+71  TRUE FALSE     TRUE
+72 FALSE FALSE     TRUE
+73 FALSE FALSE     TRUE
+74  TRUE FALSE     TRUE
+75 FALSE FALSE     TRUE
+76 FALSE FALSE     TRUE
+77  TRUE FALSE     TRUE
+78 FALSE FALSE     TRUE
+
+best,
+Vero
+
+2017-10-10 22:36 GMT+02:00 Roger Bivand <Roger.Bivand at nhh.no>:
+
+> Please report sessionInfo() in R, and check the ogrDrivers() list.
+>
+> Roger Bivand
+> Norwegian School of Economics
+> Bergen, Norway
+>
+>
+>
+>
+> On Tue, Oct 10, 2017 at 10:03 PM +0200, "Helmut Kudrnovsky" <hellik at web.de
+> > wrote:
+>
+> >Are SQLite and GML drivers disabled/broken in readVECT?
+>>
+>> some earlier discussions I remembered:
+>> https://lists.osgeo.org/pipermail/grass-stats/2015-July/001561.htmlhttps://lists.osgeo.org/pipermail/grass-stats/2015-July/001562.html
+>> [...]https://lists.osgeo.org/pipermail/grass-stats/2015-June/date.html
+>>
+>>
+>>
+>> -----
+>> best regards
+>> Helmut
+>> --
+>> Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+>> _______________________________________________
+>> grass-stats mailing listgrass-stats at lists.osgeo.orghttps://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20171010/0bd6c6b4/attachment-0001.html>
+
+From hellik at web.de  Tue Oct 10 13:56:48 2017
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Tue, 10 Oct 2017 22:56:48 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+ readVECT
+In-Reply-To: <CAAMki4ExcqkYrmRR+Z=J8bG4xHdhE4Gbjy6JFzJ7z2sMnz+Ueg@mail.gmail.com>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <1507665780575-0.post@n6.nabble.com>
+ <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+ <CAAMki4ExcqkYrmRR+Z=J8bG4xHdhE4Gbjy6JFzJ7z2sMnz+Ueg@mail.gmail.com>
+Message-ID: <trinity-6cefb5ff-9530-46f6-a2be-43452e3766a7-1507669008679@3c-app-webde-bap21>
+
+
+ 
+ 
+
+Gesendet: Dienstag, 10. Oktober 2017 um 22:52 Uhr
+Von: "Veronica Andreo" <veroandreo at gmail.com>
+An: "Roger Bivand" <Roger.Bivand at nhh.no>
+Cc: "grass-stats at lists.osgeo.org" <grass-stats at lists.osgeo.org>, "Helmut Kudrnovsky" <hellik at web.de>
+Betreff: Re: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for readVECT
+
+Hello Roger,
+ Sorry I forgot this info. Here, the outputs:
+> sessionInfo()
+R version 3.4.1 (2017-06-30)
+Platform: x86_64-redhat-linux-gnu (64-bit)
+Running under: Fedora 26 (Twenty Six)
+
+Matrix products: default
+BLAS/LAPACK: /usr/lib64/R/lib/libRblas.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C             
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8   
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8  
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C           
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C      
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base    
+
+loaded via a namespace (and not attached):
+[1] compiler_3.4.1
+
+----
+> library(rgrass7)
+Loading required package: sp
+Loading required package: XML
+GRASS GIS interface loaded with GRASS version: GRASS 7.3.svn (2017)
+and location: nc_spm_08_grass7
+> library(rgdal)
+rgdal: version: 1.2-13, (SVN revision 686)
+ Geospatial Data Abstraction Library extensions to R successfully loaded
+ Loaded GDAL runtime: GDAL 2.1.3, released 2017/20/01
+ Path to GDAL shared files: /usr/share/gdal
+ Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]
+ Path to PROJ.4 shared files: (autodetected)
+ Linking to sp version: 1.2-5
+ 
+> ogrDrivers()
+             name                                                   long_name
+1      AeronavFAA                                                 Aeronav FAA
+2      AmigoCloud                                                  AmigoCloud
+3          ARCGEN                                           Arc/Info Generate
+4          AVCBin                                    Arc/Info Binary Coverage
+5          AVCE00                               Arc/Info E00 (ASCII) Coverage
+6             BNA                                                   Atlas BNA
+7           Carto                                                       Carto
+8        Cloudant                                          Cloudant / CouchDB
+9         CouchDB                                          CouchDB / GeoCouch
+10            CSV                                Comma Separated Value (.csv)
+11            CSW                      OGC CSW (Catalog  Service for the Web)
+12            DGN                                            Microstation DGN
+13            DXF                                                 AutoCAD DXF
+14         EDIGEO                               French EDIGEO exchange format
+15  ElasticSearch                                              Elastic Search
+16 ESRI Shapefile                                              ESRI Shapefile
+17     Geoconcept                                                  Geoconcept
+18        GeoJSON                                                     GeoJSON
+19       Geomedia                                               Geomedia .mdb
+20         GeoRSS                                                      GeoRSS
+21            GFT                                        Google Fusion Tables
+22            GML                             Geography Markup Language (GML)
+23           GPKG                                                  GeoPackage
+24       GPSBabel                                                    GPSBabel
+25  GPSTrackMaker                                               GPSTrackMaker
+26            GPX                                                         GPX
+27            HTF                                Hydrographic Transfer Vector
+28           HTTP                                       HTTP Fetching Wrapper
+29         Idrisi                                        Idrisi Vector (.vct)
+30     Interlis 1                                                  Interlis 1
+31     Interlis 2                                                  Interlis 2
+32            JML                                                OpenJUMP JML
+33    JP2OpenJPEG                  JPEG-2000 driver based on OpenJPEG library
+34       JPEG2000 JPEG-2000 part 1 (ISO/IEC 15444-1), based on Jasper library
+35            KML                               Keyhole Markup Language (KML)
+36         LIBKML                            Keyhole Markup Language (LIBKML)
+37   MapInfo File                                                MapInfo File
+38         Memory                                                      Memory
+39   MSSQLSpatial                       Microsoft SQL Server Spatial Database
+40          MySQL                                                       MySQL
+41            NAS                                                 NAS - ALKIS
+42         netCDF                                  Network Common Data Format
+43           ODBC                                                        ODBC
+44            ODS        Open Document/ LibreOffice / OpenOffice Spreadsheet
+45       OGR_DODS                                                    OGR_DODS
+46        OGR_GMT                                    GMT ASCII Vectors (.gmt)
+47       OGR_OGDI                               OGDI Vectors (VPF, VMAP, DCW)
+48        OGR_PDS                                Planetary Data Systems TABLE
+49       OGR_SDTS                                                        SDTS
+50        OGR_VRT                                    VRT - Virtual Datasource
+51        OpenAir                                                     OpenAir
+52    OpenFileGDB                                                ESRI FileGDB
+53            OSM                                   OpenStreetMap XML and PBF
+54         PCIDSK                                        PCIDSK Database File
+55            PDF                                              Geospatial PDF
+56         PGDUMP                                         PostgreSQL SQL dump
+57           PGeo                                   ESRI Personal GeoDatabase
+58       PLSCENES                                      Planet Labs Scenes API
+59     PostgreSQL                                          PostgreSQL/PostGIS
+60            REC                                               EPIInfo .REC
+61            S57                                              IHO S-57 (ENC)
+62       SEGUKOOA                                        SEG-P1 / UKOOA P1/90
+63           SEGY                                                       SEG-Y
+64        Selafin                                                     Selafin
+65         SQLite                                         SQLite / Spatialite
+66            SUA             Tim Newport-Peace's Special Use Airspace Format
+67            SVG                                    Scalable Vector Graphics
+68            SXF                                 Storage and eXchange Format
+69          TIGER                                      U.S. Census TIGER/Line
+70        UK .NTF                                                     UK .NTF
+71            VDV                         VDV-451/VDV-452/INTREST Data Format
+72            VFK                        Czech Cadastral Exchange Data Format
+73           Walk                                                        Walk
+74           WAsP                                            WAsP .map format
+75            WFS                               OGC WFS (Web Feature Service)
+76            XLS                                             MS Excel format
+77           XLSX                              MS Office Open XML spreadsheet
+78         XPlane                        X-Plane/Flightgear aeronautical data
+   write  copy isVector
+1  FALSE FALSE     TRUE
+2   TRUE FALSE     TRUE
+3  FALSE FALSE     TRUE
+4  FALSE FALSE     TRUE
+5  FALSE FALSE     TRUE
+6   TRUE FALSE     TRUE
+7   TRUE FALSE     TRUE
+8   TRUE FALSE     TRUE
+9   TRUE FALSE     TRUE
+10  TRUE FALSE     TRUE
+11 FALSE FALSE     TRUE
+12  TRUE FALSE     TRUE
+13  TRUE FALSE     TRUE
+14 FALSE FALSE     TRUE
+15  TRUE FALSE     TRUE
+16  TRUE FALSE     TRUE
+17  TRUE FALSE     TRUE
+18  TRUE FALSE     TRUE
+19 FALSE FALSE     TRUE
+20  TRUE FALSE     TRUE
+21  TRUE FALSE     TRUE
+22  TRUE FALSE     TRUE
+23  TRUE  TRUE     TRUE
+24  TRUE FALSE     TRUE
+25  TRUE FALSE     TRUE
+26  TRUE FALSE     TRUE
+27 FALSE FALSE     TRUE
+28 FALSE FALSE     TRUE
+29 FALSE FALSE     TRUE
+30  TRUE FALSE     TRUE
+31  TRUE FALSE     TRUE
+32  TRUE FALSE     TRUE
+33 FALSE  TRUE     TRUE
+34 FALSE  TRUE     TRUE
+35  TRUE FALSE     TRUE
+36  TRUE FALSE     TRUE
+37  TRUE FALSE     TRUE
+38  TRUE FALSE     TRUE
+39  TRUE FALSE     TRUE
+40  TRUE FALSE     TRUE
+41 FALSE FALSE     TRUE
+42  TRUE  TRUE     TRUE
+43  TRUE FALSE     TRUE
+44  TRUE FALSE     TRUE
+45 FALSE FALSE     TRUE
+46  TRUE FALSE     TRUE
+47 FALSE FALSE     TRUE
+48 FALSE FALSE     TRUE
+49 FALSE FALSE     TRUE
+50 FALSE FALSE     TRUE
+51 FALSE FALSE     TRUE
+52 FALSE FALSE     TRUE
+53 FALSE FALSE     TRUE
+54  TRUE FALSE     TRUE
+55  TRUE  TRUE     TRUE
+56  TRUE FALSE     TRUE
+57 FALSE FALSE     TRUE
+58 FALSE FALSE     TRUE
+59  TRUE FALSE     TRUE
+60 FALSE FALSE     TRUE
+61  TRUE FALSE     TRUE
+62 FALSE FALSE     TRUE
+63 FALSE FALSE     TRUE
+64  TRUE FALSE     TRUE
+65  TRUE FALSE     TRUE
+66 FALSE FALSE     TRUE
+67 FALSE FALSE     TRUE
+68 FALSE FALSE     TRUE
+69  TRUE FALSE     TRUE
+70 FALSE FALSE     TRUE
+71  TRUE FALSE     TRUE
+72 FALSE FALSE     TRUE
+73 FALSE FALSE     TRUE
+74  TRUE FALSE     TRUE
+75 FALSE FALSE     TRUE
+76 FALSE FALSE     TRUE
+77  TRUE FALSE     TRUE
+78 FALSE FALSE     TRUE
+
+----
+
+sorry, ok, and here my results (just forgot to import the library before)
+
+>  library(rgdal)
+rgdal: version: 1.2-12, (SVN revision 681)
+ Geospatial Data Abstraction Library extensions to R successfully loaded
+ Loaded GDAL runtime: GDAL 2.2.0, released 2017/04/28
+ Path to GDAL shared files: C:/Program Files/R/R-3.4.0/library/rgdal/gdal
+ Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]
+ Path to PROJ.4 shared files: C:/Program Files/R/R-3.4.0/library/rgdal/proj
+ Linking to sp version: 1.2-5
+Warning message:
+package 'rgdal' was built under R version 3.4.2
+> ogrDrivers()
+             name                                            long_name write
+1          ARCGEN                                    Arc/Info Generate FALSE
+2          AVCBin                             Arc/Info Binary Coverage FALSE
+3          AVCE00                        Arc/Info E00 (ASCII) Coverage FALSE
+4      AeronavFAA                                          Aeronav FAA FALSE
+5      AmigoCloud                                           AmigoCloud  TRUE
+6             BNA                                            Atlas BNA  TRUE
+7             CAD                                       AutoCAD Driver FALSE
+8             CSV                         Comma Separated Value (.csv)  TRUE
+9             CSW               OGC CSW (Catalog  Service for the Web) FALSE
+10          Carto                                                Carto  TRUE
+11       Cloudant                                   Cloudant / CouchDB  TRUE
+12        CouchDB                                   CouchDB / GeoCouch  TRUE
+13            DGN                                     Microstation DGN  TRUE
+14            DXF                                          AutoCAD DXF  TRUE
+15         EDIGEO                        French EDIGEO exchange format FALSE
+16 ESRI Shapefile                                       ESRI Shapefile  TRUE
+17  ElasticSearch                                       Elastic Search  TRUE
+18            GFT                                 Google Fusion Tables  TRUE
+19            GML                      Geography Markup Language (GML)  TRUE <=
+20           GPKG                                           GeoPackage  TRUE
+21       GPSBabel                                             GPSBabel  TRUE
+22  GPSTrackMaker                                        GPSTrackMaker  TRUE
+23            GPX                                                  GPX  TRUE
+24        GeoJSON                                              GeoJSON  TRUE
+25         GeoRSS                                               GeoRSS  TRUE
+26     Geoconcept                                           Geoconcept  TRUE
+27       Geomedia                                        Geomedia .mdb FALSE
+28            HTF                         Hydrographic Transfer Vector FALSE
+29           HTTP                                HTTP Fetching Wrapper FALSE
+30         Idrisi                                 Idrisi Vector (.vct) FALSE
+31            JML                                         OpenJUMP JML  TRUE
+32            KML                        Keyhole Markup Language (KML)  TRUE
+33   MSSQLSpatial                Microsoft SQL Server Spatial Database  TRUE
+34   MapInfo File                                         MapInfo File  TRUE
+35         Memory                                               Memory  TRUE
+36           ODBC                                                 ODBC  TRUE
+37            ODS Open Document/ LibreOffice / OpenOffice Spreadsheet   TRUE
+38        OGR_GMT                             GMT ASCII Vectors (.gmt)  TRUE
+39        OGR_PDS                         Planetary Data Systems TABLE FALSE
+40       OGR_SDTS                                                 SDTS FALSE
+41        OGR_VRT                             VRT - Virtual Datasource FALSE
+42            OSM                            OpenStreetMap XML and PBF FALSE
+43        OpenAir                                              OpenAir FALSE
+44    OpenFileGDB                                         ESRI FileGDB FALSE
+45         PCIDSK                                 PCIDSK Database File  TRUE
+46            PDF                                       Geospatial PDF  TRUE
+47         PGDUMP                                  PostgreSQL SQL dump  TRUE
+48           PGeo                            ESRI Personal GeoDatabase FALSE
+49       PLSCENES                               Planet Labs Scenes API FALSE
+50     PostgreSQL                                   PostgreSQL/PostGIS  TRUE
+51            REC                                        EPIInfo .REC  FALSE
+52            S57                                       IHO S-57 (ENC)  TRUE
+53       SEGUKOOA                                 SEG-P1 / UKOOA P1/90 FALSE
+54           SEGY                                                SEG-Y FALSE
+55         SQLite                                  SQLite / Spatialite  TRUE <=
+56            SUA      Tim Newport-Peace's Special Use Airspace Format FALSE
+57            SVG                             Scalable Vector Graphics FALSE
+58            SXF                          Storage and eXchange Format FALSE
+59        Selafin                                              Selafin  TRUE
+60          TIGER                               U.S. Census TIGER/Line  TRUE
+61        UK .NTF                                              UK .NTF FALSE
+62            VDV                  VDV-451/VDV-452/INTREST Data Format  TRUE
+63            VFK                 Czech Cadastral Exchange Data Format FALSE
+64           WAsP                                     WAsP .map format  TRUE
+65            WFS                        OGC WFS (Web Feature Service) FALSE
+66           Walk                                                 Walk FALSE
+67            XLS                                      MS Excel format FALSE
+68           XLSX                       MS Office Open XML spreadsheet  TRUE
+69         XPlane                 X-Plane/Flightgear aeronautical data FALSE
+70         netCDF                           Network Common Data Format  TRUE
+ 
+GML and SQLite both there.
+
+Helmut
+
+From Roger.Bivand at nhh.no  Tue Oct 10 14:16:19 2017
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue, 10 Oct 2017 21:16:19 +0000
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+ readVECT
+In-Reply-To: <trinity-6cefb5ff-9530-46f6-a2be-43452e3766a7-1507669008679@3c-app-webde-bap21>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <1507665780575-0.post@n6.nabble.com>
+ <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+ <CAAMki4ExcqkYrmRR+Z=J8bG4xHdhE4Gbjy6JFzJ7z2sMnz+Ueg@mail.gmail.com>,
+ <trinity-6cefb5ff-9530-46f6-a2be-43452e3766a7-1507669008679@3c-app-webde-bap21>
+Message-ID: <E7824B12CF1B784E.96224f98-2e64-4790-a253-78518dfc86f0@mail.outlook.com>
+
+And output of v.in.ogr -f? Nothing has changed in rgrass7, I'll check in the morning.
+
+Roger
+
+Roger Bivand
+Norwegian School of Economics
+Bergen, Norway
+
+
+
+Fra: Helmut Kudrnovsky
+Sendt: tirsdag 10. oktober, 22.56
+Emne: Aw: Re: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for readVECT
+Til: Veronica Andreo
+Kopi: Roger Bivand, grass-stats at lists.osgeo.org
+
+
+    Gesendet: Dienstag, 10. Oktober 2017 um 22:52 Uhr Von: "Veronica Andreo" An: "Roger Bivand" Cc: "grass-stats at lists.osgeo.org" , "Helmut Kudrnovsky" Betreff: Re: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for readVECT Hello Roger,  Sorry I forgot this info. Here, the outputs: > sessionInfo() R version 3.4.1 (2017-06-30) Platform: x86_64-redhat-linux-gnu (64-bit) Running under: Fedora 26 (Twenty Six) Matrix products: default BLAS/LAPACK: /usr/lib64/R/lib/libRblas.so locale:  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8     [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8    [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                  [9] LC_ADDRESS=C               LC_TELEPHONE=C            [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       attached base packages: [1] stats     graphics  grDevices utils     datasets  methods   base     loaded via a namespace (and not attached): [1] compiler_3.4.1 ---- > library(rgrass7) Loading required package: sp Loading required package: XML GRASS GIS interface loaded with GRASS version: GRASS 7.3.svn (2017) and location: nc_spm_08_grass7 > library(rgdal) rgdal: version: 1.2-13, (SVN revision 686)  Geospatial Data Abstraction Library extensions to R successfully loaded  Loaded GDAL runtime: GDAL 2.1.3, released 2017/20/01  Path to GDAL shared files: /usr/share/gdal  Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]  Path to PROJ.4 shared files: (autodetected)  Linking to sp version: 1.2-5   > ogrDrivers()              name                                                   long_name 1      AeronavFAA                                                 Aeronav FAA 2      AmigoCloud                                                  AmigoCloud 3          ARCGEN                                           Arc/Info Generate 4          AVCBin                                    Arc/Info Binary Coverage 5          AVCE00                               Arc/Info E00 (ASCII) Coverage 6             BNA                                                   Atlas BNA 7           Carto                                                       Carto 8        Cloudant                                          Cloudant / CouchDB 9         CouchDB                                          CouchDB / GeoCouch 10            CSV                                Comma Separated Value (.csv) 11            CSW                      OGC CSW (Catalog  Service for the Web) 12            DGN                                            Microstation DGN 13            DXF                                                 AutoCAD DXF 14         EDIGEO                               French EDIGEO exchange format 15  ElasticSearch                                              Elastic Search 16 ESRI Shapefile                                              ESRI Shapefile 17     Geoconcept                                                  Geoconcept 18        GeoJSON                                                     GeoJSON 19       Geomedia                                               Geomedia .mdb 20         GeoRSS                                                      GeoRSS 21            GFT                                        Google Fusion Tables 22            GML                             Geography Markup Language (GML) 23           GPKG                                                  GeoPackage 24       GPSBabel                                                    GPSBabel 25  GPSTrackMaker                                               GPSTrackMaker 26            GPX                                                         GPX 27            HTF                                Hydrographic Transfer Vector 28           HTTP                                       HTTP Fetching Wrapper 29         Idrisi                                        Idrisi Vector (.vct) 30     Interlis 1                                                  Interlis 1 31     Interlis 2                                                  Interlis 2 32            JML                                                OpenJUMP JML 33    JP2OpenJPEG                  JPEG-2000 driver based on OpenJPEG library 34       JPEG2000 JPEG-2000 part 1 (ISO/IEC 15444-1), based on Jasper library 35            KML                               Keyhole Markup Language (KML) 36         LIBKML                            Keyhole Markup Language (LIBKML) 37   MapInfo File                                                MapInfo File 38         Memory                                                      Memory 39   MSSQLSpatial                       Microsoft SQL Server Spatial Database 40          MySQL                                                       MySQL 41            NAS                                                 NAS - ALKIS 42         netCDF                                  Network Common Data Format 43           ODBC                                                        ODBC 44            ODS        Open Document/ LibreOffice / OpenOffice Spreadsheet 45       OGR_DODS                                                    OGR_DODS 46        OGR_GMT                                    GMT ASCII Vectors (.gmt) 47       OGR_OGDI                               OGDI Vectors (VPF, VMAP, DCW) 48        OGR_PDS                                Planetary Data Systems TABLE 49       OGR_SDTS                                                        SDTS 50        OGR_VRT                                    VRT - Virtual Datasource 51        OpenAir                                                     OpenAir 52    OpenFileGDB                                                ESRI FileGDB 53            OSM                                   OpenStreetMap XML and PBF 54         PCIDSK                                        PCIDSK Database File 55            PDF                                              Geospatial PDF 56         PGDUMP                                         PostgreSQL SQL dump 57           PGeo                                   ESRI Personal GeoDatabase 58       PLSCENES                                      Planet Labs Scenes API 59     PostgreSQL                                          PostgreSQL/PostGIS 60            REC                                               EPIInfo .REC 61            S57                                              IHO S-57 (ENC) 62       SEGUKOOA                                        SEG-P1 / UKOOA P1/90 63           SEGY                                                       SEG-Y 64        Selafin                                                     Selafin 65         SQLite                                         SQLite / Spatialite 66            SUA             Tim Newport-Peace's Special Use Airspace Format 67            SVG                                    Scalable Vector Graphics 68            SXF                                 Storage and eXchange Format 69          TIGER                                      U.S. Census TIGER/Line 70        UK .NTF                                                     UK .NTF 71            VDV                         VDV-451/VDV-452/INTREST Data Format 72            VFK                        Czech Cadastral Exchange Data Format 73           Walk                                                        Walk 74           WAsP                                            WAsP .map format 75            WFS                               OGC WFS (Web Feature Service) 76            XLS                                             MS Excel format 77           XLSX                              MS Office Open XML spreadsheet 78         XPlane                        X-Plane/Flightgear aeronautical data    write  copy isVector 1  FALSE FALSE     TRUE 2   TRUE FALSE     TRUE 3  FALSE FALSE     TRUE 4  FALSE FALSE     TRUE 5  FALSE FALSE     TRUE 6   TRUE FALSE     TRUE 7   TRUE FALSE     TRUE 8   TRUE FALSE     TRUE 9   TRUE FALSE     TRUE 10  TRUE FALSE     TRUE 11 FALSE FALSE     TRUE 12  TRUE FALSE     TRUE 13  TRUE FALSE     TRUE 14 FALSE FALSE     TRUE 15  TRUE FALSE     TRUE 16  TRUE FALSE     TRUE 17  TRUE FALSE     TRUE 18  TRUE FALSE     TRUE 19 FALSE FALSE     TRUE 20  TRUE FALSE     TRUE 21  TRUE FALSE     TRUE 22  TRUE FALSE     TRUE 23  TRUE  TRUE     TRUE 24  TRUE FALSE     TRUE 25  TRUE FALSE     TRUE 26  TRUE FALSE     TRUE 27 FALSE FALSE     TRUE 28 FALSE FALSE     TRUE 29 FALSE FALSE     TRUE 30  TRUE FALSE     TRUE 31  TRUE FALSE     TRUE 32  TRUE FALSE     TRUE 33 FALSE  TRUE     TRUE 34 FALSE  TRUE     TRUE 35  TRUE FALSE     TRUE 36  TRUE FALSE     TRUE 37  TRUE FALSE     TRUE 38  TRUE FALSE     TRUE 39  TRUE FALSE     TRUE 40  TRUE FALSE     TRUE 41 FALSE FALSE     TRUE 42  TRUE  TRUE     TRUE 43  TRUE FALSE     TRUE 44  TRUE FALSE     TRUE 45 FALSE FALSE     TRUE 46  TRUE FALSE     TRUE 47 FALSE FALSE     TRUE 48 FALSE FALSE     TRUE 49 FALSE FALSE     TRUE 50 FALSE FALSE     TRUE 51 FALSE FALSE     TRUE 52 FALSE FALSE     TRUE 53 FALSE FALSE     TRUE 54  TRUE FALSE     TRUE 55  TRUE  TRUE     TRUE 56  TRUE FALSE     TRUE 57 FALSE FALSE     TRUE 58 FALSE FALSE     TRUE 59  TRUE FALSE     TRUE 60 FALSE FALSE     TRUE 61  TRUE FALSE     TRUE 62 FALSE FALSE     TRUE 63 FALSE FALSE     TRUE 64  TRUE FALSE     TRUE 65  TRUE FALSE     TRUE 66 FALSE FALSE     TRUE 67 FALSE FALSE     TRUE 68 FALSE FALSE     TRUE 69  TRUE FALSE     TRUE 70 FALSE FALSE     TRUE 71  TRUE FALSE     TRUE 72 FALSE FALSE     TRUE 73 FALSE FALSE     TRUE 74  TRUE FALSE     TRUE 75 FALSE FALSE     TRUE 76 FALSE FALSE     TRUE 77  TRUE FALSE     TRUE 78 FALSE FALSE     TRUE ---- sorry, ok, and here my results (just forgot to import the library before) > library(rgdal) rgdal: version: 1.2-12, (SVN revision 681) Geospatial Data Abstraction Library extensions to R successfully loaded Loaded GDAL runtime: GDAL 2.2.0, released 2017/04/28 Path to GDAL shared files: C:/Program Files/R/R-3.4.0/library/rgdal/gdal Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493] Path to PROJ.4 shared files: C:/Program Files/R/R-3.4.0/library/rgdal/proj Linking to sp version: 1.2-5 Warning message: package 'rgdal' was built under R version 3.4.2 > ogrDrivers() name long_name write 1 ARCGEN Arc/Info Generate FALSE 2 AVCBin Arc/Info Binary Coverage FALSE 3 AVCE00 Arc/Info E00 (ASCII) Coverage FALSE 4 AeronavFAA Aeronav FAA FALSE 5 AmigoCloud AmigoCloud TRUE 6 BNA Atlas BNA TRUE 7 CAD AutoCAD Driver FALSE 8 CSV Comma Separated Value (.csv) TRUE 9 CSW OGC CSW (Catalog Service for the Web) FALSE 10 Carto Carto TRUE 11 Cloudant Cloudant / CouchDB TRUE 12 CouchDB CouchDB / GeoCouch TRUE 13 DGN Microstation DGN TRUE 14 DXF AutoCAD DXF TRUE 15 EDIGEO French EDIGEO exchange format FALSE 16 ESRI Shapefile ESRI Shapefile TRUE 17 ElasticSearch Elastic Search TRUE 18 GFT Google Fusion Tables TRUE 19 GML Geography Markup Language (GML) TRUE
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20171010/560bc8b5/attachment-0001.html>
+
+From hellik at web.de  Tue Oct 10 14:22:16 2017
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Tue, 10 Oct 2017 23:22:16 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+ readVECT
+In-Reply-To: <E7824B12CF1B784E.96224f98-2e64-4790-a253-78518dfc86f0@mail.outlook.com>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <1507665780575-0.post@n6.nabble.com>
+ <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+ <CAAMki4ExcqkYrmRR+Z=J8bG4xHdhE4Gbjy6JFzJ7z2sMnz+Ueg@mail.gmail.com>
+ <trinity-6cefb5ff-9530-46f6-a2be-43452e3766a7-1507669008679@3c-app-webde-bap21>
+ <E7824B12CF1B784E.96224f98-2e64-4790-a253-78518dfc86f0@mail.outlook.com>
+Message-ID: <trinity-5774f1e1-1023-4b07-b68b-1d4863a8cb1a-1507670536755@3c-app-webde-bap21>
+
+>Von: "Roger Bivand"
+>And output of v.in.ogr -f?
+
+v.in.ogr -f                                                                     
+ JP2ECW (ro): ERDAS JPEG2000 (SDK 5.3)
+ FileGDB (rw+): ESRI FileGDB
+ PCIDSK (rw+): PCIDSK Database File
+ netCDF (rw+): Network Common Data Format
+ JP2OpenJPEG (rw): JPEG-2000 driver based on OpenJPEG library
+ PDF (rw+): Geospatial PDF
+ DB2ODBC (rw+): IBM DB2 Spatial Database
+ ESRI Shapefile (rw+): ESRI Shapefile
+ MapInfo File (rw+): MapInfo File
+ UK .NTF (ro): UK .NTF
+ OGR_SDTS (ro): SDTS
+ S57 (rw+): IHO S-57 (ENC)
+ DGN (rw+): Microstation DGN
+ OGR_VRT (ro): VRT - Virtual Datasource
+ REC (ro): EPIInfo .REC 
+ Memory (rw+): Memory
+ BNA (rw+): Atlas BNA
+ CSV (rw+): Comma Separated Value (.csv)
+ NAS (ro): NAS - ALKIS
+ GML (rw+): Geography Markup Language (GML) <=
+ GPX (rw+): GPX
+ LIBKML (rw+): Keyhole Markup Language (LIBKML)
+ KML (rw+): Keyhole Markup Language (KML)
+ GeoJSON (rw+): GeoJSON
+ Interlis 1 (rw+): Interlis 1
+ Interlis 2 (rw+): Interlis 2
+ OGR_GMT (rw+): GMT ASCII Vectors (.gmt)
+ GPKG (rw+): GeoPackage
+ SQLite (rw+): SQLite / Spatialite <=
+ ODBC (rw+): ODBC
+ WAsP (rw+): WAsP .map format
+ PGeo (ro): ESRI Personal GeoDatabase
+ MSSQLSpatial (rw+): Microsoft SQL Server Spatial Database
+ OGR_OGDI (ro): OGDI Vectors (VPF, VMAP, DCW)
+ PostgreSQL (rw+): PostgreSQL/PostGIS
+ MySQL (rw+): MySQL
+ OpenFileGDB (ro): ESRI FileGDB
+ XPlane (ro): X-Plane/Flightgear aeronautical data
+ DXF (rw+): AutoCAD DXF
+ CAD (ro): AutoCAD Driver
+ Geoconcept (rw+): Geoconcept
+ GeoRSS (rw+): GeoRSS
+ GPSTrackMaker (rw+): GPSTrackMaker
+ VFK (ro): Czech Cadastral Exchange Data Format
+ PGDUMP (rw+): PostgreSQL SQL dump
+ OSM (ro): OpenStreetMap XML and PBF
+ GPSBabel (rw+): GPSBabel
+ SUA (ro): Tim Newport-Peace's Special Use Airspace Format
+ OpenAir (ro): OpenAir
+ OGR_PDS (ro): Planetary Data Systems TABLE
+ WFS (ro): OGC WFS (Web Feature Service)
+ HTF (ro): Hydrographic Transfer Vector
+ AeronavFAA (ro): Aeronav FAA
+ Geomedia (ro): Geomedia .mdb
+ EDIGEO (ro): French EDIGEO exchange format
+ GFT (rw+): Google Fusion Tables
+ SVG (ro): Scalable Vector Graphics
+ CouchDB (rw+): CouchDB / GeoCouch
+ Cloudant (rw+): Cloudant / CouchDB
+ Idrisi (ro): Idrisi Vector (.vct)
+ ARCGEN (ro): Arc/Info Generate
+ SEGUKOOA (ro): SEG-P1 / UKOOA P1/90
+ SEGY (ro): SEG-Y
+ XLS (ro): MS Excel format
+ ODS (rw+): Open Document/ LibreOffice / OpenOffice Spreadsheet 
+ XLSX (rw+): MS Office Open XML spreadsheet
+ ElasticSearch (rw+): Elastic Search
+ Walk (ro): Walk
+ Carto (rw+): Carto
+ AmigoCloud (rw+): AmigoCloud
+ SXF (ro): Storage and eXchange Format
+ Selafin (rw+): Selafin
+ JML (rw+): OpenJUMP JML
+ PLSCENES (ro): Planet Labs Scenes API
+ CSW (ro): OGC CSW (Catalog  Service for the Web)
+ VDV (rw+): VDV-451/VDV-452/INTREST Data Format
+ GMLAS (rw): Geography Markup Language (GML) driven by application schemas
+ TIGER (rw+): U.S. Census TIGER/Line
+ AVCBin (ro): Arc/Info Binary Coverage
+ AVCE00 (ro): Arc/Info E00 (ASCII) Coverage
+ HTTP (ro): HTTP Fetching Wrapper
+Supported formats:
+
+---
+
+both GML and SQLite there.
+
+thanks for checking.
+
+Helmut
+
+From dicko.ahmadou at gmail.com  Tue Oct 10 14:24:33 2017
+From: dicko.ahmadou at gmail.com (Ahmadou Dicko)
+Date: Tue, 10 Oct 2017 21:24:33 +0000
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+	readVECT
+In-Reply-To: <trinity-5774f1e1-1023-4b07-b68b-1d4863a8cb1a-1507670536755@3c-app-webde-bap21>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <1507665780575-0.post@n6.nabble.com>
+ <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+ <CAAMki4ExcqkYrmRR+Z=J8bG4xHdhE4Gbjy6JFzJ7z2sMnz+Ueg@mail.gmail.com>
+ <trinity-6cefb5ff-9530-46f6-a2be-43452e3766a7-1507669008679@3c-app-webde-bap21>
+ <E7824B12CF1B784E.96224f98-2e64-4790-a253-78518dfc86f0@mail.outlook.com>
+ <trinity-5774f1e1-1023-4b07-b68b-1d4863a8cb1a-1507670536755@3c-app-webde-bap21>
+Message-ID: <CAP8THHUg7jXfuniBe4P02ZPPvsUq48WWKddTR5o4ap=gZwQJ_Q@mail.gmail.com>
+
+Hi everyone,
+
+I think that using v.external -f (instead of v.in.ogr -f) can fix this
+issue (didn't try yet)
+
+execGRASS("v.external", flags = "f", intern = TRUE)
+ [1] "ARCGEN"         "AVCBin"         "AVCE00"
+ [4] "AeronavFAA"     "AmigoCloud"     "BNA"
+ [7] "CAD"            "CSV"            "CSW"
+[10] "Carto"          "Cloudant"       "CouchDB"
+[13] "DGN"            "DXF"            "EDIGEO"
+[16] "ESRI_Shapefile" "ElasticSearch"  "GFT"
+[19] "GML"            "GPKG"           "GPSBabel"
+[22] "GPSTrackMaker"  "GPX"            "GeoJSON"
+[25] "GeoRSS"         "Geoconcept"     "Geomedia"
+[28] "HTF"            "HTTP"           "Idrisi"
+[31] "JML"            "JPEG2000"       "KML"
+[34] "MSSQLSpatial"   "MapInfo_File"   "Memory"
+[37] "MySQL"          "ODBC"           "ODS"
+[40] "OGR_GMT"        "OGR_GRASS"      "OGR_PDS"
+[43] "OGR_SDTS"       "OGR_VRT"        "OSM"
+[46] "OpenAir"        "OpenFileGDB"    "PCIDSK"
+[49] "PDF"            "PGDUMP"         "PGeo"
+[52] "PLSCENES"       "PostgreSQL"     "REC"
+
+
+Best,
+
+
+On Tue, Oct 10, 2017 at 9:22 PM, Helmut Kudrnovsky <hellik at web.de> wrote:
+
+> >Von: "Roger Bivand"
+> >And output of v.in.ogr -f?
+>
+> v.in.ogr -f
+>  JP2ECW (ro): ERDAS JPEG2000 (SDK 5.3)
+>  FileGDB (rw+): ESRI FileGDB
+>  PCIDSK (rw+): PCIDSK Database File
+>  netCDF (rw+): Network Common Data Format
+>  JP2OpenJPEG (rw): JPEG-2000 driver based on OpenJPEG library
+>  PDF (rw+): Geospatial PDF
+>  DB2ODBC (rw+): IBM DB2 Spatial Database
+>  ESRI Shapefile (rw+): ESRI Shapefile
+>  MapInfo File (rw+): MapInfo File
+>  UK .NTF (ro): UK .NTF
+>  OGR_SDTS (ro): SDTS
+>  S57 (rw+): IHO S-57 (ENC)
+>  DGN (rw+): Microstation DGN
+>  OGR_VRT (ro): VRT - Virtual Datasource
+>  REC (ro): EPIInfo .REC
+>  Memory (rw+): Memory
+>  BNA (rw+): Atlas BNA
+>  CSV (rw+): Comma Separated Value (.csv)
+>  NAS (ro): NAS - ALKIS
+>  GML (rw+): Geography Markup Language (GML) <=
+>  GPX (rw+): GPX
+>  LIBKML (rw+): Keyhole Markup Language (LIBKML)
+>  KML (rw+): Keyhole Markup Language (KML)
+>  GeoJSON (rw+): GeoJSON
+>  Interlis 1 (rw+): Interlis 1
+>  Interlis 2 (rw+): Interlis 2
+>  OGR_GMT (rw+): GMT ASCII Vectors (.gmt)
+>  GPKG (rw+): GeoPackage
+>  SQLite (rw+): SQLite / Spatialite <=
+>  ODBC (rw+): ODBC
+>  WAsP (rw+): WAsP .map format
+>  PGeo (ro): ESRI Personal GeoDatabase
+>  MSSQLSpatial (rw+): Microsoft SQL Server Spatial Database
+>  OGR_OGDI (ro): OGDI Vectors (VPF, VMAP, DCW)
+>  PostgreSQL (rw+): PostgreSQL/PostGIS
+>  MySQL (rw+): MySQL
+>  OpenFileGDB (ro): ESRI FileGDB
+>  XPlane (ro): X-Plane/Flightgear aeronautical data
+>  DXF (rw+): AutoCAD DXF
+>  CAD (ro): AutoCAD Driver
+>  Geoconcept (rw+): Geoconcept
+>  GeoRSS (rw+): GeoRSS
+>  GPSTrackMaker (rw+): GPSTrackMaker
+>  VFK (ro): Czech Cadastral Exchange Data Format
+>  PGDUMP (rw+): PostgreSQL SQL dump
+>  OSM (ro): OpenStreetMap XML and PBF
+>  GPSBabel (rw+): GPSBabel
+>  SUA (ro): Tim Newport-Peace's Special Use Airspace Format
+>  OpenAir (ro): OpenAir
+>  OGR_PDS (ro): Planetary Data Systems TABLE
+>  WFS (ro): OGC WFS (Web Feature Service)
+>  HTF (ro): Hydrographic Transfer Vector
+>  AeronavFAA (ro): Aeronav FAA
+>  Geomedia (ro): Geomedia .mdb
+>  EDIGEO (ro): French EDIGEO exchange format
+>  GFT (rw+): Google Fusion Tables
+>  SVG (ro): Scalable Vector Graphics
+>  CouchDB (rw+): CouchDB / GeoCouch
+>  Cloudant (rw+): Cloudant / CouchDB
+>  Idrisi (ro): Idrisi Vector (.vct)
+>  ARCGEN (ro): Arc/Info Generate
+>  SEGUKOOA (ro): SEG-P1 / UKOOA P1/90
+>  SEGY (ro): SEG-Y
+>  XLS (ro): MS Excel format
+>  ODS (rw+): Open Document/ LibreOffice / OpenOffice Spreadsheet
+>  XLSX (rw+): MS Office Open XML spreadsheet
+>  ElasticSearch (rw+): Elastic Search
+>  Walk (ro): Walk
+>  Carto (rw+): Carto
+>  AmigoCloud (rw+): AmigoCloud
+>  SXF (ro): Storage and eXchange Format
+>  Selafin (rw+): Selafin
+>  JML (rw+): OpenJUMP JML
+>  PLSCENES (ro): Planet Labs Scenes API
+>  CSW (ro): OGC CSW (Catalog  Service for the Web)
+>  VDV (rw+): VDV-451/VDV-452/INTREST Data Format
+>  GMLAS (rw): Geography Markup Language (GML) driven by application schemas
+>  TIGER (rw+): U.S. Census TIGER/Line
+>  AVCBin (ro): Arc/Info Binary Coverage
+>  AVCE00 (ro): Arc/Info E00 (ASCII) Coverage
+>  HTTP (ro): HTTP Fetching Wrapper
+> Supported formats:
+>
+> ---
+>
+> both GML and SQLite there.
+>
+> thanks for checking.
+>
+> Helmut
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+
+
+-- 
+Ahmadou H. DICKO, PhD
+
+Data Lab Manager
+Humanitarian Data Exchange (HDX) - humdata.org
+OCHA ROWCA regional office
+VDN Sacre Coeur III, Villa 9364 BP 16 922 Fann
+Dakar, Senegal
+Phone: (+221) 33 869 85 36
+Mobile: (+221) 77 123 81 69
+
+Email: dicko5 at un.org
+Skype: dicko.ahmadou.h
+Twitter : @dickoah
+Gitlab: gitlab/dickoa
+Github: github/dickoa
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20171010/754f1ce3/attachment.html>
+
+From hellik at web.de  Tue Oct 10 14:29:38 2017
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Tue, 10 Oct 2017 23:29:38 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+ readVECT
+In-Reply-To: <CAP8THHUg7jXfuniBe4P02ZPPvsUq48WWKddTR5o4ap=gZwQJ_Q@mail.gmail.com>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <1507665780575-0.post@n6.nabble.com>
+ <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+ <CAAMki4ExcqkYrmRR+Z=J8bG4xHdhE4Gbjy6JFzJ7z2sMnz+Ueg@mail.gmail.com>
+ <trinity-6cefb5ff-9530-46f6-a2be-43452e3766a7-1507669008679@3c-app-webde-bap21>
+ <E7824B12CF1B784E.96224f98-2e64-4790-a253-78518dfc86f0@mail.outlook.com>
+ <trinity-5774f1e1-1023-4b07-b68b-1d4863a8cb1a-1507670536755@3c-app-webde-bap21>
+ <CAP8THHUg7jXfuniBe4P02ZPPvsUq48WWKddTR5o4ap=gZwQJ_Q@mail.gmail.com>
+Message-ID: <trinity-d032389d-0c73-4685-a879-96f4fcc18c00-1507670978317@3c-app-webde-bap54>
+
+>Gesendet: Dienstag, 10. Oktober 2017 um 23:24 Uhr
+>Von: "Ahmadou Dicko" <dicko.ahmadou at gmail.com>
+>An: "Helmut Kudrnovsky" <hellik at web.de>
+>Cc: "Roger Bivand" <Roger.Bivand at nhh.no>, "grass-stats at lists.osgeo.org" <grass-stats at lists.osgeo.org>
+>Betreff: Re: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for readVECT
+>
+>Hi everyone,
+> 
+>I think that using v.external -f (instead of v.in.ogr -f) can fix this issue (didn't try yet)
+> 
+>
+>execGRASS("v.external", flags = "f", intern = TRUE)
+> [1] "ARCGEN"         "AVCBin"         "AVCE00"        
+> [4] "AeronavFAA"     "AmigoCloud"     "BNA"           
+> [7] "CAD"            "CSV"            "CSW"           
+>[10] "Carto"          "Cloudant"       "CouchDB"       
+>[13] "DGN"            "DXF"            "EDIGEO"        
+>[16] "ESRI_Shapefile" "ElasticSearch"  "GFT"           
+>[19] "GML"            "GPKG"           "GPSBabel"      
+>[22] "GPSTrackMaker"  "GPX"            "GeoJSON"       
+>[25] "GeoRSS"         "Geoconcept"     "Geomedia"      
+>[28] "HTF"            "HTTP"           "Idrisi"        
+>[31] "JML"            "JPEG2000"       "KML"           
+>[34] "MSSQLSpatial"   "MapInfo_File"   "Memory"        
+>[37] "MySQL"          "ODBC"           "ODS"           
+>[40] "OGR_GMT"        "OGR_GRASS"      "OGR_PDS"       
+>[43] "OGR_SDTS"       "OGR_VRT"        "OSM"           
+>[46] "OpenAir"        "OpenFileGDB"    "PCIDSK"        
+>[49] "PDF"            "PGDUMP"         "PGeo"          
+>[52] "PLSCENES"       "PostgreSQL"     "REC" 
+ 
+in a quick check, there is no difference in available formats.
+ 
+ 
+
+From dicko.ahmadou at gmail.com  Tue Oct 10 14:41:26 2017
+From: dicko.ahmadou at gmail.com (Ahmadou Dicko)
+Date: Tue, 10 Oct 2017 21:41:26 +0000
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+ readVECT
+In-Reply-To: <trinity-d032389d-0c73-4685-a879-96f4fcc18c00-1507670978317@3c-app-webde-bap54>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <1507665780575-0.post@n6.nabble.com>
+ <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+ <CAAMki4ExcqkYrmRR+Z=J8bG4xHdhE4Gbjy6JFzJ7z2sMnz+Ueg@mail.gmail.com>
+ <trinity-6cefb5ff-9530-46f6-a2be-43452e3766a7-1507669008679@3c-app-webde-bap21>
+ <E7824B12CF1B784E.96224f98-2e64-4790-a253-78518dfc86f0@mail.outlook.com>
+ <trinity-5774f1e1-1023-4b07-b68b-1d4863a8cb1a-1507670536755@3c-app-webde-bap21>
+ <CAP8THHUg7jXfuniBe4P02ZPPvsUq48WWKddTR5o4ap=gZwQJ_Q@mail.gmail.com>
+ <trinity-d032389d-0c73-4685-a879-96f4fcc18c00-1507670978317@3c-app-webde-bap54>
+Message-ID: <CAP8THHVakjhjhCp7Y=MwrVJbCb5bN6OYE8HULMb2D_RPs9Yh4g@mail.gmail.com>
+
+In the readVECT function, internally v.in.ogr is used to list the supported
+vector format and it is compared the format available using rgdal (or sf).
+However, using v.external instead of v.in.ogr fix this single problem
+because of the way the output is different (in form).
+For example, if you use v.in.ogr you will have to compare  SQLite_/_Spatialite
+(GRASS) to SQLite (R) and they are not the same.
+
+I tried to send a PR, let me know if it works
+
+https://github.com/rsbivand/rgrass7/pull/1
+
+Best,
+
+On Tue, Oct 10, 2017 at 9:29 PM, Helmut Kudrnovsky <hellik at web.de> wrote:
+
+> >Gesendet: Dienstag, 10. Oktober 2017 um 23:24 Uhr
+> >Von: "Ahmadou Dicko" <dicko.ahmadou at gmail.com>
+> >An: "Helmut Kudrnovsky" <hellik at web.de>
+> >Cc: "Roger Bivand" <Roger.Bivand at nhh.no>, "grass-stats at lists.osgeo.org" <
+> grass-stats at lists.osgeo.org>
+> >Betreff: Re: [GRASS-stats] rgrass7 - SQLite and GML drivers not working
+> for readVECT
+> >
+> >Hi everyone,
+> >
+> >I think that using v.external -f (instead of v.in.ogr -f) can fix this
+> issue (didn't try yet)
+> >
+> >
+> >execGRASS("v.external", flags = "f", intern = TRUE)
+> > [1] "ARCGEN"         "AVCBin"         "AVCE00"
+> > [4] "AeronavFAA"     "AmigoCloud"     "BNA"
+> > [7] "CAD"            "CSV"            "CSW"
+> >[10] "Carto"          "Cloudant"       "CouchDB"
+> >[13] "DGN"            "DXF"            "EDIGEO"
+> >[16] "ESRI_Shapefile" "ElasticSearch"  "GFT"
+> >[19] "GML"            "GPKG"           "GPSBabel"
+> >[22] "GPSTrackMaker"  "GPX"            "GeoJSON"
+> >[25] "GeoRSS"         "Geoconcept"     "Geomedia"
+> >[28] "HTF"            "HTTP"           "Idrisi"
+> >[31] "JML"            "JPEG2000"       "KML"
+> >[34] "MSSQLSpatial"   "MapInfo_File"   "Memory"
+> >[37] "MySQL"          "ODBC"           "ODS"
+> >[40] "OGR_GMT"        "OGR_GRASS"      "OGR_PDS"
+> >[43] "OGR_SDTS"       "OGR_VRT"        "OSM"
+> >[46] "OpenAir"        "OpenFileGDB"    "PCIDSK"
+> >[49] "PDF"            "PGDUMP"         "PGeo"
+> >[52] "PLSCENES"       "PostgreSQL"     "REC"
+>
+> in a quick check, there is no difference in available formats.
+>
+>
+>
+
+
+
+-- 
+Ahmadou H. DICKO, PhD
+
+Data Lab Manager
+Humanitarian Data Exchange (HDX) - humdata.org
+OCHA ROWCA regional office
+VDN Sacre Coeur III, Villa 9364 BP 16 922 Fann
+Dakar, Senegal
+Phone: (+221) 33 869 85 36
+Mobile: (+221) 77 123 81 69
+
+Email: dicko5 at un.org
+Skype: dicko.ahmadou.h
+Twitter : @dickoah
+Gitlab: gitlab/dickoa
+Github: github/dickoa
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20171010/c7eb7b8c/attachment-0001.html>
+
+From Roger.Bivand at nhh.no  Wed Oct 11 01:59:45 2017
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed, 11 Oct 2017 10:59:45 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+ readVECT
+In-Reply-To: <CAP8THHVakjhjhCp7Y=MwrVJbCb5bN6OYE8HULMb2D_RPs9Yh4g@mail.gmail.com>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <1507665780575-0.post@n6.nabble.com>
+ <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+ <CAAMki4ExcqkYrmRR+Z=J8bG4xHdhE4Gbjy6JFzJ7z2sMnz+Ueg@mail.gmail.com>
+ <trinity-6cefb5ff-9530-46f6-a2be-43452e3766a7-1507669008679@3c-app-webde-bap21>
+ <E7824B12CF1B784E.96224f98-2e64-4790-a253-78518dfc86f0@mail.outlook.com>
+ <trinity-5774f1e1-1023-4b07-b68b-1d4863a8cb1a-1507670536755@3c-app-webde-bap21>
+ <CAP8THHUg7jXfuniBe4P02ZPPvsUq48WWKddTR5o4ap=gZwQJ_Q@mail.gmail.com>
+ <trinity-d032389d-0c73-4685-a879-96f4fcc18c00-1507670978317@3c-app-webde-bap54>
+ <CAP8THHVakjhjhCp7Y=MwrVJbCb5bN6OYE8HULMb2D_RPs9Yh4g@mail.gmail.com>
+Message-ID: <alpine.LFD.2.21.1710111014390.13296@reclus.nhh.no>
+
+Thanks for trying to contribute. The GH site is not the rgrass7 
+development site - that is SVN on R-forge (GH is a very preliminary trial 
+site for using sf vector representation in R, and maybe raster raster 
+representation (or forthcoming stars), instead of sp classes).
+
+GRAS 7.2.2 works OK with the current logic checks; I can reproduce the 
+issue in 7.3 (latest); there is a change in vector/v.in.ogr/main.c 
+returning the DriverLongName for GDAL >= 2.0; in GRASS 7.2.2, there is no 
+such change. Could the GRASS developer responsible for this obvious 
+regression provide an additional flag in v.in.ogr (and v.external, 
+v.out.ogr) to permit backwards compatibility? See line 387, needs to 
+change
+
+#if GDAL_VERSION_NUM >= 2000000
+
+to add a !backwards_compatible test too.
+
+I'll hold off trying to fix this in rgrass7 because it is a regression. I 
+can add the backwards_compatibility=TRUE flag to readVECT() once it is 
+exposed.
+
+This is:
+
+https://trac.osgeo.org/grass/ticket/3425
+
+Roger
+
+On Tue, 10 Oct 2017, Ahmadou Dicko wrote:
+
+> In the readVECT function, internally v.in.ogr is used to list the supported
+> vector format and it is compared the format available using rgdal (or sf).
+> However, using v.external instead of v.in.ogr fix this single problem
+> because of the way the output is different (in form).
+> For example, if you use v.in.ogr you will have to compare  SQLite_/_Spatialite
+> (GRASS) to SQLite (R) and they are not the same.
+>
+> I tried to send a PR, let me know if it works
+>
+> https://github.com/rsbivand/rgrass7/pull/1
+>
+> Best,
+>
+> On Tue, Oct 10, 2017 at 9:29 PM, Helmut Kudrnovsky <hellik at web.de> wrote:
+>
+>>> Gesendet: Dienstag, 10. Oktober 2017 um 23:24 Uhr
+>>> Von: "Ahmadou Dicko" <dicko.ahmadou at gmail.com>
+>>> An: "Helmut Kudrnovsky" <hellik at web.de>
+>>> Cc: "Roger Bivand" <Roger.Bivand at nhh.no>, "grass-stats at lists.osgeo.org" <
+>> grass-stats at lists.osgeo.org>
+>>> Betreff: Re: [GRASS-stats] rgrass7 - SQLite and GML drivers not working
+>> for readVECT
+>>>
+>>> Hi everyone,
+>>>
+>>> I think that using v.external -f (instead of v.in.ogr -f) can fix this
+>> issue (didn't try yet)
+>>>
+>>>
+>>> execGRASS("v.external", flags = "f", intern = TRUE)
+>>> [1] "ARCGEN"         "AVCBin"         "AVCE00"
+>>> [4] "AeronavFAA"     "AmigoCloud"     "BNA"
+>>> [7] "CAD"            "CSV"            "CSW"
+>>> [10] "Carto"          "Cloudant"       "CouchDB"
+>>> [13] "DGN"            "DXF"            "EDIGEO"
+>>> [16] "ESRI_Shapefile" "ElasticSearch"  "GFT"
+>>> [19] "GML"            "GPKG"           "GPSBabel"
+>>> [22] "GPSTrackMaker"  "GPX"            "GeoJSON"
+>>> [25] "GeoRSS"         "Geoconcept"     "Geomedia"
+>>> [28] "HTF"            "HTTP"           "Idrisi"
+>>> [31] "JML"            "JPEG2000"       "KML"
+>>> [34] "MSSQLSpatial"   "MapInfo_File"   "Memory"
+>>> [37] "MySQL"          "ODBC"           "ODS"
+>>> [40] "OGR_GMT"        "OGR_GRASS"      "OGR_PDS"
+>>> [43] "OGR_SDTS"       "OGR_VRT"        "OSM"
+>>> [46] "OpenAir"        "OpenFileGDB"    "PCIDSK"
+>>> [49] "PDF"            "PGDUMP"         "PGeo"
+>>> [52] "PLSCENES"       "PostgreSQL"     "REC"
+>>
+>> in a quick check, there is no difference in available formats.
+>>
+>>
+>>
+>
+>
+>
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+Editor-in-Chief of The R Journal, https://journal.r-project.org/index.html
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+
+From Roger.Bivand at nhh.no  Wed Oct 11 04:41:16 2017
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed, 11 Oct 2017 13:41:16 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+ readVECT
+In-Reply-To: <alpine.LFD.2.21.1710111014390.13296@reclus.nhh.no>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <1507665780575-0.post@n6.nabble.com>
+ <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+ <CAAMki4ExcqkYrmRR+Z=J8bG4xHdhE4Gbjy6JFzJ7z2sMnz+Ueg@mail.gmail.com>
+ <trinity-6cefb5ff-9530-46f6-a2be-43452e3766a7-1507669008679@3c-app-webde-bap21>
+ <E7824B12CF1B784E.96224f98-2e64-4790-a253-78518dfc86f0@mail.outlook.com>
+ <trinity-5774f1e1-1023-4b07-b68b-1d4863a8cb1a-1507670536755@3c-app-webde-bap21>
+ <CAP8THHUg7jXfuniBe4P02ZPPvsUq48WWKddTR5o4ap=gZwQJ_Q@mail.gmail.com>
+ <trinity-d032389d-0c73-4685-a879-96f4fcc18c00-1507670978317@3c-app-webde-bap54>
+ <CAP8THHVakjhjhCp7Y=MwrVJbCb5bN6OYE8HULMb2D_RPs9Yh4g@mail.gmail.com>
+ <alpine.LFD.2.21.1710111014390.13296@reclus.nhh.no>
+Message-ID: <alpine.LFD.2.21.1710111336500.13296@reclus.nhh.no>
+
+New version submitted to CRAN; until then:
+
+install.packages("rgrass7", repos="http://R-Forge.R-project.org")
+
+should pick up the latest version; #3425 closed. Please report back 
+whether this works ... (conditioning on GRASS version to create comparable 
+driver name strings).
+
+Roger
+
+On Wed, 11 Oct 2017, Roger Bivand wrote:
+
+> Thanks for trying to contribute. The GH site is not the rgrass7 
+> development site - that is SVN on R-forge (GH is a very preliminary trial 
+> site for using sf vector representation in R, and maybe raster raster 
+> representation (or forthcoming stars), instead of sp classes).
+>
+> GRAS 7.2.2 works OK with the current logic checks; I can reproduce the 
+> issue in 7.3 (latest); there is a change in vector/v.in.ogr/main.c 
+> returning the DriverLongName for GDAL >= 2.0; in GRASS 7.2.2, there is no 
+> such change. Could the GRASS developer responsible for this obvious 
+> regression provide an additional flag in v.in.ogr (and v.external, 
+> v.out.ogr) to permit backwards compatibility? See line 387, needs to 
+> change
+>
+> #if GDAL_VERSION_NUM >= 2000000
+>
+> to add a !backwards_compatible test too.
+>
+> I'll hold off trying to fix this in rgrass7 because it is a regression. I 
+> can add the backwards_compatibility=TRUE flag to readVECT() once it is 
+> exposed.
+>
+> This is:
+>
+> https://trac.osgeo.org/grass/ticket/3425
+>
+> Roger
+>
+> On Tue, 10 Oct 2017, Ahmadou Dicko wrote:
+>
+>> In the readVECT function, internally v.in.ogr is used to list the supported
+>> vector format and it is compared the format available using rgdal (or sf).
+>> However, using v.external instead of v.in.ogr fix this single problem
+>> because of the way the output is different (in form).
+>> For example, if you use v.in.ogr you will have to compare 
+> SQLite_/_Spatialite
+>> (GRASS) to SQLite (R) and they are not the same.
+>>
+>> I tried to send a PR, let me know if it works
+>>
+>> https://github.com/rsbivand/rgrass7/pull/1
+>>
+>> Best,
+>>
+>> On Tue, Oct 10, 2017 at 9:29 PM, Helmut Kudrnovsky <hellik at web.de> wrote:
+>>
+>>>> Gesendet: Dienstag, 10. Oktober 2017 um 23:24 Uhr
+>>>> Von: "Ahmadou Dicko" <dicko.ahmadou at gmail.com>
+>>>> An: "Helmut Kudrnovsky" <hellik at web.de>
+>>>> Cc: "Roger Bivand" <Roger.Bivand at nhh.no>, "grass-stats at lists.osgeo.org" <
+>>> grass-stats at lists.osgeo.org>
+>>>> Betreff: Re: [GRASS-stats] rgrass7 - SQLite and GML drivers not working
+>>> for readVECT
+>>>>
+>>>> Hi everyone,
+>>>>
+>>>> I think that using v.external -f (instead of v.in.ogr -f) can fix this
+>>> issue (didn't try yet)
+>>>>
+>>>>
+>>>> execGRASS("v.external", flags = "f", intern = TRUE)
+>>>> [1] "ARCGEN"         "AVCBin"         "AVCE00"
+>>>> [4] "AeronavFAA"     "AmigoCloud"     "BNA"
+>>>> [7] "CAD"            "CSV"            "CSW"
+>>>> [10] "Carto"          "Cloudant"       "CouchDB"
+>>>> [13] "DGN"            "DXF"            "EDIGEO"
+>>>> [16] "ESRI_Shapefile" "ElasticSearch"  "GFT"
+>>>> [19] "GML"            "GPKG"           "GPSBabel"
+>>>> [22] "GPSTrackMaker"  "GPX"            "GeoJSON"
+>>>> [25] "GeoRSS"         "Geoconcept"     "Geomedia"
+>>>> [28] "HTF"            "HTTP"           "Idrisi"
+>>>> [31] "JML"            "JPEG2000"       "KML"
+>>>> [34] "MSSQLSpatial"   "MapInfo_File"   "Memory"
+>>>> [37] "MySQL"          "ODBC"           "ODS"
+>>>> [40] "OGR_GMT"        "OGR_GRASS"      "OGR_PDS"
+>>>> [43] "OGR_SDTS"       "OGR_VRT"        "OSM"
+>>>> [46] "OpenAir"        "OpenFileGDB"    "PCIDSK"
+>>>> [49] "PDF"            "PGDUMP"         "PGeo"
+>>>> [52] "PLSCENES"       "PostgreSQL"     "REC"
+>>>
+>>> in a quick check, there is no difference in available formats.
+>>>
+>>>
+>>>
+>>
+>>
+>>
+>>
+>
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+Editor-in-Chief of The R Journal, https://journal.r-project.org/index.html
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+
+From neteler at osgeo.org  Wed Oct 11 04:48:55 2017
+From: neteler at osgeo.org (Markus Neteler)
+Date: Wed, 11 Oct 2017 13:48:55 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+	readVECT
+In-Reply-To: <CALFmHhtx1seTCk4g1rjZOr7ENB1Fpq7Ck9eX5D7g__fVkiZDMw@mail.gmail.com>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <1507665780575-0.post@n6.nabble.com>
+ <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+ <CAAMki4ExcqkYrmRR+Z=J8bG4xHdhE4Gbjy6JFzJ7z2sMnz+Ueg@mail.gmail.com>
+ <trinity-6cefb5ff-9530-46f6-a2be-43452e3766a7-1507669008679@3c-app-webde-bap21>
+ <E7824B12CF1B784E.96224f98-2e64-4790-a253-78518dfc86f0@mail.outlook.com>
+ <trinity-5774f1e1-1023-4b07-b68b-1d4863a8cb1a-1507670536755@3c-app-webde-bap21>
+ <CAP8THHUg7jXfuniBe4P02ZPPvsUq48WWKddTR5o4ap=gZwQJ_Q@mail.gmail.com>
+ <trinity-d032389d-0c73-4685-a879-96f4fcc18c00-1507670978317@3c-app-webde-bap54>
+ <CAP8THHVakjhjhCp7Y=MwrVJbCb5bN6OYE8HULMb2D_RPs9Yh4g@mail.gmail.com>
+ <alpine.LFD.2.21.1710111014390.13296@reclus.nhh.no>
+ <alpine.LFD.2.21.1710111336500.13296@reclus.nhh.no>
+ <CALFmHhtQaxc5PV+vDa5WsAsZ0UL5N0xftBj_XUzAyWOW46tcGA@mail.gmail.com>
+ <CALFmHhtx1seTCk4g1rjZOr7ENB1Fpq7Ck9eX5D7g__fVkiZDMw@mail.gmail.com>
+Message-ID: <CALFmHhu9vcU=PHpzJ34xc8SDTQSrYss=wsm6YnPgOxPT5amGgA@mail.gmail.com>
+
+Dear Roger,
+
+On Oct 11, 2017 1:41 PM, "Roger Bivand" <Roger.Bivand at nhh.no> wrote:
+>
+> New version submitted to CRAN; until then:
+>
+> install.packages("rgrass7", repos="http://R-Forge.R-project.org")
+>
+> should pick up the latest version; #3425 closed. Please report back
+whether this works ... (conditioning on GRASS version to create comparable
+driver name strings).
+
+I hope we find a long term solution.
+In any case:
+Thanks for your efforts!
+
+Markus
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20171011/642945e9/attachment.html>
+
+From markus.metz.giswork at gmail.com  Wed Oct 11 05:10:10 2017
+From: markus.metz.giswork at gmail.com (Markus Metz)
+Date: Wed, 11 Oct 2017 14:10:10 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+	readVECT
+In-Reply-To: <alpine.LFD.2.21.1710111336500.13296@reclus.nhh.no>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <1507665780575-0.post@n6.nabble.com>
+ <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+ <CAAMki4ExcqkYrmRR+Z=J8bG4xHdhE4Gbjy6JFzJ7z2sMnz+Ueg@mail.gmail.com>
+ <trinity-6cefb5ff-9530-46f6-a2be-43452e3766a7-1507669008679@3c-app-webde-bap21>
+ <E7824B12CF1B784E.96224f98-2e64-4790-a253-78518dfc86f0@mail.outlook.com>
+ <trinity-5774f1e1-1023-4b07-b68b-1d4863a8cb1a-1507670536755@3c-app-webde-bap21>
+ <CAP8THHUg7jXfuniBe4P02ZPPvsUq48WWKddTR5o4ap=gZwQJ_Q@mail.gmail.com>
+ <trinity-d032389d-0c73-4685-a879-96f4fcc18c00-1507670978317@3c-app-webde-bap54>
+ <CAP8THHVakjhjhCp7Y=MwrVJbCb5bN6OYE8HULMb2D_RPs9Yh4g@mail.gmail.com>
+ <alpine.LFD.2.21.1710111014390.13296@reclus.nhh.no>
+ <alpine.LFD.2.21.1710111336500.13296@reclus.nhh.no>
+Message-ID: <CAG+h=FEPg3BuP1ne2dFbUTLg8U7TYGkC-nZaRtnXG8QrxzZu5w@mail.gmail.com>
+
+Dear Roger,
+
+On Wed, Oct 11, 2017 at 1:41 PM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+>
+> New version submitted to CRAN; until then:
+>
+> install.packages("rgrass7", repos="http://R-Forge.R-project.org")
+>
+> should pick up the latest version; #3425 closed. Please report back
+whether this works ... (conditioning on GRASS version to create comparable
+driver name strings).
+
+I don't think there is a need to condition on the GRASS version, see my
+suggestion in #3425
+
+Markus M
+>
+> Roger
+>
+>
+> On Wed, 11 Oct 2017, Roger Bivand wrote:
+>
+>> Thanks for trying to contribute. The GH site is not the rgrass7
+development site - that is SVN on R-forge (GH is a very preliminary trial
+site for using sf vector representation in R, and maybe raster raster
+representation (or forthcoming stars), instead of sp classes).
+>>
+>> GRAS 7.2.2 works OK with the current logic checks; I can reproduce the
+issue in 7.3 (latest); there is a change in vector/v.in.ogr/main.c
+returning the DriverLongName for GDAL >= 2.0; in GRASS 7.2.2, there is no
+such change. Could the GRASS developer responsible for this obvious
+regression provide an additional flag in v.in.ogr (and v.external,
+v.out.ogr) to permit backwards compatibility? See line 387, needs to change
+>>
+>> #if GDAL_VERSION_NUM >= 2000000
+>>
+>> to add a !backwards_compatible test too.
+>>
+>> I'll hold off trying to fix this in rgrass7 because it is a regression.
+I can add the backwards_compatibility=TRUE flag to readVECT() once it is
+exposed.
+>>
+>> This is:
+>>
+>> https://trac.osgeo.org/grass/ticket/3425
+>>
+>> Roger
+>>
+>> On Tue, 10 Oct 2017, Ahmadou Dicko wrote:
+>>
+>>> In the readVECT function, internally v.in.ogr is used to list the
+supported
+>>> vector format and it is compared the format available using rgdal (or
+sf).
+>>> However, using v.external instead of v.in.ogr fix this single problem
+>>> because of the way the output is different (in form).
+>>> For example, if you use v.in.ogr you will have to compare
+>>
+>> SQLite_/_Spatialite
+>>>
+>>> (GRASS) to SQLite (R) and they are not the same.
+>>>
+>>> I tried to send a PR, let me know if it works
+>>>
+>>> https://github.com/rsbivand/rgrass7/pull/1
+>>>
+>>> Best,
+>>>
+>>> On Tue, Oct 10, 2017 at 9:29 PM, Helmut Kudrnovsky <hellik at web.de>
+wrote:
+>>>
+>>>>> Gesendet: Dienstag, 10. Oktober 2017 um 23:24 Uhr
+>>>>> Von: "Ahmadou Dicko" <dicko.ahmadou at gmail.com>
+>>>>> An: "Helmut Kudrnovsky" <hellik at web.de>
+>>>>> Cc: "Roger Bivand" <Roger.Bivand at nhh.no>, "grass-stats at lists.osgeo.org"
+<
+>>>>
+>>>> grass-stats at lists.osgeo.org>
+>>>>>
+>>>>> Betreff: Re: [GRASS-stats] rgrass7 - SQLite and GML drivers not
+working
+>>>>
+>>>> for readVECT
+>>>>>
+>>>>>
+>>>>> Hi everyone,
+>>>>>
+>>>>> I think that using v.external -f (instead of v.in.ogr -f) can fix this
+>>>>
+>>>> issue (didn't try yet)
+>>>>>
+>>>>>
+>>>>>
+>>>>> execGRASS("v.external", flags = "f", intern = TRUE)
+>>>>> [1] "ARCGEN"         "AVCBin"         "AVCE00"
+>>>>> [4] "AeronavFAA"     "AmigoCloud"     "BNA"
+>>>>> [7] "CAD"            "CSV"            "CSW"
+>>>>> [10] "Carto"          "Cloudant"       "CouchDB"
+>>>>> [13] "DGN"            "DXF"            "EDIGEO"
+>>>>> [16] "ESRI_Shapefile" "ElasticSearch"  "GFT"
+>>>>> [19] "GML"            "GPKG"           "GPSBabel"
+>>>>> [22] "GPSTrackMaker"  "GPX"            "GeoJSON"
+>>>>> [25] "GeoRSS"         "Geoconcept"     "Geomedia"
+>>>>> [28] "HTF"            "HTTP"           "Idrisi"
+>>>>> [31] "JML"            "JPEG2000"       "KML"
+>>>>> [34] "MSSQLSpatial"   "MapInfo_File"   "Memory"
+>>>>> [37] "MySQL"          "ODBC"           "ODS"
+>>>>> [40] "OGR_GMT"        "OGR_GRASS"      "OGR_PDS"
+>>>>> [43] "OGR_SDTS"       "OGR_VRT"        "OSM"
+>>>>> [46] "OpenAir"        "OpenFileGDB"    "PCIDSK"
+>>>>> [49] "PDF"            "PGDUMP"         "PGeo"
+>>>>> [52] "PLSCENES"       "PostgreSQL"     "REC"
+>>>>
+>>>>
+>>>> in a quick check, there is no difference in available formats.
+>>>>
+>>>>
+>>>>
+>>>
+>>>
+>>>
+>>>
+>>
+>>
+>
+> --
+> Roger Bivand
+> Department of Economics, Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+> Editor-in-Chief of The R Journal, https://journal.r-project.org/index.html
+> http://orcid.org/0000-0003-2392-6140
+> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20171011/35b422a9/attachment-0001.html>
+
+From Roger.Bivand at nhh.no  Wed Oct 11 05:36:22 2017
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed, 11 Oct 2017 14:36:22 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+ readVECT
+In-Reply-To: <CAG+h=FEPg3BuP1ne2dFbUTLg8U7TYGkC-nZaRtnXG8QrxzZu5w@mail.gmail.com>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <1507665780575-0.post@n6.nabble.com>
+ <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+ <CAAMki4ExcqkYrmRR+Z=J8bG4xHdhE4Gbjy6JFzJ7z2sMnz+Ueg@mail.gmail.com>
+ <trinity-6cefb5ff-9530-46f6-a2be-43452e3766a7-1507669008679@3c-app-webde-bap21>
+ <E7824B12CF1B784E.96224f98-2e64-4790-a253-78518dfc86f0@mail.outlook.com>
+ <trinity-5774f1e1-1023-4b07-b68b-1d4863a8cb1a-1507670536755@3c-app-webde-bap21>
+ <CAP8THHUg7jXfuniBe4P02ZPPvsUq48WWKddTR5o4ap=gZwQJ_Q@mail.gmail.com>
+ <trinity-d032389d-0c73-4685-a879-96f4fcc18c00-1507670978317@3c-app-webde-bap54>
+ <CAP8THHVakjhjhCp7Y=MwrVJbCb5bN6OYE8HULMb2D_RPs9Yh4g@mail.gmail.com>
+ <alpine.LFD.2.21.1710111014390.13296@reclus.nhh.no>
+ <alpine.LFD.2.21.1710111336500.13296@reclus.nhh.no>
+ <CAG+h=FEPg3BuP1ne2dFbUTLg8U7TYGkC-nZaRtnXG8QrxzZu5w@mail.gmail.com>
+Message-ID: <alpine.LFD.2.21.1710111427070.13296@reclus.nhh.no>
+
+Dear Markus,
+
+I can't see how to get the same strings out without conditioning, because 
+for v.in.ogr -f and GDAL >= 2.0, GRASS < 7.3 presents for example:
+
+GML (rw): GML
+SQLite (rw): SQLite
+ESRI Shapefile (rw): ESRI Shapefile
+GeoJSON (rw): GeoJSON
+
+(readOGR used the string following ":" )
+
+and >= 7.3:
+
+GML (rw+): Geography Markup Language (GML)
+SQLite (rw+): SQLite / Spatialite
+ESRI Shapefile (rw+): ESRI Shapefile
+GeoJSON (rw+): GeoJSON
+
+where the string after ":" is different. If we can depend on all GRASS < 
+7.3 having the same short name position, yes, I could avoid conditioning 
+by changing the string processing to suit >= 7.3 and apply it to all 
+previous; I chose not to modify the string processing for < 7.3 to avoid 
+any problems I can't readily check.
+
+Best wishes,
+
+Roger
+
+On Wed, 11 Oct 2017, Markus Metz wrote:
+
+> Dear Roger,
+>
+> On Wed, Oct 11, 2017 at 1:41 PM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+>>
+>> New version submitted to CRAN; until then:
+>>
+>> install.packages("rgrass7", repos="http://R-Forge.R-project.org")
+>>
+>> should pick up the latest version; #3425 closed. Please report back
+> whether this works ... (conditioning on GRASS version to create comparable
+> driver name strings).
+>
+> I don't think there is a need to condition on the GRASS version, see my
+> suggestion in #3425
+>
+> Markus M
+>>
+>> Roger
+>>
+>>
+>> On Wed, 11 Oct 2017, Roger Bivand wrote:
+>>
+>>> Thanks for trying to contribute. The GH site is not the rgrass7
+> development site - that is SVN on R-forge (GH is a very preliminary trial
+> site for using sf vector representation in R, and maybe raster raster
+> representation (or forthcoming stars), instead of sp classes).
+>>>
+>>> GRAS 7.2.2 works OK with the current logic checks; I can reproduce the
+> issue in 7.3 (latest); there is a change in vector/v.in.ogr/main.c
+> returning the DriverLongName for GDAL >= 2.0; in GRASS 7.2.2, there is no
+> such change. Could the GRASS developer responsible for this obvious
+> regression provide an additional flag in v.in.ogr (and v.external,
+> v.out.ogr) to permit backwards compatibility? See line 387, needs to change
+>>>
+>>> #if GDAL_VERSION_NUM >= 2000000
+>>>
+>>> to add a !backwards_compatible test too.
+>>>
+>>> I'll hold off trying to fix this in rgrass7 because it is a regression.
+> I can add the backwards_compatibility=TRUE flag to readVECT() once it is
+> exposed.
+>>>
+>>> This is:
+>>>
+>>> https://trac.osgeo.org/grass/ticket/3425
+>>>
+>>> Roger
+>>>
+>>> On Tue, 10 Oct 2017, Ahmadou Dicko wrote:
+>>>
+>>>> In the readVECT function, internally v.in.ogr is used to list the
+> supported
+>>>> vector format and it is compared the format available using rgdal (or
+> sf).
+>>>> However, using v.external instead of v.in.ogr fix this single problem
+>>>> because of the way the output is different (in form).
+>>>> For example, if you use v.in.ogr you will have to compare
+>>>
+>>> SQLite_/_Spatialite
+>>>>
+>>>> (GRASS) to SQLite (R) and they are not the same.
+>>>>
+>>>> I tried to send a PR, let me know if it works
+>>>>
+>>>> https://github.com/rsbivand/rgrass7/pull/1
+>>>>
+>>>> Best,
+>>>>
+>>>> On Tue, Oct 10, 2017 at 9:29 PM, Helmut Kudrnovsky <hellik at web.de>
+> wrote:
+>>>>
+>>>>>> Gesendet: Dienstag, 10. Oktober 2017 um 23:24 Uhr
+>>>>>> Von: "Ahmadou Dicko" <dicko.ahmadou at gmail.com>
+>>>>>> An: "Helmut Kudrnovsky" <hellik at web.de>
+>>>>>> Cc: "Roger Bivand" <Roger.Bivand at nhh.no>, "grass-stats at lists.osgeo.org"
+> <
+>>>>>
+>>>>> grass-stats at lists.osgeo.org>
+>>>>>>
+>>>>>> Betreff: Re: [GRASS-stats] rgrass7 - SQLite and GML drivers not
+> working
+>>>>>
+>>>>> for readVECT
+>>>>>>
+>>>>>>
+>>>>>> Hi everyone,
+>>>>>>
+>>>>>> I think that using v.external -f (instead of v.in.ogr -f) can fix this
+>>>>>
+>>>>> issue (didn't try yet)
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> execGRASS("v.external", flags = "f", intern = TRUE)
+>>>>>> [1] "ARCGEN"         "AVCBin"         "AVCE00"
+>>>>>> [4] "AeronavFAA"     "AmigoCloud"     "BNA"
+>>>>>> [7] "CAD"            "CSV"            "CSW"
+>>>>>> [10] "Carto"          "Cloudant"       "CouchDB"
+>>>>>> [13] "DGN"            "DXF"            "EDIGEO"
+>>>>>> [16] "ESRI_Shapefile" "ElasticSearch"  "GFT"
+>>>>>> [19] "GML"            "GPKG"           "GPSBabel"
+>>>>>> [22] "GPSTrackMaker"  "GPX"            "GeoJSON"
+>>>>>> [25] "GeoRSS"         "Geoconcept"     "Geomedia"
+>>>>>> [28] "HTF"            "HTTP"           "Idrisi"
+>>>>>> [31] "JML"            "JPEG2000"       "KML"
+>>>>>> [34] "MSSQLSpatial"   "MapInfo_File"   "Memory"
+>>>>>> [37] "MySQL"          "ODBC"           "ODS"
+>>>>>> [40] "OGR_GMT"        "OGR_GRASS"      "OGR_PDS"
+>>>>>> [43] "OGR_SDTS"       "OGR_VRT"        "OSM"
+>>>>>> [46] "OpenAir"        "OpenFileGDB"    "PCIDSK"
+>>>>>> [49] "PDF"            "PGDUMP"         "PGeo"
+>>>>>> [52] "PLSCENES"       "PostgreSQL"     "REC"
+>>>>>
+>>>>>
+>>>>> in a quick check, there is no difference in available formats.
+>>>>>
+>>>>>
+>>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+>>>
+>>>
+>>
+>> --
+>> Roger Bivand
+>> Department of Economics, Norwegian School of Economics,
+>> Helleveien 30, N-5045 Bergen, Norway.
+>> voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+>> Editor-in-Chief of The R Journal, https://journal.r-project.org/index.html
+>> http://orcid.org/0000-0003-2392-6140
+>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats at lists.osgeo.org
+>> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+Editor-in-Chief of The R Journal, https://journal.r-project.org/index.html
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+
+From veroandreo at gmail.com  Wed Oct 11 05:39:23 2017
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Wed, 11 Oct 2017 14:39:23 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+	readVECT
+In-Reply-To: <CAG+h=FEPg3BuP1ne2dFbUTLg8U7TYGkC-nZaRtnXG8QrxzZu5w@mail.gmail.com>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <1507665780575-0.post@n6.nabble.com>
+ <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+ <CAAMki4ExcqkYrmRR+Z=J8bG4xHdhE4Gbjy6JFzJ7z2sMnz+Ueg@mail.gmail.com>
+ <trinity-6cefb5ff-9530-46f6-a2be-43452e3766a7-1507669008679@3c-app-webde-bap21>
+ <E7824B12CF1B784E.96224f98-2e64-4790-a253-78518dfc86f0@mail.outlook.com>
+ <trinity-5774f1e1-1023-4b07-b68b-1d4863a8cb1a-1507670536755@3c-app-webde-bap21>
+ <CAP8THHUg7jXfuniBe4P02ZPPvsUq48WWKddTR5o4ap=gZwQJ_Q@mail.gmail.com>
+ <trinity-d032389d-0c73-4685-a879-96f4fcc18c00-1507670978317@3c-app-webde-bap54>
+ <CAP8THHVakjhjhCp7Y=MwrVJbCb5bN6OYE8HULMb2D_RPs9Yh4g@mail.gmail.com>
+ <alpine.LFD.2.21.1710111014390.13296@reclus.nhh.no>
+ <alpine.LFD.2.21.1710111336500.13296@reclus.nhh.no>
+ <CAG+h=FEPg3BuP1ne2dFbUTLg8U7TYGkC-nZaRtnXG8QrxzZu5w@mail.gmail.com>
+Message-ID: <CAAMki4F93ig622g9CtY+Vb2qVpyWeMRMasZCuKwX7cW996=Q9w@mail.gmail.com>
+
+Dear Roger, MarkusM and all
+
+Thank you very much for such quick answers and solutions! I cannot tell
+which would be the best solution, but I tested the one already in r-forge
+and readVECT works again with SQLite and GML :)
+
+Thanks again to everybody!
+Vero
+
+2017-10-11 14:10 GMT+02:00 Markus Metz <markus.metz.giswork at gmail.com>:
+
+> Dear Roger,
+>
+> On Wed, Oct 11, 2017 at 1:41 PM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+> >
+> > New version submitted to CRAN; until then:
+> >
+> > install.packages("rgrass7", repos="http://R-Forge.R-project.org")
+> >
+> > should pick up the latest version; #3425 closed. Please report back
+> whether this works ... (conditioning on GRASS version to create comparable
+> driver name strings).
+>
+> I don't think there is a need to condition on the GRASS version, see my
+> suggestion in #3425
+>
+> Markus M
+> >
+> > Roger
+> >
+> >
+> > On Wed, 11 Oct 2017, Roger Bivand wrote:
+> >
+> >> Thanks for trying to contribute. The GH site is not the rgrass7
+> development site - that is SVN on R-forge (GH is a very preliminary trial
+> site for using sf vector representation in R, and maybe raster raster
+> representation (or forthcoming stars), instead of sp classes).
+> >>
+> >> GRAS 7.2.2 works OK with the current logic checks; I can reproduce the
+> issue in 7.3 (latest); there is a change in vector/v.in.ogr/main.c
+> returning the DriverLongName for GDAL >= 2.0; in GRASS 7.2.2, there is no
+> such change. Could the GRASS developer responsible for this obvious
+> regression provide an additional flag in v.in.ogr (and v.external,
+> v.out.ogr) to permit backwards compatibility? See line 387, needs to change
+> >>
+> >> #if GDAL_VERSION_NUM >= 2000000
+> >>
+> >> to add a !backwards_compatible test too.
+> >>
+> >> I'll hold off trying to fix this in rgrass7 because it is a regression.
+> I can add the backwards_compatibility=TRUE flag to readVECT() once it is
+> exposed.
+> >>
+> >> This is:
+> >>
+> >> https://trac.osgeo.org/grass/ticket/3425
+> >>
+> >> Roger
+> >>
+> >> On Tue, 10 Oct 2017, Ahmadou Dicko wrote:
+> >>
+> >>> In the readVECT function, internally v.in.ogr is used to list the
+> supported
+> >>> vector format and it is compared the format available using rgdal (or
+> sf).
+> >>> However, using v.external instead of v.in.ogr fix this single problem
+> >>> because of the way the output is different (in form).
+> >>> For example, if you use v.in.ogr you will have to compare
+> >>
+> >> SQLite_/_Spatialite
+> >>>
+> >>> (GRASS) to SQLite (R) and they are not the same.
+> >>>
+> >>> I tried to send a PR, let me know if it works
+> >>>
+> >>> https://github.com/rsbivand/rgrass7/pull/1
+> >>>
+> >>> Best,
+> >>>
+> >>> On Tue, Oct 10, 2017 at 9:29 PM, Helmut Kudrnovsky <hellik at web.de>
+> wrote:
+> >>>
+> >>>>> Gesendet: Dienstag, 10. Oktober 2017 um 23:24 Uhr
+> >>>>> Von: "Ahmadou Dicko" <dicko.ahmadou at gmail.com>
+> >>>>> An: "Helmut Kudrnovsky" <hellik at web.de>
+> >>>>> Cc: "Roger Bivand" <Roger.Bivand at nhh.no>, "
+> grass-stats at lists.osgeo.org" <
+> >>>>
+> >>>> grass-stats at lists.osgeo.org>
+> >>>>>
+> >>>>> Betreff: Re: [GRASS-stats] rgrass7 - SQLite and GML drivers not
+> working
+> >>>>
+> >>>> for readVECT
+> >>>>>
+> >>>>>
+> >>>>> Hi everyone,
+> >>>>>
+> >>>>> I think that using v.external -f (instead of v.in.ogr -f) can fix
+> this
+> >>>>
+> >>>> issue (didn't try yet)
+> >>>>>
+> >>>>>
+> >>>>>
+> >>>>> execGRASS("v.external", flags = "f", intern = TRUE)
+> >>>>> [1] "ARCGEN"         "AVCBin"         "AVCE00"
+> >>>>> [4] "AeronavFAA"     "AmigoCloud"     "BNA"
+> >>>>> [7] "CAD"            "CSV"            "CSW"
+> >>>>> [10] "Carto"          "Cloudant"       "CouchDB"
+> >>>>> [13] "DGN"            "DXF"            "EDIGEO"
+> >>>>> [16] "ESRI_Shapefile" "ElasticSearch"  "GFT"
+> >>>>> [19] "GML"            "GPKG"           "GPSBabel"
+> >>>>> [22] "GPSTrackMaker"  "GPX"            "GeoJSON"
+> >>>>> [25] "GeoRSS"         "Geoconcept"     "Geomedia"
+> >>>>> [28] "HTF"            "HTTP"           "Idrisi"
+> >>>>> [31] "JML"            "JPEG2000"       "KML"
+> >>>>> [34] "MSSQLSpatial"   "MapInfo_File"   "Memory"
+> >>>>> [37] "MySQL"          "ODBC"           "ODS"
+> >>>>> [40] "OGR_GMT"        "OGR_GRASS"      "OGR_PDS"
+> >>>>> [43] "OGR_SDTS"       "OGR_VRT"        "OSM"
+> >>>>> [46] "OpenAir"        "OpenFileGDB"    "PCIDSK"
+> >>>>> [49] "PDF"            "PGDUMP"         "PGeo"
+> >>>>> [52] "PLSCENES"       "PostgreSQL"     "REC"
+> >>>>
+> >>>>
+> >>>> in a quick check, there is no difference in available formats.
+> >>>>
+> >>>>
+> >>>>
+> >>>
+> >>>
+> >>>
+> >>>
+> >>
+> >>
+> >
+> > --
+> > Roger Bivand
+> > Department of Economics, Norwegian School of Economics,
+> > Helleveien 30, N-5045 Bergen, Norway.
+> > voice: +47 55 95 93 55 <+47%2055%2095%2093%2055>; e-mail:
+> Roger.Bivand at nhh.no
+> > Editor-in-Chief of The R Journal, https://journal.r-project.org/
+> index.html
+> > http://orcid.org/0000-0003-2392-6140
+> > https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+> > _______________________________________________
+> > grass-stats mailing list
+> > grass-stats at lists.osgeo.org
+> > https://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20171011/dc79010d/attachment.html>
+
+From markus.metz.giswork at gmail.com  Wed Oct 11 05:59:45 2017
+From: markus.metz.giswork at gmail.com (Markus Metz)
+Date: Wed, 11 Oct 2017 14:59:45 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+	readVECT
+In-Reply-To: <alpine.LFD.2.21.1710111427070.13296@reclus.nhh.no>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <1507665780575-0.post@n6.nabble.com>
+ <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+ <CAAMki4ExcqkYrmRR+Z=J8bG4xHdhE4Gbjy6JFzJ7z2sMnz+Ueg@mail.gmail.com>
+ <trinity-6cefb5ff-9530-46f6-a2be-43452e3766a7-1507669008679@3c-app-webde-bap21>
+ <E7824B12CF1B784E.96224f98-2e64-4790-a253-78518dfc86f0@mail.outlook.com>
+ <trinity-5774f1e1-1023-4b07-b68b-1d4863a8cb1a-1507670536755@3c-app-webde-bap21>
+ <CAP8THHUg7jXfuniBe4P02ZPPvsUq48WWKddTR5o4ap=gZwQJ_Q@mail.gmail.com>
+ <trinity-d032389d-0c73-4685-a879-96f4fcc18c00-1507670978317@3c-app-webde-bap54>
+ <CAP8THHVakjhjhCp7Y=MwrVJbCb5bN6OYE8HULMb2D_RPs9Yh4g@mail.gmail.com>
+ <alpine.LFD.2.21.1710111014390.13296@reclus.nhh.no>
+ <alpine.LFD.2.21.1710111336500.13296@reclus.nhh.no>
+ <CAG+h=FEPg3BuP1ne2dFbUTLg8U7TYGkC-nZaRtnXG8QrxzZu5w@mail.gmail.com>
+ <alpine.LFD.2.21.1710111427070.13296@reclus.nhh.no>
+Message-ID: <CAG+h=FGoXs2zqZKr=wUJ02Q4QtGwNRCAKSK0=XphbRweHRvEAg@mail.gmail.com>
+
+Dear Roger,
+
+On Wed, Oct 11, 2017 at 2:36 PM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+>
+> Dear Markus,
+>
+> I can't see how to get the same strings out without conditioning,
+
+with
+
+ogrDGRASSs <- gsub(" ", "_", trimws(sapply(strsplit(ogrDGRASS, " [(]"),
+"[", 1)))
+
+> because for v.in.ogr -f and GDAL >= 2.0, GRASS < 7.3 presents for example:
+>
+> GML (rw): GML
+> SQLite (rw): SQLite
+> ESRI Shapefile (rw): ESRI Shapefile
+> GeoJSON (rw): GeoJSON
+>
+> (readOGR used the string following ":" )
+
+The structure of the output of r.in.gdal -f and v.in.ogr -f is
+
+ <short name> (<read/write flags>): <description>
+
+readOGR must use the string preceding "(". Anything following ":" is a
+description which can change any time. Before GDAL 2.0, there was nothing
+else but the short name for OGR drivers, therefore the short name was used
+as description.
+
+>
+> and >= 7.3:
+>
+> GML (rw+): Geography Markup Language (GML)
+> SQLite (rw+): SQLite / Spatialite
+> ESRI Shapefile (rw+): ESRI Shapefile
+> GeoJSON (rw+): GeoJSON
+>
+> where the string after ":" is different.
+
+the string before the read/write flags, i.e. before "(" is identical.
+
+> If we can depend on all GRASS < 7.3 having the same short name position,
+yes, I could avoid conditioning by changing the string processing to suit
+>= 7.3 and apply it to all previous; I chose not to modify the string
+processing for < 7.3 to avoid any problems I can't readily check.
+
+For all versions of GRASS 7 and all versions of GDAL, the short name
+position has been and continues to be the first position. For v.in.ogr -f,
+the short name may also appear after ":", but only if there is no long name.
+
+Best regards,
+
+Markus
+
+>
+> Best wishes,
+>
+> Roger
+>
+>
+> On Wed, 11 Oct 2017, Markus Metz wrote:
+>
+>> Dear Roger,
+>>
+>> On Wed, Oct 11, 2017 at 1:41 PM, Roger Bivand <Roger.Bivand at nhh.no>
+wrote:
+>>>
+>>>
+>>> New version submitted to CRAN; until then:
+>>>
+>>> install.packages("rgrass7", repos="http://R-Forge.R-project.org")
+>>>
+>>> should pick up the latest version; #3425 closed. Please report back
+>>
+>> whether this works ... (conditioning on GRASS version to create
+comparable
+>> driver name strings).
+>>
+>> I don't think there is a need to condition on the GRASS version, see my
+>> suggestion in #3425
+>>
+>> Markus M
+>>>
+>>>
+>>> Roger
+>>>
+>>>
+>>> On Wed, 11 Oct 2017, Roger Bivand wrote:
+>>>
+>>>> Thanks for trying to contribute. The GH site is not the rgrass7
+>>
+>> development site - that is SVN on R-forge (GH is a very preliminary trial
+>> site for using sf vector representation in R, and maybe raster raster
+>> representation (or forthcoming stars), instead of sp classes).
+>>>>
+>>>>
+>>>> GRAS 7.2.2 works OK with the current logic checks; I can reproduce the
+>>
+>> issue in 7.3 (latest); there is a change in vector/v.in.ogr/main.c
+>> returning the DriverLongName for GDAL >= 2.0; in GRASS 7.2.2, there is no
+>> such change. Could the GRASS developer responsible for this obvious
+>> regression provide an additional flag in v.in.ogr (and v.external,
+>> v.out.ogr) to permit backwards compatibility? See line 387, needs to
+change
+>>>>
+>>>>
+>>>> #if GDAL_VERSION_NUM >= 2000000
+>>>>
+>>>> to add a !backwards_compatible test too.
+>>>>
+>>>> I'll hold off trying to fix this in rgrass7 because it is a regression.
+>>
+>> I can add the backwards_compatibility=TRUE flag to readVECT() once it is
+>> exposed.
+>>>>
+>>>>
+>>>> This is:
+>>>>
+>>>> https://trac.osgeo.org/grass/ticket/3425
+>>>>
+>>>> Roger
+>>>>
+>>>> On Tue, 10 Oct 2017, Ahmadou Dicko wrote:
+>>>>
+>>>>> In the readVECT function, internally v.in.ogr is used to list the
+>>
+>> supported
+>>>>>
+>>>>> vector format and it is compared the format available using rgdal (or
+>>
+>> sf).
+>>>>>
+>>>>> However, using v.external instead of v.in.ogr fix this single problem
+>>>>> because of the way the output is different (in form).
+>>>>> For example, if you use v.in.ogr you will have to compare
+>>>>
+>>>>
+>>>> SQLite_/_Spatialite
+>>>>>
+>>>>>
+>>>>> (GRASS) to SQLite (R) and they are not the same.
+>>>>>
+>>>>> I tried to send a PR, let me know if it works
+>>>>>
+>>>>> https://github.com/rsbivand/rgrass7/pull/1
+>>>>>
+>>>>> Best,
+>>>>>
+>>>>> On Tue, Oct 10, 2017 at 9:29 PM, Helmut Kudrnovsky <hellik at web.de>
+>>
+>> wrote:
+>>>>>
+>>>>>
+>>>>>>> Gesendet: Dienstag, 10. Oktober 2017 um 23:24 Uhr
+>>>>>>> Von: "Ahmadou Dicko" <dicko.ahmadou at gmail.com>
+>>>>>>> An: "Helmut Kudrnovsky" <hellik at web.de>
+>>>>>>> Cc: "Roger Bivand" <Roger.Bivand at nhh.no>, "
+grass-stats at lists.osgeo.org"
+>>
+>> <
+>>>>>>
+>>>>>>
+>>>>>> grass-stats at lists.osgeo.org>
+>>>>>>>
+>>>>>>>
+>>>>>>> Betreff: Re: [GRASS-stats] rgrass7 - SQLite and GML drivers not
+>>
+>> working
+>>>>>>
+>>>>>>
+>>>>>> for readVECT
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> Hi everyone,
+>>>>>>>
+>>>>>>> I think that using v.external -f (instead of v.in.ogr -f) can fix
+this
+>>>>>>
+>>>>>>
+>>>>>> issue (didn't try yet)
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> execGRASS("v.external", flags = "f", intern = TRUE)
+>>>>>>> [1] "ARCGEN"         "AVCBin"         "AVCE00"
+>>>>>>> [4] "AeronavFAA"     "AmigoCloud"     "BNA"
+>>>>>>> [7] "CAD"            "CSV"            "CSW"
+>>>>>>> [10] "Carto"          "Cloudant"       "CouchDB"
+>>>>>>> [13] "DGN"            "DXF"            "EDIGEO"
+>>>>>>> [16] "ESRI_Shapefile" "ElasticSearch"  "GFT"
+>>>>>>> [19] "GML"            "GPKG"           "GPSBabel"
+>>>>>>> [22] "GPSTrackMaker"  "GPX"            "GeoJSON"
+>>>>>>> [25] "GeoRSS"         "Geoconcept"     "Geomedia"
+>>>>>>> [28] "HTF"            "HTTP"           "Idrisi"
+>>>>>>> [31] "JML"            "JPEG2000"       "KML"
+>>>>>>> [34] "MSSQLSpatial"   "MapInfo_File"   "Memory"
+>>>>>>> [37] "MySQL"          "ODBC"           "ODS"
+>>>>>>> [40] "OGR_GMT"        "OGR_GRASS"      "OGR_PDS"
+>>>>>>> [43] "OGR_SDTS"       "OGR_VRT"        "OSM"
+>>>>>>> [46] "OpenAir"        "OpenFileGDB"    "PCIDSK"
+>>>>>>> [49] "PDF"            "PGDUMP"         "PGeo"
+>>>>>>> [52] "PLSCENES"       "PostgreSQL"     "REC"
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> in a quick check, there is no difference in available formats.
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>
+>>>>
+>>>
+>>> --
+>>> Roger Bivand
+>>> Department of Economics, Norwegian School of Economics,
+>>> Helleveien 30, N-5045 Bergen, Norway.
+>>> voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+>>> Editor-in-Chief of The R Journal,
+https://journal.r-project.org/index.html
+>>> http://orcid.org/0000-0003-2392-6140
+>>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats at lists.osgeo.org
+>>> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>>
+>
+> --
+> Roger Bivand
+> Department of Economics, Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+> Editor-in-Chief of The R Journal, https://journal.r-project.org/index.html
+> http://orcid.org/0000-0003-2392-6140
+> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20171011/0e2bf285/attachment-0001.html>
+
+From Roger.Bivand at nhh.no  Wed Oct 11 06:03:00 2017
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed, 11 Oct 2017 15:03:00 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+ readVECT
+In-Reply-To: <CAG+h=FGoXs2zqZKr=wUJ02Q4QtGwNRCAKSK0=XphbRweHRvEAg@mail.gmail.com>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+ <CAAMki4ExcqkYrmRR+Z=J8bG4xHdhE4Gbjy6JFzJ7z2sMnz+Ueg@mail.gmail.com>
+ <trinity-6cefb5ff-9530-46f6-a2be-43452e3766a7-1507669008679@3c-app-webde-bap21>
+ <E7824B12CF1B784E.96224f98-2e64-4790-a253-78518dfc86f0@mail.outlook.com>
+ <trinity-5774f1e1-1023-4b07-b68b-1d4863a8cb1a-1507670536755@3c-app-webde-bap21>
+ <CAP8THHUg7jXfuniBe4P02ZPPvsUq48WWKddTR5o4ap=gZwQJ_Q@mail.gmail.com>
+ <trinity-d032389d-0c73-4685-a879-96f4fcc18c00-1507670978317@3c-app-webde-bap54>
+ <CAP8THHVakjhjhCp7Y=MwrVJbCb5bN6OYE8HULMb2D_RPs9Yh4g@mail.gmail.com>
+ <alpine.LFD.2.21.1710111014390.13296@reclus.nhh.no>
+ <alpine.LFD.2.21.1710111336500.13296@reclus.nhh.no>
+ <CAG+h=FEPg3BuP1ne2dFbUTLg8U7TYGkC-nZaRtnXG8QrxzZu5w@mail.gmail.com>
+ <alpine.LFD.2.21.1710111427070.13296@reclus.nhh.no>
+ <CAG+h=FGoXs2zqZKr=wUJ02Q4QtGwNRCAKSK0=XphbRweHRvEAg@mail.gmail.com>
+Message-ID: <alpine.LFD.2.21.1710111502370.13296@reclus.nhh.no>
+
+OK, thanks, will revise at next release.
+
+Roger
+
+On Wed, 11 Oct 2017, Markus Metz wrote:
+
+> Dear Roger,
+>
+> On Wed, Oct 11, 2017 at 2:36 PM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+>>
+>> Dear Markus,
+>>
+>> I can't see how to get the same strings out without conditioning,
+>
+> with
+>
+> ogrDGRASSs <- gsub(" ", "_", trimws(sapply(strsplit(ogrDGRASS, " [(]"),
+> "[", 1)))
+>
+>> because for v.in.ogr -f and GDAL >= 2.0, GRASS < 7.3 presents for example:
+>>
+>> GML (rw): GML
+>> SQLite (rw): SQLite
+>> ESRI Shapefile (rw): ESRI Shapefile
+>> GeoJSON (rw): GeoJSON
+>>
+>> (readOGR used the string following ":" )
+>
+> The structure of the output of r.in.gdal -f and v.in.ogr -f is
+>
+> <short name> (<read/write flags>): <description>
+>
+> readOGR must use the string preceding "(". Anything following ":" is a
+> description which can change any time. Before GDAL 2.0, there was nothing
+> else but the short name for OGR drivers, therefore the short name was used
+> as description.
+>
+>>
+>> and >= 7.3:
+>>
+>> GML (rw+): Geography Markup Language (GML)
+>> SQLite (rw+): SQLite / Spatialite
+>> ESRI Shapefile (rw+): ESRI Shapefile
+>> GeoJSON (rw+): GeoJSON
+>>
+>> where the string after ":" is different.
+>
+> the string before the read/write flags, i.e. before "(" is identical.
+>
+>> If we can depend on all GRASS < 7.3 having the same short name position,
+> yes, I could avoid conditioning by changing the string processing to suit
+>> = 7.3 and apply it to all previous; I chose not to modify the string
+> processing for < 7.3 to avoid any problems I can't readily check.
+>
+> For all versions of GRASS 7 and all versions of GDAL, the short name
+> position has been and continues to be the first position. For v.in.ogr -f,
+> the short name may also appear after ":", but only if there is no long name.
+>
+> Best regards,
+>
+> Markus
+>
+>>
+>> Best wishes,
+>>
+>> Roger
+>>
+>>
+>> On Wed, 11 Oct 2017, Markus Metz wrote:
+>>
+>>> Dear Roger,
+>>>
+>>> On Wed, Oct 11, 2017 at 1:41 PM, Roger Bivand <Roger.Bivand at nhh.no>
+> wrote:
+>>>>
+>>>>
+>>>> New version submitted to CRAN; until then:
+>>>>
+>>>> install.packages("rgrass7", repos="http://R-Forge.R-project.org")
+>>>>
+>>>> should pick up the latest version; #3425 closed. Please report back
+>>>
+>>> whether this works ... (conditioning on GRASS version to create
+> comparable
+>>> driver name strings).
+>>>
+>>> I don't think there is a need to condition on the GRASS version, see my
+>>> suggestion in #3425
+>>>
+>>> Markus M
+>>>>
+>>>>
+>>>> Roger
+>>>>
+>>>>
+>>>> On Wed, 11 Oct 2017, Roger Bivand wrote:
+>>>>
+>>>>> Thanks for trying to contribute. The GH site is not the rgrass7
+>>>
+>>> development site - that is SVN on R-forge (GH is a very preliminary trial
+>>> site for using sf vector representation in R, and maybe raster raster
+>>> representation (or forthcoming stars), instead of sp classes).
+>>>>>
+>>>>>
+>>>>> GRAS 7.2.2 works OK with the current logic checks; I can reproduce the
+>>>
+>>> issue in 7.3 (latest); there is a change in vector/v.in.ogr/main.c
+>>> returning the DriverLongName for GDAL >= 2.0; in GRASS 7.2.2, there is no
+>>> such change. Could the GRASS developer responsible for this obvious
+>>> regression provide an additional flag in v.in.ogr (and v.external,
+>>> v.out.ogr) to permit backwards compatibility? See line 387, needs to
+> change
+>>>>>
+>>>>>
+>>>>> #if GDAL_VERSION_NUM >= 2000000
+>>>>>
+>>>>> to add a !backwards_compatible test too.
+>>>>>
+>>>>> I'll hold off trying to fix this in rgrass7 because it is a regression.
+>>>
+>>> I can add the backwards_compatibility=TRUE flag to readVECT() once it is
+>>> exposed.
+>>>>>
+>>>>>
+>>>>> This is:
+>>>>>
+>>>>> https://trac.osgeo.org/grass/ticket/3425
+>>>>>
+>>>>> Roger
+>>>>>
+>>>>> On Tue, 10 Oct 2017, Ahmadou Dicko wrote:
+>>>>>
+>>>>>> In the readVECT function, internally v.in.ogr is used to list the
+>>>
+>>> supported
+>>>>>>
+>>>>>> vector format and it is compared the format available using rgdal (or
+>>>
+>>> sf).
+>>>>>>
+>>>>>> However, using v.external instead of v.in.ogr fix this single problem
+>>>>>> because of the way the output is different (in form).
+>>>>>> For example, if you use v.in.ogr you will have to compare
+>>>>>
+>>>>>
+>>>>> SQLite_/_Spatialite
+>>>>>>
+>>>>>>
+>>>>>> (GRASS) to SQLite (R) and they are not the same.
+>>>>>>
+>>>>>> I tried to send a PR, let me know if it works
+>>>>>>
+>>>>>> https://github.com/rsbivand/rgrass7/pull/1
+>>>>>>
+>>>>>> Best,
+>>>>>>
+>>>>>> On Tue, Oct 10, 2017 at 9:29 PM, Helmut Kudrnovsky <hellik at web.de>
+>>>
+>>> wrote:
+>>>>>>
+>>>>>>
+>>>>>>>> Gesendet: Dienstag, 10. Oktober 2017 um 23:24 Uhr
+>>>>>>>> Von: "Ahmadou Dicko" <dicko.ahmadou at gmail.com>
+>>>>>>>> An: "Helmut Kudrnovsky" <hellik at web.de>
+>>>>>>>> Cc: "Roger Bivand" <Roger.Bivand at nhh.no>, "
+> grass-stats at lists.osgeo.org"
+>>>
+>>> <
+>>>>>>>
+>>>>>>>
+>>>>>>> grass-stats at lists.osgeo.org>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> Betreff: Re: [GRASS-stats] rgrass7 - SQLite and GML drivers not
+>>>
+>>> working
+>>>>>>>
+>>>>>>>
+>>>>>>> for readVECT
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> Hi everyone,
+>>>>>>>>
+>>>>>>>> I think that using v.external -f (instead of v.in.ogr -f) can fix
+> this
+>>>>>>>
+>>>>>>>
+>>>>>>> issue (didn't try yet)
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> execGRASS("v.external", flags = "f", intern = TRUE)
+>>>>>>>> [1] "ARCGEN"         "AVCBin"         "AVCE00"
+>>>>>>>> [4] "AeronavFAA"     "AmigoCloud"     "BNA"
+>>>>>>>> [7] "CAD"            "CSV"            "CSW"
+>>>>>>>> [10] "Carto"          "Cloudant"       "CouchDB"
+>>>>>>>> [13] "DGN"            "DXF"            "EDIGEO"
+>>>>>>>> [16] "ESRI_Shapefile" "ElasticSearch"  "GFT"
+>>>>>>>> [19] "GML"            "GPKG"           "GPSBabel"
+>>>>>>>> [22] "GPSTrackMaker"  "GPX"            "GeoJSON"
+>>>>>>>> [25] "GeoRSS"         "Geoconcept"     "Geomedia"
+>>>>>>>> [28] "HTF"            "HTTP"           "Idrisi"
+>>>>>>>> [31] "JML"            "JPEG2000"       "KML"
+>>>>>>>> [34] "MSSQLSpatial"   "MapInfo_File"   "Memory"
+>>>>>>>> [37] "MySQL"          "ODBC"           "ODS"
+>>>>>>>> [40] "OGR_GMT"        "OGR_GRASS"      "OGR_PDS"
+>>>>>>>> [43] "OGR_SDTS"       "OGR_VRT"        "OSM"
+>>>>>>>> [46] "OpenAir"        "OpenFileGDB"    "PCIDSK"
+>>>>>>>> [49] "PDF"            "PGDUMP"         "PGeo"
+>>>>>>>> [52] "PLSCENES"       "PostgreSQL"     "REC"
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> in a quick check, there is no difference in available formats.
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>
+>>>>>
+>>>>
+>>>> --
+>>>> Roger Bivand
+>>>> Department of Economics, Norwegian School of Economics,
+>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>> voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+>>>> Editor-in-Chief of The R Journal,
+> https://journal.r-project.org/index.html
+>>>> http://orcid.org/0000-0003-2392-6140
+>>>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>>>> _______________________________________________
+>>>> grass-stats mailing list
+>>>> grass-stats at lists.osgeo.org
+>>>> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>
+>>>
+>>
+>> --
+>> Roger Bivand
+>> Department of Economics, Norwegian School of Economics,
+>> Helleveien 30, N-5045 Bergen, Norway.
+>> voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+>> Editor-in-Chief of The R Journal, https://journal.r-project.org/index.html
+>> http://orcid.org/0000-0003-2392-6140
+>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+Editor-in-Chief of The R Journal, https://journal.r-project.org/index.html
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+
+From veroandreo at gmail.com  Thu Oct 19 12:26:02 2017
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Thu, 19 Oct 2017 21:26:02 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+	readVECT
+In-Reply-To: <alpine.LFD.2.21.1710111502370.13296@reclus.nhh.no>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+ <CAAMki4ExcqkYrmRR+Z=J8bG4xHdhE4Gbjy6JFzJ7z2sMnz+Ueg@mail.gmail.com>
+ <trinity-6cefb5ff-9530-46f6-a2be-43452e3766a7-1507669008679@3c-app-webde-bap21>
+ <E7824B12CF1B784E.96224f98-2e64-4790-a253-78518dfc86f0@mail.outlook.com>
+ <trinity-5774f1e1-1023-4b07-b68b-1d4863a8cb1a-1507670536755@3c-app-webde-bap21>
+ <CAP8THHUg7jXfuniBe4P02ZPPvsUq48WWKddTR5o4ap=gZwQJ_Q@mail.gmail.com>
+ <trinity-d032389d-0c73-4685-a879-96f4fcc18c00-1507670978317@3c-app-webde-bap54>
+ <CAP8THHVakjhjhCp7Y=MwrVJbCb5bN6OYE8HULMb2D_RPs9Yh4g@mail.gmail.com>
+ <alpine.LFD.2.21.1710111014390.13296@reclus.nhh.no>
+ <alpine.LFD.2.21.1710111336500.13296@reclus.nhh.no>
+ <CAG+h=FEPg3BuP1ne2dFbUTLg8U7TYGkC-nZaRtnXG8QrxzZu5w@mail.gmail.com>
+ <alpine.LFD.2.21.1710111427070.13296@reclus.nhh.no>
+ <CAG+h=FGoXs2zqZKr=wUJ02Q4QtGwNRCAKSK0=XphbRweHRvEAg@mail.gmail.com>
+ <alpine.LFD.2.21.1710111502370.13296@reclus.nhh.no>
+Message-ID: <CAAMki4HWOmSPNnzXWQdEWPUh6C4FHPR_qrnGCdSToFCQHa2Wyg@mail.gmail.com>
+
+Hello again,
+
+I come back to this thread beacuse the issue was solved for readVECT, but I
+now realize (when trying to write vectors back into GRASS after some
+processing in R) that writeVECT shows the same problem, i.e. the only
+driver working is ESRI Shapefile (all smooth, no errors), but driver =
+"SQLite" throws the same error as reported for readVECT at the begining of
+this thread. Would it be possible to fix also writeVECT?
+
+Here an example:
+
+> library(rgrass7)
+Loading required package: sp
+Loading required package: XML
+GRASS GIS interface loaded with GRASS version: GRASS 7.3.svn (2017)
+and location: eu_laea
+
+> bbox <- readVECT("bbox_greece", driver = "SQLite")
+WARNING: No attribute table found -> using only category numbers as
+attributes
+Exporting 1 area (may take some time)...
+ 100%
+v.out.ogr complete. 1 feature (Polygon type) written to <bbox_greece>
+(SQLite format).
+OGR data source with driver: SQLite
+...
+WARNING: No attribute table found -> using only category numbers as
+attributes
+Exporting 1 area (may take some time)...
+ 100%
+v.out.ogr complete. 1 feature (Polygon type) written to <bbox_greece>
+(SQLite format).
+
+> writeVECT(bbox, "bbox_from_R", driver = "SQLite")
+Error: driver %in% candDrivers is not TRUE
+
+> writeVECT(bbox, "bbox_from_R", driver = "ESRI Shapefile")
+... all goes fine...
+
+Sorry for bothersome and thanks much in advance!
+
+best,
+Vero
+
+ps: sessionInfo() and ogrDrivers() are the same as before.
+
+2017-10-11 15:03 GMT+02:00 Roger Bivand <Roger.Bivand at nhh.no>:
+
+> OK, thanks, will revise at next release.
+>
+>
+> Roger
+>
+> On Wed, 11 Oct 2017, Markus Metz wrote:
+>
+> Dear Roger,
+>>
+>> On Wed, Oct 11, 2017 at 2:36 PM, Roger Bivand <Roger.Bivand at nhh.no>
+>> wrote:
+>>
+>>>
+>>> Dear Markus,
+>>>
+>>> I can't see how to get the same strings out without conditioning,
+>>>
+>>
+>> with
+>>
+>> ogrDGRASSs <- gsub(" ", "_", trimws(sapply(strsplit(ogrDGRASS, " [(]"),
+>> "[", 1)))
+>>
+>> because for v.in.ogr -f and GDAL >= 2.0, GRASS < 7.3 presents for example:
+>>>
+>>> GML (rw): GML
+>>> SQLite (rw): SQLite
+>>> ESRI Shapefile (rw): ESRI Shapefile
+>>> GeoJSON (rw): GeoJSON
+>>>
+>>> (readOGR used the string following ":" )
+>>>
+>>
+>> The structure of the output of r.in.gdal -f and v.in.ogr -f is
+>>
+>> <short name> (<read/write flags>): <description>
+>>
+>> readOGR must use the string preceding "(". Anything following ":" is a
+>> description which can change any time. Before GDAL 2.0, there was nothing
+>> else but the short name for OGR drivers, therefore the short name was used
+>> as description.
+>>
+>>
+>>> and >= 7.3:
+>>>
+>>> GML (rw+): Geography Markup Language (GML)
+>>> SQLite (rw+): SQLite / Spatialite
+>>> ESRI Shapefile (rw+): ESRI Shapefile
+>>> GeoJSON (rw+): GeoJSON
+>>>
+>>> where the string after ":" is different.
+>>>
+>>
+>> the string before the read/write flags, i.e. before "(" is identical.
+>>
+>> If we can depend on all GRASS < 7.3 having the same short name position,
+>>>
+>> yes, I could avoid conditioning by changing the string processing to suit
+>>
+>>> = 7.3 and apply it to all previous; I chose not to modify the string
+>>>
+>> processing for < 7.3 to avoid any problems I can't readily check.
+>>
+>> For all versions of GRASS 7 and all versions of GDAL, the short name
+>> position has been and continues to be the first position. For v.in.ogr -f,
+>> the short name may also appear after ":", but only if there is no long
+>> name.
+>>
+>> Best regards,
+>>
+>> Markus
+>>
+>>
+>>> Best wishes,
+>>>
+>>> Roger
+>>>
+>>>
+>>> On Wed, 11 Oct 2017, Markus Metz wrote:
+>>>
+>>> Dear Roger,
+>>>>
+>>>> On Wed, Oct 11, 2017 at 1:41 PM, Roger Bivand <Roger.Bivand at nhh.no>
+>>>>
+>>> wrote:
+>>
+>>>
+>>>>>
+>>>>> New version submitted to CRAN; until then:
+>>>>>
+>>>>> install.packages("rgrass7", repos="http://R-Forge.R-project.org")
+>>>>>
+>>>>> should pick up the latest version; #3425 closed. Please report back
+>>>>>
+>>>>
+>>>> whether this works ... (conditioning on GRASS version to create
+>>>>
+>>> comparable
+>>
+>>> driver name strings).
+>>>>
+>>>> I don't think there is a need to condition on the GRASS version, see my
+>>>> suggestion in #3425
+>>>>
+>>>> Markus M
+>>>>
+>>>>>
+>>>>>
+>>>>> Roger
+>>>>>
+>>>>>
+>>>>> On Wed, 11 Oct 2017, Roger Bivand wrote:
+>>>>>
+>>>>> Thanks for trying to contribute. The GH site is not the rgrass7
+>>>>>>
+>>>>>
+>>>> development site - that is SVN on R-forge (GH is a very preliminary
+>>>> trial
+>>>> site for using sf vector representation in R, and maybe raster raster
+>>>> representation (or forthcoming stars), instead of sp classes).
+>>>>
+>>>>>
+>>>>>>
+>>>>>> GRAS 7.2.2 works OK with the current logic checks; I can reproduce the
+>>>>>>
+>>>>>
+>>>> issue in 7.3 (latest); there is a change in vector/v.in.ogr/main.c
+>>>> returning the DriverLongName for GDAL >= 2.0; in GRASS 7.2.2, there is
+>>>> no
+>>>> such change. Could the GRASS developer responsible for this obvious
+>>>> regression provide an additional flag in v.in.ogr (and v.external,
+>>>> v.out.ogr) to permit backwards compatibility? See line 387, needs to
+>>>>
+>>> change
+>>
+>>>
+>>>>>>
+>>>>>> #if GDAL_VERSION_NUM >= 2000000
+>>>>>>
+>>>>>> to add a !backwards_compatible test too.
+>>>>>>
+>>>>>> I'll hold off trying to fix this in rgrass7 because it is a
+>>>>>> regression.
+>>>>>>
+>>>>>
+>>>> I can add the backwards_compatibility=TRUE flag to readVECT() once it is
+>>>> exposed.
+>>>>
+>>>>>
+>>>>>>
+>>>>>> This is:
+>>>>>>
+>>>>>> https://trac.osgeo.org/grass/ticket/3425
+>>>>>>
+>>>>>> Roger
+>>>>>>
+>>>>>> On Tue, 10 Oct 2017, Ahmadou Dicko wrote:
+>>>>>>
+>>>>>> In the readVECT function, internally v.in.ogr is used to list the
+>>>>>>>
+>>>>>>
+>>>> supported
+>>>>
+>>>>>
+>>>>>>> vector format and it is compared the format available using rgdal (or
+>>>>>>>
+>>>>>>
+>>>> sf).
+>>>>
+>>>>>
+>>>>>>> However, using v.external instead of v.in.ogr fix this single problem
+>>>>>>> because of the way the output is different (in form).
+>>>>>>> For example, if you use v.in.ogr you will have to compare
+>>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> SQLite_/_Spatialite
+>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> (GRASS) to SQLite (R) and they are not the same.
+>>>>>>>
+>>>>>>> I tried to send a PR, let me know if it works
+>>>>>>>
+>>>>>>> https://github.com/rsbivand/rgrass7/pull/1
+>>>>>>>
+>>>>>>> Best,
+>>>>>>>
+>>>>>>> On Tue, Oct 10, 2017 at 9:29 PM, Helmut Kudrnovsky <hellik at web.de>
+>>>>>>>
+>>>>>>
+>>>> wrote:
+>>>>
+>>>>>
+>>>>>>>
+>>>>>>> Gesendet: Dienstag, 10. Oktober 2017 um 23:24 Uhr
+>>>>>>>>> Von: "Ahmadou Dicko" <dicko.ahmadou at gmail.com>
+>>>>>>>>> An: "Helmut Kudrnovsky" <hellik at web.de>
+>>>>>>>>> Cc: "Roger Bivand" <Roger.Bivand at nhh.no>, "
+>>>>>>>>>
+>>>>>>>> grass-stats at lists.osgeo.org"
+>>
+>>>
+>>>> <
+>>>>
+>>>>>
+>>>>>>>>
+>>>>>>>> grass-stats at lists.osgeo.org>
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Betreff: Re: [GRASS-stats] rgrass7 - SQLite and GML drivers not
+>>>>>>>>>
+>>>>>>>>
+>>>> working
+>>>>
+>>>>>
+>>>>>>>>
+>>>>>>>> for readVECT
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Hi everyone,
+>>>>>>>>>
+>>>>>>>>> I think that using v.external -f (instead of v.in.ogr -f) can fix
+>>>>>>>>>
+>>>>>>>> this
+>>
+>>>
+>>>>>>>>
+>>>>>>>> issue (didn't try yet)
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> execGRASS("v.external", flags = "f", intern = TRUE)
+>>>>>>>>> [1] "ARCGEN"         "AVCBin"         "AVCE00"
+>>>>>>>>> [4] "AeronavFAA"     "AmigoCloud"     "BNA"
+>>>>>>>>> [7] "CAD"            "CSV"            "CSW"
+>>>>>>>>> [10] "Carto"          "Cloudant"       "CouchDB"
+>>>>>>>>> [13] "DGN"            "DXF"            "EDIGEO"
+>>>>>>>>> [16] "ESRI_Shapefile" "ElasticSearch"  "GFT"
+>>>>>>>>> [19] "GML"            "GPKG"           "GPSBabel"
+>>>>>>>>> [22] "GPSTrackMaker"  "GPX"            "GeoJSON"
+>>>>>>>>> [25] "GeoRSS"         "Geoconcept"     "Geomedia"
+>>>>>>>>> [28] "HTF"            "HTTP"           "Idrisi"
+>>>>>>>>> [31] "JML"            "JPEG2000"       "KML"
+>>>>>>>>> [34] "MSSQLSpatial"   "MapInfo_File"   "Memory"
+>>>>>>>>> [37] "MySQL"          "ODBC"           "ODS"
+>>>>>>>>> [40] "OGR_GMT"        "OGR_GRASS"      "OGR_PDS"
+>>>>>>>>> [43] "OGR_SDTS"       "OGR_VRT"        "OSM"
+>>>>>>>>> [46] "OpenAir"        "OpenFileGDB"    "PCIDSK"
+>>>>>>>>> [49] "PDF"            "PGDUMP"         "PGeo"
+>>>>>>>>> [52] "PLSCENES"       "PostgreSQL"     "REC"
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> in a quick check, there is no difference in available formats.
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>
+>>>>>>
+>>>>> --
+>>>>> Roger Bivand
+>>>>> Department of Economics, Norwegian School of Economics,
+>>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>>> voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+>>>>> Editor-in-Chief of The R Journal,
+>>>>>
+>>>> https://journal.r-project.org/index.html
+>>
+>>> http://orcid.org/0000-0003-2392-6140
+>>>>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>>>>> _______________________________________________
+>>>>> grass-stats mailing list
+>>>>> grass-stats at lists.osgeo.org
+>>>>> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>>
+>>>>
+>>>>
+>>>>
+>>> --
+>>> Roger Bivand
+>>> Department of Economics, Norwegian School of Economics,
+>>> Helleveien 30, N-5045 Bergen, Norway.
+>>> voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+>>> Editor-in-Chief of The R Journal, https://journal.r-project.org/
+>>> index.html
+>>> http://orcid.org/0000-0003-2392-6140
+>>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>>>
+>>
+>>
+> --
+> Roger Bivand
+> Department of Economics, Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+> Editor-in-Chief of The R Journal, https://journal.r-project.org/index.html
+> http://orcid.org/0000-0003-2392-6140
+> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20171019/2caed921/attachment-0001.html>
+
+From markus.metz.giswork at gmail.com  Fri Oct 20 08:02:49 2017
+From: markus.metz.giswork at gmail.com (Markus Metz)
+Date: Fri, 20 Oct 2017 17:02:49 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+	readVECT
+In-Reply-To: <CAAMki4HWOmSPNnzXWQdEWPUh6C4FHPR_qrnGCdSToFCQHa2Wyg@mail.gmail.com>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <E7824B12CF1B784E.2a8fa43e-6a0e-46a3-985e-e7640b47dcb5@mail.outlook.com>
+ <CAAMki4ExcqkYrmRR+Z=J8bG4xHdhE4Gbjy6JFzJ7z2sMnz+Ueg@mail.gmail.com>
+ <trinity-6cefb5ff-9530-46f6-a2be-43452e3766a7-1507669008679@3c-app-webde-bap21>
+ <E7824B12CF1B784E.96224f98-2e64-4790-a253-78518dfc86f0@mail.outlook.com>
+ <trinity-5774f1e1-1023-4b07-b68b-1d4863a8cb1a-1507670536755@3c-app-webde-bap21>
+ <CAP8THHUg7jXfuniBe4P02ZPPvsUq48WWKddTR5o4ap=gZwQJ_Q@mail.gmail.com>
+ <trinity-d032389d-0c73-4685-a879-96f4fcc18c00-1507670978317@3c-app-webde-bap54>
+ <CAP8THHVakjhjhCp7Y=MwrVJbCb5bN6OYE8HULMb2D_RPs9Yh4g@mail.gmail.com>
+ <alpine.LFD.2.21.1710111014390.13296@reclus.nhh.no>
+ <alpine.LFD.2.21.1710111336500.13296@reclus.nhh.no>
+ <CAG+h=FEPg3BuP1ne2dFbUTLg8U7TYGkC-nZaRtnXG8QrxzZu5w@mail.gmail.com>
+ <alpine.LFD.2.21.1710111427070.13296@reclus.nhh.no>
+ <CAG+h=FGoXs2zqZKr=wUJ02Q4QtGwNRCAKSK0=XphbRweHRvEAg@mail.gmail.com>
+ <alpine.LFD.2.21.1710111502370.13296@reclus.nhh.no>
+ <CAAMki4HWOmSPNnzXWQdEWPUh6C4FHPR_qrnGCdSToFCQHa2Wyg@mail.gmail.com>
+Message-ID: <CAG+h=FEQf4=hp5Ai0p0PhZxaaYkNCAN207_g=OeZ98HmeXohVQ@mail.gmail.com>
+
+Hi Vero,
+
+On Thu, Oct 19, 2017 at 9:26 PM, Veronica Andreo <veroandreo at gmail.com>
+wrote:
+>
+> Hello again,
+>
+> I come back to this thread beacuse the issue was solved for readVECT, but
+I now realize (when trying to write vectors back into GRASS after some
+processing in R) that writeVECT shows the same problem, i.e. the only
+driver working is ESRI Shapefile (all smooth, no errors), but driver =
+"SQLite" throws the same error as reported for readVECT at the begining of
+this thread. Would it be possible to fix also writeVECT?
+
+in both readVECT and writeVECT in the file vect_link.R, replace
+    ogrDGRASSs <- gsub(" ", "_", sapply(strsplit(ogrDGRASS, ": "), "[", 2))
+with
+    ogrDGRASSs <- gsub(" ", "_", trimws(sapply(strsplit(ogrDGRASS, " [(]"),
+"[", 1)))
+
+this works with all versions of GRASS 7 and all versions of GDAL.
+
+Markus M
+
+
+>
+> Here an example:
+>
+> > library(rgrass7)
+> Loading required package: sp
+> Loading required package: XML
+> GRASS GIS interface loaded with GRASS version: GRASS 7.3.svn (2017)
+> and location: eu_laea
+>
+> > bbox <- readVECT("bbox_greece", driver = "SQLite")
+> WARNING: No attribute table found -> using only category numbers as
+attributes
+> Exporting 1 area (may take some time)...
+>  100%
+> v.out.ogr complete. 1 feature (Polygon type) written to <bbox_greece>
+> (SQLite format).
+> OGR data source with driver: SQLite
+> ...
+> WARNING: No attribute table found -> using only category numbers as
+attributes
+> Exporting 1 area (may take some time)...
+>  100%
+> v.out.ogr complete. 1 feature (Polygon type) written to <bbox_greece>
+> (SQLite format).
+>
+> > writeVECT(bbox, "bbox_from_R", driver = "SQLite")
+> Error: driver %in% candDrivers is not TRUE
+>
+> > writeVECT(bbox, "bbox_from_R", driver = "ESRI Shapefile")
+> ... all goes fine...
+>
+> Sorry for bothersome and thanks much in advance!
+>
+> best,
+> Vero
+>
+> ps: sessionInfo() and ogrDrivers() are the same as before.
+>
+> 2017-10-11 15:03 GMT+02:00 Roger Bivand <Roger.Bivand at nhh.no>:
+>>
+>> OK, thanks, will revise at next release.
+>>
+>>
+>> Roger
+>>
+>> On Wed, 11 Oct 2017, Markus Metz wrote:
+>>
+>>> Dear Roger,
+>>>
+>>> On Wed, Oct 11, 2017 at 2:36 PM, Roger Bivand <Roger.Bivand at nhh.no>
+wrote:
+>>>>
+>>>>
+>>>> Dear Markus,
+>>>>
+>>>> I can't see how to get the same strings out without conditioning,
+>>>
+>>>
+>>> with
+>>>
+>>> ogrDGRASSs <- gsub(" ", "_", trimws(sapply(strsplit(ogrDGRASS, " [(]"),
+>>> "[", 1)))
+>>>
+>>>> because for v.in.ogr -f and GDAL >= 2.0, GRASS < 7.3 presents for
+example:
+>>>>
+>>>> GML (rw): GML
+>>>> SQLite (rw): SQLite
+>>>> ESRI Shapefile (rw): ESRI Shapefile
+>>>> GeoJSON (rw): GeoJSON
+>>>>
+>>>> (readOGR used the string following ":" )
+>>>
+>>>
+>>> The structure of the output of r.in.gdal -f and v.in.ogr -f is
+>>>
+>>> <short name> (<read/write flags>): <description>
+>>>
+>>> readOGR must use the string preceding "(". Anything following ":" is a
+>>> description which can change any time. Before GDAL 2.0, there was
+nothing
+>>> else but the short name for OGR drivers, therefore the short name was
+used
+>>> as description.
+>>>
+>>>>
+>>>> and >= 7.3:
+>>>>
+>>>> GML (rw+): Geography Markup Language (GML)
+>>>> SQLite (rw+): SQLite / Spatialite
+>>>> ESRI Shapefile (rw+): ESRI Shapefile
+>>>> GeoJSON (rw+): GeoJSON
+>>>>
+>>>> where the string after ":" is different.
+>>>
+>>>
+>>> the string before the read/write flags, i.e. before "(" is identical.
+>>>
+>>>> If we can depend on all GRASS < 7.3 having the same short name
+position,
+>>>
+>>> yes, I could avoid conditioning by changing the string processing to
+suit
+>>>>
+>>>> = 7.3 and apply it to all previous; I chose not to modify the string
+>>>
+>>> processing for < 7.3 to avoid any problems I can't readily check.
+>>>
+>>> For all versions of GRASS 7 and all versions of GDAL, the short name
+>>> position has been and continues to be the first position. For v.in.ogr
+-f,
+>>> the short name may also appear after ":", but only if there is no long
+name.
+>>>
+>>> Best regards,
+>>>
+>>> Markus
+>>>
+>>>>
+>>>> Best wishes,
+>>>>
+>>>> Roger
+>>>>
+>>>>
+>>>> On Wed, 11 Oct 2017, Markus Metz wrote:
+>>>>
+>>>>> Dear Roger,
+>>>>>
+>>>>> On Wed, Oct 11, 2017 at 1:41 PM, Roger Bivand <Roger.Bivand at nhh.no>
+>>>
+>>> wrote:
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> New version submitted to CRAN; until then:
+>>>>>>
+>>>>>> install.packages("rgrass7", repos="http://R-Forge.R-project.org")
+>>>>>>
+>>>>>> should pick up the latest version; #3425 closed. Please report back
+>>>>>
+>>>>>
+>>>>> whether this works ... (conditioning on GRASS version to create
+>>>
+>>> comparable
+>>>>>
+>>>>> driver name strings).
+>>>>>
+>>>>> I don't think there is a need to condition on the GRASS version, see
+my
+>>>>> suggestion in #3425
+>>>>>
+>>>>> Markus M
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> Roger
+>>>>>>
+>>>>>>
+>>>>>> On Wed, 11 Oct 2017, Roger Bivand wrote:
+>>>>>>
+>>>>>>> Thanks for trying to contribute. The GH site is not the rgrass7
+>>>>>
+>>>>>
+>>>>> development site - that is SVN on R-forge (GH is a very preliminary
+trial
+>>>>> site for using sf vector representation in R, and maybe raster raster
+>>>>> representation (or forthcoming stars), instead of sp classes).
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> GRAS 7.2.2 works OK with the current logic checks; I can reproduce
+the
+>>>>>
+>>>>>
+>>>>> issue in 7.3 (latest); there is a change in vector/v.in.ogr/main.c
+>>>>> returning the DriverLongName for GDAL >= 2.0; in GRASS 7.2.2, there
+is no
+>>>>> such change. Could the GRASS developer responsible for this obvious
+>>>>> regression provide an additional flag in v.in.ogr (and v.external,
+>>>>> v.out.ogr) to permit backwards compatibility? See line 387, needs to
+>>>
+>>> change
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> #if GDAL_VERSION_NUM >= 2000000
+>>>>>>>
+>>>>>>> to add a !backwards_compatible test too.
+>>>>>>>
+>>>>>>> I'll hold off trying to fix this in rgrass7 because it is a
+regression.
+>>>>>
+>>>>>
+>>>>> I can add the backwards_compatibility=TRUE flag to readVECT() once it
+is
+>>>>> exposed.
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> This is:
+>>>>>>>
+>>>>>>> https://trac.osgeo.org/grass/ticket/3425
+>>>>>>>
+>>>>>>> Roger
+>>>>>>>
+>>>>>>> On Tue, 10 Oct 2017, Ahmadou Dicko wrote:
+>>>>>>>
+>>>>>>>> In the readVECT function, internally v.in.ogr is used to list the
+>>>>>
+>>>>>
+>>>>> supported
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> vector format and it is compared the format available using rgdal
+(or
+>>>>>
+>>>>>
+>>>>> sf).
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> However, using v.external instead of v.in.ogr fix this single
+problem
+>>>>>>>> because of the way the output is different (in form).
+>>>>>>>> For example, if you use v.in.ogr you will have to compare
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> SQLite_/_Spatialite
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> (GRASS) to SQLite (R) and they are not the same.
+>>>>>>>>
+>>>>>>>> I tried to send a PR, let me know if it works
+>>>>>>>>
+>>>>>>>> https://github.com/rsbivand/rgrass7/pull/1
+>>>>>>>>
+>>>>>>>> Best,
+>>>>>>>>
+>>>>>>>> On Tue, Oct 10, 2017 at 9:29 PM, Helmut Kudrnovsky <hellik at web.de>
+>>>>>
+>>>>>
+>>>>> wrote:
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>>> Gesendet: Dienstag, 10. Oktober 2017 um 23:24 Uhr
+>>>>>>>>>> Von: "Ahmadou Dicko" <dicko.ahmadou at gmail.com>
+>>>>>>>>>> An: "Helmut Kudrnovsky" <hellik at web.de>
+>>>>>>>>>> Cc: "Roger Bivand" <Roger.Bivand at nhh.no>, "
+>>>
+>>> grass-stats at lists.osgeo.org"
+>>>>>
+>>>>>
+>>>>> <
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> grass-stats at lists.osgeo.org>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> Betreff: Re: [GRASS-stats] rgrass7 - SQLite and GML drivers not
+>>>>>
+>>>>>
+>>>>> working
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> for readVECT
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> Hi everyone,
+>>>>>>>>>>
+>>>>>>>>>> I think that using v.external -f (instead of v.in.ogr -f) can fix
+>>>
+>>> this
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> issue (didn't try yet)
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> execGRASS("v.external", flags = "f", intern = TRUE)
+>>>>>>>>>> [1] "ARCGEN"         "AVCBin"         "AVCE00"
+>>>>>>>>>> [4] "AeronavFAA"     "AmigoCloud"     "BNA"
+>>>>>>>>>> [7] "CAD"            "CSV"            "CSW"
+>>>>>>>>>> [10] "Carto"          "Cloudant"       "CouchDB"
+>>>>>>>>>> [13] "DGN"            "DXF"            "EDIGEO"
+>>>>>>>>>> [16] "ESRI_Shapefile" "ElasticSearch"  "GFT"
+>>>>>>>>>> [19] "GML"            "GPKG"           "GPSBabel"
+>>>>>>>>>> [22] "GPSTrackMaker"  "GPX"            "GeoJSON"
+>>>>>>>>>> [25] "GeoRSS"         "Geoconcept"     "Geomedia"
+>>>>>>>>>> [28] "HTF"            "HTTP"           "Idrisi"
+>>>>>>>>>> [31] "JML"            "JPEG2000"       "KML"
+>>>>>>>>>> [34] "MSSQLSpatial"   "MapInfo_File"   "Memory"
+>>>>>>>>>> [37] "MySQL"          "ODBC"           "ODS"
+>>>>>>>>>> [40] "OGR_GMT"        "OGR_GRASS"      "OGR_PDS"
+>>>>>>>>>> [43] "OGR_SDTS"       "OGR_VRT"        "OSM"
+>>>>>>>>>> [46] "OpenAir"        "OpenFileGDB"    "PCIDSK"
+>>>>>>>>>> [49] "PDF"            "PGDUMP"         "PGeo"
+>>>>>>>>>> [52] "PLSCENES"       "PostgreSQL"     "REC"
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> in a quick check, there is no difference in available formats.
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>
+>>>>>> --
+>>>>>> Roger Bivand
+>>>>>> Department of Economics, Norwegian School of Economics,
+>>>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>>>> voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+>>>>>> Editor-in-Chief of The R Journal,
+>>>
+>>> https://journal.r-project.org/index.html
+>>>>>>
+>>>>>> http://orcid.org/0000-0003-2392-6140
+>>>>>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>>>>>> _______________________________________________
+>>>>>> grass-stats mailing list
+>>>>>> grass-stats at lists.osgeo.org
+>>>>>> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>>
+>>>>>
+>>>>>
+>>>>
+>>>> --
+>>>> Roger Bivand
+>>>> Department of Economics, Norwegian School of Economics,
+>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>> voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+>>>> Editor-in-Chief of The R Journal,
+https://journal.r-project.org/index.html
+>>>> http://orcid.org/0000-0003-2392-6140
+>>>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>>>
+>>>
+>>
+>> --
+>> Roger Bivand
+>> Department of Economics, Norwegian School of Economics,
+>> Helleveien 30, N-5045 Bergen, Norway.
+>> voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+>> Editor-in-Chief of The R Journal,
+https://journal.r-project.org/index.html
+>> http://orcid.org/0000-0003-2392-6140
+>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats at lists.osgeo.org
+>> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20171020/25229344/attachment-0001.html>
+
+From Roger.Bivand at nhh.no  Fri Oct 20 12:17:00 2017
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri, 20 Oct 2017 21:17:00 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+ readVECT
+In-Reply-To: <CAG+h=FEQf4=hp5Ai0p0PhZxaaYkNCAN207_g=OeZ98HmeXohVQ@mail.gmail.com>
+References: <CAAMki4HYHcpYCy28F8d=i96LyJQA-oSoap2rp=tpoOcGVrO6jg@mail.gmail.com>
+ <E7824B12CF1B784E.96224f98-2e64-4790-a253-78518dfc86f0@mail.outlook.com>
+ <trinity-5774f1e1-1023-4b07-b68b-1d4863a8cb1a-1507670536755@3c-app-webde-bap21>
+ <CAP8THHUg7jXfuniBe4P02ZPPvsUq48WWKddTR5o4ap=gZwQJ_Q@mail.gmail.com>
+ <trinity-d032389d-0c73-4685-a879-96f4fcc18c00-1507670978317@3c-app-webde-bap54>
+ <CAP8THHVakjhjhCp7Y=MwrVJbCb5bN6OYE8HULMb2D_RPs9Yh4g@mail.gmail.com>
+ <alpine.LFD.2.21.1710111014390.13296@reclus.nhh.no>
+ <alpine.LFD.2.21.1710111336500.13296@reclus.nhh.no>
+ <CAG+h=FEPg3BuP1ne2dFbUTLg8U7TYGkC-nZaRtnXG8QrxzZu5w@mail.gmail.com>
+ <alpine.LFD.2.21.1710111427070.13296@reclus.nhh.no>
+ <CAG+h=FGoXs2zqZKr=wUJ02Q4QtGwNRCAKSK0=XphbRweHRvEAg@mail.gmail.com>
+ <alpine.LFD.2.21.1710111502370.13296@reclus.nhh.no>
+ <CAAMki4HWOmSPNnzXWQdEWPUh6C4FHPR_qrnGCdSToFCQHa2Wyg@mail.gmail.com>
+ <CAG+h=FEQf4=hp5Ai0p0PhZxaaYkNCAN207_g=OeZ98HmeXohVQ@mail.gmail.com>
+Message-ID: <alpine.LFD.2.21.1710202115440.23604@reclus.nhh.no>
+
+On Fri, 20 Oct 2017, Markus Metz wrote:
+
+> Hi Vero,
+>
+> On Thu, Oct 19, 2017 at 9:26 PM, Veronica Andreo <veroandreo at gmail.com>
+> wrote:
+>>
+>> Hello again,
+>>
+>> I come back to this thread beacuse the issue was solved for readVECT, but
+> I now realize (when trying to write vectors back into GRASS after some
+> processing in R) that writeVECT shows the same problem, i.e. the only
+> driver working is ESRI Shapefile (all smooth, no errors), but driver =
+> "SQLite" throws the same error as reported for readVECT at the begining of
+> this thread. Would it be possible to fix also writeVECT?
+>
+> in both readVECT and writeVECT in the file vect_link.R, replace
+>    ogrDGRASSs <- gsub(" ", "_", sapply(strsplit(ogrDGRASS, ": "), "[", 2))
+> with
+>    ogrDGRASSs <- gsub(" ", "_", trimws(sapply(strsplit(ogrDGRASS, " [(]"),
+> "[", 1)))
+>
+> this works with all versions of GRASS 7 and all versions of GDAL.
+
+Please try:
+
+install.packages("rgrass7", repos="http://R-Forge.R-project.org")
+
+which incorporates the change in both places, not just one as before (svn 
+revision 63 on R-Forge, spgrass project).
+
+Roger
+
+>
+> Markus M
+>
+>
+>>
+>> Here an example:
+>>
+>>> library(rgrass7)
+>> Loading required package: sp
+>> Loading required package: XML
+>> GRASS GIS interface loaded with GRASS version: GRASS 7.3.svn (2017)
+>> and location: eu_laea
+>>
+>>> bbox <- readVECT("bbox_greece", driver = "SQLite")
+>> WARNING: No attribute table found -> using only category numbers as
+> attributes
+>> Exporting 1 area (may take some time)...
+>>  100%
+>> v.out.ogr complete. 1 feature (Polygon type) written to <bbox_greece>
+>> (SQLite format).
+>> OGR data source with driver: SQLite
+>> ...
+>> WARNING: No attribute table found -> using only category numbers as
+> attributes
+>> Exporting 1 area (may take some time)...
+>>  100%
+>> v.out.ogr complete. 1 feature (Polygon type) written to <bbox_greece>
+>> (SQLite format).
+>>
+>>> writeVECT(bbox, "bbox_from_R", driver = "SQLite")
+>> Error: driver %in% candDrivers is not TRUE
+>>
+>>> writeVECT(bbox, "bbox_from_R", driver = "ESRI Shapefile")
+>> ... all goes fine...
+>>
+>> Sorry for bothersome and thanks much in advance!
+>>
+>> best,
+>> Vero
+>>
+>> ps: sessionInfo() and ogrDrivers() are the same as before.
+>>
+>> 2017-10-11 15:03 GMT+02:00 Roger Bivand <Roger.Bivand at nhh.no>:
+>>>
+>>> OK, thanks, will revise at next release.
+>>>
+>>>
+>>> Roger
+>>>
+>>> On Wed, 11 Oct 2017, Markus Metz wrote:
+>>>
+>>>> Dear Roger,
+>>>>
+>>>> On Wed, Oct 11, 2017 at 2:36 PM, Roger Bivand <Roger.Bivand at nhh.no>
+> wrote:
+>>>>>
+>>>>>
+>>>>> Dear Markus,
+>>>>>
+>>>>> I can't see how to get the same strings out without conditioning,
+>>>>
+>>>>
+>>>> with
+>>>>
+>>>> ogrDGRASSs <- gsub(" ", "_", trimws(sapply(strsplit(ogrDGRASS, " [(]"),
+>>>> "[", 1)))
+>>>>
+>>>>> because for v.in.ogr -f and GDAL >= 2.0, GRASS < 7.3 presents for
+> example:
+>>>>>
+>>>>> GML (rw): GML
+>>>>> SQLite (rw): SQLite
+>>>>> ESRI Shapefile (rw): ESRI Shapefile
+>>>>> GeoJSON (rw): GeoJSON
+>>>>>
+>>>>> (readOGR used the string following ":" )
+>>>>
+>>>>
+>>>> The structure of the output of r.in.gdal -f and v.in.ogr -f is
+>>>>
+>>>> <short name> (<read/write flags>): <description>
+>>>>
+>>>> readOGR must use the string preceding "(". Anything following ":" is a
+>>>> description which can change any time. Before GDAL 2.0, there was
+> nothing
+>>>> else but the short name for OGR drivers, therefore the short name was
+> used
+>>>> as description.
+>>>>
+>>>>>
+>>>>> and >= 7.3:
+>>>>>
+>>>>> GML (rw+): Geography Markup Language (GML)
+>>>>> SQLite (rw+): SQLite / Spatialite
+>>>>> ESRI Shapefile (rw+): ESRI Shapefile
+>>>>> GeoJSON (rw+): GeoJSON
+>>>>>
+>>>>> where the string after ":" is different.
+>>>>
+>>>>
+>>>> the string before the read/write flags, i.e. before "(" is identical.
+>>>>
+>>>>> If we can depend on all GRASS < 7.3 having the same short name
+> position,
+>>>>
+>>>> yes, I could avoid conditioning by changing the string processing to
+> suit
+>>>>>
+>>>>> = 7.3 and apply it to all previous; I chose not to modify the string
+>>>>
+>>>> processing for < 7.3 to avoid any problems I can't readily check.
+>>>>
+>>>> For all versions of GRASS 7 and all versions of GDAL, the short name
+>>>> position has been and continues to be the first position. For v.in.ogr
+> -f,
+>>>> the short name may also appear after ":", but only if there is no long
+> name.
+>>>>
+>>>> Best regards,
+>>>>
+>>>> Markus
+>>>>
+>>>>>
+>>>>> Best wishes,
+>>>>>
+>>>>> Roger
+>>>>>
+>>>>>
+>>>>> On Wed, 11 Oct 2017, Markus Metz wrote:
+>>>>>
+>>>>>> Dear Roger,
+>>>>>>
+>>>>>> On Wed, Oct 11, 2017 at 1:41 PM, Roger Bivand <Roger.Bivand at nhh.no>
+>>>>
+>>>> wrote:
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> New version submitted to CRAN; until then:
+>>>>>>>
+>>>>>>> install.packages("rgrass7", repos="http://R-Forge.R-project.org")
+>>>>>>>
+>>>>>>> should pick up the latest version; #3425 closed. Please report back
+>>>>>>
+>>>>>>
+>>>>>> whether this works ... (conditioning on GRASS version to create
+>>>>
+>>>> comparable
+>>>>>>
+>>>>>> driver name strings).
+>>>>>>
+>>>>>> I don't think there is a need to condition on the GRASS version, see
+> my
+>>>>>> suggestion in #3425
+>>>>>>
+>>>>>> Markus M
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> Roger
+>>>>>>>
+>>>>>>>
+>>>>>>> On Wed, 11 Oct 2017, Roger Bivand wrote:
+>>>>>>>
+>>>>>>>> Thanks for trying to contribute. The GH site is not the rgrass7
+>>>>>>
+>>>>>>
+>>>>>> development site - that is SVN on R-forge (GH is a very preliminary
+> trial
+>>>>>> site for using sf vector representation in R, and maybe raster raster
+>>>>>> representation (or forthcoming stars), instead of sp classes).
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> GRAS 7.2.2 works OK with the current logic checks; I can reproduce
+> the
+>>>>>>
+>>>>>>
+>>>>>> issue in 7.3 (latest); there is a change in vector/v.in.ogr/main.c
+>>>>>> returning the DriverLongName for GDAL >= 2.0; in GRASS 7.2.2, there
+> is no
+>>>>>> such change. Could the GRASS developer responsible for this obvious
+>>>>>> regression provide an additional flag in v.in.ogr (and v.external,
+>>>>>> v.out.ogr) to permit backwards compatibility? See line 387, needs to
+>>>>
+>>>> change
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> #if GDAL_VERSION_NUM >= 2000000
+>>>>>>>>
+>>>>>>>> to add a !backwards_compatible test too.
+>>>>>>>>
+>>>>>>>> I'll hold off trying to fix this in rgrass7 because it is a
+> regression.
+>>>>>>
+>>>>>>
+>>>>>> I can add the backwards_compatibility=TRUE flag to readVECT() once it
+> is
+>>>>>> exposed.
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> This is:
+>>>>>>>>
+>>>>>>>> https://trac.osgeo.org/grass/ticket/3425
+>>>>>>>>
+>>>>>>>> Roger
+>>>>>>>>
+>>>>>>>> On Tue, 10 Oct 2017, Ahmadou Dicko wrote:
+>>>>>>>>
+>>>>>>>>> In the readVECT function, internally v.in.ogr is used to list the
+>>>>>>
+>>>>>>
+>>>>>> supported
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> vector format and it is compared the format available using rgdal
+> (or
+>>>>>>
+>>>>>>
+>>>>>> sf).
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> However, using v.external instead of v.in.ogr fix this single
+> problem
+>>>>>>>>> because of the way the output is different (in form).
+>>>>>>>>> For example, if you use v.in.ogr you will have to compare
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> SQLite_/_Spatialite
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> (GRASS) to SQLite (R) and they are not the same.
+>>>>>>>>>
+>>>>>>>>> I tried to send a PR, let me know if it works
+>>>>>>>>>
+>>>>>>>>> https://github.com/rsbivand/rgrass7/pull/1
+>>>>>>>>>
+>>>>>>>>> Best,
+>>>>>>>>>
+>>>>>>>>> On Tue, Oct 10, 2017 at 9:29 PM, Helmut Kudrnovsky <hellik at web.de>
+>>>>>>
+>>>>>>
+>>>>>> wrote:
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>>> Gesendet: Dienstag, 10. Oktober 2017 um 23:24 Uhr
+>>>>>>>>>>> Von: "Ahmadou Dicko" <dicko.ahmadou at gmail.com>
+>>>>>>>>>>> An: "Helmut Kudrnovsky" <hellik at web.de>
+>>>>>>>>>>> Cc: "Roger Bivand" <Roger.Bivand at nhh.no>, "
+>>>>
+>>>> grass-stats at lists.osgeo.org"
+>>>>>>
+>>>>>>
+>>>>>> <
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> grass-stats at lists.osgeo.org>
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> Betreff: Re: [GRASS-stats] rgrass7 - SQLite and GML drivers not
+>>>>>>
+>>>>>>
+>>>>>> working
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> for readVECT
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> Hi everyone,
+>>>>>>>>>>>
+>>>>>>>>>>> I think that using v.external -f (instead of v.in.ogr -f) can fix
+>>>>
+>>>> this
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> issue (didn't try yet)
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> execGRASS("v.external", flags = "f", intern = TRUE)
+>>>>>>>>>>> [1] "ARCGEN"         "AVCBin"         "AVCE00"
+>>>>>>>>>>> [4] "AeronavFAA"     "AmigoCloud"     "BNA"
+>>>>>>>>>>> [7] "CAD"            "CSV"            "CSW"
+>>>>>>>>>>> [10] "Carto"          "Cloudant"       "CouchDB"
+>>>>>>>>>>> [13] "DGN"            "DXF"            "EDIGEO"
+>>>>>>>>>>> [16] "ESRI_Shapefile" "ElasticSearch"  "GFT"
+>>>>>>>>>>> [19] "GML"            "GPKG"           "GPSBabel"
+>>>>>>>>>>> [22] "GPSTrackMaker"  "GPX"            "GeoJSON"
+>>>>>>>>>>> [25] "GeoRSS"         "Geoconcept"     "Geomedia"
+>>>>>>>>>>> [28] "HTF"            "HTTP"           "Idrisi"
+>>>>>>>>>>> [31] "JML"            "JPEG2000"       "KML"
+>>>>>>>>>>> [34] "MSSQLSpatial"   "MapInfo_File"   "Memory"
+>>>>>>>>>>> [37] "MySQL"          "ODBC"           "ODS"
+>>>>>>>>>>> [40] "OGR_GMT"        "OGR_GRASS"      "OGR_PDS"
+>>>>>>>>>>> [43] "OGR_SDTS"       "OGR_VRT"        "OSM"
+>>>>>>>>>>> [46] "OpenAir"        "OpenFileGDB"    "PCIDSK"
+>>>>>>>>>>> [49] "PDF"            "PGDUMP"         "PGeo"
+>>>>>>>>>>> [52] "PLSCENES"       "PostgreSQL"     "REC"
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> in a quick check, there is no difference in available formats.
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>
+>>>>>>> --
+>>>>>>> Roger Bivand
+>>>>>>> Department of Economics, Norwegian School of Economics,
+>>>>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>>>>> voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+>>>>>>> Editor-in-Chief of The R Journal,
+>>>>
+>>>> https://journal.r-project.org/index.html
+>>>>>>>
+>>>>>>> http://orcid.org/0000-0003-2392-6140
+>>>>>>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>>>>>>> _______________________________________________
+>>>>>>> grass-stats mailing list
+>>>>>>> grass-stats at lists.osgeo.org
+>>>>>>> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>
+>>>>> --
+>>>>> Roger Bivand
+>>>>> Department of Economics, Norwegian School of Economics,
+>>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>>> voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+>>>>> Editor-in-Chief of The R Journal,
+> https://journal.r-project.org/index.html
+>>>>> http://orcid.org/0000-0003-2392-6140
+>>>>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>>>>
+>>>>
+>>>
+>>> --
+>>> Roger Bivand
+>>> Department of Economics, Norwegian School of Economics,
+>>> Helleveien 30, N-5045 Bergen, Norway.
+>>> voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+>>> Editor-in-Chief of The R Journal,
+> https://journal.r-project.org/index.html
+>>> http://orcid.org/0000-0003-2392-6140
+>>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats at lists.osgeo.org
+>>> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>>
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+Editor-in-Chief of The R Journal, https://journal.r-project.org/index.html
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+
+From hellik at web.de  Fri Oct 20 12:31:04 2017
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Fri, 20 Oct 2017 12:31:04 -0700 (MST)
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+	readVECT
+In-Reply-To: <alpine.LFD.2.21.1710202115440.23604@reclus.nhh.no>
+References: <CAP8THHVakjhjhCp7Y=MwrVJbCb5bN6OYE8HULMb2D_RPs9Yh4g@mail.gmail.com>
+ <alpine.LFD.2.21.1710111014390.13296@reclus.nhh.no>
+ <alpine.LFD.2.21.1710111336500.13296@reclus.nhh.no>
+ <CAG+h=FEPg3BuP1ne2dFbUTLg8U7TYGkC-nZaRtnXG8QrxzZu5w@mail.gmail.com>
+ <alpine.LFD.2.21.1710111427070.13296@reclus.nhh.no>
+ <CAG+h=FGoXs2zqZKr=wUJ02Q4QtGwNRCAKSK0=XphbRweHRvEAg@mail.gmail.com>
+ <alpine.LFD.2.21.1710111502370.13296@reclus.nhh.no>
+ <CAAMki4HWOmSPNnzXWQdEWPUh6C4FHPR_qrnGCdSToFCQHa2Wyg@mail.gmail.com>
+ <CAG+h=FEQf4=hp5Ai0p0PhZxaaYkNCAN207_g=OeZ98HmeXohVQ@mail.gmail.com>
+ <alpine.LFD.2.21.1710202115440.23604@reclus.nhh.no>
+Message-ID: <1508527864169-0.post@n6.nabble.com>
+
+>Please try:
+>
+>install.packages("rgrass7", repos="http://R-Forge.R-project.org")
+>
+>which incorporates the change in both places, not just one as before (svn
+>revision 63 on R-Forge, spgrass project). 
+
+tested with above install.packages cmd:
+
+> sessionInfo()
+R version 3.4.0 (2017-04-21)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 15063)
+
+Matrix products: default
+
+locale:
+[1] C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] rgrass7_0.1-11 XML_3.98-1.9   sp_1.2-5
+
+loaded via a namespace (and not attached):
+[1] compiler_3.4.0  grid_3.4.0      lattice_0.20-35
+>
+
+it works here on winGRASS.
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+
+From veroandreo at gmail.com  Sat Oct 21 06:15:40 2017
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Sat, 21 Oct 2017 15:15:40 +0200
+Subject: [GRASS-stats] rgrass7 - SQLite and GML drivers not working for
+	readVECT
+In-Reply-To: <1508527864169-0.post@n6.nabble.com>
+References: <CAP8THHVakjhjhCp7Y=MwrVJbCb5bN6OYE8HULMb2D_RPs9Yh4g@mail.gmail.com>
+ <alpine.LFD.2.21.1710111014390.13296@reclus.nhh.no>
+ <alpine.LFD.2.21.1710111336500.13296@reclus.nhh.no>
+ <CAG+h=FEPg3BuP1ne2dFbUTLg8U7TYGkC-nZaRtnXG8QrxzZu5w@mail.gmail.com>
+ <alpine.LFD.2.21.1710111427070.13296@reclus.nhh.no>
+ <CAG+h=FGoXs2zqZKr=wUJ02Q4QtGwNRCAKSK0=XphbRweHRvEAg@mail.gmail.com>
+ <alpine.LFD.2.21.1710111502370.13296@reclus.nhh.no>
+ <CAAMki4HWOmSPNnzXWQdEWPUh6C4FHPR_qrnGCdSToFCQHa2Wyg@mail.gmail.com>
+ <CAG+h=FEQf4=hp5Ai0p0PhZxaaYkNCAN207_g=OeZ98HmeXohVQ@mail.gmail.com>
+ <alpine.LFD.2.21.1710202115440.23604@reclus.nhh.no>
+ <1508527864169-0.post@n6.nabble.com>
+Message-ID: <CAAMki4G9gLWD2g9WzaCvDfVud3ps2QqJVZi2reDVivzT-QQXBg@mail.gmail.com>
+
+Yup, works now. Thanks Roger! And thanks MarkusM as well! :)
+
+best,
+vero
+
+2017-10-20 21:31 GMT+02:00 Helmut Kudrnovsky <hellik at web.de>:
+
+> >Please try:
+> >
+> >install.packages("rgrass7", repos="http://R-Forge.R-project.org")
+> >
+> >which incorporates the change in both places, not just one as before (svn
+> >revision 63 on R-Forge, spgrass project).
+>
+> tested with above install.packages cmd:
+>
+> > sessionInfo()
+> R version 3.4.0 (2017-04-21)
+> Platform: x86_64-w64-mingw32/x64 (64-bit)
+> Running under: Windows 10 x64 (build 15063)
+>
+> Matrix products: default
+>
+> locale:
+> [1] C
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base
+>
+> other attached packages:
+> [1] rgrass7_0.1-11 XML_3.98-1.9   sp_1.2-5
+>
+> loaded via a namespace (and not attached):
+> [1] compiler_3.4.0  grid_3.4.0      lattice_0.20-35
+> >
+>
+> it works here on winGRASS.
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20171021/7c56f78a/attachment.html>
+

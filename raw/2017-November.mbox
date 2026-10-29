@@ -1,0 +1,275 @@
+From maximilianbakenhus at gmail.com  Thu Nov  9 10:31:42 2017
+From: maximilianbakenhus at gmail.com (M Bakenhus)
+Date: Thu, 9 Nov 2017 19:31:42 +0100
+Subject: [GRASS-stats] R and GRASS on Windows - Status 1
+Message-ID: <CAOg0kg3SGEcFa=1x6FbFt0vYX0esmKpXMbczuxFve+eQxn5Nfw@mail.gmail.com>
+
+Hello all,
+
+nearly any GRASS command which I write gives me Errors like:
+
+1: running command 'r.to.vect.exe --quiet --overwrite input=sites_catchm_1
+output=sites_catchm_1_v type=area' had status 1
+
+2: running command 'v.overlay.exe --overwrite --quiet
+ainput=veg_01_sa_31467.shp binput=sites_catchm_1_v operator=and
+output=veg_01_sa_31467.shp_1 olayer=1,0,0' had status 1
+
+3: running command 'v.db.addcolumn.bat map=veg_01_sa_31467.shp_1
+columns="area double precision"' had status 1
+
+I guess this is because of wrong permissions ?
+How can I get along with that ?
+
+Thanks a lot,
+
+Max
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20171109/a04c8874/attachment.html>
+
+From hellik at web.de  Thu Nov  9 12:22:04 2017
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Thu, 9 Nov 2017 13:22:04 -0700 (MST)
+Subject: [GRASS-stats] R and GRASS on Windows - Status 1
+In-Reply-To: <CAOg0kg3SGEcFa=1x6FbFt0vYX0esmKpXMbczuxFve+eQxn5Nfw@mail.gmail.com>
+References: <CAOg0kg3SGEcFa=1x6FbFt0vYX0esmKpXMbczuxFve+eQxn5Nfw@mail.gmail.com>
+Message-ID: <1510258924649-0.post@n6.nabble.com>
+
+Maximilian Bakenhus wrote
+> Hello all,
+> 
+> nearly any GRASS command which I write gives me Errors like:
+> 
+> 1: running command 'r.to.vect.exe --quiet --overwrite input=sites_catchm_1
+> output=sites_catchm_1_v type=area' had status 1
+> 
+> 2: running command 'v.overlay.exe --overwrite --quiet
+> ainput=veg_01_sa_31467.shp binput=sites_catchm_1_v operator=and
+> output=veg_01_sa_31467.shp_1 olayer=1,0,0' had status 1
+> 
+> 3: running command 'v.db.addcolumn.bat map=veg_01_sa_31467.shp_1
+> columns="area double precision"' had status 1
+> 
+> I guess this is because of wrong permissions ?
+> How can I get along with that ?
+
+(1) which R version?
+(2) which GRASS version? standalone wingrass or OSGeo4W wingrass?
+(3) how is the exact command in R?
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+
+From hellik at web.de  Thu Nov  9 13:07:57 2017
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Thu, 9 Nov 2017 14:07:57 -0700 (MST)
+Subject: [GRASS-stats] R and GRASS on Windows - Status 1
+In-Reply-To: <CAOg0kg3SGEcFa=1x6FbFt0vYX0esmKpXMbczuxFve+eQxn5Nfw@mail.gmail.com>
+References: <CAOg0kg3SGEcFa=1x6FbFt0vYX0esmKpXMbczuxFve+eQxn5Nfw@mail.gmail.com>
+Message-ID: <1510261677048-0.post@n6.nabble.com>
+
+---
+(1)‘3.4.2’of R, Version 1.1.383   of R Studio
+(2) GRASS Standalone
+(3) 
+ 
+
+a <- NULL
+for(i in 1:length(anames)){
+  print(anames[i])
+  a <- c(a,unique(execGRASS("v.db.select", 
+                            parameters = list(
+                              map = anames[i],
+                              columns = "objart"
+                            ), intern = T)[-1]))
+}
+ 
+
+Warning messages:
+1: running command 'v.db.select.exe map=veg_01_sa_31467.shp columns=objart'
+had status 1
+ 
+
+ 
+
+ 
+
+For any GRASS related command I get a similar error.
+ ----
+
+you have to keep it on the mailing list, otherwise no one is able to answer.
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+
+From maximilianbakenhus at gmail.com  Thu Nov  9 13:15:23 2017
+From: maximilianbakenhus at gmail.com (M Bakenhus)
+Date: Thu, 9 Nov 2017 22:15:23 +0100
+Subject: [GRASS-stats] R and GRASS on Windows - Status 1
+In-Reply-To: <1510261677048-0.post@n6.nabble.com>
+References: <CAOg0kg3SGEcFa=1x6FbFt0vYX0esmKpXMbczuxFve+eQxn5Nfw@mail.gmail.com>
+ <1510261677048-0.post@n6.nabble.com>
+Message-ID: <CAOg0kg0mfYaQpBnDe1+w1X6+svRrX6GEn_2CMjAOXUdRNnvXsQ@mail.gmail.com>
+
+>
+> you have to keep it on the mailing list, otherwise no one is able to
+> answer.
+>
+True, thanks for recognizing.
+Furthermore, the OS used is Windows 10 Pro.
+I argued if its maybe because of missing writing privileges,
+but I don't know how to check that.
+
+
+
+2017-11-09 22:07 GMT+01:00 Helmut Kudrnovsky <hellik at web.de>:
+
+> ---
+> (1)‘3.4.2’of R, Version 1.1.383   of R Studio
+> (2) GRASS Standalone
+> (3)
+>
+>
+> a <- NULL
+> for(i in 1:length(anames)){
+>   print(anames[i])
+>   a <- c(a,unique(execGRASS("v.db.select",
+>                             parameters = list(
+>                               map = anames[i],
+>                               columns = "objart"
+>                             ), intern = T)[-1]))
+> }
+>
+>
+> Warning messages:
+> 1: running command 'v.db.select.exe map=veg_01_sa_31467.shp columns=objart'
+> had status 1
+>
+>
+>
+>
+>
+>
+> For any GRASS related command I get a similar error.
+>  ----
+>
+> you have to keep it on the mailing list, otherwise no one is able to
+> answer.
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20171109/51477e56/attachment.html>
+
+From Roger.Bivand at nhh.no  Thu Nov  9 13:22:16 2017
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu, 9 Nov 2017 22:22:16 +0100
+Subject: [GRASS-stats] R and GRASS on Windows - Status 1
+In-Reply-To: <CAOg0kg0mfYaQpBnDe1+w1X6+svRrX6GEn_2CMjAOXUdRNnvXsQ@mail.gmail.com>
+References: <CAOg0kg3SGEcFa=1x6FbFt0vYX0esmKpXMbczuxFve+eQxn5Nfw@mail.gmail.com>
+ <1510261677048-0.post@n6.nabble.com>
+ <CAOg0kg0mfYaQpBnDe1+w1X6+svRrX6GEn_2CMjAOXUdRNnvXsQ@mail.gmail.com>
+Message-ID: <alpine.LFD.2.21.1711092219330.18865@reclus.nhh.no>
+
+On Thu, 9 Nov 2017, M Bakenhus wrote:
+
+>>
+>> you have to keep it on the mailing list, otherwise no one is able to
+>> answer.
+>>
+> True, thanks for recognizing.
+> Furthermore, the OS used is Windows 10 Pro.
+> I argued if its maybe because of missing writing privileges,
+> but I don't know how to check that.
+>
+
+Just speculation, really.
+
+Make a completely reproducible example with the North Carolina location. I 
+guess (but without such an example cannot check) that at least one of the 
+parameters is wrongly set.
+
+Almost certainly you must simplify first, then find the corner cases 
+needing special treatment.
+
+>
+>
+> 2017-11-09 22:07 GMT+01:00 Helmut Kudrnovsky <hellik at web.de>:
+>
+>> ---
+>> (1)‘3.4.2’of R, Version 1.1.383   of R Studio
+>> (2) GRASS Standalone
+>> (3)
+>>
+>>
+>> a <- NULL
+>> for(i in 1:length(anames)){
+>>   print(anames[i])
+>>   a <- c(a,unique(execGRASS("v.db.select",
+>>                             parameters = list(
+>>                               map = anames[i],
+>>                               columns = "objart"
+>>                             ), intern = T)[-1]))
+>> }
+>>
+>>
+>> Warning messages:
+>> 1: running command 'v.db.select.exe map=veg_01_sa_31467.shp columns=objart'
+>> had status 1
+>>
+>>
+>>
+>>
+>>
+>>
+>> For any GRASS related command I get a similar error.
+>>  ----
+>>
+>> you have to keep it on the mailing list, otherwise no one is able to
+>> answer.
+>>
+>>
+>>
+>> -----
+>> best regards
+>> Helmut
+>> --
+>> Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats at lists.osgeo.org
+>> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+Editor-in-Chief of The R Journal, https://journal.r-project.org/index.html
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+

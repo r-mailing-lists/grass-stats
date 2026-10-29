@@ -1,0 +1,1131 @@
+From uleopold at science.uva.nl  Wed Apr  5 05:32:02 2006
+From: uleopold at science.uva.nl (Ulrich Leopold)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Change of spatial support
+Message-ID: <16351.158.64.4.14.1144229522.squirrel@webmail.science.uva.nl>
+
+Dear list,
+
+I am trying to change the spatial support (grid size) of some floating point
+raster maps from 250x250m to 1000x1000m. It's a kind of upscaling or more
+preciseley aggregation.
+
+All I need to do is to superimpose the larger grid on the smaller grid and
+compute the average and variance for the larger grid from the 4x4 250m cells
+located within one 1000m cell.
+
+I recognise that this is still not possible in GRASS. The GRASS resampling
+methods for change of resolution, such as r.neigbors or g.region are not an
+option as they do not provide a simple averaging method and the aggregation
+error (variance).
+
+I thought maybe r.mapcalc or R with it's grass6 interface could be used. But I
+do not know how to achieve it in terms of code. Any sugegstions?
+
+Ulrich
+
+
+From hamish_nospam at yahoo.com  Wed Apr  5 07:03:40 2006
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Re: [GRASSLIST:577] Change of spatial support
+In-Reply-To: <16351.158.64.4.14.1144229522.squirrel@webmail.science.uva.nl>
+References: <16351.158.64.4.14.1144229522.squirrel@webmail.science.uva.nl>
+Message-ID: <20060405230340.7a32673e.hamish_nospam@yahoo.com>
+
+> I am trying to change the spatial support (grid size) of some floating
+> point raster maps from 250x250m to 1000x1000m. It's a kind of
+> upscaling or more preciseley aggregation.
+> 
+> All I need to do is to superimpose the larger grid on the smaller grid
+> and compute the average and variance for the larger grid from the 4x4
+> 250m cells located within one 1000m cell.
+> 
+> I recognise that this is still not possible in GRASS. The GRASS
+> resampling methods for change of resolution, such as r.neigbors or
+> g.region are not an option as they do not provide a simple averaging
+> method and the aggregation error (variance).
+
+
+r.resample, r.resamp.rst
+
+?
+Hamish
+
+
+From uleopold at science.uva.nl  Wed Apr  5 09:43:57 2006
+From: uleopold at science.uva.nl (Ulrich Leopold)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Re: [GRASSLIST:580] Re: Change of spatial support
+In-Reply-To: <20060405230340.7a32673e.hamish_nospam@yahoo.com>
+References: <16351.158.64.4.14.1144229522.squirrel@webmail.science.uva.nl>
+    <20060405230340.7a32673e.hamish_nospam@yahoo.com>
+Message-ID: <14293.83.99.28.96.1144244637.squirrel@webmail.science.uva.nl>
+
+On Wed, April 5, 2006 13:03, Hamish wrote:
+>> I am trying to change the spatial support (grid size) of some floating
+>> point raster maps from 250x250m to 1000x1000m. It's a kind of
+>> upscaling or more preciseley aggregation.
+>>
+>> All I need to do is to superimpose the larger grid on the smaller grid
+>> and compute the average and variance for the larger grid from the 4x4
+>> 250m cells located within one 1000m cell.
+>>
+>> I recognise that this is still not possible in GRASS. The GRASS
+>> resampling methods for change of resolution, such as r.neigbors or
+>> g.region are not an option as they do not provide a simple averaging
+>> method and the aggregation error (variance).
+>
+>
+> r.resample, r.resamp.rst
+>
+> ?
+> Hamish
+>
+>
+No r.resample uses the same method also nearest the neighbor method and does
+not provide any calculation of summary statsitics within a larger grid cells.
+
+
+r.resamp.rst does a re-interpolation of the raster cells. I am  looking for an
+aggregation of floating point raster cells for a lower grid resolution (4x4 =>
+1x1). Simply take the average of a 4 x 4 raster cells and produce a single
+mean value for a larger grid cell (but for floating point numbers not
+integers).
+
+Take 4 x 4 raster cells
+
+2.5  3.5  1.5  0.5
+2.5  3.5  1.5  0.5
+2.5  3.5  1.5  0.5
+2.5  3.5  1.5  0.5
+
+compute the mean and variance to yield one raster cell with
+
+mean = 2.0
+var  = 1.333
+
+jump to next block of 4 x 4 raster cells which have not been used in previous
+calculation and repeat the calculation and so on.
+
+
+Any ideas for r.mapcalc?
+
+
+
+From uleopold at science.uva.nl  Wed Apr  5 09:49:37 2006
+From: uleopold at science.uva.nl (Ulrich Leopold)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Change of spatial support
+In-Reply-To: <4433B0AD.6000300@geo.uu.nl>
+References: <16351.158.64.4.14.1144229522.squirrel@webmail.science.uva.nl>   
+    <4433B0AD.6000300@geo.uu.nl>
+Message-ID: <14309.83.99.28.96.1144244977.squirrel@webmail.science.uva.nl>
+
+On Wed, April 5, 2006 13:57, Edzer J. Pebesma wrote:
+> Ulrich Leopold wrote:
+>> Dear list,
+>> I am trying to change the spatial support (grid size) of some floating
+point
+>> raster maps from 250x250m to 1000x1000m. It's a kind of upscaling or more
+preciseley aggregation.
+>> All I need to do is to superimpose the larger grid on the smaller grid and
+compute the average and variance for the larger grid from the 4x4 250m
+cells
+>> located within one 1000m cell.
+>> I recognise that this is still not possible in GRASS. The GRASS resampling
+methods for change of resolution, such as r.neigbors or g.region are not an
+option as they do not provide a simple averaging method and the aggregation
+error (variance).
+>> I thought maybe r.mapcalc or R with it's grass6 interface could be used.
+But
+>> I
+>> do not know how to achieve it in terms of code. Any sugegstions? Ulrich
+
+> I think you can do this in R, but also think that you're primarily looking
+for a
+> GRASS solution. Am I right?
+> --
+> Edzer
+
+I am also happy to solve this in R. It might be even more appropriate as you
+caould caluclate also other summary statistics. I just do not know what kind
+of approach to use as I need a kind of jumping window for my raster map in
+which I can perform some statistical calculation.
+
+Are there already functions available in the spatial pckages of R? Or is it
+fairly easy to write an new function for that?
+
+Ulrich
+
+
+
+
+
+From Thomas.Adams at noaa.gov  Wed Apr  5 10:56:31 2006
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Re: [GRASSLIST:581] Re: Change of spatial support
+In-Reply-To: <14293.83.99.28.96.1144244637.squirrel@webmail.science.uva.nl>
+References: <16351.158.64.4.14.1144229522.squirrel@webmail.science.uva.nl>
+ <20060405230340.7a32673e.hamish_nospam@yahoo.com>
+ <14293.83.99.28.96.1144244637.squirrel@webmail.science.uva.nl>
+Message-ID: <4433DA9F.2030306@noaa.gov>
+
+Ulrich,
+
+I was wondering if r.proj, selecting bilinear interpolation might work 
+for you? I understand that all other projection parameters would be the 
+same, except for the grid spacing (1000m vs 250m).
+
+Tom
+
+
+Ulrich Leopold wrote:
+> On Wed, April 5, 2006 13:03, Hamish wrote:
+>   
+>>> I am trying to change the spatial support (grid size) of some floating
+>>> point raster maps from 250x250m to 1000x1000m. It's a kind of
+>>> upscaling or more preciseley aggregation.
+>>>
+>>> All I need to do is to superimpose the larger grid on the smaller grid
+>>> and compute the average and variance for the larger grid from the 4x4
+>>> 250m cells located within one 1000m cell.
+>>>
+>>> I recognise that this is still not possible in GRASS. The GRASS
+>>> resampling methods for change of resolution, such as r.neigbors or
+>>> g.region are not an option as they do not provide a simple averaging
+>>> method and the aggregation error (variance).
+>>>       
+>> r.resample, r.resamp.rst
+>>
+>> ?
+>> Hamish
+>>
+>>
+>>     
+> No r.resample uses the same method also nearest the neighbor method and does
+> not provide any calculation of summary statsitics within a larger grid cells.
+>
+>
+> r.resamp.rst does a re-interpolation of the raster cells. I am  looking for an
+> aggregation of floating point raster cells for a lower grid resolution (4x4 =>
+> 1x1). Simply take the average of a 4 x 4 raster cells and produce a single
+> mean value for a larger grid cell (but for floating point numbers not
+> integers).
+>
+> Take 4 x 4 raster cells
+>
+> 2.5  3.5  1.5  0.5
+> 2.5  3.5  1.5  0.5
+> 2.5  3.5  1.5  0.5
+> 2.5  3.5  1.5  0.5
+>
+> compute the mean and variance to yield one raster cell with
+>
+> mean = 2.0
+> var  = 1.333
+>
+> jump to next block of 4 x 4 raster cells which have not been used in previous
+> calculation and repeat the calculation and so on.
+>
+>
+> Any ideas for r.mapcalc?
+>
+>   
+
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+
+From daniel.mcinerney at ucd.ie  Wed Apr  5 14:54:30 2006
+From: daniel.mcinerney at ucd.ie (Daniel McInerney)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] memory issues.
+Message-ID: <44341266.205@ucd.ie>
+
+Hello list,
+
+I've been using R/GRASS for satellite
+image classification and I've been content
+with it's capabilities. I recently changed
+study area and increased the number
+of image bands being used for classification
+and began to encounter a series of memory
+related issues during R sessions.
+
+GRASS rasters are read in using
+'readCELL6sp' and then stored as a data.frame
+i.e.
+>tmpimg <- data.frame(readCELL6sp("rasterlayer")[,1])
+
+The current study region is composed of approximately
+3989808 pixels and up to 15 bands. The .RData file
+is in excess of 700Mb.
+
+Various error messages have been returned during the
+process.
+ 
+The following when reading in the grass rasters
+$>"cannot open file '/tmp/RtmpRAYfK2/file74b0dc51', reason
+        'No such file or directory"  
+
+There is no shortage of space available in the partition
+within which /tmp resides.
+
+The following during image classification. It occurs
+during the  second iteration after modification of
+parameters and the first classification has been
+written to GRASS with 'writeRast6':
+
+$>Error: cannot allocate vector of size 187022 Kb
+
+When trying to edit functions after above errors
+occurred.
+$>Error in edit(name, file, title, editor) :
+        problem with running editor vi
+
+
+I've included gc() in my functions as well as removing
+temporary objects during runtime. I recompiled R to
+enable linux-lfs and 64bit libs. I've also started R with
+various combinations of --max/min-vsize and --max/min-nsize
+However, none of these have greatly improved the situation.
+
+I'm writing to know whether anyone has encountered
+something similar and whether a work around exists? Am
+I asking too much of R or am I overlooking something?
+
+Any advice or suggestions would be greatly appreciated.
+
+Thanks in advance,
+
+Regards,
+Daniel.
+
+
+
+System
+-------
+
+Debian 2.6.8-11-amd64
+R 2.2.1
+sp 0.8-9
+spgrass6 0.1.3
+spGDAL 0.1.1
+spproj 0.3-2
+GRASS 6.1 cvs 25.02.06
+
+
+
+From rsadler at cyllene.uwa.edu.au  Wed Apr  5 21:14:42 2006
+From: rsadler at cyllene.uwa.edu.au (Rohan Sadler)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Re: Change of spatial support
+References: <200604051001.k35A1xd14066@grass.itc.it>
+Message-ID: <00fb01c65917$7c46ea60$c64c5f82@agric.uwa.edu.au>
+
+# Ulrich
+#  Try this in R
+library(spgrass6)
+library(spatstat)
+library(maptools)
+G<-gmeta6()
+
+#taking the data as a 1000 x 1000 matrix to rescale to 250 x 250.
+# input layer: your.layer
+# output layer: grass.out
+
+# function to export R matrix: y is the name of the raster layer you create 
+when exporting to GRASS
+# somebody may have a more elegant way of doing this
+putRast6wrap<-function(y,x){
+  x.dim<-dim(x)
+  x.bling<-GridTopology(c(0.002,0.002),c(0.004,0.004),c(dim(x)))
+  x.bling2<-SpatialGridDataFrame(x.bling,AttributeList(list(c(t(x)[,nrow(x):1]))))
+  writeRast6sp(x.bling2,y)
+}
+
+mean()   #  aggregation function: (could be another function)
+
+# slowest method
+
+raw.mat<-readCELL6sp("your.raster")
+raw.mat<-matrix(raw.mat$your.raster,ncol=250)
+out.mat<-matrix(0,ncol=250,nrow=250)
+
+for ( i in 1:250) {
+ for (j in 1:250) {
+  out.mat[i,j]<-mean(raw.mat[((i*4-3):(i*4)),((j*4-3):(j*4))])
+}
+cat("I've just done row ",i,"\n")  # keeps track of how slow you are going
+}
+
+putRast6wrap("grass.out",out.mat)
+
+# this is off the top of my head so hasn't been tested
+
+# Rohan Sadler
+#Ecosystems Research Group M090
+#The University of Western Australia
+#35 Stirling Hwy, Crawley, 6008
+#ph:       +61 8 6488 4257
+#fax:      +61 8 6488 7925
+#mobile: +61 0433 192 600
+#email:    rsadler@cyllene.uwa.edu.au
+
+#Affiliations:
+#Bushfire CRC
+#School of Mathematics and Statistics, UWA
+
+----- Original Message ----- 
+From: <statsgrass-request@grass.itc.it>
+To: <statsgrass@grass.itc.it>
+Sent: Wednesday, April 05, 2006 6:01 PM
+Subject: statsgrass digest, Vol 1 #176 - 1 msg
+
+
+>
+>
+> Today's Topics:
+>
+>   1. Change of spatial support (Ulrich Leopold)
+>
+> --__--__--
+>
+> Message: 1
+> Date: Wed, 5 Apr 2006 11:32:02 +0200 (CEST)
+> From: "Ulrich Leopold" <uleopold@science.uva.nl>
+> To: GRASSLIST@baylor.edu, statsgrass@grass.itc.it
+> Reply-To: uleopold@science.uva.nl
+> Subject: [STATSGRASS] Change of spatial support
+>
+> Dear list,
+>
+> I am trying to change the spatial support (grid size) of some floating 
+> point
+> raster maps from 250x250m to 1000x1000m. It's a kind of upscaling or more
+> preciseley aggregation.
+>
+> All I need to do is to superimpose the larger grid on the smaller grid and
+> compute the average and variance for the larger grid from the 4x4 250m 
+> cells
+> located within one 1000m cell.
+>
+> I recognise that this is still not possible in GRASS. The GRASS resampling
+> methods for change of resolution, such as r.neigbors or g.region are not 
+> an
+> option as they do not provide a simple averaging method and the 
+> aggregation
+> error (variance).
+>
+> I thought maybe r.mapcalc or R with it's grass6 interface could be used. 
+> But I
+> do not know how to achieve it in terms of code. Any sugegstions?
+>
+> Ulrich
+>
+>
+>
+> --__--__--
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+>
+> End of statsgrass Digest
+> 
+
+
+
+From rsadler at cyllene.uwa.edu.au  Wed Apr  5 23:16:16 2006
+From: rsadler at cyllene.uwa.edu.au (Rohan Sadler)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Re: Change of Spatial Support
+References: <200604051001.k35A1xd14066@grass.itc.it>
+Message-ID: <015701c65928$77648c80$c64c5f82@agric.uwa.edu.au>
+
+#Hi Ulrich
+
+#I forgot to comment on:
+putRast6wrap<-function(y,x){
+  x.bling<-GridTopology(c(0.002,0.002),c(0.004,0.004),c(dim(x)))
+  x.bling2<-SpatialGridDataFrame(x.bling,AttributeList(list(c(t(x)[,nrow(x):1]))))
+  writeRast6sp(x.bling2,y)
+}
+#  x is your data matrix in R
+#  you control the grid topology with the assignment 
+x.bling<-GridTopology(cell.centre.offset, cell.resolution ,matrix.dimension)
+#  The current settings are to send a 250x250 matrix to an x,y region of 
+dimension (0,1) x (0,1)
+#  Again, I haven't tried the code but you may need to use g.region to 
+change raster resolution once you are back in GRASS in order to view
+#   Regards, Ro
+
+
+
+
+----- Original Message ----- 
+From: <statsgrass-request@grass.itc.it>
+To: <statsgrass@grass.itc.it>
+Sent: Wednesday, April 05, 2006 6:01 PM
+Subject: statsgrass digest, Vol 1 #176 - 1 msg
+
+
+> Send statsgrass mailing list submissions to
+> statsgrass@grass.itc.it
+>
+> To subscribe or unsubscribe via the World Wide Web, visit
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> or, via email, send a message with subject or body 'help' to
+> statsgrass-request@grass.itc.it
+>
+> You can reach the person managing the list at
+> statsgrass-admin@grass.itc.it
+>
+> When replying, please edit your Subject line so it is more specific
+> than "Re: Contents of statsgrass digest..."
+>
+>
+> Today's Topics:
+>
+>   1. Change of spatial support (Ulrich Leopold)
+>
+> --__--__--
+>
+> Message: 1
+> Date: Wed, 5 Apr 2006 11:32:02 +0200 (CEST)
+> From: "Ulrich Leopold" <uleopold@science.uva.nl>
+> To: GRASSLIST@baylor.edu, statsgrass@grass.itc.it
+> Reply-To: uleopold@science.uva.nl
+> Subject: [STATSGRASS] Change of spatial support
+>
+> Dear list,
+>
+> I am trying to change the spatial support (grid size) of some floating 
+> point
+> raster maps from 250x250m to 1000x1000m. It's a kind of upscaling or more
+> preciseley aggregation.
+>
+> All I need to do is to superimpose the larger grid on the smaller grid and
+> compute the average and variance for the larger grid from the 4x4 250m 
+> cells
+> located within one 1000m cell.
+>
+> I recognise that this is still not possible in GRASS. The GRASS resampling
+> methods for change of resolution, such as r.neigbors or g.region are not 
+> an
+> option as they do not provide a simple averaging method and the 
+> aggregation
+> error (variance).
+>
+> I thought maybe r.mapcalc or R with it's grass6 interface could be used. 
+> But I
+> do not know how to achieve it in terms of code. Any sugegstions?
+>
+> Ulrich
+>
+>
+>
+> --__--__--
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+>
+> End of statsgrass Digest
+> 
+
+
+
+From e.pebesma at geo.uu.nl  Thu Apr  6 06:10:49 2006
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] memory issues.
+In-Reply-To: <44341266.205@ucd.ie>
+References: <44341266.205@ucd.ie>
+Message-ID: <4434E929.7000906@geo.uu.nl>
+
+Daniel, it seems you have a setup that anticipated large arrays.
+What happens if you I give in R:
+
+ > object.size(as.numeric(1:1e9))
+
+I get:
+
+Error: cannot allocate vector of size 3906250 Kb
+In addition: Warning messages:
+1: Reached total allocation of 1023Mb: see help(memory.size)
+2: Reached total allocation of 1023Mb: see help(memory.size)
+
+but if your R is really 64 bits, this should work.
+--
+Edzer
+
+Daniel McInerney wrote:
+
+>Hello list,
+>
+>I've been using R/GRASS for satellite
+>image classification and I've been content
+>with it's capabilities. I recently changed
+>study area and increased the number
+>of image bands being used for classification
+>and began to encounter a series of memory
+>related issues during R sessions.
+>
+>GRASS rasters are read in using
+>'readCELL6sp' and then stored as a data.frame
+>i.e.
+>  
+>
+>>tmpimg <- data.frame(readCELL6sp("rasterlayer")[,1])
+>>    
+>>
+>
+>The current study region is composed of approximately
+>3989808 pixels and up to 15 bands. The .RData file
+>is in excess of 700Mb.
+>
+>Various error messages have been returned during the
+>process.
+> 
+>The following when reading in the grass rasters
+>$>"cannot open file '/tmp/RtmpRAYfK2/file74b0dc51', reason
+>        'No such file or directory"  
+>
+>There is no shortage of space available in the partition
+>within which /tmp resides.
+>
+>The following during image classification. It occurs
+>during the  second iteration after modification of
+>parameters and the first classification has been
+>written to GRASS with 'writeRast6':
+>
+>$>Error: cannot allocate vector of size 187022 Kb
+>
+>When trying to edit functions after above errors
+>occurred.
+>$>Error in edit(name, file, title, editor) :
+>        problem with running editor vi
+>
+>
+>I've included gc() in my functions as well as removing
+>temporary objects during runtime. I recompiled R to
+>enable linux-lfs and 64bit libs. I've also started R with
+>various combinations of --max/min-vsize and --max/min-nsize
+>However, none of these have greatly improved the situation.
+>
+>I'm writing to know whether anyone has encountered
+>something similar and whether a work around exists? Am
+>I asking too much of R or am I overlooking something?
+>
+>Any advice or suggestions would be greatly appreciated.
+>
+>Thanks in advance,
+>
+>Regards,
+>Daniel.
+>
+>
+>
+>System
+>-------
+>
+>Debian 2.6.8-11-amd64
+>R 2.2.1
+>sp 0.8-9
+>spgrass6 0.1.3
+>spGDAL 0.1.1
+>spproj 0.3-2
+>GRASS 6.1 cvs 25.02.06
+>
+>
+>_______________________________________________
+>statsgrass mailing list
+>statsgrass@grass.itc.it
+>http://grass.itc.it/mailman/listinfo/statsgrass
+>  
+>
+
+
+From rsadler at cyllene.uwa.edu.au  Fri Apr  7 01:42:18 2006
+From: rsadler at cyllene.uwa.edu.au (Rohan Sadler)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Re: memory issues
+References: <200604061001.k36A1Zd08326@grass.itc.it>
+Message-ID: <01c801c65a06$088d0100$c64c5f82@agric.uwa.edu.au>
+
+Hi Daniel,
+
+I've been dealing with large data issues on single 32-bit machines 
+successfully using  fortran (alternatively C) code dynamically loaded into 
+R. In my application I've had to rapidly locate minute bits of information 
+in a 6.5 Gb library of sets of pixel locations corresponding to 
+parameterised shapes. I use fortran loaded into R because R by itself is an 
+interpretive language (like Python) that in parsing the code holds objects 
+in memory (therefore no writing and dumping of memory objects) until parsing 
+is complete, instead of being fast wired as compiled machine code. From the 
+size of your data (equivalent to 2000x2000) my opinion is that it is the 
+only way if you want to do it in R on 32 bit machines. I don't know what 
+your options are with r.mapcalc.
+
+The steps I visualise would be:
+1) use R to import single band layers and then write as text files.
+2) Write fortran (f77) code to process files but call from within R.
+3) import output text file into R and export to GRASS.
+
+If the processing is complex, and wishes to use sophisticated R functions 
+then the code becomes a hybrid of fortran subroutines and wrapped by R code 
+(e.g. to modify parameter values from logicals passed from fortran 
+subroutines to R to then be put into another iteration of a fortran 
+subroutine).
+
+Also, if you are able to have it all work from a clean workspace 
+add --vanilla to a R CMD BATCH command.
+
+With the dynamically loaded script it is more involved but worth it in the 
+end. Limited help is found in the R documentation on writing R extensions.
+
+Regards
+Rohan Sadler
+
+Ecosystems Research Group M090
+The University of Western Australia
+35 Stirling Hwy, Crawley, 6008
+ph:       +61 8 6488 7914
+fax:      +61 8 6488 7925
+mobile: +61 0433 192 600
+email:    rsadler@cyllene.uwa.edu.au
+
+Affiliations:
+Bushfire CRC
+School of Mathematics and Statistics, UWA
+>
+> Message: 5
+> Date: Wed, 05 Apr 2006 19:54:30 +0100
+> From: Daniel McInerney <daniel.mcinerney@ucd.ie>
+> To: statsgrass@grass.itc.it
+> Subject: [STATSGRASS] memory issues.
+>
+> Hello list,
+>
+> I've been using R/GRASS for satellite
+> image classification and I've been content
+> with it's capabilities. I recently changed
+> study area and increased the number
+> of image bands being used for classification
+> and began to encounter a series of memory
+> related issues during R sessions.
+>
+> GRASS rasters are read in using
+> 'readCELL6sp' and then stored as a data.frame
+> i.e.
+>>tmpimg <- data.frame(readCELL6sp("rasterlayer")[,1])
+>
+> The current study region is composed of approximately
+> 3989808 pixels and up to 15 bands. The .RData file
+> is in excess of 700Mb.
+>
+> Various error messages have been returned during the
+> process.
+>
+> The following when reading in the grass rasters
+> $>"cannot open file '/tmp/RtmpRAYfK2/file74b0dc51', reason
+>        'No such file or directory"
+>
+> There is no shortage of space available in the partition
+> within which /tmp resides.
+>
+> The following during image classification. It occurs
+> during the  second iteration after modification of
+> parameters and the first classification has been
+> written to GRASS with 'writeRast6':
+>
+> $>Error: cannot allocate vector of size 187022 Kb
+>
+> When trying to edit functions after above errors
+> occurred.
+> $>Error in edit(name, file, title, editor) :
+>        problem with running editor vi
+>
+>
+> I've included gc() in my functions as well as removing
+> temporary objects during runtime. I recompiled R to
+> enable linux-lfs and 64bit libs. I've also started R with
+> various combinations of --max/min-vsize and --max/min-nsize
+> However, none of these have greatly improved the situation.
+>
+> I'm writing to know whether anyone has encountered
+> something similar and whether a work around exists? Am
+> I asking too much of R or am I overlooking something?
+>
+> Any advice or suggestions would be greatly appreciated.
+>
+> Thanks in advance,
+>
+> Regards,
+> Daniel.
+>
+>
+>
+> System
+> -------
+>
+> Debian 2.6.8-11-amd64
+> R 2.2.1
+> sp 0.8-9
+> spgrass6 0.1.3
+> spGDAL 0.1.1
+> spproj 0.3-2
+> GRASS 6.1 cvs 25.02.06
+>
+>
+>
+> --__--__--
+>
+> Message: 8
+> Date: Thu, 06 Apr 2006 11:10:49 +0100
+> From: "Edzer J. Pebesma" <e.pebesma@geo.uu.nl>
+> To: Daniel McInerney <daniel.mcinerney@ucd.ie>
+> Cc: statsgrass@grass.itc.it
+> Subject: Re: [STATSGRASS] memory issues.
+>
+> Daniel, it seems you have a setup that anticipated large arrays.
+> What happens if you I give in R:
+>
+> > object.size(as.numeric(1:1e9))
+>
+> I get:
+>
+> Error: cannot allocate vector of size 3906250 Kb
+> In addition: Warning messages:
+> 1: Reached total allocation of 1023Mb: see help(memory.size)
+> 2: Reached total allocation of 1023Mb: see help(memory.size)
+>
+> but if your R is really 64 bits, this should work.
+> --
+> Edzer
+>
+> Daniel McInerney wrote:
+>
+>>Hello list,
+>>
+>>I've been using R/GRASS for satellite
+>>image classification and I've been content
+>>with it's capabilities. I recently changed
+>>study area and increased the number
+>>of image bands being used for classification
+>>and began to encounter a series of memory
+>>related issues during R sessions.
+>>
+>>GRASS rasters are read in using
+>>'readCELL6sp' and then stored as a data.frame
+>>i.e.
+>>
+>>
+>>>tmpimg <- data.frame(readCELL6sp("rasterlayer")[,1])
+>>>
+>>>
+>>
+>>The current study region is composed of approximately
+>>3989808 pixels and up to 15 bands. The .RData file
+>>is in excess of 700Mb.
+>>
+>>Various error messages have been returned during the
+>>process.
+>>
+>>The following when reading in the grass rasters
+>>$>"cannot open file '/tmp/RtmpRAYfK2/file74b0dc51', reason
+>>        'No such file or directory"
+>>
+>>There is no shortage of space available in the partition
+>>within which /tmp resides.
+>>
+>>The following during image classification. It occurs
+>>during the  second iteration after modification of
+>>parameters and the first classification has been
+>>written to GRASS with 'writeRast6':
+>>
+>>$>Error: cannot allocate vector of size 187022 Kb
+>>
+>>When trying to edit functions after above errors
+>>occurred.
+>>$>Error in edit(name, file, title, editor) :
+>>        problem with running editor vi
+>>
+>>
+>>I've included gc() in my functions as well as removing
+>>temporary objects during runtime. I recompiled R to
+>>enable linux-lfs and 64bit libs. I've also started R with
+>>various combinations of --max/min-vsize and --max/min-nsize
+>>However, none of these have greatly improved the situation.
+>>
+>>I'm writing to know whether anyone has encountered
+>>something similar and whether a work around exists? Am
+>>I asking too much of R or am I overlooking something?
+>>
+>>Any advice or suggestions would be greatly appreciated.
+>>
+>>Thanks in advance,
+>>
+>>Regards,
+>>Daniel.
+>>
+>>
+>>
+>>System
+>>-------
+>>
+>>Debian 2.6.8-11-amd64
+>>R 2.2.1
+>>sp 0.8-9
+>>spgrass6 0.1.3
+>>spGDAL 0.1.1
+>>spproj 0.3-2
+>>GRASS 6.1 cvs 25.02.06
+>>
+
+
+
+From massimodisasha at yahoo.it  Fri Apr  7 09:23:02 2006
+From: massimodisasha at yahoo.it (epifanio epi)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] ORDINARY KRIGING IN R WITH GRASS6 DATA
+In-Reply-To: <200604061001.k36A1Zd08326@grass.itc.it>
+References: <200604061001.k36A1Zd08326@grass.itc.it>
+Message-ID: <EFC84D69-7EA5-4D95-B828-820C0E7A844E@yahoo.it>
+
+i'm trying to use the ORDINARY KRIGING IN R WITH GRASS6 DATA
+
+
+
+i've in a grass location a vector file ( type : point) its name is :  
+vector_point
+
+i open R and type :
+
+ > library(spgrass6)
+Carico il pacchetto richiesto: rgdal
+Carico il pacchetto richiesto: sp
+Carico il pacchetto richiesto: abind
+Carico il pacchetto richiesto: pixmap
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Carico il pacchetto richiesto: sp
+Warning message:
+cannot create HTML package index in: make.packages.html()
+
+then as the example at the web page :
+http://grass.gdf-hannover.de/twiki/pub/GRASS/WebHome/ 
+krigingusingRGRASS6.txt
+
+i type :
+
+ > giaciture <- getSites6sp("vector_point")
+Errore: non trovo la funzione "getSites6sp"
+
+why R do not find :  getSites6sp - function ?
+canyou helpe me ?
+thank's!
+Massimo
+
+
+From massimodisasha at yahoo.it  Fri Apr  7 09:21:27 2006
+From: massimodisasha at yahoo.it (epifanio epi)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] ORDINARY KRIGING IN R WITH GRASS6 DATA
+Message-ID: <A8AA7D64-6F6C-4A0F-888D-69A170E682FD@yahoo.it>
+
+i'm trying to use the ORDINARY KRIGING IN R WITH GRASS6 DATA
+
+
+
+i've in a grass location a vector file ( type : point) its name is :  
+vector_point
+
+i open R and type :
+
+ > library(spgrass6)
+Carico il pacchetto richiesto: rgdal
+Carico il pacchetto richiesto: sp
+Carico il pacchetto richiesto: abind
+Carico il pacchetto richiesto: pixmap
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Carico il pacchetto richiesto: sp
+Warning message:
+cannot create HTML package index in: make.packages.html()
+
+then as the example at the web page :
+http://grass.gdf-hannover.de/twiki/pub/GRASS/WebHome/ 
+krigingusingRGRASS6.txt
+
+i type :
+
+ > giaciture <- getSites6sp("vector_point")
+Errore: non trovo la funzione "getSites6sp"
+
+why R do not find :  getSites6sp - function ?
+canyou helpe me ?
+thank's!
+Massimo
+
+
+From Roger.Bivand at nhh.no  Fri Apr  7 09:41:54 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] ORDINARY KRIGING IN R WITH GRASS6 DATA
+In-Reply-To: <EFC84D69-7EA5-4D95-B828-820C0E7A844E@yahoo.it>
+Message-ID: <Pine.LNX.4.44.0604071539170.10731-100000@reclus.nhh.no>
+
+On Fri, 7 Apr 2006, epifanio epi wrote:
+
+> 
+> i'm trying to use the ORDINARY KRIGING IN R WITH GRASS6 DATA
+> 
+> 
+> 
+> i've in a grass location a vector file ( type : point) its name is :  
+> vector_point
+> 
+> i open R and type :
+> 
+>  > library(spgrass6)
+> Carico il pacchetto richiesto: rgdal
+> Carico il pacchetto richiesto: sp
+> Carico il pacchetto richiesto: abind
+> Carico il pacchetto richiesto: pixmap
+> Geospatial Data Abstraction Library extensions to R successfully loaded
+> Carico il pacchetto richiesto: sp
+> Warning message:
+> cannot create HTML package index in: make.packages.html()
+> 
+> then as the example at the web page :
+> http://grass.gdf-hannover.de/twiki/pub/GRASS/WebHome/ 
+> krigingusingRGRASS6.txt
+> 
+> i type :
+
+Please report the output of sessionInfo() - if your copy of the spgrass6 
+package is not 0.1-6, that may be the reason.
+
+> 
+>  > giaciture <- getSites6sp("vector_point")
+> Errore: non trovo la funzione "getSites6sp"
+> 
+> why R do not find :  getSites6sp - function ?
+> canyou helpe me ?
+> thank's!
+> Massimo
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From twiens at interbaun.com  Tue Apr 18 01:50:58 2006
+From: twiens at interbaun.com (Trevor Wiens)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Spatial Clustering or Network Problem?
+Message-ID: <20060417235058.434f143b@localhost.localdomain>
+
+I have an interesting problem and after spending some time looking
+through the clustering documentation in R, I'm not sure that is the
+right approach.
+
+I have a region for which a series of bird surveys were conducted
+within a vector defined grid. The coverage is not complete and I want to
+assess how best to clump the grid squares based on a survey
+completeness. Thus some grid squares will have a had no survey and
+others will be partial and others will be complete. I want to group them
+irregularly so that I end up with groups of squares that have had n
+number of completed surveys conducted. 
+
+When I first thought of this problem I thought of R and using some
+clustering mechanism, but it would appear to me that these are all
+based on the idea of grouping data based on similarity of value and
+specifying at the outset how many groups you will end up with at the
+end. My problem is the opposite in that I want to value for each group
+to be as close to each other as possible, but I don't know how many
+groups I will end up with.
+
+Then I started wondering about turning the centroids of these squares
+into a network using v.delaunay and using a network approach
+to the problem, although I'm not sure how I might do this.
+
+Any suggestions on how to approach this problem would be appreciated.
+
+Thanks
+
+T
+-- 
+Trevor Wiens 
+twiens@interbaun.com
+
+The significant problems that we face cannot be solved at the same 
+level of thinking we were at when we created them. 
+(Albert Einstein)
+
+
+From hamish_nospam at yahoo.com  Tue Apr 18 05:16:36 2006
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Re: [GRASSLIST:732] Spatial Clustering or Network Problem?
+In-Reply-To: <20060417235058.434f143b@localhost.localdomain>
+References: <20060417235058.434f143b@localhost.localdomain>
+Message-ID: <20060418211636.03f377bc.hamish_nospam@yahoo.com>
+
+> I have an interesting problem and after spending some time looking
+> through the clustering documentation in R, I'm not sure that is the
+> right approach.
+> 
+> I have a region for which a series of bird surveys were conducted
+> within a vector defined grid. The coverage is not complete and I want
+> to assess how best to clump the grid squares based on a survey
+> completeness. Thus some grid squares will have a had no survey and
+> others will be partial and others will be complete. I want to group
+> them irregularly so that I end up with groups of squares that have had
+> n number of completed surveys conducted. 
+> 
+> When I first thought of this problem I thought of R and using some
+> clustering mechanism, but it would appear to me that these are all
+> based on the idea of grouping data based on similarity of value and
+> specifying at the outset how many groups you will end up with at the
+> end. My problem is the opposite in that I want to value for each group
+> to be as close to each other as possible, but I don't know how many
+> groups I will end up with.
+> 
+> Then I started wondering about turning the centroids of these squares
+> into a network using v.delaunay and using a network approach
+> to the problem, although I'm not sure how I might do this.
+
+set the region resolution to match the vector grid size and run
+s.cellstats from GRASS 5.4. Then clustering/r.neighbors etc in GRASS 6.
+
+???
+
+Hamish
+
+

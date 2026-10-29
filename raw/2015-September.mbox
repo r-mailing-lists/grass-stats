@@ -1,0 +1,2999 @@
+From neteler at osgeo.org  Sat Sep  5 03:09:12 2015
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sat, 5 Sep 2015 12:09:12 +0200
+Subject: [GRASS-stats] rgrass7_0.1-2 on CRAN
+In-Reply-To: <alpine.LFD.2.20.1508240855200.10168@reclus.nhh.no>
+References: <alpine.LFD.2.20.1508240855200.10168@reclus.nhh.no>
+Message-ID: <CALFmHhs9S2+F-oF=O+prn=D16bwXBt3_r4ZcAzTTD2A-qJ1Yjw@mail.gmail.com>
+
+On Mon, Aug 24, 2015 at 9:05 AM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+> I've just submitted a new version of rgrass7 to CRAN, and the source
+package
+> is now available. The Windows CRAN binary will follow shortly, but the OSX
+> CRAN Mavericks binary may be delayed. This is because the new version
+> suggests the most recent rgdal_1.0-6, which fixes an issue with the SQLite
+> driver in GDAL2, seen when that driver is available.
+>
+> The main change is to move the vector interface to using the SQLite format
+> for intermediate files if it is available, and to get around the field
+name
+> length restriction when using the shapefile format. Users should not see
+> changes in behaviour,
+
+This is excellent, thanks for having implemented this improvement.
+
+> but I'd be grateful for reports to ensure that using
+> these alternative mechanisms does not change results. Among other things,
+> the laundering of SQLite field names is turned off, to prevent unintended
+> conversion to lower case.
+
+
+I have just made a test:
+
+GRASS 7.0.2svn (nc_spm_08_grass7):~ >
+
+g.copy vect=zipcodes_wake,myzipcodes_wake
+
+g.region raster=elevation -p
+projection: 99 (Lambert Conformal Conic)
+zone:       0
+datum:      nad83
+ellipsoid:  a=6378137 es=0.006694380022900787
+north:      228500
+south:      215000
+west:       630000
+east:       645000
+nsres:      10
+ewres:      10
+rows:       1350
+cols:       1500
+cells:      2025000
+
+# generate very long column names with long prefix:
+v.rast.stats myzipcodes_wake raster=elevation   column_prefix=elev_data
+method=minimum,maximum,average,stddev,percentile   percentile=95
+Processing data (13 categories)...
+Updating the database .
+
+v.info -c myzipcodes_wake
+Displaying column types/names for database connection of layer <1>:
+INTEGER|cat
+INTEGER|OBJECTID
+DOUBLE PRECISION|WAKE_ZIPCO
+DOUBLE PRECISION|PERIMETER
+DOUBLE PRECISION|ZIPCODE_
+DOUBLE PRECISION|ZIPCODE_ID
+CHARACTER|ZIPNAME
+DOUBLE PRECISION|ZIPNUM
+CHARACTER|ZIPCODE
+CHARACTER|NAME
+DOUBLE PRECISION|SHAPE_Leng
+DOUBLE PRECISION|SHAPE_Area
+DOUBLE PRECISION|elev_data_minimum
+DOUBLE PRECISION|elev_data_maximum
+DOUBLE PRECISION|elev_data_average
+DOUBLE PRECISION|elev_data_stddev
+DOUBLE PRECISION|elev_data_percentile_95
+
+
+GRASS 7.0.2svn (nc_spm_08_grass7):~ > R
+
+R version 3.2.1 (2015-06-18) -- "World-Famous Astronaut"
+...
+> library(rgrass7)
+Loading required package: sp
+Loading required package: XML
+GRASS GIS interface loaded with GRASS version: GRASS 7.0.2svn (2015)
+and location: nc_spm_08_grass7
+> mydata <- readVECT("myzipcodes_wake")
+Exporting 48 areas (may take some time)...
+ 100%
+v.out.ogr complete. 48 features (Polygon type) written to <myzipcodes_wake>
+(SQLite format).
+OGR data source with driver: SQLite
+Source:
+"/home/neteler/grassdata/nc_spm_08_grass7/user1/.tmp/oboe.localdomain/myzipcodes_wake",
+layer: "myzipcodes_wake"
+with 48 features
+It has 17 fields
+Warning message:
+In rgdal::readOGR(dsn = RDSN, layer = LAYER, verbose = !ignore.stderr) :
+  Z-dimension discarded
+
+> summary(mydata)
+Object of class SpatialPolygonsDataFrame
+Coordinates:
+       min      max
+x 610047.9 677060.7
+y 196327.5 258102.6
+Is projected: TRUE
+proj4string :
+[+proj=lcc +lat_1=36.16666666666666 +lat_2=34.33333333333334
++lat_0=33.75 +lon_0=-79 +x_0=609601.22 +y_0=0 +datum=NAD83 +units=m
++no_defs +ellps=GRS80 +towgs84=0,0,0]
+Data attributes:
+      cat           OBJECTID       WAKE_ZIPCO          PERIMETER
+ Min.   : 1.00   Min.   :  1.0   Min.   :5.951e+05   Min.   :  3226
+ 1st Qu.:11.75   1st Qu.: 16.5   1st Qu.:8.368e+07   1st Qu.: 51693
+ Median :22.50   Median : 32.5   Median :5.698e+08   Median :135398
+ Mean   :22.50   Mean   :103.4   Mean   :5.765e+08   Mean   :138404
+ 3rd Qu.:33.25   3rd Qu.:224.2   3rd Qu.:8.408e+08   3rd Qu.:199258
+ Max.   :44.00   Max.   :301.0   Max.   :2.826e+09   Max.   :465259
+
+    ZIPCODE_       ZIPCODE_ID              ZIPNAME       ZIPNUM
+ Min.   : 2.00   Min.   :  1.00   RALEIGH      :15   Min.   :27501
+ 1st Qu.:17.25   1st Qu.:  9.75   APEX         : 4   1st Qu.:27526
+ Median :32.00   Median : 18.00   CARY         : 4   Median :27592
+ Mean   :29.93   Mean   : 36.25   ANGIER       : 2   Mean   :27574
+ 3rd Qu.:43.25   3rd Qu.: 29.25   DURHAM       : 2   3rd Qu.:27607
+ Max.   :53.00   Max.   :157.00   FUQUAY VARINA: 2   Max.   :27713
+                                  (Other)      :15
+                ZIPCODE              NAME      SHAPE_Leng
+ ANGIER 27501       : 2   RALEIGH      :15   Min.   :  3221
+ APEX 27539         : 2   APEX         : 4   1st Qu.: 44978
+ FUQUAY VARINA 27526: 2   CARY         : 4   Median :127213
+ WILLOW SPRING 27592: 2   ANGIER       : 2   Mean   :132809
+ YOUNGSVILLE 27596  : 2   DURHAM       : 2   3rd Qu.:193936
+ APEX 27502         : 1   FUQUAY VARINA: 2   Max.   :477265
+ (Other)            :33   (Other)      :15
+   SHAPE_Area        elev_data_minimum elev_data_maximum elev_data_average
+ Min.   :5.943e+05   Min.   : 55.58    Min.   :107.5     Min.   : 80.94
+ 1st Qu.:7.061e+07   1st Qu.: 68.90    1st Qu.:117.6     1st Qu.: 97.35
+ Median :5.267e+08   Median : 77.12    Median :134.3     Median :107.11
+ Mean   :5.430e+08   Mean   : 79.85    Mean   :135.0     Mean   :110.36
+ 3rd Qu.:7.941e+08   3rd Qu.: 89.95    3rd Qu.:152.7     3rd Qu.:121.78
+ Max.   :2.807e+09   Max.   :113.91    Max.   :156.3     Max.   :142.60
+                     NA's   :31        NA's   :31        NA's   :31
+ elev_data_stddev elev_data_percentile_95
+ Min.   : 6.667   Min.   : 99.84
+ 1st Qu.: 9.219   1st Qu.:111.22
+ Median :11.882   Median :123.83
+ Mean   :11.601   Mean   :127.94
+ 3rd Qu.:13.630   3rd Qu.:144.57
+ Max.   :15.839   Max.   :151.69
+ NA's   :31       NA's   :31
+>
+
+
+Looks all good!
+
+Best,
+Markus
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150905/34081532/attachment.html>
+
+From neteler at osgeo.org  Wed Sep  9 14:35:25 2015
+From: neteler at osgeo.org (Markus Neteler)
+Date: Wed, 9 Sep 2015 23:35:25 +0200
+Subject: [GRASS-stats] wish: less verbose messages in rgrass7
+Message-ID: <CALFmHhsL51HAWjV5CKNWdH9Z1E5i3CJXP1aN-pKXso-DDhT6ng@mail.gmail.com>
+
+Hi,
+
+today we used "rgrass7" on Windows (and I made some tests on Linux, too).
+
+I was wondering about a few warnings which might be suppressed to avoid
+user confusion:
+
+
+######## Windows: calling GRASS 7.1 from R session
+
+> library(rgrass7)
+Loading required package: sp
+Loading required package: XML
+GRASS GIS interface loaded with GRASS version: (GRASS not running)
+Warning messages:
+1: package ?rgrass7? was built under R version 3.2.2
+2: package ?sp? was built under R version 3.2.2
+3: package ?XML? was built under R version 3.2.2
+
+> initGRASS(gisBase = "C:/OSGeo4W/apps/grass/grass-7.1.svn",
++ gisDbase = "C:/Users/marissa/GRASSdata/",
++ location = "CA", mapset = "Aegypti")
+Error in initGRASS(gisBase = "C:/OSGeo4W/apps/grass/grass-7.1.svn",
+gisDbase = "C:/Users/marissa/GRASSdata/",  :
+  A GISRC file already exists; to override, set override=TRUE
+
+
+==> the last sentence is not quite clear. Perhaps change to
+
+"A GISRC file already exists (the GRASS GIS mapset is already in use); to
+override, set override=TRUE"
+
+
+> initGRASS(gisBase = "C:/OSGeo4W/apps/grass/grass-7.1.svn",
++ gisDbase = "C:/Users/marissa/GRASSdata/",
++ location = "CA", mapset = "Aegypti",
++ override=TRUE)
+gisdbase    C:/Users/marissa/GRASSdata/
+location    CA
+mapset      Aegypti
+rows        265
+columns     230
+north       452000
+south       -608000
+west        -376000
+east        544000
+nsres       4000
+ewres       4000
+projection  +proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0
++y_0=-4000000 +no_defs +a=6378137 +rf=298.257222101
++towgs84=0.000,0.000,0.000 +to_meter=1
+Warning message:
+In dir.create(gisDbase) : 'C:\Users\marissa\GRASSdata' already exists
+
+==> the last warning is not clear to me. If I set override=TRUE, I refer to
+the mapset's gislock, hence the dir.create(gisDbase should not be done at
+all. Is it a bug?
+
+
+############## Linux
+
+> ncdata <- readRAST("elevation")
+WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+         <PERMANENT>)
+WARNING: Using <elevation at user1>
+WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+         <PERMANENT>)
+WARNING: Using <elevation at user1>
+WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+         <PERMANENT>)
+WARNING: Using <elevation at user1>
+
+==> these warning make probably sense in a GRASS session but IMHO here
+less. They could be suppressed with --q in the respective GRASS module call.
+
+
+Creating BIL support files...
+Exporting raster as floating values (bytes=4)
+ 100%
+Warning messages:
+1: In execGRASS("r.info", flags = "g", map = vname[i], intern = TRUE,  :
+  The command:
+r.info -g map=elevation
+produced at least one warning during execution:
+WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+         <PERMANENT>)
+WARNING: Using <elevation at user1>
+WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+         <PERMANENT>)
+WARNING: Using <elevation at user1>
+WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+         <PERMANENT>)
+WARNING: Using <elevation at user1>
+
+==> here it is, I suggest to use r.info --q
+
+2: In execGRASS("r.info", flags = "r", map = vname[i], intern = TRUE,  :
+  The command:
+r.info -r map=elevation
+produced at least one warning during execution:
+WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+         <PERMANENT>)
+WARNING: Using <elevation at user1>
+WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+         <PERMANENT>)
+WARNING: Using <elevation at user1>
+WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+         <PERMANENT>)
+WARNING: Using <elevation at user1>
+
+==> same thing
+
+3: In execGRASS("r.out.bin", flags = rOutBinFlags, input = vname[i],  :
+  The command:
+r.out.bin -b -f input=elevation
+output=/home/neteler/grassdata/nc_spm_08_grass7/user1/.tmp/pgis_north/elevation
+bytes=4 null=54
+produced at least one warning during execution:
+WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+         <PERMANENT>)
+WARNING: Using <elevation at user1>
+WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+         <PERMANENT>)
+WARNING: Using <elevation at user1>
+WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+         <PERMANENT>)
+WARNING: Using <elevation at user1>
+
+==> same thing
+
+Creating BIL support files...
+Exporting raster as floating values (bytes=4)
+ 100%
+
+thanks
+Markus
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150909/c0965bed/attachment.html>
+
+From Rainer at krugs.de  Thu Sep 10 00:31:09 2015
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Thu, 10 Sep 2015 09:31:09 +0200
+Subject: [GRASS-stats] wish: less verbose messages in rgrass7
+In-Reply-To: <CALFmHhsL51HAWjV5CKNWdH9Z1E5i3CJXP1aN-pKXso-DDhT6ng@mail.gmail.com>
+	(Markus Neteler's message of "Wed, 9 Sep 2015 23:35:25 +0200")
+References: <CALFmHhsL51HAWjV5CKNWdH9Z1E5i3CJXP1aN-pKXso-DDhT6ng@mail.gmail.com>
+Message-ID: <m2lhcerarm.fsf@krugs.de>
+
+Markus Neteler <neteler at osgeo.org> writes:
+
+> Hi,
+>
+> today we used "rgrass7" on Windows (and I made some tests on Linux, too).
+
+Hi Markus,
+
+thanks for reporting.
+
+>
+> I was wondering about a few warnings which might be suppressed to avoid
+> user confusion:
+>
+>
+> ######## Windows: calling GRASS 7.1 from R session
+>
+>> library(rgrass7)
+> Loading required package: sp
+> Loading required package: XML
+> GRASS GIS interface loaded with GRASS version: (GRASS not running)
+> Warning messages:
+> 1: package ?rgrass7? was built under R version 3.2.2
+> 2: package ?sp? was built under R version 3.2.2
+> 3: package ?XML? was built under R version 3.2.2
+>
+>> initGRASS(gisBase = "C:/OSGeo4W/apps/grass/grass-7.1.svn",
+> + gisDbase = "C:/Users/marissa/GRASSdata/",
+> + location = "CA", mapset = "Aegypti")
+> Error in initGRASS(gisBase = "C:/OSGeo4W/apps/grass/grass-7.1.svn",
+> gisDbase = "C:/Users/marissa/GRASSdata/",  :
+>   A GISRC file already exists; to override, set override=TRUE
+>
+>
+> ==> the last sentence is not quite clear. Perhaps change to
+
+I agree with the first part of the sentence.
+
+>
+> "A GISRC file already exists (the GRASS GIS mapset is already in use); to
+> override, set override=TRUE"
+
+I don't think this is true. I have regularly to use #override=TRUE# even
+though I definitely use the mapset. I rather think that the GISRC is not
+cleaned up after finishing in grass in R. 
+
+This raises the question: if GISRC is created, should it be deleted,
+i.e. should there be a function
+
+  closeGRASS()
+
+which is doing the cleanup (or is it done and not working in my cases)?
+
+Rather change it to:
+
+--8<---------------cut here---------------start------------->8--- "A
+GISRC file already exists.
+The GRASS GIS mapset might be already in use or the file has not been
+deleted.
+To override, set override=TRUE"
+--8<---------------cuthere---------------end--------------->8---
+
+
+>
+>
+>> initGRASS(gisBase = "C:/OSGeo4W/apps/grass/grass-7.1.svn",
+> + gisDbase = "C:/Users/marissa/GRASSdata/",
+> + location = "CA", mapset = "Aegypti",
+> + override=TRUE)
+> gisdbase    C:/Users/marissa/GRASSdata/
+> location    CA
+> mapset      Aegypti
+> rows        265
+> columns     230
+> north       452000
+> south       -608000
+> west        -376000
+> east        544000
+> nsres       4000
+> ewres       4000
+> projection  +proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0
+> +y_0=-4000000 +no_defs +a=6378137 +rf=298.257222101
+> +towgs84=0.000,0.000,0.000 +to_meter=1
+> Warning message:
+> In dir.create(gisDbase) : 'C:\Users\marissa\GRASSdata' already exists
+>
+> ==> the last warning is not clear to me. If I set override=TRUE, I refer to
+> the mapset's gislock, hence the dir.create(gisDbase should not be done at
+> all. Is it a bug?
+
+Strange.
+
+I just looked in the code of initGRASS() and all dir.create(gisDbase) are
+in
+
+,----
+| if (!file.exists(gisDbase)) dir.create(gisDbase)
+`----
+
+statements. Maybe I am missing something? Could you set
+
+--8<---------------cut here---------------start------------->8---
+option(warn=2)
+--8<---------------cut here---------------end--------------->8---
+
+before running the code again and give a traceback?
+
+
+>
+>
+> ############## Linux
+>
+>> ncdata <- readRAST("elevation")
+> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>          <PERMANENT>)
+> WARNING: Using <elevation at user1>
+> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>          <PERMANENT>)
+> WARNING: Using <elevation at user1>
+> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>          <PERMANENT>)
+> WARNING: Using <elevation at user1>
+>
+> ==> these warning make probably sense in a GRASS session but IMHO here
+> less. They could be suppressed with --q in the respective GRASS module
+> call.
+
+Agreed - but very useful for debugging.
+
+--q could could be added into the options of the rgrass7 package?
+
+>
+>
+> Creating BIL support files...
+> Exporting raster as floating values (bytes=4)
+>  100%
+> Warning messages:
+> 1: In execGRASS("r.info", flags = "g", map = vname[i], intern = TRUE,  :
+>   The command:
+> r.info -g map=elevation
+> produced at least one warning during execution:
+> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>          <PERMANENT>)
+> WARNING: Using <elevation at user1>
+> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>          <PERMANENT>)
+> WARNING: Using <elevation at user1>
+> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>          <PERMANENT>)
+> WARNING: Using <elevation at user1>
+>
+> ==> here it is, I suggest to use r.info --q
+
+This should be optional - for debugging, these warnings might be crucial.
+
+>
+> 2: In execGRASS("r.info", flags = "r", map = vname[i], intern = TRUE,  :
+>   The command:
+> r.info -r map=elevation
+> produced at least one warning during execution:
+> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>          <PERMANENT>)
+> WARNING: Using <elevation at user1>
+> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>          <PERMANENT>)
+> WARNING: Using <elevation at user1>
+> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>          <PERMANENT>)
+> WARNING: Using <elevation at user1>
+>
+> ==> same thing
+
+No - If I use execGRASS() I know grass (hopefully...) and I can specify
+--q if I want it.
+The execGRASS must not add any flags or arguments which make the
+commands differ from the GRASS versions.
+
+>
+> 3: In execGRASS("r.out.bin", flags = rOutBinFlags, input = vname[i],  :
+>   The command:
+> r.out.bin -b -f input=elevation
+> output=/home/neteler/grassdata/nc_spm_08_grass7/user1/.tmp/pgis_north/elevation
+> bytes=4 null=54
+> produced at least one warning during execution:
+> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>          <PERMANENT>)
+> WARNING: Using <elevation at user1>
+> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>          <PERMANENT>)
+> WARNING: Using <elevation at user1>
+> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>          <PERMANENT>)
+> WARNING: Using <elevation at user1>
+>
+> ==> same thing
+
+Should be using a new rgrass7 option for --q.
+
+Cheers,
+
+Rainer
+
+>
+> Creating BIL support files...
+> Exporting raster as floating values (bytes=4)
+>  100%
+>
+> thanks
+> Markus
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+PGP: 0x0F52F982
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 480 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150910/39bbc751/attachment.pgp>
+
+From Roger.Bivand at nhh.no  Thu Sep 10 01:22:36 2015
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu, 10 Sep 2015 10:22:36 +0200
+Subject: [GRASS-stats] wish: less verbose messages in rgrass7
+In-Reply-To: <m2lhcerarm.fsf@krugs.de>
+References: <CALFmHhsL51HAWjV5CKNWdH9Z1E5i3CJXP1aN-pKXso-DDhT6ng@mail.gmail.com>
+	<m2lhcerarm.fsf@krugs.de>
+Message-ID: <alpine.LFD.2.20.1509101010120.4288@reclus.nhh.no>
+
+On Thu, 10 Sep 2015, Rainer M Krug wrote:
+
+> Markus Neteler <neteler at osgeo.org> writes:
+>
+>> Hi,
+>>
+>> today we used "rgrass7" on Windows (and I made some tests on Linux, too).
+>
+> Hi Markus,
+>
+> thanks for reporting.
+>
+>>
+>> I was wondering about a few warnings which might be suppressed to avoid
+>> user confusion:
+
+Hi,
+
+The confusion is probably coming from the use duality. If a location and 
+mapset already exists, the (much) prefered route is to run R inside GRASS 
+- start R from the GRASS console or similar. Then GISRC etc. are handled 
+in the correct way by GRASS itself.
+
+If there is no location, and the location/mapset will be created on a 
+throw-away basis in the R temporary directory or elsewhere outside 
+GISDBASE, initGRASS() is a sensible choice, because it gives access to 
+GRASS tools - running GRASS inside R.
+
+Here GRASS is being run inside R in relation to an existing 
+location/mapset using initGRASS(), which by design doesn't know anything 
+about locking etc.; it expects to throw the location away when R exits 
+(deleting the temporary directory if owned by R - mileage may vary on 
+Windows).
+
+Should we tell users not to do something that isn't very sensible, or 
+change initGRASS to know much more about a running GRASS instance?
+
+I prefer the former - for non-advanced users:
+
+1) if the GRASS location/mapset is only a throwaway one, use initGRASS() 
+and run GRASS inside R;
+
+2) if you already have a GRASS location/mapset, use R inside GRASS and do 
+not use initGRASS().
+
+Advanced users can make their own choices.
+
+Warnings should IMHO never be hidden - I don't agree that not knowing is 
+ever helpful.
+
+I don't have time to look at this now, I can look in a couple of weeks' 
+time maybe.
+
+Best wishes,
+
+Roger
+
+>>
+>>
+>> ######## Windows: calling GRASS 7.1 from R session
+>>
+>>> library(rgrass7)
+>> Loading required package: sp
+>> Loading required package: XML
+>> GRASS GIS interface loaded with GRASS version: (GRASS not running)
+>> Warning messages:
+>> 1: package ?rgrass7? was built under R version 3.2.2
+>> 2: package ?sp? was built under R version 3.2.2
+>> 3: package ?XML? was built under R version 3.2.2
+>>
+>>> initGRASS(gisBase = "C:/OSGeo4W/apps/grass/grass-7.1.svn",
+>> + gisDbase = "C:/Users/marissa/GRASSdata/",
+>> + location = "CA", mapset = "Aegypti")
+>> Error in initGRASS(gisBase = "C:/OSGeo4W/apps/grass/grass-7.1.svn",
+>> gisDbase = "C:/Users/marissa/GRASSdata/",  :
+>>   A GISRC file already exists; to override, set override=TRUE
+>>
+>>
+>> ==> the last sentence is not quite clear. Perhaps change to
+>
+> I agree with the first part of the sentence.
+>
+>>
+>> "A GISRC file already exists (the GRASS GIS mapset is already in use); to
+>> override, set override=TRUE"
+>
+> I don't think this is true. I have regularly to use #override=TRUE# even
+> though I definitely use the mapset. I rather think that the GISRC is not
+> cleaned up after finishing in grass in R.
+>
+> This raises the question: if GISRC is created, should it be deleted,
+> i.e. should there be a function
+>
+>  closeGRASS()
+>
+> which is doing the cleanup (or is it done and not working in my cases)?
+>
+> Rather change it to:
+>
+> --8<---------------cut here---------------start------------->8--- "A
+> GISRC file already exists.
+> The GRASS GIS mapset might be already in use or the file has not been
+> deleted.
+> To override, set override=TRUE"
+> --8<---------------cuthere---------------end--------------->8---
+>
+>
+>>
+>>
+>>> initGRASS(gisBase = "C:/OSGeo4W/apps/grass/grass-7.1.svn",
+>> + gisDbase = "C:/Users/marissa/GRASSdata/",
+>> + location = "CA", mapset = "Aegypti",
+>> + override=TRUE)
+>> gisdbase    C:/Users/marissa/GRASSdata/
+>> location    CA
+>> mapset      Aegypti
+>> rows        265
+>> columns     230
+>> north       452000
+>> south       -608000
+>> west        -376000
+>> east        544000
+>> nsres       4000
+>> ewres       4000
+>> projection  +proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0
+>> +y_0=-4000000 +no_defs +a=6378137 +rf=298.257222101
+>> +towgs84=0.000,0.000,0.000 +to_meter=1
+>> Warning message:
+>> In dir.create(gisDbase) : 'C:\Users\marissa\GRASSdata' already exists
+>>
+>> ==> the last warning is not clear to me. If I set override=TRUE, I refer to
+>> the mapset's gislock, hence the dir.create(gisDbase should not be done at
+>> all. Is it a bug?
+>
+> Strange.
+>
+> I just looked in the code of initGRASS() and all dir.create(gisDbase) are
+> in
+>
+> ,----
+> | if (!file.exists(gisDbase)) dir.create(gisDbase)
+> `----
+>
+> statements. Maybe I am missing something? Could you set
+>
+> --8<---------------cut here---------------start------------->8---
+> option(warn=2)
+> --8<---------------cut here---------------end--------------->8---
+>
+> before running the code again and give a traceback?
+>
+>
+>>
+>>
+>> ############## Linux
+>>
+>>> ncdata <- readRAST("elevation")
+>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>          <PERMANENT>)
+>> WARNING: Using <elevation at user1>
+>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>          <PERMANENT>)
+>> WARNING: Using <elevation at user1>
+>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>          <PERMANENT>)
+>> WARNING: Using <elevation at user1>
+>>
+>> ==> these warning make probably sense in a GRASS session but IMHO here
+>> less. They could be suppressed with --q in the respective GRASS module
+>> call.
+>
+> Agreed - but very useful for debugging.
+>
+> --q could could be added into the options of the rgrass7 package?
+>
+>>
+>>
+>> Creating BIL support files...
+>> Exporting raster as floating values (bytes=4)
+>>  100%
+>> Warning messages:
+>> 1: In execGRASS("r.info", flags = "g", map = vname[i], intern = TRUE,  :
+>>   The command:
+>> r.info -g map=elevation
+>> produced at least one warning during execution:
+>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>          <PERMANENT>)
+>> WARNING: Using <elevation at user1>
+>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>          <PERMANENT>)
+>> WARNING: Using <elevation at user1>
+>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>          <PERMANENT>)
+>> WARNING: Using <elevation at user1>
+>>
+>> ==> here it is, I suggest to use r.info --q
+>
+> This should be optional - for debugging, these warnings might be crucial.
+>
+>>
+>> 2: In execGRASS("r.info", flags = "r", map = vname[i], intern = TRUE,  :
+>>   The command:
+>> r.info -r map=elevation
+>> produced at least one warning during execution:
+>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>          <PERMANENT>)
+>> WARNING: Using <elevation at user1>
+>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>          <PERMANENT>)
+>> WARNING: Using <elevation at user1>
+>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>          <PERMANENT>)
+>> WARNING: Using <elevation at user1>
+>>
+>> ==> same thing
+>
+> No - If I use execGRASS() I know grass (hopefully...) and I can specify
+> --q if I want it.
+> The execGRASS must not add any flags or arguments which make the
+> commands differ from the GRASS versions.
+>
+>>
+>> 3: In execGRASS("r.out.bin", flags = rOutBinFlags, input = vname[i],  :
+>>   The command:
+>> r.out.bin -b -f input=elevation
+>> output=/home/neteler/grassdata/nc_spm_08_grass7/user1/.tmp/pgis_north/elevation
+>> bytes=4 null=54
+>> produced at least one warning during execution:
+>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>          <PERMANENT>)
+>> WARNING: Using <elevation at user1>
+>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>          <PERMANENT>)
+>> WARNING: Using <elevation at user1>
+>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>          <PERMANENT>)
+>> WARNING: Using <elevation at user1>
+>>
+>> ==> same thing
+>
+> Should be using a new rgrass7 option for --q.
+>
+> Cheers,
+>
+> Rainer
+>
+>>
+>> Creating BIL support files...
+>> Exporting raster as floating values (bytes=4)
+>>  100%
+>>
+>> thanks
+>> Markus
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats at lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+
+From Rainer at krugs.de  Thu Sep 10 02:11:15 2015
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Thu, 10 Sep 2015 11:11:15 +0200
+Subject: [GRASS-stats] wish: less verbose messages in rgrass7
+In-Reply-To: <alpine.LFD.2.20.1509101010120.4288@reclus.nhh.no> (Roger
+	Bivand's message of "Thu, 10 Sep 2015 10:22:36 +0200")
+References: <CALFmHhsL51HAWjV5CKNWdH9Z1E5i3CJXP1aN-pKXso-DDhT6ng@mail.gmail.com>
+	<m2lhcerarm.fsf@krugs.de>
+	<alpine.LFD.2.20.1509101010120.4288@reclus.nhh.no>
+Message-ID: <m2a8sur64s.fsf@krugs.de>
+
+Roger Bivand <Roger.Bivand at nhh.no> writes:
+
+> On Thu, 10 Sep 2015, Rainer M Krug wrote:
+>
+>> Markus Neteler <neteler at osgeo.org> writes:
+>>
+>>> Hi,
+>>>
+>>> today we used "rgrass7" on Windows (and I made some tests on Linux, too).
+>>
+>> Hi Markus,
+>>
+>> thanks for reporting.
+>>
+>>>
+>>> I was wondering about a few warnings which might be suppressed to avoid
+>>> user confusion:
+>
+> Hi,
+>
+> The confusion is probably coming from the use duality. If a location
+> and mapset already exists, the (much) prefered route is to run R
+> inside GRASS - start R from the GRASS console or similar. Then GISRC
+> etc. are handled in the correct way by GRASS itself.
+>
+> If there is no location, and the location/mapset will be created on a
+> throw-away basis in the R temporary directory or elsewhere outside
+> GISDBASE, initGRASS() is a sensible choice, because it gives access to
+> GRASS tools - running GRASS inside R.
+>
+> Here GRASS is being run inside R in relation to an existing
+> location/mapset using initGRASS(), which by design doesn't know
+> anything about locking etc.; it expects to throw the location away
+> when R exits (deleting the temporary directory if owned by R - mileage
+> may vary on Windows).
+>
+> Should we tell users not to do something that isn't very sensible, or
+> change initGRASS to know much more about a running GRASS instance?
+>
+> I prefer the former - for non-advanced users:
+>
+> 1) if the GRASS location/mapset is only a throwaway one, use
+> initGRASS() and run GRASS inside R;
+>
+> 2) if you already have a GRASS location/mapset, use R inside GRASS and
+> do not use initGRASS().
+>
+> Advanced users can make their own choices.
+
+That is one major problem in rgrass: that one is encouraged to run R in
+GRASS to use an existing mapset.
+
+I have no idea how python and other languages which have a GRASS
+interface do it, but I don't think that they should be run in GRASS. If
+I use R, GRASS is a kind of a library, about which I do not want to
+care.
+
+So the way forward should be to make the "GRASS in R" scenario the main
+way of using GRASS in R.
+This will become much easier in 7.1 with the --exec argument. See
+
+--8<---------------cut here---------------start------------->8---
+https://lists.osgeo.org/pipermail/grass-user/2015-June/072515.html
+https://grass.osgeo.org/grass71/manuals/grass7.html#exec-interface-example
+--8<---------------cut here---------------end--------------->8---
+
+for how it looks at the moment.
+
+I wanted to look into using this approach for rgrass71 but did not
+manage so far to look at it.
+
+This is not to say that the "running R in GRASS" scenario is not
+needed - but I see that one as using R from GRASS to do spatial analysis
+and continue afterwards in GRASS - so a little bit like R as a tool in
+GRASS, while the other is GRASS a tool in R.
+
+In the long run, these are two quite different usage scenarios which
+might even diverge over time in two different packages.
+
+>
+> Warnings should IMHO never be hidden - I don't agree that not knowing
+> is ever helpful.
+
+Not helpful - but when writing simulations (as I did) the warnings will
+clutter the output and if I know the warnings, I simply would like to
+have the option to silence them.
+
+Apart from that, I think that particular warning would be a case for a
+"verbose" output in GRASS as it is looking for something I did not tell
+it to (look in PERMANENT when the map exists in the mapset I am in).
+
+As in GRASS, I think there should be an option to silence the warnings,
+specifically in the case of the commands in rgrass - that was what I
+meant bu introducing an additional option (like e.g. useGDAL), so that
+they can be silenced if necessary.
+
+execGRASS should always do / show what GRASS would do / show when the
+command is executed.
+
+>
+> I don't have time to look at this now, I can look in a couple of
+> weeks' time maybe.
+>
+> Best wishes,
+>
+> Roger
+>
+>>>
+>>>
+>>> ######## Windows: calling GRASS 7.1 from R session
+>>>
+>>>> library(rgrass7)
+>>> Loading required package: sp
+>>> Loading required package: XML
+>>> GRASS GIS interface loaded with GRASS version: (GRASS not running)
+>>> Warning messages:
+>>> 1: package ?rgrass7? was built under R version 3.2.2
+>>> 2: package ?sp? was built under R version 3.2.2
+>>> 3: package ?XML? was built under R version 3.2.2
+>>>
+>>>> initGRASS(gisBase = "C:/OSGeo4W/apps/grass/grass-7.1.svn",
+>>> + gisDbase = "C:/Users/marissa/GRASSdata/",
+>>> + location = "CA", mapset = "Aegypti")
+>>> Error in initGRASS(gisBase = "C:/OSGeo4W/apps/grass/grass-7.1.svn",
+>>> gisDbase = "C:/Users/marissa/GRASSdata/",  :
+>>>   A GISRC file already exists; to override, set override=TRUE
+>>>
+>>>
+>>> ==> the last sentence is not quite clear. Perhaps change to
+>>
+>> I agree with the first part of the sentence.
+>>
+>>>
+>>> "A GISRC file already exists (the GRASS GIS mapset is already in use); to
+>>> override, set override=TRUE"
+>>
+>> I don't think this is true. I have regularly to use #override=TRUE# even
+>> though I definitely use the mapset. I rather think that the GISRC is not
+>> cleaned up after finishing in grass in R.
+>>
+>> This raises the question: if GISRC is created, should it be deleted,
+>> i.e. should there be a function
+>>
+>>  closeGRASS()
+>>
+>> which is doing the cleanup (or is it done and not working in my cases)?
+>>
+>> Rather change it to:
+>>
+>> --8<---------------cut here---------------start------------->8--- "A
+>> GISRC file already exists.
+>> The GRASS GIS mapset might be already in use or the file has not been
+>> deleted.
+>> To override, set override=TRUE"
+>> --8<---------------cuthere---------------end--------------->8---
+>>
+>>
+>>>
+>>>
+>>>> initGRASS(gisBase = "C:/OSGeo4W/apps/grass/grass-7.1.svn",
+>>> + gisDbase = "C:/Users/marissa/GRASSdata/",
+>>> + location = "CA", mapset = "Aegypti",
+>>> + override=TRUE)
+>>> gisdbase    C:/Users/marissa/GRASSdata/
+>>> location    CA
+>>> mapset      Aegypti
+>>> rows        265
+>>> columns     230
+>>> north       452000
+>>> south       -608000
+>>> west        -376000
+>>> east        544000
+>>> nsres       4000
+>>> ewres       4000
+>>> projection  +proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0
+>>> +y_0=-4000000 +no_defs +a=6378137 +rf=298.257222101
+>>> +towgs84=0.000,0.000,0.000 +to_meter=1
+>>> Warning message:
+>>> In dir.create(gisDbase) : 'C:\Users\marissa\GRASSdata' already exists
+>>>
+>>> ==> the last warning is not clear to me. If I set override=TRUE, I refer to
+>>> the mapset's gislock, hence the dir.create(gisDbase should not be done at
+>>> all. Is it a bug?
+>>
+>> Strange.
+>>
+>> I just looked in the code of initGRASS() and all dir.create(gisDbase) are
+>> in
+>>
+>> ,----
+>> | if (!file.exists(gisDbase)) dir.create(gisDbase)
+>> `----
+>>
+>> statements. Maybe I am missing something? Could you set
+>>
+>> --8<---------------cut here---------------start------------->8---
+>> option(warn=2)
+>> --8<---------------cut here---------------end--------------->8---
+>>
+>> before running the code again and give a traceback?
+>>
+>>
+>>>
+>>>
+>>> ############## Linux
+>>>
+>>>> ncdata <- readRAST("elevation")
+>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>          <PERMANENT>)
+>>> WARNING: Using <elevation at user1>
+>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>          <PERMANENT>)
+>>> WARNING: Using <elevation at user1>
+>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>          <PERMANENT>)
+>>> WARNING: Using <elevation at user1>
+>>>
+>>> ==> these warning make probably sense in a GRASS session but IMHO here
+>>> less. They could be suppressed with --q in the respective GRASS module
+>>> call.
+>>
+>> Agreed - but very useful for debugging.
+>>
+>> --q could could be added into the options of the rgrass7 package?
+>>
+>>>
+>>>
+>>> Creating BIL support files...
+>>> Exporting raster as floating values (bytes=4)
+>>>  100%
+>>> Warning messages:
+>>> 1: In execGRASS("r.info", flags = "g", map = vname[i], intern = TRUE,  :
+>>>   The command:
+>>> r.info -g map=elevation
+>>> produced at least one warning during execution:
+>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>          <PERMANENT>)
+>>> WARNING: Using <elevation at user1>
+>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>          <PERMANENT>)
+>>> WARNING: Using <elevation at user1>
+>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>          <PERMANENT>)
+>>> WARNING: Using <elevation at user1>
+>>>
+>>> ==> here it is, I suggest to use r.info --q
+>>
+>> This should be optional - for debugging, these warnings might be crucial.
+>>
+>>>
+>>> 2: In execGRASS("r.info", flags = "r", map = vname[i], intern = TRUE,  :
+>>>   The command:
+>>> r.info -r map=elevation
+>>> produced at least one warning during execution:
+>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>          <PERMANENT>)
+>>> WARNING: Using <elevation at user1>
+>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>          <PERMANENT>)
+>>> WARNING: Using <elevation at user1>
+>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>          <PERMANENT>)
+>>> WARNING: Using <elevation at user1>
+>>>
+>>> ==> same thing
+>>
+>> No - If I use execGRASS() I know grass (hopefully...) and I can specify
+>> --q if I want it.
+>> The execGRASS must not add any flags or arguments which make the
+>> commands differ from the GRASS versions.
+>>
+>>>
+>>> 3: In execGRASS("r.out.bin", flags = rOutBinFlags, input = vname[i],  :
+>>>   The command:
+>>> r.out.bin -b -f input=elevation
+>>> output=/home/neteler/grassdata/nc_spm_08_grass7/user1/.tmp/pgis_north/elevation
+>>> bytes=4 null=54
+>>> produced at least one warning during execution:
+>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>          <PERMANENT>)
+>>> WARNING: Using <elevation at user1>
+>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>          <PERMANENT>)
+>>> WARNING: Using <elevation at user1>
+>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>          <PERMANENT>)
+>>> WARNING: Using <elevation at user1>
+>>>
+>>> ==> same thing
+>>
+>> Should be using a new rgrass7 option for --q.
+>>
+>> Cheers,
+>>
+>> Rainer
+>>
+>>>
+>>> Creating BIL support files...
+>>> Exporting raster as floating values (bytes=4)
+>>>  100%
+>>>
+>>> thanks
+>>> Markus
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats at lists.osgeo.org
+>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>>
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+PGP: 0x0F52F982
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 480 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150910/00783457/attachment.pgp>
+
+From Roger.Bivand at nhh.no  Thu Sep 10 03:42:31 2015
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu, 10 Sep 2015 12:42:31 +0200
+Subject: [GRASS-stats] wish: less verbose messages in rgrass7
+In-Reply-To: <m2a8sur64s.fsf@krugs.de>
+References: <CALFmHhsL51HAWjV5CKNWdH9Z1E5i3CJXP1aN-pKXso-DDhT6ng@mail.gmail.com>
+	<m2lhcerarm.fsf@krugs.de>
+	<alpine.LFD.2.20.1509101010120.4288@reclus.nhh.no>
+	<m2a8sur64s.fsf@krugs.de>
+Message-ID: <alpine.LFD.2.20.1509101239140.4288@reclus.nhh.no>
+
+On Thu, 10 Sep 2015, Rainer M Krug wrote:
+
+> Roger Bivand <Roger.Bivand at nhh.no> writes:
+>
+>> On Thu, 10 Sep 2015, Rainer M Krug wrote:
+>>
+>>> Markus Neteler <neteler at osgeo.org> writes:
+>>>
+>>>> Hi,
+>>>>
+>>>> today we used "rgrass7" on Windows (and I made some tests on Linux, too).
+>>>
+>>> Hi Markus,
+>>>
+>>> thanks for reporting.
+>>>
+>>>>
+>>>> I was wondering about a few warnings which might be suppressed to avoid
+>>>> user confusion:
+>>
+>> Hi,
+>>
+>> The confusion is probably coming from the use duality. If a location
+>> and mapset already exists, the (much) prefered route is to run R
+>> inside GRASS - start R from the GRASS console or similar. Then GISRC
+>> etc. are handled in the correct way by GRASS itself.
+>>
+>> If there is no location, and the location/mapset will be created on a
+>> throw-away basis in the R temporary directory or elsewhere outside
+>> GISDBASE, initGRASS() is a sensible choice, because it gives access to
+>> GRASS tools - running GRASS inside R.
+>>
+>> Here GRASS is being run inside R in relation to an existing
+>> location/mapset using initGRASS(), which by design doesn't know
+>> anything about locking etc.; it expects to throw the location away
+>> when R exits (deleting the temporary directory if owned by R - mileage
+>> may vary on Windows).
+>>
+>> Should we tell users not to do something that isn't very sensible, or
+>> change initGRASS to know much more about a running GRASS instance?
+>>
+>> I prefer the former - for non-advanced users:
+>>
+>> 1) if the GRASS location/mapset is only a throwaway one, use
+>> initGRASS() and run GRASS inside R;
+>>
+>> 2) if you already have a GRASS location/mapset, use R inside GRASS and
+>> do not use initGRASS().
+>>
+>> Advanced users can make their own choices.
+>
+> That is one major problem in rgrass: that one is encouraged to run R in
+> GRASS to use an existing mapset.
+>
+> I have no idea how python and other languages which have a GRASS
+> interface do it, but I don't think that they should be run in GRASS. If
+> I use R, GRASS is a kind of a library, about which I do not want to
+> care.
+>
+> So the way forward should be to make the "GRASS in R" scenario the main
+> way of using GRASS in R.
+> This will become much easier in 7.1 with the --exec argument. See
+>
+> --8<---------------cut here---------------start------------->8---
+> https://lists.osgeo.org/pipermail/grass-user/2015-June/072515.html
+> https://grass.osgeo.org/grass71/manuals/grass7.html#exec-interface-example
+> --8<---------------cut here---------------end--------------->8---
+>
+> for how it looks at the moment.
+>
+> I wanted to look into using this approach for rgrass71 but did not
+> manage so far to look at it.
+>
+> This is not to say that the "running R in GRASS" scenario is not
+> needed - but I see that one as using R from GRASS to do spatial analysis
+> and continue afterwards in GRASS - so a little bit like R as a tool in
+> GRASS, while the other is GRASS a tool in R.
+>
+> In the long run, these are two quite different usage scenarios which
+> might even diverge over time in two different packages.
+>
+>>
+>> Warnings should IMHO never be hidden - I don't agree that not knowing
+>> is ever helpful.
+>
+> Not helpful - but when writing simulations (as I did) the warnings will
+> clutter the output and if I know the warnings, I simply would like to
+> have the option to silence them.
+
+Maybe use options("warn"), and add checking within doGRASS() to add --q if 
+options("warn") takes a suitable value - rather than an extra argument? 
+Then it only needs setting once?
+
+Roger
+
+>
+> Apart from that, I think that particular warning would be a case for a
+> "verbose" output in GRASS as it is looking for something I did not tell
+> it to (look in PERMANENT when the map exists in the mapset I am in).
+>
+> As in GRASS, I think there should be an option to silence the warnings,
+> specifically in the case of the commands in rgrass - that was what I
+> meant bu introducing an additional option (like e.g. useGDAL), so that
+> they can be silenced if necessary.
+>
+> execGRASS should always do / show what GRASS would do / show when the
+> command is executed.
+>
+>>
+>> I don't have time to look at this now, I can look in a couple of
+>> weeks' time maybe.
+>>
+>> Best wishes,
+>>
+>> Roger
+>>
+>>>>
+>>>>
+>>>> ######## Windows: calling GRASS 7.1 from R session
+>>>>
+>>>>> library(rgrass7)
+>>>> Loading required package: sp
+>>>> Loading required package: XML
+>>>> GRASS GIS interface loaded with GRASS version: (GRASS not running)
+>>>> Warning messages:
+>>>> 1: package ?rgrass7? was built under R version 3.2.2
+>>>> 2: package ?sp? was built under R version 3.2.2
+>>>> 3: package ?XML? was built under R version 3.2.2
+>>>>
+>>>>> initGRASS(gisBase = "C:/OSGeo4W/apps/grass/grass-7.1.svn",
+>>>> + gisDbase = "C:/Users/marissa/GRASSdata/",
+>>>> + location = "CA", mapset = "Aegypti")
+>>>> Error in initGRASS(gisBase = "C:/OSGeo4W/apps/grass/grass-7.1.svn",
+>>>> gisDbase = "C:/Users/marissa/GRASSdata/",  :
+>>>>   A GISRC file already exists; to override, set override=TRUE
+>>>>
+>>>>
+>>>> ==> the last sentence is not quite clear. Perhaps change to
+>>>
+>>> I agree with the first part of the sentence.
+>>>
+>>>>
+>>>> "A GISRC file already exists (the GRASS GIS mapset is already in use); to
+>>>> override, set override=TRUE"
+>>>
+>>> I don't think this is true. I have regularly to use #override=TRUE# even
+>>> though I definitely use the mapset. I rather think that the GISRC is not
+>>> cleaned up after finishing in grass in R.
+>>>
+>>> This raises the question: if GISRC is created, should it be deleted,
+>>> i.e. should there be a function
+>>>
+>>>  closeGRASS()
+>>>
+>>> which is doing the cleanup (or is it done and not working in my cases)?
+>>>
+>>> Rather change it to:
+>>>
+>>> --8<---------------cut here---------------start------------->8--- "A
+>>> GISRC file already exists.
+>>> The GRASS GIS mapset might be already in use or the file has not been
+>>> deleted.
+>>> To override, set override=TRUE"
+>>> --8<---------------cuthere---------------end--------------->8---
+>>>
+>>>
+>>>>
+>>>>
+>>>>> initGRASS(gisBase = "C:/OSGeo4W/apps/grass/grass-7.1.svn",
+>>>> + gisDbase = "C:/Users/marissa/GRASSdata/",
+>>>> + location = "CA", mapset = "Aegypti",
+>>>> + override=TRUE)
+>>>> gisdbase    C:/Users/marissa/GRASSdata/
+>>>> location    CA
+>>>> mapset      Aegypti
+>>>> rows        265
+>>>> columns     230
+>>>> north       452000
+>>>> south       -608000
+>>>> west        -376000
+>>>> east        544000
+>>>> nsres       4000
+>>>> ewres       4000
+>>>> projection  +proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0
+>>>> +y_0=-4000000 +no_defs +a=6378137 +rf=298.257222101
+>>>> +towgs84=0.000,0.000,0.000 +to_meter=1
+>>>> Warning message:
+>>>> In dir.create(gisDbase) : 'C:\Users\marissa\GRASSdata' already exists
+>>>>
+>>>> ==> the last warning is not clear to me. If I set override=TRUE, I refer to
+>>>> the mapset's gislock, hence the dir.create(gisDbase should not be done at
+>>>> all. Is it a bug?
+>>>
+>>> Strange.
+>>>
+>>> I just looked in the code of initGRASS() and all dir.create(gisDbase) are
+>>> in
+>>>
+>>> ,----
+>>> | if (!file.exists(gisDbase)) dir.create(gisDbase)
+>>> `----
+>>>
+>>> statements. Maybe I am missing something? Could you set
+>>>
+>>> --8<---------------cut here---------------start------------->8---
+>>> option(warn=2)
+>>> --8<---------------cut here---------------end--------------->8---
+>>>
+>>> before running the code again and give a traceback?
+>>>
+>>>
+>>>>
+>>>>
+>>>> ############## Linux
+>>>>
+>>>>> ncdata <- readRAST("elevation")
+>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>          <PERMANENT>)
+>>>> WARNING: Using <elevation at user1>
+>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>          <PERMANENT>)
+>>>> WARNING: Using <elevation at user1>
+>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>          <PERMANENT>)
+>>>> WARNING: Using <elevation at user1>
+>>>>
+>>>> ==> these warning make probably sense in a GRASS session but IMHO here
+>>>> less. They could be suppressed with --q in the respective GRASS module
+>>>> call.
+>>>
+>>> Agreed - but very useful for debugging.
+>>>
+>>> --q could could be added into the options of the rgrass7 package?
+>>>
+>>>>
+>>>>
+>>>> Creating BIL support files...
+>>>> Exporting raster as floating values (bytes=4)
+>>>>  100%
+>>>> Warning messages:
+>>>> 1: In execGRASS("r.info", flags = "g", map = vname[i], intern = TRUE,  :
+>>>>   The command:
+>>>> r.info -g map=elevation
+>>>> produced at least one warning during execution:
+>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>          <PERMANENT>)
+>>>> WARNING: Using <elevation at user1>
+>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>          <PERMANENT>)
+>>>> WARNING: Using <elevation at user1>
+>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>          <PERMANENT>)
+>>>> WARNING: Using <elevation at user1>
+>>>>
+>>>> ==> here it is, I suggest to use r.info --q
+>>>
+>>> This should be optional - for debugging, these warnings might be crucial.
+>>>
+>>>>
+>>>> 2: In execGRASS("r.info", flags = "r", map = vname[i], intern = TRUE,  :
+>>>>   The command:
+>>>> r.info -r map=elevation
+>>>> produced at least one warning during execution:
+>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>          <PERMANENT>)
+>>>> WARNING: Using <elevation at user1>
+>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>          <PERMANENT>)
+>>>> WARNING: Using <elevation at user1>
+>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>          <PERMANENT>)
+>>>> WARNING: Using <elevation at user1>
+>>>>
+>>>> ==> same thing
+>>>
+>>> No - If I use execGRASS() I know grass (hopefully...) and I can specify
+>>> --q if I want it.
+>>> The execGRASS must not add any flags or arguments which make the
+>>> commands differ from the GRASS versions.
+>>>
+>>>>
+>>>> 3: In execGRASS("r.out.bin", flags = rOutBinFlags, input = vname[i],  :
+>>>>   The command:
+>>>> r.out.bin -b -f input=elevation
+>>>> output=/home/neteler/grassdata/nc_spm_08_grass7/user1/.tmp/pgis_north/elevation
+>>>> bytes=4 null=54
+>>>> produced at least one warning during execution:
+>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>          <PERMANENT>)
+>>>> WARNING: Using <elevation at user1>
+>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>          <PERMANENT>)
+>>>> WARNING: Using <elevation at user1>
+>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>          <PERMANENT>)
+>>>> WARNING: Using <elevation at user1>
+>>>>
+>>>> ==> same thing
+>>>
+>>> Should be using a new rgrass7 option for --q.
+>>>
+>>> Cheers,
+>>>
+>>> Rainer
+>>>
+>>>>
+>>>> Creating BIL support files...
+>>>> Exporting raster as floating values (bytes=4)
+>>>>  100%
+>>>>
+>>>> thanks
+>>>> Markus
+>>>> _______________________________________________
+>>>> grass-stats mailing list
+>>>> grass-stats at lists.osgeo.org
+>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>
+>>>
+>
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+
+From Rainer at krugs.de  Thu Sep 10 03:58:03 2015
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Thu, 10 Sep 2015 12:58:03 +0200
+Subject: [GRASS-stats] wish: less verbose messages in rgrass7
+In-Reply-To: <alpine.LFD.2.20.1509101239140.4288@reclus.nhh.no> (Roger
+	Bivand's message of "Thu, 10 Sep 2015 12:42:31 +0200")
+References: <CALFmHhsL51HAWjV5CKNWdH9Z1E5i3CJXP1aN-pKXso-DDhT6ng@mail.gmail.com>
+	<m2lhcerarm.fsf@krugs.de>
+	<alpine.LFD.2.20.1509101010120.4288@reclus.nhh.no>
+	<m2a8sur64s.fsf@krugs.de>
+	<alpine.LFD.2.20.1509101239140.4288@reclus.nhh.no>
+Message-ID: <m2k2rypmmc.fsf@krugs.de>
+
+Roger Bivand <Roger.Bivand at nhh.no> writes:
+
+> On Thu, 10 Sep 2015, Rainer M Krug wrote:
+>
+>> Roger Bivand <Roger.Bivand at nhh.no> writes:
+>>
+>>> On Thu, 10 Sep 2015, Rainer M Krug wrote:
+>>>
+>>>> Markus Neteler <neteler at osgeo.org> writes:
+>>>>
+>>>>> Hi,
+>>>>>
+>>>>> today we used "rgrass7" on Windows (and I made some tests on Linux, too).
+>>>>
+>>>> Hi Markus,
+>>>>
+>>>> thanks for reporting.
+>>>>
+>>>>>
+>>>>> I was wondering about a few warnings which might be suppressed to avoid
+>>>>> user confusion:
+>>>
+>>> Hi,
+>>>
+>>> The confusion is probably coming from the use duality. If a location
+>>> and mapset already exists, the (much) prefered route is to run R
+>>> inside GRASS - start R from the GRASS console or similar. Then GISRC
+>>> etc. are handled in the correct way by GRASS itself.
+>>>
+>>> If there is no location, and the location/mapset will be created on a
+>>> throw-away basis in the R temporary directory or elsewhere outside
+>>> GISDBASE, initGRASS() is a sensible choice, because it gives access to
+>>> GRASS tools - running GRASS inside R.
+>>>
+>>> Here GRASS is being run inside R in relation to an existing
+>>> location/mapset using initGRASS(), which by design doesn't know
+>>> anything about locking etc.; it expects to throw the location away
+>>> when R exits (deleting the temporary directory if owned by R - mileage
+>>> may vary on Windows).
+>>>
+>>> Should we tell users not to do something that isn't very sensible, or
+>>> change initGRASS to know much more about a running GRASS instance?
+>>>
+>>> I prefer the former - for non-advanced users:
+>>>
+>>> 1) if the GRASS location/mapset is only a throwaway one, use
+>>> initGRASS() and run GRASS inside R;
+>>>
+>>> 2) if you already have a GRASS location/mapset, use R inside GRASS and
+>>> do not use initGRASS().
+>>>
+>>> Advanced users can make their own choices.
+>>
+>> That is one major problem in rgrass: that one is encouraged to run R in
+>> GRASS to use an existing mapset.
+>>
+>> I have no idea how python and other languages which have a GRASS
+>> interface do it, but I don't think that they should be run in GRASS. If
+>> I use R, GRASS is a kind of a library, about which I do not want to
+>> care.
+>>
+>> So the way forward should be to make the "GRASS in R" scenario the main
+>> way of using GRASS in R.
+>> This will become much easier in 7.1 with the --exec argument. See
+>>
+>> --8<---------------cut here---------------start------------->8---
+>> https://lists.osgeo.org/pipermail/grass-user/2015-June/072515.html
+>> https://grass.osgeo.org/grass71/manuals/grass7.html#exec-interface-example
+>> --8<---------------cut here---------------end--------------->8---
+>>
+>> for how it looks at the moment.
+>>
+>> I wanted to look into using this approach for rgrass71 but did not
+>> manage so far to look at it.
+>>
+>> This is not to say that the "running R in GRASS" scenario is not
+>> needed - but I see that one as using R from GRASS to do spatial analysis
+>> and continue afterwards in GRASS - so a little bit like R as a tool in
+>> GRASS, while the other is GRASS a tool in R.
+>>
+>> In the long run, these are two quite different usage scenarios which
+>> might even diverge over time in two different packages.
+>>
+>>>
+>>> Warnings should IMHO never be hidden - I don't agree that not knowing
+>>> is ever helpful.
+>>
+>> Not helpful - but when writing simulations (as I did) the warnings will
+>> clutter the output and if I know the warnings, I simply would like to
+>> have the option to silence them.
+>
+> Maybe use options("warn"), and add checking within doGRASS() to add
+> --q if options("warn") takes a suitable value - rather than an extra
+> argument? Then it only needs setting once?
+
+Hm. I see options("warn") as a ind of last resort when nothing else
+works, as all warnings are suppressed. I would suggest an additional
+argument for the "toplevel" functions:
+
+readRAST
+writeRAST
+readVECT
+writeVECT
+
+to get an additional argument
+
+suppressGRASSwarnings
+
+which would pass the --q flag to the calls to GRASS fro within these
+functions.
+
+This argument should be, as e.g. useGDAL, settable globally for all
+calls to these functions.
+
+This would be a much more fine grained solution as only GRASS warnings
+would be suppressed and not R warnings.
+
+As this is a cosmetical change, I would add it to the TODO for rgrass7
+and implement it as soon as somebody has time.
+
+Cheers,
+
+Rainer
+
+>
+> Roger
+>
+>>
+>> Apart from that, I think that particular warning would be a case for a
+>> "verbose" output in GRASS as it is looking for something I did not tell
+>> it to (look in PERMANENT when the map exists in the mapset I am in).
+>>
+>> As in GRASS, I think there should be an option to silence the warnings,
+>> specifically in the case of the commands in rgrass - that was what I
+>> meant bu introducing an additional option (like e.g. useGDAL), so that
+>> they can be silenced if necessary.
+>>
+>> execGRASS should always do / show what GRASS would do / show when the
+>> command is executed.
+>>
+>>>
+>>> I don't have time to look at this now, I can look in a couple of
+>>> weeks' time maybe.
+>>>
+>>> Best wishes,
+>>>
+>>> Roger
+>>>
+>>>>>
+>>>>>
+>>>>> ######## Windows: calling GRASS 7.1 from R session
+>>>>>
+>>>>>> library(rgrass7)
+>>>>> Loading required package: sp
+>>>>> Loading required package: XML
+>>>>> GRASS GIS interface loaded with GRASS version: (GRASS not running)
+>>>>> Warning messages:
+>>>>> 1: package ?rgrass7? was built under R version 3.2.2
+>>>>> 2: package ?sp? was built under R version 3.2.2
+>>>>> 3: package ?XML? was built under R version 3.2.2
+>>>>>
+>>>>>> initGRASS(gisBase = "C:/OSGeo4W/apps/grass/grass-7.1.svn",
+>>>>> + gisDbase = "C:/Users/marissa/GRASSdata/",
+>>>>> + location = "CA", mapset = "Aegypti")
+>>>>> Error in initGRASS(gisBase = "C:/OSGeo4W/apps/grass/grass-7.1.svn",
+>>>>> gisDbase = "C:/Users/marissa/GRASSdata/",  :
+>>>>>   A GISRC file already exists; to override, set override=TRUE
+>>>>>
+>>>>>
+>>>>> ==> the last sentence is not quite clear. Perhaps change to
+>>>>
+>>>> I agree with the first part of the sentence.
+>>>>
+>>>>>
+>>>>> "A GISRC file already exists (the GRASS GIS mapset is already in use); to
+>>>>> override, set override=TRUE"
+>>>>
+>>>> I don't think this is true. I have regularly to use #override=TRUE# even
+>>>> though I definitely use the mapset. I rather think that the GISRC is not
+>>>> cleaned up after finishing in grass in R.
+>>>>
+>>>> This raises the question: if GISRC is created, should it be deleted,
+>>>> i.e. should there be a function
+>>>>
+>>>>  closeGRASS()
+>>>>
+>>>> which is doing the cleanup (or is it done and not working in my cases)?
+>>>>
+>>>> Rather change it to:
+>>>>
+>>>> --8<---------------cut here---------------start------------->8--- "A
+>>>> GISRC file already exists.
+>>>> The GRASS GIS mapset might be already in use or the file has not been
+>>>> deleted.
+>>>> To override, set override=TRUE"
+>>>> --8<---------------cuthere---------------end--------------->8---
+>>>>
+>>>>
+>>>>>
+>>>>>
+>>>>>> initGRASS(gisBase = "C:/OSGeo4W/apps/grass/grass-7.1.svn",
+>>>>> + gisDbase = "C:/Users/marissa/GRASSdata/",
+>>>>> + location = "CA", mapset = "Aegypti",
+>>>>> + override=TRUE)
+>>>>> gisdbase    C:/Users/marissa/GRASSdata/
+>>>>> location    CA
+>>>>> mapset      Aegypti
+>>>>> rows        265
+>>>>> columns     230
+>>>>> north       452000
+>>>>> south       -608000
+>>>>> west        -376000
+>>>>> east        544000
+>>>>> nsres       4000
+>>>>> ewres       4000
+>>>>> projection  +proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0
+>>>>> +y_0=-4000000 +no_defs +a=6378137 +rf=298.257222101
+>>>>> +towgs84=0.000,0.000,0.000 +to_meter=1
+>>>>> Warning message:
+>>>>> In dir.create(gisDbase) : 'C:\Users\marissa\GRASSdata' already exists
+>>>>>
+>>>>> ==> the last warning is not clear to me. If I set override=TRUE, I refer to
+>>>>> the mapset's gislock, hence the dir.create(gisDbase should not be done at
+>>>>> all. Is it a bug?
+>>>>
+>>>> Strange.
+>>>>
+>>>> I just looked in the code of initGRASS() and all dir.create(gisDbase) are
+>>>> in
+>>>>
+>>>> ,----
+>>>> | if (!file.exists(gisDbase)) dir.create(gisDbase)
+>>>> `----
+>>>>
+>>>> statements. Maybe I am missing something? Could you set
+>>>>
+>>>> --8<---------------cut here---------------start------------->8---
+>>>> option(warn=2)
+>>>> --8<---------------cut here---------------end--------------->8---
+>>>>
+>>>> before running the code again and give a traceback?
+>>>>
+>>>>
+>>>>>
+>>>>>
+>>>>> ############## Linux
+>>>>>
+>>>>>> ncdata <- readRAST("elevation")
+>>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>>          <PERMANENT>)
+>>>>> WARNING: Using <elevation at user1>
+>>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>>          <PERMANENT>)
+>>>>> WARNING: Using <elevation at user1>
+>>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>>          <PERMANENT>)
+>>>>> WARNING: Using <elevation at user1>
+>>>>>
+>>>>> ==> these warning make probably sense in a GRASS session but IMHO here
+>>>>> less. They could be suppressed with --q in the respective GRASS module
+>>>>> call.
+>>>>
+>>>> Agreed - but very useful for debugging.
+>>>>
+>>>> --q could could be added into the options of the rgrass7 package?
+>>>>
+>>>>>
+>>>>>
+>>>>> Creating BIL support files...
+>>>>> Exporting raster as floating values (bytes=4)
+>>>>>  100%
+>>>>> Warning messages:
+>>>>> 1: In execGRASS("r.info", flags = "g", map = vname[i], intern = TRUE,  :
+>>>>>   The command:
+>>>>> r.info -g map=elevation
+>>>>> produced at least one warning during execution:
+>>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>>          <PERMANENT>)
+>>>>> WARNING: Using <elevation at user1>
+>>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>>          <PERMANENT>)
+>>>>> WARNING: Using <elevation at user1>
+>>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>>          <PERMANENT>)
+>>>>> WARNING: Using <elevation at user1>
+>>>>>
+>>>>> ==> here it is, I suggest to use r.info --q
+>>>>
+>>>> This should be optional - for debugging, these warnings might be crucial.
+>>>>
+>>>>>
+>>>>> 2: In execGRASS("r.info", flags = "r", map = vname[i], intern = TRUE,  :
+>>>>>   The command:
+>>>>> r.info -r map=elevation
+>>>>> produced at least one warning during execution:
+>>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>>          <PERMANENT>)
+>>>>> WARNING: Using <elevation at user1>
+>>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>>          <PERMANENT>)
+>>>>> WARNING: Using <elevation at user1>
+>>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>>          <PERMANENT>)
+>>>>> WARNING: Using <elevation at user1>
+>>>>>
+>>>>> ==> same thing
+>>>>
+>>>> No - If I use execGRASS() I know grass (hopefully...) and I can specify
+>>>> --q if I want it.
+>>>> The execGRASS must not add any flags or arguments which make the
+>>>> commands differ from the GRASS versions.
+>>>>
+>>>>>
+>>>>> 3: In execGRASS("r.out.bin", flags = rOutBinFlags, input = vname[i],  :
+>>>>>   The command:
+>>>>> r.out.bin -b -f input=elevation
+>>>>> output=/home/neteler/grassdata/nc_spm_08_grass7/user1/.tmp/pgis_north/elevation
+>>>>> bytes=4 null=54
+>>>>> produced at least one warning during execution:
+>>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>>          <PERMANENT>)
+>>>>> WARNING: Using <elevation at user1>
+>>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>>          <PERMANENT>)
+>>>>> WARNING: Using <elevation at user1>
+>>>>> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>>>>>          <PERMANENT>)
+>>>>> WARNING: Using <elevation at user1>
+>>>>>
+>>>>> ==> same thing
+>>>>
+>>>> Should be using a new rgrass7 option for --q.
+>>>>
+>>>> Cheers,
+>>>>
+>>>> Rainer
+>>>>
+>>>>>
+>>>>> Creating BIL support files...
+>>>>> Exporting raster as floating values (bytes=4)
+>>>>>  100%
+>>>>>
+>>>>> thanks
+>>>>> Markus
+>>>>> _______________________________________________
+>>>>> grass-stats mailing list
+>>>>> grass-stats at lists.osgeo.org
+>>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>
+>>>>
+>>
+>>
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+PGP: 0x0F52F982
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 480 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150910/48561048/attachment-0001.pgp>
+
+From neteler at osgeo.org  Thu Sep 10 04:02:03 2015
+From: neteler at osgeo.org (Markus Neteler)
+Date: Thu, 10 Sep 2015 13:02:03 +0200
+Subject: [GRASS-stats] How to use r.what in rgrass7?
+Message-ID: <CALFmHhtW3Ozz=o+MwT89HWJjsWHeno_UPHVrWXf5WOovwwLBhg@mail.gmail.com>
+
+Dear list,
+
+I try to query from R a raster map at given vector point positions
+(both maps are in GRASS but it could well be that the points are in R
+and the (huge) raster map in GRASS).
+
+So, simple North Carolina data set example:
+
+goutput <- execGRASS("r.what", map="elev_state_500m",
+points="geodetic_pts", separator=",")
+
+I would expect that the result is stored in "goutput" (seems it is)
+but it also dumps it into the terminal which I would like to avoid. I
+don't manage to switch that off.
+
+Then, following this blog
+https://pvanb.wordpress.com/2013/01/23/import-grass-function-console-output-as-data-frame-in-r/
+
+I tried to parse the output:
+con <- textConnection(goutput)
+
+which fails with
+Error in textConnection(goutput) : invalid 'text' argument
+
+Does anyone have a suggestion how to turn the output of r.what into an R object?
+
+Likewise suggestions are welcome how to feed R point positions into
+r.what from R.
+
+Hope I am not asking too much :-)
+
+thanks,
+Markus
+
+From Rainer at krugs.de  Thu Sep 10 04:19:25 2015
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Thu, 10 Sep 2015 13:19:25 +0200
+Subject: [GRASS-stats] How to use r.what in rgrass7?
+In-Reply-To: <CALFmHhtW3Ozz=o+MwT89HWJjsWHeno_UPHVrWXf5WOovwwLBhg@mail.gmail.com>
+	(Markus Neteler's message of "Thu, 10 Sep 2015 13:02:03 +0200")
+References: <CALFmHhtW3Ozz=o+MwT89HWJjsWHeno_UPHVrWXf5WOovwwLBhg@mail.gmail.com>
+Message-ID: <m2fv2mplmq.fsf@krugs.de>
+
+Markus Neteler <neteler at osgeo.org> writes:
+
+> Dear list,
+>
+> I try to query from R a raster map at given vector point positions
+> (both maps are in GRASS but it could well be that the points are in R
+> and the (huge) raster map in GRASS).
+>
+> So, simple North Carolina data set example:
+>
+> goutput <- execGRASS("r.what", map="elev_state_500m",
+> points="geodetic_pts", separator=",")
+
+Which data set do you mean? I don't have the maps in the
+nc_basic_spm_grass7 dataset?
+
+did you try to use intern=TRUE :
+
+,----
+| intern: default NULL, in which case set internally from
+|           ?get.useInternOption?; a logical (not 'NA') which indicates
+|           whether to make the output of the command an R object. Not
+|           available unless 'popen' is supported on the platform
+`----
+
+Other options to try:
+
+,----
+| Sys_ignore.stdout, Sys_wait, Sys_input: pass extra arguments to
+|           ?system?
+| 
+| Sys_show.output.on.console, Sys_minimized, Sys_invisible: pass extra
+|           arguments to ?system? on Windows systems only
+`----
+
+Cheers,
+
+Rainer
+
+>
+> I would expect that the result is stored in "goutput" (seems it is)
+> but it also dumps it into the terminal which I would like to avoid. I
+> don't manage to switch that off.
+>
+> Then, following this blog
+> https://pvanb.wordpress.com/2013/01/23/import-grass-function-console-output-as-data-frame-in-r/
+>
+> I tried to parse the output:
+> con <- textConnection(goutput)
+>
+> which fails with
+> Error in textConnection(goutput) : invalid 'text' argument
+>
+> Does anyone have a suggestion how to turn the output of r.what into an R object?
+>
+> Likewise suggestions are welcome how to feed R point positions into
+> r.what from R.
+>
+> Hope I am not asking too much :-)
+>
+> thanks,
+> Markus
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+PGP: 0x0F52F982
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 480 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150910/c129c0be/attachment.pgp>
+
+From Roger.Bivand at nhh.no  Thu Sep 10 04:39:58 2015
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu, 10 Sep 2015 13:39:58 +0200
+Subject: [GRASS-stats] How to use r.what in rgrass7?
+In-Reply-To: <CALFmHhtW3Ozz=o+MwT89HWJjsWHeno_UPHVrWXf5WOovwwLBhg@mail.gmail.com>
+References: <CALFmHhtW3Ozz=o+MwT89HWJjsWHeno_UPHVrWXf5WOovwwLBhg@mail.gmail.com>
+Message-ID: <alpine.LFD.2.20.1509101310390.4288@reclus.nhh.no>
+
+On Thu, 10 Sep 2015, Markus Neteler wrote:
+
+> Dear list,
+>
+> I try to query from R a raster map at given vector point positions
+> (both maps are in GRASS but it could well be that the points are in R
+> and the (huge) raster map in GRASS).
+>
+> So, simple North Carolina data set example:
+>
+> goutput <- execGRASS("r.what", map="elev_state_500m",
+> points="geodetic_pts", separator=",")
+
+Did you try the intern=TRUE argument - it is NULL by default and taken 
+from get.useInternOption(), initialised on load to FALSE?
+
+What you get without is:
+
+> goutput <- execGRASS("r.what", map="elevation", points="elev_points", 
+separator=",")
+...
+> str(goutput)
+  atomic [1:1] 0
+  - attr(*, "resOut")= chr [1:6000] "638381.5,220749.5,,128.7498" 
+"638400.5,220749.5,,129.5774" "638403.5,220749.5,,129.5774" 
+"638441.5,220749.5,,131.3128" ...
+  - attr(*, "resErr")= chr(0)
+
+with the data as x,y,z,value:
+
+> con <- textConnection(attr(goutput, "resOut"))
+> go1 <- read.csv(con, header=FALSE)
+> str(go1)
+'data.frame':	6000 obs. of  4 variables:
+  $ V1: num  638382 638400 638404 638442 638470 ...
+  $ V2: num  220750 220750 220750 220750 220750 ...
+  $ V3: logi  NA NA NA NA NA NA ...
+  $ V4: num  129 130 130 131 132 ...
+> close(con)
+
+since we are splitting stdout and stderr results.
+
+> goutput <- execGRASS("r.what", map="elevation", points="elev_points", 
+separator=",", intern=TRUE)
+> str(goutput)
+  chr [1:6000] "638381.5,220749.5,,128.7498" ...
+
+Now:
+
+> con <- textConnection(goutput)
+> go1 <- read.csv(con, header=FALSE)
+> str(go1)
+'data.frame':	6000 obs. of  4 variables:
+  $ V1: num  638382 638400 638404 638442 638470 ...
+  $ V2: num  220750 220750 220750 220750 220750 ...
+  $ V3: logi  NA NA NA NA NA NA ...
+  $ V4: num  129 130 130 131 132 ...
+> close(con)
+
+You'd need to check:
+
+> ep <- readVECT("elev_points")
+> all.equal(go1$V1, coordinates(ep)[,1])
+[1] TRUE
+
+but it looks OK.
+
+Roger
+
+>
+> I would expect that the result is stored in "goutput" (seems it is)
+> but it also dumps it into the terminal which I would like to avoid. I
+> don't manage to switch that off.
+>
+> Then, following this blog
+> https://pvanb.wordpress.com/2013/01/23/import-grass-function-console-output-as-data-frame-in-r/
+>
+> I tried to parse the output:
+> con <- textConnection(goutput)
+>
+> which fails with
+> Error in textConnection(goutput) : invalid 'text' argument
+>
+> Does anyone have a suggestion how to turn the output of r.what into an R object?
+>
+> Likewise suggestions are welcome how to feed R point positions into
+> r.what from R.
+>
+> Hope I am not asking too much :-)
+>
+> thanks,
+> Markus
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+
+
+From wenzeslaus at gmail.com  Thu Sep 10 07:04:39 2015
+From: wenzeslaus at gmail.com (Vaclav Petras)
+Date: Thu, 10 Sep 2015 10:04:39 -0400
+Subject: [GRASS-stats] wish: less verbose messages in rgrass7
+In-Reply-To: <CALFmHhsL51HAWjV5CKNWdH9Z1E5i3CJXP1aN-pKXso-DDhT6ng@mail.gmail.com>
+References: <CALFmHhsL51HAWjV5CKNWdH9Z1E5i3CJXP1aN-pKXso-DDhT6ng@mail.gmail.com>
+Message-ID: <CABo5uVuRLC5St2Nh18xJur5W6agLr8P1MeQascmdN9+Ce_UbWg@mail.gmail.com>
+
+On Wed, Sep 9, 2015 at 5:35 PM, Markus Neteler <neteler at osgeo.org> wrote:
+
+> > ncdata <- readRAST("elevation")
+> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>          <PERMANENT>)
+> WARNING: Using <elevation at user1>
+> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>          <PERMANENT>)
+> WARNING: Using <elevation at user1>
+> WARNING: 'cellhd/elevation' was found in more mapsets (also found in
+>          <PERMANENT>)
+> WARNING: Using <elevation at user1>
+>
+> ==> these warning make probably sense in a GRASS session but IMHO here
+> less. They could be suppressed with --q in the respective GRASS module call.
+>
+
+I don't a big difference between R and GRASS case here. The root of the
+problem is that the message is split into two warnings which are reported
+three times, so you get 6 messages when you should get just one. It could
+be perhaps just a (important?) message, not really a warning. In any case,
+it is a GRASS issue.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150910/f55e6f66/attachment.html>
+
+From madonnelly at ucdavis.edu  Thu Sep 10 07:05:34 2015
+From: madonnelly at ucdavis.edu (Marisa Donnelly)
+Date: Thu, 10 Sep 2015 16:05:34 +0200
+Subject: [GRASS-stats] raster data in R
+Message-ID: <CA+g1hYjTxQQc7Pxt4D26VgGXB+WayLr3UM7gtLLbdkYyq1BshQ@mail.gmail.com>
+
+Hello,
+I am currently working on a project attempts to summarize the potential
+mosquito reproductive rate of regions in California given the region's mean
+annual daily temperature. I have a written a model in R that uses
+temperature as an input and outputs the reproductive rate given that
+temperature. I have also constructed a raster map in GRASS GIS version 7.1
+of the aggregated California daily tmean values for a year. I would like to
+take the tmean temperature value of each pixel in the California map, input
+it into my model in R, and generate a reproductive rate for each pixel,
+which I would then like to be able to map. I would like to find the best
+and most efficient way to bring in the map data into R and input it into my
+model. Do you any suggestions for the best way to do this?
+-- 
+Marisa Donnelly
+Ph.D. Student
+Graduate Group in Epidemiology
+University of California, Davis
+madonnelly at ucdavis.edu
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150910/e8f2944f/attachment.html>
+
+From Rainer at krugs.de  Thu Sep 10 07:36:51 2015
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Thu, 10 Sep 2015 16:36:51 +0200
+Subject: [GRASS-stats] raster data in R
+In-Reply-To: <CA+g1hYjTxQQc7Pxt4D26VgGXB+WayLr3UM7gtLLbdkYyq1BshQ@mail.gmail.com>
+	(Marisa Donnelly's message of "Thu, 10 Sep 2015 16:05:34 +0200")
+References: <CA+g1hYjTxQQc7Pxt4D26VgGXB+WayLr3UM7gtLLbdkYyq1BshQ@mail.gmail.com>
+Message-ID: <m237ympcho.fsf@krugs.de>
+
+Marisa Donnelly <madonnelly at ucdavis.edu> writes:
+
+> Hello,
+> I am currently working on a project attempts to summarize the potential
+> mosquito reproductive rate of regions in California given the region's mean
+> annual daily temperature. I have a written a model in R that uses
+> temperature as an input and outputs the reproductive rate given that
+> temperature. I have also constructed a raster map in GRASS GIS version 7.1
+> of the aggregated California daily tmean values for a year. I would like to
+> take the tmean temperature value of each pixel in the California map, input
+> it into my model in R, and generate a reproductive rate for each pixel,
+> which I would then like to be able to map. I would like to find the best
+> and most efficient way to bring in the map data into R and input it into my
+> model. Do you any suggestions for the best way to do this?
+
+I assume that you are accustomed to using R.
+
+Just check out the rgrass7 package - readRAST() allows you to read your
+raster, then you do your calculations with the data, then you add them
+to the map object in R and finally you can safe them by using
+writeRAST() back to GRASS.
+
+Cheers,
+
+Rainer
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+PGP: 0x0F52F982
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 480 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150910/7d3b24f1/attachment.pgp>
+
+From neteler at osgeo.org  Thu Sep 10 07:47:28 2015
+From: neteler at osgeo.org (Markus Neteler)
+Date: Thu, 10 Sep 2015 16:47:28 +0200
+Subject: [GRASS-stats] raster data in R
+In-Reply-To: <m237ympcho.fsf@krugs.de>
+References: <CA+g1hYjTxQQc7Pxt4D26VgGXB+WayLr3UM7gtLLbdkYyq1BshQ@mail.gmail.com>
+	<m237ympcho.fsf@krugs.de>
+Message-ID: <CALFmHhvHH94iYvbi9bUa=56Ji0UDOuqRZGibucoi3jjqN4SuNA@mail.gmail.com>
+
+Hi Rainer,
+
+On Thu, Sep 10, 2015 at 4:36 PM, Rainer M Krug <Rainer at krugs.de> wrote:
+...
+> Just check out the rgrass7 package - readRAST() allows you to read your
+> raster, then you do your calculations with the data,
+
+... this calculation part is the question of Marisa... any recommended
+tutorials on how to loop over pixels in R after having used
+readRAST()?
+
+> then you add them
+> to the map object in R and finally you can safe them by using
+> writeRAST() back to GRASS.
+
+Yes, that part is clear. Just the "loop" best practice not so much.
+
+thanks
+Markus
+
+From neteler at osgeo.org  Thu Sep 10 08:25:45 2015
+From: neteler at osgeo.org (Markus Neteler)
+Date: Thu, 10 Sep 2015 17:25:45 +0200
+Subject: [GRASS-stats] How to use r.what in rgrass7?
+In-Reply-To: <m2fv2mplmq.fsf@krugs.de>
+References: <CALFmHhtW3Ozz=o+MwT89HWJjsWHeno_UPHVrWXf5WOovwwLBhg@mail.gmail.com>
+	<m2fv2mplmq.fsf@krugs.de>
+Message-ID: <CALFmHhsaB-1BUZcjVbOH-vxYuCON39DBLn69obPR-u6-4nNoig@mail.gmail.com>
+
+On Thu, Sep 10, 2015 at 1:19 PM, Rainer M Krug <Rainer at krugs.de> wrote:
+> Markus Neteler <neteler at osgeo.org> writes:
+>
+>> Dear list,
+>>
+>> I try to query from R a raster map at given vector point positions
+>> (both maps are in GRASS but it could well be that the points are in R
+>> and the (huge) raster map in GRASS).
+>>
+>> So, simple North Carolina data set example:
+>>
+>> goutput <- execGRASS("r.what", map="elev_state_500m",
+>> points="geodetic_pts", separator=",")
+>
+> Which data set do you mean? I don't have the maps in the
+> nc_basic_spm_grass7 dataset?
+
+I am using "nc_spm_08_grass7" (the full sample dataset).
+
+
+> did you try to use intern=TRUE :
+
+Great, intern=TRUE does the job (warnings still printed which is fine):
+
+> goutput <- execGRASS("r.what", map="elev_state_500m",
++ points="geodetic_pts", separator=",", intern=TRUE)
+Warning message:
+In execGRASS("r.what", map = "elev_state_500m", points = "geodetic_pts",  :
+  The command:
+r.what map=elev_state_500m points=geodetic_pts separator=,
+produced at least one warning during execution:
+WARNING: 375528.09289275 323036.936425953 is outside your current region
+WARNING: 366626.43789275 326709.311425953 is outside your current region
+WARNING: 373413.90589275 321705.812425953 is outside your current region
+WARNING: 121862.14889275 154448.453425953 is outside your current region
+WARNING: 500126.65589275 327185.625425953 is outside your current region
+WARNING: 497992.12589275 319289.780425953 is outside your current region
+WARNING: 446393.81189275 320264.688425953 is outside your current region
+WARNING: 446144.84289275 320081.218425953 is outside your current region
+WARNING: 453882.74989275 319223.249425953 is outside your current region
+>
+
+Perhaps intern=TRUE should be the default when assigning to an object?
+
+In any case, I now get
+
+> str(goutput)
+ chr [1:29939] "571530.81289275,265739.968425953,,187.8082200648" ...
+
+which looks good and simplifies the rest:
+
+> con <- textConnection(goutput)
+> go1 <- read.csv(con, header=FALSE)
+> str(go1)
+'data.frame':    29939 obs. of  4 variables:
+ $ V1: num  571531 571359 571976 572391 573011 ...
+ $ V2: num  265740 265987 267049 267513 269615 ...
+ $ V3: logi  NA NA NA NA NA NA ...
+ $ V4: Factor w/ 22738 levels "-0.0048115728",..: 6859 6642 6749 6411
+6356 6904 7506 7224 6908 7167 ...
+
+Thanks for the help!
+
+Markus
+
+PS: I'll add that to the rgrass7 Wiki page.
+
+From madonnelly at ucdavis.edu  Fri Sep 11 00:32:08 2015
+From: madonnelly at ucdavis.edu (Marisa Donnelly)
+Date: Fri, 11 Sep 2015 09:32:08 +0200
+Subject: [GRASS-stats] raster data in R
+In-Reply-To: <D3FB3BE2-BE2E-48ED-A396-5A07F9F46005@gmail.com>
+References: <CA+g1hYjTxQQc7Pxt4D26VgGXB+WayLr3UM7gtLLbdkYyq1BshQ@mail.gmail.com>
+	<m237ympcho.fsf@krugs.de>
+	<CALFmHhvHH94iYvbi9bUa=56Ji0UDOuqRZGibucoi3jjqN4SuNA@mail.gmail.com>
+	<D3FB3BE2-BE2E-48ED-A396-5A07F9F46005@gmail.com>
+Message-ID: <CA+g1hYgy8H+k5a13myKkv8NO5xQCtPGbg5QMCD6gepYxvEPgdQ@mail.gmail.com>
+
+Hi Rainer,
+This clarifies things a great deal. I'll try it and let you know, but it
+makes sense so I don't anticipate needing an example.
+Thank you!
+Marisa
+
+On Thu, Sep 10, 2015 at 8:22 PM, Rainer M Krug <r.m.krug at gmail.com> wrote:
+
+>
+>
+> Envoy? de mon iPhone
+>
+> > Le 10 sept. 2015 ? 16:47, Markus Neteler <neteler at osgeo.org> a ?crit :
+> >
+> > Hi Rainer,
+> >
+> >> On Thu, Sep 10, 2015 at 4:36 PM, Rainer M Krug <Rainer at krugs.de> wrote:
+> >> ...
+> >> Just check out the rgrass7 package - readRAST() allows you to read your
+> >> raster, then you do your calculations with the data,
+> >
+> > ... this calculation part is the question of Marisa... any recommended
+> > tutorials on how to loop over pixels in R after having used
+> > readRAST()?
+>
+> The data slot of the returned SpatialGridDataFrame is simply a data.frame
+> with one cell per row. So you can simply iterate over each row and add the
+> results as a new column, which you can then save. If the function is
+> vectorizes, you don't even have to iterate but R can do the work. If
+> necessary, I can send you a small example tomorrow- just let me know.
+>
+> Hope this helps,
+>
+> Rainer
+>
+> >
+> >> then you add them
+> >> to the map object in R and finally you can safe them by using
+> >> writeRAST() back to GRASS.
+> >
+> > Yes, that part is clear. Just the "loop" best practice not so much.
+> >
+> > thanks
+> > Markus
+>
+
+
+
+-- 
+Marisa Donnelly
+Ph.D. Student
+Graduate Group in Epidemiology
+University of California, Davis
+madonnelly at ucdavis.edu
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150911/19d23156/attachment.html>
+
+From Rainer at krugs.de  Fri Sep 11 01:50:21 2015
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Fri, 11 Sep 2015 10:50:21 +0200
+Subject: [GRASS-stats] raster data in R
+In-Reply-To: <CA+g1hYgy8H+k5a13myKkv8NO5xQCtPGbg5QMCD6gepYxvEPgdQ@mail.gmail.com>
+	(Marisa Donnelly's message of "Fri, 11 Sep 2015 09:32:08 +0200")
+References: <CA+g1hYjTxQQc7Pxt4D26VgGXB+WayLr3UM7gtLLbdkYyq1BshQ@mail.gmail.com>
+	<m237ympcho.fsf@krugs.de>
+	<CALFmHhvHH94iYvbi9bUa=56Ji0UDOuqRZGibucoi3jjqN4SuNA@mail.gmail.com>
+	<D3FB3BE2-BE2E-48ED-A396-5A07F9F46005@gmail.com>
+	<CA+g1hYgy8H+k5a13myKkv8NO5xQCtPGbg5QMCD6gepYxvEPgdQ@mail.gmail.com>
+Message-ID: <m27fnxmjaq.fsf@krugs.de>
+
+Marisa Donnelly <madonnelly at ucdavis.edu> writes:
+
+> Hi Rainer,
+> This clarifies things a great deal. I'll try it and let you know, but it
+> makes sense so I don't anticipate needing an example.
+> Thank you!
+
+Pleasure
+
+Just check out
+
+?"SpatialGridDataFrame-class"
+
+in R and you find the info about the object returned by readfRAST().
+
+Among other info, it states:
+
+,----
+| Slots:
+| 
+|      ?grid?: see GridTopology-class; grid parameters
+| 
+|      ?bbox?: Object of class ?"matrix"?; bounding box
+| 
+|      ?proj4string?: Object of class ?"CRS"?; projection
+| 
+|      ?data?: Object of class data.frame, containing attribute data
+`----
+
+Cheers,
+
+Rainer
+
+> Marisa
+>
+> On Thu, Sep 10, 2015 at 8:22 PM, Rainer M Krug <r.m.krug at gmail.com> wrote:
+>
+>>
+>>
+>> Envoy? de mon iPhone
+>>
+>> > Le 10 sept. 2015 ? 16:47, Markus Neteler <neteler at osgeo.org> a ?crit :
+>> >
+>> > Hi Rainer,
+>> >
+>> >> On Thu, Sep 10, 2015 at 4:36 PM, Rainer M Krug <Rainer at krugs.de> wrote:
+>> >> ...
+>> >> Just check out the rgrass7 package - readRAST() allows you to read your
+>> >> raster, then you do your calculations with the data,
+>> >
+>> > ... this calculation part is the question of Marisa... any recommended
+>> > tutorials on how to loop over pixels in R after having used
+>> > readRAST()?
+>>
+>> The data slot of the returned SpatialGridDataFrame is simply a data.frame
+>> with one cell per row. So you can simply iterate over each row and add the
+>> results as a new column, which you can then save. If the function is
+>> vectorizes, you don't even have to iterate but R can do the work. If
+>> necessary, I can send you a small example tomorrow- just let me know.
+>>
+>> Hope this helps,
+>>
+>> Rainer
+>>
+>> >
+>> >> then you add them
+>> >> to the map object in R and finally you can safe them by using
+>> >> writeRAST() back to GRASS.
+>> >
+>> > Yes, that part is clear. Just the "loop" best practice not so much.
+>> >
+>> > thanks
+>> > Markus
+>>
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+PGP: 0x0F52F982
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 480 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150911/02e13098/attachment.pgp>
+
+From madonnelly at ucdavis.edu  Wed Sep 16 07:31:28 2015
+From: madonnelly at ucdavis.edu (Marisa Donnelly)
+Date: Wed, 16 Sep 2015 16:31:28 +0200
+Subject: [GRASS-stats] R image problem with SpatialGridDataFrame
+Message-ID: <CA+g1hYgNc2HxJ4L1Ena5e4_F5TVBU3O=9hAjqA47utZPXYgK8A@mail.gmail.com>
+
+Hello,
+I am trying to plot the image of the data from a SpatialGridDataFrame with
+two variables per pixel in R studio. Here is the line I am using and the
+error message I receive after.
+
+> image(year_aegypti at data$repro.rate, col = topo.colors(20))
+Error in image.default(year_aegypti at data$repro.rate, col = topo.colors(20))
+:
+  argument must be matrix-like
+
+Additionally, here is the structure of the SpatialGridDataFrame I am using
+
+ str(year_aegypti)
+Formal class 'SpatialGridDataFrame' [package "sp"] with 4 slots
+  ..@ data       :'data.frame': 60950 obs. of  2 variables:
+  .. ..$ year_tmean.Aegypti: num [1:60950] NA NA NA NA NA NA NA NA NA NA ...
+  .. ..$ repro.rate        : num [1:60950] NA NA NA NA NA NA NA NA NA NA ...
+  ..@ grid       :Formal class 'GridTopology' [package "sp"] with 3 slots
+  .. .. ..@ cellcentre.offset: num [1:2] -374000 -606000
+  .. .. ..@ cellsize         : num [1:2] 4000 4000
+  .. .. ..@ cells.dim        : int [1:2] 230 265
+  ..@ bbox       : num [1:2, 1:2] -376000 -608000 544000 452000
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : NULL
+  .. .. ..$ : chr [1:2] "min" "max"
+  ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slot
+  .. .. ..@ projargs: chr "+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0
++lon_0=-120 +x_0=0 +y_0=-4000000 +no_defs +a=6378137 +rf=298.257222101
++towgs84=0.000,"| __truncated__
+
+I would like to plot only the second variable in the dataframe,
+$year_tmean.Aegypti, but can't quite figure out how. There are NAs in both
+variables, in addition to real numbers.
+
+When I try spplot I get the following error:
+ spplot(year_aegypti at data$repro.rate)
+Error in (function (classes, fdef, mtable)  :
+  unable to find an inherited method for function ?spplot? for signature
+?"numeric"?
+
+Does anyone have any ideas for solving these issues?
+Thanks!
+Marisa Donnelly
+Ph.D. Student
+Graduate Group in Epidemiology
+University of California, Davis
+madonnelly at ucdavis.edu
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150916/aefe518d/attachment.html>
+
+From dicko.ahmadou at gmail.com  Wed Sep 16 07:47:46 2015
+From: dicko.ahmadou at gmail.com (Ahmadou Dicko)
+Date: Wed, 16 Sep 2015 14:47:46 +0000
+Subject: [GRASS-stats] R image problem with SpatialGridDataFrame
+In-Reply-To: <CA+g1hYgNc2HxJ4L1Ena5e4_F5TVBU3O=9hAjqA47utZPXYgK8A@mail.gmail.com>
+References: <CA+g1hYgNc2HxJ4L1Ena5e4_F5TVBU3O=9hAjqA47utZPXYgK8A@mail.gmail.com>
+Message-ID: <CAP8THHVP4yTP3fPpYUp=DNknjn=Zu+JL+CjkjxCv00MvTPMRJw@mail.gmail.com>
+
+Hi,
+
+More a R-Sig-Geo question but I'm sure there is connection with the rgrass7
+package.
+You have some errors because the argument of the image function are not the
+right one.
+I think you should take a look at the help of the
+image.SpatialPixelsDataFrame function (?image.SpatialPixelsDataFrame)
+
+You will see that something along these lines should work
+
+image(year_aegypti, "repro.rate", col = topo.colors(20))
+spplot(year_aegypti, "repro.rate")
+
+A final tips when using a Spatial*DataFrame object, it's better to access
+directly the column like this 'year_aegypti$repro.rate' instead of
+'year_aegypti at data$repro.rate'
+
+Hope it helps
+
+
+
+On Wed, Sep 16, 2015 at 2:31 PM, Marisa Donnelly <madonnelly at ucdavis.edu>
+wrote:
+
+> Hello,
+> I am trying to plot the image of the data from a SpatialGridDataFrame with
+> two variables per pixel in R studio. Here is the line I am using and the
+> error message I receive after.
+>
+> > image(year_aegypti at data$repro.rate, col = topo.colors(20))
+> Error in image.default(year_aegypti at data$repro.rate, col =
+> topo.colors(20)) :
+>   argument must be matrix-like
+>
+> Additionally, here is the structure of the SpatialGridDataFrame I am using
+>
+>  str(year_aegypti)
+> Formal class 'SpatialGridDataFrame' [package "sp"] with 4 slots
+>   ..@ data       :'data.frame': 60950 obs. of  2 variables:
+>   .. ..$ year_tmean.Aegypti: num [1:60950] NA NA NA NA NA NA NA NA NA NA
+> ...
+>   .. ..$ repro.rate        : num [1:60950] NA NA NA NA NA NA NA NA NA NA
+> ...
+>   ..@ grid       :Formal class 'GridTopology' [package "sp"] with 3 slots
+>   .. .. ..@ cellcentre.offset: num [1:2] -374000 -606000
+>   .. .. ..@ cellsize         : num [1:2] 4000 4000
+>   .. .. ..@ cells.dim        : int [1:2] 230 265
+>   ..@ bbox       : num [1:2, 1:2] -376000 -608000 544000 452000
+>   .. ..- attr(*, "dimnames")=List of 2
+>   .. .. ..$ : NULL
+>   .. .. ..$ : chr [1:2] "min" "max"
+>   ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slot
+>   .. .. ..@ projargs: chr "+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0
+> +lon_0=-120 +x_0=0 +y_0=-4000000 +no_defs +a=6378137 +rf=298.257222101
+> +towgs84=0.000,"| __truncated__
+>
+> I would like to plot only the second variable in the dataframe,
+> $year_tmean.Aegypti, but can't quite figure out how. There are NAs in both
+> variables, in addition to real numbers.
+>
+> When I try spplot I get the following error:
+>  spplot(year_aegypti at data$repro.rate)
+> Error in (function (classes, fdef, mtable)  :
+>   unable to find an inherited method for function ?spplot? for signature
+> ?"numeric"?
+>
+> Does anyone have any ideas for solving these issues?
+> Thanks!
+> Marisa Donnelly
+> Ph.D. Student
+> Graduate Group in Epidemiology
+> University of California, Davis
+> madonnelly at ucdavis.edu
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+
+
+-- 
+Ahmadou H. DICKO
+statistician economist (Ing?nieur Statisticien ?conomiste)
+PhD candidate in Climate change economics
+Faculty of economics and managment - Cheikh Anta Diop University
+West African Science Service Center on Climate Change and Adaptated Land
+Use (WASCAL)
+Center for Development Research (ZEF) - University of Bonn
+email : ahmadou.dicko at ucad.edu.sn
+twitter : @dickoah
+github : github/dickoa <https://github.com/dickoa>
+tel : +221 33 827 55 16
+portable: +221 77 123 81 69
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150916/a88f6fc0/attachment.html>
+
+From eduardodiez at gmx.com  Thu Sep 24 12:11:02 2015
+From: eduardodiez at gmx.com (Eduardo Diez)
+Date: Thu, 24 Sep 2015 16:11:02 -0300
+Subject: [GRASS-stats] rgrass7 read/write SpatialPolygonsDataFrames errors
+Message-ID: <CANK5cGypK-VVq0JvGPvXGJQVGDxYFK4Vfi0aoGBqXb28LrQB1g@mail.gmail.com>
+
+Hi, I'm a user of R mostly for spatial information processing. Besides sp,
+maptools, etc. i also use functions from GRASS, at first through spgrass6
+and then rgrass7. A few days ago, I started having trouble reading and
+writing SpatialPolygonsDataFrames using readVECT and writeVECT. I tried
+both reinstalling both grass (6.4.4, 7.0.0 and 7.0.1) and the R packages
+(spgrass6 0.8-6 and rgrass7 0.1-2), and also with different R objects but i
+kept getting the same errors.
+
+The "mult.r" object is a RasterLayer with 4 zones and the objective is to
+convert it to polygons and "clean" small areas with v.clean rmarea (as i
+don't currently know a way of doing this in plain R).
+
+The first thing that came out strange was that when executing writeVECT it
+would ask me for the driver to use (in the way of rgdal's writeOGR, it
+didn't ask for it before). I figured out that object to be written should
+be projected (not in lat-lon, don't know why). After doing this i could
+write the vector and execute v.clean. The problem came again when trying to
+read the cleaned polygons back to R.
+Below i paste an extract of my R console with the errors and some
+information.
+
+Thanks in advance,
+Eduardo
+
+> mult.rp <- projectRaster(mult.r, crs = prj.crs, method = "ngb")
+> mult.pol <- rasterToPolygons(mult.rp, dissolve = T)
+> initGRASS(gisBase = "c:/Program Files (x86)/GRASS GIS 7.0.1", home =
+tempdir(), override = T)
+gisdbase    C:/Users/ediez1/AppData/Local/Temp/RtmpegbyiQ
+location    file2f7c6dc070e6
+mapset      file2f7c30eb3f52
+rows        1
+columns     1
+north       1
+south       0
+west        0
+east        1
+nsres       1
+ewres       1
+projection  NA
+> writeVECT(mult.pol, "pol1", v.in.ogr_flags = "o")
+Error: !is.null(driver) is not TRUE
+> writeVECT(mult.pol, "pol1", v.in.ogr_flags = "o", driver = "ESRI
+Shapefile")
+Over-riding projection check
+Check if OGR layer <r848659> contains polygons...
+
+Importing 4 features (OGR layer <r848659>)...
+
+-----------------------------------------------------
+Registering primitives...
+3005 primitives registered
+15587 vertices registered
+Number of nodes: 2691
+Number of primitives: 3005
+Number of points: 0
+Number of lines: 0
+Number of boundaries: 3005
+Number of centroids: 0
+Number of areas: -
+Number of isles: -
+-----------------------------------------------------
+Cleaning polygons
+-----------------------------------------------------
+Breaking polygons...
+Breaking polygons (pass 1: select break points)...
+
+Breaking polygons (pass 2: break at selected points)...
+
+-----------------------------------------------------
+Removing duplicates...
+
+-----------------------------------------------------
+Breaking boundaries...
+
+-----------------------------------------------------
+Removing duplicates...
+
+-----------------------------------------------------
+Cleaning boundaries at nodes...
+
+-----------------------------------------------------
+Merging boundaries...
+
+-----------------------------------------------------
+Removing dangles...
+
+-----------------------------------------------------
+Building areas...
+
+95 areas built
+8 isles built
+Number of nodes: 2771
+Number of primitives: 7307
+Number of points: 0
+Number of lines: 0
+Number of boundaries: 7307
+Number of centroids: 0
+Number of areas: 95
+Number of isles: 8
+-----------------------------------------------------
+Removing bridges...
+
+-----------------------------------------------------
+Registering primitives...
+231 primitives registered
+7594 vertices registered
+Building areas...
+
+95 areas built
+8 isles built
+Attaching islands...
+
+Number of nodes: 144
+Number of primitives: 231
+Number of points: 0
+Number of lines: 0
+Number of boundaries: 231
+Number of centroids: 0
+Number of areas: 95
+Number of isles: 8
+-----------------------------------------------------
+Finding centroids for OGR layer <r848659>...
+
+-----------------------------------------------------
+Writing centroids...
+
+-----------------------------------------------------
+95 input polygons
+Total area: 1.28981E+006 (95 areas)
+-----------------------------------------------------
+Copying features...
+
+WARNING: Unable to delete file
+
+ 'C:/Users/ediez1/AppData/Local/Temp/Rtmpg10lvi/filec2473b0126/filec24129b63ac/.tmp/unknown/vector/tmp_10484/coor'
+Building topology for vector map <r848659 at filec24129b63ac>...
+Registering primitives...
+326 primitives registered
+7689 vertices registered
+Building areas...
+
+95 areas built
+8 isles built
+Attaching islands...
+
+Attaching centroids...
+
+Number of nodes: 144
+Number of primitives: 326
+Number of points: 0
+Number of lines: 0
+Number of boundaries: 231
+Number of centroids: 95
+Number of areas: 95
+Number of isles: 8
+
+> execGRASS("v.clean", flags = c("overwrite"), input = "pol1",
++ output = "clnpol", tool = "rmarea", threshold = 3000)
+--------------------------------------------------
+Tool: Threshold
+Remove small areas: 3000
+--------------------------------------------------
+Copying features...
+
+Rebuilding parts of topology...
+Building topology for vector map <k1f9f75 at filec24129b63ac>...
+Registering primitives...
+326 primitives registered
+7689 vertices registered
+Building areas...
+
+95 areas built
+8 isles built
+Attaching islands...
+
+Attaching centroids...
+
+Number of nodes: 144
+Number of primitives: 326
+Number of points: 0
+Number of lines: 0
+Number of boundaries: 231
+Number of centroids: 95
+Number of areas: 95
+Number of isles: 8
+--------------------------------------------------
+Tool: Remove small areas
+
+55 areas of total size 29487.1 removed
+--------------------------------------------------
+Rebuilding topology for output vector map...
+Building topology for vector map <k1f9f75 at filec24129b63ac>...
+Registering primitives...
+212 primitives registered
+6840 vertices registered
+Building areas...
+
+40 areas built
+4 isles built
+Attaching islands...
+
+Attaching centroids...
+
+Number of nodes: 136
+Number of primitives: 212
+Number of points: 0
+Number of lines: 0
+Number of boundaries: 172
+Number of centroids: 40
+Number of areas: 40
+Number of isles: 4
+> cln.pol <- readVECT("clnpol")
+Error: !is.null(driver) is not TRUE
+> cln.pol <- readVECT("clnpol", driver = "ESRI Shapefile")
+Error in scan(file, what, nmax, sep, dec, quote, skip, nlines, na.strings,
+ :
+  line 4 did not have 2 elements
+
+> sessionInfo()
+R version 3.2.2 (2015-08-14)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 7 x64 (build 7601) Service Pack 1
+
+locale:
+[1] LC_COLLATE=English_United States.1252  LC_CTYPE=English_United
+States.1252    LC_MONETARY=English_United States.1252
+[4] LC_NUMERIC=C                           LC_TIME=English_United
+States.1252
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] rgrass7_0.1-2   classInt_0.1-22 maptools_0.8-36 ggplot2_1.0.1
+XML_3.98-1.3    raster_2.4-20   sp_1.2-0
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_0.12.1      magrittr_1.5     MASS_7.3-43      munsell_0.4.2
+ colorspace_1.2-6 lattice_0.20-33  stringr_1.0.0    plyr_1.8.3
+ [9] tools_3.2.2      parallel_3.2.2   rgdal_1.0-7      grid_3.2.2
+gtable_0.1.2     e1071_1.6-7      class_7.3-13     rgeos_0.3-12
+[17] digest_0.6.8     reshape2_1.4.1   labeling_0.3     stringi_0.5-5
+ scales_0.3.0     foreign_0.8-65   proto_0.3-10
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150924/ac41600a/attachment-0001.html>
+

@@ -1,0 +1,393 @@
+From veroandreo at gmail.com  Mon Aug  3 16:17:01 2015
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Mon, 3 Aug 2015 20:17:01 -0300
+Subject: [GRASS-stats] error initGRASS - rgrass7
+In-Reply-To: <CALFmHhvPSmcfpyMFF3oUFr1DsdZxhX+NM0Xr+OLp1iEdaE+RJA@mail.gmail.com>
+References: <CAAMki4H-pnFaaBZGHr1z7sAmwbS7nV82TOghn+NE9RR8u7x5Xg@mail.gmail.com>
+	<m2egk0xrq0.fsf@krugs.de>
+	<CALFmHhtAMBJSBdo6zuCFPZVpDg3Ebft6Z96A_pmRG-rrdSUoUg@mail.gmail.com>
+	<m2oaj2yp2e.fsf@krugs.de>
+	<CALFmHhvPSmcfpyMFF3oUFr1DsdZxhX+NM0Xr+OLp1iEdaE+RJA@mail.gmail.com>
+Message-ID: <CAAMki4ExWQH__mNNGaZM5H-E0nMasP8608yhPx-fELR++47zWQ@mail.gmail.com>
+
+Hi Markus, Rainer, all,
+
+Thanks a lot for the help! :)
+
+I've now completed the update of:
+http://grasswiki.osgeo.org/wiki/R_statistics/rgrass7#GRASS_within_R
+
+Cheers,
+Vero
+
+ps: I insist it would be awesome to also have support to read/write
+spatio-temporal raster datasets (strds) in rgrass7 :)
+
+2015-07-31 11:56 GMT-03:00 Markus Neteler <neteler at osgeo.org>:
+
+> Hi,
+>
+> On Fri, Jul 24, 2015 at 9:47 AM, Rainer M Krug <Rainer at krugs.de> wrote:
+> > Markus Neteler <neteler at osgeo.org> writes:
+> >
+> >> On Wed, Jul 22, 2015 at 3:11 PM, Rainer M Krug <Rainer at krugs.de> wrote:
+> >>> Hi Veronica,
+> >>>
+> >>> Veronica Andreo <veroandreo at gmail.com> writes:
+> >>>
+> >>>> Hi,
+> >>>>
+> >>>> I'm trying to run GRASS from R using:
+> >>>>
+> >>>> library(rgrass7)
+> >>>> initGRASS(gisBase="/home/veroandreo/software/grass-7.0.svn",
+> >>>>           home=tempdir(), gisDbase="/home/veroandreo/grassdata",
+> >>>>           location="latlong_wgs84", mapset="clorofila", override=TRUE)
+> >>>
+> >>> I assume you use Linux.
+> >>>
+> >>>>
+> >>>> but I get the following error:
+> >>>>
+> >>>> sh: g.gisenv: command not found
+>
+> so, I found the trick:
+>
+> In the first place, find out the path to the GRASS GIS library. This
+> can be easily done with the following command (still outside of R; or
+> through a system() call inside of R):
+>
+>  grass70 --config path
+>
+>
+> It may report something like:
+>  /home/veroandreo/software/grass-7.0.svn/dist.x86_64-unknown-linux-gnu
+>
+> This path must be used then:
+>
+> library(rgrass7)
+>
+> # initialisation and the use of North Carolina sample dataset
+> initGRASS(gisBase =
+> "/home/veroandreo/software/grass-7.0.svn/dist.x86_64-unknown-linux-gnu",
+> home = tempdir(),
+>           gisDbase = "/home/veroandreo/grassdata/",
+>           location = "nc_spm_08_grass7", mapset = "user1", SG="elevation",
+>           override = TRUE)
+> ...
+>
+> and it works fine.
+>
+> I have updated the Wiki page accordingly:
+> http://grasswiki.osgeo.org/wiki/R_statistics/rgrass7#GRASS_within_R
+>
+> Cheers
+> Markus
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150803/d925dc13/attachment.html>
+
+From veroandreo at gmail.com  Tue Aug 18 04:20:24 2015
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Tue, 18 Aug 2015 08:20:24 -0300
+Subject: [GRASS-stats] support for raster time series in rgrass7?
+Message-ID: <CAAMki4Hr4twzo5zCce2h9-fXMV8iRUBgak1S+Yd_QrSa1kFi8w@mail.gmail.com>
+
+Hello list,
+
+I'm just trying to use GRASS along with R for raster time series
+processing.
+I'm using GRASS temporal modules (t.rast.export/t.rast.import) along with
+the functions available in spacetime package (read.tgrass and write.tgrass)
+to complete workflow... However, after finally being able of getting
+write.tgrass to work, t.rast.import does not do the job... So, I don't know
+where exactly the problem is...
+
+The workflow I'm following is more or less like this:
+
+# GRASS (where I have my raster time series)
+t.rast.export input=temperature output=test_export_temp.tar.bzip2
+# extract data to check it's fine
+tar xvf test_export_temp.tar.bzip2
+# check text files
+cat list.txt ; cat proj.txt ; cat init.txt ; cat metadata.txt
+
+(if i import it back into GRASS with
+t.rast.import in=test_export_temp.tar.bzip2 out=test_import_temp
+base=t_test directory=/tmp it works smoothly)
+
+but, let's say I want to import it into R, do something there and get it
+back into GRASS. So,
+
+# In R
+library(spacetime)
+tgrass_test <- read.tgrass("test_export_temp.tar.bzip2")
+
+dim(tgrass_test)
+#[1] 135 150  12
+
+class(tgrass_test)
+#[1] "RasterStack"
+#attr(,"package")
+#[1] "raster"
+
+when, trying to follow the example in the "spacetime package" manual,
+
+> write.tgrass(tgrass_test, "myfile.tar.bzip2")
+Error in .local(x, filename, ...) :
+  filenames of source and target should be different
+
+# I changed map names (dunno if it makes sense) because of the previous
+error message
+for (i in c(1:12)) name_tgrass[i]<-paste("layer_",i,sep="")
+names(tgrass_test)<-name_tgrass
+
+> write.tgrass(tgrass_test, "myfile.tar.bzip2")
+tar: .: file changed as we read it
+
+> getwd()
+[1] "/tmp/RtmplJyK2L"
+
+# the file is created anyway... but when i try to import the created
+.tar.bzip2 into GRASS again, I get:
+
+GRASS 7.1.svn (nc_spm_08_grass7):~ > t.rast.import
+input=/tmp/RtmplJyK2L/myfile.tar.bzip2 out=tgrass_import basename=t_test_2
+directory=/tmp/RtmplJyK2L
+Traceback (most recent call last):
+  File
+"/home/veroandreo/software/grass-7.1.svn/dist.x86_64-unknown-linux-gnu/scripts/t.rast.import",
+line 123, in <module>
+    main()
+  File
+"/home/veroandreo/software/grass-7.1.svn/dist.x86_64-unknown-linux-gnu/scripts/t.rast.import",
+line 119, in main
+    set_current_region)
+  File
+"/home/veroandreo/software/grass-7.1.svn/dist.x86_64-unknown-linux-gnu/etc/python/grass/temporal/stds_import.py",
+line 216, in import_stds
+    gscript.fatal(_("Unable to find init file <%s>") % init_file_name)
+  File
+"/home/veroandreo/software/grass-7.1.svn/dist.x86_64-unknown-linux-gnu/etc/python/grass/script/core.py",
+line 643, in fatal
+    raise ScriptError(msg)
+grass.exceptions.ScriptError: Unable to find init file <init.txt>
+
+When I check the .tar.bzip2 file, the init.txt file is in fact there, but
+also the original maps... Can anybody explain how it is supposed to work??
+Or what I'm doing wrong? I attach the .tar.bzip2 file I get with
+t.rast.export
+
+I was wondering if there was any chance to include support for
+reading/writing spatio-temporal data sets in rgrass7, and make this kind of
+workflows a bit smoother, besides saving time and disk space... A somehow
+equivalent structure for GRASS raster data sets, but in R might be STFDF
+from spacetime package, "A class for spatio-temporal data with full
+space-time grid; for n spatial locations and m times, n x m observations
+are available", maybe it can be recycled??
+
+I'm using GRASS GIS 7.1 r65947 and R 3.2.1 under Fedora 21.
+
+Thanks a lot!!!
+
+Cheers,
+Vero
+
+ps: sorry for double posting :)
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150818/c104599b/attachment-0001.html>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: test_export_temp.tar.bzip2
+Type: application/octet-stream
+Size: 165769 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150818/c104599b/attachment-0001.obj>
+
+From veroandreo at gmail.com  Tue Aug 18 06:06:55 2015
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Tue, 18 Aug 2015 10:06:55 -0300
+Subject: [GRASS-stats] [GRASS-dev] support for raster time series in
+	rgrass7?
+Message-ID: <CAAMki4GyaNQaiE4EGbrRrYKqReW4JBvs9ypxywWRzzBeSWO2VQ@mail.gmail.com>
+
+Hi Soeren, lists :)
+
+2015-08-18 8:34 GMT-03:00 S?ren Gebbert <soerengebbert at googlemail.com>:
+
+> Hi Veronica,
+> can you please provide the tar.bzip2 file generated by R
+>
+
+Yes, please find the tar.bzip2 I get from R in this link:
+
+https://www.dropbox.com/s/2ukkkm8phaknczx/myfile.tar.bzip2?dl=0
+
+Thanks a lot!
+
+Vero
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150818/031b2f6b/attachment.html>
+
+From veroandreo at gmail.com  Tue Aug 18 06:19:20 2015
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Tue, 18 Aug 2015 10:19:20 -0300
+Subject: [GRASS-stats] [GRASS-dev] support for raster time series in
+	rgrass7?
+In-Reply-To: <CAPHDReKw3eRaquxtg8Enrh1B1zQ9wHp_HaLG_qW0Fk6A_Duy_w@mail.gmail.com>
+References: <CAAMki4Hr4twzo5zCce2h9-fXMV8iRUBgak1S+Yd_QrSa1kFi8w@mail.gmail.com>
+	<CAPHDReLia71PeyAh52RGaY--jyk5pfmFpSf+wOFNt+pg93AHow@mail.gmail.com>
+	<CAAMki4F_M9h1HwJYxB-XvWpfwydcLps3W_ZY=VYqNyzePksVGw@mail.gmail.com>
+	<CAPHDReKw3eRaquxtg8Enrh1B1zQ9wHp_HaLG_qW0Fk6A_Duy_w@mail.gmail.com>
+Message-ID: <CAAMki4F5Uo0QJyJmWGPpsaOe8r-mnnS55_rREiiq5DTAPvVn=g@mail.gmail.com>
+
+Hi Soeren,
+
+2015-08-18 10:07 GMT-03:00 S?ren Gebbert <soerengebbert at googlemail.com>:
+
+> Hi Veronica,
+> first note: the attached file is a gzip archive, the suffix is wrong.
+>
+
+ops! Yes, you are right... write.tgrass creates gzip files, my mistake, I'm
+sorry...
+
+
+> However, this seems to be a bug in t.rast.import, since the file names
+> in the tar archive are listed with a "./" in the path.
+> I will try to fix this issue.
+>
+
+Thanks a lot!
+
+Vero
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150818/83f64851/attachment.html>
+
+From veroandreo at gmail.com  Tue Aug 18 12:09:26 2015
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Tue, 18 Aug 2015 16:09:26 -0300
+Subject: [GRASS-stats] [GRASS-dev] support for raster time series in
+	rgrass7?
+In-Reply-To: <CAPHDReLbod1+jMu3pwOrfM7pAkMu16_X0Ff+AX9NEbPQY_9vRA@mail.gmail.com>
+References: <CAAMki4Hr4twzo5zCce2h9-fXMV8iRUBgak1S+Yd_QrSa1kFi8w@mail.gmail.com>
+	<CAPHDReLia71PeyAh52RGaY--jyk5pfmFpSf+wOFNt+pg93AHow@mail.gmail.com>
+	<CAAMki4F_M9h1HwJYxB-XvWpfwydcLps3W_ZY=VYqNyzePksVGw@mail.gmail.com>
+	<CAPHDReKw3eRaquxtg8Enrh1B1zQ9wHp_HaLG_qW0Fk6A_Duy_w@mail.gmail.com>
+	<CAAMki4F5Uo0QJyJmWGPpsaOe8r-mnnS55_rREiiq5DTAPvVn=g@mail.gmail.com>
+	<CAPHDReLbod1+jMu3pwOrfM7pAkMu16_X0Ff+AX9NEbPQY_9vRA@mail.gmail.com>
+Message-ID: <CAAMki4FUDuWJZDx2CVvmsayD5rz5Uk1nfSZHV8uPf1jasSy1tQ@mail.gmail.com>
+
+Hi Soeren,
+
+Thanks much! The data is imported now, and it is imported correctly!!
+
+I still think, however, that it would be great to have something like
+read/writeSTRDS under rgrass7 :)
+
+THANKS MUCH again!
+Best,
+Vero
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150818/f6718366/attachment.html>
+
+From Roger.Bivand at nhh.no  Mon Aug 24 00:05:04 2015
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon, 24 Aug 2015 09:05:04 +0200
+Subject: [GRASS-stats] rgrass7_0.1-2 on CRAN
+Message-ID: <alpine.LFD.2.20.1508240855200.10168@reclus.nhh.no>
+
+I've just submitted a new version of rgrass7 to CRAN, and the source 
+package is now available. The Windows CRAN binary will follow shortly, but 
+the OSX CRAN Mavericks binary may be delayed. This is because the new 
+version suggests the most recent rgdal_1.0-6, which fixes an issue with 
+the SQLite driver in GDAL2, seen when that driver is available.
+
+The main change is to move the vector interface to using the SQLite format 
+for intermediate files if it is available, and to get around the field 
+name length restriction when using the shapefile format. Users should not 
+see changes in behaviour, but I'd be grateful for reports to ensure that 
+using these alternative mechanisms does not change results. Among other 
+things, the laundering of SQLite field names is turned off, to prevent 
+unintended conversion to lower case.
+
+Suggestions and reports welcome!
+
+Roger
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+
+
+From Rainer at krugs.de  Mon Aug 24 01:24:33 2015
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Mon, 24 Aug 2015 10:24:33 +0200
+Subject: [GRASS-stats] rgrass7_0.1-2 on CRAN
+In-Reply-To: <alpine.LFD.2.20.1508240855200.10168@reclus.nhh.no> (Roger
+	Bivand's message of "Mon, 24 Aug 2015 09:05:04 +0200")
+References: <alpine.LFD.2.20.1508240855200.10168@reclus.nhh.no>
+Message-ID: <m27folccvy.fsf@krugs.de>
+
+Roger Bivand <Roger.Bivand at nhh.no> writes:
+
+> I've just submitted a new version of rgrass7 to CRAN, and the source
+> package is now available. The Windows CRAN binary will follow shortly,
+> but the OSX CRAN Mavericks binary may be delayed. This is because the
+> new version suggests the most recent rgdal_1.0-6, which fixes an issue
+> with the SQLite driver in GDAL2, seen when that driver is available.
+>
+> The main change is to move the vector interface to using the SQLite
+> format for intermediate files if it is available, and to get around
+> the field name length restriction when using the shapefile
+> format.
+
+Thanks Roger - this is a very welcome improvement.
+
+Cheers,
+
+Rainer
+
+> Users should not see changes in behaviour, but I'd be grateful
+> for reports to ensure that using these alternative mechanisms does not
+> change results. Among other things, the laundering of SQLite field
+> names is turned off, to prevent unintended conversion to lower case.
+>
+> Suggestions and reports welcome!
+>
+> Roger
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+PGP: 0x0F52F982
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 480 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150824/6f459b75/attachment.pgp>
+

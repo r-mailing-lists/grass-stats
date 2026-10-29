@@ -1,0 +1,2542 @@
+From kratochanna at gmail.com  Mon Nov 14 20:12:07 2016
+From: kratochanna at gmail.com (=?UTF-8?B?QW5uYSBQZXRyw6HFoW92w6E=?=)
+Date: Mon, 14 Nov 2016 23:12:07 -0500
+Subject: [GRASS-stats] GRASS can't find R packages from personal library on
+	Windows
+Message-ID: <CAE0EDEpOJCUffS1DCzHvapEo8N1W+T0B7QsxwEHx6M1G6uFx1A@mail.gmail.com>
+
+Hi,
+
+I installed latest R on fresh Windows 10, then I installed several
+packages into my personal library, then I installed standalone GRASS
+GIS 7.3, and when I run R from GRASS session, it does not see the
+installed packages. .libPaths() called from GRASS session indeed does
+not show the path to the personal library. I installed the packages
+again in GRASS session and then it's OK. Any idea why this happens and
+how to avoid that?
+
+Thank you,
+
+Anna
+
+From Roger.Bivand at nhh.no  Tue Nov 15 01:04:06 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue, 15 Nov 2016 10:04:06 +0100
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+ on	Windows
+In-Reply-To: <CAE0EDEpOJCUffS1DCzHvapEo8N1W+T0B7QsxwEHx6M1G6uFx1A@mail.gmail.com>
+References: <CAE0EDEpOJCUffS1DCzHvapEo8N1W+T0B7QsxwEHx6M1G6uFx1A@mail.gmail.com>
+Message-ID: <alpine.LFD.2.20.1611151000110.13336@reclus.nhh.no>
+
+On Tue, 15 Nov 2016, Anna Petrášová wrote:
+
+> Hi,
+>
+> I installed latest R on fresh Windows 10, then I installed several
+> packages into my personal library, then I installed standalone GRASS
+> GIS 7.3, and when I run R from GRASS session, it does not see the
+> installed packages. .libPaths() called from GRASS session indeed does
+> not show the path to the personal library. I installed the packages
+> again in GRASS session and then it's OK. Any idea why this happens and
+> how to avoid that?
+
+No idea, only you can reproduce what you are doing. Do you mean 7.3, the 
+development version? Try the 7.0 and 7.2 versions, and compare to see 
+which environment variables may not be being transferred (R_LIBS probably) 
+in GRASS 7.3. Are you running R in a Windows terminal (if such 
+exists in Windows 10) inside GRASS, or in the command line in the 
+GRASS GUI? If the latter, has this changed?
+
+Roger
+
+>
+> Thank you,
+>
+> Anna
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From hellik at web.de  Wed Nov 16 05:31:48 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Wed, 16 Nov 2016 06:31:48 -0700 (MST)
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+	on	Windows
+In-Reply-To: <alpine.LFD.2.20.1611151000110.13336@reclus.nhh.no>
+References: <CAE0EDEpOJCUffS1DCzHvapEo8N1W+T0B7QsxwEHx6M1G6uFx1A@mail.gmail.com>
+ <alpine.LFD.2.20.1611151000110.13336@reclus.nhh.no>
+Message-ID: <1479303108061-5296042.post@n6.nabble.com>
+
+Roger Bivand wrote
+> On Tue, 15 Nov 2016, Anna Petrášová wrote:
+> 
+>> Hi,
+>>
+>> I installed latest R on fresh Windows 10, then I installed several
+>> packages into my personal library, then I installed standalone GRASS
+>> GIS 7.3, and when I run R from GRASS session, it does not see the
+>> installed packages. .libPaths() called from GRASS session indeed does
+>> not show the path to the personal library. I installed the packages
+>> again in GRASS session and then it's OK. Any idea why this happens and
+>> how to avoid that?
+> 
+> No idea, only you can reproduce what you are doing. Do you mean 7.3, the 
+> development version? Try the 7.0 and 7.2 versions, and compare to see 
+> which environment variables may not be being transferred (R_LIBS probably) 
+> in GRASS 7.3. Are you running R in a Windows terminal (if such 
+> exists in Windows 10) inside GRASS, or in the command line in the 
+> GRASS GUI? If the latter, has this changed?
+
+tested with winGRASS7.2.svn standalone installer
+
+System Info                                                                     
+GRASS version: 7.2.svn                                                          
+GRASS SVN revision: r69794                                                      
+Build date: 2016-11-13                                                          
+Build platform: x86_64-w64-mingw32                                              
+GDAL: 2.1.2                                                                     
+PROJ.4: 4.9.3                                                                   
+GEOS: 3.5.0                                                                     
+SQLite: 3.14.1                                                                  
+Python: 2.7.5                                                                   
+wxPython: 2.8.12.1                                                              
+Platform: Windows-8-6.2.9200   
+
+in the winGRASS-provided windows console:
+
+Cleaning up temporary files...
+Starting GRASS GIS...
+WARNING: Concurrent mapset locking is not supported on Windows
+
+          __________  ___   __________    _______________
+         / ____/ __ \/   | / ___/ ___/   / ____/  _/ ___/
+        / / __/ /_/ / /| | \__ \\_  \   / / __ / / \__ \
+       / /_/ / _, _/ ___ |___/ /__/ /  / /_/ // / ___/ /
+       \____/_/ |_/_/  |_/____/____/   \____/___//____/
+
+Welcome to GRASS GIS 7.2.svn (r69794)
+GRASS GIS homepage:                      http://grass.osgeo.org
+This version running through:            Command Shell
+(C:\WINDOWS\system32\cmd.exe)
+Help is available with the command:      g.manual -i
+See the licence terms with:              g.version -c
+See citation options with:               g.version -x
+If required, restart the GUI with:       g.gui wxpython
+When ready to quit enter:                exit
+
+Launching <wxpython> GUI in the background, please wait...
+Microsoft Windows [Version 10.0.14393]
+(c) 2016 Microsoft Corporation. Alle Rechte vorbehalten.
+
+C:\Users\test>R
+
+R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> q()
+Save workspace image? [y/n/c]: n
+
+C:\Users\test>echo %R_LIBS%
+%R_LIBS%
+
+I've implemented the R-winGRASS-connecting for the standalone installer by
+
+https://trac.osgeo.org/grass/browser/grass/trunk/mswindows/external/rbatch
+https://trac.osgeo.org/grass/browser/grass/trunk/mswindows/external/rbatch/R.bat
+
+%R_LIBS% isn't listed there.
+
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296042.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Wed Nov 16 06:01:53 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed, 16 Nov 2016 15:01:53 +0100
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+ on	Windows
+In-Reply-To: <1479303108061-5296042.post@n6.nabble.com>
+References: <CAE0EDEpOJCUffS1DCzHvapEo8N1W+T0B7QsxwEHx6M1G6uFx1A@mail.gmail.com>
+ <alpine.LFD.2.20.1611151000110.13336@reclus.nhh.no>
+ <1479303108061-5296042.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+
+On Wed, 16 Nov 2016, Helmut Kudrnovsky wrote:
+
+> Roger Bivand wrote
+>> On Tue, 15 Nov 2016, Anna Petrášová wrote:
+>> 
+>>> Hi,
+>>>
+>>> I installed latest R on fresh Windows 10, then I installed several
+>>> packages into my personal library, then I installed standalone GRASS
+>>> GIS 7.3, and when I run R from GRASS session, it does not see the
+>>> installed packages. .libPaths() called from GRASS session indeed does
+>>> not show the path to the personal library. I installed the packages
+>>> again in GRASS session and then it's OK. Any idea why this happens and
+>>> how to avoid that?
+>> 
+>> No idea, only you can reproduce what you are doing. Do you mean 7.3, the 
+>> development version? Try the 7.0 and 7.2 versions, and compare to see 
+>> which environment variables may not be being transferred (R_LIBS probably) 
+>> in GRASS 7.3. Are you running R in a Windows terminal (if such 
+>> exists in Windows 10) inside GRASS, or in the command line in the 
+>> GRASS GUI? If the latter, has this changed?
+>
+> tested with winGRASS7.2.svn standalone installer
+>
+> System Info 
+> GRASS version: 7.2.svn 
+> GRASS SVN revision: r69794 
+> Build date: 2016-11-13 
+> Build platform: x86_64-w64-mingw32 
+> GDAL: 2.1.2 
+> PROJ.4: 4.9.3 
+> GEOS: 3.5.0 
+> SQLite: 3.14.1 
+> Python: 2.7.5 
+> wxPython: 2.8.12.1 
+> Platform: Windows-8-6.2.9200 
+>
+> in the winGRASS-provided windows console:
+>
+> Cleaning up temporary files...
+> Starting GRASS GIS...
+> WARNING: Concurrent mapset locking is not supported on Windows
+>
+>          __________  ___   __________    _______________
+>         / ____/ __ \/   | / ___/ ___/   / ____/  _/ ___/
+>        / / __/ /_/ / /| | \__ \\_  \   / / __ / / \__ \
+>       / /_/ / _, _/ ___ |___/ /__/ /  / /_/ // / ___/ /
+>       \____/_/ |_/_/  |_/____/____/   \____/___//____/
+>
+> Welcome to GRASS GIS 7.2.svn (r69794)
+> GRASS GIS homepage:                      http://grass.osgeo.org
+> This version running through:            Command Shell
+> (C:\WINDOWS\system32\cmd.exe)
+> Help is available with the command:      g.manual -i
+> See the licence terms with:              g.version -c
+> See citation options with:               g.version -x
+> If required, restart the GUI with:       g.gui wxpython
+> When ready to quit enter:                exit
+>
+> Launching <wxpython> GUI in the background, please wait...
+> Microsoft Windows [Version 10.0.14393]
+> (c) 2016 Microsoft Corporation. Alle Rechte vorbehalten.
+>
+> C:\Users\test>R
+>
+> R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+> Copyright (C) 2016 The R Foundation for Statistical Computing
+> Platform: x86_64-w64-mingw32/x64 (64-bit)
+>
+> R is free software and comes with ABSOLUTELY NO WARRANTY.
+> You are welcome to redistribute it under certain conditions.
+> Type 'license()' or 'licence()' for distribution details.
+>
+> R is a collaborative project with many contributors.
+> Type 'contributors()' for more information and
+> 'citation()' on how to cite R or R packages in publications.
+>
+> Type 'demo()' for some demos, 'help()' for on-line help, or
+> 'help.start()' for an HTML browser interface to help.
+> Type 'q()' to quit R.
+
+You would need to try to load a package from your personal library, so:
+
+.libPaths()
+library()
+installed.packages()
+
+should show whether anything is found, and to install within the GRASS 
+session:
+
+install.packages("rgrass7")
+library(rgrass7)
+
+and see what happens.
+
+For me on Linux, R_LIBS is set by me and works, but on Windows the default 
+is (possibly) set in the Registry anyway, which would/should be used if 
+R_LIBS is not set. Within R, .libPaths() should be the same inside GRASS 
+and outside GRASS. In Linux I have chosen to set R_LIBS, in Windows 7, 
+GRASS standalone 7.0.4, I can start R GUI in the GRASS GUI console command 
+line, and my personal library is found (no R_LIBS set, .libPaths() returns 
+the default). I haven't tried with GRASS 7.2 on Windows.
+
+Roger
+
+>
+>> q()
+> Save workspace image? [y/n/c]: n
+>
+> C:\Users\test>echo %R_LIBS%
+> %R_LIBS%
+>
+> I've implemented the R-winGRASS-connecting for the standalone installer by
+>
+> https://trac.osgeo.org/grass/browser/grass/trunk/mswindows/external/rbatch
+> https://trac.osgeo.org/grass/browser/grass/trunk/mswindows/external/rbatch/R.bat
+>
+> %R_LIBS% isn't listed there.
+>
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296042.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From hellik at web.de  Wed Nov 16 06:19:56 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Wed, 16 Nov 2016 07:19:56 -0700 (MST)
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+	on	Windows
+In-Reply-To: <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+References: <CAE0EDEpOJCUffS1DCzHvapEo8N1W+T0B7QsxwEHx6M1G6uFx1A@mail.gmail.com>
+ <alpine.LFD.2.20.1611151000110.13336@reclus.nhh.no>
+ <1479303108061-5296042.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+Message-ID: <1479305996319-5296059.post@n6.nabble.com>
+
+Roger Bivand wrote
+> You would need to try to load a package from your personal library, so:
+> 
+> .libPaths()
+> library()
+> installed.packages()
+> 
+> should show whether anything is found, and to install within the GRASS 
+> session:
+> 
+> install.packages("rgrass7")
+> library(rgrass7)
+> 
+> and see what happens.
+> 
+> For me on Linux, R_LIBS is set by me and works, but on Windows the default 
+> is (possibly) set in the Registry anyway, which would/should be used if 
+> R_LIBS is not set. Within R, .libPaths() should be the same inside GRASS 
+> and outside GRASS. In Linux I have chosen to set R_LIBS, in Windows 7, 
+> GRASS standalone 7.0.4, I can start R GUI in the GRASS GUI console command 
+> line, and my personal library is found (no R_LIBS set, .libPaths() returns 
+> the default). I haven't tried with GRASS 7.2 on Windows.
+
+Cleaning up temporary files...
+Starting GRASS GIS...
+WARNING: Concurrent mapset locking is not supported on Windows
+
+          __________  ___   __________    _______________
+         / ____/ __ \/   | / ___/ ___/   / ____/  _/ ___/
+        / / __/ /_/ / /| | \__ \\_  \   / / __ / / \__ \
+       / /_/ / _, _/ ___ |___/ /__/ /  / /_/ // / ___/ /
+       \____/_/ |_/_/  |_/____/____/   \____/___//____/
+
+Welcome to GRASS GIS 7.2.svn (r69794)
+GRASS GIS homepage:                      http://grass.osgeo.org
+This version running through:            Command Shell
+(C:\WINDOWS\system32\cmd.exe)
+Help is available with the command:      g.manual -i
+See the licence terms with:              g.version -c
+See citation options with:               g.version -x
+If required, restart the GUI with:       g.gui wxpython
+When ready to quit enter:                exit
+
+Launching <wxpython> GUI in the background, please wait...
+Microsoft Windows [Version 10.0.14393]
+(c) 2016 Microsoft Corporation. Alle Rechte vorbehalten.
+
+C:\Users\test>R
+
+R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> .libPaths()
+[1] "C:/Program Files/R/R-3.3.1/library"
+> library(rgrass7)
+Loading required package: sp
+Loading required package: XML
+GRASS GIS interface loaded with GRASS version: GRASS 7.2.svn (2016)
+and location: nc_spm_08_grass7
+>
+
+ .libPaths() works here the same outside an inside a winGRASS session.
+everything works.
+
+I've installed all my libraries system wide here, not to any personal folder
+like Anna.
+
+so I'll test later by adding some libraries to a personal folder like Anna.
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296059.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From hellik at web.de  Thu Nov 17 02:25:51 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Thu, 17 Nov 2016 03:25:51 -0700 (MST)
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+	on	Windows
+In-Reply-To: <1479305996319-5296059.post@n6.nabble.com>
+References: <CAE0EDEpOJCUffS1DCzHvapEo8N1W+T0B7QsxwEHx6M1G6uFx1A@mail.gmail.com>
+ <alpine.LFD.2.20.1611151000110.13336@reclus.nhh.no>
+ <1479303108061-5296042.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+ <1479305996319-5296059.post@n6.nabble.com>
+Message-ID: <1479378351507-5296217.post@n6.nabble.com>
+
+Helmut Kudrnovsky wrote
+> 
+> Roger Bivand wrote
+>> For me on Linux, R_LIBS is set by me and works, but on Windows the
+>> default 
+>> is (possibly) set in the Registry anyway, which would/should be used if 
+>> R_LIBS is not set. Within R, .libPaths() should be the same inside GRASS 
+>> and outside GRASS. In Linux I have chosen to set R_LIBS, in Windows 7, 
+>> GRASS standalone 7.0.4, I can start R GUI in the GRASS GUI console
+>> command 
+>> line, and my personal library is found (no R_LIBS set, .libPaths()
+>> returns 
+>> the default). I haven't tried with GRASS 7.2 on Windows.
+>  .libPaths() works here the same outside an inside a winGRASS session.
+> everything works.
+> 
+> I've installed all my libraries system wide here, not to any personal
+> folder like Anna.
+> 
+> so I'll test later by adding some libraries to a personal folder like
+> Anna.
+
+now tested by intalling some libraries into my personal library.
+
+outside a winGRASS7.2.svn session
+
+> .libPaths()
+[1] "C:/Users/test/Documents/R/win-library/3.3"
+[2] "C:/Program Files/R/R-3.3.1/library"        
+> 
+
+inside a winGRASS7.2.svn session
+
+> .libPaths()
+[1] "C:/Program Files/R/R-3.3.1/library"
+
+there is a diffference between inside and outside a winGRASS7.2.svn session
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296217.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From hellik at web.de  Thu Nov 17 02:40:31 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Thu, 17 Nov 2016 03:40:31 -0700 (MST)
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+	on	Windows
+In-Reply-To: <1479378351507-5296217.post@n6.nabble.com>
+References: <CAE0EDEpOJCUffS1DCzHvapEo8N1W+T0B7QsxwEHx6M1G6uFx1A@mail.gmail.com>
+ <alpine.LFD.2.20.1611151000110.13336@reclus.nhh.no>
+ <1479303108061-5296042.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+ <1479305996319-5296059.post@n6.nabble.com>
+ <1479378351507-5296217.post@n6.nabble.com>
+Message-ID: <1479379231450-5296219.post@n6.nabble.com>
+
+Helmut Kudrnovsky wrote
+> now tested by intalling some libraries into my personal library.
+> 
+> outside a winGRASS7.2.svn session
+> 
+>> .libPaths()
+> [1] "C:/Users/test/Documents/R/win-library/3.3"
+> [2] "C:/Program Files/R/R-3.3.1/library"        
+>> 
+> 
+> inside a winGRASS7.2.svn session
+> 
+>> .libPaths()
+> [1] "C:/Program Files/R/R-3.3.1/library"
+> 
+> there is a diffference between inside and outside a winGRASS7.2.svn
+> session
+
+
+now tested with standalone winGRASS7.0.5; same behaviour; inside a
+winGRASS-session the personal library seems not to be found.
+
+any idea?
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296219.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From hellik at web.de  Thu Nov 17 02:49:12 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Thu, 17 Nov 2016 03:49:12 -0700 (MST)
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+	on	Windows
+In-Reply-To: <1479379231450-5296219.post@n6.nabble.com>
+References: <CAE0EDEpOJCUffS1DCzHvapEo8N1W+T0B7QsxwEHx6M1G6uFx1A@mail.gmail.com>
+ <alpine.LFD.2.20.1611151000110.13336@reclus.nhh.no>
+ <1479303108061-5296042.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+ <1479305996319-5296059.post@n6.nabble.com>
+ <1479378351507-5296217.post@n6.nabble.com>
+ <1479379231450-5296219.post@n6.nabble.com>
+Message-ID: <1479379752901-5296225.post@n6.nabble.com>
+
+Helmut Kudrnovsky wrote
+> 
+> Helmut Kudrnovsky wrote
+>> now tested by intalling some libraries into my personal library.
+>> 
+>> outside a winGRASS7.2.svn session
+>> 
+>>> .libPaths()
+>> [1] "C:/Users/test/Documents/R/win-library/3.3"
+>> [2] "C:/Program Files/R/R-3.3.1/library"        
+>>> 
+>> 
+>> inside a winGRASS7.2.svn session
+>> 
+>>> .libPaths()
+>> [1] "C:/Program Files/R/R-3.3.1/library"
+>> 
+>> there is a diffference between inside and outside a winGRASS7.2.svn
+>> session
+> now tested with standalone winGRASS7.0.5; same behaviour; inside a
+> winGRASS-session the personal library seems not to be found.
+> 
+> any idea?
+
+now changing into the locally GRASS source code where R-batch files lives
+(D:\software_source\grass_trunk\mswindows\external\rbatch) and start R form
+there (same mechanism as implemented in the standalone winGRASS):
+
+D:\software_source\grass_trunk\mswindows\external\rbatch>R
+
+R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R ist freie Software und kommt OHNE JEGLICHE GARANTIE.
+Sie sind eingeladen, es unter bestimmten Bedingungen weiter zu verbreiten.
+Tippen Sie 'license()' or 'licence()' für Details dazu.
+
+R ist ein Gemeinschaftsprojekt mit vielen Beitragenden.
+Tippen Sie 'contributors()' für mehr Information und 'citation()',
+um zu erfahren, wie R oder R packages in Publikationen zitiert werden
+können.
+
+Tippen Sie 'demo()' für einige Demos, 'help()' für on-line Hilfe, oder
+'help.start()' für eine HTML Browserschnittstelle zur Hilfe.
+Tippen Sie 'q()', um R zu verlassen.
+
+> .libPaths()
+[1] "C:/Users/test/Documents/R/win-library/3.3"
+[2] "C:/Program Files/R/R-3.3.1/library"
+>
+
+here R finds both, the standard and the personal library.
+
+so it seems winGRASS seems to hide the path to the personal library.
+
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296225.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Thu Nov 17 03:04:20 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu, 17 Nov 2016 12:04:20 +0100
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+ on	Windows
+In-Reply-To: <1479379231450-5296219.post@n6.nabble.com>
+References: <CAE0EDEpOJCUffS1DCzHvapEo8N1W+T0B7QsxwEHx6M1G6uFx1A@mail.gmail.com>
+ <alpine.LFD.2.20.1611151000110.13336@reclus.nhh.no>
+ <1479303108061-5296042.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+ <1479305996319-5296059.post@n6.nabble.com>
+ <1479378351507-5296217.post@n6.nabble.com>
+ <1479379231450-5296219.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.20.1611171149230.26777@reclus.nhh.no>
+
+On Thu, 17 Nov 2016, Helmut Kudrnovsky wrote:
+
+> Helmut Kudrnovsky wrote
+>> now tested by intalling some libraries into my personal library.
+>> 
+>> outside a winGRASS7.2.svn session
+>> 
+>>> .libPaths()
+>> [1] "C:/Users/test/Documents/R/win-library/3.3"
+>> [2] "C:/Program Files/R/R-3.3.1/library" 
+>>> 
+>> 
+>> inside a winGRASS7.2.svn session
+>> 
+>>> .libPaths()
+>> [1] "C:/Program Files/R/R-3.3.1/library"
+>> 
+>> there is a diffference between inside and outside a winGRASS7.2.svn
+>> session
+>
+>
+> now tested with standalone winGRASS7.0.5; same behaviour; inside a
+> winGRASS-session the personal library seems not to be found.
+>
+> any idea?
+
+My Windows 7, GRASS 7.0.4 shows identical .libPaths() values both inside 
+and out with RGui. I don't know how the location of the personal library 
+folder is recorded - is it in the registry? How might one know? It looks 
+like:
+
+Sys.getenv("R_LIBS_USER")
+
+gives a template, so maybe it isn't in the registry? Some documentation 
+here:
+
+https://cran.r-project.org/bin/windows/base/rw-FAQ.html#I-don_0027t-have-permission-to-write-to-the-R_002d3_002e3_002e2_005clibrary-directory
+https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Windows-packages
+
+Users can have one or more libraries, normally specified by the 
+environment variable R_LIBS_USER. This has a default value (to see it, use 
+‘Sys.getenv("R_LIBS_USER")’ within an R session), but that is only used if 
+the corresponding directory actually exists (which by default it will not)
+
+https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Managing-libraries
+
+Best wishes,
+
+Roger
+
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296219.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From hellik at web.de  Thu Nov 17 03:14:17 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Thu, 17 Nov 2016 04:14:17 -0700 (MST)
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+	on	Windows
+In-Reply-To: <alpine.LFD.2.20.1611171149230.26777@reclus.nhh.no>
+References: <CAE0EDEpOJCUffS1DCzHvapEo8N1W+T0B7QsxwEHx6M1G6uFx1A@mail.gmail.com>
+ <alpine.LFD.2.20.1611151000110.13336@reclus.nhh.no>
+ <1479303108061-5296042.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+ <1479305996319-5296059.post@n6.nabble.com>
+ <1479378351507-5296217.post@n6.nabble.com>
+ <1479379231450-5296219.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611171149230.26777@reclus.nhh.no>
+Message-ID: <1479381257136-5296239.post@n6.nabble.com>
+
+>My Windows 7, GRASS 7.0.4 shows identical .libPaths() values both inside
+>and out with RGui. I don't know how the location of the personal library
+>folder is recorded - is it in the registry? How might one know? It looks
+>like:
+>
+>Sys.getenv("R_LIBS_USER") 
+
+tested within a winGRASS7.0.5 session:
+
+> Sys.getenv("R_LIBS_USER")
+[1] "C:\\Users\\test/R/win-library/3.3"
+> .libPaths()
+[1] "C:/Program Files/R/R-3.3.1/library"
+
+R_LIBS_USER is listed there within the winGRASS session, but the path itself
+looks odd.
+
+outside a winGRASS7.0.5/7.2.svn session, everthing is ok with these
+variables (see above).
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296239.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Thu Nov 17 11:57:21 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu, 17 Nov 2016 20:57:21 +0100
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+ on Windows
+In-Reply-To: <1479381257136-5296239.post@n6.nabble.com>
+References: <CAE0EDEpOJCUffS1DCzHvapEo8N1W+T0B7QsxwEHx6M1G6uFx1A@mail.gmail.com>
+ <alpine.LFD.2.20.1611151000110.13336@reclus.nhh.no>
+ <1479303108061-5296042.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+ <1479305996319-5296059.post@n6.nabble.com>
+ <1479378351507-5296217.post@n6.nabble.com>
+ <1479379231450-5296219.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611171149230.26777@reclus.nhh.no>
+ <1479381257136-5296239.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+
+On Thu, 17 Nov 2016, Helmut Kudrnovsky wrote:
+
+>> My Windows 7, GRASS 7.0.4 shows identical .libPaths() values both inside
+>> and out with RGui. I don't know how the location of the personal library
+>> folder is recorded - is it in the registry? How might one know? It looks
+>> like:
+>>
+>> Sys.getenv("R_LIBS_USER") 
+>
+> tested within a winGRASS7.0.5 session:
+>
+>> Sys.getenv("R_LIBS_USER")
+> [1] "C:\\Users\\test/R/win-library/3.3"
+>> .libPaths()
+> [1] "C:/Program Files/R/R-3.3.1/library"
+>
+> R_LIBS_USER is listed there within the winGRASS session, but the path itself
+> looks odd.
+
+Unfortunately, I couldn't reproduce this with stand-alone GRASS 7.0.5 or 
+7.2, Windows 7 Pro, R 3.3.2. I see the same .libPaths() values inside and 
+outside. But see below - I found out how to reproduce the problem 
+predictably.
+
+The reason was (of course) that I'd forgotten that I had set R_LIBS_USER 
+in Control Panel -> System and Security -> System -> Advanced system 
+settings -> Environment Variables. I'd done this as a response to the 
+extra work caused at each annual change of the default address as R's 
+version was incremented. See also:
+
+https://stat.ethz.ch/R-manual/R-devel/library/base/html/libPaths.html
+
+So a workaround might to use the R_LIBS_USER environment variable in that 
+setting, checking that the directory exists. R uses it internally as 
+generated, but doesn't export it. I don't know how this plays 
+cross-platform.
+
+Best wishes,
+
+Roger
+
+>
+> outside a winGRASS7.0.5/7.2.svn session, everthing is ok with these
+> variables (see above).
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296239.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From Roger.Bivand at nhh.no  Thu Nov 17 23:53:47 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri, 18 Nov 2016 08:53:47 +0100
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+ on Windows
+In-Reply-To: <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+References: <CAE0EDEpOJCUffS1DCzHvapEo8N1W+T0B7QsxwEHx6M1G6uFx1A@mail.gmail.com>
+ <alpine.LFD.2.20.1611151000110.13336@reclus.nhh.no>
+ <1479303108061-5296042.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+ <1479305996319-5296059.post@n6.nabble.com>
+ <1479378351507-5296217.post@n6.nabble.com>
+ <1479379231450-5296219.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611171149230.26777@reclus.nhh.no>
+ <1479381257136-5296239.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+Message-ID: <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+
+On Thu, 17 Nov 2016, Roger Bivand wrote:
+
+> On Thu, 17 Nov 2016, Helmut Kudrnovsky wrote:
+>
+>> >  My Windows 7, GRASS 7.0.4 shows identical .libPaths() values both inside
+>> >  and out with RGui. I don't know how the location of the personal library
+>> >  folder is recorded - is it in the registry? How might one know? It looks
+>> >  like:
+>> > 
+>> >  Sys.getenv("R_LIBS_USER") 
+>>
+>>  tested within a winGRASS7.0.5 session:
+>> 
+>> >  Sys.getenv("R_LIBS_USER")
+>>  [1] "C:\\Users\\test/R/win-library/3.3"
+>> >  .libPaths()
+>>  [1] "C:/Program Files/R/R-3.3.1/library"
+>>
+>>  R_LIBS_USER is listed there within the winGRASS session, but the path
+>>  itself
+>>  looks odd.
+>
+> Unfortunately, I couldn't reproduce this with stand-alone GRASS 7.0.5 or 7.2, 
+> Windows 7 Pro, R 3.3.2. I see the same .libPaths() values inside and outside. 
+> But see below - I found out how to reproduce the problem predictably.
+>
+> The reason was (of course) that I'd forgotten that I had set R_LIBS_USER in 
+> Control Panel -> System and Security -> System -> Advanced system settings -> 
+> Environment Variables. I'd done this as a response to the extra work caused 
+> at each annual change of the default address as R's version was incremented. 
+> See also:
+>
+> https://stat.ethz.ch/R-manual/R-devel/library/base/html/libPaths.html
+>
+> So a workaround might to use the R_LIBS_USER environment variable in that 
+> setting, checking that the directory exists. R uses it internally as 
+> generated, but doesn't export it. I don't know how this plays cross-platform.
+
+In a context with Windows 7 without setting the R_LIBS_USER environment 
+variable, R outside GRASS reports:
+
+> Sys.getenv("HOME")
+[1] "C:\\Users\\rsb\\Documents"
+> .libPaths()
+[1] "C:/Users/rsb/Documents/R/win-library/3.3"
+[2] "C:/Program Files/R/R-3.3.2/library"
+
+but inside GRASS %HOME% is re-defined, so:
+
+> Sys.getenv("HOME")
+[1] "C:\\Users\\rsb"
+> .libPaths()
+[1] "c:/Program Files/R/R-3.3.2/library"
+
+as R cannot construct: subdirectory ‘R/win-library/x.y’ of the home 
+directory, for R x.y.z, because "C:\\Users\\rsb/R/win-library/x.y" does 
+not exist, and that is where R is looking (here in GRASS):
+
+> Sys.getenv("R_LIBS_USER")
+[1] "C:\\Users\\rsb/R/win-library/3.3"
+
+(the different dirseps do not matter).
+
+Does WinGRASS need to change the HOME environment variable? If it does, 
+users of R in GRASS need to set R_LIBS or R_LIBS_USER, easiest once via 
+Control Panel.
+
+Roger
+
+>
+> Best wishes,
+>
+> Roger
+>
+>>
+>>  outside a winGRASS7.0.5/7.2.svn session, everthing is ok with these
+>>  variables (see above).
+>> 
+>> 
+>>
+>>  -----
+>>  best regards
+>>  Helmut
+>>  --
+>>  View this message in context:
+>>  http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296239.html
+>>  Sent from the Grass - Stats mailing list archive at Nabble.com.
+>>  _______________________________________________
+>>  grass-stats mailing list
+>>  grass-stats at lists.osgeo.org
+>>  http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From hellik at web.de  Fri Nov 18 00:22:16 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Fri, 18 Nov 2016 01:22:16 -0700 (MST)
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+	on Windows
+In-Reply-To: <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+References: <alpine.LFD.2.20.1611151000110.13336@reclus.nhh.no>
+ <1479303108061-5296042.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+ <1479305996319-5296059.post@n6.nabble.com>
+ <1479378351507-5296217.post@n6.nabble.com>
+ <1479379231450-5296219.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611171149230.26777@reclus.nhh.no>
+ <1479381257136-5296239.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+ <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+Message-ID: <1479457336745-5296409.post@n6.nabble.com>
+
+Roger Bivand wrote
+> On Thu, 17 Nov 2016, Roger Bivand wrote:
+> 
+>> On Thu, 17 Nov 2016, Helmut Kudrnovsky wrote:
+>>
+>>> >  My Windows 7, GRASS 7.0.4 shows identical .libPaths() values both
+>>> inside
+>>> >  and out with RGui. I don't know how the location of the personal
+>>> library
+>>> >  folder is recorded - is it in the registry? How might one know? It
+>>> looks
+>>> >  like:
+>>> > 
+>>> >  Sys.getenv("R_LIBS_USER") 
+>>>
+>>>  tested within a winGRASS7.0.5 session:
+>>> 
+>>> >  Sys.getenv("R_LIBS_USER")
+>>>  [1] "C:\\Users\\test/R/win-library/3.3"
+>>> >  .libPaths()
+>>>  [1] "C:/Program Files/R/R-3.3.1/library"
+>>>
+>>>  R_LIBS_USER is listed there within the winGRASS session, but the path
+>>>  itself
+>>>  looks odd.
+>>
+>> Unfortunately, I couldn't reproduce this with stand-alone GRASS 7.0.5 or
+>> 7.2, 
+>> Windows 7 Pro, R 3.3.2. I see the same .libPaths() values inside and
+>> outside. 
+>> But see below - I found out how to reproduce the problem predictably.
+>>
+>> The reason was (of course) that I'd forgotten that I had set R_LIBS_USER
+>> in 
+>> Control Panel -> System and Security -> System -> Advanced system
+>> settings -> 
+>> Environment Variables. I'd done this as a response to the extra work
+>> caused 
+>> at each annual change of the default address as R's version was
+>> incremented. 
+>> See also:
+>>
+>> https://stat.ethz.ch/R-manual/R-devel/library/base/html/libPaths.html
+>>
+>> So a workaround might to use the R_LIBS_USER environment variable in that 
+>> setting, checking that the directory exists. R uses it internally as 
+>> generated, but doesn't export it. I don't know how this plays
+>> cross-platform.
+> 
+> In a context with Windows 7 without setting the R_LIBS_USER environment 
+> variable, R outside GRASS reports:
+> 
+>> Sys.getenv("HOME")
+> [1] "C:\\Users\\rsb\\Documents"
+>> .libPaths()
+> [1] "C:/Users/rsb/Documents/R/win-library/3.3"
+> [2] "C:/Program Files/R/R-3.3.2/library"
+> 
+> but inside GRASS %HOME% is re-defined, so:
+> 
+>> Sys.getenv("HOME")
+> [1] "C:\\Users\\rsb"
+>> .libPaths()
+> [1] "c:/Program Files/R/R-3.3.2/library"
+> 
+> as R cannot construct: subdirectory ‘R/win-library/x.y’ of the home 
+> directory, for R x.y.z, because "C:\\Users\\rsb/R/win-library/x.y" does 
+> not exist, and that is where R is looking (here in GRASS):
+> 
+>> Sys.getenv("R_LIBS_USER")
+> [1] "C:\\Users\\rsb/R/win-library/3.3"
+> 
+> (the different dirseps do not matter).
+> 
+> Does WinGRASS need to change the HOME environment variable? If it does, 
+> users of R in GRASS need to set R_LIBS or R_LIBS_USER, easiest once via 
+> Control Panel.
+
+could you download the files from
+https://trac.osgeo.org/grass/browser/grass/trunk/mswindows/external/rbatch,
+copy these to an arbitrary folder e.g. C:\wd\testfolder, open a windows
+console within this folder and type R in the console, then try your test
+with  Sys.getenv("R_LIBS_USER") and  .libPaths()?
+
+for me it works that the general and private library is found by R.
+
+I'll have a look if /where winGRASS changes %HOME%
+
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296409.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Fri Nov 18 01:37:07 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri, 18 Nov 2016 10:37:07 +0100
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+ on Windows
+In-Reply-To: <1479457336745-5296409.post@n6.nabble.com>
+References: <alpine.LFD.2.20.1611151000110.13336@reclus.nhh.no>
+ <1479303108061-5296042.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+ <1479305996319-5296059.post@n6.nabble.com>
+ <1479378351507-5296217.post@n6.nabble.com>
+ <1479379231450-5296219.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611171149230.26777@reclus.nhh.no>
+ <1479381257136-5296239.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+ <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+ <1479457336745-5296409.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.20.1611181032230.917@reclus.nhh.no>
+
+On Fri, 18 Nov 2016, Helmut Kudrnovsky wrote:
+
+> Roger Bivand wrote
+>> On Thu, 17 Nov 2016, Roger Bivand wrote:
+>> 
+>>> On Thu, 17 Nov 2016, Helmut Kudrnovsky wrote:
+>>>
+>>>> >  My Windows 7, GRASS 7.0.4 shows identical .libPaths() values both
+>>>> inside
+>>>> >  and out with RGui. I don't know how the location of the personal
+>>>> library
+>>>> >  folder is recorded - is it in the registry? How might one know? It
+>>>> looks
+>>>> >  like:
+>>>> > 
+>>>> >  Sys.getenv("R_LIBS_USER") 
+>>>>
+>>>>  tested within a winGRASS7.0.5 session:
+>>>> 
+>>>> >  Sys.getenv("R_LIBS_USER")
+>>>>  [1] "C:\\Users\\test/R/win-library/3.3"
+>>>> >  .libPaths()
+>>>>  [1] "C:/Program Files/R/R-3.3.1/library"
+>>>>
+>>>>  R_LIBS_USER is listed there within the winGRASS session, but the path
+>>>>  itself
+>>>>  looks odd.
+>>>
+>>> Unfortunately, I couldn't reproduce this with stand-alone GRASS 7.0.5 or
+>>> 7.2, 
+>>> Windows 7 Pro, R 3.3.2. I see the same .libPaths() values inside and
+>>> outside. 
+>>> But see below - I found out how to reproduce the problem predictably.
+>>>
+>>> The reason was (of course) that I'd forgotten that I had set R_LIBS_USER
+>>> in 
+>>> Control Panel -> System and Security -> System -> Advanced system
+>>> settings -> 
+>>> Environment Variables. I'd done this as a response to the extra work
+>>> caused 
+>>> at each annual change of the default address as R's version was
+>>> incremented. 
+>>> See also:
+>>>
+>>> https://stat.ethz.ch/R-manual/R-devel/library/base/html/libPaths.html
+>>>
+>>> So a workaround might to use the R_LIBS_USER environment variable in that 
+>>> setting, checking that the directory exists. R uses it internally as 
+>>> generated, but doesn't export it. I don't know how this plays
+>>> cross-platform.
+>> 
+>> In a context with Windows 7 without setting the R_LIBS_USER environment 
+>> variable, R outside GRASS reports:
+>> 
+>>> Sys.getenv("HOME")
+>> [1] "C:\\Users\\rsb\\Documents"
+>>> .libPaths()
+>> [1] "C:/Users/rsb/Documents/R/win-library/3.3"
+>> [2] "C:/Program Files/R/R-3.3.2/library"
+>> 
+>> but inside GRASS %HOME% is re-defined, so:
+>> 
+>>> Sys.getenv("HOME")
+>> [1] "C:\\Users\\rsb"
+>>> .libPaths()
+>> [1] "c:/Program Files/R/R-3.3.2/library"
+>> 
+>> as R cannot construct: subdirectory ‘R/win-library/x.y’ of the home 
+>> directory, for R x.y.z, because "C:\\Users\\rsb/R/win-library/x.y" does 
+>> not exist, and that is where R is looking (here in GRASS):
+>> 
+>>> Sys.getenv("R_LIBS_USER")
+>> [1] "C:\\Users\\rsb/R/win-library/3.3"
+>> 
+>> (the different dirseps do not matter).
+>> 
+>> Does WinGRASS need to change the HOME environment variable? If it does, 
+>> users of R in GRASS need to set R_LIBS or R_LIBS_USER, easiest once via 
+>> Control Panel.
+>
+> could you download the files from
+> https://trac.osgeo.org/grass/browser/grass/trunk/mswindows/external/rbatch,
+> copy these to an arbitrary folder e.g. C:\wd\testfolder, open a windows
+> console within this folder and type R in the console, then try your test
+> with  Sys.getenv("R_LIBS_USER") and  .libPaths()?
+>
+> for me it works that the general and private library is found by R.
+
+OK, looks like this:
+
+> Sys.getenv("R_LIBS_USER")
+[1] "C:\\Users\\rsb\\Documents/R/win-library/3.3"
+> .libPaths()
+[1] "C:/Users/rsb/Documents/R/win-library/3.3"
+[2] "C:/Program Files/R/R-3.3.2/library"
+> any(match(installed.packages()[,"Package"], "rgrass7"))
+[1] TRUE
+
+But I don't see any recent revisions in that directory?
+
+Roger
+
+>
+> I'll have a look if /where winGRASS changes %HOME%
+>
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296409.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From hellik at web.de  Fri Nov 18 02:39:40 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Fri, 18 Nov 2016 03:39:40 -0700 (MST)
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+	on Windows
+In-Reply-To: <alpine.LFD.2.20.1611181032230.917@reclus.nhh.no>
+References: <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+ <1479305996319-5296059.post@n6.nabble.com>
+ <1479378351507-5296217.post@n6.nabble.com>
+ <1479379231450-5296219.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611171149230.26777@reclus.nhh.no>
+ <1479381257136-5296239.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+ <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+ <1479457336745-5296409.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181032230.917@reclus.nhh.no>
+Message-ID: <1479465580180-5296444.post@n6.nabble.com>
+
+Roger Bivand wrote
+>> could you download the files from
+>> https://trac.osgeo.org/grass/browser/grass/trunk/mswindows/external/rbatch,
+>> copy these to an arbitrary folder e.g. C:\wd\testfolder, open a windows
+>> console within this folder and type R in the console, then try your test
+>> with  Sys.getenv("R_LIBS_USER") and  .libPaths()?
+>>
+>> for me it works that the general and private library is found by R.
+> 
+> OK, looks like this:
+> 
+>> Sys.getenv("R_LIBS_USER")
+> [1] "C:\\Users\\rsb\\Documents/R/win-library/3.3"
+>> .libPaths()
+> [1] "C:/Users/rsb/Documents/R/win-library/3.3"
+> [2] "C:/Program Files/R/R-3.3.2/library"
+>> any(match(installed.packages()[,"Package"], "rgrass7"))
+> [1] TRUE
+> 
+> But I don't see any recent revisions in that directory?
+
+
+it is taken from https://github.com/ggrothendieck/batchfiles by author`s
+permission.
+
+so the script works outside a winGRASS session also for you.
+
+but the same script doesn't work inside a winGRASS session. so it's maybe
+related to some %HOME% issues as mentioned before.
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296444.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From hellik at web.de  Fri Nov 18 03:43:48 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Fri, 18 Nov 2016 04:43:48 -0700 (MST)
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+	on Windows
+In-Reply-To: <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+References: <alpine.LFD.2.20.1611151000110.13336@reclus.nhh.no>
+ <1479303108061-5296042.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+ <1479305996319-5296059.post@n6.nabble.com>
+ <1479378351507-5296217.post@n6.nabble.com>
+ <1479379231450-5296219.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611171149230.26777@reclus.nhh.no>
+ <1479381257136-5296239.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+ <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+Message-ID: <1479469428344-5296449.post@n6.nabble.com>
+
+Roger Bivand wrote
+> In a context with Windows 7 without setting the R_LIBS_USER environment 
+> variable, R outside GRASS reports:
+> 
+>> Sys.getenv("HOME")
+> [1] "C:\\Users\\rsb\\Documents"
+>> .libPaths()
+> [1] "C:/Users/rsb/Documents/R/win-library/3.3"
+> [2] "C:/Program Files/R/R-3.3.2/library"
+> 
+> but inside GRASS %HOME% is re-defined, so:
+> 
+>> Sys.getenv("HOME")
+> [1] "C:\\Users\\rsb"
+>> .libPaths()
+> [1] "c:/Program Files/R/R-3.3.2/library"
+> 
+> as R cannot construct: subdirectory ‘R/win-library/x.y’ of the home 
+> directory, for R x.y.z, because "C:\\Users\\rsb/R/win-library/x.y" does 
+> not exist, and that is where R is looking (here in GRASS):
+> 
+>> Sys.getenv("R_LIBS_USER")
+> [1] "C:\\Users\\rsb/R/win-library/3.3"
+> 
+> (the different dirseps do not matter).
+> 
+> Does WinGRASS need to change the HOME environment variable? If it does, 
+> users of R in GRASS need to set R_LIBS or R_LIBS_USER, easiest once via 
+> Control Panel.
+
+I had a look into the sources; I can't find a line of code where winGRASS
+changes %HOME% at the moment; but it obvious uses %USERPROFILE% as %HOME%. 
+
+and %USERPROFILE% points to in (at least newer)  windows versions  to
+
+e.g.
+echo %USERPROFILE%
+C:\Users\hkmyr
+C:\Users\\rsb
+etc.
+
+in a vanilla windows console, %HOME% isn't defined:
+
+echo %HOME%
+%HOME%
+
+within a winGRASS session
+
+echo %HOME%
+C:\Users\hkmyr
+
+it points to the folder defined under %USERPROFILE%
+
+add following line 
+
+SET HOME=%USERPROFILE%\Documents
+
+below 
+
+https://trac.osgeo.org/grass/browser/grass/trunk/mswindows/env.bat#L23
+
+has following effect within a winGRASS session:
+
+Cleaning up temporary files...
+Starting GRASS GIS...
+WARNING: Concurrent mapset locking is not supported on Windows
+
+          __________  ___   __________    _______________
+         / ____/ __ \/   | / ___/ ___/   / ____/  _/ ___/
+        / / __/ /_/ / /| | \__ \\_  \   / / __ / / \__ \
+       / /_/ / _, _/ ___ |___/ /__/ /  / /_/ // / ___/ /
+       \____/_/ |_/_/  |_/____/____/   \____/___//____/
+
+Welcome to GRASS GIS 7.0.5
+GRASS GIS homepage:                      http://grass.osgeo.org
+This version running through:            Command Shell
+(C:\WINDOWS\system32\cmd.exe)
+Help is available with the command:      g.manual -i
+See the licence terms with:              g.version -c
+See citation options with:               g.version -x
+If required, restart the GUI with:       g.gui wxpython
+When ready to quit enter:                exit
+
+Launching <wxpython> GUI in the background, please wait...
+Microsoft Windows [Version 10.0.14393]
+(c) 2016 Microsoft Corporation. Alle Rechte vorbehalten.
+
+C:\Users\hkmyr>
+C:\Users\hkmyr>echo %HOME%
+C:\Users\hkmyr\Documents
+
+C:\Users\hkmyr>R
+
+R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> .libpaths()
+Error: could not find function ".libpaths"
+> .libPaths()
+[1] "C:/Users/hkmyr/Documents/R/win-library/3.3"
+[2] "C:/Program Files/R/R-3.3.1/library"
+>
+
+now also the private library is detected within a winGRASS session.
+
+no idea at the moment if this change in env.bat has a side effect to the
+winGRASS installation; further tests are needed.
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296449.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Fri Nov 18 04:11:52 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri, 18 Nov 2016 13:11:52 +0100
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+ on Windows
+In-Reply-To: <1479469428344-5296449.post@n6.nabble.com>
+References: <alpine.LFD.2.20.1611151000110.13336@reclus.nhh.no>
+ <1479303108061-5296042.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+ <1479305996319-5296059.post@n6.nabble.com>
+ <1479378351507-5296217.post@n6.nabble.com>
+ <1479379231450-5296219.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611171149230.26777@reclus.nhh.no>
+ <1479381257136-5296239.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+ <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+ <1479469428344-5296449.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.20.1611181306550.30514@reclus.nhh.no>
+
+On Fri, 18 Nov 2016, Helmut Kudrnovsky wrote:
+
+> Roger Bivand wrote
+>> In a context with Windows 7 without setting the R_LIBS_USER environment 
+>> variable, R outside GRASS reports:
+>> 
+>>> Sys.getenv("HOME")
+>> [1] "C:\\Users\\rsb\\Documents"
+>>> .libPaths()
+>> [1] "C:/Users/rsb/Documents/R/win-library/3.3"
+>> [2] "C:/Program Files/R/R-3.3.2/library"
+>> 
+>> but inside GRASS %HOME% is re-defined, so:
+>> 
+>>> Sys.getenv("HOME")
+>> [1] "C:\\Users\\rsb"
+>>> .libPaths()
+>> [1] "c:/Program Files/R/R-3.3.2/library"
+>> 
+>> as R cannot construct: subdirectory ‘R/win-library/x.y’ of the home 
+>> directory, for R x.y.z, because "C:\\Users\\rsb/R/win-library/x.y" does 
+>> not exist, and that is where R is looking (here in GRASS):
+>> 
+>>> Sys.getenv("R_LIBS_USER")
+>> [1] "C:\\Users\\rsb/R/win-library/3.3"
+>> 
+>> (the different dirseps do not matter).
+>> 
+>> Does WinGRASS need to change the HOME environment variable? If it does, 
+>> users of R in GRASS need to set R_LIBS or R_LIBS_USER, easiest once via 
+>> Control Panel.
+>
+> I had a look into the sources; I can't find a line of code where winGRASS
+> changes %HOME% at the moment; but it obvious uses %USERPROFILE% as %HOME%. 
+>
+> and %USERPROFILE% points to in (at least newer)  windows versions  to
+>
+> e.g.
+> echo %USERPROFILE%
+> C:\Users\hkmyr
+> C:\Users\\rsb
+> etc.
+>
+> in a vanilla windows console, %HOME% isn't defined:
+>
+> echo %HOME%
+> %HOME%
+>
+> within a winGRASS session
+>
+> echo %HOME%
+> C:\Users\hkmyr
+>
+> it points to the folder defined under %USERPROFILE%
+>
+> add following line 
+>
+> SET HOME=%USERPROFILE%\Documents
+>
+> below 
+>
+> https://trac.osgeo.org/grass/browser/grass/trunk/mswindows/env.bat#L23
+>
+> has following effect within a winGRASS session:
+>
+> Cleaning up temporary files...
+> Starting GRASS GIS...
+> WARNING: Concurrent mapset locking is not supported on Windows
+>
+>          __________  ___   __________    _______________
+>         / ____/ __ \/   | / ___/ ___/   / ____/  _/ ___/
+>        / / __/ /_/ / /| | \__ \\_  \   / / __ / / \__ \
+>       / /_/ / _, _/ ___ |___/ /__/ /  / /_/ // / ___/ /
+>       \____/_/ |_/_/  |_/____/____/   \____/___//____/
+>
+> Welcome to GRASS GIS 7.0.5
+> GRASS GIS homepage:                      http://grass.osgeo.org
+> This version running through:            Command Shell
+> (C:\WINDOWS\system32\cmd.exe)
+> Help is available with the command:      g.manual -i
+> See the licence terms with:              g.version -c
+> See citation options with:               g.version -x
+> If required, restart the GUI with:       g.gui wxpython
+> When ready to quit enter:                exit
+>
+> Launching <wxpython> GUI in the background, please wait...
+> Microsoft Windows [Version 10.0.14393]
+> (c) 2016 Microsoft Corporation. Alle Rechte vorbehalten.
+>
+> C:\Users\hkmyr>
+> C:\Users\hkmyr>echo %HOME%
+> C:\Users\hkmyr\Documents
+>
+> C:\Users\hkmyr>R
+>
+> R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+> Copyright (C) 2016 The R Foundation for Statistical Computing
+> Platform: x86_64-w64-mingw32/x64 (64-bit)
+>
+> R is free software and comes with ABSOLUTELY NO WARRANTY.
+> You are welcome to redistribute it under certain conditions.
+> Type 'license()' or 'licence()' for distribution details.
+>
+> R is a collaborative project with many contributors.
+> Type 'contributors()' for more information and
+> 'citation()' on how to cite R or R packages in publications.
+>
+> Type 'demo()' for some demos, 'help()' for on-line help, or
+> 'help.start()' for an HTML browser interface to help.
+> Type 'q()' to quit R.
+>
+>> .libpaths()
+> Error: could not find function ".libpaths"
+>> .libPaths()
+> [1] "C:/Users/hkmyr/Documents/R/win-library/3.3"
+> [2] "C:/Program Files/R/R-3.3.1/library"
+>>
+>
+> now also the private library is detected within a winGRASS session.
+>
+> no idea at the moment if this change in env.bat has a side effect to the
+> winGRASS installation; further tests are needed.
+>
+
+See also
+
+> ?"environment variables"
+
+which on a Windows installation shows "R_USER" in the Windows specific 
+section at foot, this also loses /Documents within GRASS.
+
+Roger
+
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296449.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From hellik at web.de  Fri Nov 18 04:16:08 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Fri, 18 Nov 2016 05:16:08 -0700 (MST)
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+	on Windows
+In-Reply-To: <1479469428344-5296449.post@n6.nabble.com>
+References: <1479303108061-5296042.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+ <1479305996319-5296059.post@n6.nabble.com>
+ <1479378351507-5296217.post@n6.nabble.com>
+ <1479379231450-5296219.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611171149230.26777@reclus.nhh.no>
+ <1479381257136-5296239.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+ <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+ <1479469428344-5296449.post@n6.nabble.com>
+Message-ID: <1479471368580-5296458.post@n6.nabble.com>
+
+Helmut Kudrnovsky wrote
+> I had a look into the sources; I can't find a line of code where winGRASS
+> changes %HOME% at the moment; but it obvious uses %USERPROFILE% as %HOME%. 
+
+maybe just found it:
+
+for trunk
+
+https://trac.osgeo.org/grass/browser/grass/trunk/lib/init/grass.py#L712
+
+712	def ensure_home():
+713	    """Set HOME if not set on MS Windows"""
+714	    if windows and not os.getenv('HOME'):
+715	        os.environ['HOME'] = os.path.join(os.getenv('HOMEDRIVE'),
+716	                                          os.getenv('HOMEPATH'))
+
+and for the 7.0.x-line
+
+https://trac.osgeo.org/grass/browser/grass/branches/releasebranch_7_0/lib/init/grass.py#L1338
+
+1338	# set HOME
+1339	if windows and not os.getenv('HOME'):
+1340	    os.environ['HOME'] = os.path.join(os.getenv('HOMEDRIVE'),
+1341	                                      os.getenv('HOMEPATH'))
+
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296458.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Fri Nov 18 04:22:20 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri, 18 Nov 2016 13:22:20 +0100
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+ on Windows
+In-Reply-To: <1479471368580-5296458.post@n6.nabble.com>
+References: <1479303108061-5296042.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+ <1479305996319-5296059.post@n6.nabble.com>
+ <1479378351507-5296217.post@n6.nabble.com>
+ <1479379231450-5296219.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611171149230.26777@reclus.nhh.no>
+ <1479381257136-5296239.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+ <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+ <1479469428344-5296449.post@n6.nabble.com>
+ <1479471368580-5296458.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.20.1611181318280.30514@reclus.nhh.no>
+
+On Fri, 18 Nov 2016, Helmut Kudrnovsky wrote:
+
+> Helmut Kudrnovsky wrote
+>> I had a look into the sources; I can't find a line of code where winGRASS
+>> changes %HOME% at the moment; but it obvious uses %USERPROFILE% as %HOME%. 
+>
+> maybe just found it:
+>
+> for trunk
+>
+> https://trac.osgeo.org/grass/browser/grass/trunk/lib/init/grass.py#L712
+>
+> 712	def ensure_home():
+> 713	    """Set HOME if not set on MS Windows"""
+> 714	    if windows and not os.getenv('HOME'):
+> 715	        os.environ['HOME'] = os.path.join(os.getenv('HOMEDRIVE'),
+> 716	                                          os.getenv('HOMEPATH'))
+>
+> and for the 7.0.x-line
+>
+> https://trac.osgeo.org/grass/browser/grass/branches/releasebranch_7_0/lib/init/grass.py#L1338
+>
+> 1338	# set HOME
+> 1339	if windows and not os.getenv('HOME'):
+> 1340	    os.environ['HOME'] = os.path.join(os.getenv('HOMEDRIVE'),
+> 1341	                                      os.getenv('HOMEPATH'))
+>
+>
+
+OK, so the extension would be to look in %HOME%/Documents to see if there 
+is %HOME%/Documents/R, and if so do what? If R_LIBS_USER is set, do 
+nothing, if not, set R_USER, or guess which win-library is the relevant 
+one and set R_LIBS_USER? Even if this is redundant for non-R users?
+
+Roger
+
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296458.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From hellik at web.de  Fri Nov 18 04:27:33 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Fri, 18 Nov 2016 05:27:33 -0700 (MST)
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+	on Windows
+In-Reply-To: <alpine.LFD.2.20.1611181306550.30514@reclus.nhh.no>
+References: <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+ <1479305996319-5296059.post@n6.nabble.com>
+ <1479378351507-5296217.post@n6.nabble.com>
+ <1479379231450-5296219.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611171149230.26777@reclus.nhh.no>
+ <1479381257136-5296239.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+ <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+ <1479469428344-5296449.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181306550.30514@reclus.nhh.no>
+Message-ID: <1479472053327-5296461.post@n6.nabble.com>
+
+Roger Bivand wrote
+>>
+>> no idea at the moment if this change in env.bat has a side effect to the
+>> winGRASS installation; further tests are needed.
+>>
+> 
+> See also
+> 
+>> ?"environment variables"
+> 
+> which on a Windows installation shows "R_USER" in the Windows specific 
+> section at foot, this also loses /Documents within GRASS.
+
+see my other mail where %HOME% is set by winGRASS-grass7xx.py
+
+so it seems to be some kind of a "design mismatch" where eg. windows (via
+%USERPROFILE) and python
+
+C:\>python
+Python 2.7.5 (default, May 15 2013, 22:44:16) [MSC v.1500 64 bit (AMD64)] on
+win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import os
+>>> os.getenv('HOME')
+'C:\\Users\\hkmyr'
+>>> os.getenv('HOMEPATH')
+'\\Users\\hkmyr'
+>>> os.getenv('HOMEDRIVE')
+'C:'
+>>>
+
+and R looks for %HOME%.
+
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296461.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Fri Nov 18 04:48:28 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri, 18 Nov 2016 13:48:28 +0100
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+ on Windows
+In-Reply-To: <1479472053327-5296461.post@n6.nabble.com>
+References: <alpine.LFD.2.20.1611161432470.11021@reclus.nhh.no>
+ <1479305996319-5296059.post@n6.nabble.com>
+ <1479378351507-5296217.post@n6.nabble.com>
+ <1479379231450-5296219.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611171149230.26777@reclus.nhh.no>
+ <1479381257136-5296239.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+ <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+ <1479469428344-5296449.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181306550.30514@reclus.nhh.no>
+ <1479472053327-5296461.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.20.1611181343200.30514@reclus.nhh.no>
+
+On Fri, 18 Nov 2016, Helmut Kudrnovsky wrote:
+
+> Roger Bivand wrote
+>>>
+>>> no idea at the moment if this change in env.bat has a side effect to the
+>>> winGRASS installation; further tests are needed.
+>>>
+>> 
+>> See also
+>> 
+>>> ?"environment variables"
+>> 
+>> which on a Windows installation shows "R_USER" in the Windows specific 
+>> section at foot, this also loses /Documents within GRASS.
+>
+> see my other mail where %HOME% is set by winGRASS-grass7xx.py
+>
+> so it seems to be some kind of a "design mismatch" where eg. windows (via
+> %USERPROFILE) and python
+>
+> C:\>python
+> Python 2.7.5 (default, May 15 2013, 22:44:16) [MSC v.1500 64 bit (AMD64)] on
+> win32
+> Type "help", "copyright", "credits" or "license" for more information.
+>>>> import os
+>>>> os.getenv('HOME')
+> 'C:\\Users\\hkmyr'
+>>>> os.getenv('HOMEPATH')
+> '\\Users\\hkmyr'
+>>>> os.getenv('HOMEDRIVE')
+> 'C:'
+>>>>
+>
+> and R looks for %HOME%.
+>
+
+Right. Both R and Python seem to use %USERPROFILE% which is predictably 
+present in modern Windows. In winGRASS this is used to set %HOME%, which R 
+uses instead of %USERPROFILE%. R believes a set %HOME%, leading to the 
+difficulties.
+
+Could the winGRASS startup set R_LIBS_USER itself, and free it on exit? If 
+the user had multiple /x.y library directories, the advice would be to set 
+manually in the control panel, if one, use that?
+
+Roger
+
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296461.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From hellik at web.de  Fri Nov 18 05:11:39 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Fri, 18 Nov 2016 06:11:39 -0700 (MST)
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+	on Windows
+In-Reply-To: <alpine.LFD.2.20.1611181343200.30514@reclus.nhh.no>
+References: <1479378351507-5296217.post@n6.nabble.com>
+ <1479379231450-5296219.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611171149230.26777@reclus.nhh.no>
+ <1479381257136-5296239.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+ <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+ <1479469428344-5296449.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181306550.30514@reclus.nhh.no>
+ <1479472053327-5296461.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181343200.30514@reclus.nhh.no>
+Message-ID: <1479474699397-5296469.post@n6.nabble.com>
+
+Roger Bivand wrote
+> Right. Both R and Python seem to use %USERPROFILE% which is predictably 
+> present in modern Windows. In winGRASS this is used to set %HOME%, which R 
+> uses instead of %USERPROFILE%. R believes a set %HOME%, leading to the 
+> difficulties.
+
+a list of available windows variables:
+
+http://ss64.com/nt/syntax-variables.html
+
+USERPROFILE:
+
+%SystemDrive%\Users\{username}
+This is equivalent to the $HOME environment variable in Unix/Linux 
+
+
+Roger Bivand wrote
+> Could the winGRASS startup set R_LIBS_USER itself, and free it on exit? If 
+> the user had multiple /x.y library directories, the advice would be to set 
+> manually in the control panel, if one, use that?
+
+theoretically it would be possible to set R_LIBS_USER during installation; a
+new logic has to be added to the nsis installer script.
+
+the other way around may be to set %HOME% in winGRASS as
+%USERPROFILE%\Documents.
+
+both changes should be discussed on the dev ML.
+
+before such changes are implemented, the workaround to manage this issue
+manually via the control panel should go to the wiki.
+
+Anna, any suggestions?
+
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296469.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From hellik at web.de  Fri Nov 18 06:17:12 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Fri, 18 Nov 2016 07:17:12 -0700 (MST)
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+	on Windows
+In-Reply-To: <1479474699397-5296469.post@n6.nabble.com>
+References: <1479379231450-5296219.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611171149230.26777@reclus.nhh.no>
+ <1479381257136-5296239.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+ <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+ <1479469428344-5296449.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181306550.30514@reclus.nhh.no>
+ <1479472053327-5296461.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181343200.30514@reclus.nhh.no>
+ <1479474699397-5296469.post@n6.nabble.com>
+Message-ID: <1479478632711-5296481.post@n6.nabble.com>
+
+Helmut Kudrnovsky wrote
+> both changes should be discussed on the dev ML.
+> 
+> before such changes are implemented, the workaround to manage this issue
+> manually via the control panel should go to the wiki.
+> 
+> Anna, any suggestions?
+
+just opened a discussion on the dev ML:
+
+https://lists.osgeo.org/pipermail/grass-dev/2016-November/083122.html
+
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5296481.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From hellik at web.de  Wed Nov 23 12:36:50 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Wed, 23 Nov 2016 13:36:50 -0700 (MST)
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+	on Windows
+In-Reply-To: <1479478632711-5296481.post@n6.nabble.com>
+References: <alpine.LFD.2.20.1611171149230.26777@reclus.nhh.no>
+ <1479381257136-5296239.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+ <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+ <1479469428344-5296449.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181306550.30514@reclus.nhh.no>
+ <1479472053327-5296461.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181343200.30514@reclus.nhh.no>
+ <1479474699397-5296469.post@n6.nabble.com>
+ <1479478632711-5296481.post@n6.nabble.com>
+Message-ID: <1479933410544-5297179.post@n6.nabble.com>
+
+Helmut Kudrnovsky wrote
+> 
+> Helmut Kudrnovsky wrote
+>> both changes should be discussed on the dev ML.
+>> 
+>> before such changes are implemented, the workaround to manage this issue
+>> manually via the control panel should go to the wiki.
+>> 
+>> Anna, any suggestions?
+> just opened a discussion on the dev ML:
+> 
+> https://lists.osgeo.org/pipermail/grass-dev/2016-November/083122.html
+
+some insights regarding %HOME% in winGRASS:
+
+https://lists.osgeo.org/pipermail/grass-dev/2016-November/083159.html
+
+----------------------------------------------------------------------------------------------
+[GRASS-dev] does GRASS need HOME to be defined?
+> >> anyone more insight, if %HOME% is needed in winGRASS?
+> >
+> >Done by Glynn in:
+> >https://trac.osgeo.org/grass/changeset/37873
+> 
+> does GRASS need HOME to be defined?
+> 
+> any hints?
+
+It's used G__home() on Unix (and as a fallback on Windows) and it's
+used for G_rc_path() on Windows (for some reason, the Unix version
+uses getpwuid(), which is probably incorrect in this context).
+
+It may also be used implicitly by library functions or external
+programs looking for configuration files.
+----------------------------------------------------------------------------------------------
+
+https://lists.osgeo.org/pipermail/grass-stats/2016-November/001708.html
+----------------------------------------------------------------------------------------------
+OK, so the extension would be to look in %HOME%/Documents to see if there 
+is %HOME%/Documents/R, and if so do what? If R_LIBS_USER is set, do 
+nothing, if not, set R_USER, or guess which win-library is the relevant 
+one and set R_LIBS_USER? Even if this is redundant for non-R users?
+----------------------------------------------------------------------------------------------
+
+so it's still to discuss what would be the best option to overcome this
+issue.
+
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5297179.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From hellik at web.de  Wed Nov 23 13:07:20 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Wed, 23 Nov 2016 14:07:20 -0700 (MST)
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+	on Windows
+In-Reply-To: <1479933410544-5297179.post@n6.nabble.com>
+References: <1479381257136-5296239.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+ <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+ <1479469428344-5296449.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181306550.30514@reclus.nhh.no>
+ <1479472053327-5296461.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181343200.30514@reclus.nhh.no>
+ <1479474699397-5296469.post@n6.nabble.com>
+ <1479478632711-5296481.post@n6.nabble.com>
+ <1479933410544-5297179.post@n6.nabble.com>
+Message-ID: <1479935240439-5297192.post@n6.nabble.com>
+
+Helmut Kudrnovsky wrote
+> 
+> Helmut Kudrnovsky wrote
+>> 
+>> Helmut Kudrnovsky wrote
+>>> both changes should be discussed on the dev ML.
+>>> 
+>>> before such changes are implemented, the workaround to manage this issue
+>>> manually via the control panel should go to the wiki.
+>>> 
+>>> Anna, any suggestions?
+>> just opened a discussion on the dev ML:
+>> 
+>> https://lists.osgeo.org/pipermail/grass-dev/2016-November/083122.html
+> some insights regarding %HOME% in winGRASS:
+> 
+> https://lists.osgeo.org/pipermail/grass-dev/2016-November/083159.html
+> 
+> ----------------------------------------------------------------------------------------------
+> [GRASS-dev] does GRASS need HOME to be defined?
+>> >> anyone more insight, if %HOME% is needed in winGRASS?
+>> >
+>> >Done by Glynn in:
+>> >https://trac.osgeo.org/grass/changeset/37873
+>> 
+>> does GRASS need HOME to be defined?
+>> 
+>> any hints?
+> 
+> It's used G__home() on Unix (and as a fallback on Windows) and it's
+> used for G_rc_path() on Windows (for some reason, the Unix version
+> uses getpwuid(), which is probably incorrect in this context).
+> 
+> It may also be used implicitly by library functions or external
+> programs looking for configuration files.
+> ----------------------------------------------------------------------------------------------
+> 
+> https://lists.osgeo.org/pipermail/grass-stats/2016-November/001708.html
+> ----------------------------------------------------------------------------------------------
+> OK, so the extension would be to look in %HOME%/Documents to see if there 
+> is %HOME%/Documents/R, and if so do what? If R_LIBS_USER is set, do 
+> nothing, if not, set R_USER, or guess which win-library is the relevant 
+> one and set R_LIBS_USER? Even if this is redundant for non-R users?
+> ----------------------------------------------------------------------------------------------
+> 
+> so it's still to discuss what would be the best option to overcome this
+> issue.
+
+
+tested here within a winGRASS session:
+
+D:\software_source\grass_trunk\mswindows\external\rbatch>set
+R_USER=C:\Users\hkmyr\Documents
+
+D:\software_source\grass_trunk\mswindows\external\rbatch>R
+
+R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R ist freie Software und kommt OHNE JEGLICHE GARANTIE.
+Sie sind eingeladen, es unter bestimmten Bedingungen weiter zu verbreiten.
+Tippen Sie 'license()' or 'licence()' für Details dazu.
+
+R ist ein Gemeinschaftsprojekt mit vielen Beitragenden.
+Tippen Sie 'contributors()' für mehr Information und 'citation()',
+um zu erfahren, wie R oder R packages in Publikationen zitiert werden
+können.
+
+Tippen Sie 'demo()' für einige Demos, 'help()' für on-line Hilfe, oder
+'help.start()' für eine HTML Browserschnittstelle zur Hilfe.
+Tippen Sie 'q()', um R zu verlassen.
+
+> .libPaths()
+[1] "C:/Users/hkmyr/Documents/R/win-library/3.3"
+[2] "C:/Program Files/R/R-3.3.1/library"
+
+------------------
+
+if we let %HOME% untouched, the easiest way may be
+(similar as we already do it with Rstudio:
+IF EXIST "%ProgramFiles%\RStudio\bin\rstudio.exe" set
+PATH=%PATH%;%ProgramFiles%\RStudio\bin)
+
+- check if there is C:\Users\yourusername\Documents\R
+- if yes, set R_USER=C:\Users\hkmyr\Documents
+
+so the most common cases of private R libraries should be covered.
+
+any comments/objections for this change?
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5297192.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From hellik at web.de  Wed Nov 23 13:56:03 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Wed, 23 Nov 2016 14:56:03 -0700 (MST)
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+	on Windows
+In-Reply-To: <1479935240439-5297192.post@n6.nabble.com>
+References: <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+ <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+ <1479469428344-5296449.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181306550.30514@reclus.nhh.no>
+ <1479472053327-5296461.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181343200.30514@reclus.nhh.no>
+ <1479474699397-5296469.post@n6.nabble.com>
+ <1479478632711-5296481.post@n6.nabble.com>
+ <1479933410544-5297179.post@n6.nabble.com>
+ <1479935240439-5297192.post@n6.nabble.com>
+Message-ID: <1479938163274-5297203.post@n6.nabble.com>
+
+Helmut Kudrnovsky wrote
+> if we let %HOME% untouched, the easiest way may be
+> (similar as we already do it with Rstudio:
+> IF EXIST "%ProgramFiles%\RStudio\bin\rstudio.exe" set
+> PATH=%PATH%;%ProgramFiles%\RStudio\bin)
+> 
+> - check if there is C:\Users\yourusername\Documents\R
+> - if yes, set R_USER=C:\Users\hkmyr\Documents
+> 
+> so the most common cases of private R libraries should be covered.
+> 
+> any comments/objections for this change?
+
+after some testing on win7, win8, win10, I've committed:
+https://lists.osgeo.org/pipermail/grass-commit/2016-November/040769.html
+
+New Revision: 69883
+
+Modified:
+   grass/trunk/mswindows/env.bat
+Log:
+set R_USER if %USERPROFILE%\Documents\R\ exists to catch most common cases
+of private R libraries in windows
+
+it should catch at least the common cases where personal libraries are
+located in %USERPROFILE%\Documents\R\ 
+
+please test the next standalone winGRASS7.3.svn daily builds
+(https://wingrass.fsv.cvut.cz/grass73/x86_64/ or
+https://wingrass.fsv.cvut.cz/grass73/x86/).
+
+if it works, it should be backported to the standalone winGRASS7.0.x and the
+upcoming winGRASS7.2.
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5297203.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From neteler at osgeo.org  Thu Nov 24 01:34:45 2016
+From: neteler at osgeo.org (Markus Neteler)
+Date: Thu, 24 Nov 2016 10:34:45 +0100
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+ on Windows
+In-Reply-To: <1479938163274-5297203.post@n6.nabble.com>
+References: <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+ <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+ <1479469428344-5296449.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181306550.30514@reclus.nhh.no>
+ <1479472053327-5296461.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181343200.30514@reclus.nhh.no>
+ <1479474699397-5296469.post@n6.nabble.com>
+ <1479478632711-5296481.post@n6.nabble.com>
+ <1479933410544-5297179.post@n6.nabble.com>
+ <1479935240439-5297192.post@n6.nabble.com>
+ <1479938163274-5297203.post@n6.nabble.com>
+Message-ID: <CALFmHhtn6=W89fRV80N5U2j7+-zZJ7EKniZCgdJyXG1hBd7QHQ@mail.gmail.com>
+
+On Wed, Nov 23, 2016 at 10:56 PM, Helmut Kudrnovsky <hellik at web.de> wrote:
+...
+> New Revision: 69883
+>
+> Modified:
+>    grass/trunk/mswindows/env.bat
+> Log:
+> set R_USER if %USERPROFILE%\Documents\R\ exists to catch most common cases
+> of private R libraries in windows
+>
+> it should catch at least the common cases where personal libraries are
+> located in %USERPROFILE%\Documents\R\
+>
+> please test the next standalone winGRASS7.3.svn daily builds
+> (https://wingrass.fsv.cvut.cz/grass73/x86_64/ or
+> https://wingrass.fsv.cvut.cz/grass73/x86/).
+
+The new installer is available now:
+
+https://wingrass.fsv.cvut.cz/grass73/x86_64/WinGRASS-7.3.svn-r69883-73-Setup-x86_64.exe
+(or later)
+
+> if it works, it should be backported to the standalone winGRASS7.0.x and the
+> upcoming winGRASS7.2.
+
+If possible, please timely test. I am holding RC2 for this at time.
+
+thanks
+Markus
+
+From Roger.Bivand at nhh.no  Thu Nov 24 02:16:14 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu, 24 Nov 2016 11:16:14 +0100
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+ on Windows
+In-Reply-To: <CALFmHhtn6=W89fRV80N5U2j7+-zZJ7EKniZCgdJyXG1hBd7QHQ@mail.gmail.com>
+References: <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+ <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+ <1479469428344-5296449.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181306550.30514@reclus.nhh.no>
+ <1479472053327-5296461.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181343200.30514@reclus.nhh.no>
+ <1479474699397-5296469.post@n6.nabble.com>
+ <1479478632711-5296481.post@n6.nabble.com>
+ <1479933410544-5297179.post@n6.nabble.com>
+ <1479935240439-5297192.post@n6.nabble.com>
+ <1479938163274-5297203.post@n6.nabble.com>
+ <CALFmHhtn6=W89fRV80N5U2j7+-zZJ7EKniZCgdJyXG1hBd7QHQ@mail.gmail.com>
+Message-ID: <alpine.LFD.2.20.1611241110290.18253@reclus.nhh.no>
+
+On Thu, 24 Nov 2016, Markus Neteler wrote:
+
+> On Wed, Nov 23, 2016 at 10:56 PM, Helmut Kudrnovsky <hellik at web.de> wrote:
+> ...
+>> New Revision: 69883
+>>
+>> Modified:
+>>    grass/trunk/mswindows/env.bat
+>> Log:
+>> set R_USER if %USERPROFILE%\Documents\R\ exists to catch most common cases
+>> of private R libraries in windows
+>>
+>> it should catch at least the common cases where personal libraries are
+>> located in %USERPROFILE%\Documents\R\
+>>
+>> please test the next standalone winGRASS7.3.svn daily builds
+>> (https://wingrass.fsv.cvut.cz/grass73/x86_64/ or
+>> https://wingrass.fsv.cvut.cz/grass73/x86/).
+>
+> The new installer is available now:
+>
+> https://wingrass.fsv.cvut.cz/grass73/x86_64/WinGRASS-7.3.svn-r69883-73-Setup-x86_64.exe
+> (or later)
+>
+>> if it works, it should be backported to the standalone winGRASS7.0.x and the
+>> upcoming winGRASS7.2.
+>
+> If possible, please timely test. I am holding RC2 for this at time.
+
+With the version you cite (7.3.svn-r69883), I see the resolution:
+
+> .libPaths()
+[1] "C:/Users/rsb/Documents/R/win-library/3.3"
+[2] "c:/Program Files/R/R-3.3.2/library"
+> library(rgrass7)
+Loading required package: sp
+Loading required package: XML
+GRASS GIS interface loaded with GRASS version: GRASS 7.3.svn (2016)
+and location: nc_basic_spm_grass7
+
+With the fix, R for Windows picks up the default personal library 
+location. This is both with Rgui started in the GRASS Layer Manager 
+console, and in the Windows GRASS terminal.
+
+Thanks very much!
+
+Roger
+
+>
+> thanks
+> Markus
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From neteler at osgeo.org  Thu Nov 24 02:48:08 2016
+From: neteler at osgeo.org (Markus Neteler)
+Date: Thu, 24 Nov 2016 11:48:08 +0100
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+ on Windows
+In-Reply-To: <alpine.LFD.2.20.1611241110290.18253@reclus.nhh.no>
+References: <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+ <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+ <1479469428344-5296449.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181306550.30514@reclus.nhh.no>
+ <1479472053327-5296461.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181343200.30514@reclus.nhh.no>
+ <1479474699397-5296469.post@n6.nabble.com>
+ <1479478632711-5296481.post@n6.nabble.com>
+ <1479933410544-5297179.post@n6.nabble.com>
+ <1479935240439-5297192.post@n6.nabble.com>
+ <1479938163274-5297203.post@n6.nabble.com>
+ <CALFmHhtn6=W89fRV80N5U2j7+-zZJ7EKniZCgdJyXG1hBd7QHQ@mail.gmail.com>
+ <alpine.LFD.2.20.1611241110290.18253@reclus.nhh.no>
+Message-ID: <CALFmHhvRXU-A=zvMs+b-XQFvU5=hq82hea7bbbZ_1Gi8fYoa7w@mail.gmail.com>
+
+On Thu, Nov 24, 2016 at 11:16 AM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+> On Thu, 24 Nov 2016, Markus Neteler wrote:
+>> On Wed, Nov 23, 2016 at 10:56 PM, Helmut Kudrnovsky <hellik at web.de> wrote:
+...
+>> https://wingrass.fsv.cvut.cz/grass73/x86_64/WinGRASS-7.3.svn-r69883-73-Setup-x86_64.exe
+>> (or later)
+...
+> With the version you cite (7.3.svn-r69883), I see the resolution:
+>
+>> .libPaths()
+>
+> [1] "C:/Users/rsb/Documents/R/win-library/3.3"
+> [2] "c:/Program Files/R/R-3.3.2/library"
+>>
+>> library(rgrass7)
+>
+> Loading required package: sp
+> Loading required package: XML
+> GRASS GIS interface loaded with GRASS version: GRASS 7.3.svn (2016)
+> and location: nc_basic_spm_grass7
+>
+> With the fix, R for Windows picks up the default personal library location.
+> This is both with Rgui started in the GRASS Layer Manager console, and in
+> the Windows GRASS terminal.
+>
+> Thanks very much!
+
+Excellent, thanks for the rapid test! Hence I'll backport the fix.
+
+Markus
+
+From kratochanna at gmail.com  Thu Nov 24 06:16:23 2016
+From: kratochanna at gmail.com (=?UTF-8?B?QW5uYSBQZXRyw6HFoW92w6E=?=)
+Date: Thu, 24 Nov 2016 09:16:23 -0500
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+ on Windows
+In-Reply-To: <CALFmHhvRXU-A=zvMs+b-XQFvU5=hq82hea7bbbZ_1Gi8fYoa7w@mail.gmail.com>
+References: <alpine.LFD.2.20.1611172039210.26225@reclus.nhh.no>
+ <alpine.LFD.2.20.1611180843240.29706@reclus.nhh.no>
+ <1479469428344-5296449.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181306550.30514@reclus.nhh.no>
+ <1479472053327-5296461.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181343200.30514@reclus.nhh.no>
+ <1479474699397-5296469.post@n6.nabble.com>
+ <1479478632711-5296481.post@n6.nabble.com>
+ <1479933410544-5297179.post@n6.nabble.com>
+ <1479935240439-5297192.post@n6.nabble.com>
+ <1479938163274-5297203.post@n6.nabble.com>
+ <CALFmHhtn6=W89fRV80N5U2j7+-zZJ7EKniZCgdJyXG1hBd7QHQ@mail.gmail.com>
+ <alpine.LFD.2.20.1611241110290.18253@reclus.nhh.no>
+ <CALFmHhvRXU-A=zvMs+b-XQFvU5=hq82hea7bbbZ_1Gi8fYoa7w@mail.gmail.com>
+Message-ID: <CAE0EDEoQwR7xp2ogsG7JzgJc0F8WVdwbCQuKoojvNTgCX1NQYQ@mail.gmail.com>
+
+On Thu, Nov 24, 2016 at 5:48 AM, Markus Neteler <neteler at osgeo.org> wrote:
+> On Thu, Nov 24, 2016 at 11:16 AM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+>> On Thu, 24 Nov 2016, Markus Neteler wrote:
+>>> On Wed, Nov 23, 2016 at 10:56 PM, Helmut Kudrnovsky <hellik at web.de> wrote:
+> ...
+>>> https://wingrass.fsv.cvut.cz/grass73/x86_64/WinGRASS-7.3.svn-r69883-73-Setup-x86_64.exe
+>>> (or later)
+> ...
+>> With the version you cite (7.3.svn-r69883), I see the resolution:
+>>
+>>> .libPaths()
+>>
+>> [1] "C:/Users/rsb/Documents/R/win-library/3.3"
+>> [2] "c:/Program Files/R/R-3.3.2/library"
+>>>
+>>> library(rgrass7)
+>>
+>> Loading required package: sp
+>> Loading required package: XML
+>> GRASS GIS interface loaded with GRASS version: GRASS 7.3.svn (2016)
+>> and location: nc_basic_spm_grass7
+>>
+>> With the fix, R for Windows picks up the default personal library location.
+>> This is both with Rgui started in the GRASS Layer Manager console, and in
+>> the Windows GRASS terminal.
+>>
+>> Thanks very much!
+>
+> Excellent, thanks for the rapid test! Hence I'll backport the fix.
+>
+> Markus
+
+Works for me as well, thank you for solving this!
+
+Anna
+
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+From hellik at web.de  Thu Nov 24 12:35:49 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Thu, 24 Nov 2016 13:35:49 -0700 (MST)
+Subject: [GRASS-stats] GRASS can't find R packages from personal library
+	on Windows
+In-Reply-To: <CALFmHhvRXU-A=zvMs+b-XQFvU5=hq82hea7bbbZ_1Gi8fYoa7w@mail.gmail.com>
+References: <1479472053327-5296461.post@n6.nabble.com>
+ <alpine.LFD.2.20.1611181343200.30514@reclus.nhh.no>
+ <1479474699397-5296469.post@n6.nabble.com>
+ <1479478632711-5296481.post@n6.nabble.com>
+ <1479933410544-5297179.post@n6.nabble.com>
+ <1479935240439-5297192.post@n6.nabble.com>
+ <1479938163274-5297203.post@n6.nabble.com>
+ <CALFmHhtn6=W89fRV80N5U2j7+-zZJ7EKniZCgdJyXG1hBd7QHQ@mail.gmail.com>
+ <alpine.LFD.2.20.1611241110290.18253@reclus.nhh.no>
+ <CALFmHhvRXU-A=zvMs+b-XQFvU5=hq82hea7bbbZ_1Gi8fYoa7w@mail.gmail.com>
+Message-ID: <1480019749534-5297335.post@n6.nabble.com>
+
+> >With the fix, R for Windows picks up the default personal library
+location. 
+>> This is both with Rgui started in the GRASS Layer Manager console, and in 
+>> the Windows GRASS terminal. 
+> >
+>> Thanks very much!
+
+>Excellent, thanks for the rapid test! Hence I'll backport the fix. 
+
+thanks for testing and backporting. 
+
+locally already working, I hope to find some time soon to implement that the
+R-GRASS coupling in OSGEO4W-winGRASS works the same as in standalone
+winGRASS. 
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/GRASS-can-t-find-R-packages-from-personal-library-on-Windows-tp5295771p5297335.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+

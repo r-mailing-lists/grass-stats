@@ -1,0 +1,1015 @@
+From rabennett at ymail.com  Thu Aug  4 05:02:22 2011
+From: rabennett at ymail.com (Rebecca Bennett)
+Date: Thu Aug  4 20:20:16 2011
+Subject: [GRASS-stats] Correlation calculation
+Message-ID: <1312448542.52005.YahooMailNeo@web28402.mail.ukl.yahoo.com>
+
+Hello all,
+
+I am *very* new to R and am experimenting with the GRASS / R interface to look at correlation of elevation and spectral values.
+
+Reading through the literature and mailing list, I have imported my GRASS rasters to R as a dataset looked at the summary statistics and then attempted to run a correlation analysis using cor, along the lines of the example here:
+
+
+map <- readRAST6(c("lageado_10k_fisher_K_15x15", 
+? ?"lageado_10k_fisher_K_25x25")) 
+summary(map) 
+cor(as(map, "data.frame")) 
+
+
+and get the output:
+
+
+??????????????? coombe_rev_LRM intensity_coombe????????? x????????? y
+coombe_rev_LRM??????????????? 1?????????????? NA???????? NA???????? NA
+intensity_coombe????????? NA?????? 1.00000000 -0.1525509 0.09057913
+x??????????????????????????? ??? NA????? -0.15255095? 1.0000000 0.00000000
+y??????????????????????????? ??? NA?????? 0.09057913? 0.0000000 1.00000000
+
+
+
+so the correlation is running on the x and y values of the rasters not the z?
+
+How do I begin to assess correlation in the z value of two rasters?
+
+Many thanks for reading, (and sorry if my question seems stupid or I have missed something obvious)
+
+Rebecca
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20110804/4d14f0b0/attachment.html
+From Roger.Bivand at nhh.no  Thu Aug  4 05:41:04 2011
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Aug  4 20:58:25 2011
+Subject: [GRASS-stats] Correlation calculation
+In-Reply-To: <1312448542.52005.YahooMailNeo@web28402.mail.ukl.yahoo.com>
+References: <1312448542.52005.YahooMailNeo@web28402.mail.ukl.yahoo.com>
+Message-ID: <alpine.LRH.2.00.1108041131130.31612@reclus.nhh.no>
+
+On Thu, 4 Aug 2011, Rebecca Bennett wrote:
+
+> Hello all,
+>
+> I am *very* new to R and am experimenting with the GRASS / R interface 
+> to look at correlation of elevation and spectral values.
+>
+> Reading through the literature and mailing list, I have imported my 
+> GRASS rasters to R as a dataset looked at the summary statistics and 
+> then attempted to run a correlation analysis using cor, along the lines 
+> of the example here:
+>
+>
+> map <- readRAST6(c("lageado_10k_fisher_K_15x15", 
+> ? ?"lageado_10k_fisher_K_25x25")) 
+> summary(map)
+
+I think that here you will see that for your current GRASS region, there 
+are missing values (NAs) in the first attribute.
+
+> cor(as(map, "data.frame")) 
+>
+>
+> and get the output:
+>
+>
+> ??????????????? coombe_rev_LRM intensity_coombe????????? x????????? y
+> coombe_rev_LRM??????????????? 1?????????????? NA???????? NA???????? NA
+> intensity_coombe????????? NA?????? 1.00000000 -0.1525509 0.09057913
+> x??????????????????????????? ??? NA????? -0.15255095? 1.0000000 0.00000000
+> y??????????????????????????? ??? NA?????? 0.09057913? 0.0000000 1.00000000
+>
+>
+
+so results for intensity_coombe are given, but not for coombe_rev_LRM. The 
+x and y are the coordinates of the raster cells are uninteresting, and are 
+added when you use as(..., "data.frame"). Try:
+
+cor(as(map, "data.frame")[,1:2], use="complete.obs")
+
+to use only the two real attributes, and to drop observations where there 
+are missing values. Do check that the missing values are intended, as they 
+may be caused by your region setting in GRASS.
+
+Hope this helps,
+
+Roger
+
+>
+> so the correlation is running on the x and y values of the rasters not 
+> the z?
+>
+> How do I begin to assess correlation in the z value of two rasters?
+>
+> Many thanks for reading, (and sorry if my question seems stupid or I 
+> have missed something obvious)
+>
+> Rebecca
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From Roger.Bivand at nhh.no  Thu Aug  4 07:42:04 2011
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Aug  4 23:05:55 2011
+Subject: [GRASS-stats] Correlation calculation
+Message-ID: <alpine.LRH.2.00.1108041341170.32393@reclus.nhh.no>
+
+On Thu, 4 Aug 2011, Rebecca Bennett wrote:
+
+> Great, this worked, thank you for your quick reply Roger. The missing values 
+> are intended - I didn't realise that I had to specify such to R.
+> 
+> 
+> This probably going to show my vast ignorance of R in comparison to SPSS, but 
+> is there a way to tell / set the significance level for the analysis?
+
+?cor.test
+
+but beware that your observations are not independent, and will have inflated 
+significance levels, so the test output really should not be used unless you 
+can first show that there is no spatial autocorrelation in either variable. You 
+could look at ?Geary in the raster package as a way of checking 
+autocorrelation. If you are an ecologist, you could look at Fortin & Dale for 
+background, and maybe the Numerical ecology with R useR! book from Springer. 
+The Moran() and Geary() functions in raster don't give you a significance test 
+for autocorrelation, though, you may need other approaches in spdep for that.
+
+Hope this helps,
+
+Roger
+
+> 
+> cheers,
+> Rebecca
+> 
+> 
+> 
+> 
+>> ________________________________
+>> From: Roger Bivand <Roger.Bivand@nhh.no>
+>> To: Rebecca Bennett <rabennett@ymail.com>
+>> Cc: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org>
+>> Sent: Thursday, 4 August 2011, 10:41
+>> Subject: Re: [GRASS-stats] Correlation calculation
+>> 
+>> On Thu, 4 Aug 2011, Rebecca Bennett wrote:
+>> 
+>>> Hello all,
+>>> 
+>>> I am *very* new to R and am experimenting with the GRASS / R interface to 
+>>> look at correlation of elevation and spectral values.
+>>> 
+>>> Reading through the literature and mailing list, I have imported my GRASS 
+>>> rasters to R as a dataset looked at the summary statistics and then 
+>>> attempted to run a correlation analysis using cor, along the lines of the 
+>>> example here:
+>>> 
+>>> 
+>>> map <- readRAST6(c("lageado_10k_fisher_K_15x15", ? 
+>>> ?"lageado_10k_fisher_K_25x25")) summary(map)
+>> 
+>> I think that here you will see that for your current GRASS region, there are 
+>> missing values (NAs) in the first attribute.
+>> 
+>>> cor(as(map, "data.frame")) 
+>>> and get the output:
+>>> 
+>>> 
+>>> ??????????????? coombe_rev_LRM intensity_coombe????????? x????????? y
+>>> coombe_rev_LRM??????????????? 1?????????????? NA???????? NA???????? NA
+>>> intensity_coombe????????? NA?????? 1.00000000 -0.1525509 0.09057913
+>>> x??????????????????????????? ??? NA????? -0.15255095? 1.0000000 0.00000000
+>>> y??????????????????????????? ??? NA?????? 0.09057913? 0.0000000 1.00000000
+>>> 
+>>> 
+>> 
+>> so results for intensity_coombe are given, but not for coombe_rev_LRM. The x 
+>> and y are the coordinates of the raster cells are uninteresting, and are 
+>> added when you use as(..., "data.frame"). Try:
+>> 
+>> cor(as(map, "data.frame")[,1:2], use="complete.obs")
+>> 
+>> to use only the two real attributes, and to drop observations where there 
+>> are missing values. Do check that the missing values are intended, as they 
+>> may be caused by your region setting in GRASS.
+>> 
+>> Hope this helps,
+>> 
+>> Roger
+>> 
+>>> 
+>>> so the correlation is running on the x and y values of the rasters not the 
+>>> z?
+>>> 
+>>> How do I begin to assess correlation in the z value of two rasters?
+>>> 
+>>> Many thanks for reading, (and sorry if my question seems stupid or I have 
+>>> missed something obvious)
+>>> 
+>>> Rebecca
+>> 
+>> -- Roger Bivand
+>> Department of Economics, NHH Norwegian School of Economics,
+>> Helleveien 30, N-5045 Bergen, Norway.
+>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>> e-mail: Roger.Bivand@nhh.no
+>> 
+>> 
+>>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From rabennett at ymail.com  Thu Aug  4 09:54:06 2011
+From: rabennett at ymail.com (Rebecca Bennett)
+Date: Fri Aug  5 01:29:26 2011
+Subject: [GRASS-stats] raster package
+In-Reply-To: <1312455769.6541.YahooMailNeo@web28409.mail.ukl.yahoo.com>
+References: <1312448542.52005.YahooMailNeo@web28402.mail.ukl.yahoo.com>
+	<alpine.LRH.2.00.1108041131130.31612@reclus.nhh.no>
+	<1312451878.46036.YahooMailNeo@web28401.mail.ukl.yahoo.com>
+	<alpine.LRH.2.00.1108041217100.31612@reclus.nhh.no>
+	<1312455769.6541.YahooMailNeo@web28409.mail.ukl.yahoo.com>
+Message-ID: <1312466046.92646.YahooMailNeo@web28415.mail.ukl.yahoo.com>
+
+hell all,
+
+I have tried to install raster using install.packages("raster")
+
+but have got the error:
+
+In getDependencies(pkgs, dependencies, available, lib) :
+? package ?raster? is not available
+
+I am also unable to find it in Synaptic (Ubuntu 10.04).
+
+Here is the output of sessionInfo()
+R version 2.10.1 (2009-12-14) 
+i486-pc-linux-gnu 
+
+locale:
+?[1] LC_CTYPE=en_GB.utf8?????? LC_NUMERIC=C???????????? 
+?[3] LC_TIME=en_GB.utf8??????? LC_COLLATE=en_GB.utf8??? 
+?[5] LC_MONETARY=C???????????? LC_MESSAGES=en_GB.utf8?? 
+?[7] LC_PAPER=en_GB.utf8?????? LC_NAME=C??????????????? 
+?[9] LC_ADDRESS=C????????????? LC_TELEPHONE=C?????????? 
+[11] LC_MEASUREMENT=en_GB.utf8 LC_IDENTIFICATION=C????? 
+
+attached base packages:
+[1] stats???? graphics? grDevices utils???? datasets? methods?? base???? 
+
+loaded via a namespace (and not attached):
+[1] tcltk_2.10.1 tools_2.10.1
+
+Any ideas how I get this package?
+
+Cheers
+Rebecca
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20110804/b101063e/attachment.html
+From Roger.Bivand at nhh.no  Thu Aug  4 10:03:20 2011
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri Aug  5 01:35:33 2011
+Subject: [GRASS-stats] raster package
+In-Reply-To: <1312466046.92646.YahooMailNeo@web28415.mail.ukl.yahoo.com>
+References: <1312448542.52005.YahooMailNeo@web28402.mail.ukl.yahoo.com>
+	<alpine.LRH.2.00.1108041131130.31612@reclus.nhh.no>
+	<1312451878.46036.YahooMailNeo@web28401.mail.ukl.yahoo.com>
+	<alpine.LRH.2.00.1108041217100.31612@reclus.nhh.no>
+	<1312455769.6541.YahooMailNeo@web28409.mail.ukl.yahoo.com>
+	<1312466046.92646.YahooMailNeo@web28415.mail.ukl.yahoo.com>
+Message-ID: <alpine.LRH.2.00.1108041600020.2931@reclus.nhh.no>
+
+On Thu, 4 Aug 2011, Rebecca Bennett wrote:
+
+> hell all,
+>
+> I have tried to install raster using install.packages("raster")
+>
+> but have got the error:
+>
+> In getDependencies(pkgs, dependencies, available, lib) :
+> ? package ?raster? is not available
+>
+> I am also unable to find it in Synaptic (Ubuntu 10.04).
+>
+> Here is the output of sessionInfo()
+> R version 2.10.1 (2009-12-14) 
+> i486-pc-linux-gnu
+
+If you refer to:
+
+http://cran.r-project.org/web/packages/raster/index.html
+
+you'll see that it requires R (? 2.11.0), which you don't meet. Your R is 
+definitely in need of an upgrade, current is 2.13.1, and this is available 
+as an ubuntu binary for lucid lynx:
+
+http://cran.r-project.org/bin/linux/ubuntu/
+
+Roger
+
+>
+> locale:
+> ?[1] LC_CTYPE=en_GB.utf8?????? LC_NUMERIC=C???????????? 
+> ?[3] LC_TIME=en_GB.utf8??????? LC_COLLATE=en_GB.utf8??? 
+> ?[5] LC_MONETARY=C???????????? LC_MESSAGES=en_GB.utf8?? 
+> ?[7] LC_PAPER=en_GB.utf8?????? LC_NAME=C??????????????? 
+> ?[9] LC_ADDRESS=C????????????? LC_TELEPHONE=C?????????? 
+> [11] LC_MEASUREMENT=en_GB.utf8 LC_IDENTIFICATION=C????? 
+>
+> attached base packages:
+> [1] stats???? graphics? grDevices utils???? datasets? methods?? base???? 
+>
+> loaded via a namespace (and not attached):
+> [1] tcltk_2.10.1 tools_2.10.1
+>
+> Any ideas how I get this package?
+>
+> Cheers
+> Rebecca
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From rabennett at ymail.com  Thu Aug  4 10:20:35 2011
+From: rabennett at ymail.com (Rebecca Bennett)
+Date: Fri Aug  5 01:54:14 2011
+Subject: [GRASS-stats] raster package
+In-Reply-To: <alpine.LRH.2.00.1108041600020.2931@reclus.nhh.no>
+References: <1312448542.52005.YahooMailNeo@web28402.mail.ukl.yahoo.com>
+	<alpine.LRH.2.00.1108041131130.31612@reclus.nhh.no>
+	<1312451878.46036.YahooMailNeo@web28401.mail.ukl.yahoo.com>
+	<alpine.LRH.2.00.1108041217100.31612@reclus.nhh.no>
+	<1312455769.6541.YahooMailNeo@web28409.mail.ukl.yahoo.com>
+	<1312466046.92646.YahooMailNeo@web28415.mail.ukl.yahoo.com>
+	<alpine.LRH.2.00.1108041600020.2931@reclus.nhh.no>
+Message-ID: <1312467635.46884.YahooMailNeo@web28406.mail.ukl.yahoo.com>
+
+Thanks Roger
+
+I tried following the instructions suggested to upgrade my version of R by adding a new cran mirror to my repositories.
+
+I have tried both
+
+deb http://www.stats.bris.ac.uk/R/bin/linux/ubuntu/ lucid
+and
+deb http://cran.r-project.org/bin/linux/ubuntu/ lucid
+
+But these repositories crash out my system on reload with the error
+Failed to fetch http://www.stats.bris.ac.uk/R/bin/linux/ubuntu/dists/lucid/main/binary-i386/Packages.gz? 404? Not Found
+Some index files failed to download, they have been ignored, or old ones used instead.
+
+If anyone has been successful upgrading to the latest R from Ubuntu 10.04 could you please give me some tips on where I'm going wrong?
+
+Thanks,
+Rebecca
+
+
+>________________________________
+>From: Roger Bivand <Roger.Bivand@nhh.no>
+>To: Rebecca Bennett <rabennett@ymail.com>
+>Cc: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org>
+>Sent: Thursday, 4 August 2011, 15:03
+>Subject: Re: [GRASS-stats] raster package
+>
+>On Thu, 4 Aug 2011, Rebecca Bennett wrote:
+>
+>> hell all,
+>> 
+>> I have tried to install raster using install.packages("raster")
+>> 
+>> but have got the error:
+>> 
+>> In getDependencies(pkgs, dependencies, available, lib) :
+>> ? package ?raster? is not available
+>> 
+>> I am also unable to find it in Synaptic (Ubuntu 10.04).
+>> 
+>> Here is the output of sessionInfo()
+>> R version 2.10.1 (2009-12-14) i486-pc-linux-gnu
+>
+>If you refer to:
+>
+>http://cran.r-project.org/web/packages/raster/index.html
+>
+>you'll see that it requires R (? 2.11.0), which you don't meet. Your R is definitely in need of an upgrade, current is 2.13.1, and this is available as an ubuntu binary for lucid lynx:
+>
+>http://cran.r-project.org/bin/linux/ubuntu/
+>
+>Roger
+>
+>> 
+>> locale:
+>> ?[1] LC_CTYPE=en_GB.utf8?????? LC_NUMERIC=C???????????? ?[3] LC_TIME=en_GB.utf8??????? LC_COLLATE=en_GB.utf8??? ?[5] LC_MONETARY=C???????????? LC_MESSAGES=en_GB.utf8?? ?[7] LC_PAPER=en_GB.utf8?????? LC_NAME=C??????????????? ?[9] LC_ADDRESS=C????????????? LC_TELEPHONE=C?????????? [11] LC_MEASUREMENT=en_GB.utf8 LC_IDENTIFICATION=C????? 
+>> attached base packages:
+>> [1] stats???? graphics? grDevices utils???? datasets? methods?? base???? 
+>> loaded via a namespace (and not attached):
+>> [1] tcltk_2.10.1 tools_2.10.1
+>> 
+>> Any ideas how I get this package?
+>> 
+>> Cheers
+>> Rebecca
+>
+>-- Roger Bivand
+>Department of Economics, NHH Norwegian School of Economics,
+>Helleveien 30, N-5045 Bergen, Norway.
+>voice: +47 55 95 93 55; fax +47 55 95 95 43
+>e-mail: Roger.Bivand@nhh.no
+>
+>
+>
+From ducciorocchini at gmail.com  Thu Aug  4 10:25:15 2011
+From: ducciorocchini at gmail.com (Duccio Rocchini)
+Date: Fri Aug  5 01:59:30 2011
+Subject: [GRASS-stats] Re: Correlation calculation
+Message-ID: <CAG-593zWjDT_8x-Q2tz5A5YSwTpe0tqUVw-+7mpyaK78E0nBZg@mail.gmail.com>
+
+This is a stimulating point. testing correlation with autocorrelated data.
+The reply by Roger is great! You could test additionally bootstrap methods
+(rely on Brian Cade's papers). I guess that it does not solve the
+autocorrelation problem actually, but ....
+
+Further, Ingolf Kuhn has developed a number of measures of autocorrelation.
+They are available in R. Just take a look at his home page.
+
+Best!
+Duccio
+
+
+> > Great, this worked, thank you for your quick reply Roger. The missing
+> values
+> > are intended - I didn't realise that I had to specify such to R.
+> >
+> >
+> > This probably going to show my vast ignorance of R in comparison to SPSS,
+> but
+> > is there a way to tell / set the significance level for the analysis?
+>
+> ?cor.test
+>
+> but beware that your observations are not independent, and will have
+> inflated
+> significance levels, so the test output really should not be used unless
+> you
+> can first show that there is no spatial autocorrelation in either variable.
+> You
+> could look at ?Geary in the raster package as a way of checking
+> autocorrelation. If you are an ecologist, you could look at Fortin & Dale
+> for
+> background, and maybe the Numerical ecology with R useR! book from
+> Springer.
+> The Moran() and Geary() functions in raster don't give you a significance
+> test
+> for autocorrelation, though, you may need other approaches in spdep for
+> that.
+>
+> Hope this helps,
+>
+> Roger
+>
+> >
+> > cheers,
+> > Rebecca
+> >
+> >
+> >
+> >
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20110804/a2c8b7df/attachment.html
+From rabennett at ymail.com  Thu Aug  4 11:21:51 2011
+From: rabennett at ymail.com (Rebecca Bennett)
+Date: Fri Aug  5 02:58:53 2011
+Subject: [GRASS-stats] raster package SOLVED
+In-Reply-To: <1312467635.46884.YahooMailNeo@web28406.mail.ukl.yahoo.com>
+References: <1312448542.52005.YahooMailNeo@web28402.mail.ukl.yahoo.com>
+	<alpine.LRH.2.00.1108041131130.31612@reclus.nhh.no>
+	<1312451878.46036.YahooMailNeo@web28401.mail.ukl.yahoo.com>
+	<alpine.LRH.2.00.1108041217100.31612@reclus.nhh.no>
+	<1312455769.6541.YahooMailNeo@web28409.mail.ukl.yahoo.com>
+	<1312466046.92646.YahooMailNeo@web28415.mail.ukl.yahoo.com>
+	<alpine.LRH.2.00.1108041600020.2931@reclus.nhh.no>
+	<1312467635.46884.YahooMailNeo@web28406.mail.ukl.yahoo.com>
+Message-ID: <1312471311.61844.YahooMailNeo@web28412.mail.ukl.yahoo.com>
+
+Thanks, I'm now the proud owner of R 2.13.1 and the raster package.
+
+Cheers
+Rebecca
+
+
+
+
+>________________________________
+>From: Rebecca Bennett <rabennett@ymail.com>
+>To: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org>
+>Sent: Thursday, 4 August 2011, 15:20
+>Subject: Re: [GRASS-stats] raster package
+>
+>Thanks Roger
+>
+>I tried following the instructions suggested to upgrade my version of R by adding a new cran mirror to my repositories.
+>
+>I have tried both
+>
+>deb http://www.stats.bris.ac.uk/R/bin/linux/ubuntu/ lucid
+>and
+>deb http://cran.r-project.org/bin/linux/ubuntu/ lucid
+>
+>But these repositories crash out my system on reload with the error
+>Failed to fetch http://www.stats.bris.ac.uk/R/bin/linux/ubuntu/dists/lucid/main/binary-i386/Packages.gz? 404? Not Found
+>Some index files failed to download, they have been ignored, or old ones used instead.
+>
+>If anyone has been successful upgrading to the latest R from Ubuntu 10.04 could you please give me some tips on where I'm going wrong?
+>
+>Thanks,
+>Rebecca
+>
+>
+>>________________________________
+>>From: Roger Bivand <Roger.Bivand@nhh.no>
+>>To: Rebecca Bennett <rabennett@ymail.com>
+>>Cc: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org>
+>>Sent: Thursday, 4 August 2011, 15:03
+>>Subject: Re: [GRASS-stats] raster package
+>>
+>>On Thu, 4 Aug 2011, Rebecca Bennett wrote:
+>>
+>>> hell all,
+>>> 
+>>> I have tried to install raster using install.packages("raster")
+>>> 
+>>> but have got the error:
+>>> 
+>>> In getDependencies(pkgs, dependencies, available, lib) :
+>>> ? package ?raster? is not available
+>>> 
+>>> I am also unable to find it in Synaptic (Ubuntu 10.04).
+>>> 
+>>> Here is the output of sessionInfo()
+>>> R version 2.10.1 (2009-12-14) i486-pc-linux-gnu
+>>
+>>If you refer to:
+>>
+>>http://cran.r-project.org/web/packages/raster/index.html
+>>
+>>you'll see that it requires R (? 2.11.0), which you don't meet. Your R is definitely in need of an upgrade, current is 2.13.1, and this is available as an ubuntu binary for lucid lynx:
+>>
+>>http://cran.r-project.org/bin/linux/ubuntu/
+>>
+>>Roger
+>>
+>>> 
+>>> locale:
+>>> ?[1] LC_CTYPE=en_GB.utf8?????? LC_NUMERIC=C???????????? ?[3] LC_TIME=en_GB.utf8??????? LC_COLLATE=en_GB.utf8??? ?[5] LC_MONETARY=C???????????? LC_MESSAGES=en_GB.utf8?? ?[7] LC_PAPER=en_GB.utf8?????? LC_NAME=C??????????????? ?[9] LC_ADDRESS=C????????????? LC_TELEPHONE=C?????????? [11] LC_MEASUREMENT=en_GB.utf8 LC_IDENTIFICATION=C????? 
+>>> attached base packages:
+>>> [1] stats???? graphics? grDevices utils???? datasets? methods?? base???? 
+>>> loaded via a namespace (and not attached):
+>>> [1] tcltk_2.10.1 tools_2.10.1
+>>> 
+>>> Any ideas how I get this package?
+>>> 
+>>> Cheers
+>>> Rebecca
+>>
+>>-- Roger Bivand
+>>Department of Economics, NHH Norwegian School of Economics,
+>>Helleveien 30, N-5045 Bergen, Norway.
+>>voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>e-mail: Roger.Bivand@nhh.no
+>>
+>>
+>>
+>_______________________________________________
+>grass-stats mailing list
+>grass-stats@lists.osgeo.org
+>http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20110804/ffa8e461/attachment.html
+From rabennett at ymail.com  Thu Aug  4 12:32:23 2011
+From: rabennett at ymail.com (Rebecca Bennett)
+Date: Fri Aug  5 04:13:18 2011
+Subject: [GRASS-stats] Re: Correlation calculation
+In-Reply-To: <CAG-593zWjDT_8x-Q2tz5A5YSwTpe0tqUVw-+7mpyaK78E0nBZg@mail.gmail.com>
+References: <CAG-593zWjDT_8x-Q2tz5A5YSwTpe0tqUVw-+7mpyaK78E0nBZg@mail.gmail.com>
+Message-ID: <1312475543.18185.YahooMailNeo@web28408.mail.ukl.yahoo.com>
+
+Hello there,
+
+I'd like to read several raster (all same size and resolution) into R using the suggested command
+
+stats <- readRAST6(c("LRM_smoothed", "Band74_scaled", "coombe_ground", "intensity_smoothed"), cat =c(TRUE,FALSE), ignore.stderr = TRUE)
+
+I get the error:
+
+Error in readRAST6(c("LRM_smoothed", "Band74_scaled", "coombe_ground", "intensity_smoothed"), :
+? vname and cat not same length
+
+Unfortunately I don't understand what the error message is trying to tell me - any help deciphering this error would be gratefully appreciated.
+
+Also where can I find more detail on the readRAST command to work out this error message for myself? I have looked in the sp.pdf and online for documentation but can't find anything but maybe there's another resource I don't know of yet?
+
+Thanks for reading,
+
+Rebecca
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20110804/19babb66/attachment-0001.html
+From Roger.Bivand at nhh.no  Thu Aug  4 12:58:40 2011
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri Aug  5 04:40:22 2011
+Subject: [GRASS-stats] Re: Correlation calculation
+In-Reply-To: <1312475543.18185.YahooMailNeo@web28408.mail.ukl.yahoo.com>
+References: <CAG-593zWjDT_8x-Q2tz5A5YSwTpe0tqUVw-+7mpyaK78E0nBZg@mail.gmail.com>
+	<1312475543.18185.YahooMailNeo@web28408.mail.ukl.yahoo.com>
+Message-ID: <alpine.LRH.2.00.1108041852470.3335@reclus.nhh.no>
+
+On Thu, 4 Aug 2011, Rebecca Bennett wrote:
+
+> Hello there,
+>
+> I'd like to read several raster (all same size and resolution) into R 
+> using the suggested command
+>
+> stats <- readRAST6(c("LRM_smoothed", "Band74_scaled", "coombe_ground", 
+> "intensity_smoothed"), cat =c(TRUE,FALSE), ignore.stderr = TRUE)
+>
+> I get the error:
+>
+> Error in readRAST6(c("LRM_smoothed", "Band74_scaled", "coombe_ground", 
+> "intensity_smoothed"), : ? vname and cat not same length
+>
+
+vname <- c("LRM_smoothed", "Band74_scaled", "coombe_ground",
+   "intensity_smoothed")
+cat <- c(TRUE, FALSE)
+length(vname)
+length(cat)
+
+How is the function supposed to guess which of the four layers is 
+categorical? Are any of them categorical?
+
+
+> Unfortunately I don't understand what the error message is trying to 
+> tell me - any help deciphering this error would be gratefully 
+> appreciated.
+>
+> Also where can I find more detail on the readRAST command to work out 
+> this error message for myself? I have looked in the sp.pdf and online 
+> for documentation but can't find anything but maybe there's another 
+> resource I don't know of yet?
+
+?readRAST6 or help(readRAST6)
+
+Do you have a library - you haven't given any affiliation yet? ymail.com 
+isn't informative. Look for Neteler & Mitasova 2008, the GRASS book, 
+and/or Bivand, Pebesma & Gomez-Rubio 2008, the R-spatial book.
+
+Roger
+
+>
+> Thanks for reading,
+>
+> Rebecca
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From 414187837 at qq.com  Mon Aug  8 03:19:27 2011
+From: 414187837 at qq.com (boyhailong)
+Date: Mon Aug  8 23:46:23 2011
+Subject: [GRASS-stats] Re: GRASS and R for image classification
+In-Reply-To: <AANLkTikBHBtRq_gOjRRrmpfiZQjWtZWJQrTYhy8L3Aqm@mail.gmail.com>
+References: <AANLkTikBHBtRq_gOjRRrmpfiZQjWtZWJQrTYhy8L3Aqm@mail.gmail.com>
+Message-ID: <1312787967276-6663381.post@n2.nabble.com>
+
+do you have solve the question ?
+
+--
+View this message in context: http://osgeo-org.1803224.n2.nabble.com/GRASS-and-R-for-image-classification-tp5427232p6663381.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+From Roger.Bivand at nhh.no  Sat Aug 20 13:25:53 2011
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sat Aug 20 15:12:42 2011
+Subject: [GRASS-stats] Changes to execGRASS()
+Message-ID: <alpine.LRH.2.00.1108201903110.1523@reclus.nhh.no>
+
+Following Rainer's talk at useR! 2011, I have made a number of changes to 
+execGRASS() and other functions in spgrass6 - the code is committed to 
+R-Forge project rspatial module spgrass6, and should be built this evening 
+as a source package, with version 0.7-4 and revision 1121.
+
+The changes are 1) to introduce central options for ignore.stderr and 
+useGDAL; 2) to parse interface description parameters for defaults, and to 
+supply these defaults for omitted parameters; 3) to permit parameters to 
+be passed as ... in execGRASS() and doGRASS() instead of parameters=list() 
+- either representation may be used, but not both.
+
+This means that ... in execGRASS() is now used for GRASS parameters, so 
+all of the arguments to system() - which previously received the ... 
+arguments - have to be named and given explicitly, otherwise they will be 
+passed to GRASS. In particular, the "input" argument to system() collides 
+with input= parameters to GRASS - see ?execGRASS for system() argument 
+names.
+
+The committed code checks in spearfish for R 2.13.1 and R-devel with both 
+the current release branch 6.4.2svn47586 and development trunk 
+7.0svn47783. It would be very useful if others could try this spgrass6 
+code to see how far existing scripts are affected.
+
+The 0.7 series began with the introduction of a NAMESPACE, a requirement 
+for the next release of R in October.
+
+Thanks to Rainer for interesting suggestions!
+
+Roger
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From neteler at osgeo.org  Sun Aug 21 09:35:08 2011
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sun Aug 21 12:29:51 2011
+Subject: [GRASS-stats] Changes to execGRASS()
+In-Reply-To: <alpine.LRH.2.00.1108201903110.1523@reclus.nhh.no>
+References: <alpine.LRH.2.00.1108201903110.1523@reclus.nhh.no>
+Message-ID: <CALFmHhuWhQQ2g_YtcKPjhOxiGKRYVsZb78Qq2kw42TgEcwj0og@mail.gmail.com>
+
+On Sat, Aug 20, 2011 at 7:25 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> Following Rainer's talk at useR! 2011, I have made a number of changes to
+> execGRASS() and other functions in spgrass6 - the code is committed to
+> R-Forge project rspatial module spgrass6, and should be built this evening
+> as a source package, with version 0.7-4 and revision 1121.
+
+Is Rainer's talk online available? I would be interested to look a it.
+
+Markus
+From Roger.Bivand at nhh.no  Sun Aug 21 09:45:43 2011
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun Aug 21 12:40:10 2011
+Subject: [GRASS-stats] Changes to execGRASS()
+In-Reply-To: <CALFmHhuWhQQ2g_YtcKPjhOxiGKRYVsZb78Qq2kw42TgEcwj0og@mail.gmail.com>
+References: <alpine.LRH.2.00.1108201903110.1523@reclus.nhh.no>
+	<CALFmHhuWhQQ2g_YtcKPjhOxiGKRYVsZb78Qq2kw42TgEcwj0og@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.1108211544480.7268@reclus.nhh.no>
+
+On Sun, 21 Aug 2011, Markus Neteler wrote:
+
+> On Sat, Aug 20, 2011 at 7:25 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> Following Rainer's talk at useR! 2011, I have made a number of changes to
+>> execGRASS() and other functions in spgrass6 - the code is committed to
+>> R-Forge project rspatial module spgrass6, and should be built this evening
+>> as a source package, with version 0.7-4 and revision 1121.
+>
+> Is Rainer's talk online available? I would be interested to look a it.
+
+Only the abstract is available from the conference website; I don't think 
+that they will make presentations available.
+
+Roger
+
+>
+> Markus
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From r.m.krug at gmail.com  Sun Aug 21 12:11:47 2011
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Sun Aug 21 15:14:59 2011
+Subject: [GRASS-stats] Changes to execGRASS()
+In-Reply-To: <alpine.LRH.2.00.1108211544480.7268@reclus.nhh.no>
+References: <alpine.LRH.2.00.1108201903110.1523@reclus.nhh.no>
+	<CALFmHhuWhQQ2g_YtcKPjhOxiGKRYVsZb78Qq2kw42TgEcwj0og@mail.gmail.com>
+	<alpine.LRH.2.00.1108211544480.7268@reclus.nhh.no>
+Message-ID: <CAGhLh6Gzdx3+d4BNy5rdOy3Q3+0XCHzOzN8fTDCShahbEYjL=w@mail.gmail.com>
+
+Hi Roger
+
+thanks a lot for the prompt implementation of my ideas - I will come back to
+you in more detail over the week.
+
+Re download: I uploaded the presentation to a temporary location where it
+can be downloaded - I will set up a more permanent location very soon:
+
+http://thekrugs.free.fr/rainer/RMKrug_GRASS-R.pdf
+
+If you have any further questions, please let me know. I will be on email
+less frequent the next two weeks, but more frequently after that again.
+
+Cheers,
+
+Rainer
+
+On Sun, Aug 21, 2011 at 3:45 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+
+> On Sun, 21 Aug 2011, Markus Neteler wrote:
+>
+>  On Sat, Aug 20, 2011 at 7:25 PM, Roger Bivand <Roger.Bivand@nhh.no>
+>> wrote:
+>>
+>>> Following Rainer's talk at useR! 2011, I have made a number of changes to
+>>> execGRASS() and other functions in spgrass6 - the code is committed to
+>>> R-Forge project rspatial module spgrass6, and should be built this
+>>> evening
+>>> as a source package, with version 0.7-4 and revision 1121.
+>>>
+>>
+>> Is Rainer's talk online available? I would be interested to look a it.
+>>
+>
+> Only the abstract is available from the conference website; I don't think
+> that they will make presentations available.
+>
+> Roger
+>
+>
+>> Markus
+>>
+>>
+> --
+> Roger Bivand
+> Department of Economics, NHH Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+>
+
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology,
+UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax (F):       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer@krugs.de
+
+Skype:      RMkrug
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20110821/24191280/attachment.html
+From gos47 at hotmail.com  Mon Aug 22 01:17:00 2011
+From: gos47 at hotmail.com (=?iso-8859-1?Q?Gaspar_Reyes_P=F3ndigo?=)
+Date: Mon Aug 22 05:04:41 2011
+Subject: [GRASS-stats] Error slot - spgrass6
+Message-ID: <BLU0-SMTP2098A9DD41A040FC9E6180BB72F0@phx.gbl>
+
+Hi, Dear Grass-stats users
+
+I am new user R 2.13 (spgrass6) from GRASS-GIS 6.4.1-5, under Mac OS X 10.68. I have the following problem, when preparing the data before run R's princomp() function in R from GRASS,  there was an error. The line of code is copied below:
+
+
+#########################################
+library(spgrass6)
+
+G <- gmeta6()
+
+ATC <- readRAST6(c('Acrf_1993_b1','Acrf_1993_b2','Acrf_1993_b3','Acrf_1993_b4','Acrf_1993_b5','Acrf_1993_b7'))
+
+ATC.nas <- which(is.na(ATC@data$Acrf_1993_b1) & is.na(ATC@data$Acrf_1993_b2) & is.na(ATC@data$Acrf_1993_b3) & is.na(ATC@data$Acrf_1993_b4) & is.na(ATC@data$Acrf_1993_b5) & is.na(ATC@data$Acrf_1993_b7))
+
+ATC.ms.values <- which(!is.na(ATC@data$Acrf_1993_b1) & !is.na(ATC@data$Acrf_1993_b2) & !is.na(ATC@data$Acrf_1993_b3) & !is.na(ATC@data$Acrf_1993_b4) & !is.na(ATC@data$Acrf_1993_b5) & !is.na(ATC@data$Acrf_1993_b7))
+
+#######################################
+####  I got the following error message  
+#######################################
+ATC.ms.nonas <- ATC.ms.values@data[ATC.ms.values, ]
+Error: tentativa de obtener un slot "data" de un objeto de una clase b?sica ("integer") sin slots
+#########################################
+
+Can you please point my problem? and How do I fix my problem?
+Thanks in advance for any help. 
+
+NOTE:I followed the guide of http://grass.osgeo.org/wiki/Principal_Components_Analysis # Using_R.27s_princomp.28.29_function for  PRINCOMP() function.
+NOTE: the images are LANDSAT 5 TM
+
+
+Gaspar Reyes P?ndigo
+Universidad del Mar, Oaxaca, M?xico
+Campus Puerto-?ngel
+Carretera principal Puerto ?ngel Zipolite km 1.5 
+C.P. 70902
+From Roger.Bivand at nhh.no  Mon Aug 22 03:38:39 2011
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon Aug 22 07:32:31 2011
+Subject: [GRASS-stats] Error slot - spgrass6
+In-Reply-To: <BLU0-SMTP2098A9DD41A040FC9E6180BB72F0@phx.gbl>
+References: <BLU0-SMTP2098A9DD41A040FC9E6180BB72F0@phx.gbl>
+Message-ID: <alpine.LRH.2.00.1108220936490.10038@reclus.nhh.no>
+
+On Mon, 22 Aug 2011, Gaspar Reyes P?ndigo wrote:
+
+> Hi, Dear Grass-stats users
+>
+> I am new user R 2.13 (spgrass6) from GRASS-GIS 6.4.1-5, under Mac OS X 
+> 10.68. I have the following problem, when preparing the data before run 
+> R's princomp() function in R from GRASS, there was an error. The line of 
+> code is copied below:
+>
+
+Please only post to one list at a time, and wait patiently for an answer.
+
+
+>
+> #########################################
+> library(spgrass6)
+>
+> G <- gmeta6()
+>
+> ATC <- readRAST6(c('Acrf_1993_b1','Acrf_1993_b2','Acrf_1993_b3','Acrf_1993_b4','Acrf_1993_b5','Acrf_1993_b7'))
+>
+> ATC.nas <- which(is.na(ATC@data$Acrf_1993_b1) & is.na(ATC@data$Acrf_1993_b2) & is.na(ATC@data$Acrf_1993_b3) & is.na(ATC@data$Acrf_1993_b4) & is.na(ATC@data$Acrf_1993_b5) & is.na(ATC@data$Acrf_1993_b7))
+
+Never access columns with ...@data$... which is exactly the same as 
+...$...
+
+>
+> ATC.ms.values <- which(!is.na(ATC@data$Acrf_1993_b1) & !is.na(ATC@data$Acrf_1993_b2) & !is.na(ATC@data$Acrf_1993_b3) & !is.na(ATC@data$Acrf_1993_b4) & !is.na(ATC@data$Acrf_1993_b5) & !is.na(ATC@data$Acrf_1993_b7))
+>
+> #######################################
+> ####  I got the following error message
+> #######################################
+> ATC.ms.nonas <- ATC.ms.values@data[ATC.ms.values, ]
+
+str(ATC.ms.values) is certainly integer. I believe that you want to say
+either (may need casting to SpatialPixelsDataFrame first):
+
+ATC.ms.nonas <- ATC[ATC.ms.values,]
+
+or
+
+ATC.ms.nonas <- as(ATC, "data.frame")[ATC.ms.values,]
+
+
+> Error: tentativa de obtener un slot "data" de un objeto de una clase 
+> b?sica ("integer") sin slots
+
+which is very clear. Do use str() or class() to check the objects you are
+using.
+
+Roger
+
+> 
+#########################################
+>
+> Can you please point my problem? and How do I fix my problem?
+> Thanks in advance for any help.
+>
+> NOTE:I followed the guide of http://grass.osgeo.org/wiki/Principal_Components_Analysis # Using_R.27s_princomp.28.29_function for  PRINCOMP() function.
+> NOTE: the images are LANDSAT 5 TM
+>
+>
+> Gaspar Reyes P?ndigo
+> Universidad del Mar, Oaxaca, M?xico
+> Campus Puerto-?ngel
+> Carretera principal Puerto ?ngel Zipolite km 1.5
+> C.P. 70902_______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no

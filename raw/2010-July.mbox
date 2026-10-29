@@ -1,0 +1,449 @@
+From pinaud at cebc.cnrs.fr  Tue Jul  6 10:52:06 2010
+From: pinaud at cebc.cnrs.fr (Pinaud David)
+Date: Tue Jul  6 10:57:54 2010
+Subject: [GRASS-stats] r.mapcalc with spgrass6
+Message-ID: <4C334316.6050501@cebc.cnrs.fr>
+
+Dear all,
+
+I'm trying to use the GRASS function "r.mapcalc" using R package 
+"spgrass6", but I've got some trouble with it, I'm not even able to 
+parse this function:
+
+ > library(rgdal)
+Le chargement a n?cessit? le package : sp
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Loaded GDAL runtime: GDAL 1.7.1, released 2010/02/08
+Path to GDAL shared files: C:/PROGRA~1/R/R-211~1.1/library/rgdal/gdal
+Loaded PROJ.4 runtime: Rel. 4.7.1, 23 September 2009
+Path to PROJ.4 shared files: C:/PROGRA~1/R/R-211~1.1/library/rgdal/proj
+
+ > library(spgrass6)
+Le chargement a n?cessit? le package : XML
+GRASS GIS interface loaded with GRASS version: (GRASS not running)
+
+ > parseGRASS("r.mapcalc")
+Error : syntax error, unexpected '-', expecting NAME or STRING
+Parse error  does not seem to be XML, nor to identify a file name
+Erreur dans parseGRASS("r.mapcalc") : r.mapcalc not parsed
+
+I tried to change the XML encoding by
+ > setXMLencoding("latin1")
+without success.
+
+For example,
+ > parseGRASS("g.region")
+is correctly running, I've got the description of the function.
+
+Otherwise, my calculus with "r.mapcalc" within GRASS 6.4.0 is correctly 
+running.
+
+ > sessionInfo()
+R version 2.11.1 (2010-05-31)
+i386-pc-mingw32
+
+locale:
+[1] LC_COLLATE=French_France.1252  LC_CTYPE=French_France.1252    
+LC_MONETARY=French_France.1252
+[4] LC_NUMERIC=C                   LC_TIME=French_France.1252   
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base    
+
+other attached packages:
+[1] spgrass6_0.6-16 XML_3.1-0       rgdal_0.6-27    sp_0.9-65     
+
+loaded via a namespace (and not attached):
+[1] grid_2.11.1    lattice_0.18-8 tools_2.11.1 
+
+ > get("SYS", envir = .GRASS_CACHE)
+[1] "WinNat"
+
+
+Am I missing something? Any idea?
+
+Thank you very much for your help and patience.
+
+David
+
+
+-- 
+***************************************************
+David PINAUD
+Ing?nieur de Recherche "Analyses spatiales"
+
+Centre d'Etudes Biologiques de Chiz? - CNRS UPR1934
+79360 Villiers-en-Bois, France 
+poste 485
+Tel: +33 (0)5.49.09.35.58
+Fax: +33 (0)5.49.09.65.26
+http://www.cebc.cnrs.fr/
+
+***************************************************
+
+
+
+
+__________ Information from ESET Mail Security, version of virus signature database 5255 (20100706) __________
+
+The message was checked by ESET Mail Security.
+http://www.eset.com
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: pinaud.vcf
+Type: text/x-vcard
+Size: 324 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20100706/cf437547/pinaud.vcf
+From Roger.Bivand at nhh.no  Tue Jul  6 17:42:56 2010
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Jul  6 17:41:49 2010
+Subject: [GRASS-stats] Re: [R-sig-Geo] r.mapcalc with spgrass6
+In-Reply-To: <4C334316.6050501@cebc.cnrs.fr>
+References: <4C334316.6050501@cebc.cnrs.fr>
+Message-ID: <alpine.LRH.2.00.1007062340260.1106@reclus.nhh.no>
+
+On Tue, 6 Jul 2010, Pinaud David wrote:
+
+> Dear all,
+>
+> I'm trying to use the GRASS function "r.mapcalc" using R package "spgrass6", 
+> but I've got some trouble with it, I'm not even able to parse this function:
+>
+>> library(rgdal)
+> Le chargement a n?cessit? le package : sp
+> Geospatial Data Abstraction Library extensions to R successfully loaded
+> Loaded GDAL runtime: GDAL 1.7.1, released 2010/02/08
+> Path to GDAL shared files: C:/PROGRA~1/R/R-211~1.1/library/rgdal/gdal
+> Loaded PROJ.4 runtime: Rel. 4.7.1, 23 September 2009
+> Path to PROJ.4 shared files: C:/PROGRA~1/R/R-211~1.1/library/rgdal/proj
+>
+>> library(spgrass6)
+> Le chargement a n?cessit? le package : XML
+> GRASS GIS interface loaded with GRASS version: (GRASS not running)
+>
+>> parseGRASS("r.mapcalc")
+> Error : syntax error, unexpected '-', expecting NAME or STRING
+> Parse error  does not seem to be XML, nor to identify a file name
+> Erreur dans parseGRASS("r.mapcalc") : r.mapcalc not parsed
+
+You cannot use r.mapcalc with execGRASS for obvious reasons - r.mapcalc 
+wants to handle input itself. Use r.mapcalculator instead for scripting. 
+or use r.mapcalcs directly.
+
+Hope this helps,
+
+Roger
+
+>
+> I tried to change the XML encoding by
+>> setXMLencoding("latin1")
+> without success.
+>
+> For example,
+>> parseGRASS("g.region")
+> is correctly running, I've got the description of the function.
+>
+> Otherwise, my calculus with "r.mapcalc" within GRASS 6.4.0 is correctly 
+> running.
+>
+>> sessionInfo()
+> R version 2.11.1 (2010-05-31)
+> i386-pc-mingw32
+>
+> locale:
+> [1] LC_COLLATE=French_France.1252  LC_CTYPE=French_France.1252 
+> LC_MONETARY=French_France.1252
+> [4] LC_NUMERIC=C                   LC_TIME=French_France.1252 
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base 
+> other attached packages:
+> [1] spgrass6_0.6-16 XML_3.1-0       rgdal_0.6-27    sp_0.9-65 
+> loaded via a namespace (and not attached):
+> [1] grid_2.11.1    lattice_0.18-8 tools_2.11.1 
+>> get("SYS", envir = .GRASS_CACHE)
+> [1] "WinNat"
+>
+>
+> Am I missing something? Any idea?
+>
+> Thank you very much for your help and patience.
+>
+> David
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From hamish_b at yahoo.com  Wed Jul  7 01:35:38 2010
+From: hamish_b at yahoo.com (Hamish)
+Date: Wed Jul  7 01:42:22 2010
+Subject: [GRASS-stats] Re: [R-sig-Geo] r.mapcalc with spgrass6
+In-Reply-To: <alpine.LRH.2.00.1007062340260.1106@reclus.nhh.no>
+Message-ID: <567000.59975.qm@web110010.mail.gq1.yahoo.com>
+
+> >> parseGRASS("r.mapcalc")
+> > Error : syntax error, unexpected '-', expecting NAME or STRING
+> > Parse error 
+
+Roger wrote:
+> You cannot use r.mapcalc with execGRASS for obvious reasons
+> - r.mapcalc wants to handle input itself.
+
+just a heads-up for the future: in grass7 r.mapcalc will be (is) a normal
+module using the standard parser.
+
+
+regards,
+Hamish
+
+
+      
+From Roger.Bivand at nhh.no  Wed Jul  7 04:04:20 2010
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Jul  7 04:03:14 2010
+Subject: [GRASS-stats] Re: [R-sig-Geo] r.mapcalc with spgrass6
+In-Reply-To: <567000.59975.qm@web110010.mail.gq1.yahoo.com>
+References: <567000.59975.qm@web110010.mail.gq1.yahoo.com>
+Message-ID: <alpine.LRH.2.00.1007071002530.3143@reclus.nhh.no>
+
+On Tue, 6 Jul 2010, Hamish wrote:
+
+>>>> parseGRASS("r.mapcalc")
+>>> Error : syntax error, unexpected '-', expecting NAME or STRING
+>>> Parse error
+>
+> Roger wrote:
+>> You cannot use r.mapcalc with execGRASS for obvious reasons
+>> - r.mapcalc wants to handle input itself.
+>
+> just a heads-up for the future: in grass7 r.mapcalc will be (is) a normal
+> module using the standard parser.
+
+Great, then it will self-declare in parseable XML like all the others!
+
+Roger
+
+
+>
+>
+> regards,
+> Hamish
+>
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From neteler at osgeo.org  Sat Jul 10 02:12:31 2010
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sat Jul 10 02:12:57 2010
+Subject: [GRASS-stats] readRAST6() issue with NODATA
+In-Reply-To: <alpine.LRH.2.00.1006120647320.22837@reclus.nhh.no>
+References: <AANLkTim7eqYH-lceoqweAyE0BL1xIMXEa7A1kINHcVnz@mail.gmail.com> 
+	<alpine.LRH.2.00.1006120647320.22837@reclus.nhh.no>
+Message-ID: <AANLkTinWeD2J7QeTQswcE7ZDpLcSAVsJu7pZpKR6zdAK@mail.gmail.com>
+
+Dear Roger,
+
+On Sat, Jun 12, 2010 at 6:51 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Sat, 12 Jun 2010, Markus Neteler wrote:
+>
+>> Dear Roger,
+>>
+>> hope all is well.
+>>
+>> I came across an issue with readRAST6():
+>>
+>>> library(spgrass6)
+>>
+>> Loading required package: sp
+>> Loading required package: rgdal
+>> Geospatial Data Abstraction Library extensions to R successfully loaded
+>> Loaded GDAL runtime: GDAL 1.5.2, released 2008/05/29
+>> Path to GDAL shared files: /home/neteler/binaries/share/gdal
+>> Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+>> Path to PROJ.4 shared files: (autodetected)
+>> Loading required package: XML
+>> GRASS GIS interface loaded with GRASS version: 6.4.0svn
+>> and location: patUTM32
+>>>
+>>> mydata_raw <-readRAST6(c("thresh_annual_over_11_celsius_2001_2008_avg", "italy_dem20_PHD_zone"), cat=c(FALSE, FALSE))
+>>
+>>
+>> /home/neteler/grassdata/patUTM32/zanzara_satellite/.tmp/fep/thresh_annual_over_11_celsius_2001_2008_avg
+>> has GDAL driver GTiff
+>> and has 601 rows and 1011 columns
+>> WARNING: The given nodata value is present in rasterband
+>> ? ? ? ?<italy_dem20_PHD_zone> and would lead to data loss. Please specify
+>> ? ? ? ?a different nodata value with the nodata parameter.
+>> ERROR: Raster export aborted.
+>>
+>> Debugging r.out.gdal, I found that the value 10 was used.
+>>
+>>
+>> GRASS 6.4.0svn (patUTM32): > r.info -r italy_dem20_PHD_zone
+>> min=0
+>> max=3890
+>> GRASS 6.4.0svn (patUTM32): > r.info -t italy_dem20_PHD_zone
+>> datatype=CELL
+>>
+>> I hacked in -99999 as NODATA value in the r.out.gdal calls
+>> (spgrass6/R/bin_link.R).
+>>
+>> I have no idea why 10 was used but from GRASS 6.4 onwards the r.out.gdal
+>> module has an intelligent NODATA selection thanks to Markus Metz. I can
+>> imagine what you don't want to clutter the code with conditions, but here
+>> it
+>> would be great to let the NODATA selection job to r.out.gdal rather than
+>> using the current r.info tricks.
+>
+> Dear Markus,
+>
+> The tricks were there for the time when r.out.gdal didn't find its own
+> value, and for the null parameter for r.out.bin. I've moved them down to the
+> r.out.bin branch only, and modified the execGRASS() call to r.out.gdal to
+> omit the nodata= argument by default when NODATA=NULL.
+>
+> Committed to sourceforge CVS, project r-spatial, module spgrass6. Could you
+> check this and let me know if the problem is resolved?
+
+Sorry for the delay, I was away.
+
+I have updated from CVS and run
+
+mydata_raw <-readRAST6(c("thresh_annual_over_11_celsius_2001_2008_avg",
+"italy_dem20_PHD_zone"), cat=c(FALSE, FALSE))
+/home/neteler/grassdata/patUTM32/zanzara_satellite/.tmp/fep/thresh_annual_over_11_celsius_2001_2008_avg
+has GDAL driver GTiff
+and has 601 rows and 1011 columns
+/home/neteler/grassdata/patUTM32/zanzara_satellite/.tmp/fep/italy_dem20_PHD_zone
+has GDAL driver GTiff
+and has 601 rows and 1011 columns
+
+No more errors, thanks!
+
+Best wishes,
+Markus
+
+-- 
+http://gis.ambiente.fmach.it/
+From Roger.Bivand at nhh.no  Sat Jul 10 13:47:46 2010
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sat Jul 10 13:46:40 2010
+Subject: [GRASS-stats] readRAST6() issue with NODATA
+In-Reply-To: <AANLkTinWeD2J7QeTQswcE7ZDpLcSAVsJu7pZpKR6zdAK@mail.gmail.com>
+References: <AANLkTim7eqYH-lceoqweAyE0BL1xIMXEa7A1kINHcVnz@mail.gmail.com>
+	<alpine.LRH.2.00.1006120647320.22837@reclus.nhh.no>
+	<AANLkTinWeD2J7QeTQswcE7ZDpLcSAVsJu7pZpKR6zdAK@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.1007101947210.14750@reclus.nhh.no>
+
+On Sat, 10 Jul 2010, Markus Neteler wrote:
+
+> Dear Roger,
+>
+> On Sat, Jun 12, 2010 at 6:51 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> On Sat, 12 Jun 2010, Markus Neteler wrote:
+
+Thanks, new release submitted to CRAN.
+
+Roger
+
+>>
+>>> Dear Roger,
+>>>
+>>> hope all is well.
+>>>
+>>> I came across an issue with readRAST6():
+>>>
+>>>> library(spgrass6)
+>>>
+>>> Loading required package: sp
+>>> Loading required package: rgdal
+>>> Geospatial Data Abstraction Library extensions to R successfully loaded
+>>> Loaded GDAL runtime: GDAL 1.5.2, released 2008/05/29
+>>> Path to GDAL shared files: /home/neteler/binaries/share/gdal
+>>> Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+>>> Path to PROJ.4 shared files: (autodetected)
+>>> Loading required package: XML
+>>> GRASS GIS interface loaded with GRASS version: 6.4.0svn
+>>> and location: patUTM32
+>>>>
+>>>> mydata_raw <-readRAST6(c("thresh_annual_over_11_celsius_2001_2008_avg", "italy_dem20_PHD_zone"), cat=c(FALSE, FALSE))
+>>>
+>>>
+>>> /home/neteler/grassdata/patUTM32/zanzara_satellite/.tmp/fep/thresh_annual_over_11_celsius_2001_2008_avg
+>>> has GDAL driver GTiff
+>>> and has 601 rows and 1011 columns
+>>> WARNING: The given nodata value is present in rasterband
+>>> ? ? ? ?<italy_dem20_PHD_zone> and would lead to data loss. Please specify
+>>> ? ? ? ?a different nodata value with the nodata parameter.
+>>> ERROR: Raster export aborted.
+>>>
+>>> Debugging r.out.gdal, I found that the value 10 was used.
+>>>
+>>>
+>>> GRASS 6.4.0svn (patUTM32): > r.info -r italy_dem20_PHD_zone
+>>> min=0
+>>> max=3890
+>>> GRASS 6.4.0svn (patUTM32): > r.info -t italy_dem20_PHD_zone
+>>> datatype=CELL
+>>>
+>>> I hacked in -99999 as NODATA value in the r.out.gdal calls
+>>> (spgrass6/R/bin_link.R).
+>>>
+>>> I have no idea why 10 was used but from GRASS 6.4 onwards the r.out.gdal
+>>> module has an intelligent NODATA selection thanks to Markus Metz. I can
+>>> imagine what you don't want to clutter the code with conditions, but here
+>>> it
+>>> would be great to let the NODATA selection job to r.out.gdal rather than
+>>> using the current r.info tricks.
+>>
+>> Dear Markus,
+>>
+>> The tricks were there for the time when r.out.gdal didn't find its own
+>> value, and for the null parameter for r.out.bin. I've moved them down to the
+>> r.out.bin branch only, and modified the execGRASS() call to r.out.gdal to
+>> omit the nodata= argument by default when NODATA=NULL.
+>>
+>> Committed to sourceforge CVS, project r-spatial, module spgrass6. Could you
+>> check this and let me know if the problem is resolved?
+>
+> Sorry for the delay, I was away.
+>
+> I have updated from CVS and run
+>
+> mydata_raw <-readRAST6(c("thresh_annual_over_11_celsius_2001_2008_avg",
+> "italy_dem20_PHD_zone"), cat=c(FALSE, FALSE))
+> /home/neteler/grassdata/patUTM32/zanzara_satellite/.tmp/fep/thresh_annual_over_11_celsius_2001_2008_avg
+> has GDAL driver GTiff
+> and has 601 rows and 1011 columns
+> /home/neteler/grassdata/patUTM32/zanzara_satellite/.tmp/fep/italy_dem20_PHD_zone
+> has GDAL driver GTiff
+> and has 601 rows and 1011 columns
+>
+> No more errors, thanks!
+>
+> Best wishes,
+> Markus
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no

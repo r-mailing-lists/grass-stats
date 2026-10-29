@@ -1,0 +1,3315 @@
+From matteo.dallamico at ing.unitn.it  Mon Jul  9 09:26:22 2007
+From: matteo.dallamico at ing.unitn.it (Matteo Dall'Amico)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] import DTM with readRAST6()
+Message-ID: <A3AC428C-EF2E-478B-A2C2-6D42CFF95938@ing.unitn.it>
+
+Hello everybody,
+I am a new R & Grass user.
+I am interested in doing a kriging of the Temperature in a basin,  
+based on pixel elevation (DTM).
+I use Grass 6.2.1 and R 2.5.1 and have installed the spgrass6 package.
+
+The DTM is called "DTM_trentino_100m" and has a header and data like  
+the following:
+
+north:5158000.0
+south:5058500.0
+east:1729700.0
+west:1611600.0
+rows:995
+cols:1181
+-9999.0 -9999.0 -9999.0 370.84381103515625 372.55120849609375  
+373.13128662109375 .....
+
+I have opened R inside the Grass location, and imported the DTM:
+
+ >  trentino.grid<-readRAST6("DTM_trentino_100m")
+Creating BIL support files ...
+Header File = /Users/Matteo/Documents/DataGrass/GBovest/ 
+Permafrost/.tmp/nilo.local/DTM_trentino_100m.hdr
+World File = /Users/Matteo/Documents/DataGrass/GBovest/ 
+Permafrost/.tmp/nilo.local/DTM_trentino_100m.wld
+Exporting Raster as double values(bytes=8)
+Using the Current Region settings ...
+north=5158000.000000
+south=5058500.000000
+east=1729700.000000
+west=1611600.000000
+r=995
+c=1181
+
+Percent complete:  100%
+r.out.bin complete.
+
+ > summary(trentino.grid)
+Object of class SpatialGridDataFrame
+Coordinates:
+               min     max
+coords.x1 1611600 1729700
+coords.x2 5058500 5158000
+Is projected: TRUE
+proj4string :
+[+proj=tmerc +lat_0=0.0000000000 +lon_0=9.0000000000 +k_0=0.9996000000
++x_0=1500000.0000000000 +y_0=0.0000000000 +a=6378388 +rf=297 +no_defs
++towgs84=-225.000,-65.000,9.000]
+Number of points: 2
+Grid attributes:
+   cellcentre.offset cellsize cells.dim
+1           1611650      100      1181
+2           5058550      100       995
+Data attributes:
+DTM_trentino_100m
+Min.   :1.192e-319
+1st Qu.:1.065e-314
+Median :1.066e-314
+Mean   :1.285e-312
+3rd Qu.:2.722e-312
+Max.   :4.774e-312
+
+As you can see, the import has been fully done, yet the attributes  
+are not correct. In fact, the Min. value is 1.192e-319 and the Max is  
+4.774e-312 but in reality the elevation changes between 60m to 3500m.
+Have I done something wrong? What should I do?
+Thank you in advance,
+
+Matteo
+
+
+---------------------------------
+Matteo Dall'Amico
+PhD candidate
+CUDAM and department of Civil and Environmental Engineering
+Universita' degli Studi di Trento
+Via Mesiano 77 - 38050 Trento - Italy
+email: matteo.dallamico@ing.unitn.it
+Tel. +39 0461 882610
+Fax +39 0461 882672
+http://www.dottorato.it/trento/
+---------------------------------
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20070709/db208be2/attachment.html
+From carlos.grohmann at gmail.com  Mon Jul  9 09:41:47 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] import DTM with readRAST6()
+In-Reply-To: <A3AC428C-EF2E-478B-A2C2-6D42CFF95938@ing.unitn.it>
+References: <A3AC428C-EF2E-478B-A2C2-6D42CFF95938@ing.unitn.it>
+Message-ID: <bd07447b0707090641l7ed92a32y23d9cf015e01b2cd@mail.gmail.com>
+
+try to
+str(trentino.grid)
+
+the summary() you want is probably
+
+summary(trentino.grid$DTM_trentino_100m)
+
+hope this helps
+Carlos
+
+
+
+On 7/9/07, Matteo Dall'Amico <matteo.dallamico@ing.unitn.it> wrote:
+>
+> Hello everybody,
+> I am a new R & Grass user.
+> I am interested in doing a kriging of the Temperature in a basin, based on
+> pixel elevation (DTM).
+> I use Grass 6.2.1 and R 2.5.1 and have installed the spgrass6 package.
+>
+> The DTM is called "DTM_trentino_100m" and has a header and data like the
+> following:
+>
+> north:5158000.0
+> south:5058500.0
+> east:1729700.0
+> west:1611600.0
+> rows:995
+> cols:1181
+> -9999.0 -9999.0 -9999.0 370.84381103515625 372.55120849609375
+> 373.13128662109375 .....
+>
+> I have opened R inside the Grass location, and imported the DTM:
+>
+> >  trentino.grid<-readRAST6("DTM_trentino_100m")
+> Creating BIL support files ...
+> Header File =
+> /Users/Matteo/Documents/DataGrass/GBovest/Permafrost/.tmp/nilo.local/DTM_trentino_100m.hdr
+> World File =
+> /Users/Matteo/Documents/DataGrass/GBovest/Permafrost/.tmp/nilo.local/DTM_trentino_100m.wld
+> Exporting Raster as double values(bytes=8)
+> Using the Current Region settings ...
+> north=5158000.000000
+> south=5058500.000000
+> east=1729700.000000
+> west=1611600.000000
+> r=995
+> c=1181
+>
+> Percent complete:  100%
+> r.out.bin complete.
+>
+> > summary(trentino.grid)
+> Object of class SpatialGridDataFrame
+> Coordinates:
+>               min     max
+> coords.x1 1611600 1729700
+> coords.x2 5058500 5158000
+> Is projected: TRUE
+> proj4string :
+> [+proj=tmerc +lat_0=0.0000000000 +lon_0=9.0000000000 +k_0=0.9996000000
+> +x_0=1500000.0000000000 +y_0=0.0000000000 +a=6378388 +rf=297 +no_defs
+> +towgs84=-225.000,-65.000,9.000]
+> Number of points: 2
+> Grid attributes:
+>   cellcentre.offset cellsize cells.dim
+> 1           1611650      100      1181
+> 2           5058550      100       995
+> Data attributes:
+> DTM_trentino_100m
+> Min.   :1.192e-319
+> 1st Qu.:1.065e-314
+> Median :1.066e-314
+> Mean   :1.285e-312
+> 3rd Qu.:2.722e-312
+> Max.   :4.774e-312
+>
+> As you can see, the import has been fully done, yet the attributes are not
+> correct. In fact, the Min. value is 1.192e-319 and the Max is 4.774e-312 but
+> in reality the elevation changes between 60m to 3500m.
+> Have I done something wrong? What should I do?
+> Thank you in advance,
+>
+> Matteo
+>
+>
+> ---------------------------------
+> Matteo Dall'Amico
+> PhD candidate
+> CUDAM and department of Civil and Environmental Engineering
+> Universita' degli Studi di Trento
+> Via Mesiano 77 - 38050 Trento - Italy
+> email: matteo.dallamico@ing.unitn.it
+> Tel. +39 0461 882610
+> Fax +39 0461 882672
+> http://www.dottorato.it/trento/
+> ---------------------------------
+>
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+>
+
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Visiting Researcher at Kingston University London - UK
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+
+From matteo.dallamico at ing.unitn.it  Mon Jul  9 10:29:50 2007
+From: matteo.dallamico at ing.unitn.it (Matteo Dall'Amico)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] import DTM with readRAST6()
+In-Reply-To: <bd07447b0707090641l7ed92a32y23d9cf015e01b2cd@mail.gmail.com>
+References: <A3AC428C-EF2E-478B-A2C2-6D42CFF95938@ing.unitn.it>
+	<bd07447b0707090641l7ed92a32y23d9cf015e01b2cd@mail.gmail.com>
+Message-ID: <E6C64CE1-69AB-4A8D-93D3-9CA0CDB7DA54@ing.unitn.it>
+
+Hi Carlos,
+thank you for your reply.
+I think the problem is that the import was not successful. As you see  
+from data attributes,
+
+Data attributes:
+DTM_trentino_100m
+Min.   :1.192e-319
+1st Qu.:1.065e-314
+Median :1.066e-314
+Mean   :1.285e-312
+3rd Qu.:2.722e-312
+Max.   :4.774e-312
+
+the elevations are not correct. I would expect values ranging between  
+60 and 3500m and not from 1.192e-319 to 4.774e-312.
+I think the problem lays in the import procedure during readRAST6().
+Any suggestion?
+Thanks in advance,
+Matteo
+
+On 9 Jul 2007, at 15:41, Carlos Gu?no Grohmann wrote:
+
+> try to
+> str(trentino.grid)
+>
+> the summary() you want is probably
+>
+> summary(trentino.grid$DTM_trentino_100m)
+>
+> hope this helps
+> Carlos
+>
+>
+>
+> On 7/9/07, Matteo Dall'Amico <matteo.dallamico@ing.unitn.it> wrote:
+>>
+>> Hello everybody,
+>> I am a new R & Grass user.
+>> I am interested in doing a kriging of the Temperature in a basin,  
+>> based on
+>> pixel elevation (DTM).
+>> I use Grass 6.2.1 and R 2.5.1 and have installed the spgrass6  
+>> package.
+>>
+>> The DTM is called "DTM_trentino_100m" and has a header and data  
+>> like the
+>> following:
+>>
+>> north:5158000.0
+>> south:5058500.0
+>> east:1729700.0
+>> west:1611600.0
+>> rows:995
+>> cols:1181
+>> -9999.0 -9999.0 -9999.0 370.84381103515625 372.55120849609375
+>> 373.13128662109375 .....
+>>
+>> I have opened R inside the Grass location, and imported the DTM:
+>>
+>> >  trentino.grid<-readRAST6("DTM_trentino_100m")
+>> Creating BIL support files ...
+>> Header File =
+>> /Users/Matteo/Documents/DataGrass/GBovest/Permafrost/.tmp/ 
+>> nilo.local/DTM_trentino_100m.hdr
+>> World File =
+>> /Users/Matteo/Documents/DataGrass/GBovest/Permafrost/.tmp/ 
+>> nilo.local/DTM_trentino_100m.wld
+>> Exporting Raster as double values(bytes=8)
+>> Using the Current Region settings ...
+>> north=5158000.000000
+>> south=5058500.000000
+>> east=1729700.000000
+>> west=1611600.000000
+>> r=995
+>> c=1181
+>>
+>> Percent complete:  100%
+>> r.out.bin complete.
+>>
+>> > summary(trentino.grid)
+>> Object of class SpatialGridDataFrame
+>> Coordinates:
+>>               min     max
+>> coords.x1 1611600 1729700
+>> coords.x2 5058500 5158000
+>> Is projected: TRUE
+>> proj4string :
+>> [+proj=tmerc +lat_0=0.0000000000 +lon_0=9.0000000000  
+>> +k_0=0.9996000000
+>> +x_0=1500000.0000000000 +y_0=0.0000000000 +a=6378388 +rf=297 +no_defs
+>> +towgs84=-225.000,-65.000,9.000]
+>> Number of points: 2
+>> Grid attributes:
+>>   cellcentre.offset cellsize cells.dim
+>> 1           1611650      100      1181
+>> 2           5058550      100       995
+>> Data attributes:
+>> DTM_trentino_100m
+>> Min.   :1.192e-319
+>> 1st Qu.:1.065e-314
+>> Median :1.066e-314
+>> Mean   :1.285e-312
+>> 3rd Qu.:2.722e-312
+>> Max.   :4.774e-312
+>>
+>> As you can see, the import has been fully done, yet the attributes  
+>> are not
+>> correct. In fact, the Min. value is 1.192e-319 and the Max is  
+>> 4.774e-312 but
+>> in reality the elevation changes between 60m to 3500m.
+>> Have I done something wrong? What should I do?
+>> Thank you in advance,
+>>
+>> Matteo
+>>
+>>
+>> ---------------------------------
+>> Matteo Dall'Amico
+>> PhD candidate
+>> CUDAM and department of Civil and Environmental Engineering
+>> Universita' degli Studi di Trento
+>> Via Mesiano 77 - 38050 Trento - Italy
+>> email: matteo.dallamico@ing.unitn.it
+>> Tel. +39 0461 882610
+>> Fax +39 0461 882672
+>> http://www.dottorato.it/trento/
+>> ---------------------------------
+>>
+>>
+>> _______________________________________________
+>> statsgrass mailing list
+>> statsgrass@grass.itc.it
+>> http://grass.itc.it/mailman/listinfo/statsgrass
+>>
+>>
+>
+>
+> -- 
+> +-----------------------------------------------------------+
+>              Carlos Henrique Grohmann - Guano
+>  Visiting Researcher at Kingston University London - UK
+>  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+> Linux User #89721  - carlos dot grohmann at gmail dot com
+> +-----------------------------------------------------------+
+> _________________
+> "Good morning, doctors. I have taken the liberty of removing Windows
+> 95 from my hard drive."
+> --The winning entry in a "What were HAL's first words" contest judged
+> by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+
+
+
+From carlos.grohmann at gmail.com  Mon Jul  9 10:40:57 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] import DTM with readRAST6()
+In-Reply-To: <E6C64CE1-69AB-4A8D-93D3-9CA0CDB7DA54@ing.unitn.it>
+References: <A3AC428C-EF2E-478B-A2C2-6D42CFF95938@ing.unitn.it>
+	<bd07447b0707090641l7ed92a32y23d9cf015e01b2cd@mail.gmail.com>
+	<E6C64CE1-69AB-4A8D-93D3-9CA0CDB7DA54@ing.unitn.it>
+Message-ID: <bd07447b0707090740s64b4197fs840de68d84b7d562@mail.gmail.com>
+
+I just tested here in grass 6.2.1 (ubuntu package), it worked fine.
+
+I see you have some very "precise" elevation readings:
+370.84381103515625....
+
+and that in the import process, data is exported as double (bytes=8),
+maybe this is the problem?
+
+any way you can get that elevations with less decimal values?
+
+just a guess, but..
+
+Carlos
+
+
+
+
+
+
+On 7/9/07, Matteo Dall'Amico <matteo.dallamico@ing.unitn.it> wrote:
+> Hi Carlos,
+> thank you for your reply.
+> I think the problem is that the import was not successful. As you see
+> from data attributes,
+>
+> Data attributes:
+> DTM_trentino_100m
+> Min.   :1.192e-319
+> 1st Qu.:1.065e-314
+> Median :1.066e-314
+> Mean   :1.285e-312
+> 3rd Qu.:2.722e-312
+> Max.   :4.774e-312
+>
+> the elevations are not correct. I would expect values ranging between
+> 60 and 3500m and not from 1.192e-319 to 4.774e-312.
+> I think the problem lays in the import procedure during readRAST6().
+> Any suggestion?
+> Thanks in advance,
+> Matteo
+>
+> On 9 Jul 2007, at 15:41, Carlos Gu?no Grohmann wrote:
+>
+> > try to
+> > str(trentino.grid)
+> >
+> > the summary() you want is probably
+> >
+> > summary(trentino.grid$DTM_trentino_100m)
+> >
+> > hope this helps
+> > Carlos
+> >
+> >
+> >
+> > On 7/9/07, Matteo Dall'Amico <matteo.dallamico@ing.unitn.it> wrote:
+> >>
+> >> Hello everybody,
+> >> I am a new R & Grass user.
+> >> I am interested in doing a kriging of the Temperature in a basin,
+> >> based on
+> >> pixel elevation (DTM).
+> >> I use Grass 6.2.1 and R 2.5.1 and have installed the spgrass6
+> >> package.
+> >>
+> >> The DTM is called "DTM_trentino_100m" and has a header and data
+> >> like the
+> >> following:
+> >>
+> >> north:5158000.0
+> >> south:5058500.0
+> >> east:1729700.0
+> >> west:1611600.0
+> >> rows:995
+> >> cols:1181
+> >> -9999.0 -9999.0 -9999.0 370.84381103515625 372.55120849609375
+> >> 373.13128662109375 .....
+> >>
+> >> I have opened R inside the Grass location, and imported the DTM:
+> >>
+> >> >  trentino.grid<-readRAST6("DTM_trentino_100m")
+> >> Creating BIL support files ...
+> >> Header File =
+> >> /Users/Matteo/Documents/DataGrass/GBovest/Permafrost/.tmp/
+> >> nilo.local/DTM_trentino_100m.hdr
+> >> World File =
+> >> /Users/Matteo/Documents/DataGrass/GBovest/Permafrost/.tmp/
+> >> nilo.local/DTM_trentino_100m.wld
+> >> Exporting Raster as double values(bytes=8)
+> >> Using the Current Region settings ...
+> >> north=5158000.000000
+> >> south=5058500.000000
+> >> east=1729700.000000
+> >> west=1611600.000000
+> >> r=995
+> >> c=1181
+> >>
+> >> Percent complete:  100%
+> >> r.out.bin complete.
+> >>
+> >> > summary(trentino.grid)
+> >> Object of class SpatialGridDataFrame
+> >> Coordinates:
+> >>               min     max
+> >> coords.x1 1611600 1729700
+> >> coords.x2 5058500 5158000
+> >> Is projected: TRUE
+> >> proj4string :
+> >> [+proj=tmerc +lat_0=0.0000000000 +lon_0=9.0000000000
+> >> +k_0=0.9996000000
+> >> +x_0=1500000.0000000000 +y_0=0.0000000000 +a=6378388 +rf=297 +no_defs
+> >> +towgs84=-225.000,-65.000,9.000]
+> >> Number of points: 2
+> >> Grid attributes:
+> >>   cellcentre.offset cellsize cells.dim
+> >> 1           1611650      100      1181
+> >> 2           5058550      100       995
+> >> Data attributes:
+> >> DTM_trentino_100m
+> >> Min.   :1.192e-319
+> >> 1st Qu.:1.065e-314
+> >> Median :1.066e-314
+> >> Mean   :1.285e-312
+> >> 3rd Qu.:2.722e-312
+> >> Max.   :4.774e-312
+> >>
+> >> As you can see, the import has been fully done, yet the attributes
+> >> are not
+> >> correct. In fact, the Min. value is 1.192e-319 and the Max is
+> >> 4.774e-312 but
+> >> in reality the elevation changes between 60m to 3500m.
+> >> Have I done something wrong? What should I do?
+> >> Thank you in advance,
+> >>
+> >> Matteo
+> >>
+> >>
+> >> ---------------------------------
+> >> Matteo Dall'Amico
+> >> PhD candidate
+> >> CUDAM and department of Civil and Environmental Engineering
+> >> Universita' degli Studi di Trento
+> >> Via Mesiano 77 - 38050 Trento - Italy
+> >> email: matteo.dallamico@ing.unitn.it
+> >> Tel. +39 0461 882610
+> >> Fax +39 0461 882672
+> >> http://www.dottorato.it/trento/
+> >> ---------------------------------
+> >>
+> >>
+> >> _______________________________________________
+> >> statsgrass mailing list
+> >> statsgrass@grass.itc.it
+> >> http://grass.itc.it/mailman/listinfo/statsgrass
+> >>
+> >>
+> >
+> >
+> > --
+> > +-----------------------------------------------------------+
+> >              Carlos Henrique Grohmann - Guano
+> >  Visiting Researcher at Kingston University London - UK
+> >  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+> > Linux User #89721  - carlos dot grohmann at gmail dot com
+> > +-----------------------------------------------------------+
+> > _________________
+> > "Good morning, doctors. I have taken the liberty of removing Windows
+> > 95 from my hard drive."
+> > --The winning entry in a "What were HAL's first words" contest judged
+> > by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+> >
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> >
+>
+>
+
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Visiting Researcher at Kingston University London - UK
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+
+From Seppo.Kaitala at fimr.fi  Mon Jul  9 15:04:39 2007
+From: Seppo.Kaitala at fimr.fi (Seppo.Kaitala@fimr.fi)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] Seppo Kaitala/FIMR/FI is out of the office.
+Message-ID: <OF3C17F6B9.4CB074F4-ONC2257313.0068CBEF-C2257313.0068CBF2@fimr.fi>
+
+
+I will be out of the office starting  06.07.2007 and will not return until
+06.08.2007.
+
+I will respond to your message when I return.
+
+
+From matteo.dallamico at ing.unitn.it  Tue Jul 10 15:12:09 2007
+From: matteo.dallamico at ing.unitn.it (Matteo Dall'Amico)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] import DTM with readRAST6()
+In-Reply-To: <bd07447b0707090740s64b4197fs840de68d84b7d562@mail.gmail.com>
+References: <A3AC428C-EF2E-478B-A2C2-6D42CFF95938@ing.unitn.it>
+	<bd07447b0707090641l7ed92a32y23d9cf015e01b2cd@mail.gmail.com>
+	<E6C64CE1-69AB-4A8D-93D3-9CA0CDB7DA54@ing.unitn.it>
+	<bd07447b0707090740s64b4197fs840de68d84b7d562@mail.gmail.com>
+Message-ID: <4DFDFD6E-E1AB-4B31-A4BC-4B31B165706F@ing.unitn.it>
+
+Hello Carlos,
+I tried to transform the DTM in integer values through the command:  
+r.out.ascii -i
+
+then I did again the import with readRAST6() but the result is the same:
+
+ > summary(trent.grid.integer)
+Object of class SpatialGridDataFrame
+Coordinates:
+               min     max
+coords.x1 1611600 1729700
+coords.x2 5058500 5158000
+Is projected: TRUE
+proj4string :
+[+proj=tmerc +lat_0=0.0000000000 +lon_0=9.0000000000 +k_0=0.9996000000
++x_0=1500000.0000000000 +y_0=0.0000000000 +a=6378388 +rf=297 +no_defs
++towgs84=-225.000,-65.000,9.000]
+Number of points: 2
+Grid attributes:
+   cellcentre.offset cellsize cells.dim
+1           1611650      100      1181
+2           5058550      100       995
+Data attributes:
+DTM_trent_100m
+Min.   :1.192e-319
+1st Qu.:1.065e-314
+Median :1.066e-314
+Mean   :1.285e-312
+3rd Qu.:2.722e-312
+Max.   :4.774e-312
+
+
+As you see, I didn't obtain a good import, as the elevation values  
+are still strange...
+Any idea?
+
+Matteo
+
+On 9 Jul 2007, at 16:40, Carlos Gu?no Grohmann wrote:
+
+> I just tested here in grass 6.2.1 (ubuntu package), it worked fine.
+>
+> I see you have some very "precise" elevation readings:
+> 370.84381103515625....
+>
+> and that in the import process, data is exported as double (bytes=8),
+> maybe this is the problem?
+>
+> any way you can get that elevations with less decimal values?
+>
+> just a guess, but..
+>
+> Carlos
+>
+>
+>
+>
+>
+>
+> On 7/9/07, Matteo Dall'Amico <matteo.dallamico@ing.unitn.it> wrote:
+>> Hi Carlos,
+>> thank you for your reply.
+>> I think the problem is that the import was not successful. As you see
+>> from data attributes,
+>>
+>> Data attributes:
+>> DTM_trentino_100m
+>> Min.   :1.192e-319
+>> 1st Qu.:1.065e-314
+>> Median :1.066e-314
+>> Mean   :1.285e-312
+>> 3rd Qu.:2.722e-312
+>> Max.   :4.774e-312
+>>
+>> the elevations are not correct. I would expect values ranging between
+>> 60 and 3500m and not from 1.192e-319 to 4.774e-312.
+>> I think the problem lays in the import procedure during readRAST6().
+>> Any suggestion?
+>> Thanks in advance,
+>> Matteo
+>>
+>> On 9 Jul 2007, at 15:41, Carlos Gu?no Grohmann wrote:
+>>
+>> > try to
+>> > str(trentino.grid)
+>> >
+>> > the summary() you want is probably
+>> >
+>> > summary(trentino.grid$DTM_trentino_100m)
+>> >
+>> > hope this helps
+>> > Carlos
+>> >
+>> >
+>> >
+>> > On 7/9/07, Matteo Dall'Amico <matteo.dallamico@ing.unitn.it> wrote:
+>> >>
+>> >> Hello everybody,
+>> >> I am a new R & Grass user.
+>> >> I am interested in doing a kriging of the Temperature in a basin,
+>> >> based on
+>> >> pixel elevation (DTM).
+>> >> I use Grass 6.2.1 and R 2.5.1 and have installed the spgrass6
+>> >> package.
+>> >>
+>> >> The DTM is called "DTM_trentino_100m" and has a header and data
+>> >> like the
+>> >> following:
+>> >>
+>> >> north:5158000.0
+>> >> south:5058500.0
+>> >> east:1729700.0
+>> >> west:1611600.0
+>> >> rows:995
+>> >> cols:1181
+>> >> -9999.0 -9999.0 -9999.0 370.84381103515625 372.55120849609375
+>> >> 373.13128662109375 .....
+>> >>
+>> >> I have opened R inside the Grass location, and imported the DTM:
+>> >>
+>> >> >  trentino.grid<-readRAST6("DTM_trentino_100m")
+>> >> Creating BIL support files ...
+>> >> Header File =
+>> >> /Users/Matteo/Documents/DataGrass/GBovest/Permafrost/.tmp/
+>> >> nilo.local/DTM_trentino_100m.hdr
+>> >> World File =
+>> >> /Users/Matteo/Documents/DataGrass/GBovest/Permafrost/.tmp/
+>> >> nilo.local/DTM_trentino_100m.wld
+>> >> Exporting Raster as double values(bytes=8)
+>> >> Using the Current Region settings ...
+>> >> north=5158000.000000
+>> >> south=5058500.000000
+>> >> east=1729700.000000
+>> >> west=1611600.000000
+>> >> r=995
+>> >> c=1181
+>> >>
+>> >> Percent complete:  100%
+>> >> r.out.bin complete.
+>> >>
+>> >> > summary(trentino.grid)
+>> >> Object of class SpatialGridDataFrame
+>> >> Coordinates:
+>> >>               min     max
+>> >> coords.x1 1611600 1729700
+>> >> coords.x2 5058500 5158000
+>> >> Is projected: TRUE
+>> >> proj4string :
+>> >> [+proj=tmerc +lat_0=0.0000000000 +lon_0=9.0000000000
+>> >> +k_0=0.9996000000
+>> >> +x_0=1500000.0000000000 +y_0=0.0000000000 +a=6378388 +rf=297  
+>> +no_defs
+>> >> +towgs84=-225.000,-65.000,9.000]
+>> >> Number of points: 2
+>> >> Grid attributes:
+>> >>   cellcentre.offset cellsize cells.dim
+>> >> 1           1611650      100      1181
+>> >> 2           5058550      100       995
+>> >> Data attributes:
+>> >> DTM_trentino_100m
+>> >> Min.   :1.192e-319
+>> >> 1st Qu.:1.065e-314
+>> >> Median :1.066e-314
+>> >> Mean   :1.285e-312
+>> >> 3rd Qu.:2.722e-312
+>> >> Max.   :4.774e-312
+>> >>
+>> >> As you can see, the import has been fully done, yet the attributes
+>> >> are not
+>> >> correct. In fact, the Min. value is 1.192e-319 and the Max is
+>> >> 4.774e-312 but
+>> >> in reality the elevation changes between 60m to 3500m.
+>> >> Have I done something wrong? What should I do?
+>> >> Thank you in advance,
+>> >>
+>> >> Matteo
+>> >>
+>> >>
+>> >> ---------------------------------
+>> >> Matteo Dall'Amico
+>> >> PhD candidate
+>> >> CUDAM and department of Civil and Environmental Engineering
+>> >> Universita' degli Studi di Trento
+>> >> Via Mesiano 77 - 38050 Trento - Italy
+>> >> email: matteo.dallamico@ing.unitn.it
+>> >> Tel. +39 0461 882610
+>> >> Fax +39 0461 882672
+>> >> http://www.dottorato.it/trento/
+>> >> ---------------------------------
+>> >>
+>> >>
+>> >> _______________________________________________
+>> >> statsgrass mailing list
+>> >> statsgrass@grass.itc.it
+>> >> http://grass.itc.it/mailman/listinfo/statsgrass
+>> >>
+>> >>
+>> >
+>> >
+>> > --
+>> > +-----------------------------------------------------------+
+>> >              Carlos Henrique Grohmann - Guano
+>> >  Visiting Researcher at Kingston University London - UK
+>> >  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+>> > Linux User #89721  - carlos dot grohmann at gmail dot com
+>> > +-----------------------------------------------------------+
+>> > _________________
+>> > "Good morning, doctors. I have taken the liberty of removing  
+>> Windows
+>> > 95 from my hard drive."
+>> > --The winning entry in a "What were HAL's first words" contest  
+>> judged
+>> > by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+>> >
+>> > _______________________________________________
+>> > statsgrass mailing list
+>> > statsgrass@grass.itc.it
+>> > http://grass.itc.it/mailman/listinfo/statsgrass
+>> >
+>>
+>>
+>
+>
+> -- 
+> +-----------------------------------------------------------+
+>              Carlos Henrique Grohmann - Guano
+>  Visiting Researcher at Kingston University London - UK
+>  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+> Linux User #89721  - carlos dot grohmann at gmail dot com
+> +-----------------------------------------------------------+
+> _________________
+> "Good morning, doctors. I have taken the liberty of removing Windows
+> 95 from my hard drive."
+> --The winning entry in a "What were HAL's first words" contest judged
+> by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+
+
+
+From neteler at itc.it  Thu Jul 12 05:08:27 2007
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] import DTM with readRAST6()
+In-Reply-To: <4DFDFD6E-E1AB-4B31-A4BC-4B31B165706F@ing.unitn.it>
+References: <A3AC428C-EF2E-478B-A2C2-6D42CFF95938@ing.unitn.it>
+	<bd07447b0707090641l7ed92a32y23d9cf015e01b2cd@mail.gmail.com>
+	<E6C64CE1-69AB-4A8D-93D3-9CA0CDB7DA54@ing.unitn.it>
+	<bd07447b0707090740s64b4197fs840de68d84b7d562@mail.gmail.com>
+	<4DFDFD6E-E1AB-4B31-A4BC-4B31B165706F@ing.unitn.it>
+Message-ID: <11556201.post@talk.nabble.com>
+
+
+hi Matteo,
+
+I have just made a test on a fresh installed machine with latest R
+and sp* packages using a synthetic DEM (still don't have a real
+DEM on this computer):
+
+GRASS 6.3.cvs (bellunoOvest):~ > r.surf.fractal dem
+Steps=1
+Preliminary surface calculations.
+Calculating surface 1 (of 1)
+GRASS 6.3.cvs (bellunoOvest):~ > R
+
+R version 2.5.1 (2007-06-27)
+...
+> trentino.grid<-readRAST6("dem")
+Error: could not find function "readRAST6"
+> library(spgrass6)
+Loading required package: sp
+Loading required package: maptools
+Loading required package: foreign
+Loading required package: rgdal
+Geospatial Data Abstraction Library extensions to R successfully loaded
+
+> trentino.grid<-readRAST6("dem")
+Creating BIL support files ...
+Header File =
+/home/neteler/grassdata/bellunoOvest/PERMANENT/.tmp/localhost/dem.hdr
+World File =
+/home/neteler/grassdata/bellunoOvest/PERMANENT/.tmp/localhost/dem.wld
+Exporting Raster as double values(bytes=8)
+Using the Current Region settings ...
+north=5175700.000000
+south=5084600.000000
+east=1787600.000000
+west=1706300.000000
+r=911
+c=813
+ 100%
+
+> summary(trentino.grid)
+Object of class SpatialGridDataFrame
+Coordinates:
+              min     max
+coords.x1 1706300 1787600
+coords.x2 5084600 5175700
+Is projected: TRUE
+proj4string :
+[+proj=tmerc +lat_0=0 +lon_0=9 +k=0.999600 +x_0=1500000 +y_0=0 +no_defs
++a=6378388 +rf=297 +towgs84=-225.000,-65.000,9.000 +to_meter=1]
+Number of points: 2
+Grid attributes:
+  cellcentre.offset cellsize cells.dim
+1           1706350      100       813
+2           5084650      100       911
+Data attributes:
+      dem
+ Min.   :-604.82
+ 1st Qu.:-289.55
+ Median :  49.31
+ Mean   :  23.07
+ 3rd Qu.: 334.70
+ Max.   : 669.46
+
+> system("r.info -r dem")
+min=-604.821087
+max=669.457656
+
+> system("r.info -t dem")
+datatype=DCELL
+
+Looks all functional. I am using 6.3, though. Do you use a 64bit machine
+(like me)? Probably there were 64bit fixes after GRASS 6.2.1, I don't
+remember in this moment.
+
+Did you run
+update.packages()
+for your R installation?
+
+ciao
+Markus
+
+-- 
+View this message in context: http://www.nabble.com/import-DTM-with-readRAST6%28%29-tf4049321.html#a11556201
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+
+From matteo.dallamico at ing.unitn.it  Thu Jul 12 06:50:57 2007
+From: matteo.dallamico at ing.unitn.it (Matteo Dall'Amico)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] import DTM with readRAST6()
+In-Reply-To: <11556201.post@talk.nabble.com>
+References: <A3AC428C-EF2E-478B-A2C2-6D42CFF95938@ing.unitn.it>
+	<bd07447b0707090641l7ed92a32y23d9cf015e01b2cd@mail.gmail.com>
+	<E6C64CE1-69AB-4A8D-93D3-9CA0CDB7DA54@ing.unitn.it>
+	<bd07447b0707090740s64b4197fs840de68d84b7d562@mail.gmail.com>
+	<4DFDFD6E-E1AB-4B31-A4BC-4B31B165706F@ing.unitn.it>
+	<11556201.post@talk.nabble.com>
+Message-ID: <E70525CC-32E8-4087-8EB5-7BA645CD2753@ing.unitn.it>
+
+Hi Markus,
+I own a MacBookPro with Intel processor and I am running Mac OSX  
+version 10.4.10.
+I have installed GRASS 6.2.1 and R 2.5.1.
+I have tried all yesterday to read the raster DTM without success.
+This is what I get:
+
+ >trent.int<-readRAST6("DTM_integer")
+Creating BIL support files ...
+Header File = /Users/Matteo/Documents/DataGrass/GBovest/ 
+Permafrost/.tmp/nilo.ing.unitn.it/DTM_integer.hdr
+World File = /Users/Matteo/Documents/DataGrass/GBovest/ 
+Permafrost/.tmp/nilo.ing.unitn.it/DTM_integer.wld
+Exporting Raster as integer values (bytes=2)
+Using the Current Region settings ...
+north=5158000.000000
+south=5058500.000000
+east=1729700.000000
+west=1611600.000000
+r=995
+c=1181
+
+Percent complete:  100%
+r.out.bin complete.
+
+ > summary(trent.int)
+Object of class SpatialGridDataFrame
+Coordinates:
+               min     max
+coords.x1 1611600 1729700
+coords.x2 5058500 5158000
+Is projected: TRUE
+proj4string :
+[+proj=tmerc +lat_0=0.0000000000 +lon_0=9.0000000000 +k_0=0.9996000000
++x_0=1500000.0000000000 +y_0=0.0000000000 +a=6378388 +rf=297 +no_defs
++towgs84=-225.000,-65.000,9.000]
+Number of points: 2
+Grid attributes:
+   cellcentre.offset cellsize cells.dim
+1           1611650      100      1181
+2           5058550      100       995
+Data attributes:
+   DTM_integer
+Min.   :-32768
+1st Qu.: -3624
+Median : -3624
+Mean   : -1991
+3rd Qu.:  1028
+Max.   : 32525
+
+ > print(trent.int@data[100000:100150,])
+   [1]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624   
+-3624  -3624
+[11]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624   
+-3624
+[21]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624   
+-3624
+[31]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624   
+-3624
+[41]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624   
+-3624
+[51]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624   
+-3624
+[61]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624   
+-3624
+[71]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624   
+-3624
+[81]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624   
+-3624
+[91]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624   
+-3624
+[101]  -3624  -3624  -3624  -3624 -19703  12298  22794   2058  -8951  
+-17911
+[111] -27895  29961  27401 -32759 -25079 -13815  15370  25354  30986  
+-30710
+[121] -15094   6923   -758  -7670 -17654 -22518 -20214 -30710  21258   
+10506
+[131]  17930 -28150 -26102  28938  23818   -247  26889 -31991 -15607   
+10761
+[141]  -4856 -18936  28936  14088  -4857 -21241   9223 -11002 -17658   
+-9722
+[151]   5639
+
+As you can see, it doesn't distinguish the NODATA: instead of -9999  
+it uses -3624.
+Also in summary there is no notice of the NODATA.
+
+I downloaded all the packages and then, from the terminal, I  
+installed them using:
+
+R CMD INSTALL name_of_package
+
+I really think there are problems with my spgrass6 package and MacOS  
+system.
+Any idea?
+Thanks,
+Matteo
+
+On 12 Jul 2007, at 11:08, Markus Neteler wrote:
+
+>
+> hi Matteo,
+>
+> I have just made a test on a fresh installed machine with latest R
+> and sp* packages using a synthetic DEM (still don't have a real
+> DEM on this computer):
+>
+> GRASS 6.3.cvs (bellunoOvest):~ > r.surf.fractal dem
+> Steps=1
+> Preliminary surface calculations.
+> Calculating surface 1 (of 1)
+> GRASS 6.3.cvs (bellunoOvest):~ > R
+>
+> R version 2.5.1 (2007-06-27)
+> ...
+>> trentino.grid<-readRAST6("dem")
+> Error: could not find function "readRAST6"
+>> library(spgrass6)
+> Loading required package: sp
+> Loading required package: maptools
+> Loading required package: foreign
+> Loading required package: rgdal
+> Geospatial Data Abstraction Library extensions to R successfully  
+> loaded
+>
+>> trentino.grid<-readRAST6("dem")
+> Creating BIL support files ...
+> Header File =
+> /home/neteler/grassdata/bellunoOvest/PERMANENT/.tmp/localhost/dem.hdr
+> World File =
+> /home/neteler/grassdata/bellunoOvest/PERMANENT/.tmp/localhost/dem.wld
+> Exporting Raster as double values(bytes=8)
+> Using the Current Region settings ...
+> north=5175700.000000
+> south=5084600.000000
+> east=1787600.000000
+> west=1706300.000000
+> r=911
+> c=813
+>  100%
+>
+>> summary(trentino.grid)
+> Object of class SpatialGridDataFrame
+> Coordinates:
+>               min     max
+> coords.x1 1706300 1787600
+> coords.x2 5084600 5175700
+> Is projected: TRUE
+> proj4string :
+> [+proj=tmerc +lat_0=0 +lon_0=9 +k=0.999600 +x_0=1500000 +y_0=0  
+> +no_defs
+> +a=6378388 +rf=297 +towgs84=-225.000,-65.000,9.000 +to_meter=1]
+> Number of points: 2
+> Grid attributes:
+>   cellcentre.offset cellsize cells.dim
+> 1           1706350      100       813
+> 2           5084650      100       911
+> Data attributes:
+>       dem
+>  Min.   :-604.82
+>  1st Qu.:-289.55
+>  Median :  49.31
+>  Mean   :  23.07
+>  3rd Qu.: 334.70
+>  Max.   : 669.46
+>
+>> system("r.info -r dem")
+> min=-604.821087
+> max=669.457656
+>
+>> system("r.info -t dem")
+> datatype=DCELL
+>
+> Looks all functional. I am using 6.3, though. Do you use a 64bit  
+> machine
+> (like me)? Probably there were 64bit fixes after GRASS 6.2.1, I don't
+> remember in this moment.
+>
+> Did you run
+> update.packages()
+> for your R installation?
+>
+> ciao
+> Markus
+>
+> -- 
+> View this message in context: http://www.nabble.com/import-DTM-with- 
+> readRAST6%28%29-tf4049321.html#a11556201
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+
+
+From neteler at itc.it  Thu Jul 12 08:18:11 2007
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] import DTM with readRAST6()
+In-Reply-To: <E70525CC-32E8-4087-8EB5-7BA645CD2753@ing.unitn.it>
+References: <A3AC428C-EF2E-478B-A2C2-6D42CFF95938@ing.unitn.it>
+	<bd07447b0707090641l7ed92a32y23d9cf015e01b2cd@mail.gmail.com>
+	<E6C64CE1-69AB-4A8D-93D3-9CA0CDB7DA54@ing.unitn.it>
+	<bd07447b0707090740s64b4197fs840de68d84b7d562@mail.gmail.com>
+	<4DFDFD6E-E1AB-4B31-A4BC-4B31B165706F@ing.unitn.it>
+	<11556201.post@talk.nabble.com>
+	<E70525CC-32E8-4087-8EB5-7BA645CD2753@ing.unitn.it>
+Message-ID: <20070712121811.GF30719@bartok.itc.it>
+
+On Thu, Jul 12, 2007 at 12:50:57PM +0200, Matteo Dall'Amico wrote:
+> Hi Markus,
+> I own a MacBookPro with Intel processor and I am running Mac OSX version 
+> 10.4.10.
+> I have installed GRASS 6.2.1 and R 2.5.1.
+> I have tried all yesterday to read the raster DTM without success.
+> This is what I get:
+>
+> >trent.int<-readRAST6("DTM_integer")
+> Creating BIL support files ...
+> Header File = 
+> /Users/Matteo/Documents/DataGrass/GBovest/Permafrost/.tmp/nilo.ing.unitn.it/DTM_integer.hdr
+> World File = 
+> /Users/Matteo/Documents/DataGrass/GBovest/Permafrost/.tmp/nilo.ing.unitn.it/DTM_integer.wld
+> Exporting Raster as integer values (bytes=2)
+> Using the Current Region settings ...
+> north=5158000.000000
+> south=5058500.000000
+> east=1729700.000000
+> west=1611600.000000
+> r=995
+> c=1181
+>
+> Percent complete:  100%
+> r.out.bin complete.
+>
+> > summary(trent.int)
+> Object of class SpatialGridDataFrame
+> Coordinates:
+>               min     max
+> coords.x1 1611600 1729700
+> coords.x2 5058500 5158000
+> Is projected: TRUE
+> proj4string :
+> [+proj=tmerc +lat_0=0.0000000000 +lon_0=9.0000000000 +k_0=0.9996000000
+> +x_0=1500000.0000000000 +y_0=0.0000000000 +a=6378388 +rf=297 +no_defs
+> +towgs84=-225.000,-65.000,9.000]
+> Number of points: 2
+> Grid attributes:
+>   cellcentre.offset cellsize cells.dim
+> 1           1611650      100      1181
+> 2           5058550      100       995
+> Data attributes:
+>   DTM_integer
+> Min.   :-32768
+> 1st Qu.: -3624
+> Median : -3624
+> Mean   : -1991
+> 3rd Qu.:  1028
+> Max.   : 32525
+>
+> > print(trent.int@data[100000:100150,])
+>   [1]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624
+> [11]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624
+> [21]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624
+> [31]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624
+> [41]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624
+> [51]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624
+> [61]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624
+> [71]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624
+> [81]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624
+> [91]  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624  -3624
+> [101]  -3624  -3624  -3624  -3624 -19703  12298  22794   2058  -8951 -17911
+> [111] -27895  29961  27401 -32759 -25079 -13815  15370  25354  30986 -30710
+> [121] -15094   6923   -758  -7670 -17654 -22518 -20214 -30710  21258  10506
+> [131]  17930 -28150 -26102  28938  23818   -247  26889 -31991 -15607  10761
+> [141]  -4856 -18936  28936  14088  -4857 -21241   9223 -11002 -17658  -9722
+> [151]   5639
+>
+> As you can see, it doesn't distinguish the NODATA: instead of -9999 it uses 
+> -3624.
+> Also in summary there is no notice of the NODATA.
+>
+> I downloaded all the packages and then, from the terminal, I installed them 
+> using:
+>
+> R CMD INSTALL name_of_package
+
+I would update like this:
+
+http://grass.itc.it/statsgrass/grass6_r_install.html
+
+# you need to be connected to the Internet to use these commands:
+install.packages(c("sp","spgrass6","rgdal","maptools"), dependencies=TRUE)
+
+> I really think there are problems with my spgrass6 package and MacOS 
+> system.
+> Any idea?
+
+Could you try a more recent GRASS?
+http://www.kyngchaos.com/software/unixport/grass/
+
+Markus
+
+> Thanks,
+> Matteo
+>
+> On 12 Jul 2007, at 11:08, Markus Neteler wrote:
+>
+>>
+>> hi Matteo,
+>>
+>> I have just made a test on a fresh installed machine with latest R
+>> and sp* packages using a synthetic DEM (still don't have a real
+>> DEM on this computer):
+>>
+>> GRASS 6.3.cvs (bellunoOvest):~ > r.surf.fractal dem
+>> Steps=1
+>> Preliminary surface calculations.
+>> Calculating surface 1 (of 1)
+>> GRASS 6.3.cvs (bellunoOvest):~ > R
+>>
+>> R version 2.5.1 (2007-06-27)
+>> ...
+>>> trentino.grid<-readRAST6("dem")
+>> Error: could not find function "readRAST6"
+>>> library(spgrass6)
+>> Loading required package: sp
+>> Loading required package: maptools
+>> Loading required package: foreign
+>> Loading required package: rgdal
+>> Geospatial Data Abstraction Library extensions to R successfully loaded
+>>
+>>> trentino.grid<-readRAST6("dem")
+>> Creating BIL support files ...
+>> Header File =
+>> /home/neteler/grassdata/bellunoOvest/PERMANENT/.tmp/localhost/dem.hdr
+>> World File =
+>> /home/neteler/grassdata/bellunoOvest/PERMANENT/.tmp/localhost/dem.wld
+>> Exporting Raster as double values(bytes=8)
+>> Using the Current Region settings ...
+>> north=5175700.000000
+>> south=5084600.000000
+>> east=1787600.000000
+>> west=1706300.000000
+>> r=911
+>> c=813
+>>  100%
+>>
+>>> summary(trentino.grid)
+>> Object of class SpatialGridDataFrame
+>> Coordinates:
+>>               min     max
+>> coords.x1 1706300 1787600
+>> coords.x2 5084600 5175700
+>> Is projected: TRUE
+>> proj4string :
+>> [+proj=tmerc +lat_0=0 +lon_0=9 +k=0.999600 +x_0=1500000 +y_0=0 +no_defs
+>> +a=6378388 +rf=297 +towgs84=-225.000,-65.000,9.000 +to_meter=1]
+>> Number of points: 2
+>> Grid attributes:
+>>   cellcentre.offset cellsize cells.dim
+>> 1           1706350      100       813
+>> 2           5084650      100       911
+>> Data attributes:
+>>       dem
+>>  Min.   :-604.82
+>>  1st Qu.:-289.55
+>>  Median :  49.31
+>>  Mean   :  23.07
+>>  3rd Qu.: 334.70
+>>  Max.   : 669.46
+>>
+>>> system("r.info -r dem")
+>> min=-604.821087
+>> max=669.457656
+>>
+>>> system("r.info -t dem")
+>> datatype=DCELL
+>>
+>> Looks all functional. I am using 6.3, though. Do you use a 64bit machine
+>> (like me)? Probably there were 64bit fixes after GRASS 6.2.1, I don't
+>> remember in this moment.
+>>
+>> Did you run
+>> update.packages()
+>> for your R installation?
+>>
+>> ciao
+>> Markus
+>>
+>> -- 
+>> View this message in context: 
+>> http://www.nabble.com/import-DTM-with-readRAST6%28%29-tf4049321.html#a11556201
+>> Sent from the Grass - Stats mailing list archive at Nabble.com.
+>>
+>> _______________________________________________
+>> statsgrass mailing list
+>> statsgrass@grass.itc.it
+>> http://grass.itc.it/mailman/listinfo/statsgrass
+>>
+>
+
+-- 
+Markus Neteler  <neteler itc it>  http://mpa.itc.it/markus/
+FBK-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+
+From lanczos at t-zones.sk  Mon Jul 23 11:00:22 2007
+From: lanczos at t-zones.sk (lanczos@t-zones.sk)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] v.surf.krige
+Message-ID: <20070723150022.14350.qmail@ewm.e-zones.sk>
+
+I am trying to do some kriging job within grass using the v.surf.krige. It looks that there is an error, but I am not sure where is it, or I am doing something wrong. After finishing the variogram construction and starting the v.surf.krige I got a following error message:
+
+ v.surf.krige model=Spherical psill=4 nugget=0.5 range=800 output=t_500_s outputcv=cvc_nfit outputcvf=cvc_fit
+
+Error in parse(file, n = -1, NULL, "?", srcfile, encoding) :
+    R_temp: syntax error, unexpected NUM_CONST, expecting ',' at
+22: ,vgm(psill=4,model="Sph",range=800,nugget=))
+23:
+Execution halted
+Done
+
+Could somebody help me?
+
+Many thanks in advance
+
+Tomas
+
+--
+From Roger.Bivand at nhh.no  Mon Jul 23 13:54:35 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] v.surf.krige
+In-Reply-To: <20070723150022.14350.qmail@ewm.e-zones.sk>
+References: <20070723150022.14350.qmail@ewm.e-zones.sk>
+Message-ID: <Pine.LNX.4.64.0707231949100.5847@reclus.nhh.no>
+
+On Mon, 23 Jul 2007, lanczos@t-zones.sk wrote:
+
+> I am trying to do some kriging job within grass using the v.surf.krige. 
+> It looks that there is an error, but I am not sure where is it, or I am 
+> doing something wrong. After finishing the variogram construction and 
+> starting the v.surf.krige I got a following error message:
+>
+> v.surf.krige model=Spherical psill=4 nugget=0.5 range=800 output=t_500_s 
+> outputcv=cvc_nfit outputcvf=cvc_fit
+>
+> Error in parse(file, n = -1, NULL, "?", srcfile, encoding) :
+>    R_temp: syntax error, unexpected NUM_CONST, expecting ',' at
+> 22: ,vgm(psill=4,model="Sph",range=800,nugget=))
+> 23:
+> Execution halted
+> Done
+>
+> Could somebody help me?
+>
+> Many thanks in advance
+
+This "add-on" is not maintained or checked by its authors against current 
+GRASS or R, and should only be used by people knowing shell scripting and 
+R very well. My guess is that $nugget is not defined, as:
+
+line 115: nugget=$GIS_OPT_nuggetv
+
+where I think the v is a typo. However, this is just a guess. The code is 
+almost impossible to read, and does not use facilities in current 
+spgrass6, which would have simplified setting up the prediction raster.
+
+Please do try to do this directly in R, it will save you a lot of time and 
+heartache!
+
+Roger
+
+>
+> Tomas
+>
+> --
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From hzambran.newsgroups at gmail.com  Wed Jul 25 07:17:10 2007
+From: hzambran.newsgroups at gmail.com (Mauricio Zambrano)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] GRASS+R: problem with gmeta() command
+Message-ID: <63d616b0707250417l288567abj9932ff953eec245e@mail.gmail.com>
+
+Hi,
+
+I'm using GRASS 6.2.2cvs and R 2.4.1, and I'm new in the use of R.
+
+I installed the package GRASS within R (and all the Spatial and
+Machine Learning & Statistical Learning packages) without any
+problems, but when I loaded the package GRASS into R (inside
+GRASS-GIS) and I put the command "gmeta()", I obtained the error
+message "Bad or no region for current mapset". However I can see the
+limits for my region within GRASS-GIS and when I put the command
+"g.region -p" within GRASS-GIS, I obtain:
+
+projection: 1 (UTM)
+zone:       -19
+datum:      psad56
+ellipsoid:  international
+north:      6456369.99999
+south:      6205510
+west:       237658
+east:       428666.999996
+nsres:      25.00099661
+ewres:      25.00117801
+rows:       10034
+cols:       7640
+cells:      76659760
+
+any help in how to solve this problem with "gmeta()" command will be
+very valuable for me
+
+Thanks in advance
+
+Mauricio Zambrano B.
+(University of Trento)
+
+
+From wegmann at biozentrum.uni-wuerzburg.de  Wed Jul 25 07:23:55 2007
+From: wegmann at biozentrum.uni-wuerzburg.de (Martin Wegmann)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] GRASS+R: problem with gmeta() command
+In-Reply-To: <63d616b0707250417l288567abj9932ff953eec245e@mail.gmail.com>
+References: <63d616b0707250417l288567abj9932ff953eec245e@mail.gmail.com>
+Message-ID: <200707251323.55791.wegmann@biozentrum.uni-wuerzburg.de>
+
+hello Mauricio, 
+
+I haven't tested it with GRASS 6.2.2, but isn't it gmeta6() ?
+
+Have a look at the GRASS-R article by Roger Bivand: 
+http://www.osgeo.org/journal/volume1
+
+regards, Martin
+
+On Wednesday 25 July 2007 13:17:10 Mauricio Zambrano wrote:
+> Hi,
+>
+> I'm using GRASS 6.2.2cvs and R 2.4.1, and I'm new in the use of R.
+>
+> I installed the package GRASS within R (and all the Spatial and
+> Machine Learning & Statistical Learning packages) without any
+> problems, but when I loaded the package GRASS into R (inside
+> GRASS-GIS) and I put the command "gmeta()", I obtained the error
+> message "Bad or no region for current mapset". However I can see the
+> limits for my region within GRASS-GIS and when I put the command
+> "g.region -p" within GRASS-GIS, I obtain:
+>
+> projection: 1 (UTM)
+> zone:       -19
+> datum:      psad56
+> ellipsoid:  international
+> north:      6456369.99999
+> south:      6205510
+> west:       237658
+> east:       428666.999996
+> nsres:      25.00099661
+> ewres:      25.00117801
+> rows:       10034
+> cols:       7640
+> cells:      76659760
+>
+> any help in how to solve this problem with "gmeta()" command will be
+> very valuable for me
+>
+> Thanks in advance
+>
+> Mauricio Zambrano B.
+> (University of Trento)
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+
+From hzambran.newsgroups at gmail.com  Wed Jul 25 07:33:49 2007
+From: hzambran.newsgroups at gmail.com (Mauricio Zambrano)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] GRASS+R: problem with gmeta() command
+In-Reply-To: <200707251323.55791.wegmann@biozentrum.uni-wuerzburg.de>
+References: <63d616b0707250417l288567abj9932ff953eec245e@mail.gmail.com>
+	<200707251323.55791.wegmann@biozentrum.uni-wuerzburg.de>
+Message-ID: <63d616b0707250433h4907315ds11bcfe290b9dd871@mail.gmail.com>
+
+Thanks Martin,
+Unfortunately, there is not gmeta6() command.
+I updated Grass last Monday, when I already had done the installation of
+R 2.4.1 and the previous GRASS 6.2.1.
+
+Regards
+Mauricio
+
+
+From carlos.grohmann at gmail.com  Wed Jul 25 07:39:22 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] GRASS+R: problem with gmeta() command
+In-Reply-To: <63d616b0707250433h4907315ds11bcfe290b9dd871@mail.gmail.com>
+References: <63d616b0707250417l288567abj9932ff953eec245e@mail.gmail.com>
+	<200707251323.55791.wegmann@biozentrum.uni-wuerzburg.de>
+	<63d616b0707250433h4907315ds11bcfe290b9dd871@mail.gmail.com>
+Message-ID: <bd07447b0707250439i56f66503k613b0b7395399cf@mail.gmail.com>
+
+Mauricio, you don't use gmeta() as a command, but you use it to pass
+the region information to a variable inside R, like
+
+G <- gmeta6()
+
+so "G" now has the info on limits, rows, cols, etc.
+
+Carlos
+
+
+On 7/25/07, Mauricio Zambrano <hzambran.newsgroups@gmail.com> wrote:
+> Thanks Martin,
+> Unfortunately, there is not gmeta6() command.
+> I updated Grass last Monday, when I already had done the installation of
+> R 2.4.1 and the previous GRASS 6.2.1.
+>
+> Regards
+> Mauricio
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Visiting Researcher at Kingston University London - UK
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+
+
+From wegmann at biozentrum.uni-wuerzburg.de  Wed Jul 25 07:39:38 2007
+From: wegmann at biozentrum.uni-wuerzburg.de (Martin Wegmann)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] GRASS+R: problem with gmeta() command
+In-Reply-To: <63d616b0707250433h4907315ds11bcfe290b9dd871@mail.gmail.com>
+References: <63d616b0707250417l288567abj9932ff953eec245e@mail.gmail.com>
+	<200707251323.55791.wegmann@biozentrum.uni-wuerzburg.de>
+	<63d616b0707250433h4907315ds11bcfe290b9dd871@mail.gmail.com>
+Message-ID: <200707251339.38755.wegmann@biozentrum.uni-wuerzburg.de>
+
+hello Mauricio,
+
+On Wednesday 25 July 2007 13:33:49 Mauricio Zambrano wrote:
+> Thanks Martin,
+> Unfortunately, there is not gmeta6() command.
+> I updated Grass last Monday, when I already had done the installation of
+> R 2.4.1 and the previous GRASS 6.2.1.
+
+well, I tested it using GRASS (6.3-cvs and 6.2.1) and R 2.5.1 beta (Debian 
+unstable repos.) and it works:
+
+Welcome to GRASS 6.3.cvs (2007)
+GRASS homepage:                          http://grass.itc.it/
+This version running thru:               Bash Shell (/bin/bash)
+Help is available with the command:      g.manual -i
+See the licence terms with:              g.version -c
+If required, restart the graphical user interface with: gis.m
+When ready to quit enter:                exit
+GRASS 6.3.cvs (spearfish60):~ > R
+
+R version 2.5.1 beta (2007-06-17 r41981)
+Copyright (C) 2007 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R ist freie Software und kommt OHNE JEGLICHE GARANTIE.
+Sie sind eingeladen, es unter bestimmten Bedingungen weiter zu verbreiten.
+Tippen Sie 'license()' or 'licence()' f?r Details dazu.
+
+R ist ein Gemeinschaftsprojekt mit vielen Beitragenden.
+Tippen Sie 'contributors()' f?r mehr Information und 'citation()',
+um zu erfahren, wie R oder R packages in Publikationen zitiert werden k?nnen.
+
+Tippen Sie 'demo()' f?r einige Demos, 'help()' f?r on-line Hilfe, oder
+'help.start()' f?r eine HTML Browserschnittstelle zur Hilfe.
+Tippen Sie 'q()', um R zu verlassen.
+
+[Vorher gesicherter Workspace wiederhergestellt]
+
+> library(spgrass6)
+Lade n?tiges Paket: sp
+Lade n?tiges Paket: maptools
+Lade n?tiges Paket: foreign
+Lade n?tiges Paket: rgdal
+Geospatial Data Abstraction Library extensions to R successfully loaded
+> gmeta6()
+gisdbase    /data1/grassdb
+location    spearfish60
+mapset      PERMANENT
+rows        140
+columns     190
+north       4928000
+south       4914000
+west        590000
+east        609000
+nsres       100
+ewres       100
+projection  +proj=utm +zone=13 +a=6378206.4 +rf=294.9786982 +no_defs
++nadgrids=/usr/local/grass-6.3.cvs/etc/nad/conus +to_meter=1.0
+
+unfortunately I cannot test it using your R version but it should work.
+
+regards, Martin
+
+>
+> Regards
+> Mauricio
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+-- 
+Martin Wegmann
+
+DLR - German Aerospace Center
+German Remote Sensing Data Center
+@
+Institute of Geography
+Dept. of Remote Sensing
+Remote Sensing and Biodiversity Unit
+Am Hubland
+97074 W?rzburg
+Germany
+
+phone: +49-(0)931 - 888 4797
+fax: ? +49-(0)931 - 888 4961
+http://www.biota-africa.org
+http://www.biogis.de
+
+
+From hzambran.newsgroups at gmail.com  Wed Jul 25 07:45:45 2007
+From: hzambran.newsgroups at gmail.com (Mauricio Zambrano)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] GRASS+R: problem with gmeta() command
+In-Reply-To: <bd07447b0707250439i56f66503k613b0b7395399cf@mail.gmail.com>
+References: <63d616b0707250417l288567abj9932ff953eec245e@mail.gmail.com>
+	<200707251323.55791.wegmann@biozentrum.uni-wuerzburg.de>
+	<63d616b0707250433h4907315ds11bcfe290b9dd871@mail.gmail.com>
+	<bd07447b0707250439i56f66503k613b0b7395399cf@mail.gmail.com>
+Message-ID: <63d616b0707250445h53493caet32721383de837599@mail.gmail.com>
+
+In fact the problem appears when I try to do a "G <-  gmeta()"
+command, and when i tried to solve the problem i arrive to the gmeta()
+command.
+Mauricio
+
+
+From sisma66 at tiscali.it  Wed Jul 25 07:50:46 2007
+From: sisma66 at tiscali.it (pierluigi de rosa)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] GRASS+R: problem with gmeta() command
+In-Reply-To: <63d616b0707250417l288567abj9932ff953eec245e@mail.gmail.com>
+References: <63d616b0707250417l288567abj9932ff953eec245e@mail.gmail.com>
+Message-ID: <200707251350.46611.sisma66@tiscali.it>
+
+Hi,
+Did you run library(spgrass6)?
+If yes, you should have gmeta6()!.
+Bye
+Pierluigi
+
+Alle 13:17, mercoled? 25 luglio 2007, Mauricio Zambrano ha scritto:
+> Hi,
+>
+> I'm using GRASS 6.2.2cvs and R 2.4.1, and I'm new in the use of R.
+>
+> I installed the package GRASS within R (and all the Spatial and
+> Machine Learning & Statistical Learning packages) without any
+> problems, but when I loaded the package GRASS into R (inside
+> GRASS-GIS) and I put the command "gmeta()", I obtained the error
+> message "Bad or no region for current mapset". However I can see the
+> limits for my region within GRASS-GIS and when I put the command
+> "g.region -p" within GRASS-GIS, I obtain:
+>
+> projection: 1 (UTM)
+> zone:       -19
+> datum:      psad56
+> ellipsoid:  international
+> north:      6456369.99999
+> south:      6205510
+> west:       237658
+> east:       428666.999996
+> nsres:      25.00099661
+> ewres:      25.00117801
+> rows:       10034
+> cols:       7640
+> cells:      76659760
+>
+> any help in how to solve this problem with "gmeta()" command will be
+> very valuable for me
+>
+> Thanks in advance
+>
+> Mauricio Zambrano B.
+> (University of Trento)
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+From hzambran.newsgroups at gmail.com  Wed Jul 25 07:54:06 2007
+From: hzambran.newsgroups at gmail.com (Mauricio Zambrano)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] GRASS+R: problem with gmeta() command
+In-Reply-To: <200707251339.38755.wegmann@biozentrum.uni-wuerzburg.de>
+References: <63d616b0707250417l288567abj9932ff953eec245e@mail.gmail.com>
+	<200707251323.55791.wegmann@biozentrum.uni-wuerzburg.de>
+	<63d616b0707250433h4907315ds11bcfe290b9dd871@mail.gmail.com>
+	<200707251339.38755.wegmann@biozentrum.uni-wuerzburg.de>
+Message-ID: <63d616b0707250454u7eee8c91t4a89811546462f88@mail.gmail.com>
+
+Thanks a lot Martin.
+
+The problem was in the library that I had loaded, because I had loaded
+the library GRASS with the command "library(GRASS)", as is read
+yesterday in the web-page :
+
+http://www.geog.uni-hannover.de/grass/statsgrass/grass_r_interface.html#Using_GRASS_R
+
+but now i realized thath the right instructions are int the web page:
+
+http://www.geog.uni-hannover.de/grass/statsgrass/grass6_r_install.html
+
+In fact, when I put "library(spgrass6)" everything was right:
+
+Loading required package: sp
+Loading required package: maptools
+Loading required package: foreign
+Loading required package: rgdal
+Geospatial Data Abstraction Library extensions to R successfully loaded
+> gmeta6()
+gisdbase    /home/hzambran/GrassData/UTM/psad56_h19s
+location    chile
+mapset      v_region
+rows        10034
+columns     7640
+north       6456370
+south       6205510
+west        237658
+east        428667
+nsres       25.00100
+ewres       25.00118
+projection  +proj=utm +south +zone=19 +a=6378388 +rf=297 +no_defs
++towgs84=-288.000,175.000,-376.000
+
+Thanks a lot !.
+
+Mauricio
+
+
+From Roger.Bivand at nhh.no  Wed Jul 25 08:19:59 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] GRASS+R: problem with gmeta() command
+In-Reply-To: <63d616b0707250454u7eee8c91t4a89811546462f88@mail.gmail.com>
+References: <63d616b0707250417l288567abj9932ff953eec245e@mail.gmail.com>
+	<200707251323.55791.wegmann@biozentrum.uni-wuerzburg.de>
+	<63d616b0707250433h4907315ds11bcfe290b9dd871@mail.gmail.com>
+	<200707251339.38755.wegmann@biozentrum.uni-wuerzburg.de>
+	<63d616b0707250454u7eee8c91t4a89811546462f88@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0707251417130.13073@reclus.nhh.no>
+
+On Wed, 25 Jul 2007, Mauricio Zambrano wrote:
+
+> Thanks a lot Martin.
+>
+> The problem was in the library that I had loaded, because I had loaded
+> the library GRASS with the command "library(GRASS)", as is read
+> yesterday in the web-page :
+>
+> http://www.geog.uni-hannover.de/grass/statsgrass/grass_r_interface.html#Using_GRASS_R
+>
+> but now i realized thath the right instructions are int the web page:
+>
+> http://www.geog.uni-hannover.de/grass/statsgrass/grass6_r_install.html
+
+Exactly. Perhaps we can ask the webmaster to make the latter page the main 
+link, and move the current page to a less visible location? The OSGeo 
+Journal note gives the current status.
+
+Roger
+
+>
+> In fact, when I put "library(spgrass6)" everything was right:
+>
+> Loading required package: sp
+> Loading required package: maptools
+> Loading required package: foreign
+> Loading required package: rgdal
+> Geospatial Data Abstraction Library extensions to R successfully loaded
+>>  gmeta6()
+> gisdbase    /home/hzambran/GrassData/UTM/psad56_h19s
+> location    chile
+> mapset      v_region
+> rows        10034
+> columns     7640
+> north       6456370
+> south       6205510
+> west        237658
+> east        428667
+> nsres       25.00100
+> ewres       25.00118
+> projection  +proj=utm +south +zone=19 +a=6378388 +rf=297 +no_defs
+> +towgs84=-288.000,175.000,-376.000
+>
+> Thanks a lot !.
+>
+> Mauricio
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From neteler at itc.it  Wed Jul 25 09:19:01 2007
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] GRASS+R: problem with gmeta() command
+In-Reply-To: <Pine.LNX.4.64.0707251417130.13073@reclus.nhh.no>
+References: <63d616b0707250417l288567abj9932ff953eec245e@mail.gmail.com>
+	<200707251323.55791.wegmann@biozentrum.uni-wuerzburg.de>
+	<63d616b0707250433h4907315ds11bcfe290b9dd871@mail.gmail.com>
+	<200707251339.38755.wegmann@biozentrum.uni-wuerzburg.de>
+	<63d616b0707250454u7eee8c91t4a89811546462f88@mail.gmail.com>
+	<Pine.LNX.4.64.0707251417130.13073@reclus.nhh.no>
+Message-ID: <20070725131901.GC26402@bartok.itc.it>
+
+On Wed, Jul 25, 2007 at 02:19:59PM +0200, Roger Bivand wrote:
+> On Wed, 25 Jul 2007, Mauricio Zambrano wrote:
+>
+>> Thanks a lot Martin.
+>>
+>> The problem was in the library that I had loaded, because I had loaded
+>> the library GRASS with the command "library(GRASS)", as is read
+>> yesterday in the web-page :
+>>
+>> http://www.geog.uni-hannover.de/grass/statsgrass/grass_r_interface.html#Using_GRASS_R
+>>
+>> but now i realized thath the right instructions are int the web page:
+>>
+>> http://www.geog.uni-hannover.de/grass/statsgrass/grass6_r_install.html
+>
+> Exactly. Perhaps we can ask the webmaster to make the latter page the main 
+> link, and move the current page to a less visible location?
+
+It appears that I am this webmaster (the page states
+ Written by (c) 2000-2003 Markus Neteler
+). But the page
+ http://www.geog.uni-hannover.de/grass/statsgrass/grass_r_interface.html#Using_GRASS_R
+also clearly mentions "grass5"... And there is a link on top pointing
+to the "GRASS 6" installation instructions.
+
+I didn't have time so far to update the page to GRASS 6
+(also because the R interface evolves pretty fast).
+
+I can just remove the page if this is helpful.
+
+> The OSGeo Journal note gives the current status.
+
+... which is listed at:
+http://www.geog.uni-hannover.de/grass/statsgrass/grass6_r_install.html
+
+Another option is that the entire content is moved to
+the GRASS Wiki. Then folks could just update it. I am
+maintaining far too much documentation :)
+
+Best,
+Markus
+
+
+> Roger
+>
+>>
+>> In fact, when I put "library(spgrass6)" everything was right:
+>>
+>> Loading required package: sp
+>> Loading required package: maptools
+>> Loading required package: foreign
+>> Loading required package: rgdal
+>> Geospatial Data Abstraction Library extensions to R successfully loaded
+>>>  gmeta6()
+>> gisdbase    /home/hzambran/GrassData/UTM/psad56_h19s
+>> location    chile
+>> mapset      v_region
+>> rows        10034
+>> columns     7640
+>> north       6456370
+>> south       6205510
+>> west        237658
+>> east        428667
+>> nsres       25.00100
+>> ewres       25.00118
+>> projection  +proj=utm +south +zone=19 +a=6378388 +rf=297 +no_defs
+>> +towgs84=-288.000,175.000,-376.000
+>>
+>> Thanks a lot !.
+>>
+>> Mauricio
+>>
+>> _______________________________________________
+>> statsgrass mailing list
+>> statsgrass@grass.itc.it
+>> http://grass.itc.it/mailman/listinfo/statsgrass
+>>
+>>
+>
+> -- 
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+
+
+From neteler at itc.it  Wed Jul 25 09:41:19 2007
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] GRASS+R: problem with gmeta() command
+In-Reply-To: <20070725131901.GC26402@bartok.itc.it>
+References: <63d616b0707250417l288567abj9932ff953eec245e@mail.gmail.com>
+	<200707251323.55791.wegmann@biozentrum.uni-wuerzburg.de>
+	<63d616b0707250433h4907315ds11bcfe290b9dd871@mail.gmail.com>
+	<200707251339.38755.wegmann@biozentrum.uni-wuerzburg.de>
+	<63d616b0707250454u7eee8c91t4a89811546462f88@mail.gmail.com>
+	<Pine.LNX.4.64.0707251417130.13073@reclus.nhh.no>
+	<20070725131901.GC26402@bartok.itc.it>
+Message-ID: <11782908.post@talk.nabble.com>
+
+
+
+Markus Neteler wrote:
+> 
+> On Wed, Jul 25, 2007 at 02:19:59PM +0200, Roger Bivand wrote:
+>> On Wed, 25 Jul 2007, Mauricio Zambrano wrote:
+>>
+>>> Thanks a lot Martin.
+>>>
+>>> The problem was in the library that I had loaded, because I had loaded
+>>> the library GRASS with the command "library(GRASS)", as is read
+>>> yesterday in the web-page :
+>>>
+>>> http://www.geog.uni-hannover.de/grass/statsgrass/grass_r_interface.html#Using_GRASS_R
+> 
+
+OK, the GRASS 5 stuff is moved out now to a new page and this page:
+
+http://grass.itc.it/statsgrass/grass_r_interface.html
+
+contains references only. It will reach the Hannover mirror within 24h.
+
+Markus
+-- 
+View this message in context: http://www.nabble.com/GRASS%2BR%3A-problem-with-gmeta%28%29-command-tf4141495.html#a11782908
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+
+From carlos.grohmann at gmail.com  Thu Jul 26 07:07:54 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] cant read raster created with r.neighbours
+Message-ID: <bd07447b0707260407k72fde94cn8398d564775f647d@mail.gmail.com>
+
+Hi,
+some strange stuff happened today:
+
+in R:
+this works fine:
+elev<-readRAST6("dem3arcsec_srtm_reprojected")
+slope<-readRAST6("dem3arcsec_srtm_reprojected_slope")
+
+but this
+slope<-readRAST6("dem3arcsec_srtm_reprojected_slope_avg")
+gves
+
+Creating BIL support files ...
+Header File = wld
+World File =
+/home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/dem3arcsec_srtm_reprojected_slope_avg.wld
+Exporting Raster as floating values (bytes=4)
+Using the Current Region settings ...
+north=4031000.000000
+south=4002650.000000
+east=494850.000000
+west=466500.000000
+r=315
+c=315
+ 100%
+Error in readBinGrid(rtmpfl11, colname = vname[i], proj4string = p4,
+integer = to_int) :
+        no such file:
+/home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/dem3arcsec_srtm_reprojected_slope_avg.hdr
+
+
+
+the last map was created with
+r.neighbors input=dem3arcsec_srtm_reprojected_slope
+output=dem3arcsec_srtm_reprojected_slope_avg method=average size=3
+--overwrite
+
+
+I'm lost..
+
+tks
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Visiting Researcher at Kingston University London - UK
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+
+
+From carlos.grohmann at gmail.com  Thu Jul 26 07:23:01 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] plot of mean slope x elevation
+Message-ID: <bd07447b0707260423n257e3c4bhe96945193419d07d@mail.gmail.com>
+
+Does anyone know how to make a plot of mean slope x elevation like
+figures 8 and 9 of:
+Guth, P. L. , 2006. Geomorphometry from SRTM: Comparison to NED
+Photogrammetric Engineering and Remote Sensing, , 72, 269-278
+
+see figure attached
+
+thanks
+Carlos
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Visiting Researcher at Kingston University London - UK
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: guth.jpg
+Type: image/jpeg
+Size: 57238 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20070726/6ea3ac61/guth.jpg
+From jarekj at amu.edu.pl  Thu Jul 26 08:42:59 2007
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] cant read raster created with r.neighbours
+In-Reply-To: <bd07447b0707260407k72fde94cn8398d564775f647d@mail.gmail.com>
+References: <bd07447b0707260407k72fde94cn8398d564775f647d@mail.gmail.com>
+Message-ID: <46A896D3.5010801@amu.edu.pl>
+
+Carlos "Gu?no" Grohmann wrote:
+> Hi,
+> some strange stuff happened today:
+>
+> in R:
+> this works fine:
+> elev<-readRAST6("dem3arcsec_srtm_reprojected")
+> slope<-readRAST6("dem3arcsec_srtm_reprojected_slope")
+>
+> but this
+> slope<-readRAST6("dem3arcsec_srtm_reprojected_slope_avg")
+> gves
+>
+> Creating BIL support files ...
+> Header File = wld
+> World File =
+> /home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/dem3arcsec_srtm_reprojected_slope_avg.wld 
+>
+> Exporting Raster as floating values (bytes=4)
+> Using the Current Region settings ...
+> north=4031000.000000
+> south=4002650.000000
+> east=494850.000000
+> west=466500.000000
+> r=315
+> c=315
+> 100%
+> Error in readBinGrid(rtmpfl11, colname = vname[i], proj4string = p4,
+> integer = to_int) :
+>        no such file:
+> /home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/dem3arcsec_srtm_reprojected_slope_avg.hdr 
+>
+>
+>
+>
+> the last map was created with
+> r.neighbors input=dem3arcsec_srtm_reprojected_slope
+> output=dem3arcsec_srtm_reprojected_slope_avg method=average size=3
+> --overwrite
+>
+>
+> I'm lost..
+>
+> tks
+>
+try to create a file with little shorter name....
+
+
+From Roger.Bivand at nhh.no  Thu Jul 26 11:02:15 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] plot of mean slope x elevation
+In-Reply-To: <bd07447b0707260423n257e3c4bhe96945193419d07d@mail.gmail.com>
+References: <bd07447b0707260423n257e3c4bhe96945193419d07d@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0707261657300.21064@reclus.nhh.no>
+
+On Thu, 26 Jul 2007, Carlos "Gu?no" Grohmann wrote:
+
+> Does anyone know how to make a plot of mean slope x elevation like
+> figures 8 and 9 of:
+> Guth, P. L. , 2006. Geomorphometry from SRTM: Comparison to NED
+> Photogrammetric Engineering and Remote Sensing, , 72, 269-278
+>
+> see figure attached
+
+Something like this:
+
+library(spgrass6)
+sf <- readRAST6(c("elevation.dem", "slope"))
+df <- as(sf, "data.frame")
+df1 <- df[order(df$elevation.dem),]
+df1$elev.factor <- cut(df1$elevation.dem, breaks=seq(1051, 1840, 10),
+   ordered_result=TRUE)
+df2 <- tapply(df1$slope, df1$elev.factor, mean, na.rm=TRUE)
+str(df2)
+plot(df2, seq(1051, 1840, 10), type="l")
+
+in spearfish - the orgiginal figure doesn't say how they binned the 
+elevations, but I think that they must have done that somehow.
+
+Roger
+
+
+>
+> thanks
+> Carlos
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From carlos.grohmann at gmail.com  Thu Jul 26 12:27:58 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] cant read raster created with r.neighbours
+In-Reply-To: <46A896D3.5010801@amu.edu.pl>
+References: <bd07447b0707260407k72fde94cn8398d564775f647d@mail.gmail.com>
+	<46A896D3.5010801@amu.edu.pl>
+Message-ID: <bd07447b0707260927m60370434lb9b1f514afd4a1aa@mail.gmail.com>
+
+Yes, it works..
+I wonder why... I mean, who can't deal with long names? R?
+
+cheers
+
+On 7/26/07, Jarek Jasiewicz <jarekj@amu.edu.pl> wrote:
+> Carlos "Gu?no" Grohmann wrote:
+> > Hi,
+> > some strange stuff happened today:
+> >
+> > in R:
+> > this works fine:
+> > elev<-readRAST6("dem3arcsec_srtm_reprojected")
+> > slope<-readRAST6("dem3arcsec_srtm_reprojected_slope")
+> >
+> > but this
+> > slope<-readRAST6("dem3arcsec_srtm_reprojected_slope_avg")
+> > gves
+> >
+> > Creating BIL support files ...
+> > Header File = wld
+> > World File =
+> > /home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/dem3arcsec_srtm_reprojected_slope_avg.wld
+> >
+> > Exporting Raster as floating values (bytes=4)
+> > Using the Current Region settings ...
+> > north=4031000.000000
+> > south=4002650.000000
+> > east=494850.000000
+> > west=466500.000000
+> > r=315
+> > c=315
+> > 100%
+> > Error in readBinGrid(rtmpfl11, colname = vname[i], proj4string = p4,
+> > integer = to_int) :
+> >        no such file:
+> > /home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/dem3arcsec_srtm_reprojected_slope_avg.hdr
+> >
+> >
+> >
+> >
+> > the last map was created with
+> > r.neighbors input=dem3arcsec_srtm_reprojected_slope
+> > output=dem3arcsec_srtm_reprojected_slope_avg method=average size=3
+> > --overwrite
+> >
+> >
+> > I'm lost..
+> >
+> > tks
+> >
+> try to create a file with little shorter name....
+>
+
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Visiting Researcher at Kingston University London - UK
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+
+
+From Roger.Bivand at nhh.no  Thu Jul 26 12:58:17 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] cant read raster created with r.neighbours
+In-Reply-To: <bd07447b0707260927m60370434lb9b1f514afd4a1aa@mail.gmail.com>
+References: <bd07447b0707260407k72fde94cn8398d564775f647d@mail.gmail.com>
+	<46A896D3.5010801@amu.edu.pl>
+	<bd07447b0707260927m60370434lb9b1f514afd4a1aa@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0707261841140.21064@reclus.nhh.no>
+
+On Thu, 26 Jul 2007, Carlos "Gu?no" Grohmann wrote:
+
+> Yes, it works..
+> I wonder why... I mean, who can't deal with long names? R?
+
+Not R in principle, I think, but if you run debug(readBinGrid) first, and 
+repeat with the long names, you can step through and see whether the files 
+get created in the location temporary directory with the correct names, 
+pointing list.files() at the right place. It looks like a 128-byte buffer 
+somewhere, though GRASS filenames are GNAME_MAX (256) long, and the 
+offending string was only 104 characters. The temporary files get deleted 
+on exit.
+
+list.files(dirname(fname))
+
+within debug should show what is in the temporary directory.
+
+Roger
+
+>
+> cheers
+>
+> On 7/26/07, Jarek Jasiewicz <jarekj@amu.edu.pl> wrote:
+>>  Carlos "Gu?no" Grohmann wrote:
+>> >  Hi,
+>> >  some strange stuff happened today:
+>> > 
+>> >  in R:
+>> >  this works fine:
+>> >  elev<-readRAST6("dem3arcsec_srtm_reprojected")
+>> >  slope<-readRAST6("dem3arcsec_srtm_reprojected_slope")
+>> > 
+>> >  but this
+>> >  slope<-readRAST6("dem3arcsec_srtm_reprojected_slope_avg")
+>> >  gves
+>> > 
+>> >  Creating BIL support files ...
+>> >  Header File = wld
+>> >  World File =
+>> >  /home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/dem3arcsec_srtm_reprojected_slope_avg.wld
+>> > 
+>> >  Exporting Raster as floating values (bytes=4)
+>> >  Using the Current Region settings ...
+>> >  north=4031000.000000
+>> >  south=4002650.000000
+>> >  east=494850.000000
+>> >  west=466500.000000
+>> >  r=315
+>> >  c=315
+>> >  100%
+>> >  Error in readBinGrid(rtmpfl11, colname = vname[i], proj4string = p4,
+>> >  integer = to_int) :
+>> >         no such file:
+>> >  /home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/dem3arcsec_srtm_reprojected_slope_avg.hdr
+>> > 
+>> > 
+>> > 
+>> > 
+>> >  the last map was created with
+>> >  r.neighbors input=dem3arcsec_srtm_reprojected_slope
+>> >  output=dem3arcsec_srtm_reprojected_slope_avg method=average size=3
+>> >  --overwrite
+>> > 
+>> > 
+>> >  I'm lost..
+>> > 
+>> >  tks
+>> >
+>>  try to create a file with little shorter name....
+>> 
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From carlos.grohmann at gmail.com  Thu Jul 26 13:05:35 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] plot of mean slope x elevation
+In-Reply-To: <Pine.LNX.4.64.0707261657300.21064@reclus.nhh.no>
+References: <bd07447b0707260423n257e3c4bhe96945193419d07d@mail.gmail.com>
+	<Pine.LNX.4.64.0707261657300.21064@reclus.nhh.no>
+Message-ID: <bd07447b0707261005m7bc3b958nef254d77fc337cd1@mail.gmail.com>
+
+Thanks Roger.
+that did it.
+
+Carlos
+
+On 7/26/07, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Thu, 26 Jul 2007, Carlos "Gu?no" Grohmann wrote:
+>
+> > Does anyone know how to make a plot of mean slope x elevation like
+> > figures 8 and 9 of:
+> > Guth, P. L. , 2006. Geomorphometry from SRTM: Comparison to NED
+> > Photogrammetric Engineering and Remote Sensing, , 72, 269-278
+> >
+> > see figure attached
+>
+> Something like this:
+>
+> library(spgrass6)
+> sf <- readRAST6(c("elevation.dem", "slope"))
+> df <- as(sf, "data.frame")
+> df1 <- df[order(df$elevation.dem),]
+> df1$elev.factor <- cut(df1$elevation.dem, breaks=seq(1051, 1840, 10),
+>    ordered_result=TRUE)
+> df2 <- tapply(df1$slope, df1$elev.factor, mean, na.rm=TRUE)
+> str(df2)
+> plot(df2, seq(1051, 1840, 10), type="l")
+>
+> in spearfish - the orgiginal figure doesn't say how they binned the
+> elevations, but I think that they must have done that somehow.
+>
+> Roger
+>
+>
+> >
+> > thanks
+> > Carlos
+> >
+> >
+>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Visiting Researcher at Kingston University London - UK
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+
+
+From carlos.grohmann at gmail.com  Thu Jul 26 13:15:37 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] cant read raster created with r.neighbours
+In-Reply-To: <Pine.LNX.4.64.0707261841140.21064@reclus.nhh.no>
+References: <bd07447b0707260407k72fde94cn8398d564775f647d@mail.gmail.com>
+	<46A896D3.5010801@amu.edu.pl>
+	<bd07447b0707260927m60370434lb9b1f514afd4a1aa@mail.gmail.com>
+	<Pine.LNX.4.64.0707261841140.21064@reclus.nhh.no>
+Message-ID: <bd07447b0707261015x21878745xb1b12ab49ed81ec7@mail.gmail.com>
+
+Here is the debug output:
+
+> debug(readBinGrid)
+> slopeavg<-readRAST6("dem3arcsec_srtm_reprojected_slope_avg2")
+Creating BIL support files ...
+Header File = .wld
+World File =
+/home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/dem3arcsec_srtm_reprojected_slope_avg2.wld
+Exporting Raster as floating values (bytes=4)
+Using the Current Region settings ...
+north=4031000.000000
+south=4002650.000000
+east=494850.000000
+west=466500.000000
+r=315
+c=315
+ 100%
+debugging in: readBinGrid(rtmpfl11, colname = vname[i], proj4string =
+p4, integer = to_int)
+debug: {
+    if (missing(integer))
+        stop("integer TRUE/FALSE required")
+    if (!file.exists(fname))
+        stop(paste("no such file:", fname))
+    if (!file.exists(paste(fname, "hdr", sep = ".")))
+        stop(paste("no such file:", paste(fname, "hdr", sep = ".")))
+    if (!file.exists(paste(fname, "wld", sep = ".")))
+        stop(paste("no such file:", paste(fname, "wld", sep = ".")))
+    con <- file(paste(fname, "hdr", sep = "."), "r")
+    l8 <- readLines(con, n = 8)
+    close(con)
+    l8 <- read.dcf(textConnection(gsub(" ", ":", l8)))
+    lres <- as.list(l8)
+    names(lres) <- colnames(l8)
+    lres$nrows <- as.integer(lres$nrows)
+    lres$ncols <- as.integer(lres$ncols)
+    lres$nbands <- as.integer(lres$nbands)
+    lres$nbits <- as.integer(lres$nbits)
+    lres$skipbytes <- as.integer(lres$skipbytes)
+    lres$nodata <- ifelse(integer, as.integer(lres$nodata),
+as.numeric(lres$nodata))
+    con <- file(paste(fname, "wld", sep = "."), "r")
+    l6 <- readLines(con, n = 6)
+    close(con)
+    lres$ewres <- abs(as.numeric(l6[1]))
+    lres$nsres <- abs(as.numeric(l6[4]))
+    lres$n_cc <- as.numeric(l6[6])
+    lres$w_cc <- as.numeric(l6[5])
+    lres$s_cc <- lres$n_cc - lres$nsres * (lres$nrows - 1)
+    what <- ifelse(integer, "integer", "double")
+    n <- lres$nrows * lres$ncols
+    size <- lres$nbits/8
+    map <- readBin(fname, what = what, n = n, size = size, signed = TRUE)
+    is.na(map) <- map == lres$nodata
+    grid = GridTopology(c(lres$w_cc, lres$s_cc), c(lres$ewres,
+        lres$nsres), c(lres$ncols, lres$nrows))
+    df <- list(var1 = map)
+    names(df) <- colname
+    if (.sp_lt_0.9()) {
+        df1 <- AttributeList(df)
+    }
+    else {
+        df1 <- data.frame(df)
+    }
+    res <- SpatialGridDataFrame(grid, data = df1, proj4string = proj4string)
+    res
+}
+Browse[1]> list.files(dirname(fname))
+ [1] "162.0"
+ [2] "162.1"
+ [3] "162.2"
+ [4] "260.0"
+ [5] "260.1"
+ [6] "260.2"
+ [7] "284.0"
+ [8] "284.1"
+ [9] "284.2"
+[10] "336.0"
+[11] "336.1"
+[12] "393.0"
+[13] "393.1"
+[14] "436.0"
+[15] "436.1"
+[16] "436.2"
+[17] "436.3"
+[18] "441.0"
+[19] "60.0"
+[20] "60.1"
+[21] "60.2"
+[22] "60.3"
+[23] "6183.0"
+[24] "6183.1"
+[25] "6183.1.ppm"
+[26] "6183.2"
+[27] "6183.2.pgm"
+[28] "6183.2.ppm"
+[29] "6183.3"
+[30] "6183.3.pgm"
+[31] "6183.3.ppm"
+[32] "653.0"
+[33] "653.1"
+[34] "653.2"
+[35] "653.3"
+[36] "653.4"
+[37] "653.5"
+[38] "661.0"
+[39] "661.1"
+[40] "661.2"
+[41] "6630.0"
+[42] "6630.1"
+[43] "753.0"
+[44] "753.1"
+[45] "753.2"
+[46] "786.0"
+[47] "786.1"
+[48] "786.2"
+[49] "796.0"
+[50] "796.1"
+[51] "796.2"
+[52] "796.3"
+[53] "796.4"
+[54] "846.0"
+[55] "846.1"
+[56] "846.2"
+[57] "846.3"
+[58] "847.0"
+[59] "847.1"
+[60] "847.2"
+[61] "847.3"
+[62] "940.0"
+[63] "dem3arcsec_srtm_reprojected_aspect"
+[64] "dem3arcsec_srtm_reprojected_slope_avg2"
+[65] "dem3arcsec_srtm_reprojected_slope_avg2.wld"
+Browse[1]>
+debug: if (missing(integer)) stop("integer TRUE/FALSE required")
+Browse[1]>
+debug: if (!file.exists(fname)) stop(paste("no such file:", fname))
+Browse[1]>
+debug: if (!file.exists(paste(fname, "hdr", sep = ".")))
+stop(paste("no such file:",
+    paste(fname, "hdr", sep = ".")))
+Browse[1]>
+Error in readBinGrid(rtmpfl11, colname = vname[i], proj4string = p4,
+integer = to_int) :
+        no such file:
+/home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/dem3arcsec_srtm_reprojected_slope_avg2.hdr
+>
+
+
+and then with a short file name
+
+
+> elev<-readRAST6("srtm3sec_reprojected")
+Creating BIL support files ...
+Header File =
+/home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/srtm3sec_reprojected.hdr
+World File =
+/home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/srtm3sec_reprojected.wld
+Exporting Raster as floating values (bytes=4)
+Using the Current Region settings ...
+north=4031000.000000
+south=4002650.000000
+east=494850.000000
+west=466500.000000
+r=315
+c=315
+ 100%
+debugging in: readBinGrid(rtmpfl11, colname = vname[i], proj4string =
+p4, integer = to_int)
+debug: {
+
+<snip>
+
+[60] "847.1"
+[61] "847.2"
+[62] "847.3"
+[63] "940.0"
+[64] "dem3arcsec_srtm_reprojected_aspect"
+[65] "dem3arcsec_srtm_reprojected_slope_avg2"
+[66] "dem3arcsec_srtm_reprojected_slope_avg2.wld"
+[67] "srtm3sec_reprojected"
+[68] "srtm3sec_reprojected.hdr"
+[69] "srtm3sec_reprojected.wld"
+Browse[1]>
+debug: if (missing(integer)) stop("integer TRUE/FALSE required")
+
+
+So it appears to me that for some reason the .hdr was not attached to
+the file...
+
+
+Carlos
+
+
+
+
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Visiting Researcher at Kingston University London - UK
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+
+
+From Roger.Bivand at nhh.no  Thu Jul 26 13:39:47 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] cant read raster created with r.neighbours
+In-Reply-To: <bd07447b0707261015x21878745xb1b12ab49ed81ec7@mail.gmail.com>
+References: <bd07447b0707260407k72fde94cn8398d564775f647d@mail.gmail.com>
+	<46A896D3.5010801@amu.edu.pl>
+	<bd07447b0707260927m60370434lb9b1f514afd4a1aa@mail.gmail.com>
+	<Pine.LNX.4.64.0707261841140.21064@reclus.nhh.no>
+	<bd07447b0707261015x21878745xb1b12ab49ed81ec7@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0707261930520.21064@reclus.nhh.no>
+
+CC-ed to GRASS-dev, short file name buffer issue in 
+raster/r.out.bin/main.c line 225:
+
+On Thu, 26 Jul 2007, Carlos "Gu?no" Grohmann wrote:
+
+> Here is the debug output:
+>
+>>  debug(readBinGrid)
+>>  slopeavg<-readRAST6("dem3arcsec_srtm_reprojected_slope_avg2")
+> Creating BIL support files ...
+> Header File = .wld
+> World File =
+> /home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/dem3arcsec_srtm_reprojected_slope_avg2.wld
+> Exporting Raster as floating values (bytes=4)
+> Using the Current Region settings ...
+> north=4031000.000000
+> south=4002650.000000
+> east=494850.000000
+> west=466500.000000
+> r=315
+> c=315
+> 100%
+> debugging in: readBinGrid(rtmpfl11, colname = vname[i], proj4string =
+> p4, integer = to_int)
+> debug: {
+>    if (missing(integer))
+>        stop("integer TRUE/FALSE required")
+>    if (!file.exists(fname))
+>        stop(paste("no such file:", fname))
+>    if (!file.exists(paste(fname, "hdr", sep = ".")))
+>        stop(paste("no such file:", paste(fname, "hdr", sep = ".")))
+>    if (!file.exists(paste(fname, "wld", sep = ".")))
+>        stop(paste("no such file:", paste(fname, "wld", sep = ".")))
+>    con <- file(paste(fname, "hdr", sep = "."), "r")
+>    l8 <- readLines(con, n = 8)
+>    close(con)
+>    l8 <- read.dcf(textConnection(gsub(" ", ":", l8)))
+>    lres <- as.list(l8)
+>    names(lres) <- colnames(l8)
+>    lres$nrows <- as.integer(lres$nrows)
+>    lres$ncols <- as.integer(lres$ncols)
+>    lres$nbands <- as.integer(lres$nbands)
+>    lres$nbits <- as.integer(lres$nbits)
+>    lres$skipbytes <- as.integer(lres$skipbytes)
+>    lres$nodata <- ifelse(integer, as.integer(lres$nodata),
+> as.numeric(lres$nodata))
+>    con <- file(paste(fname, "wld", sep = "."), "r")
+>    l6 <- readLines(con, n = 6)
+>    close(con)
+>    lres$ewres <- abs(as.numeric(l6[1]))
+>    lres$nsres <- abs(as.numeric(l6[4]))
+>    lres$n_cc <- as.numeric(l6[6])
+>    lres$w_cc <- as.numeric(l6[5])
+>    lres$s_cc <- lres$n_cc - lres$nsres * (lres$nrows - 1)
+>    what <- ifelse(integer, "integer", "double")
+>    n <- lres$nrows * lres$ncols
+>    size <- lres$nbits/8
+>    map <- readBin(fname, what = what, n = n, size = size, signed = TRUE)
+>    is.na(map) <- map == lres$nodata
+>    grid = GridTopology(c(lres$w_cc, lres$s_cc), c(lres$ewres,
+>        lres$nsres), c(lres$ncols, lres$nrows))
+>    df <- list(var1 = map)
+>    names(df) <- colname
+>    if (.sp_lt_0.9()) {
+>        df1 <- AttributeList(df)
+>    }
+>    else {
+>        df1 <- data.frame(df)
+>    }
+>    res <- SpatialGridDataFrame(grid, data = df1, proj4string = proj4string)
+>    res
+> }
+> Browse[1]> list.files(dirname(fname))
+> [1] "162.0"
+> [2] "162.1"
+> [3] "162.2"
+> [4] "260.0"
+> [5] "260.1"
+> [6] "260.2"
+> [7] "284.0"
+> [8] "284.1"
+> [9] "284.2"
+> [10] "336.0"
+> [11] "336.1"
+> [12] "393.0"
+> [13] "393.1"
+> [14] "436.0"
+> [15] "436.1"
+> [16] "436.2"
+> [17] "436.3"
+> [18] "441.0"
+> [19] "60.0"
+> [20] "60.1"
+> [21] "60.2"
+> [22] "60.3"
+> [23] "6183.0"
+> [24] "6183.1"
+> [25] "6183.1.ppm"
+> [26] "6183.2"
+> [27] "6183.2.pgm"
+> [28] "6183.2.ppm"
+> [29] "6183.3"
+> [30] "6183.3.pgm"
+> [31] "6183.3.ppm"
+> [32] "653.0"
+> [33] "653.1"
+> [34] "653.2"
+> [35] "653.3"
+> [36] "653.4"
+> [37] "653.5"
+> [38] "661.0"
+> [39] "661.1"
+> [40] "661.2"
+> [41] "6630.0"
+> [42] "6630.1"
+> [43] "753.0"
+> [44] "753.1"
+> [45] "753.2"
+> [46] "786.0"
+> [47] "786.1"
+> [48] "786.2"
+> [49] "796.0"
+> [50] "796.1"
+> [51] "796.2"
+> [52] "796.3"
+> [53] "796.4"
+> [54] "846.0"
+> [55] "846.1"
+> [56] "846.2"
+> [57] "846.3"
+> [58] "847.0"
+> [59] "847.1"
+> [60] "847.2"
+> [61] "847.3"
+> [62] "940.0"
+> [63] "dem3arcsec_srtm_reprojected_aspect"
+> [64] "dem3arcsec_srtm_reprojected_slope_avg2"
+> [65] "dem3arcsec_srtm_reprojected_slope_avg2.wld"
+> Browse[1]>
+> debug: if (missing(integer)) stop("integer TRUE/FALSE required")
+> Browse[1]>
+> debug: if (!file.exists(fname)) stop(paste("no such file:", fname))
+> Browse[1]>
+> debug: if (!file.exists(paste(fname, "hdr", sep = ".")))
+> stop(paste("no such file:",
+>   paste(fname, "hdr", sep = ".")))
+> Browse[1]>
+> Error in readBinGrid(rtmpfl11, colname = vname[i], proj4string = p4,
+> integer = to_int) :
+>       no such file:
+> /home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/dem3arcsec_srtm_reprojected_slope_avg2.hdr
+>> 
+>
+>
+> and then with a short file name
+>
+>
+>>  elev<-readRAST6("srtm3sec_reprojected")
+> Creating BIL support files ...
+> Header File =
+> /home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/srtm3sec_reprojected.hdr
+> World File =
+> /home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/srtm3sec_reprojected.wld
+> Exporting Raster as floating values (bytes=4)
+> Using the Current Region settings ...
+> north=4031000.000000
+> south=4002650.000000
+> east=494850.000000
+> west=466500.000000
+> r=315
+> c=315
+> 100%
+> debugging in: readBinGrid(rtmpfl11, colname = vname[i], proj4string =
+> p4, integer = to_int)
+> debug: {
+>
+> <snip>
+>
+> [60] "847.1"
+> [61] "847.2"
+> [62] "847.3"
+> [63] "940.0"
+> [64] "dem3arcsec_srtm_reprojected_aspect"
+> [65] "dem3arcsec_srtm_reprojected_slope_avg2"
+> [66] "dem3arcsec_srtm_reprojected_slope_avg2.wld"
+> [67] "srtm3sec_reprojected"
+> [68] "srtm3sec_reprojected.hdr"
+> [69] "srtm3sec_reprojected.wld"
+> Browse[1]>
+> debug: if (missing(integer)) stop("integer TRUE/FALSE required")
+>
+>
+> So it appears to me that for some reason the .hdr was not attached to
+> the file...
+
+Yes, because a shorter file name buffer is declared on line 225 of main.c 
+in r.out.bin - with a length of 100, so fname fits, but the header 
+overwrites it, I think - could I suggest that the lengths of the out_bufs 
+in line 255 be set to [GNAME_MAX] instead?
+
+Roger
+
+>
+>
+> Carlos
+>
+>
+>
+>
+> +-----------------------------------------------------------+
+>              Carlos Henrique Grohmann - Guano
+>  Visiting Researcher at Kingston University London - UK
+>  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+> Linux User #89721  - carlos dot grohmann at gmail dot com
+> +-----------------------------------------------------------+
+> _________________
+> "Good morning, doctors. I have taken the liberty of removing Windows
+> 95 from my hard drive."
+> --The winning entry in a "What were HAL's first words" contest judged
+> by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+>
+> Can't stop the signal.
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From neteler at itc.it  Thu Jul 26 17:28:25 2007
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [GRASS-dev] Re: [STATSGRASS] cant read raster created with
+	r.neighbours
+In-Reply-To: <Pine.LNX.4.64.0707261930520.21064@reclus.nhh.no>
+References: <bd07447b0707260407k72fde94cn8398d564775f647d@mail.gmail.com>
+	<46A896D3.5010801@amu.edu.pl>
+	<bd07447b0707260927m60370434lb9b1f514afd4a1aa@mail.gmail.com>
+	<Pine.LNX.4.64.0707261841140.21064@reclus.nhh.no>
+	<bd07447b0707261015x21878745xb1b12ab49ed81ec7@mail.gmail.com>
+	<Pine.LNX.4.64.0707261930520.21064@reclus.nhh.no>
+Message-ID: <20070726212825.GH15731@bartok.itc.it>
+
+Roger, Carlos,
+
+I have fixed the r.out.bin buffer issue in CVS (also in 6.2.3-CVS).
+
+Markus
+
+On Thu, Jul 26, 2007 at 07:39:47PM +0200, Roger Bivand wrote:
+> CC-ed to GRASS-dev, short file name buffer issue in raster/r.out.bin/main.c 
+> line 225:
+>
+> On Thu, 26 Jul 2007, Carlos "Gu?no" Grohmann wrote:
+>
+>> Here is the debug output:
+>>
+>>>  debug(readBinGrid)
+>>>  slopeavg<-readRAST6("dem3arcsec_srtm_reprojected_slope_avg2")
+>> Creating BIL support files ...
+>> Header File = .wld
+>> World File =
+>> /home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/dem3arcsec_srtm_reprojected_slope_avg2.wld
+>> Exporting Raster as floating values (bytes=4)
+>> Using the Current Region settings ...
+>> north=4031000.000000
+>> south=4002650.000000
+>> east=494850.000000
+>> west=466500.000000
+>> r=315
+>> c=315
+>> 100%
+>> debugging in: readBinGrid(rtmpfl11, colname = vname[i], proj4string =
+>> p4, integer = to_int)
+>> debug: {
+>>    if (missing(integer))
+>>        stop("integer TRUE/FALSE required")
+>>    if (!file.exists(fname))
+>>        stop(paste("no such file:", fname))
+>>    if (!file.exists(paste(fname, "hdr", sep = ".")))
+>>        stop(paste("no such file:", paste(fname, "hdr", sep = ".")))
+>>    if (!file.exists(paste(fname, "wld", sep = ".")))
+>>        stop(paste("no such file:", paste(fname, "wld", sep = ".")))
+>>    con <- file(paste(fname, "hdr", sep = "."), "r")
+>>    l8 <- readLines(con, n = 8)
+>>    close(con)
+>>    l8 <- read.dcf(textConnection(gsub(" ", ":", l8)))
+>>    lres <- as.list(l8)
+>>    names(lres) <- colnames(l8)
+>>    lres$nrows <- as.integer(lres$nrows)
+>>    lres$ncols <- as.integer(lres$ncols)
+>>    lres$nbands <- as.integer(lres$nbands)
+>>    lres$nbits <- as.integer(lres$nbits)
+>>    lres$skipbytes <- as.integer(lres$skipbytes)
+>>    lres$nodata <- ifelse(integer, as.integer(lres$nodata),
+>> as.numeric(lres$nodata))
+>>    con <- file(paste(fname, "wld", sep = "."), "r")
+>>    l6 <- readLines(con, n = 6)
+>>    close(con)
+>>    lres$ewres <- abs(as.numeric(l6[1]))
+>>    lres$nsres <- abs(as.numeric(l6[4]))
+>>    lres$n_cc <- as.numeric(l6[6])
+>>    lres$w_cc <- as.numeric(l6[5])
+>>    lres$s_cc <- lres$n_cc - lres$nsres * (lres$nrows - 1)
+>>    what <- ifelse(integer, "integer", "double")
+>>    n <- lres$nrows * lres$ncols
+>>    size <- lres$nbits/8
+>>    map <- readBin(fname, what = what, n = n, size = size, signed = TRUE)
+>>    is.na(map) <- map == lres$nodata
+>>    grid = GridTopology(c(lres$w_cc, lres$s_cc), c(lres$ewres,
+>>        lres$nsres), c(lres$ncols, lres$nrows))
+>>    df <- list(var1 = map)
+>>    names(df) <- colname
+>>    if (.sp_lt_0.9()) {
+>>        df1 <- AttributeList(df)
+>>    }
+>>    else {
+>>        df1 <- data.frame(df)
+>>    }
+>>    res <- SpatialGridDataFrame(grid, data = df1, proj4string = 
+>> proj4string)
+>>    res
+>> }
+>> Browse[1]> list.files(dirname(fname))
+>> [1] "162.0"
+>> [2] "162.1"
+>> [3] "162.2"
+>> [4] "260.0"
+>> [5] "260.1"
+>> [6] "260.2"
+>> [7] "284.0"
+>> [8] "284.1"
+>> [9] "284.2"
+>> [10] "336.0"
+>> [11] "336.1"
+>> [12] "393.0"
+>> [13] "393.1"
+>> [14] "436.0"
+>> [15] "436.1"
+>> [16] "436.2"
+>> [17] "436.3"
+>> [18] "441.0"
+>> [19] "60.0"
+>> [20] "60.1"
+>> [21] "60.2"
+>> [22] "60.3"
+>> [23] "6183.0"
+>> [24] "6183.1"
+>> [25] "6183.1.ppm"
+>> [26] "6183.2"
+>> [27] "6183.2.pgm"
+>> [28] "6183.2.ppm"
+>> [29] "6183.3"
+>> [30] "6183.3.pgm"
+>> [31] "6183.3.ppm"
+>> [32] "653.0"
+>> [33] "653.1"
+>> [34] "653.2"
+>> [35] "653.3"
+>> [36] "653.4"
+>> [37] "653.5"
+>> [38] "661.0"
+>> [39] "661.1"
+>> [40] "661.2"
+>> [41] "6630.0"
+>> [42] "6630.1"
+>> [43] "753.0"
+>> [44] "753.1"
+>> [45] "753.2"
+>> [46] "786.0"
+>> [47] "786.1"
+>> [48] "786.2"
+>> [49] "796.0"
+>> [50] "796.1"
+>> [51] "796.2"
+>> [52] "796.3"
+>> [53] "796.4"
+>> [54] "846.0"
+>> [55] "846.1"
+>> [56] "846.2"
+>> [57] "846.3"
+>> [58] "847.0"
+>> [59] "847.1"
+>> [60] "847.2"
+>> [61] "847.3"
+>> [62] "940.0"
+>> [63] "dem3arcsec_srtm_reprojected_aspect"
+>> [64] "dem3arcsec_srtm_reprojected_slope_avg2"
+>> [65] "dem3arcsec_srtm_reprojected_slope_avg2.wld"
+>> Browse[1]>
+>> debug: if (missing(integer)) stop("integer TRUE/FALSE required")
+>> Browse[1]>
+>> debug: if (!file.exists(fname)) stop(paste("no such file:", fname))
+>> Browse[1]>
+>> debug: if (!file.exists(paste(fname, "hdr", sep = ".")))
+>> stop(paste("no such file:",
+>>   paste(fname, "hdr", sep = ".")))
+>> Browse[1]>
+>> Error in readBinGrid(rtmpfl11, colname = vname[i], proj4string = p4,
+>> integer = to_int) :
+>>       no such file:
+>> /home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/dem3arcsec_srtm_reprojected_slope_avg2.hdr
+>>
+>>
+>> and then with a short file name
+>>
+>>
+>>>  elev<-readRAST6("srtm3sec_reprojected")
+>> Creating BIL support files ...
+>> Header File =
+>> /home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/srtm3sec_reprojected.hdr
+>> World File =
+>> /home/guano/grassdata/srtm_krig_utm/death_valley/.tmp/eclipse/srtm3sec_reprojected.wld
+>> Exporting Raster as floating values (bytes=4)
+>> Using the Current Region settings ...
+>> north=4031000.000000
+>> south=4002650.000000
+>> east=494850.000000
+>> west=466500.000000
+>> r=315
+>> c=315
+>> 100%
+>> debugging in: readBinGrid(rtmpfl11, colname = vname[i], proj4string =
+>> p4, integer = to_int)
+>> debug: {
+>>
+>> <snip>
+>>
+>> [60] "847.1"
+>> [61] "847.2"
+>> [62] "847.3"
+>> [63] "940.0"
+>> [64] "dem3arcsec_srtm_reprojected_aspect"
+>> [65] "dem3arcsec_srtm_reprojected_slope_avg2"
+>> [66] "dem3arcsec_srtm_reprojected_slope_avg2.wld"
+>> [67] "srtm3sec_reprojected"
+>> [68] "srtm3sec_reprojected.hdr"
+>> [69] "srtm3sec_reprojected.wld"
+>> Browse[1]>
+>> debug: if (missing(integer)) stop("integer TRUE/FALSE required")
+>>
+>>
+>> So it appears to me that for some reason the .hdr was not attached to
+>> the file...
+>
+> Yes, because a shorter file name buffer is declared on line 225 of main.c 
+> in r.out.bin - with a length of 100, so fname fits, but the header 
+> overwrites it, I think - could I suggest that the lengths of the out_bufs 
+> in line 255 be set to [GNAME_MAX] instead?
+>
+> Roger
+>
+>>
+>>
+>> Carlos
+>>
+>>
+>>
+>>
+>> +-----------------------------------------------------------+
+>>              Carlos Henrique Grohmann - Guano
+>>  Visiting Researcher at Kingston University London - UK
+>>  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+>> Linux User #89721  - carlos dot grohmann at gmail dot com
+>> +-----------------------------------------------------------+
+>> _________________
+>> "Good morning, doctors. I have taken the liberty of removing Windows
+>> 95 from my hard drive."
+>> --The winning entry in a "What were HAL's first words" contest judged
+>> by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+>>
+>> Can't stop the signal.
+>>
+>> _______________________________________________
+>> statsgrass mailing list
+>> statsgrass@grass.itc.it
+>> http://grass.itc.it/mailman/listinfo/statsgrass
+>>
+>>
+>
+> -- 
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+
+> _______________________________________________
+> grass-dev mailing list
+> grass-dev@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/grass-dev
+
+
+From giohappy at gmail.com  Tue Jul 31 09:39:36 2007
+From: giohappy at gmail.com (G. Allegri)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] spgrass6 question...
+Message-ID: <e12429640707310639w44052ffcy75cbf7c1b33424cc@mail.gmail.com>
+
+I'm looking for a way to interface gvSIG with R, and I was taking a
+look to spgrass6 source to have inspiration.
+I've a question about the readVECT6 function. Looking into the
+relative R script it seems the vector layer is being exported to
+shaprfile, then is read with readOGR (Rgdal package?), but the
+shapefile created is never destroyed after this operation.
+Am I wrong?  If not, isn't it garbage to be trashed?
+
+
+From Roger.Bivand at nhh.no  Tue Jul 31 09:58:42 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] spgrass6 question...
+In-Reply-To: <e12429640707310639w44052ffcy75cbf7c1b33424cc@mail.gmail.com>
+References: <e12429640707310639w44052ffcy75cbf7c1b33424cc@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0707311553530.5808@reclus.nhh.no>
+
+On Tue, 31 Jul 2007, G. Allegri wrote:
+
+> I'm looking for a way to interface gvSIG with R, and I was taking a
+> look to spgrass6 source to have inspiration.
+> I've a question about the readVECT6 function. Looking into the
+> relative R script it seems the vector layer is being exported to
+> shaprfile, then is read with readOGR (Rgdal package?), but the
+> shapefile created is never destroyed after this operation.
+> Am I wrong?  If not, isn't it garbage to be trashed?
+
+The files transferred are created in the location, mapset and machine 
+specific .tmp directory, so unless something bad happens, GRASS ought to 
+delete them at end of session, if I understand correctly. The scripts 
+could be altered to unlink directly, but sometimes leaving them around 
+during the session may be helpful for debugging.
+
+Hope this helps,
+
+Roger
+
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+

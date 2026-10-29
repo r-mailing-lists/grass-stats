@@ -1,0 +1,1140 @@
+From cbuerger4 at gmail.com  Fri Jul  1 13:19:31 2016
+From: cbuerger4 at gmail.com (C. Buerger IV)
+Date: Fri, 1 Jul 2016 15:19:31 -0500
+Subject: [GRASS-stats] R 3.3.1 and GRASSGIS 7.0.4
+Message-ID: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+
+I'm attempting to use the FUTURES
+<https://grasswiki.osgeo.org/wiki/Workshop_on_urban_growth_modeling_with_FUTURES#Software>model
+for GRASSGIS, which requires an interface with R to use the drudge
+function. I'm running Windows 7 and the automatic linkup between R and
+GRASS does not seem to be happening. When working from the FUTURES package
+I have run:
+
+ r.futures.potential -d input=sampling at practice1 output=potential.csv
+columns=devpressure_0_5_92,slope,road_dens_perc,forest_1992_smooth_perc,dist_to_water_km,dist_to_protected_km,dist_interchanges_km,travel_time_cities
+developed_column=urban_change_clip subregions_column=counties
+min_variables=4 --overwrite
+
+and get:
+
+Running automatic model selection ...
+Traceback (most recent call last):
+  File "C:\Users\buer3379\AppData\Roaming\GRASS7\addons/scri
+pts/r.futures.potential.py", line 185, in <module>
+    sys.exit(main())
+  File "C:\Users\buer3379\AppData\Roaming\GRASS7\addons/scri
+pts/r.futures.potential.py", line 158, in main
+    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "C:\OSGEO4~1\apps\Python27\lib\subprocess.py", line
+711, in __init__
+    errread, errwrite)
+  File "C:\OSGEO4~1\apps\Python27\lib\subprocess.py", line
+948, in _execute_child
+    startupinfo)
+WindowsError: [Error 2] The system cannot find the file
+specified
+
+In just attempting to run R via R--save I get:
+
+R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+  Natural language support but running in an English locale
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+During startup - Warning messages:
+1: Setting LC_CTYPE=en_US.cp1252 failed
+2: Setting LC_COLLATE=en_US.cp1252 failed
+3: Setting LC_TIME=en_US.cp1252 failed
+4: Setting LC_MONETARY=en_US.cp1252 failed
+>
+
+Does anyone have any pointers or tips to work around this problem.  Any
+ideas would be appreicated.
+
+C. L. Buerger IV
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20160701/cdc54640/attachment.html>
+
+From kratochanna at gmail.com  Fri Jul  1 19:09:37 2016
+From: kratochanna at gmail.com (=?UTF-8?B?QW5uYSBQZXRyw6HFoW92w6E=?=)
+Date: Fri, 1 Jul 2016 22:09:37 -0400
+Subject: [GRASS-stats] R 3.3.1 and GRASSGIS 7.0.4
+In-Reply-To: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+References: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+Message-ID: <CAE0EDEoTD=MN-ukev+kx48FFvXaBOqAamUbmu-4b4M32rZhhTQ@mail.gmail.com>
+
+Hi,
+
+In order for GRASS to be able to find R executables, R must be on the
+PATH variable. Follow for example this solution:
+
+https://pvanb.wordpress.com/2014/12/17/access-r-from-grass-gis-on-windows/
+
+to make R accessible from GRASS permanently. A simple but temporary
+solution is to open GRASS GIS and paste the path to R in the black
+terminal:
+
+set PATH=%PATH%;C:\Program Files\R\R-3.3.1\bin
+
+but this has to be repeated after restarting GRASS session.
+
+Anna
+
+
+
+On Fri, Jul 1, 2016 at 4:19 PM, C. Buerger IV <cbuerger4 at gmail.com> wrote:
+> I'm attempting to use the FUTURES model for GRASSGIS, which requires an
+> interface with R to use the drudge function. I'm running Windows 7 and the
+> automatic linkup between R and GRASS does not seem to be happening. When
+> working from the FUTURES package
+> I have run:
+>
+>  r.futures.potential -d input=sampling at practice1 output=potential.csv
+> columns=devpressure_0_5_92,slope,road_dens_perc,forest_1992_smooth_perc,dist_to_water_km,dist_to_protected_km,dist_interchanges_km,travel_time_cities
+> developed_column=urban_change_clip subregions_column=counties
+> min_variables=4 --overwrite
+>
+> and get:
+>
+> Running automatic model selection ...
+> Traceback (most recent call last):
+>   File "C:\Users\buer3379\AppData\Roaming\GRASS7\addons/scri
+> pts/r.futures.potential.py", line 185, in <module>
+>     sys.exit(main())
+>   File "C:\Users\buer3379\AppData\Roaming\GRASS7\addons/scri
+> pts/r.futures.potential.py", line 158, in main
+>     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+>   File "C:\OSGEO4~1\apps\Python27\lib\subprocess.py", line
+> 711, in __init__
+>     errread, errwrite)
+>   File "C:\OSGEO4~1\apps\Python27\lib\subprocess.py", line
+> 948, in _execute_child
+>     startupinfo)
+> WindowsError: [Error 2] The system cannot find the file
+> specified
+>
+> In just attempting to run R via R--save I get:
+>
+> R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+> Copyright (C) 2016 The R Foundation for Statistical Computing
+> Platform: x86_64-w64-mingw32/x64 (64-bit)
+> R is free software and comes with ABSOLUTELY NO WARRANTY.
+> You are welcome to redistribute it under certain conditions.
+> Type 'license()' or 'licence()' for distribution details.
+>   Natural language support but running in an English locale
+> R is a collaborative project with many contributors.
+> Type 'contributors()' for more information and
+> 'citation()' on how to cite R or R packages in publications.
+> Type 'demo()' for some demos, 'help()' for on-line help, or
+> 'help.start()' for an HTML browser interface to help.
+> Type 'q()' to quit R.
+> During startup - Warning messages:
+> 1: Setting LC_CTYPE=en_US.cp1252 failed
+> 2: Setting LC_COLLATE=en_US.cp1252 failed
+> 3: Setting LC_TIME=en_US.cp1252 failed
+> 4: Setting LC_MONETARY=en_US.cp1252 failed
+>>
+>
+> Does anyone have any pointers or tips to work around this problem.  Any
+> ideas would be appreicated.
+>
+> C. L. Buerger IV
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+From hellik at web.de  Sun Jul  3 05:49:20 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Sun, 3 Jul 2016 05:49:20 -0700 (PDT)
+Subject: [GRASS-stats] R 3.3.1 and GRASSGIS 7.0.4
+In-Reply-To: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+References: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+Message-ID: <1467550160335-5274522.post@n6.nabble.com>
+
+C. Buerger IV wrote
+> I'm attempting to use the FUTURES
+> &lt;https://grasswiki.osgeo.org/wiki/Workshop_on_urban_growth_modeling_with_FUTURES#Software&gt;model
+> for GRASSGIS, which requires an interface with R to use the drudge
+> function. I'm running Windows 7 and the automatic linkup between R and
+> GRASS does not seem to be happening.
+
+OSGeo4W-winGRASS7.0.4 or standalone installer winGRASS7.0.4?
+
+
+
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/R-3-3-1-and-GRASSGIS-7-0-4-tp5274444p5274522.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From hellik at web.de  Fri Jul  8 13:16:13 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Fri, 8 Jul 2016 13:16:13 -0700 (PDT)
+Subject: [GRASS-stats] R 3.3.1 and GRASSGIS 7.0.4
+In-Reply-To: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+References: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+Message-ID: <1468008973932-5275488.post@n6.nabble.com>
+
+[please keep it on the ML]
+
+>A Standalone install. At the time it seemed like what I wanted.
+
+tested here:
+
+System Info                                                                     
+GRASS Version: 7.3.svn                                                          
+GRASS SVN revision: r68855                                                      
+Build date: 2016-07-06                                                          
+Build platform: x86_64-w64-mingw32                                              
+GDAL: 2.0.2                                                                     
+PROJ.4: 4.9.2                                                                   
+GEOS: 3.5.0                                                                     
+SQLite: 3.7.17                                                                  
+Python: 2.7.5                                                                   
+wxPython: 2.8.12.1                                                              
+Platform: Windows-8-6.2.9200 
+
+typing R in the console:
+
+Cleaning up temporary files...
+Starting GRASS GIS...
+WARNUNG: Sperren gleichzeitiger Zugriffe auf ein Mapset ist unter Windows
+         nicht möglich.
+
+          __________  ___   __________    _______________
+         / ____/ __ \/   | / ___/ ___/   / ____/  _/ ___/
+        / / __/ /_/ / /| | \__ \\_  \   / / __ / / \__ \
+       / /_/ / _, _/ ___ |___/ /__/ /  / /_/ // / ___/ /
+       \____/_/ |_/_/  |_/____/____/   \____/___//____/
+
+Welcome to GRASS GIS 7.3.svn (r68855)
+GRASS GIS homepage:                      http://grass.osgeo.org
+This version running through:            Command Shell
+(C:\Windows\system32\cmd.exe)
+Help is available with the command:      g.manual -i
+See the licence terms with:              g.version -c
+See citation options with:               g.version -x
+If required, restart the GUI with:       g.gui wxpython
+When ready to quit enter:                exit
+
+Launching <wxpython> GUI in the background, please wait...
+Microsoft Windows [Version 10.0.10586]
+(c) 2015 Microsoft Corporation. Alle Rechte vorbehalten.
+
+C:\Users\xxxx>R
+
+R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+>I'm running Windows 7 and the automatic linkup between R and GRASS does not
+seem to be happening. 
+
+in the standalone R is in the %PATH% variable, so more investigation in the
+r.future-script is needed.
+
+
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/R-3-3-1-and-GRASSGIS-7-0-4-tp5274444p5275488.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From hellik at web.de  Fri Jul  8 13:20:05 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Fri, 8 Jul 2016 13:20:05 -0700 (PDT)
+Subject: [GRASS-stats] R 3.3.1 and GRASSGIS 7.0.4
+In-Reply-To: <CAE0EDEoTD=MN-ukev+kx48FFvXaBOqAamUbmu-4b4M32rZhhTQ@mail.gmail.com>
+References: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+ <CAE0EDEoTD=MN-ukev+kx48FFvXaBOqAamUbmu-4b4M32rZhhTQ@mail.gmail.com>
+Message-ID: <1468009205562-5275489.post@n6.nabble.com>
+
+>In order for GRASS to be able to find R executables, R must be on the
+>PATH variable.
+
+in the standalone winGRASS installer R is already in the %PATH% variable, so
+no extra work is needed.
+
+I hope I'll find some time to implement this also in OSGeo4W-winGRASS.
+
+see in original report above, R is in %PATH% as R starts in the winGRASS
+windows console.
+
+
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/R-3-3-1-and-GRASSGIS-7-0-4-tp5274444p5275489.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From hellik at web.de  Fri Jul  8 16:37:14 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Fri, 8 Jul 2016 16:37:14 -0700 (PDT)
+Subject: [GRASS-stats] R 3.3.1 and GRASSGIS 7.0.4
+In-Reply-To: <CAE0EDEoTD=MN-ukev+kx48FFvXaBOqAamUbmu-4b4M32rZhhTQ@mail.gmail.com>
+References: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+ <CAE0EDEoTD=MN-ukev+kx48FFvXaBOqAamUbmu-4b4M32rZhhTQ@mail.gmail.com>
+Message-ID: <1468021034372-5275498.post@n6.nabble.com>
+
+Anna Petrášová wrote
+> Hi,
+> 
+> In order for GRASS to be able to find R executables, R must be on the
+> PATH variable. Follow for example this solution:
+> 
+> https://pvanb.wordpress.com/2014/12/17/access-r-from-grass-gis-on-windows/
+> 
+> to make R accessible from GRASS permanently. A simple but temporary
+> solution is to open GRASS GIS and paste the path to R in the black
+> terminal:
+> 
+> set PATH=%PATH%;C:\Program Files\R\R-3.3.1\bin
+> 
+> but this has to be repeated after restarting GRASS session.
+> 
+> Anna
+> 
+> 
+> 
+> On Fri, Jul 1, 2016 at 4:19 PM, C. Buerger IV &lt;
+
+> cbuerger4@
+
+> &gt; wrote:
+>> I'm attempting to use the FUTURES model for GRASSGIS, which requires an
+>> interface with R to use the drudge function. I'm running Windows 7 and
+>> the
+>> automatic linkup between R and GRASS does not seem to be happening. When
+>> working from the FUTURES package
+>> I have run:
+>>
+>>  r.futures.potential -d input=sampling at practice1 output=potential.csv
+>> columns=devpressure_0_5_92,slope,road_dens_perc,forest_1992_smooth_perc,dist_to_water_km,dist_to_protected_km,dist_interchanges_km,travel_time_cities
+>> developed_column=urban_change_clip subregions_column=counties
+>> min_variables=4 --overwrite
+>>
+>> and get:
+>>
+>> Running automatic model selection ...
+>> Traceback (most recent call last):
+>>   File "C:\Users\buer3379\AppData\Roaming\GRASS7\addons/scri
+>> pts/r.futures.potential.py", line 185, in 
+> <module>
+>>     sys.exit(main())
+>>   File "C:\Users\buer3379\AppData\Roaming\GRASS7\addons/scri
+>> pts/r.futures.potential.py", line 158, in main
+>>     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+>>   File "C:\OSGEO4~1\apps\Python27\lib\subprocess.py", line
+>> 711, in __init__
+>>     errread, errwrite)
+>>   File "C:\OSGEO4~1\apps\Python27\lib\subprocess.py", line
+>> 948, in _execute_child
+>>     startupinfo)
+>> WindowsError: [Error 2] The system cannot find the file
+>> specified
+>>
+>> In just attempting to run R via R--save I get:
+>>
+>> R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+>> Copyright (C) 2016 The R Foundation for Statistical Computing
+>> Platform: x86_64-w64-mingw32/x64 (64-bit)
+>> R is free software and comes with ABSOLUTELY NO WARRANTY.
+>> You are welcome to redistribute it under certain conditions.
+>> Type 'license()' or 'licence()' for distribution details.
+>>   Natural language support but running in an English locale
+>> R is a collaborative project with many contributors.
+>> Type 'contributors()' for more information and
+>> 'citation()' on how to cite R or R packages in publications.
+>> Type 'demo()' for some demos, 'help()' for on-line help, or
+>> 'help.start()' for an HTML browser interface to help.
+>> Type 'q()' to quit R.
+>> During startup - Warning messages:
+>> 1: Setting LC_CTYPE=en_US.cp1252 failed
+>> 2: Setting LC_COLLATE=en_US.cp1252 failed
+>> 3: Setting LC_TIME=en_US.cp1252 failed
+>> 4: Setting LC_MONETARY=en_US.cp1252 failed
+>>>
+>>
+>> Does anyone have any pointers or tips to work around this problem.  Any
+>> ideas would be appreicated.
+
+just tested it now with standalone-winGRASS
+
+System Info                                                                     
+GRASS Version: 7.3.svn                                                          
+GRASS SVN revision: r68855                                                      
+Build date: 2016-07-06                                                          
+Build platform: x86_64-w64-mingw32                                              
+GDAL: 2.0.2                                                                     
+PROJ.4: 4.9.2                                                                   
+GEOS: 3.5.0                                                                     
+SQLite: 3.7.17                                                                  
+Python: 2.7.5                                                                   
+wxPython: 2.8.12.1                                                              
+Platform: Windows-8-6.2.9200
+
+- without any change to %PATH%
+
+- with the example from [1] (n.b. not exactly because too lazy and to tired
+to follow all the exercises late at night)
+
+------------------------------------------------------------------------
+r.futures.potential -d input=sampling output=potential.csv
+columns=devpressure_0_5_92,slope,road_dens_perc,forest_1992_smooth_perc,dist_to_water_km,dist_to_protected_km,dist_interchanges_km,travel_time_cities
+developed_column=urban_change_clip subregions_column=counties
+min_variables=4
+Running automatic model selection ...
+Best model summary:
+-------------------------
+Beim Start - Warnmeldungen:
+1: Setting LC_CTYPE=de_AT.cp1252 failed 
+2: Setting LC_COLLATE=de_AT.cp1252 failed 
+3: Setting LC_TIME=de_AT.cp1252 failed 
+4: Setting LC_MONETARY=de_AT.cp1252 failed 
+Fixed term is "(Intercept)"
+Es gab 16 Warnungen (Anzeige mit warnings())
+Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: binomial  ( logit )
+Formula: urban_change_clip ~ devpressure_0_5_92 + dist_to_protected_km +  
+    dist_to_water_km + forest_1992_smooth_perc + road_dens_perc +  
+    slope + (1 | counties)
+   Data: input_data
+     AIC      BIC   logLik deviance df.resid 
+  2757.3   2810.9  -1370.7   2741.3     5980 
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-9.3923 -0.2265 -0.0989 -0.0544 15.1501 
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ counties (Intercept) 0.07361  0.2713  
+Number of obs: 5988, groups:  counties, 5
+Fixed effects:
+                         Estimate Std. Error z value Pr(>|z|)    
+(Intercept)             -0.963822   0.228732  -4.214 2.51e-05 ***
+devpressure_0_5_92       0.035412   0.004745   7.463 8.44e-14 ***
+dist_to_protected_km    -0.150421   0.042385  -3.549 0.000387 ***
+dist_to_water_km        -0.133979   0.023773  -5.636 1.74e-08 ***
+forest_1992_smooth_perc -0.047532   0.002375 -20.014  < 2e-16 ***
+road_dens_perc           0.091590   0.007598  12.054  < 2e-16 ***
+slope                    0.039895   0.009316   4.282 1.85e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+Correlation of Fixed Effects:
+            (Intr) d_0_5_ dst_t_p_ dst_t_w_ f_1992 rd_dn_
+dvpr_0_5_92 -0.286                                       
+dst_t_prtc_ -0.320  0.036                                
+dst_t_wtr_k -0.312  0.182 -0.054                         
+frst_1992__ -0.274  0.168  0.087    0.064                
+rod_dns_prc -0.370 -0.335 -0.100   -0.042    0.044       
+slope       -0.198  0.044  0.007   -0.061   -0.557  0.017
+convergence code: 0
+Model failed to converge with max|grad| = 0.00202276 (tol = 0.001, component
+1)
+(Sat Jul 09 01:43:18 2016) Befehl ausgeführt (7 Min 23 Sek)  
+------------------------------------------------------------------------
+
+so it seems to work at least here ...
+
+any idea?
+
+maybe around here?
+
+"Before further steps, we will set our working directory so that the input
+population files and text files we are going to create in the following
+section are saved in one directory and easily accessible. You can do that
+from menu Settings → GRASS working environment → Change working directory.
+Select (or create) a directory and move there the downloaded files
+population_projection.csv and population_trend.csv. "
+
+?
+
+[1]
+https://grasswiki.osgeo.org/wiki/Workshop_on_urban_growth_modeling_with_FUTURES
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/R-3-3-1-and-GRASSGIS-7-0-4-tp5274444p5275498.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From hellik at web.de  Fri Jul  8 16:45:11 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Fri, 8 Jul 2016 16:45:11 -0700 (PDT)
+Subject: [GRASS-stats] R 3.3.1 and GRASSGIS 7.0.4
+In-Reply-To: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+References: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+Message-ID: <1468021511450-5275499.post@n6.nabble.com>
+
+C. Buerger IV wrote
+> I'm attempting to use the FUTURES
+> &lt;https://grasswiki.osgeo.org/wiki/Workshop_on_urban_growth_modeling_with_FUTURES#Software&gt;model
+> for GRASSGIS, which requires an interface with R to use the drudge
+> function. I'm running Windows 7 and the automatic linkup between R and
+> GRASS does not seem to be happening. When working from the FUTURES package
+> I have run:
+> 
+>  r.futures.potential -d input=sampling at practice1 output=potential.csv
+> columns=devpressure_0_5_92,slope,road_dens_perc,forest_1992_smooth_perc,dist_to_water_km,dist_to_protected_km,dist_interchanges_km,travel_time_cities
+> developed_column=urban_change_clip subregions_column=counties
+> min_variables=4 --overwrite
+> 
+> and get:
+> 
+> Running automatic model selection ...
+> Traceback (most recent call last):
+>   File "C:\Users\buer3379\AppData\Roaming\GRASS7\addons/scri
+> pts/r.futures.potential.py", line 185, in 
+> <module>
+>     sys.exit(main())
+>   File "C:\Users\buer3379\AppData\Roaming\GRASS7\addons/scri
+> pts/r.futures.potential.py", line 158, in main
+>     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+>   File "C:\OSGEO4~1\apps\Python27\lib\subprocess.py", line
+> 711, in __init__
+>     errread, errwrite)
+>   File "C:\OSGEO4~1\apps\Python27\lib\subprocess.py", line
+> 948, in _execute_child
+>     startupinfo)
+> WindowsError: [Error 2] The system cannot find the file
+> specified
+> 
+> In just attempting to run R via R--save I get:
+> 
+> R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+> Copyright (C) 2016 The R Foundation for Statistical Computing
+> Platform: x86_64-w64-mingw32/x64 (64-bit)
+> R is free software and comes with ABSOLUTELY NO WARRANTY.
+> You are welcome to redistribute it under certain conditions.
+> Type 'license()' or 'licence()' for distribution details.
+>   Natural language support but running in an English locale
+> R is a collaborative project with many contributors.
+> Type 'contributors()' for more information and
+> 'citation()' on how to cite R or R packages in publications.
+> Type 'demo()' for some demos, 'help()' for on-line help, or
+> 'help.start()' for an HTML browser interface to help.
+> Type 'q()' to quit R.
+> During startup - Warning messages:
+> 1: Setting LC_CTYPE=en_US.cp1252 failed
+> 2: Setting LC_COLLATE=en_US.cp1252 failed
+> 3: Setting LC_TIME=en_US.cp1252 failed
+> 4: Setting LC_MONETARY=en_US.cp1252 failed
+>>
+> 
+> Does anyone have any pointers or tips to work around this problem.  Any
+> ideas would be appreicated.
+> 
+> C. L. Buerger IV
+
+could you type in the winGRASS windows console:
+
+echo %PATH%
+
+?
+
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/R-3-3-1-and-GRASSGIS-7-0-4-tp5274444p5275499.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From cbuerger4 at gmail.com  Wed Jul 13 13:46:20 2016
+From: cbuerger4 at gmail.com (C. Buerger IV)
+Date: Wed, 13 Jul 2016 15:46:20 -0500
+Subject: [GRASS-stats] R 3.3.1 and GRASSGIS 7.0.4
+In-Reply-To: <1468021511450-5275499.post@n6.nabble.com>
+References: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+ <1468021511450-5275499.post@n6.nabble.com>
+Message-ID: <CADy3X4agFDkHFT0VCgDBc25j5Td_u-gKAdDS6CU1H+wX=Df5rg@mail.gmail.com>
+
+When I enter the command echo %PATH% I get:
+
+C:\Program Files\Grass GIS 7.0.7\lib;C:\Program Files\GRASS GIS
+7.0.4\bin;C:\Users\buer3379\AppData\Roaming\GRASS7\addons\bin;{app};C:\Program
+Files\GRASS GIS 7.0.4\estrabin;C:\Program Files\GRASS GIS
+7.0.4\bin;C:\Program
+Files\Oracle\Java\javapath;C:\Windows\System32;C:\Windows;C:\Windows\System32\wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windowssystem32\config\systemprofile\.dnx\bin;C:\Program
+Files\Microsoft\DNS
+Dnvm\;C:\Program Files
+(x86)\Skype\Phone\;c:\users\buer3379\appdata\local\enthought\canopy\user\scripts;C:\Users\buer3379\AppData\Local\Enthough\Canopy\User;C:\Users\buer3379\AppData\Local\Enthought\Canopy\User\Scripts;C:\Program
+Files\RStudio\bin;C:\Program Files\R\R-3.3.1\bin\x64
+
+Reassigning the PATH variable did not affect anything. I got the same error
+as before.
+
+
+any idea?
+> maybe around here?
+> "Before further steps, we will set our working directory so that the input
+> population files and text files we are going to create in the following
+> section are saved in one directory and easily accessible. You can do that
+> from menu Settings → GRASS working environment → Change working directory.
+> Select (or create) a directory and move there the downloaded files
+> population_projection.csv and population_trend.csv. "
+
+
+I had questions about this part, or its placement in the order of the
+walkthrough, and contacted an individual on the OSGEO team at NC State
+about them. That individual. That person seemed unconcerned about it, but
+perhaps I did not express my concerns clearly enough. I did do that part,
+though I still do not understand why it should be done that far ahead of
+the step that uses the population data.
+
+Thank you for your help and appologies for getting back to you so late,
+
+C. L. Buerger IV
+
+On Fri, Jul 8, 2016 at 6:45 PM, Helmut Kudrnovsky <hellik at web.de> wrote:
+
+> C. Buerger IV wrote
+> > I'm attempting to use the FUTURES
+> > &lt;
+> https://grasswiki.osgeo.org/wiki/Workshop_on_urban_growth_modeling_with_FUTURES#Software&gt;model
+> > for GRASSGIS, which requires an interface with R to use the drudge
+> > function. I'm running Windows 7 and the automatic linkup between R and
+> > GRASS does not seem to be happening. When working from the FUTURES
+> package
+> > I have run:
+> >
+> >  r.futures.potential -d input=sampling at practice1 output=potential.csv
+> >
+> columns=devpressure_0_5_92,slope,road_dens_perc,forest_1992_smooth_perc,dist_to_water_km,dist_to_protected_km,dist_interchanges_km,travel_time_cities
+> > developed_column=urban_change_clip subregions_column=counties
+> > min_variables=4 --overwrite
+> >
+> > and get:
+> >
+> > Running automatic model selection ...
+> > Traceback (most recent call last):
+> >   File "C:\Users\buer3379\AppData\Roaming\GRASS7\addons/scri
+> > pts/r.futures.potential.py", line 185, in
+> > <module>
+> >     sys.exit(main())
+> >   File "C:\Users\buer3379\AppData\Roaming\GRASS7\addons/scri
+> > pts/r.futures.potential.py", line 158, in main
+> >     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+> >   File "C:\OSGEO4~1\apps\Python27\lib\subprocess.py", line
+> > 711, in __init__
+> >     errread, errwrite)
+> >   File "C:\OSGEO4~1\apps\Python27\lib\subprocess.py", line
+> > 948, in _execute_child
+> >     startupinfo)
+> > WindowsError: [Error 2] The system cannot find the file
+> > specified
+> >
+> > In just attempting to run R via R--save I get:
+> >
+> > R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+> > Copyright (C) 2016 The R Foundation for Statistical Computing
+> > Platform: x86_64-w64-mingw32/x64 (64-bit)
+> > R is free software and comes with ABSOLUTELY NO WARRANTY.
+> > You are welcome to redistribute it under certain conditions.
+> > Type 'license()' or 'licence()' for distribution details.
+> >   Natural language support but running in an English locale
+> > R is a collaborative project with many contributors.
+> > Type 'contributors()' for more information and
+> > 'citation()' on how to cite R or R packages in publications.
+> > Type 'demo()' for some demos, 'help()' for on-line help, or
+> > 'help.start()' for an HTML browser interface to help.
+> > Type 'q()' to quit R.
+> > During startup - Warning messages:
+> > 1: Setting LC_CTYPE=en_US.cp1252 failed
+> > 2: Setting LC_COLLATE=en_US.cp1252 failed
+> > 3: Setting LC_TIME=en_US.cp1252 failed
+> > 4: Setting LC_MONETARY=en_US.cp1252 failed
+> >>
+> >
+> > Does anyone have any pointers or tips to work around this problem.  Any
+> > ideas would be appreicated.
+> >
+> > C. L. Buerger IV
+>
+> could you type in the winGRASS windows console:
+>
+> echo %PATH%
+>
+> ?
+>
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context:
+> http://osgeo-org.1560.x6.nabble.com/R-3-3-1-and-GRASSGIS-7-0-4-tp5274444p5275499.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20160713/8244bdd6/attachment.html>
+
+From hellik at web.de  Thu Jul 14 12:20:02 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Thu, 14 Jul 2016 12:20:02 -0700 (PDT)
+Subject: [GRASS-stats] R 3.3.1 and GRASSGIS 7.0.4
+In-Reply-To: <CADy3X4agFDkHFT0VCgDBc25j5Td_u-gKAdDS6CU1H+wX=Df5rg@mail.gmail.com>
+References: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+ <1468021511450-5275499.post@n6.nabble.com>
+ <CADy3X4agFDkHFT0VCgDBc25j5Td_u-gKAdDS6CU1H+wX=Df5rg@mail.gmail.com>
+Message-ID: <1468524002588-5276452.post@n6.nabble.com>
+
+>When I enter the command echo %PATH% I get:
+>[...]
+>Dnvm\;C:\Program Files
+(x86)\Skype\Phone\;c:\users\buer3379\appdata\local\enthought\canopy\user\scripts;C:\Users\buer3379\AppData\Local\Enthough\Canopy\User;C:\Users\buer3379\AppData\Local\Enthought\Canopy\User\Scripts;C:\Program
+Files\RStudio\bin;C:\Program Files\R\R-3.3.1\bin\x64
+
+ok, R is in %PATH%
+
+the script works here on my win 10 machine out of the box.
+
+have you installed all the R packages needed by the GRASS addon?
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/R-3-3-1-and-GRASSGIS-7-0-4-tp5274444p5276452.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From kratochanna at gmail.com  Thu Jul 14 12:54:51 2016
+From: kratochanna at gmail.com (=?UTF-8?B?QW5uYSBQZXRyw6HFoW92w6E=?=)
+Date: Thu, 14 Jul 2016 21:54:51 +0200
+Subject: [GRASS-stats] R 3.3.1 and GRASSGIS 7.0.4
+In-Reply-To: <1468524002588-5276452.post@n6.nabble.com>
+References: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+ <1468021511450-5275499.post@n6.nabble.com>
+ <CADy3X4agFDkHFT0VCgDBc25j5Td_u-gKAdDS6CU1H+wX=Df5rg@mail.gmail.com>
+ <1468524002588-5276452.post@n6.nabble.com>
+Message-ID: <CAE0EDEp8GWYrhz6zdnax1wt866PF0zfRO30k4+x7Gap9xS8WCQ@mail.gmail.com>
+
+On Thu, Jul 14, 2016 at 9:20 PM, Helmut Kudrnovsky <hellik at web.de> wrote:
+>>When I enter the command echo %PATH% I get:
+>>[...]
+>>Dnvm\;C:\Program Files
+> (x86)\Skype\Phone\;c:\users\buer3379\appdata\local\enthought\canopy\user\scripts;C:\Users\buer3379\AppData\Local\Enthough\Canopy\User;C:\Users\buer3379\AppData\Local\Enthought\Canopy\User\Scripts;C:\Program
+> Files\RStudio\bin;C:\Program Files\R\R-3.3.1\bin\x64
+>
+> ok, R is in %PATH%
+>
+> the script works here on my win 10 machine out of the box.
+>
+> have you installed all the R packages needed by the GRASS addon?
+>
+>
+>
+
+When you launch Rscript from GRASS terminal (the black one) what do you get?
+
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/R-3-3-1-and-GRASSGIS-7-0-4-tp5274444p5276452.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+From cbuerger4 at gmail.com  Thu Jul 14 12:57:37 2016
+From: cbuerger4 at gmail.com (C. Buerger IV)
+Date: Thu, 14 Jul 2016 14:57:37 -0500
+Subject: [GRASS-stats] R 3.3.1 and GRASSGIS 7.0.4
+In-Reply-To: <1468524002588-5276452.post@n6.nabble.com>
+References: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+ <1468021511450-5275499.post@n6.nabble.com>
+ <CADy3X4agFDkHFT0VCgDBc25j5Td_u-gKAdDS6CU1H+wX=Df5rg@mail.gmail.com>
+ <1468524002588-5276452.post@n6.nabble.com>
+Message-ID: <CADy3X4YvojWUJfozJqTzmVk6y8OLZ+U1jr_ykxx23j5mFDTELQ@mail.gmail.com>
+
+>
+> ok, R is in %PATH%
+> the script works here on my win 10 machine out of the box.
+> have you installed all the R packages needed by the GRASS addon?
+
+
+Yes, I have. It did not change anything. Nor has reinstalling everything,
+several times in various orders.
+
+When you launch Rscript from GRASS terminal (the black one) what do you get?
+
+
+The same error as before.
+
+CLBIV
+
+C. L. Buerger IV
+
+On Thu, Jul 14, 2016 at 2:20 PM, Helmut Kudrnovsky <hellik at web.de> wrote:
+
+> >When I enter the command echo %PATH% I get:
+> >[...]
+> >Dnvm\;C:\Program Files
+>
+> (x86)\Skype\Phone\;c:\users\buer3379\appdata\local\enthought\canopy\user\scripts;C:\Users\buer3379\AppData\Local\Enthough\Canopy\User;C:\Users\buer3379\AppData\Local\Enthought\Canopy\User\Scripts;C:\Program
+> Files\RStudio\bin;C:\Program Files\R\R-3.3.1\bin\x64
+>
+> ok, R is in %PATH%
+>
+> the script works here on my win 10 machine out of the box.
+>
+> have you installed all the R packages needed by the GRASS addon?
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context:
+> http://osgeo-org.1560.x6.nabble.com/R-3-3-1-and-GRASSGIS-7-0-4-tp5274444p5276452.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20160714/94e1d372/attachment.html>
+
+From kratochanna at gmail.com  Thu Jul 14 12:59:56 2016
+From: kratochanna at gmail.com (=?UTF-8?B?QW5uYSBQZXRyw6HFoW92w6E=?=)
+Date: Thu, 14 Jul 2016 21:59:56 +0200
+Subject: [GRASS-stats] R 3.3.1 and GRASSGIS 7.0.4
+In-Reply-To: <CADy3X4YvojWUJfozJqTzmVk6y8OLZ+U1jr_ykxx23j5mFDTELQ@mail.gmail.com>
+References: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+ <1468021511450-5275499.post@n6.nabble.com>
+ <CADy3X4agFDkHFT0VCgDBc25j5Td_u-gKAdDS6CU1H+wX=Df5rg@mail.gmail.com>
+ <1468524002588-5276452.post@n6.nabble.com>
+ <CADy3X4YvojWUJfozJqTzmVk6y8OLZ+U1jr_ykxx23j5mFDTELQ@mail.gmail.com>
+Message-ID: <CAE0EDEo_1rvvDhh54tjsiMJgKQJG1A1d6nvBpw3sd-33Gh06Wg@mail.gmail.com>
+
+On Thu, Jul 14, 2016 at 9:57 PM, C. Buerger IV <cbuerger4 at gmail.com> wrote:
+>> ok, R is in %PATH%
+>> the script works here on my win 10 machine out of the box.
+>> have you installed all the R packages needed by the GRASS addon?
+>
+>
+> Yes, I have. It did not change anything. Nor has reinstalling everything,
+> several times in various orders.
+>
+>> When you launch Rscript from GRASS terminal (the black one) what do you
+>> get?
+>
+>
+> The same error as before.
+
+The error is from Python, so this should be different one. Please post it here.
+
+>
+> CLBIV
+>
+> C. L. Buerger IV
+>
+> On Thu, Jul 14, 2016 at 2:20 PM, Helmut Kudrnovsky <hellik at web.de> wrote:
+>>
+>> >When I enter the command echo %PATH% I get:
+>> >[...]
+>> >Dnvm\;C:\Program Files
+>>
+>> (x86)\Skype\Phone\;c:\users\buer3379\appdata\local\enthought\canopy\user\scripts;C:\Users\buer3379\AppData\Local\Enthough\Canopy\User;C:\Users\buer3379\AppData\Local\Enthought\Canopy\User\Scripts;C:\Program
+>> Files\RStudio\bin;C:\Program Files\R\R-3.3.1\bin\x64
+>>
+>> ok, R is in %PATH%
+>>
+>> the script works here on my win 10 machine out of the box.
+>>
+>> have you installed all the R packages needed by the GRASS addon?
+>>
+>>
+>>
+>> -----
+>> best regards
+>> Helmut
+>> --
+>> View this message in context:
+>> http://osgeo-org.1560.x6.nabble.com/R-3-3-1-and-GRASSGIS-7-0-4-tp5274444p5276452.html
+>> Sent from the Grass - Stats mailing list archive at Nabble.com.
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats at lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+From hellik at web.de  Thu Jul 14 12:43:49 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Thu, 14 Jul 2016 12:43:49 -0700 (PDT)
+Subject: [GRASS-stats] R 3.3.1 and GRASSGIS 7.0.4
+In-Reply-To: <CAE0EDEp8GWYrhz6zdnax1wt866PF0zfRO30k4+x7Gap9xS8WCQ@mail.gmail.com>
+References: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+ <1468021511450-5275499.post@n6.nabble.com>
+ <CADy3X4agFDkHFT0VCgDBc25j5Td_u-gKAdDS6CU1H+wX=Df5rg@mail.gmail.com>
+ <1468524002588-5276452.post@n6.nabble.com>
+ <CAE0EDEp8GWYrhz6zdnax1wt866PF0zfRO30k4+x7Gap9xS8WCQ@mail.gmail.com>
+Message-ID: <1468525429392-5276459.post@n6.nabble.com>
+
+Anna Petrášová wrote
+> On Thu, Jul 14, 2016 at 9:20 PM, Helmut Kudrnovsky &lt;
+
+> hellik@
+
+> &gt; wrote:
+>>>When I enter the command echo %PATH% I get:
+>>>[...]
+>>>Dnvm\;C:\Program Files
+>> (x86)\Skype\Phone\;c:\users\buer3379\appdata\local\enthought\canopy\user\scripts;C:\Users\buer3379\AppData\Local\Enthough\Canopy\User;C:\Users\buer3379\AppData\Local\Enthought\Canopy\User\Scripts;C:\Program
+>> Files\RStudio\bin;C:\Program Files\R\R-3.3.1\bin\x64
+>>
+>> ok, R is in %PATH%
+>>
+>> the script works here on my win 10 machine out of the box.
+>>
+>> have you installed all the R packages needed by the GRASS addon?
+>>
+>>
+>>
+> 
+> When you launch Rscript from GRASS terminal (the black one) what do you
+> get?
+
+Cleaning up temporary files...
+Starting GRASS GIS...
+WARNUNG: Sperren gleichzeitiger Zugriffe auf ein Mapset ist unter Windows
+         nicht möglich.
+
+          __________  ___   __________    _______________
+         / ____/ __ \/   | / ___/ ___/   / ____/  _/ ___/
+        / / __/ /_/ / /| | \__ \\_  \   / / __ / / \__ \
+       / /_/ / _, _/ ___ |___/ /__/ /  / /_/ // / ___/ /
+       \____/_/ |_/_/  |_/____/____/   \____/___//____/
+
+Welcome to GRASS GIS 7.3.svn (r68855)
+GRASS GIS homepage:                      http://grass.osgeo.org
+This version running through:            Command Shell
+(C:\Windows\system32\cmd.exe)
+Help is available with the command:      g.manual -i
+See the licence terms with:              g.version -c
+See citation options with:               g.version -x
+If required, restart the GUI with:       g.gui wxpython
+When ready to quit enter:                exit
+
+Launching <wxpython> GUI in the background, please wait...
+Microsoft Windows [Version 10.0.10586]
+(c) 2015 Microsoft Corporation. Alle Rechte vorbehalten.
+
+C:\Users\hkmyr>Rscript
+Usage: /path/to/Rscript [--options] [-e expr [-e expr2 ...] | file] [args]
+
+--options accepted are
+  --help              Print usage and exit
+  --version           Print version and exit
+  --verbose           Print information on progress
+  --default-packages=list
+                      Where 'list' is a comma-separated set
+                        of package names, or 'NULL'
+or options to R, in addition to --slave --no-restore, such as
+  --save              Do save workspace at the end of the session
+  --no-environ        Don't read the site and user environment files
+  --no-site-file      Don't read the site-wide Rprofile
+  --no-init-file      Don't read the user R profile
+  --restore           Do restore previously saved objects at startup
+  --vanilla           Combine --no-save, --no-restore, --no-site-file
+                        --no-init-file and --no-environ
+
+'file' may contain spaces but not shell metacharacters
+Expressions (one or more '-e <expr>') may be used *instead* of 'file'
+See also  ?Rscript  from within R
+
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/R-3-3-1-and-GRASSGIS-7-0-4-tp5274444p5276459.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From hellik at web.de  Thu Jul 14 12:50:07 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Thu, 14 Jul 2016 12:50:07 -0700 (PDT)
+Subject: [GRASS-stats] R 3.3.1 and GRASSGIS 7.0.4
+In-Reply-To: <CADy3X4YvojWUJfozJqTzmVk6y8OLZ+U1jr_ykxx23j5mFDTELQ@mail.gmail.com>
+References: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+ <1468021511450-5275499.post@n6.nabble.com>
+ <CADy3X4agFDkHFT0VCgDBc25j5Td_u-gKAdDS6CU1H+wX=Df5rg@mail.gmail.com>
+ <1468524002588-5276452.post@n6.nabble.com>
+ <CADy3X4YvojWUJfozJqTzmVk6y8OLZ+U1jr_ykxx23j5mFDTELQ@mail.gmail.com>
+Message-ID: <1468525807617-5276460.post@n6.nabble.com>
+
+C. Buerger IV wrote
+>>When you launch Rscript from GRASS terminal (the black one) what do you
+get?
+> 
+> The same error as before.
+
+here on my side:
+
+Cleaning up temporary files...
+Starting GRASS GIS...
+WARNUNG: Sperren gleichzeitiger Zugriffe auf ein Mapset ist unter Windows
+         nicht möglich.
+
+          __________  ___   __________    _______________
+         / ____/ __ \/   | / ___/ ___/   / ____/  _/ ___/
+        / / __/ /_/ / /| | \__ \\_  \   / / __ / / \__ \
+       / /_/ / _, _/ ___ |___/ /__/ /  / /_/ // / ___/ /
+       \____/_/ |_/_/  |_/____/____/   \____/___//____/
+
+Welcome to GRASS GIS 7.3.svn (r68855)
+GRASS GIS homepage:                      http://grass.osgeo.org
+This version running through:            Command Shell
+(C:\Windows\system32\cmd.exe)
+Help is available with the command:      g.manual -i
+See the licence terms with:              g.version -c
+See citation options with:               g.version -x
+If required, restart the GUI with:       g.gui wxpython
+When ready to quit enter:                exit
+
+Launching <wxpython> GUI in the background, please wait...
+Microsoft Windows [Version 10.0.10586]
+(c) 2015 Microsoft Corporation. Alle Rechte vorbehalten.
+
+C:\Users\xxx>Rscript
+Usage: /path/to/Rscript [--options] [-e expr [-e expr2 ...] | file] [args]
+[...]
+
+so we maybe narrow down the problem.
+
+here on my side Rscript.exe lives in :
+
+C:\Program Files\R\R-3.3.1\bin
+
+can you have a look at it if the exe is there?
+
+and start a normal windows console, just the one which is delivered by
+windows itself and type RScript
+
+here on my side:
+
+Microsoft Windows [Version 10.0.10586]
+(c) 2015 Microsoft Corporation. Alle Rechte vorbehalten.
+
+C:\Users\xxxx>cd C:\Program Files\R\R-3.3.1\bin
+
+C:\Program Files\R\R-3.3.1\bin>RScript
+Usage: /path/to/Rscript [--options] [-e expr [-e expr2 ...] | file] [args]
+
+--options accepted are
+  --help              Print usage and exit
+  --version           Print version and exit
+  --verbose           Print information on progress
+  --default-packages=list
+                      Where 'list' is a comma-separated set
+                        of package names, or 'NULL'
+or options to R, in addition to --slave --no-restore, such as
+  --save              Do save workspace at the end of the session
+  --no-environ        Don't read the site and user environment files
+  --no-site-file      Don't read the site-wide Rprofile
+  --no-init-file      Don't read the user R profile
+  --restore           Do restore previously saved objects at startup
+  --vanilla           Combine --no-save, --no-restore, --no-site-file
+                        --no-init-file and --no-environ
+
+'file' may contain spaces but not shell metacharacters
+Expressions (one or more '-e <expr>') may be used *instead* of 'file'
+See also  ?Rscript  from within R
+
+C:\Program Files\R\R-3.3.1\bin>
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/R-3-3-1-and-GRASSGIS-7-0-4-tp5274444p5276460.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From hellik at web.de  Thu Jul 14 12:53:12 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Thu, 14 Jul 2016 12:53:12 -0700 (PDT)
+Subject: [GRASS-stats] R 3.3.1 and GRASSGIS 7.0.4
+In-Reply-To: <1468525807617-5276460.post@n6.nabble.com>
+References: <CADy3X4aXVnaO+xib=YZSyK=bqHPp_3m1HJnQwCgE=Vdfen5VHA@mail.gmail.com>
+ <1468021511450-5275499.post@n6.nabble.com>
+ <CADy3X4agFDkHFT0VCgDBc25j5Td_u-gKAdDS6CU1H+wX=Df5rg@mail.gmail.com>
+ <1468524002588-5276452.post@n6.nabble.com>
+ <CADy3X4YvojWUJfozJqTzmVk6y8OLZ+U1jr_ykxx23j5mFDTELQ@mail.gmail.com>
+ <1468525807617-5276460.post@n6.nabble.com>
+Message-ID: <1468525992372-5276461.post@n6.nabble.com>
+
+>and start a normal windows console, just the one which is delivered by
+windows itself and type RScript
+>
+>here on my side:
+>
+>Microsoft Windows [Version 10.0.10586]
+>(c) 2015 Microsoft Corporation. Alle Rechte vorbehalten.
+>
+>C:\Users\xxxx>cd C:\Program Files\R\R-3.3.1\bin 
+
+of course, first change to the R installation folder, see above
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/R-3-3-1-and-GRASSGIS-7-0-4-tp5274444p5276461.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+

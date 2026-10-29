@@ -1,0 +1,1160 @@
+From hamish_nospam at yahoo.com  Thu Jul 22 03:28:56 2004
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] r.univar(2)
+Message-ID: <20040722192856.7b1078c6.hamish_nospam@yahoo.com>
+
+fyi, I've enabled the faster C version of r.univar now for 5.7.
+
+
+
+Hamish
+
+
+From marta.benito at uam.es  Wed Jul 28 15:19:55 2004
+From: marta.benito at uam.es (marta.benito@uam.es)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] R - problem with mapsets
+Message-ID: <200407281319.i6SDJtcT025524@asterix.ti.uam.es>
+
+Hello, 
+I try to work in R (using GRASS library) with two different maps with the same
+name that are located in two different mapsets:
+mapset1: map r
+mapset2: map r
+
+and allways I get the same map 
+
+> grass5 ms1
+> g.region w=0 s=0 e=1 n=1
+> r.mapcalc r=123
+> exit
+
+> grass5 ms2
+> g.region w=0 s=0 e=1 n=1
+> r.mapcalc r=456
+> R
+> library(GRASS)
+> G <-gmeta()
+> r <- rast.get(G,"r@ms1")
+> r
+$r
+[1] 456
+
+
+ 
+Thanks
+
+Marta
+
+--------------------------------------------------------------------------
+Mensaje enviado mediante una herramienta Webmail integrada en *El Rincon*:
+------------->>>>>>>>     https://rincon.uam.es     <<<<<<<<--------------
+
+
+
+From Roger.Bivand at nhh.no  Wed Jul 28 12:06:20 2004
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] R - problem with mapsets
+In-Reply-To: <200407281319.i6SDJtcT025524@asterix.ti.uam.es>
+Message-ID: <Pine.LNX.4.44.0407281804250.16455-100000@reclus.nhh.no>
+
+On Wed, 28 Jul 2004 marta.benito@uam.es wrote:
+
+> Hello, 
+> I try to work in R (using GRASS library) with two different maps with the same
+> name that are located in two different mapsets:
+> mapset1: map r
+> mapset2: map r
+> 
+> and allways I get the same map 
+> 
+> > grass5 ms1
+> > g.region w=0 s=0 e=1 n=1
+> > r.mapcalc r=123
+> > exit
+> 
+> > grass5 ms2
+> > g.region w=0 s=0 e=1 n=1
+> > r.mapcalc r=456
+> > R
+> > library(GRASS)
+> > G <-gmeta()
+> > r <- rast.get(G,"r@ms1")
+> > r
+> $r
+> [1] 456
+
+I'll have a look, could you tell me which version of the GRASS interface 
+you are using (help(package=GRASS)), and what print(G) says? What does 
+get.mapsets() say?
+
+Roger
+
+> 
+> 
+>  
+> Thanks
+> 
+> Marta
+> 
+> --------------------------------------------------------------------------
+> Mensaje enviado mediante una herramienta Webmail integrada en *El Rincon*:
+> ------------->>>>>>>>     https://rincon.uam.es     <<<<<<<<--------------
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From marta.benito at uam.es  Thu Jul 29 09:41:03 2004
+From: marta.benito at uam.es (marta.benito@uam.es)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] R - problem with mapsets
+Message-ID: <200407290741.i6T7f2bX009778@asterix.ti.uam.es>
+
+Hello, thanks Roger, following the same example:
+
+>grass5 ms1
+>R
+>(help(package=GRASS))
+Package: GRASS
+Version: 0.2-13
+Date: 2003/09/25
+>print(G) 
+$LOCATION
+[1] "rtest"
+$MAPSET
+[1] "ms1"
+$proj
+[1] "UTM, zone: 30"
+$n
+[1] 1
+$s
+[1] 0
+$w
+[1] 0
+$e
+[1] 1
+$nsres
+[1] 1
+$ewres
+[1] 1
+$Nrow
+[1] 1
+$Ncol
+[1] 1
+$Ncells
+[1] 1
+$xlims
+[1] 0 1
+$ylims
+[1] 0 1
+$xseq
+[1] 0.5
+$yseq
+[1] 0.5
+$ryseq
+[1] 0.5
+attr(,"class")
+[1] "grassmeta"
+get.mapsets()
+[1] "ms1"       "PERMANENT"
+r <- rast.get(G,"r@ms2")
+print(r)
+$r
+[1] 123
+> system("g.mapsets mapset=ms2")
+> refresh.mapsets()
+[1] "ms1" "ms2"
+> get.mapsets()
+[1] "ms1" "ms2"
+> r <- rast.get(G,"r@ms2")
+> print(r)
+$r
+[1] 123
+
+
+
+Marta
+
+
+> On Wed, 28 Jul 2004 marta.benito@uam.es wrote:
+> 
+> > Hello, 
+> > I try to work in R (using GRASS library) with two different maps with the same
+> > name that are located in two different mapsets:
+> > mapset1: map r
+> > mapset2: map r
+> > 
+> > and allways I get the same map 
+> > 
+> > > grass5 ms1
+> > > g.region w=0 s=0 e=1 n=1
+> > > r.mapcalc r=123
+> > > exit
+> > 
+> > > grass5 ms2
+> > > g.region w=0 s=0 e=1 n=1
+> > > r.mapcalc r=456
+> > > R
+> > > library(GRASS)
+> > > G <-gmeta()
+> > > r <- rast.get(G,"r@ms1")
+> > > r
+> > $r
+> > [1] 456
+> 
+> I'll have a look, could you tell me which version of the GRASS interface 
+> you are using (help(package=GRASS)), and what print(G) says? What does 
+> get.mapsets() say?
+> 
+> Roger
+> 
+> > 
+> > 
+> >  
+> > Thanks
+> > 
+> > Marta
+> > 
+> > --------------------------------------------------------------------------
+> > Mensaje enviado mediante una herramienta Webmail integrada en *El Rincon*:
+> > ------------->>>>>>>>     https://rincon.uam.es     <<<<<<<<--------------
+> > 
+> > 
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> 
+> -- 
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+> e-mail: Roger.Bivand@nhh.no
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+> 
+
+
+--------------------------------------------------------------------------
+Mensaje enviado mediante una herramienta Webmail integrada en *El Rincon*:
+------------->>>>>>>>     https://rincon.uam.es     <<<<<<<<--------------
+
+
+
+From Roger.Bivand at nhh.no  Thu Jul 29 05:11:55 2004
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] R - problem with mapsets
+In-Reply-To: <200407290741.i6T7f2bX009778@asterix.ti.uam.es>
+Message-ID: <Pine.LNX.4.44.0407291058200.17065-100000@reclus.nhh.no>
+
+Marta:
+
+Thanks, this is helpful. I'll look at rast.get(), the underlying C 
+function rastget, and the GRASS function it calls (G_find_cell()) - 
+rastget doesn't try to parse the @, and if G_find_cell() doesn't, then the 
+behaviour you see is reasonable. Markus and I looked at this last year and 
+I think we thought we had a solution, but it obviously isn't good enough.
+
+Roger
+
+
+On Thu, 29 Jul 2004 marta.benito@uam.es wrote:
+
+> Hello, thanks Roger, following the same example:
+> 
+> >grass5 ms1
+> >R
+> >(help(package=GRASS))
+> Package: GRASS
+> Version: 0.2-13
+> Date: 2003/09/25
+> >print(G) 
+> $LOCATION
+> [1] "rtest"
+> $MAPSET
+> [1] "ms1"
+> $proj
+> [1] "UTM, zone: 30"
+> $n
+> [1] 1
+> $s
+> [1] 0
+> $w
+> [1] 0
+> $e
+> [1] 1
+> $nsres
+> [1] 1
+> $ewres
+> [1] 1
+> $Nrow
+> [1] 1
+> $Ncol
+> [1] 1
+> $Ncells
+> [1] 1
+> $xlims
+> [1] 0 1
+> $ylims
+> [1] 0 1
+> $xseq
+> [1] 0.5
+> $yseq
+> [1] 0.5
+> $ryseq
+> [1] 0.5
+> attr(,"class")
+> [1] "grassmeta"
+> get.mapsets()
+> [1] "ms1"       "PERMANENT"
+> r <- rast.get(G,"r@ms2")
+> print(r)
+> $r
+> [1] 123
+> > system("g.mapsets mapset=ms2")
+> > refresh.mapsets()
+> [1] "ms1" "ms2"
+> > get.mapsets()
+> [1] "ms1" "ms2"
+> > r <- rast.get(G,"r@ms2")
+> > print(r)
+> $r
+> [1] 123
+> 
+> 
+> 
+> Marta
+> 
+> 
+> > On Wed, 28 Jul 2004 marta.benito@uam.es wrote:
+> > 
+> > > Hello, 
+> > > I try to work in R (using GRASS library) with two different maps with the same
+> > > name that are located in two different mapsets:
+> > > mapset1: map r
+> > > mapset2: map r
+> > > 
+> > > and allways I get the same map 
+> > > 
+> > > > grass5 ms1
+> > > > g.region w=0 s=0 e=1 n=1
+> > > > r.mapcalc r=123
+> > > > exit
+> > > 
+> > > > grass5 ms2
+> > > > g.region w=0 s=0 e=1 n=1
+> > > > r.mapcalc r=456
+> > > > R
+> > > > library(GRASS)
+> > > > G <-gmeta()
+> > > > r <- rast.get(G,"r@ms1")
+> > > > r
+> > > $r
+> > > [1] 456
+> > 
+> > I'll have a look, could you tell me which version of the GRASS interface 
+> > you are using (help(package=GRASS)), and what print(G) says? What does 
+> > get.mapsets() say?
+> > 
+> > Roger
+> > 
+> > > 
+> > > 
+> > >  
+> > > Thanks
+> > > 
+> > > Marta
+> > > 
+> > > --------------------------------------------------------------------------
+> > > Mensaje enviado mediante una herramienta Webmail integrada en *El Rincon*:
+> > > ------------->>>>>>>>     https://rincon.uam.es     <<<<<<<<--------------
+> > > 
+> > > 
+> > > _______________________________________________
+> > > statsgrass mailing list
+> > > statsgrass@grass.itc.it
+> > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > 
+> > 
+> > -- 
+> > Roger Bivand
+> > Economic Geography Section, Department of Economics, Norwegian School of
+> > Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+> > Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+> > e-mail: Roger.Bivand@nhh.no
+> > 
+> > 
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> > 
+> 
+> 
+> --------------------------------------------------------------------------
+> Mensaje enviado mediante una herramienta Webmail integrada en *El Rincon*:
+> ------------->>>>>>>>     https://rincon.uam.es     <<<<<<<<--------------
+> 
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From hamish_nospam at yahoo.com  Thu Jul 29 06:57:28 2004
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] R - problem with mapsets
+In-Reply-To: <Pine.LNX.4.44.0407291058200.17065-100000@reclus.nhh.no>
+References: <200407290741.i6T7f2bX009778@asterix.ti.uam.es>
+	<Pine.LNX.4.44.0407291058200.17065-100000@reclus.nhh.no>
+Message-ID: <20040729225728.10796461.hamish_nospam@yahoo.com>
+
+> Thanks, this is helpful. I'll look at rast.get(), the underlying C 
+> function rastget, and the GRASS function it calls (G_find_cell()) - 
+> rastget doesn't try to parse the @, and if G_find_cell() doesn't, then
+> the behaviour you see is reasonable.
+
+
+g.mlist might be a *much* better program to use for parsing.
+(works well in GRASS 5.3 & newer; take care with the 5.0.3 version)
+
+e.g., 'g.mlist rast'  lists all rasters in mapset, one on each line.
+
+
+see:
+http://grass.ibiblio.org/grass57/manuals/html57_user/g.mlist.html
+
+
+
+Hamish
+
+
+From Roger.Bivand at nhh.no  Thu Jul 29 07:51:31 2004
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] R - problem with mapsets
+In-Reply-To: <20040729225728.10796461.hamish_nospam@yahoo.com>
+Message-ID: <Pine.LNX.4.44.0407291348490.17065-100000@reclus.nhh.no>
+
+On Thu, 29 Jul 2004, Hamish wrote:
+
+> > Thanks, this is helpful. I'll look at rast.get(), the underlying C 
+> > function rastget, and the GRASS function it calls (G_find_cell()) - 
+> > rastget doesn't try to parse the @, and if G_find_cell() doesn't, then
+> > the behaviour you see is reasonable.
+> 
+> 
+> g.mlist might be a *much* better program to use for parsing.
+> (works well in GRASS 5.3 & newer; take care with the 5.0.3 version)
+> 
+> e.g., 'g.mlist rast'  lists all rasters in mapset, one on each line.
+> 
+> 
+> see:
+> http://grass.ibiblio.org/grass57/manuals/html57_user/g.mlist.html
+
+Thanks, I'll look at its code, but it is not a program that is needed, it 
+is the libgis.a functions for a program that stays running longer than 
+regular GRASS programs, and gets fooled by legagy GRASS buffers and 
+squirrels-away (mapset was one) because it doesn't see changes made by 
+other GRASS programs.
+
+Roger
+
+> 
+> 
+> 
+> Hamish
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From Roger.Bivand at nhh.no  Thu Jul 29 12:49:21 2004
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] R - problem with mapsets
+In-Reply-To: <200407290741.i6T7f2bX009778@asterix.ti.uam.es>
+Message-ID: <Pine.LNX.4.44.0407291843120.17065-100000@reclus.nhh.no>
+
+Now I have:
+
+> library(GRASS)
+GRASS environment variables in: /home/rsb/.grassrc5 
+> G <- gmeta()
+> summary(G)
+Data from GRASS 5.0 LOCATION marta with 1 columns and 1 rows;
+UTM, zone: 30
+The west-east range is: 0, 1,
+and the south-north: 0, 1;
+West-east cell sizes are 1 units,
+and south-north 1 units.
+> get.mapsets()
+[1] "ms2"       "PERMANENT"
+> rast.get(G, "r")$r
+[1] 456
+> rast.get(G, "r@ms2")$r
+[1] 456
+> rast.get(G, "r@ms1")$r
+[1] 123
+
+which I think is what you want. The diagnosis was that G_find_cell() was 
+overwriting the layer name, replacing "r@ms1" by "r", which was then found 
+in "@ms2". I can either submit a new release to CRAN (I'll do that 
+anyway), or put a draft package on my website for brave people to try - 
+please tell me soon if I should NOT submit to CRAN before you have had a 
+chance to check whether this change impacts your work (i.e. if you have 
+been using the interface on multiple mapsets containing layers with the 
+same names).
+
+Thanks for a helpful bug report.
+
+Roger
+
+
+On Thu, 29 Jul 2004 marta.benito@uam.es wrote:
+
+> Hello, thanks Roger, following the same example:
+> 
+> >grass5 ms1
+> >R
+> >(help(package=GRASS))
+> Package: GRASS
+> Version: 0.2-13
+> Date: 2003/09/25
+> >print(G) 
+> $LOCATION
+> [1] "rtest"
+> $MAPSET
+> [1] "ms1"
+> $proj
+> [1] "UTM, zone: 30"
+> $n
+> [1] 1
+> $s
+> [1] 0
+> $w
+> [1] 0
+> $e
+> [1] 1
+> $nsres
+> [1] 1
+> $ewres
+> [1] 1
+> $Nrow
+> [1] 1
+> $Ncol
+> [1] 1
+> $Ncells
+> [1] 1
+> $xlims
+> [1] 0 1
+> $ylims
+> [1] 0 1
+> $xseq
+> [1] 0.5
+> $yseq
+> [1] 0.5
+> $ryseq
+> [1] 0.5
+> attr(,"class")
+> [1] "grassmeta"
+> get.mapsets()
+> [1] "ms1"       "PERMANENT"
+> r <- rast.get(G,"r@ms2")
+> print(r)
+> $r
+> [1] 123
+> > system("g.mapsets mapset=ms2")
+> > refresh.mapsets()
+> [1] "ms1" "ms2"
+> > get.mapsets()
+> [1] "ms1" "ms2"
+> > r <- rast.get(G,"r@ms2")
+> > print(r)
+> $r
+> [1] 123
+> 
+> 
+> 
+> Marta
+> 
+> 
+> > On Wed, 28 Jul 2004 marta.benito@uam.es wrote:
+> > 
+> > > Hello, 
+> > > I try to work in R (using GRASS library) with two different maps with the same
+> > > name that are located in two different mapsets:
+> > > mapset1: map r
+> > > mapset2: map r
+> > > 
+> > > and allways I get the same map 
+> > > 
+> > > > grass5 ms1
+> > > > g.region w=0 s=0 e=1 n=1
+> > > > r.mapcalc r=123
+> > > > exit
+> > > 
+> > > > grass5 ms2
+> > > > g.region w=0 s=0 e=1 n=1
+> > > > r.mapcalc r=456
+> > > > R
+> > > > library(GRASS)
+> > > > G <-gmeta()
+> > > > r <- rast.get(G,"r@ms1")
+> > > > r
+> > > $r
+> > > [1] 456
+> > 
+> > I'll have a look, could you tell me which version of the GRASS interface 
+> > you are using (help(package=GRASS)), and what print(G) says? What does 
+> > get.mapsets() say?
+> > 
+> > Roger
+> > 
+> > > 
+> > > 
+> > >  
+> > > Thanks
+> > > 
+> > > Marta
+> > > 
+> > > --------------------------------------------------------------------------
+> > > Mensaje enviado mediante una herramienta Webmail integrada en *El Rincon*:
+> > > ------------->>>>>>>>     https://rincon.uam.es     <<<<<<<<--------------
+> > > 
+> > > 
+> > > _______________________________________________
+> > > statsgrass mailing list
+> > > statsgrass@grass.itc.it
+> > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > 
+> > 
+> > -- 
+> > Roger Bivand
+> > Economic Geography Section, Department of Economics, Norwegian School of
+> > Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+> > Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+> > e-mail: Roger.Bivand@nhh.no
+> > 
+> > 
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> > 
+> 
+> 
+> --------------------------------------------------------------------------
+> Mensaje enviado mediante una herramienta Webmail integrada en *El Rincon*:
+> ------------->>>>>>>>     https://rincon.uam.es     <<<<<<<<--------------
+> 
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From marta.benito at uam.es  Fri Jul 30 10:35:16 2004
+From: marta.benito at uam.es (marta.benito@uam.es)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] R - problem with mapsets
+Message-ID: <200407300835.i6U8ZG8j027759@obelix.ti.uam.es>
+
+Thanks a  lot, 
+
+that was exactly what I need, I have just begin to work with the interface with
+multiple mapsets, so I will go on without problems. Please, go ahead.
+
+Thank you for your help 
+
+Marta 
+
+
+
+
+> Now I have:
+> 
+> > library(GRASS)
+> GRASS environment variables in: /home/rsb/.grassrc5 
+> > G <- gmeta()
+> > summary(G)
+> Data from GRASS 5.0 LOCATION marta with 1 columns and 1 rows;
+> UTM, zone: 30
+> The west-east range is: 0, 1,
+> and the south-north: 0, 1;
+> West-east cell sizes are 1 units,
+> and south-north 1 units.
+> > get.mapsets()
+> [1] "ms2"       "PERMANENT"
+> > rast.get(G, "r")$r
+> [1] 456
+> > rast.get(G, "r@ms2")$r
+> [1] 456
+> > rast.get(G, "r@ms1")$r
+> [1] 123
+> 
+> which I think is what you want. The diagnosis was that G_find_cell() was 
+> overwriting the layer name, replacing "r@ms1" by "r", which was then found 
+> in "@ms2". I can either submit a new release to CRAN (I'll do that 
+> anyway), or put a draft package on my website for brave people to try - 
+> please tell me soon if I should NOT submit to CRAN before you have had a 
+> chance to check whether this change impacts your work (i.e. if you have 
+> been using the interface on multiple mapsets containing layers with the 
+> same names).
+> 
+> Thanks for a helpful bug report.
+> 
+> Roger
+> 
+> 
+> On Thu, 29 Jul 2004 marta.benito@uam.es wrote:
+> 
+> > Hello, thanks Roger, following the same example:
+> > 
+> > >grass5 ms1
+> > >R
+> > >(help(package=GRASS))
+> > Package: GRASS
+> > Version: 0.2-13
+> > Date: 2003/09/25
+> > >print(G) 
+> > $LOCATION
+> > [1] "rtest"
+> > $MAPSET
+> > [1] "ms1"
+> > $proj
+> > [1] "UTM, zone: 30"
+> > $n
+> > [1] 1
+> > $s
+> > [1] 0
+> > $w
+> > [1] 0
+> > $e
+> > [1] 1
+> > $nsres
+> > [1] 1
+> > $ewres
+> > [1] 1
+> > $Nrow
+> > [1] 1
+> > $Ncol
+> > [1] 1
+> > $Ncells
+> > [1] 1
+> > $xlims
+> > [1] 0 1
+> > $ylims
+> > [1] 0 1
+> > $xseq
+> > [1] 0.5
+> > $yseq
+> > [1] 0.5
+> > $ryseq
+> > [1] 0.5
+> > attr(,"class")
+> > [1] "grassmeta"
+> > get.mapsets()
+> > [1] "ms1"       "PERMANENT"
+> > r <- rast.get(G,"r@ms2")
+> > print(r)
+> > $r
+> > [1] 123
+> > > system("g.mapsets mapset=ms2")
+> > > refresh.mapsets()
+> > [1] "ms1" "ms2"
+> > > get.mapsets()
+> > [1] "ms1" "ms2"
+> > > r <- rast.get(G,"r@ms2")
+> > > print(r)
+> > $r
+> > [1] 123
+> > 
+> > 
+> > 
+> > Marta
+> > 
+> > 
+> > > On Wed, 28 Jul 2004 marta.benito@uam.es wrote:
+> > > 
+> > > > Hello, 
+> > > > I try to work in R (using GRASS library) with two different maps with
+the same
+> > > > name that are located in two different mapsets:
+> > > > mapset1: map r
+> > > > mapset2: map r
+> > > > 
+> > > > and allways I get the same map 
+> > > > 
+> > > > > grass5 ms1
+> > > > > g.region w=0 s=0 e=1 n=1
+> > > > > r.mapcalc r=123
+> > > > > exit
+> > > > 
+> > > > > grass5 ms2
+> > > > > g.region w=0 s=0 e=1 n=1
+> > > > > r.mapcalc r=456
+> > > > > R
+> > > > > library(GRASS)
+> > > > > G <-gmeta()
+> > > > > r <- rast.get(G,"r@ms1")
+> > > > > r
+> > > > $r
+> > > > [1] 456
+> > > 
+> > > I'll have a look, could you tell me which version of the GRASS interface 
+> > > you are using (help(package=GRASS)), and what print(G) says? What does 
+> > > get.mapsets() say?
+> > > 
+> > > Roger
+> > > 
+> > > > 
+> > > > 
+> > > >  
+> > > > Thanks
+> > > > 
+> > > > Marta
+> > > > 
+> > > > --------------------------------------------------------------------------
+> > > > Mensaje enviado mediante una herramienta Webmail integrada en *El Rincon*:
+> > > > ------------->>>>>>>>     https://rincon.uam.es     <<<<<<<<--------------
+> > > > 
+> > > > 
+> > > > _______________________________________________
+> > > > statsgrass mailing list
+> > > > statsgrass@grass.itc.it
+> > > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > > 
+> > > 
+> > > -- 
+> > > Roger Bivand
+> > > Economic Geography Section, Department of Economics, Norwegian School of
+> > > Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+> > > Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+> > > e-mail: Roger.Bivand@nhh.no
+> > > 
+> > > 
+> > > _______________________________________________
+> > > statsgrass mailing list
+> > > statsgrass@grass.itc.it
+> > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > 
+> > > 
+> > 
+> > 
+> > --------------------------------------------------------------------------
+> > Mensaje enviado mediante una herramienta Webmail integrada en *El Rincon*:
+> > ------------->>>>>>>>     https://rincon.uam.es     <<<<<<<<--------------
+> > 
+> > 
+> > 
+> 
+> -- 
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+> e-mail: Roger.Bivand@nhh.no
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+> 
+
+
+--------------------------------------------------------------------------
+Mensaje enviado mediante una herramienta Webmail integrada en *El Rincon*:
+------------->>>>>>>>     https://rincon.uam.es     <<<<<<<<--------------
+
+
+
+From Roger.Bivand at nhh.no  Fri Jul 30 12:25:12 2004
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] R - problem with mapsets
+In-Reply-To: <200407300835.i6U8ZG8j027759@obelix.ti.uam.es>
+Message-ID: <Pine.LNX.4.44.0407301821540.17871-100000@reclus.nhh.no>
+
+On Fri, 30 Jul 2004 marta.benito@uam.es wrote:
+
+> Thanks a  lot, 
+> 
+> that was exactly what I need, I have just begin to work with the
+> interface with multiple mapsets, so I will go on without problems.
+> Please, go ahead.
+
+Submitted to CRAN, and available for trial on:
+
+http://spatial.nhh.no/R/GRASS/GRASS_0.2-17.tar.gz
+
+Roger
+
+> 
+> Thank you for your help 
+> 
+> Marta 
+> 
+> 
+> 
+> 
+> > Now I have:
+> > 
+> > > library(GRASS)
+> > GRASS environment variables in: /home/rsb/.grassrc5 
+> > > G <- gmeta()
+> > > summary(G)
+> > Data from GRASS 5.0 LOCATION marta with 1 columns and 1 rows;
+> > UTM, zone: 30
+> > The west-east range is: 0, 1,
+> > and the south-north: 0, 1;
+> > West-east cell sizes are 1 units,
+> > and south-north 1 units.
+> > > get.mapsets()
+> > [1] "ms2"       "PERMANENT"
+> > > rast.get(G, "r")$r
+> > [1] 456
+> > > rast.get(G, "r@ms2")$r
+> > [1] 456
+> > > rast.get(G, "r@ms1")$r
+> > [1] 123
+> > 
+> > which I think is what you want. The diagnosis was that G_find_cell() was 
+> > overwriting the layer name, replacing "r@ms1" by "r", which was then found 
+> > in "@ms2". I can either submit a new release to CRAN (I'll do that 
+> > anyway), or put a draft package on my website for brave people to try - 
+> > please tell me soon if I should NOT submit to CRAN before you have had a 
+> > chance to check whether this change impacts your work (i.e. if you have 
+> > been using the interface on multiple mapsets containing layers with the 
+> > same names).
+> > 
+> > Thanks for a helpful bug report.
+> > 
+> > Roger
+> > 
+> > 
+> > On Thu, 29 Jul 2004 marta.benito@uam.es wrote:
+> > 
+> > > Hello, thanks Roger, following the same example:
+> > > 
+> > > >grass5 ms1
+> > > >R
+> > > >(help(package=GRASS))
+> > > Package: GRASS
+> > > Version: 0.2-13
+> > > Date: 2003/09/25
+> > > >print(G) 
+> > > $LOCATION
+> > > [1] "rtest"
+> > > $MAPSET
+> > > [1] "ms1"
+> > > $proj
+> > > [1] "UTM, zone: 30"
+> > > $n
+> > > [1] 1
+> > > $s
+> > > [1] 0
+> > > $w
+> > > [1] 0
+> > > $e
+> > > [1] 1
+> > > $nsres
+> > > [1] 1
+> > > $ewres
+> > > [1] 1
+> > > $Nrow
+> > > [1] 1
+> > > $Ncol
+> > > [1] 1
+> > > $Ncells
+> > > [1] 1
+> > > $xlims
+> > > [1] 0 1
+> > > $ylims
+> > > [1] 0 1
+> > > $xseq
+> > > [1] 0.5
+> > > $yseq
+> > > [1] 0.5
+> > > $ryseq
+> > > [1] 0.5
+> > > attr(,"class")
+> > > [1] "grassmeta"
+> > > get.mapsets()
+> > > [1] "ms1"       "PERMANENT"
+> > > r <- rast.get(G,"r@ms2")
+> > > print(r)
+> > > $r
+> > > [1] 123
+> > > > system("g.mapsets mapset=ms2")
+> > > > refresh.mapsets()
+> > > [1] "ms1" "ms2"
+> > > > get.mapsets()
+> > > [1] "ms1" "ms2"
+> > > > r <- rast.get(G,"r@ms2")
+> > > > print(r)
+> > > $r
+> > > [1] 123
+> > > 
+> > > 
+> > > 
+> > > Marta
+> > > 
+> > > 
+> > > > On Wed, 28 Jul 2004 marta.benito@uam.es wrote:
+> > > > 
+> > > > > Hello, 
+> > > > > I try to work in R (using GRASS library) with two different maps with
+> the same
+> > > > > name that are located in two different mapsets:
+> > > > > mapset1: map r
+> > > > > mapset2: map r
+> > > > > 
+> > > > > and allways I get the same map 
+> > > > > 
+> > > > > > grass5 ms1
+> > > > > > g.region w=0 s=0 e=1 n=1
+> > > > > > r.mapcalc r=123
+> > > > > > exit
+> > > > > 
+> > > > > > grass5 ms2
+> > > > > > g.region w=0 s=0 e=1 n=1
+> > > > > > r.mapcalc r=456
+> > > > > > R
+> > > > > > library(GRASS)
+> > > > > > G <-gmeta()
+> > > > > > r <- rast.get(G,"r@ms1")
+> > > > > > r
+> > > > > $r
+> > > > > [1] 456
+> > > > 
+> > > > I'll have a look, could you tell me which version of the GRASS interface 
+> > > > you are using (help(package=GRASS)), and what print(G) says? What does 
+> > > > get.mapsets() say?
+> > > > 
+> > > > Roger
+> > > > 
+> > > > > 
+> > > > > 
+> > > > >  
+> > > > > Thanks
+> > > > > 
+> > > > > Marta
+> > > > > 
+> > > > > --------------------------------------------------------------------------
+> > > > > Mensaje enviado mediante una herramienta Webmail integrada en *El Rincon*:
+> > > > > ------------->>>>>>>>     https://rincon.uam.es     <<<<<<<<--------------
+> > > > > 
+> > > > > 
+> > > > > _______________________________________________
+> > > > > statsgrass mailing list
+> > > > > statsgrass@grass.itc.it
+> > > > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > > > 
+> > > > 
+> > > > -- 
+> > > > Roger Bivand
+> > > > Economic Geography Section, Department of Economics, Norwegian School of
+> > > > Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+> > > > Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+> > > > e-mail: Roger.Bivand@nhh.no
+> > > > 
+> > > > 
+> > > > _______________________________________________
+> > > > statsgrass mailing list
+> > > > statsgrass@grass.itc.it
+> > > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > > 
+> > > > 
+> > > 
+> > > 
+> > > --------------------------------------------------------------------------
+> > > Mensaje enviado mediante una herramienta Webmail integrada en *El Rincon*:
+> > > ------------->>>>>>>>     https://rincon.uam.es     <<<<<<<<--------------
+> > > 
+> > > 
+> > > 
+> > 
+> > -- 
+> > Roger Bivand
+> > Economic Geography Section, Department of Economics, Norwegian School of
+> > Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+> > Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+> > e-mail: Roger.Bivand@nhh.no
+> > 
+> > 
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> > 
+> 
+> 
+> --------------------------------------------------------------------------
+> Mensaje enviado mediante una herramienta Webmail integrada en *El Rincon*:
+> ------------->>>>>>>>     https://rincon.uam.es     <<<<<<<<--------------
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+

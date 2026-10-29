@@ -1,0 +1,194 @@
+From hneedham at hawaii.edu  Thu Jan  5 15:13:24 2017
+From: hneedham at hawaii.edu (helekua)
+Date: Thu, 5 Jan 2017 16:13:24 -0700 (MST)
+Subject: [GRASS-stats] Parameter error in when using r.horizons
+Message-ID: <1483658004211-5302223.post@n6.nabble.com>
+
+Hi All,
+
+I am a new GRASS user and would like to pull horizon data for multiple
+points off of a DEM.  I have been able to use the grass console to
+accomplish this but I will need to run thousands of points from a gridded
+dataset.  I was hoping to apply a function or loop in R to accomplish this
+however I am getting the following error in R while listing parameters. 
+
+Using Windows 10, R x64 3.3.2, rstudio 1.0.136 in a Grass GIS session
+
+
+*Section of code:*
+library(rgrass7)
+
+doGRASS("r.horizon", flags = c("d"), parameters = list(elevation =
+"w001001",
+                  direction = 0.0, step = 180.0, 
+                  coordinates = -155.447804131,19.3115222633, 
+                  file = "test_horizon1.csv"))
+
+*Error:* 
+Error in doGRASS("r.horizon", flags = flags, parameters = parameters) : 
+  Invalid parameter name: 
+>
+
+
+
+Any suggestions would be most appreciated.
+
+Thanks,
+Heidi
+
+
+
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/Parameter-error-in-when-using-r-horizons-tp5302223.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Fri Jan  6 01:45:22 2017
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri, 6 Jan 2017 10:45:22 +0100
+Subject: [GRASS-stats] Parameter error in when using r.horizons
+In-Reply-To: <1483658004211-5302223.post@n6.nabble.com>
+References: <1483658004211-5302223.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.20.1701061040540.2700@reclus.nhh.no>
+
+On Fri, 6 Jan 2017, helekua wrote:
+
+> Hi All,
+>
+> I am a new GRASS user and would like to pull horizon data for multiple
+> points off of a DEM.  I have been able to use the grass console to
+> accomplish this but I will need to run thousands of points from a gridded
+> dataset.  I was hoping to apply a function or loop in R to accomplish this
+> however I am getting the following error in R while listing parameters. 
+>
+> Using Windows 10, R x64 3.3.2, rstudio 1.0.136 in a Grass GIS session
+>
+>
+> *Section of code:*
+> library(rgrass7)
+>
+> doGRASS("r.horizon", flags = c("d"), parameters = list(elevation =
+> "w001001",
+>                  direction = 0.0, step = 180.0,
+>                  coordinates = -155.447804131,19.3115222633,
+
+
+Use a numeric vector: coordinates = c(-155.447804131,19.3115222633), as 
+now the comma in -155.447804131,19.3115222633 is seen as starting a new 
+parameter:
+
+> list(elevation = "w001001", direction = 0.0, step = 180.0, coordinates = 
+-155.447804131,19.3115222633, file = "test_horizon1.csv")
+$elevation
+[1] "w001001"
+
+$direction
+[1] 0
+
+$step
+[1] 180
+
+$coordinates
+[1] -155.4478
+
+[[5]]
+[1] 19.31152
+
+$file
+[1] "test_horizon1.csv"
+
+with the fifth list component having no name - hence the non-informative 
+error message.
+
+A more modern approach is to say:
+
+> doGRASS("r.horizon", flags = c("d"), elevation = "w001001", direction = 
+0.0, step = 180.0, coordinates = c(-155.447804131,19.3115222633), file = 
+"test_horizon1.csv")
+[1] "r.horizon -d elevation=w001001 direction=0 step=180 
+coordinates=-155.447804131,19.3115222633 file=test_horizon1.csv"
+attr(,"cmd")
+[1] "r.horizon"
+
+treating the unnamed R function arguments as GRASS parameters.
+
+Looping over coordinates= vectors should be feasible.
+
+Hope this helps,
+
+Roger
+
+>                  file = "test_horizon1.csv"))
+>
+> *Error:* 
+> Error in doGRASS("r.horizon", flags = flags, parameters = parameters) :
+>  Invalid parameter name: 
+>>
+>
+>
+>
+> Any suggestions would be most appreciated.
+>
+> Thanks,
+> Heidi
+>
+>
+>
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/Parameter-error-in-when-using-r-horizons-tp5302223.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From hneedham at hawaii.edu  Fri Jan  6 13:22:40 2017
+From: hneedham at hawaii.edu (helekua)
+Date: Fri, 6 Jan 2017 14:22:40 -0700 (MST)
+Subject: [GRASS-stats] Parameter error in when using r.horizons
+In-Reply-To: <alpine.LFD.2.20.1701061040540.2700@reclus.nhh.no>
+References: <1483658004211-5302223.post@n6.nabble.com>
+ <alpine.LFD.2.20.1701061040540.2700@reclus.nhh.no>
+Message-ID: <1483737760613-5302375.post@n6.nabble.com>
+
+Thanks Roger, this solution worked perfect.  I'm no longer receiving the
+error.
+
+Cheers,
+Heidi
+
+
+
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/Parameter-error-in-when-using-r-horizons-tp5302223p5302375.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From neteler at osgeo.org  Sun Jan  8 10:05:34 2017
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sun, 8 Jan 2017 19:05:34 +0100
+Subject: [GRASS-stats] Parameter error in when using r.horizons
+In-Reply-To: <1483737760613-5302375.post@n6.nabble.com>
+References: <1483658004211-5302223.post@n6.nabble.com>
+ <alpine.LFD.2.20.1701061040540.2700@reclus.nhh.no>
+ <1483737760613-5302375.post@n6.nabble.com>
+Message-ID: <CALFmHhuN_NJ9cHJ-OawJx=RPm0mn7R9gfgiE90ewwzkkwc1ADg@mail.gmail.com>
+
+On Fri, Jan 6, 2017 at 10:22 PM, helekua <hneedham at hawaii.edu> wrote:
+> Thanks Roger, this solution worked perfect.  I'm no longer receiving the
+> error.
+
+Please consider to add a note or example here:
+
+https://grasswiki.osgeo.org/wiki/R_statistics/rgrass7
+
+thanks
+Markus
+

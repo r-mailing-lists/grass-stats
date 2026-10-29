@@ -1,0 +1,479 @@
+From w_chris_carleton at hotmail.com  Thu Nov 11 11:57:28 2010
+From: w_chris_carleton at hotmail.com (Chris Carleton)
+Date: Thu Nov 11 11:57:32 2010
+Subject: [GRASS-stats] SpatialGridDataFrame simple selection problem
+Message-ID: <AANLkTinE7HxK+6ANjXeUzWevXUrqQ7mkVBS=E6xeGJBT@mail.gmail.com>
+
+Hi List,
+
+I've imported a SpatialGridDataFrame (SGDF) from GRASS with spgrass, and now
+I'm trying to select only those entries with a certain value in a column.
+What is the appropriate syntax for selecting cells in a grid that have
+particular values? Here's what I have:
+
+----------
+> summary(modelRast)
+Object of class SpatialGridDataFrame
+Coordinates:
+        min       max
+x  174812.5  382055.5
+y 1798172.6 1942292.8
+Is projected: TRUE
+proj4string :
+[+proj=utm +zone=16 +a=6378137 +rf=298.257223563 +no_defs
++towgs84=0.000,0.000,0.000 +to_meter=1.0]
+Number of points: 2
+Grid attributes:
+  cellcentre.offset cellsize cells.dim
+x            174820 15.00021     13816
+y           1798180 15.00002      9608
+Data attributes:
+  Value 1      NA's
+  1534000 131210128
+----------
+
+So, the SGDF obviously 'knows' which cells are NA and which are 1, but how
+do I select cells on the basis of a column value?
+
+Also, is there a way to write values into a column in the SGDF without
+having to create a new df object and then combine them? For example, how do
+I:
+
+---pseudo code---
+for cell in sgdf {
+thing = calculate_something(cell)
+write2grid(cell, thing)
+}
+------------------------
+
+I haven't been able to work this out on my own or find any examples of this
+type of selection online (been searching a while... ) though I might be
+looking in the wrong places. Thanks,
+
+Chris
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20101111/5cb3bb2b/attachment.html
+From Roger.Bivand at nhh.no  Thu Nov 11 14:50:04 2010
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Nov 11 14:49:08 2010
+Subject: [GRASS-stats] SpatialGridDataFrame simple selection problem
+In-Reply-To: <AANLkTinE7HxK+6ANjXeUzWevXUrqQ7mkVBS=E6xeGJBT@mail.gmail.com>
+References: <AANLkTinE7HxK+6ANjXeUzWevXUrqQ7mkVBS=E6xeGJBT@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.1011112042420.30205@reclus.nhh.no>
+
+On Thu, 11 Nov 2010, Chris Carleton wrote:
+
+> Hi List,
+>
+> I've imported a SpatialGridDataFrame (SGDF) from GRASS with spgrass, and now
+> I'm trying to select only those entries with a certain value in a column.
+> What is the appropriate syntax for selecting cells in a grid that have
+> particular values? Here's what I have:
+>
+> ----------
+>> summary(modelRast)
+> Object of class SpatialGridDataFrame
+> Coordinates:
+>        min       max
+> x  174812.5  382055.5
+> y 1798172.6 1942292.8
+> Is projected: TRUE
+> proj4string :
+> [+proj=utm +zone=16 +a=6378137 +rf=298.257223563 +no_defs
+> +towgs84=0.000,0.000,0.000 +to_meter=1.0]
+> Number of points: 2
+> Grid attributes:
+>  cellcentre.offset cellsize cells.dim
+> x            174820 15.00021     13816
+> y           1798180 15.00002      9608
+> Data attributes:
+>  Value 1      NA's
+>  1534000 131210128
+> ----------
+>
+> So, the SGDF obviously 'knows' which cells are NA and which are 1, but how
+> do I select cells on the basis of a column value?
+
+Firstly, this is a very large object if you are considering statistical 
+analysis. In general, you treat Spatial*DataFrames like any data frame. To 
+operate on it, you might choose to coerce it to a SpatialPixelsDataFrame, 
+which drops all of the missing values cells, and retains only those within 
+your apparent mask. Then, you'd do something like:
+
+modelRastSP <- as(modelRast, "SpatialPixelsDataFrame")
+# add a variable
+modelRastSP$newvar <- whatever
+
+The same "$" or "[[" operator works on a SpatialGridDataFrame. Are you 
+asking because you need to interpolate to the raster within a mask? Then 
+you could use coordinates(modelRastSP) to get the prediction points.
+
+If you can make your questions more specific, I think that others may be 
+able to help,
+
+Roger
+
+>
+> Also, is there a way to write values into a column in the SGDF without
+> having to create a new df object and then combine them? For example, how do
+> I:
+>
+> ---pseudo code---
+> for cell in sgdf {
+> thing = calculate_something(cell)
+> write2grid(cell, thing)
+> }
+> ------------------------
+>
+> I haven't been able to work this out on my own or find any examples of this
+> type of selection online (been searching a while... ) though I might be
+> looking in the wrong places. Thanks,
+>
+> Chris
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From w_chris_carleton at hotmail.com  Thu Nov 11 15:50:49 2010
+From: w_chris_carleton at hotmail.com (Chris Carleton)
+Date: Thu Nov 11 15:50:52 2010
+Subject: [GRASS-stats] SpatialGridDataFrame simple selection problem
+In-Reply-To: <alpine.LRH.2.00.1011112042420.30205@reclus.nhh.no>
+References: <AANLkTinE7HxK+6ANjXeUzWevXUrqQ7mkVBS=E6xeGJBT@mail.gmail.com>
+	<alpine.LRH.2.00.1011112042420.30205@reclus.nhh.no>
+Message-ID: <AANLkTincgEdO0TaSzPn4u_ta7pfqvXdn-A9O5jXf_WyB@mail.gmail.com>
+
+Hi Roger and list, thanks for the reply. I'll start at the beginning to
+clarify. I'm an archaeologist and I'm creating a model that predicts the
+locations of archaeological sites (there are various extant methods, but I'm
+developing a new one using a combination of techniques) given 'n'
+environmental variables that can be continuous or categorical. The model is
+structured on the idea that each cell in the output raster map will contain
+a probability that it is within a buffer around a site based on the
+definition of 'site' derived from the continuous and categorical data input
+by the analyst. I've taken the stance that the predictive problem can be
+viewed as one of classification in n-dimensions so that every point in the
+study area has n-dimensional coordinates in the data space. So, the question
+is, 'what is the probability that any given pixel in a raster map of
+arbitrary size is located within [buffer] distance of a site?'.
+
+In order to derive the probability, I'm using an R package called 'np' by
+Tristen Hayeld and Jerey S. Racine, which can create an n-dimensional pdf
+estimate using a kernel that includes both continuous and categorical data
+types. I'm also weighting the probabilities based on distance since the
+definition of a site (based on statistics gathered from [buffer] distance
+around known site locations) can and will be different in different
+locations -- some sites are preferentially located on terraces, others at
+fluvial confluences, etc. Taking a cue from geographically weighted
+regression techniques, I'm weighting the probability that any given pixel is
+within [buffer] distance of a site using distance decay kernels. As a
+result, known sites nearer to a location of interest for which I want to
+predict the probability of finding a site at/near will have greater
+influence on the probability since it's more likely that proximal sites are
+similar in their environmental characteristics than disparate ones. The
+probabilities are, therefore, different for every pixel of interest since
+the distances between each pixel and each known site location will be
+different in different cases. So, this calculation needs to be done on a
+'per-pixel' basis. Some day, I'll write the code so that it's convenient for
+parallel processing and make large maps possible (I'll be using region
+settings and masks to limit the size for now). In the meantime, I was hoping
+to find an elegant way to write the probabilities to a raster map in R. I'm
+developing a function that returns the probability, but so far the only way
+I've been able to write the data out and ensure that it's being written to
+the appropriate corresponding coordinate position in the grid is like this;
+
+
+*using libraries sp, spgrass6
+--------------
+if (any(parseGlist(rast_list) == "MASK")) {
+        ##obey GRASS mask
+        modelRast <- readRAST6(c("MASK"))
+        ##after pulling the mask in, get spatial information for use in the
+output
+        tmp_proj4string <- slot(modelRast,'proj4string')
+        numcells <-
+prod(as.vector(slot(slot(modelRast,"grid"),"cells.dim")))
+        slot(modelRast, "data") <- data.frame(index=c(seq(1,celldim,1)))
+        ##convert to dataframe for processing one cell at a time
+        modelRast_df <- data.frame(modelRast)
+        ##iterate over dataframe one cell at a time to calculate probability
+and write to appropriate df column and row
+        for (i in modelRast_df$index) {
+            modelRast_df[index,'probability'] <-
+calcProb(modelRast_df[modelRast_df$index ==
+1,],vect_pts,buffer_df,distkernel,pdfkernel)
+        }
+        ##promote df to spatial grid
+        modelRast <-
+as(SpatialPixelsDataFrame(modelRast_df[c('x','y')],modelRast_df),
+"SpatialGridDataFrame")
+        ##add spatial information back to the grid that was captured above
+        slot(modelRast,"proj4string") <- tmp_proj4string
+        ##output GRASS raster
+        writeRAST6(modelRast,"pred_model",zcol="probability")
+    }
+--------------
+
+If anyone has any ideas for cleaning this up -- like writing the information
+directly to the spatial grid without changing it to a dataframe and being
+certain that the new data is written into the proper row -- I would greatly
+appreciate it. I'll also think more about Roger's suggestion and try to
+implement it. Thanks,
+
+Chris
+
+
+On 11 November 2010 14:50, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+
+> On Thu, 11 Nov 2010, Chris Carleton wrote:
+>
+>  Hi List,
+>>
+>> I've imported a SpatialGridDataFrame (SGDF) from GRASS with spgrass, and
+>> now
+>> I'm trying to select only those entries with a certain value in a column.
+>> What is the appropriate syntax for selecting cells in a grid that have
+>> particular values? Here's what I have:
+>>
+>> ----------
+>>
+>>> summary(modelRast)
+>>>
+>> Object of class SpatialGridDataFrame
+>> Coordinates:
+>>       min       max
+>> x  174812.5  382055.5
+>> y 1798172.6 1942292.8
+>> Is projected: TRUE
+>> proj4string :
+>> [+proj=utm +zone=16 +a=6378137 +rf=298.257223563 +no_defs
+>> +towgs84=0.000,0.000,0.000 +to_meter=1.0]
+>> Number of points: 2
+>> Grid attributes:
+>>  cellcentre.offset cellsize cells.dim
+>> x            174820 15.00021     13816
+>> y           1798180 15.00002      9608
+>> Data attributes:
+>>  Value 1      NA's
+>>  1534000 131210128
+>> ----------
+>>
+>> So, the SGDF obviously 'knows' which cells are NA and which are 1, but how
+>> do I select cells on the basis of a column value?
+>>
+>
+> Firstly, this is a very large object if you are considering statistical
+> analysis. In general, you treat Spatial*DataFrames like any data frame. To
+> operate on it, you might choose to coerce it to a SpatialPixelsDataFrame,
+> which drops all of the missing values cells, and retains only those within
+> your apparent mask. Then, you'd do something like:
+>
+> modelRastSP <- as(modelRast, "SpatialPixelsDataFrame")
+> # add a variable
+> modelRastSP$newvar <- whatever
+>
+> The same "$" or "[[" operator works on a SpatialGridDataFrame. Are you
+> asking because you need to interpolate to the raster within a mask? Then you
+> could use coordinates(modelRastSP) to get the prediction points.
+>
+> If you can make your questions more specific, I think that others may be
+> able to help,
+>
+> Roger
+>
+>
+>
+>> Also, is there a way to write values into a column in the SGDF without
+>> having to create a new df object and then combine them? For example, how
+>> do
+>> I:
+>>
+>> ---pseudo code---
+>> for cell in sgdf {
+>> thing = calculate_something(cell)
+>> write2grid(cell, thing)
+>> }
+>> ------------------------
+>>
+>> I haven't been able to work this out on my own or find any examples of
+>> this
+>> type of selection online (been searching a while... ) though I might be
+>> looking in the wrong places. Thanks,
+>>
+>> Chris
+>>
+>>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20101111/e65de2e8/attachment.html
+From edzer.pebesma at uni-muenster.de  Fri Nov 12 02:34:35 2010
+From: edzer.pebesma at uni-muenster.de (Edzer Pebesma)
+Date: Fri Nov 12 02:34:38 2010
+Subject: [GRASS-stats] SpatialGridDataFrame simple selection problem
+In-Reply-To: <AANLkTincgEdO0TaSzPn4u_ta7pfqvXdn-A9O5jXf_WyB@mail.gmail.com>
+References: <AANLkTinE7HxK+6ANjXeUzWevXUrqQ7mkVBS=E6xeGJBT@mail.gmail.com>	<alpine.LRH.2.00.1011112042420.30205@reclus.nhh.no>
+	<AANLkTincgEdO0TaSzPn4u_ta7pfqvXdn-A9O5jXf_WyB@mail.gmail.com>
+Message-ID: <4CDCEE0B.9040303@uni-muenster.de>
+
+
+
+On 11/11/2010 09:50 PM, Chris Carleton wrote:
+>         for (i in modelRast_df$index) {
+>             modelRast_df[index,'probability'] <-
+> calcProb(modelRast_df[modelRast_df$index ==
+> 1,],vect_pts,buffer_df,distkernel,pdfkernel)
+>         }
+
+The R way to clean this up includes vectorizing calcProb:
+
+modelRast$probability = calcProb(modelRast_df, vect_pts, ...)
+
+Think vectors, not numbers.
+-- 
+Edzer Pebesma
+Institute for Geoinformatics (ifgi), University of M?nster
+Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+8333081, Fax: +49 251 8339763  http://ifgi.uni-muenster.de
+http://www.52north.org/geostatistics      e.pebesma@wwu.de
+From antonio.rocha at deimos.com.pt  Mon Nov 29 09:53:11 2010
+From: antonio.rocha at deimos.com.pt (=?ISO-8859-1?Q?Ant=F3nio_Rocha?=)
+Date: Mon Nov 29 09:53:11 2010
+Subject: [GRASS-stats] Integrating gstats on WinGRASS
+Message-ID: <4CF3BE57.9090905@deimos.com.pt>
+
+Greetings
+
+I'm a WinGRASS user (6.4.0) and I would like to have gstat integrated 
+into my GRASS installation. has anyone tried? is it possible?
+Thanks for your answers (in advance)
+
+Antonio Rocha
+
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature database 5657 (20101129) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+
+
+From hellik at web.de  Tue Nov 30 04:13:35 2010
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Tue Nov 30 04:20:43 2010
+Subject: [GRASS-stats] Integrating gstats on WinGRASS
+Message-ID: <808801205.2085397.1291108415388.JavaMail.fmail@mwmweb003>
+
+>   I'm a WinGRASS user (6.4.0) and I would like to have gstat integrated 
+>into my GRASS installation. has anyone tried? is it possible?
+
+what about Grass and R?
+
+for WinGrass and R see:
+http://grass.osgeo.org/wiki/R_statistics#MS_Windows
+
+for R and gstat:
+http://cran.r-project.org/web/packages/gstat/
+
+best regards
+Helmut
+___________________________________________________________
+Neu: WEB.DE De-Mail - Einfach wie E-Mail, sicher wie ein Brief!  
+Jetzt De-Mail-Adresse reservieren: https://produkte.web.de/go/demail02
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: smime.p7s
+Type: application/pkcs7-signature
+Size: 1747 bytes
+Desc: S/MIME Cryptographic Signature
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20101130/f404d927/smime.bin
+From antonio.rocha at deimos.com.pt  Tue Nov 30 05:43:18 2010
+From: antonio.rocha at deimos.com.pt (=?UTF-8?B?QW50w7NuaW8gUm9jaGE=?=)
+Date: Tue Nov 30 05:43:06 2010
+Subject: [GRASS-stats] Re: Integrating gstats on WinGRASS
+In-Reply-To: <808801205.2085397.1291108415388.JavaMail.fmail@mwmweb003>
+References: <808801205.2085397.1291108415388.JavaMail.fmail@mwmweb003>
+Message-ID: <4CF4D546.3000907@deimos.com.pt>
+
+Hello Helmut (again!)
+
+I have read about R but my question is that I'm building a winGRASS 
+installer and I'm not sure if I can integrate R in it. Is it possible?
+
+
+Helmut Kudrnovsky wrote:
+>>   I'm a WinGRASS user (6.4.0) and I would like to have gstat integrated 
+>> into my GRASS installation. has anyone tried? is it possible?
+>>     
+>
+> what about Grass and R?
+>
+> for WinGrass and R see:
+> http://grass.osgeo.org/wiki/R_statistics#MS_Windows
+>
+> for R and gstat:
+> http://cran.r-project.org/web/packages/gstat/
+>
+> best regards
+> Helmut
+> ___________________________________________________________
+> Neu: WEB.DE De-Mail - Einfach wie E-Mail, sicher wie ein Brief!  
+> Jetzt De-Mail-Adresse reservieren: https://produkte.web.de/go/demail02
+>   
+
+
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature database 5660 (20101130) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+
+
+From hellik at web.de  Tue Nov 30 08:13:44 2010
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Tue Nov 30 08:13:48 2010
+Subject: [GRASS-stats] Integrating gstats on WinGRASS
+Message-ID: <454582083.2252574.1291122824879.JavaMail.fmail@mwmweb002>
+
+>   I have read about R but my question is that I'm building a winGRASS 
+>installer and I'm not sure if I can integrate R in it. Is it possible?
+
+from the gstat-homepage (http://www.gstat.org/index.html):
+
+"[...] Current
+development mainly focuses on the S extension. The reason for this is
+obvious for those familiar with R and/or S-Plus."
+
+so by using R it's the best way to get the latest and gratest from gstat.
+
+but why do you want to integrate R in a wingrass-installer?
+
+the R-windows-installer is very good and the Grass-R-linkage is usable in windows.
+
+ best regards
+Helmut
+___________________________________________________________
+Neu: WEB.DE De-Mail - Einfach wie E-Mail, sicher wie ein Brief!  
+Jetzt De-Mail-Adresse reservieren: https://produkte.web.de/go/demail02
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: smime.p7s
+Type: application/pkcs7-signature
+Size: 1747 bytes
+Desc: S/MIME Cryptographic Signature
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20101130/5e25ba34/smime.bin

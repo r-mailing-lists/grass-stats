@@ -1,0 +1,499 @@
+From Roger.Bivand at nhh.no  Tue Apr  2 11:21:48 2002
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] R contour(): x,y output
+In-Reply-To: <Pine.OSF.3.96.1020322094421.4540F-100000@ija.csic.es>
+Message-ID: <Pine.LNX.4.21.0204021809510.22622-100000@reclus.nhh.no>
+
+On Fri, 22 Mar 2002, Agustin Lobo wrote:
+
+> 
+> I forward this message (with permission) 
+> as I think that it is interesting for the 
+> list.
+> 
+
+I've had a shot at recovering the contour lines from inside contour; a
+tarball with modified: src/main/plot3d.c src/library/base/R/contour.R
+src/library/base/man/contour.Rd is on:
+
+ftp://reclus.nhh.no/pub/R/contour.tar.gz
+
+I've checked them on a recent R-patched, and they seem to work so far. A
+new argument to contour() called return.contours should be set equal to
+TRUE to return a list object - see the manual page. 
+
+Paul - if you think they are OK, please use them as you wish. I  have
+commented most changes (the ones I could find!), but draw your attention
+to my having commented out vmax[sg]et in do_contour() and contour(), they
+were causing too much trouble. I've run a loop of 100 examples watching
+top, and can't see any memory bloat caused by letting the garbage
+collector take care of recouping memory. On my machine (RH7.1, PIII
+933MHz) the top RSS just stays at 20M.
+
+Roger
+
+> 
+> 
+> ---------- Forwarded message ----------
+> Date: Thu, 21 Mar 2002 10:37:08 +1200
+> From: Paul Murrell <p.murrell@auckland.ac.nz>
+> To: Agustin Lobo <alobo@ija.csic.es>
+> Subject: Re: suggestion
+> 
+> Hi
+> 
+> 
+> > Paul,
+> > your TODO list in
+> > http://developer.r-project.org/paul-todo.html
+> > mentions
+> > "* I am compiling a list of missing features or inconsistencies in R
+> > graphics that I'd like to get to..."
+> >
+> > Related to this, would it be possible to get the x,y coordinates
+> > of the vertices in the contours() function? I mean a couple
+> > of vectors that could be plotted with lines(). Having this, it
+> > would be possible to write a a function to write these
+> > coordinates to a file in dxf format, which would be very
+> > useful for linking R to GIS packs.
+> 
+> 
+> I agree this is a good idea.  There is a plan to do just such a thing in
+> order to make contour plotting possible in the lattice package.  The bad
+> news:  I suspect the next time I'll get a chance to try and do this is
+> probably only for R1.6 (i.e., for around September some time I think).
+> Would that still be useful to you?
+> 
+> Paul
+> 
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+and: Department of Geography and Regional Development, University of
+Gdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.
+
+
+
+From alobo at ija.csic.es  Fri Apr 12 13:35:53 2002
+From: alobo at ija.csic.es (Agustin Lobo)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] grass display using R to stretch
+Message-ID: <Pine.OSF.3.96.1020412191550.9093A-100000@ija.csic.es>
+
+HI!,
+
+Not really stats, but as this merges grass and R and
+I'm not in the other grass lists, I send it here. Please
+forward to the other lists if you feel it's worthwhile.
+
+I've made 2 simple cshell scripts to display
+grey and color images with d.rast and d.rgb
+but using R to apply a 2% stretching to the
+histogram. In this version the scripts do not
+keep the new colr files, just use them for
+display and then write back the original
+ones. But modifying this would be trivial.
+
+Also, perhaps 2% at each tail of the
+histogram is too much, 1 or 1.5% might be
+better.
+
+grstretch.scr raster.in
+- calculates the stretched LUT using R,
+- displays (using xv) an R graph with histogram info and
+the 2% and 98% values of the histogram
+used to calculate the stretched LUT
+- displays the stretched image using d.rast
+- reverts the colr table to its original file
+
+gr.str.rgb.scr rasterR rasterG rasterB
+- calculates the stretched LUT using R for each
+raster.
+- displays the stretched image using d.rgb
+- reverts the colr tables to their original files
+
+Hope they are useful and other people make 
+them better:
+
+GREY SCALE IMAGERY:
+
+grstretch.scr:
+
+#!/bin/csh -f
+#set echo on
+#set verbose on
+
+if ($#argv == 0) then
+        echo "### USO: grstretch.scr raster.in ###"
+        exit
+endif
+
+r.support -r $argv[1]
+setenv infile /cell_misc/$argv[1]/histogram
+
+#echo "infile <- system('echo $infile",intern=T)' > provi.in
+
+echo "gr.stretch()" > provi.in
+echo "q()" >> provi.in
+
+R -q --save < provi.in
+
+cp $LOCATION/colr/$argv[1] $LOCATION/colr/$argv[1].backup
+cp outfile $LOCATION/colr/$argv[1]
+d.rast $argv[1]
+rm $LOCATION/colr/$argv[1]
+mv $LOCATION/colr/$argv[1].backup $LOCATION/colr/$argv[1]
+rm outfile
+xv -rotate -90 Rplots.ps #si pongo &, borra antes de poder ejecutar xv
+rm Rplots.ps
+rm provi.in
+unsetenv infile
+
+COLOR IMAGERY
+
+gr.str.rgb.scr:
+
+#!/bin/csh -f
+#set echo on
+#set verbose on
+
+if ($#argv == 0) then
+        echo "### USO: gr.str.rgb.scr rasterR rasterG rasterB ###"
+        exit
+endif
+
+##RED##
+r.support -r $argv[1]
+setenv infile /cell_misc/$argv[1]/histogram
+echo "res <- gr.stretch()" > provi.in
+echo "readline()" >> provi.in
+R --no-save -q < provi.in
+cp $LOCATION/colr/$argv[1] $LOCATION/colr/$argv[1].backup
+cp outfile $LOCATION/colr/$argv[1]
+rm outfile
+unsetenv infile
+##GREEN##
+r.support -r $argv[2]
+setenv infile /cell_misc/$argv[2]/histogram
+echo "res <- gr.stretch()" > provi.in
+echo "readline()" >> provi.in
+R --no-save -q < provi.in
+cp $LOCATION/colr/$argv[2] $LOCATION/colr/$argv[2].backup
+cp outfile $LOCATION/colr/$argv[2]
+rm outfile
+unsetenv infile
+##BLUE##
+r.support -r $argv[3]
+setenv infile /cell_misc/$argv[3]/histogram
+echo "res <- gr.stretch()" > provi.in
+R --no-save -q < provi.in
+cp $LOCATION/colr/$argv[3] $LOCATION/colr/$argv[3].backup
+cp outfile $LOCATION/colr/$argv[3]
+rm outfile
+unsetenv infile
+
+d.rgb red=$argv[1] green=$argv[2] blue=$argv[3]
+
+rm $LOCATION/colr/$argv[1]
+mv $LOCATION/colr/$argv[1].backup $LOCATION/colr/$argv[1]
+rm $LOCATION/colr/$argv[2]
+mv $LOCATION/colr/$argv[2].backup $LOCATION/colr/$argv[2]
+rm $LOCATION/colr/$argv[3]
+mv $LOCATION/colr/$argv[3].backup $LOCATION/colr/$argv[3]
+rm provi.in
+
+
+THE R FUNCTION IS JUST:
+
+"gr.stretch" <- function()
+{
+        layout(matrix(c(1,1,2,3), ncol=2, byrow = TRUE))
+        infile.nom <-system("echo $infile",intern=T)
+        print(infile.nom)
+        infile <- paste(system("echo
+$LOCATION",intern=T),infile.nom,sep="")
+        histog <- round(matrix(scan(infile,sep=":"),byrow=T,ncol=2))
+        cumfreq <- cumsum(histog[,2]*100/sum(histog[,2]))
+        plot(histog[,1],histog[,2]*100/sum(histog[,2]))
+        cumfreq[cumfreq<2.0] <- 200
+        minim.val <- histog[cumfreq==min(cumfreq),2]*100/sum(histog[,2])
+        minim <- histog[cumfreq==min(cumfreq),1]
+        cumfreq <- cumsum(histog[,2]*100/sum(histog[,2]))
+        cumfreq[cumfreq>98.0] <- -100
+        maxim.val <- histog[cumfreq==max(cumfreq),2]*100/sum(histog[,2])
+        maxim <- histog[cumfreq==max(cumfreq),1]
+        title(paste("2% MIN=",minim,"98% MAX=",maxim))
+        points (c(minim,maxim),c(minim.val,maxim.val),col="red")
+        cumfreq <- cumsum(histog[,2]*100/sum(histog[,2]))
+        plot(histog[,1],cumfreq)
+        minim.val <- cumfreq[histog[,1]==minim]
+        maxim.val <- cumfreq[histog[,1]==maxim]
+        points (c(minim,maxim),c(minim.val,maxim.val),col="red")
+        colortable <- cbind(0:255,rep(0,256))
+        colortable[colortable[,1]<minim,2] <- 0
+        colortable[colortable[,1]>maxim,2] <- 255
+        colortable[(minim+1):(maxim+1),2] <-
+rescale(minim:maxim,minim,maxim,0,255)
+        plot(colortable[,1],colortable[,2])
+        points(colortable[c((minim+1),(maxim+1)),1],
+colortable[c((minim+1),(maxim+1)),2],col="red")
+        write("% 0 255",file="outfile")
+
+write(paste(colortable[,1],round(colortable[,2]),sep=":"),file="outfile",ncol=1,append=T)
+}
+
+
+
+Agus
+
+Dr. Agustin Lobo
+Instituto de Ciencias de la Tierra (CSIC)
+Lluis Sole Sabaris s/n
+08028 Barcelona SPAIN
+tel 34 93409 5410
+fax 34 93411 0012
+alobo@ija.csic.es
+
+
+
+From andresjavier.garcia at wanadoo.es  Mon Apr 22 08:35:07 2002
+From: andresjavier.garcia at wanadoo.es (Javier)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] grass, gstat, and 3d maps
+Message-ID: <006401c1e9fc$75abac60$4e17253e@pochito>
+
+Hello all;
+
+When I try to use a site list with 3 dimensions, (and a couple of attributes also), with gstat, the file can't be read.
+I've tried to use it in the same way that I use the usual 2d maps of Grass with Gstat. I mean that in the first line of the 
+command file to use as input for Gstat, I don't specify the row containing the data.
+
+I've tried to specify the columns in several ways with no success.
+Is it possible to read these maps directly from grass? If so, how do I specify the z column and the column of data of 
+concern?
+
+Thank you in advance for any help
+---------------
+Javier Garcia
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20020422/fcf72528/attachment.html
+From e.pebesma at geog.uu.nl  Tue Apr 23 03:24:24 2002
+From: e.pebesma at geog.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] grass, gstat, and 3d maps
+References: <006401c1e9fc$75abac60$4e17253e@pochito>
+Message-ID: <3CC50C28.BCD123E3@geog.uu.nl>
+
+I wrote grass support in gstat such that also the z-dimension was
+used; if the z-dimension is in column 3 of the site list, you should use:
+
+data(something): 'sites', z=3;
+
+i.e., x- and y-coordinates are assumed to be in column 1 and 2.
+
+It is not unlikely that you are the first one to test this feature, so
+please bear with us. Could you send me the offending command file, the
+sites data (or part of it), and the output gstat gives you?
+--
+Edzer
+
+From andresjavier.garcia at wanadoo.es  Wed Apr 24 04:53:06 2002
+From: andresjavier.garcia at wanadoo.es (Javier)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] grass, gstat, and 3d maps
+References: <006401c1e9fc$75abac60$4e17253e@pochito> <3CC50C28.BCD123E3@geog.uu.nl>
+Message-ID: <000201c1ebac$e36a95c0$cb91253e@pochito>
+
+Hi Edzer;
+I've tried to save you a little of work. I send you the sites file, and in
+the file "paraEdzer.txt", there are all the posibilities I've tried in the
+command file, followed by the corresponding answers.
+------
+Javier
+
+----- Original Message -----
+From: Edzer J. Pebesma <e.pebesma@geog.uu.nl>
+To: Javier <andresjavier.garcia@wanadoo.es>
+Cc: <statsgrass@grass.itc.it>
+Sent: Tuesday, April 23, 2002 9:24 AM
+Subject: Re: [STATSGRASS] grass, gstat, and 3d maps
+
+
+> I wrote grass support in gstat such that also the z-dimension was
+> used; if the z-dimension is in column 3 of the site list, you should use:
+>
+> data(something): 'sites', z=3;
+>
+> i.e., x- and y-coordinates are assumed to be in column 1 and 2.
+>
+> It is not unlikely that you are the first one to test this feature, so
+> please bear with us. Could you send me the offending command file, the
+> sites data (or part of it), and the output gstat gives you?
+> --
+> Edzer
+>
+-------------- next part --------------
+If I don't specify any coordinate or data, the first set of data is read, but only 2d are considered:	data(traz1):"trazas1";
+
+gstat: Linux version 2.3.6 (28 January 2002)
+Copyright (C) 1992, 2001 Edzer J. Pebesma
+name|trazas1
+desc|s.in.ascii sites=trazas1
+GRASS site list trazas1: 0 cat, 3 dim, 0 str, 2 dbl.
+Warning: gstat/grass: specify z coordinate if you want to use it
+ 
+data(traz1): gstat/grass: 547 sites read successfully.
+         trazas1     (GRASS site list)
+attribute:             col[1]     [x:] x_1        : [    686000,    711000]
+n:                        547     [y:] y_2        : [ 4.185e+06, 4.205e+06]
+sample mean:           1.4757     sample std.:         0.621017
+[starting interactive mode]
+--------------------------------------------------------------------------------------
+Just the same if I specify:	data(traz1):"trazas1",v=1;
+
+gstat: Linux version 2.3.6 (28 January 2002)
+Copyright (C) 1992, 2001 Edzer J. Pebesma
+name|trazas1
+desc|s.in.ascii sites=trazas1
+GRASS site list trazas1: 0 cat, 3 dim, 0 str, 2 dbl.
+Warning: gstat/grass: specify z coordinate if you want to use it
+ 
+data(traz1): gstat/grass: 547 sites read successfully.
+         trazas1     (GRASS site list)
+attribute:             col[1]     [x:] x_1        : [    686000,    711000]
+n:                        547     [y:] y_2        : [ 4.185e+06, 4.205e+06]
+sample mean:           1.4757     sample std.:         0.621017
+[starting interactive mode]
+press return to continue...
+-------------------
+In this way, I can specify the second set of data, but still are considered 2d:	data(traz1):"trazas1",v=2;
+
+Copyright (C) 1992, 2001 Edzer J. Pebesma
+name|trazas1
+desc|s.in.ascii sites=trazas1
+GRASS site list trazas1: 0 cat, 3 dim, 0 str, 2 dbl.
+Warning: gstat/grass: specify z coordinate if you want to use it
+ 
+data(traz1): gstat/grass: 547 sites read successfully.
+         trazas1     (GRASS site list)
+attribute:             col[2]     [x:] x_1        : [    686000,    711000]
+n:                        547     [y:] y_2        : [ 4.185e+06, 4.205e+06]
+sample mean:          67.3692     sample std.:          36.3099
+[starting interactive mode]
+press return to continue...
+------------------------------------------------------------------------------------------
+If I try to specify the first set of data in this way:	data(traz1):"trazas1",v=4;
+
+gstat: Linux version 2.3.6 (28 January 2002)
+Copyright (C) 1992, 2001 Edzer J. Pebesma
+name|trazas1
+desc|s.in.ascii sites=trazas1
+GRASS site list trazas1: 0 cat, 3 dim, 0 str, 2 dbl.
+Warning: gstat/grass doubles in site list are ignored, check data v field!
+Warning: gstat/grass: specify z coordinate if you want to use it
+ 
+gstat: value not allowed for: data v field not found in sites list
+
+--------------------------------------------------------------
+If I just specify the z column (as z=3), at last z column is read but now no set of data is established: data(traz1):"trazas1",z=3;
+
+gstat: Linux version 2.3.6 (28 January 2002)
+Copyright (C) 1992, 2001 Edzer J. Pebesma
+name|trazas1
+desc|s.in.ascii sites=trazas1
+GRASS site list trazas1: 0 cat, 3 dim, 0 str, 2 dbl.
+data(traz1): using coordinate column 3 as z-coordinategstat/grass: 547 sites read successfully.
+         trazas1     (GRASS site list)
+attribute:             col[1]
+n:                        547
+no v attribute set for data(traz1)
+gstat: variable not set: trazas1.cmd
+------------------------------------------------------------------------------------ 
+Just the same if I specify:	data(traz1):"trazas1",z=3,v=1;
+
+gstat: Linux version 2.3.6 (28 January 2002)
+Copyright (C) 1992, 2001 Edzer J. Pebesma
+name|trazas1
+desc|s.in.ascii sites=trazas1
+GRASS site list trazas1: 0 cat, 3 dim, 0 str, 2 dbl.
+data(traz1): using coordinate column 3 as z-coordinategstat/grass: 547 sites read successfully.
+         trazas1     (GRASS site list)
+attribute:             col[1]
+n:                        547
+no v attribute set for data(traz1)
+gstat: variable not set: trazas1.cmd
+----------------------------------------------------------------------------------------
+A different message when I try:	data(traz1):"trazas1",z=3,v=4;
+
+gstat: Linux version 2.3.6 (28 January 2002)
+Copyright (C) 1992, 2001 Edzer J. Pebesma
+name|trazas1
+desc|s.in.ascii sites=trazas1
+GRASS site list trazas1: 0 cat, 3 dim, 0 str, 2 dbl.
+Warning: gstat/grass doubles in site list are ignored, check data v field!
+gstat: value not allowed for: data v field not found in sites list
+----------------------------------
+I have also tried:	data(traz1):"trazas1",x=1,y=2,z=3,v=4;
+
+gstat: Linux version 2.3.6 (28 January 2002)
+Copyright (C) 1992, 2001 Edzer J. Pebesma
+name|trazas1
+desc|s.in.ascii sites=trazas1
+GRASS site list trazas1: 0 cat, 3 dim, 0 str, 2 dbl.
+Warning: gstat/grass doubles in site list are ignored, check data v field!
+gstat: value not allowed for: data v field not found in sites list
+---------------------------------------------
+And:	data(traz1):"trazas1",x=1,y=2,z=3,v=5;
+
+gstat: Linux version 2.3.6 (28 January 2002)
+Copyright (C) 1992, 2001 Edzer J. Pebesma
+name|trazas1
+desc|s.in.ascii sites=trazas1
+GRASS site list trazas1: 0 cat, 3 dim, 0 str, 2 dbl.
+Warning: gstat/grass doubles in site list are ignored, check data v field!
+gstat: value not allowed for: data v field not found in sites list
+
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: trazas1
+Type: application/octet-stream
+Size: 21524 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20020424/b7aaf13b/trazas1.obj
+From e.pebesma at geog.uu.nl  Thu Apr 25 09:00:50 2002
+From: e.pebesma at geog.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] grass, gstat, and 3d maps
+References: <006401c1e9fc$75abac60$4e17253e@pochito> <3CC50C28.BCD123E3@geog.uu.nl> <000201c1ebac$e36a95c0$cb91253e@pochito>
+Message-ID: <3CC7FE02.CD65458D@geog.uu.nl>
+
+Thanks for the test data set. I corrected two bugs in gstat, and z-coordinate
+reading now seems to work fine. Use:
+
+  data(traz1):"trazas1",z=3, v=2; 
+
+to specify the second attribute column.
+
+The updated source code is in the "daily" snapshot of 2.3.7, at the
+download are of http://www.gstat.org/
+
+Best regards,
+--
+Edzer
+

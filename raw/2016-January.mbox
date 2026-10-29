@@ -1,0 +1,3653 @@
+From hellik at web.de  Sat Jan  9 13:48:26 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Sat, 9 Jan 2016 13:48:26 -0800 (PST)
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+Message-ID: <1452376106568-5244411.post@n6.nabble.com>
+
+taken from the GRASS GIS dev ML:
+
+https://lists.osgeo.org/pipermail/grass-dev/2016-January/078318.html
+
+"In Windows running R from within GRASS (latter installed via OSGeo4W) 
+works fine, except that it can't seem to find the GRASS addons I 
+installed (with g.extension), not using rgrass7 nor directly using 
+system(). On Linux this is no problem, I can run any installed addon. 
+Any ideas how to solve this?"
+
+https://lists.osgeo.org/pipermail/grass-dev/2016-January/078322.html
+
+"> what does echo %PATH% in the osgeo4w shell within the winGRASS session
+> print?
+>
+> is the e.g. C:\Users\xy\AppData\Roaming\GRASS7\addons\bin included?
+>
+
+The following is included in the PATH:
+C:\OSGeo4W\apps\grass\grass-7.0.2\lib
+C:\OSGeo4W\apps\grass\grass-7.0.2\bin
+C:\Users\Jeannette\AppData\Roaming\GRASS7\addons\bin
+C:\OSGeo4W\apps\msys\bin
+C:\OSGeo4W\bin;
+C:\WINDOWS\system32
+C:\WINDOWS
+C:\WINDOWS\WBem
+C:\OSGeo4W\apps\msys\bin
+C:\OSGeo4W\apps\Python27\Scripts;
+C:\Program Files\RStudio\bin"
+
+https://lists.osgeo.org/pipermail/grass-dev/2016-January/078327.html
+
+"a quick test here with a py and an exe addon:
+
+r.basin.py
+
+> execGRASS("r.basin", map="elevation", map="elevation", prefix="v",
+> coordinates="637500.0,221750.0", dir="C:\tmp", threshold=1000)
+Error in system(cmd0, intern = TRUE) : 'r.basin.exe' not found
+Error in parseGRASS(cmd, legacyExec = legacyExec) : r.basin not found
+
+r.stream.order.exe
+
+> execGRASS("r.sream.order")
+Error in system(cmd0, intern = TRUE) : 'r.sream.order.exe' not found
+Error in parseGRASS(cmd, legacyExec = legacyExec) :
+  r.sream.order not found
+
+so maybe a question for the GRASS Statistics mailing List?"
+
+
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Sun Jan 10 10:43:08 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun, 10 Jan 2016 19:43:08 +0100
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <1452376106568-5244411.post@n6.nabble.com>
+References: <1452376106568-5244411.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.20.1601101000110.10870@reclus.nhh.no>
+
+On Sat, 9 Jan 2016, Helmut Kudrnovsky wrote:
+
+> taken from the GRASS GIS dev ML:
+>
+> https://lists.osgeo.org/pipermail/grass-dev/2016-January/078318.html
+>
+> "In Windows running R from within GRASS (latter installed via OSGeo4W) 
+> works fine, except that it can't seem to find the GRASS addons I 
+> installed (with g.extension), not using rgrass7 nor directly using 
+> system(). On Linux this is no problem, I can run any installed addon. 
+> Any ideas how to solve this?"
+>
+> https://lists.osgeo.org/pipermail/grass-dev/2016-January/078322.html
+>
+> "> what does echo %PATH% in the osgeo4w shell within the winGRASS session
+>> print?
+>>
+>> is the e.g. C:\Users\xy\AppData\Roaming\GRASS7\addons\bin included?
+>>
+
+This is not seen by rgrass::parseGRASS(), but a section could be added to 
+list bin/*.bat files in the GRASS_ADDON_BASE environment variable 
+directory. Do users also install addons system-wide (there is an option in 
+the GUI)? Where does install if the -s flag is given - do we need to look 
+there too?
+
+What happens to C/C++ Windows extensions, are they in the GRASS_ADDON_BASE 
+\bin with an .exe extension?
+
+Contributions welcome!
+
+Roger
+
+>
+> The following is included in the PATH:
+> C:\OSGeo4W\apps\grass\grass-7.0.2\lib
+> C:\OSGeo4W\apps\grass\grass-7.0.2\bin
+> C:\Users\Jeannette\AppData\Roaming\GRASS7\addons\bin
+> C:\OSGeo4W\apps\msys\bin
+> C:\OSGeo4W\bin;
+> C:\WINDOWS\system32
+> C:\WINDOWS
+> C:\WINDOWS\WBem
+> C:\OSGeo4W\apps\msys\bin
+> C:\OSGeo4W\apps\Python27\Scripts;
+> C:\Program Files\RStudio\bin"
+>
+> https://lists.osgeo.org/pipermail/grass-dev/2016-January/078327.html
+>
+> "a quick test here with a py and an exe addon:
+>
+> r.basin.py
+>
+>> execGRASS("r.basin", map="elevation", map="elevation", prefix="v",
+>> coordinates="637500.0,221750.0", dir="C:\tmp", threshold=1000)
+> Error in system(cmd0, intern = TRUE) : 'r.basin.exe' not found
+> Error in parseGRASS(cmd, legacyExec = legacyExec) : r.basin not found
+>
+> r.stream.order.exe
+>
+>> execGRASS("r.sream.order")
+> Error in system(cmd0, intern = TRUE) : 'r.sream.order.exe' not found
+> Error in parseGRASS(cmd, legacyExec = legacyExec) :
+>  r.sream.order not found
+>
+> so maybe a question for the GRASS Statistics mailing List?"
+>
+>
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From hellik at web.de  Sun Jan 10 11:07:30 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Sun, 10 Jan 2016 11:07:30 -0800 (PST)
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <alpine.LFD.2.20.1601101000110.10870@reclus.nhh.no>
+References: <1452376106568-5244411.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601101000110.10870@reclus.nhh.no>
+Message-ID: <1452452850123-5244457.post@n6.nabble.com>
+
+>This is not seen by rgrass::parseGRASS(), but a section could be added to
+>list bin/*.bat files in the GRASS_ADDON_BASE environment variable
+>directory.
+
+the folder structure in C:\Users\xy\AppData\Roaming\GRASS7\addons is the
+same as in the winGRASS binary installation:
+
+C:\Users\xy\AppData\Roaming\GRASS7\addons
+- bin
+- docs
+- etc
+- scripts
+
+some testing:
+
+binary addon:
+
+g.extension extension=r.hydrodem
+svnurl=http://svn.osgeo.org/grass/grass-addons/grass7
+Downloading precompiled GRASS Addons <r.hydrodem>...
+Updating addons metadata file...
+Installation of <r.hydrodem> successfully finished
+
+r.hydrodem.exe installed in C:\Users\xy\AppData\Roaming\GRASS7\addons\bin
+
+python script addon
+
+g.extension extension=r.basin
+svnurl=http://svn.osgeo.org/grass/grass-addons/grass7
+Downloading precompiled GRASS Addons <r.basin>...
+Updating addons metadata file...
+Installation of <r.basin> successfully finished
+
+r.basin.bat installed in C:\Users\xy\AppData\Roaming\GRASS7\addons\bin
+r.basin.py installed in C:\Users\xy\AppData\Roaming\GRASS7\addons\scripts
+
+---------------
+
+system wide installation
+
+binary addon:
+
+g.extension -s extension=r.geomorphon
+svnurl=http://svn.osgeo.org/grass/grass-addons/grass7
+Downloading precompiled GRASS Addons <r.geomorphon>...
+Updating addons metadata file...
+Installation of <r.geomorphon> successfully finished
+
+r.geomorphon installed in e.g. C:\OSGeo4W\apps\grass\grass-7.0.3RC1\bin
+
+python script addon:
+
+g.extension -s extension=r.euro.ecosystem
+svnurl=http://svn.osgeo.org/grass/grass-addons/grass7
+Downloading precompiled GRASS Addons <r.euro.ecosystem>...
+Updating addons metadata file...
+Installation of <r.euro.ecosystem> successfully finished
+
+r.euro.ecosystem.bat installed in C:\OSGeo4W\apps\grass\grass-7.0.3RC1\bin
+r.euro.ecosystem.py installed in
+C:\OSGeo4W\apps\grass\grass-7.0.3RC1\scripts
+
+>Do users also install addons system-wide (there is an option in
+>the GUI)? Where does install if the -s flag is given - do we need to look
+>there too?
+
+by the -s flag in the winGRASS installation folder (e.g.
+C:\OSGeo4W\apps\grass\grass-7.0.3RC1); so no further scan is needed. AFAIU
+-s may only work in a OSGeo4W-installation but not in a winGRASS standalone
+installation as for the the latter permissions rights are needed to install
+in C:\Program Files and I'm not sure this is handled by g.extension in
+winGRASS
+
+>What happens to C/C++ Windows extensions, are they in the GRASS_ADDON_BASE
+>\bin with an .exe extension? 
+
+binary addons (C/C++ Windows extensions) have an .exe extension and live in
+\bin; python addons have a related .bat-script (see above) in \bin, the
+script itself is in \script
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244457.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From hellik at web.de  Sun Jan 10 11:55:54 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Sun, 10 Jan 2016 11:55:54 -0800 (PST)
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <alpine.LFD.2.20.1601101000110.10870@reclus.nhh.no>
+References: <1452376106568-5244411.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601101000110.10870@reclus.nhh.no>
+Message-ID: <1452455754410-5244459.post@n6.nabble.com>
+
+> Contributions welcome! 
+
+this thread is about rgrass7 and winGRASS7.
+
+just found https://github.com/cran/rgrass7
+
+where to look? maybe here:
+https://github.com/cran/rgrass7/blob/master/R/xml1.R ?
+
+(un)related:
+
+https://github.com/cran/rgrass7/blob/master/R/initGRASS.R#L42
+
+it references to grass63.bat; regarding winGRASS7 there were many changes
+for starting, some of variables mentioned in L42 below aren't no longer
+there (e.g. [1]).
+
+should these also be updated?
+
+[1]
+https://trac.osgeo.org/grass/browser/grass/branches/releasebranch_7_0/mswindows/env.bat
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244459.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Sun Jan 10 23:32:31 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon, 11 Jan 2016 08:32:31 +0100
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <1452455754410-5244459.post@n6.nabble.com>
+References: <1452376106568-5244411.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601101000110.10870@reclus.nhh.no>
+ <1452455754410-5244459.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+
+On Sun, 10 Jan 2016, Helmut Kudrnovsky wrote:
+
+>> Contributions welcome! 
+>
+> this thread is about rgrass7 and winGRASS7.
+>
+> just found https://github.com/cran/rgrass7
+>
+> where to look? maybe here:
+> https://github.com/cran/rgrass7/blob/master/R/xml1.R ?
+>
+
+No, of course not. Github is used by Gabor Csardi without the consent of 
+the authors or maintainers of packages to give fashionable access to work 
+(not done by the copiers who have a dictatorial frame of mind) that is 
+completely accessible elsewhere:
+
+https://r-forge.r-project.org/projects/spgrass/
+
+using SVN. The underlying MetaCRAN "project" does say: "Unofficial 
+read-only mirror of all CRAN R packages", which is accurate - it is used 
+for some rather misleading metrics designed largely to boost the value of 
+R Studio (IMHO). It is *not* a development repository.
+
+To contribute, either ask for contributor status and checkout with a user 
+name, committing only after successful R CMD check --as-cran on a fresh 
+tarball, or send patch files to the maintainer after checking out 
+anonymously. The successful R CMD check --as-cran on a fresh tarball is 
+the crucial step, especially across relevant platforms. The github mindset 
+is to hope that travis is set up right to do cross-platform testing, which 
+it largely isn't; the eyes of developers are often far more perceptive - 
+provided that the checking/testing is done (here with NC basic).
+
+My guess is that the addons/bin also needs to be searched (possibly twice, 
+once for *.bat, again for *.exe) in xml1.R.
+
+> (un)related:
+>
+> https://github.com/cran/rgrass7/blob/master/R/initGRASS.R#L42
+>
+
+This is irrelevant here - see rather R/AAA.R:
+
+https://r-forge.r-project.org/scm/viewvc.php/pkg/rgrass7/R/AAA.R?view=markup&revision=24&root=spgrass
+
+Both need to be progressed to GRASS 7, as does the exclusion list at the 
+head of R/xml1.R
+
+Best wishes,
+
+Roger
+
+
+> it references to grass63.bat; regarding winGRASS7 there were many changes
+> for starting, some of variables mentioned in L42 below aren't no longer
+> there (e.g. [1]).
+>
+> should these also be updated?
+>
+> [1]
+> https://trac.osgeo.org/grass/browser/grass/branches/releasebranch_7_0/mswindows/env.bat
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244459.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From hellik at web.de  Mon Jan 11 02:55:05 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Mon, 11 Jan 2016 02:55:05 -0800 (PST)
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+References: <1452376106568-5244411.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601101000110.10870@reclus.nhh.no>
+ <1452455754410-5244459.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+Message-ID: <1452509705632-5244520.post@n6.nabble.com>
+
+>completely accessible elsewhere:
+>
+>https://r-forge.r-project.org/projects/spgrass/
+>
+>using SVN.
+
+I've done a SVN checkout.
+
+I'm not sure that I can contribute code diffs, but here are some test
+findings:
+
+> library(rgrass7)
+Loading required package: sp
+Loading required package: XML
+GRASS GIS interface loaded with GRASS version: GRASS 7.0.3RC1 (2015)
+and location: nc_spm_08_grass7
+
+-------------------
+
+AFAIK msys is dropped in winGRASS7
+
+C:\tmp\rg\rgrass7\pkg\rgrass7\R\AAA.R
+
+  SYS <- ""
+  if (.Platform$OS.type == "windows") {
+    if (Sys.getenv("OSTYPE") == "msys") SYS <- "msys"
+    else SYS <- "WinNat"
+  } else if (.Platform$OS.type == "unix") SYS <- "unix"
+  assign("SYS", SYS, envir=.GRASS_CACHE)
+  
+   res <- ""
+  if (SYS == "msys" || SYS == "WinNat") res =".exe"
+  assign("addEXE", res, envir=.GRASS_CACHE)
+  assign("WN_bat", "", envir=.GRASS_CACHE)
+ 
+> t1 <- .Platform$OS.type
+> t1
+[1] "windows"
+> t2 <- Sys.getenv("OSTYPE")
+> t2
+[1] ""
+>
+
+so maybe simplified to:
+
+  if (.Platform$OS.type == "windows") SYS <- "WinNat"
+  else if (.Platform$OS.type == "unix") SYS <- "unix"
+[...]
+  if (SYS == "WinNat") res =".exe"
+  assign("addEXE", res, envir=.GRASS_CACHE)
+  
+  
+
+  if (SYS == "WinNat" && nchar(gisrc) > 0) {
+    pyScripts <- basename(list.files(paste(Sys.getenv("WINGISBASE"),
+      "scripts", sep="/"), pattern="py$"))
+    names(pyScripts) <- sub("\\.py", "", pyScripts)
+    assign("pyScripts", pyScripts, envir=.GRASS_CACHE)
+	
+> t3 <- Sys.getenv("WINGISBASE")
+> t3
+[1] ""
+> t4 <- Sys.getenv("GISBASE")
+> t4
+[1] "C:\\OSGEO4~1\\apps\\grass\\grass-7.0.3RC1"
+> t5 <- Sys.getenv("GRASS_ADDON_BASE")
+> t5
+[1] "C:\\Users\\myricaria\\AppData\\Roaming\\GRASS7\\addons"
+
+> pyScripts <- basename(list.files(paste(Sys.getenv("GISBASE"), "scripts",
+> "scripts", sep="/"), pattern="py$"))
+> pyScripts
+  [1] "d.correlate.py"          "d.out.file.py"
+  [3] "d.polar.py"              "d.rast.edit.py"
+  [5] "d.rast.leg.py"           "d.redraw.py"
+  [7] "d.shade.py"              "d.to.rast.py"
+  [9] "d.what.rast.py"          "d.what.vect.py"
+ [11] "db.dropcolumn.py"        "db.droptable.py"
+ [13] "db.in.ogr.py"            "db.out.ogr.py"
+ [15] "db.test.py"              "db.univar.py"
+ [17] "g.extension.all.py"      "g.extension.py"
+ [19] "g.gui.animation.py"      "g.gui.dbmgr.py"
+ [21] "g.gui.gcp.py"            "g.gui.gmodeler.py"
+ [23] "g.gui.iclass.py"         "g.gui.mapswipe.py"
+ [25] "g.gui.psmap.py"          "g.gui.rlisetup.py"
+ [27] "g.gui.timeline.py"       "g.gui.tplot.py"
+ [29] "g.gui.vdigit.py"         "g.manual.py"
+ [31] "i.colors.enhance.py"     "i.image.mosaic.py"
+ [33] "i.in.spotvgt.py"         "i.oif.py"
+ [35] "i.pansharpen.py"         "i.spectral.py"
+ [37] "i.tasscap.py"            "m.proj.py"
+ [39] "r.blend.py"              "r.buffer.lowmem.py"
+ [41] "r.colors.stddev.py"      "r.fillnulls.py"
+ [43] "r.grow.py"               "r.import.py"
+ [45] "r.in.aster.py"           "r.in.srtm.py"
+ [47] "r.in.wms.py"             "r.mask.py"
+ [49] "r.out.xyz.py"            "r.pack.py"
+ [51] "r.plane.py"              "r.reclass.area.py"
+ [53] "r.rgb.py"                "r.shade.py"
+ [55] "r.tileset.py"            "r.unpack.py"
+ [57] "r3.in.xyz.py"            "t.create.py"
+ [59] "t.info.py"               "t.list.py"
+ [61] "t.merge.py"              "t.rast.accdetect.py"
+ [63] "t.rast.accumulate.py"    "t.rast.aggregate.ds.py"
+ [65] "t.rast.aggregate.py"     "t.rast.colors.py"
+ [67] "t.rast.export.py"        "t.rast.extract.py"
+ [69] "t.rast.gapfill.py"       "t.rast.import.py"
+ [71] "t.rast.list.py"          "t.rast.mapcalc.py"
+ [73] "t.rast.neighbors.py"     "t.rast.out.vtk.py"
+ [75] "t.rast.series.py"        "t.rast.to.rast3.py"
+ [77] "t.rast.univar.py"        "t.rast3d.extract.py"
+ [79] "t.rast3d.list.py"        "t.rast3d.mapcalc.py"
+ [81] "t.rast3d.univar.py"      "t.register.py"
+ [83] "t.remove.py"             "t.rename.py"
+ [85] "t.sample.py"             "t.select.py"
+ [87] "t.shift.py"              "t.snap.py"
+ [89] "t.support.py"            "t.topology.py"
+ [91] "t.unregister.py"         "t.vect.db.select.py"
+ [93] "t.vect.export.py"        "t.vect.extract.py"
+ [95] "t.vect.import.py"        "t.vect.list.py"
+ [97] "t.vect.observe.strds.py" "t.vect.univar.py"
+ [99] "t.vect.what.strds.py"    "v.build.all.py"
+[101] "v.centroids.py"          "v.db.addcolumn.py"
+[103] "v.db.addtable.py"        "v.db.dropcolumn.py"
+[105] "v.db.droprow.py"         "v.db.droptable.py"
+[107] "v.db.join.py"            "v.db.reconnect.all.py"
+[109] "v.db.renamecolumn.py"    "v.db.univar.py"
+[111] "v.db.update.py"          "v.dissolve.py"
+[113] "v.import.py"             "v.in.e00.py"
+[115] "v.in.geonames.py"        "v.in.lines.py"
+[117] "v.in.mapgen.py"          "v.in.wfs.py"
+[119] "v.krige.py"              "v.pack.py"
+[121] "v.rast.stats.py"         "v.report.py"
+[123] "v.to.lines.py"           "v.unpack.py"
+[125] "v.what.strds.py"         "v.what.vect.py"
+[127] "wxpyimgview.py"
+>
+
+AFAIK variable %WINGISBASE% isn't there anymore in winGRASS7, it's now
+%GISBASE%
+-------------------
+
+C:\tmp\rg\rgrass7\pkg\rgrass7\R\rgrass.R
+
+.addexe <- function() {
+    res <- ""
+    SYS <- get("SYS", envir=.GRASS_CACHE)
+    if (SYS == "msys" || SYS == "WinNat") res =".exe"
+    res
+}
+
+maybe simplified to:
+
+    if (SYS == "WinNat") res =".exe"
+
+-------------------
+
+C:\tmp\rg\rgrass7\pkg\rgrass7\R\xml1.R
+
+    bin_out_win <- c("d.colors.exe", "d.save.exe", "d.what.rast.exe",
+      "d.what.vect.exe", "d.zoom.exe", "g.parser.exe", "gis.m.bat",
+      "i.spectral.bat", "mkftcap.bat", "r.mapcalc.exe", "r.tileset.bat",
+      "r3.mapcalc.exe", "v.in.gpsbabel.bat", "v.proj.exe")
+	  
+"gis.m.bat" -> AFAIK gis.m is dropped in GRASS7
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244520.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From hellik at web.de  Mon Jan 11 04:28:33 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Mon, 11 Jan 2016 04:28:33 -0800 (PST)
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+References: <1452376106568-5244411.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601101000110.10870@reclus.nhh.no>
+ <1452455754410-5244459.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+Message-ID: <1452515313330-5244536.post@n6.nabble.com>
+
+>My guess is that the addons/bin also needs to be searched (possibly twice,
+>once for *.bat, again for *.exe) in xml1.R. 
+
+yes I think so.
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244536.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Mon Jan 11 06:06:29 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon, 11 Jan 2016 15:06:29 +0100
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <1452509705632-5244520.post@n6.nabble.com>
+References: <1452376106568-5244411.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601101000110.10870@reclus.nhh.no>
+ <1452455754410-5244459.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+ <1452509705632-5244520.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.20.1601111453510.18584@reclus.nhh.no>
+
+On Mon, 11 Jan 2016, Helmut Kudrnovsky wrote:
+
+>> completely accessible elsewhere:
+>>
+>> https://r-forge.r-project.org/projects/spgrass/
+>>
+>> using SVN.
+>
+> I've done a SVN checkout.
+>
+> I'm not sure that I can contribute code diffs, but here are some test
+> findings:
+
+
+OK, thanks. SVN commited revisions at # 45. I've sent a build request to R 
+Winbuilder to get a regular Windows rgrass7 binary, ready now at:
+
+http://win-builder.r-project.org/s90s00N7rhyt/
+
+WN_bat should now include *.bat files in GRASS_ADDON_BASE, which is in the 
+PATH for me using Windows Native (not checked with OSGeo4W). References to 
+msys and WINGISBASE removed.
+
+Comments welcome,
+
+Roger
+
+>
+>> library(rgrass7)
+> Loading required package: sp
+> Loading required package: XML
+> GRASS GIS interface loaded with GRASS version: GRASS 7.0.3RC1 (2015)
+> and location: nc_spm_08_grass7
+>
+> -------------------
+>
+> AFAIK msys is dropped in winGRASS7
+>
+> C:\tmp\rg\rgrass7\pkg\rgrass7\R\AAA.R
+>
+>  SYS <- ""
+>  if (.Platform$OS.type == "windows") {
+>    if (Sys.getenv("OSTYPE") == "msys") SYS <- "msys"
+>    else SYS <- "WinNat"
+>  } else if (.Platform$OS.type == "unix") SYS <- "unix"
+>  assign("SYS", SYS, envir=.GRASS_CACHE)
+>
+>   res <- ""
+>  if (SYS == "msys" || SYS == "WinNat") res =".exe"
+>  assign("addEXE", res, envir=.GRASS_CACHE)
+>  assign("WN_bat", "", envir=.GRASS_CACHE)
+> 
+>> t1 <- .Platform$OS.type
+>> t1
+> [1] "windows"
+>> t2 <- Sys.getenv("OSTYPE")
+>> t2
+> [1] ""
+>>
+>
+> so maybe simplified to:
+>
+>  if (.Platform$OS.type == "windows") SYS <- "WinNat"
+>  else if (.Platform$OS.type == "unix") SYS <- "unix"
+> [...]
+>  if (SYS == "WinNat") res =".exe"
+>  assign("addEXE", res, envir=.GRASS_CACHE)
+>
+> 
+>
+>  if (SYS == "WinNat" && nchar(gisrc) > 0) {
+>    pyScripts <- basename(list.files(paste(Sys.getenv("WINGISBASE"),
+>      "scripts", sep="/"), pattern="py$"))
+>    names(pyScripts) <- sub("\\.py", "", pyScripts)
+>    assign("pyScripts", pyScripts, envir=.GRASS_CACHE)
+> 
+>> t3 <- Sys.getenv("WINGISBASE")
+>> t3
+> [1] ""
+>> t4 <- Sys.getenv("GISBASE")
+>> t4
+> [1] "C:\\OSGEO4~1\\apps\\grass\\grass-7.0.3RC1"
+>> t5 <- Sys.getenv("GRASS_ADDON_BASE")
+>> t5
+> [1] "C:\\Users\\myricaria\\AppData\\Roaming\\GRASS7\\addons"
+>
+>> pyScripts <- basename(list.files(paste(Sys.getenv("GISBASE"), "scripts",
+>> "scripts", sep="/"), pattern="py$"))
+>> pyScripts
+>  [1] "d.correlate.py"          "d.out.file.py"
+>  [3] "d.polar.py"              "d.rast.edit.py"
+>  [5] "d.rast.leg.py"           "d.redraw.py"
+>  [7] "d.shade.py"              "d.to.rast.py"
+>  [9] "d.what.rast.py"          "d.what.vect.py"
+> [11] "db.dropcolumn.py"        "db.droptable.py"
+> [13] "db.in.ogr.py"            "db.out.ogr.py"
+> [15] "db.test.py"              "db.univar.py"
+> [17] "g.extension.all.py"      "g.extension.py"
+> [19] "g.gui.animation.py"      "g.gui.dbmgr.py"
+> [21] "g.gui.gcp.py"            "g.gui.gmodeler.py"
+> [23] "g.gui.iclass.py"         "g.gui.mapswipe.py"
+> [25] "g.gui.psmap.py"          "g.gui.rlisetup.py"
+> [27] "g.gui.timeline.py"       "g.gui.tplot.py"
+> [29] "g.gui.vdigit.py"         "g.manual.py"
+> [31] "i.colors.enhance.py"     "i.image.mosaic.py"
+> [33] "i.in.spotvgt.py"         "i.oif.py"
+> [35] "i.pansharpen.py"         "i.spectral.py"
+> [37] "i.tasscap.py"            "m.proj.py"
+> [39] "r.blend.py"              "r.buffer.lowmem.py"
+> [41] "r.colors.stddev.py"      "r.fillnulls.py"
+> [43] "r.grow.py"               "r.import.py"
+> [45] "r.in.aster.py"           "r.in.srtm.py"
+> [47] "r.in.wms.py"             "r.mask.py"
+> [49] "r.out.xyz.py"            "r.pack.py"
+> [51] "r.plane.py"              "r.reclass.area.py"
+> [53] "r.rgb.py"                "r.shade.py"
+> [55] "r.tileset.py"            "r.unpack.py"
+> [57] "r3.in.xyz.py"            "t.create.py"
+> [59] "t.info.py"               "t.list.py"
+> [61] "t.merge.py"              "t.rast.accdetect.py"
+> [63] "t.rast.accumulate.py"    "t.rast.aggregate.ds.py"
+> [65] "t.rast.aggregate.py"     "t.rast.colors.py"
+> [67] "t.rast.export.py"        "t.rast.extract.py"
+> [69] "t.rast.gapfill.py"       "t.rast.import.py"
+> [71] "t.rast.list.py"          "t.rast.mapcalc.py"
+> [73] "t.rast.neighbors.py"     "t.rast.out.vtk.py"
+> [75] "t.rast.series.py"        "t.rast.to.rast3.py"
+> [77] "t.rast.univar.py"        "t.rast3d.extract.py"
+> [79] "t.rast3d.list.py"        "t.rast3d.mapcalc.py"
+> [81] "t.rast3d.univar.py"      "t.register.py"
+> [83] "t.remove.py"             "t.rename.py"
+> [85] "t.sample.py"             "t.select.py"
+> [87] "t.shift.py"              "t.snap.py"
+> [89] "t.support.py"            "t.topology.py"
+> [91] "t.unregister.py"         "t.vect.db.select.py"
+> [93] "t.vect.export.py"        "t.vect.extract.py"
+> [95] "t.vect.import.py"        "t.vect.list.py"
+> [97] "t.vect.observe.strds.py" "t.vect.univar.py"
+> [99] "t.vect.what.strds.py"    "v.build.all.py"
+> [101] "v.centroids.py"          "v.db.addcolumn.py"
+> [103] "v.db.addtable.py"        "v.db.dropcolumn.py"
+> [105] "v.db.droprow.py"         "v.db.droptable.py"
+> [107] "v.db.join.py"            "v.db.reconnect.all.py"
+> [109] "v.db.renamecolumn.py"    "v.db.univar.py"
+> [111] "v.db.update.py"          "v.dissolve.py"
+> [113] "v.import.py"             "v.in.e00.py"
+> [115] "v.in.geonames.py"        "v.in.lines.py"
+> [117] "v.in.mapgen.py"          "v.in.wfs.py"
+> [119] "v.krige.py"              "v.pack.py"
+> [121] "v.rast.stats.py"         "v.report.py"
+> [123] "v.to.lines.py"           "v.unpack.py"
+> [125] "v.what.strds.py"         "v.what.vect.py"
+> [127] "wxpyimgview.py"
+>>
+>
+> AFAIK variable %WINGISBASE% isn't there anymore in winGRASS7, it's now
+> %GISBASE%
+> -------------------
+>
+> C:\tmp\rg\rgrass7\pkg\rgrass7\R\rgrass.R
+>
+> .addexe <- function() {
+>    res <- ""
+>    SYS <- get("SYS", envir=.GRASS_CACHE)
+>    if (SYS == "msys" || SYS == "WinNat") res =".exe"
+>    res
+> }
+>
+> maybe simplified to:
+>
+>    if (SYS == "WinNat") res =".exe"
+>
+> -------------------
+>
+> C:\tmp\rg\rgrass7\pkg\rgrass7\R\xml1.R
+>
+>    bin_out_win <- c("d.colors.exe", "d.save.exe", "d.what.rast.exe",
+>      "d.what.vect.exe", "d.zoom.exe", "g.parser.exe", "gis.m.bat",
+>      "i.spectral.bat", "mkftcap.bat", "r.mapcalc.exe", "r.tileset.bat",
+>      "r3.mapcalc.exe", "v.in.gpsbabel.bat", "v.proj.exe")
+> 
+> "gis.m.bat" -> AFAIK gis.m is dropped in GRASS7
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244520.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From Roger.Bivand at nhh.no  Mon Jan 11 11:25:19 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon, 11 Jan 2016 19:25:19 +0000
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <alpine.LFD.2.20.1601111453510.18584@reclus.nhh.no>
+References: <1452376106568-5244411.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601101000110.10870@reclus.nhh.no>
+ <1452455754410-5244459.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+ <1452509705632-5244520.post@n6.nabble.com>,
+ <alpine.LFD.2.20.1601111453510.18584@reclus.nhh.no>
+Message-ID: <E953A98FD6EAA7479A68EE8C24491F6B80C85F3B@DALER.valuta.nhh.no>
+
+The link is *not* to CRAN, and a lot more testing will  be needed before I even submit to CRAN - re your link from GRASS-dev to this thread. I need to know that use cases of g.extensions installed workflows now succeed where previously they failed for OSGeo4W and native Windows builds of GRASS. CRAN isn't used for speculating about possibilities that things might (or might not) work - that is R-forge, from which you may svn update, then R CMD build rgrass7, then R CMD INSTALL --build rgrass7_0.1-4.tar.gz (using RTools), then install from local zip file, then run the workflow.
+
+There are other pending edits to vector file transfer on Windows, so the extensions issue isn't alone enough to trigger a submission to CRAN.
+
+Roger
+
+--
+Roger Bivand
+Norwegian School of Economics
+Helleveien 30, 5045 Bergen, Norway
+Roger.Bivand at nhh.no
+
+
+________________________________________
+Fra: grass-stats [grass-stats-bounces at lists.osgeo.org] p&#229; vegne av Roger Bivand [Roger.Bivand at nhh.no]
+Sendt: 11. januar 2016 3:06
+Til: Helmut Kudrnovsky
+Kopi: grass-stats at lists.osgeo.org
+Emne: Re: [GRASS-stats] Using GRASS addons in R on Windows
+
+On Mon, 11 Jan 2016, Helmut Kudrnovsky wrote:
+
+>> completely accessible elsewhere:
+>>
+>> https://r-forge.r-project.org/projects/spgrass/
+>>
+>> using SVN.
+>
+> I've done a SVN checkout.
+>
+> I'm not sure that I can contribute code diffs, but here are some test
+> findings:
+
+
+OK, thanks. SVN commited revisions at # 45. I've sent a build request to R
+Winbuilder to get a regular Windows rgrass7 binary, ready now at:
+
+http://win-builder.r-project.org/s90s00N7rhyt/
+
+WN_bat should now include *.bat files in GRASS_ADDON_BASE, which is in the
+PATH for me using Windows Native (not checked with OSGeo4W). References to
+msys and WINGISBASE removed.
+
+Comments welcome,
+
+Roger
+
+>
+>> library(rgrass7)
+> Loading required package: sp
+> Loading required package: XML
+> GRASS GIS interface loaded with GRASS version: GRASS 7.0.3RC1 (2015)
+> and location: nc_spm_08_grass7
+>
+> -------------------
+>
+> AFAIK msys is dropped in winGRASS7
+>
+> C:\tmp\rg\rgrass7\pkg\rgrass7\R\AAA.R
+>
+>  SYS <- ""
+>  if (.Platform$OS.type == "windows") {
+>    if (Sys.getenv("OSTYPE") == "msys") SYS <- "msys"
+>    else SYS <- "WinNat"
+>  } else if (.Platform$OS.type == "unix") SYS <- "unix"
+>  assign("SYS", SYS, envir=.GRASS_CACHE)
+>
+>   res <- ""
+>  if (SYS == "msys" || SYS == "WinNat") res =".exe"
+>  assign("addEXE", res, envir=.GRASS_CACHE)
+>  assign("WN_bat", "", envir=.GRASS_CACHE)
+>
+>> t1 <- .Platform$OS.type
+>> t1
+> [1] "windows"
+>> t2 <- Sys.getenv("OSTYPE")
+>> t2
+> [1] ""
+>>
+>
+> so maybe simplified to:
+>
+>  if (.Platform$OS.type == "windows") SYS <- "WinNat"
+>  else if (.Platform$OS.type == "unix") SYS <- "unix"
+> [...]
+>  if (SYS == "WinNat") res =".exe"
+>  assign("addEXE", res, envir=.GRASS_CACHE)
+>
+>
+>
+>  if (SYS == "WinNat" && nchar(gisrc) > 0) {
+>    pyScripts <- basename(list.files(paste(Sys.getenv("WINGISBASE"),
+>      "scripts", sep="/"), pattern="py$"))
+>    names(pyScripts) <- sub("\\.py", "", pyScripts)
+>    assign("pyScripts", pyScripts, envir=.GRASS_CACHE)
+>
+>> t3 <- Sys.getenv("WINGISBASE")
+>> t3
+> [1] ""
+>> t4 <- Sys.getenv("GISBASE")
+>> t4
+> [1] "C:\\OSGEO4~1\\apps\\grass\\grass-7.0.3RC1"
+>> t5 <- Sys.getenv("GRASS_ADDON_BASE")
+>> t5
+> [1] "C:\\Users\\myricaria\\AppData\\Roaming\\GRASS7\\addons"
+>
+>> pyScripts <- basename(list.files(paste(Sys.getenv("GISBASE"), "scripts",
+>> "scripts", sep="/"), pattern="py$"))
+>> pyScripts
+>  [1] "d.correlate.py"          "d.out.file.py"
+>  [3] "d.polar.py"              "d.rast.edit.py"
+>  [5] "d.rast.leg.py"           "d.redraw.py"
+>  [7] "d.shade.py"              "d.to.rast.py"
+>  [9] "d.what.rast.py"          "d.what.vect.py"
+> [11] "db.dropcolumn.py"        "db.droptable.py"
+> [13] "db.in.ogr.py"            "db.out.ogr.py"
+> [15] "db.test.py"              "db.univar.py"
+> [17] "g.extension.all.py"      "g.extension.py"
+> [19] "g.gui.animation.py"      "g.gui.dbmgr.py"
+> [21] "g.gui.gcp.py"            "g.gui.gmodeler.py"
+> [23] "g.gui.iclass.py"         "g.gui.mapswipe.py"
+> [25] "g.gui.psmap.py"          "g.gui.rlisetup.py"
+> [27] "g.gui.timeline.py"       "g.gui.tplot.py"
+> [29] "g.gui.vdigit.py"         "g.manual.py"
+> [31] "i.colors.enhance.py"     "i.image.mosaic.py"
+> [33] "i.in.spotvgt.py"         "i.oif.py"
+> [35] "i.pansharpen.py"         "i.spectral.py"
+> [37] "i.tasscap.py"            "m.proj.py"
+> [39] "r.blend.py"              "r.buffer.lowmem.py"
+> [41] "r.colors.stddev.py"      "r.fillnulls.py"
+> [43] "r.grow.py"               "r.import.py"
+> [45] "r.in.aster.py"           "r.in.srtm.py"
+> [47] "r.in.wms.py"             "r.mask.py"
+> [49] "r.out.xyz.py"            "r.pack.py"
+> [51] "r.plane.py"              "r.reclass.area.py"
+> [53] "r.rgb.py"                "r.shade.py"
+> [55] "r.tileset.py"            "r.unpack.py"
+> [57] "r3.in.xyz.py"            "t.create.py"
+> [59] "t.info.py"               "t.list.py"
+> [61] "t.merge.py"              "t.rast.accdetect.py"
+> [63] "t.rast.accumulate.py"    "t.rast.aggregate.ds.py"
+> [65] "t.rast.aggregate.py"     "t.rast.colors.py"
+> [67] "t.rast.export.py"        "t.rast.extract.py"
+> [69] "t.rast.gapfill.py"       "t.rast.import.py"
+> [71] "t.rast.list.py"          "t.rast.mapcalc.py"
+> [73] "t.rast.neighbors.py"     "t.rast.out.vtk.py"
+> [75] "t.rast.series.py"        "t.rast.to.rast3.py"
+> [77] "t.rast.univar.py"        "t.rast3d.extract.py"
+> [79] "t.rast3d.list.py"        "t.rast3d.mapcalc.py"
+> [81] "t.rast3d.univar.py"      "t.register.py"
+> [83] "t.remove.py"             "t.rename.py"
+> [85] "t.sample.py"             "t.select.py"
+> [87] "t.shift.py"              "t.snap.py"
+> [89] "t.support.py"            "t.topology.py"
+> [91] "t.unregister.py"         "t.vect.db.select.py"
+> [93] "t.vect.export.py"        "t.vect.extract.py"
+> [95] "t.vect.import.py"        "t.vect.list.py"
+> [97] "t.vect.observe.strds.py" "t.vect.univar.py"
+> [99] "t.vect.what.strds.py"    "v.build.all.py"
+> [101] "v.centroids.py"          "v.db.addcolumn.py"
+> [103] "v.db.addtable.py"        "v.db.dropcolumn.py"
+> [105] "v.db.droprow.py"         "v.db.droptable.py"
+> [107] "v.db.join.py"            "v.db.reconnect.all.py"
+> [109] "v.db.renamecolumn.py"    "v.db.univar.py"
+> [111] "v.db.update.py"          "v.dissolve.py"
+> [113] "v.import.py"             "v.in.e00.py"
+> [115] "v.in.geonames.py"        "v.in.lines.py"
+> [117] "v.in.mapgen.py"          "v.in.wfs.py"
+> [119] "v.krige.py"              "v.pack.py"
+> [121] "v.rast.stats.py"         "v.report.py"
+> [123] "v.to.lines.py"           "v.unpack.py"
+> [125] "v.what.strds.py"         "v.what.vect.py"
+> [127] "wxpyimgview.py"
+>>
+>
+> AFAIK variable %WINGISBASE% isn't there anymore in winGRASS7, it's now
+> %GISBASE%
+> -------------------
+>
+> C:\tmp\rg\rgrass7\pkg\rgrass7\R\rgrass.R
+>
+> .addexe <- function() {
+>    res <- ""
+>    SYS <- get("SYS", envir=.GRASS_CACHE)
+>    if (SYS == "msys" || SYS == "WinNat") res =".exe"
+>    res
+> }
+>
+> maybe simplified to:
+>
+>    if (SYS == "WinNat") res =".exe"
+>
+> -------------------
+>
+> C:\tmp\rg\rgrass7\pkg\rgrass7\R\xml1.R
+>
+>    bin_out_win <- c("d.colors.exe", "d.save.exe", "d.what.rast.exe",
+>      "d.what.vect.exe", "d.zoom.exe", "g.parser.exe", "gis.m.bat",
+>      "i.spectral.bat", "mkftcap.bat", "r.mapcalc.exe", "r.tileset.bat",
+>      "r3.mapcalc.exe", "v.in.gpsbabel.bat", "v.proj.exe")
+>
+> "gis.m.bat" -> AFAIK gis.m is dropped in GRASS7
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244520.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+--
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+_______________________________________________
+grass-stats mailing list
+grass-stats at lists.osgeo.org
+http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+From hellik at web.de  Mon Jan 11 12:33:14 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Mon, 11 Jan 2016 12:33:14 -0800 (PST)
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <E953A98FD6EAA7479A68EE8C24491F6B80C85F3B@DALER.valuta.nhh.no>
+References: <1452376106568-5244411.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601101000110.10870@reclus.nhh.no>
+ <1452455754410-5244459.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+ <1452509705632-5244520.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601111453510.18584@reclus.nhh.no>
+ <E953A98FD6EAA7479A68EE8C24491F6B80C85F3B@DALER.valuta.nhh.no>
+Message-ID: <1452544394530-5244618.post@n6.nabble.com>
+
+>The link is *not* to CRAN, and a lot more testing will  be needed before I
+even submit to CRAN - re your link from GRASS-dev to this thread. I need to
+know that use cases of g.extensions installed workflows now succeed where
+previously they failed for OSGeo4W and native Windows builds of GRASS. CRAN
+isn't used for speculating about possibilities that things might (or might
+not) work - that is R-forge, from which you may svn update, then R CMD build
+rgrass7, then R CMD INSTALL --build rgrass7_0.1-4.tar.gz (using RTools),
+then install from local zip file, then run the workflow.
+>
+>There are other pending edits to vector file transfer on Windows, so the
+extensions issue isn't alone enough to trigger a submission to CRAN. 
+
+thanks for the clarification.
+
+tested now:
+
+-----------------------
+
+versuche URL
+'http://R-Forge.R-project.org/bin/windows/contrib/3.2/rgrass7_0.1-4.zip'
+Content type 'application/zip' length 85081 bytes (83 KB)
+downloaded 83 KB
+
+-----------------------
+
+GRASS version: 7.0.3RC1                                                         
+GRASS SVN Revision: 67443                                                       
+Build Date: 2015-12-31                                                          
+Build Platform: x86_64-w64-mingw32                                              
+GDAL/OGR: 1.11.3                                                                
+PROJ.4: 4.9.2                                                                   
+GEOS: 3.5.0                                                                     
+SQLite: 3.7.17                                                                  
+Python: 2.7.5                                                                   
+wxPython: 2.8.12.1                                                              
+Platform: Windows-7-6.1.7601-SP1 (OSGeo4W) 
+
+-----------------------
+
+binary addon (r.stream.order)
+
+in GRASS:
+
+r.watershed elevation=elevation at PERMANENT threshold=10000
+accumulation=myaccum drainage=myflowdir stream=mystreams
+r.stream.order stream_rast=mystreams at rtestw64bit
+direction=myflowdir at rtestw64bit elevation=elevation at PERMANENT
+accumulation=myaccum at rtestw64bit strahler=mystrahler
+
+in R:
+
+> library(rgrass7)
+Loading required package: sp
+Loading required package: XML
+GRASS GIS interface loaded with GRASS version: GRASS 7.0.3RC1 (2015)
+and location: nc_spm_08_grass7
+
+execGRASS("r.watershed", elevation="elevation", threshold=10000,
+accumulation="myaccum", drainage="myflowdir", stream="mystreams")
+
+> execGRASS("r.watershed", elevation="elevation", threshold=10000,
+> accumulatio$ ...
+SECTION 1a (of 5): Initiating Memory.
+SECTION 1b (of 5): Determining Offmap Flow.
+ 100%
+SECTION 2: A* Search.
+ 100%
+SECTION 3a: Accumulating Surface Flow with MFD.
+ 100%
+SECTION 3b: Adjusting drainage directions.
+ 100%
+SECTION 4: Watershed determination.
+ 100%
+SECTION 5: Closing Maps.
+ 100%
+
+execGRASS("r.stream.order", stream_rast="mystreams", direction="myflowdir",
+elevation="elevation", accumulation="myaccum", strahler="mystrahler")
+
+> execGRASS("r.stream.order", stream_rast="mystreams",
+> direction="myflowdir", $ ...
+All in RAM calculation...
+Reading raster map <mystreams>...
+ 100%
+Reading raster map <myflowdir>...
+ 100%
+Finding nodes...
+Calculating Strahler's stream order...
+Writing output raster maps...
+
+-----------------------
+
+python addon (r.roughness.vector):
+
+in GRASS:
+
+r.slope.aspect elevation=elevation at PERMANENT slope=myslope aspect=myaspect 
+r.roughness.vector elevation=elevation at PERMANENT slope=myslope at rtestw64bit
+aspect=myaspect at rtestw64bit strength=vectorstrength
+
+in R:
+
+execGRASS("r.slope.aspect", elevation="elevation", slope="myslope",
+aspect="myaspect")
+
+> execGRASS("r.slope.aspect", elevation="elevation", slope="myslope",
+> aspect="$
+ 100%
+Aspect raster map <myaspect> complete
+Slope raster map <myslope> complete
+
+execGRASS("r.roughness.vector", elevation="elevation", slope="myslope",
+aspect="myaspect", strength="vectorstrength")
+
+> execGRASS("r.roughness.vector", elevation="elevation", slope="myslope",
+> aspe$
+Error in system(cmd0, intern = TRUE) : 'r.roughness.vector.exe' not found
+Error in parseGRASS(cmd, legacyExec = legacyExec) :
+  r.roughness.vector not found
+
+-----------------------
+
+python GRASS script (r.reclass.area):
+
+in GRASS:
+
+r.reclass.area input=zipcodes at PERMANENT output=zipcode_larger2000ha
+value=2000 mode=greater
+
+in R:
+
+execGRASS("r.reclass.area", input="zipcodes", output="zipcode_larger2000ha",
+value=2000, mode="greater")
+
+> execGRASS("r.reclass.area", input="zipcodes",
+> output="zipcode_larger2000ha",$
+Error in system(cmd0, intern = TRUE) : 'r.reclass.area.exe' not found
+Error in parseGRASS(cmd, legacyExec = legacyExec) :
+  r.reclass.area not found
+  
+-----------------------  
+
+in summary (tested in OSGeo4W-winGRASS):
+
+- binary addon (e.g. r.stream.order) is reckognized and can be run via
+execGRASS
+- python scripts (python GRASS GIS scripts e.g. r.reclass.area _and_ python
+addon scripts) aren't found; it seems it is searched for an .exe, in
+winGRASS these scripts are started by a related .bat-file.
+
+
+
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244618.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From hellik at web.de  Mon Jan 11 13:05:01 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Mon, 11 Jan 2016 13:05:01 -0800 (PST)
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <E953A98FD6EAA7479A68EE8C24491F6B80C85F3B@DALER.valuta.nhh.no>
+References: <1452376106568-5244411.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601101000110.10870@reclus.nhh.no>
+ <1452455754410-5244459.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+ <1452509705632-5244520.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601111453510.18584@reclus.nhh.no>
+ <E953A98FD6EAA7479A68EE8C24491F6B80C85F3B@DALER.valuta.nhh.no>
+Message-ID: <1452546301235-5244620.post@n6.nabble.com>
+
+>The link is *not* to CRAN, and a lot more testing will  be needed before I
+even submit to CRAN - re your link from GRASS-dev to this thread. I need to
+know that use cases of g.extensions installed workflows now succeed where
+previously they failed for OSGeo4W and native Windows builds of GRASS. CRAN
+isn't used for speculating about possibilities that things might (or might
+not) work - that is R-forge, from which you may svn update, then R CMD build
+rgrass7, then R CMD INSTALL --build rgrass7_0.1-4.tar.gz (using RTools),
+then install from local zip file, then run the workflow.
+
+>There are other pending edits to vector file transfer on Windows, so the
+extensions issue isn't alone enough to trigger a submission to CRAN. 
+
+now tested with winGRASS standalone:
+
+-----------------------  
+
+GRASS version: 7.1.svn                                                          
+GRASS SVN revision: 67543                                                       
+Build date: 2016-01-11                                                          
+Build platform: x86_64-w64-mingw32                                              
+GDAL: 1.11.3                                                                    
+PROJ.4: 4.9.2                                                                   
+GEOS: 3.5.0                                                                     
+SQLite: 3.7.17                                                                  
+Python: 2.7.5                                                                   
+wxPython: 2.8.12.1                                                              
+Platform: Windows-7-6.1.7601-SP1   
+
+----------------------- 
+
+> execGRASS("r.watershed", elevation="elevation", threshold=10000,
+> accumulatio$
+SECTION 1a (of 5): Initiating Memory.
+SECTION 1b (of 5): Determining Offmap Flow.
+ 100%
+SECTION 2: A* Search.
+ 100%
+SECTION 3a: Accumulating Surface Flow with MFD.
+ 100%
+SECTION 3b: Adjusting drainage directions.
+ 100%
+SECTION 4: Watershed determination.
+ 100%
+SECTION 5: Closing Maps.
+ 100%
+
+----------------------- 
+
+> execGRASS("r.stream.order", stream_rast="mystreams",
+> direction="myflowdir", $
+All in RAM calculation...
+Reading raster map <mystreams>...
+ 100%
+Reading raster map <myflowdir>...
+ 100%
+Finding nodes...
+Calculating Strahler's stream order...
+Writing output raster maps...
+
+----------------------- 
+
+> execGRASS("r.slope.aspect", elevation="elevation", slope="myslope",
+> aspect="$
+ 100%
+Aspect raster map <myaspect> complete
+Slope raster map <myslope> complete
+
+----------------------- 
+
+> execGRASS("r.roughness.vector", elevation="elevation", slope="myslope",
+> aspe$
+Error in system(cmd0, intern = TRUE) : 'r.roughness.vector.exe' not found
+Error in parseGRASS(cmd, legacyExec = legacyExec) :
+  r.roughness.vector not found
+
+----------------------- 
+
+> execGRASS("r.reclass.area", input="zipcodes",
+> output="zipcode_larger2000ha",$
+Error in system(cmd0, intern = TRUE) : 'r.reclass.area.exe' not found
+Error in parseGRASS(cmd, legacyExec = legacyExec) :
+  r.reclass.area not found
+
+-----------------------
+
+it seems to be same that python scripts (python GRASS GIS scripts and python
+addon scripts) aren't reckognized.
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244620.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Mon Jan 11 15:45:38 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue, 12 Jan 2016 00:45:38 +0100
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <1452544394530-5244618.post@n6.nabble.com>
+References: <1452376106568-5244411.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601101000110.10870@reclus.nhh.no>
+ <1452455754410-5244459.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+ <1452509705632-5244520.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601111453510.18584@reclus.nhh.no>
+ <E953A98FD6EAA7479A68EE8C24491F6B80C85F3B@DALER.valuta.nhh.no>
+ <1452544394530-5244618.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.20.1601120040001.3099@reclus.nhh.no>
+
+On Mon, 11 Jan 2016, Helmut Kudrnovsky wrote:
+
+>> The link is *not* to CRAN, and a lot more testing will  be needed before I
+> even submit to CRAN - re your link from GRASS-dev to this thread. I need to
+> know that use cases of g.extensions installed workflows now succeed where
+> previously they failed for OSGeo4W and native Windows builds of GRASS. CRAN
+> isn't used for speculating about possibilities that things might (or might
+> not) work - that is R-forge, from which you may svn update, then R CMD build
+> rgrass7, then R CMD INSTALL --build rgrass7_0.1-4.tar.gz (using RTools),
+> then install from local zip file, then run the workflow.
+>>
+>> There are other pending edits to vector file transfer on Windows, so the
+> extensions issue isn't alone enough to trigger a submission to CRAN. 
+>
+> thanks for the clarification.
+>
+> tested now:
+>
+> -----------------------
+>
+> versuche URL
+> 'http://R-Forge.R-project.org/bin/windows/contrib/3.2/rgrass7_0.1-4.zip'
+> Content type 'application/zip' length 85081 bytes (83 KB)
+> downloaded 83 KB
+>
+> -----------------------
+>
+> GRASS version: 7.0.3RC1 
+> GRASS SVN Revision: 67443 
+> Build Date: 2015-12-31 
+> Build Platform: x86_64-w64-mingw32 
+> GDAL/OGR: 1.11.3 
+> PROJ.4: 4.9.2 
+> GEOS: 3.5.0 
+> SQLite: 3.7.17 
+> Python: 2.7.5 
+> wxPython: 2.8.12.1 
+> Platform: Windows-7-6.1.7601-SP1 (OSGeo4W) 
+>
+> -----------------------
+>
+> binary addon (r.stream.order)
+>
+> in GRASS:
+>
+> r.watershed elevation=elevation at PERMANENT threshold=10000
+> accumulation=myaccum drainage=myflowdir stream=mystreams
+> r.stream.order stream_rast=mystreams at rtestw64bit
+> direction=myflowdir at rtestw64bit elevation=elevation at PERMANENT
+> accumulation=myaccum at rtestw64bit strahler=mystrahler
+>
+> in R:
+>
+>> library(rgrass7)
+> Loading required package: sp
+> Loading required package: XML
+> GRASS GIS interface loaded with GRASS version: GRASS 7.0.3RC1 (2015)
+> and location: nc_spm_08_grass7
+>
+> execGRASS("r.watershed", elevation="elevation", threshold=10000,
+> accumulation="myaccum", drainage="myflowdir", stream="mystreams")
+>
+>> execGRASS("r.watershed", elevation="elevation", threshold=10000,
+>> accumulatio$ ...
+> SECTION 1a (of 5): Initiating Memory.
+> SECTION 1b (of 5): Determining Offmap Flow.
+> 100%
+> SECTION 2: A* Search.
+> 100%
+> SECTION 3a: Accumulating Surface Flow with MFD.
+> 100%
+> SECTION 3b: Adjusting drainage directions.
+> 100%
+> SECTION 4: Watershed determination.
+> 100%
+> SECTION 5: Closing Maps.
+> 100%
+>
+> execGRASS("r.stream.order", stream_rast="mystreams", direction="myflowdir",
+> elevation="elevation", accumulation="myaccum", strahler="mystrahler")
+>
+>> execGRASS("r.stream.order", stream_rast="mystreams",
+>> direction="myflowdir", $ ...
+> All in RAM calculation...
+> Reading raster map <mystreams>...
+> 100%
+> Reading raster map <myflowdir>...
+> 100%
+> Finding nodes...
+> Calculating Strahler's stream order...
+> Writing output raster maps...
+>
+> -----------------------
+>
+> python addon (r.roughness.vector):
+>
+> in GRASS:
+>
+> r.slope.aspect elevation=elevation at PERMANENT slope=myslope aspect=myaspect 
+> r.roughness.vector elevation=elevation at PERMANENT slope=myslope at rtestw64bit
+> aspect=myaspect at rtestw64bit strength=vectorstrength
+>
+> in R:
+>
+> execGRASS("r.slope.aspect", elevation="elevation", slope="myslope",
+> aspect="myaspect")
+>
+>> execGRASS("r.slope.aspect", elevation="elevation", slope="myslope",
+>> aspect="$
+> 100%
+> Aspect raster map <myaspect> complete
+> Slope raster map <myslope> complete
+>
+> execGRASS("r.roughness.vector", elevation="elevation", slope="myslope",
+> aspect="myaspect", strength="vectorstrength")
+>
+>> execGRASS("r.roughness.vector", elevation="elevation", slope="myslope",
+>> aspe$
+> Error in system(cmd0, intern = TRUE) : 'r.roughness.vector.exe' not found
+> Error in parseGRASS(cmd, legacyExec = legacyExec) :
+>  r.roughness.vector not found
+>
+> -----------------------
+>
+> python GRASS script (r.reclass.area):
+>
+> in GRASS:
+>
+> r.reclass.area input=zipcodes at PERMANENT output=zipcode_larger2000ha
+> value=2000 mode=greater
+>
+> in R:
+>
+> execGRASS("r.reclass.area", input="zipcodes", output="zipcode_larger2000ha",
+> value=2000, mode="greater")
+>
+>> execGRASS("r.reclass.area", input="zipcodes",
+>> output="zipcode_larger2000ha",$
+> Error in system(cmd0, intern = TRUE) : 'r.reclass.area.exe' not found
+> Error in parseGRASS(cmd, legacyExec = legacyExec) :
+>  r.reclass.area not found
+> 
+> ----------------------- 
+>
+> in summary (tested in OSGeo4W-winGRASS):
+>
+> - binary addon (e.g. r.stream.order) is reckognized and can be run via
+> execGRASS
+> - python scripts (python GRASS GIS scripts e.g. r.reclass.area _and_ python
+> addon scripts) aren't found; it seems it is searched for an .exe, in
+> winGRASS these scripts are started by a related .bat-file.
+>
+>
+
+Wrong target, please use:
+
+http://win-builder.r-project.org/s90s00N7rhyt/rgrass7_0.1-4.zip
+
+R-Forge builds nightly, Winbuilder builds on demand. The R-forge version 
+has now caught up, but you need to check the SVN revision number too. I 
+did provide the link to the R Winbuilder binary, but contributors should 
+download RTools an build their own Windows binaries if speed matters. I do 
+not use Windows, so I cannot check everything. We need more reports from 
+users installing the Winbuilder or R-forge rev. 46 binary.
+
+Roger
+
+>
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244618.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From hellik at web.de  Tue Jan 12 00:50:49 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Tue, 12 Jan 2016 00:50:49 -0800 (PST)
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <alpine.LFD.2.20.1601120040001.3099@reclus.nhh.no>
+References: <1452376106568-5244411.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601101000110.10870@reclus.nhh.no>
+ <1452455754410-5244459.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+ <1452509705632-5244520.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601111453510.18584@reclus.nhh.no>
+ <E953A98FD6EAA7479A68EE8C24491F6B80C85F3B@DALER.valuta.nhh.no>
+ <1452544394530-5244618.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601120040001.3099@reclus.nhh.no>
+Message-ID: <1452588649985-5244654.post@n6.nabble.com>
+
+>Wrong target, please use:
+>http://win-builder.r-project.org/s90s00N7rhyt/rgrass7_0.1-4.zip
+
+> utils:::menuInstallLocal()
+Paket ‘rgrass7’ erfolgreich ausgepackt und MD5 Summen abgeglichen
+
+GRASS version: 7.1.svn                                                          
+GRASS SVN revision: 67543                                                       
+Build date: 2016-01-11                                                          
+Build platform: x86_64-w64-mingw32                                              
+GDAL: 1.11.3                                                                    
+PROJ.4: 4.9.2                                                                   
+GEOS: 3.5.0                                                                     
+SQLite: 3.7.17                                                                  
+Python: 2.7.5                                                                   
+wxPython: 2.8.12.1                                                              
+Platform: Windows-7-6.1.7601-SP1    
+
+> library(rgrass7)
+Loading required package: sp
+Loading required package: XML
+GRASS GIS interface loaded with GRASS version: GRASS 7.1.svn (2016)
+and location: nc_spm_08_grass7
+
+--------------
+binary addon (r.stream.order)
+
+> execGRASS("r.watershed", elevation="elevation", threshold=10000,
+> accumulatio$
+SECTION 1a (of 5): Initiating Memory.
+SECTION 1b (of 5): Determining Offmap Flow.
+ 100%
+SECTION 2: A* Search.
+ 100%
+SECTION 3a: Accumulating Surface Flow with MFD.
+ 100%
+SECTION 3b: Adjusting drainage directions.
+ 100%
+SECTION 4: Watershed determination.
+ 100%
+SECTION 5: Closing Maps.
+ 100%
+>
+
+> execGRASS("r.stream.order", stream_rast="mystreams",
+> direction="myflowdir", $
+All in RAM calculation...
+Reading raster map <mystreams>...
+ 100%
+Reading raster map <myflowdir>...
+ 100%
+Finding nodes...
+Calculating Strahler's stream order...
+Writing output raster maps...
+--------------
+python addon (r.roughness.vector):
+
+> execGRASS("r.slope.aspect", elevation="elevation", slope="myslope",
+> aspect="$
+ 100%
+Aspect raster map <myaspect> complete
+Slope raster map <myslope> complete
+
+> execGRASS("r.roughness.vector", elevation="elevation", slope="myslope",
+> aspe$
+Error in system(cmd0, intern = TRUE) : 'r.roughness.vector.exe' not found
+Error in parseGRASS(cmd, legacyExec = legacyExec) :
+  r.roughness.vector not found
+--------------
+python GRASS script (r.reclass.area):
+
+> execGRASS("r.reclass.area", input="zipcodes",
+> output="zipcode_larger2000ha",$
+Error in system(cmd0, intern = TRUE) : 'r.reclass.area.exe' not found
+Error in parseGRASS(cmd, legacyExec = legacyExec) :
+  r.reclass.area not found
+--------------
+
+it seems to be the same behaviour: 
+
+binary addons (exe living in e.g.
+C:\Users\xy\AppData\Roaming\GRASS7\addons\bin) are found.
+python scripts (with related bat-files in e.g.
+C:\Users\xy\AppData\Roaming\GRASS7\addons\bin or in e.g. C:\Program
+Files\GRASS GIS 7.1.svn\bin) are not found as it is searched for e.g.
+r.reclass.area.exe (see above).
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244654.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Tue Jan 12 01:33:34 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue, 12 Jan 2016 10:33:34 +0100
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <1452588649985-5244654.post@n6.nabble.com>
+References: <1452376106568-5244411.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601101000110.10870@reclus.nhh.no>
+ <1452455754410-5244459.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+ <1452509705632-5244520.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601111453510.18584@reclus.nhh.no>
+ <E953A98FD6EAA7479A68EE8C24491F6B80C85F3B@DALER.valuta.nhh.no>
+ <1452544394530-5244618.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601120040001.3099@reclus.nhh.no>
+ <1452588649985-5244654.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.20.1601121029050.3235@reclus.nhh.no>
+
+On Tue, 12 Jan 2016, Helmut Kudrnovsky wrote:
+
+>> Wrong target, please use:
+>> http://win-builder.r-project.org/s90s00N7rhyt/rgrass7_0.1-4.zip
+>
+
+OK. Please check that r.roughness.vector.bat is present in:
+
+C:\Users\xy\AppData\Roaming\GRASS7\addons\bin, or
+C:\Program Files\GRASS GIS 7.1.svn\bin
+
+Possibly run
+
+debug(parseGRASS)
+parseGRASS("r.roughness.vector")
+
+and check that its *.bat file is present in WN_bat under debugging. I'll 
+try it too.
+
+The revisions add *.bat from local addons to the global list of *.bat, but 
+something may have got lost - it worked for me for r.basin.
+
+Roger
+
+
+>> utils:::menuInstallLocal()
+> Paket ‘rgrass7’ erfolgreich ausgepackt und MD5 Summen abgeglichen
+>
+> GRASS version: 7.1.svn 
+> GRASS SVN revision: 67543 
+> Build date: 2016-01-11 
+> Build platform: x86_64-w64-mingw32 
+> GDAL: 1.11.3 
+> PROJ.4: 4.9.2 
+> GEOS: 3.5.0 
+> SQLite: 3.7.17 
+> Python: 2.7.5 
+> wxPython: 2.8.12.1 
+> Platform: Windows-7-6.1.7601-SP1 
+>
+>> library(rgrass7)
+> Loading required package: sp
+> Loading required package: XML
+> GRASS GIS interface loaded with GRASS version: GRASS 7.1.svn (2016)
+> and location: nc_spm_08_grass7
+>
+> --------------
+> binary addon (r.stream.order)
+>
+>> execGRASS("r.watershed", elevation="elevation", threshold=10000,
+>> accumulatio$
+> SECTION 1a (of 5): Initiating Memory.
+> SECTION 1b (of 5): Determining Offmap Flow.
+> 100%
+> SECTION 2: A* Search.
+> 100%
+> SECTION 3a: Accumulating Surface Flow with MFD.
+> 100%
+> SECTION 3b: Adjusting drainage directions.
+> 100%
+> SECTION 4: Watershed determination.
+> 100%
+> SECTION 5: Closing Maps.
+> 100%
+>>
+>
+>> execGRASS("r.stream.order", stream_rast="mystreams",
+>> direction="myflowdir", $
+> All in RAM calculation...
+> Reading raster map <mystreams>...
+> 100%
+> Reading raster map <myflowdir>...
+> 100%
+> Finding nodes...
+> Calculating Strahler's stream order...
+> Writing output raster maps...
+> --------------
+> python addon (r.roughness.vector):
+>
+>> execGRASS("r.slope.aspect", elevation="elevation", slope="myslope",
+>> aspect="$
+> 100%
+> Aspect raster map <myaspect> complete
+> Slope raster map <myslope> complete
+>
+>> execGRASS("r.roughness.vector", elevation="elevation", slope="myslope",
+>> aspe$
+> Error in system(cmd0, intern = TRUE) : 'r.roughness.vector.exe' not found
+> Error in parseGRASS(cmd, legacyExec = legacyExec) :
+>  r.roughness.vector not found
+> --------------
+> python GRASS script (r.reclass.area):
+>
+>> execGRASS("r.reclass.area", input="zipcodes",
+>> output="zipcode_larger2000ha",$
+> Error in system(cmd0, intern = TRUE) : 'r.reclass.area.exe' not found
+> Error in parseGRASS(cmd, legacyExec = legacyExec) :
+>  r.reclass.area not found
+> --------------
+>
+> it seems to be the same behaviour: 
+>
+> binary addons (exe living in e.g.
+> C:\Users\xy\AppData\Roaming\GRASS7\addons\bin) are found.
+> python scripts (with related bat-files in e.g.
+> C:\Users\xy\AppData\Roaming\GRASS7\addons\bin or in e.g. C:\Program
+> Files\GRASS GIS 7.1.svn\bin) are not found as it is searched for e.g.
+> r.reclass.area.exe (see above).
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244654.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From hellik at web.de  Tue Jan 12 01:50:12 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Tue, 12 Jan 2016 01:50:12 -0800 (PST)
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <alpine.LFD.2.20.1601121029050.3235@reclus.nhh.no>
+References: <alpine.LFD.2.20.1601101000110.10870@reclus.nhh.no>
+ <1452455754410-5244459.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+ <1452509705632-5244520.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601111453510.18584@reclus.nhh.no>
+ <E953A98FD6EAA7479A68EE8C24491F6B80C85F3B@DALER.valuta.nhh.no>
+ <1452544394530-5244618.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601120040001.3099@reclus.nhh.no>
+ <1452588649985-5244654.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121029050.3235@reclus.nhh.no>
+Message-ID: <1452592212413-5244663.post@n6.nabble.com>
+
+>OK. Please check that r.roughness.vector.bat is present in:
+>
+>C:\Users\xy\AppData\Roaming\GRASS7\addons\bin, or
+>C:\Program Files\GRASS GIS 7.1.svn\bin 
+
+it is in the addon path: C:\Users\xxx\AppData\Roaming\GRASS7\addons\bin
+
+it works in winGRASS itself.
+
+r.roughness.vector elevation=elevation at PERMANENT slope=slope at rtestw64bit
+aspect=aspect at rtestw64bit
+----
+Check if input files exist ...
+----
+Define default output names when not defined by user ...
+----
+Calculate compass aspect values ...
+----
+Calculate colatitude ...
+----
+Calculate direction cosines ...
+----
+Calculate sum of direction cosines ...
+Calculating sum of X direction cosines ...
+Calculating sum of Y direction cosines ...
+Calculating sum of Z direction cosines ...
+----
+Calculate vector strength ...
+----
+Calculate inverted Fisher's K parameter ...
+----
+Result maps:
+elevation_vector_strength_3x3
+elevation_fisher_1K_3x3
+Calculations done.
+----
+(Tue Jan 12 10:41:00 2016) Command finished (1 min 18 sec)  
+
+xml1.R
+
+"            WN_bat <- sub(".bat", "", 
+                list.files(paste(Sys.getenv("GISBASE"), "bin", sep="/"),
+                pattern=".bat$"))
+            if (nchar(Sys.getenv("GRASS_ADDON_BASE")) > 0) {
+                t0 <- try(sub(".bat", "", 
+                   list.files(paste(Sys.getenv("GRASS_ADDON_BASE"),
+                       "bin", sep="/"), pattern=".bat$")), silent=TRUE)
+                if (class(t0) != "try-error" && is.character(t0) &&
+                   nchar(t0) > 0)
+                   WN_bat <- c(WN_bat, t0)
+                assign("WN_bat", WN_bat, envir=.GRASS_CACHE)
+            }"
+
+do it manually:
+
+WN_bat <- sub(".bat", "", list.files(paste(Sys.getenv("GISBASE"), "bin",
+sep="/"), pattern=".bat$"))
+> WN_bat
+  [1] "d.correlate"          "d.frame"              "d.out.file"
+  [4] "d.polar"              "d.rast.edit"          "d.rast.leg"
+  [7] "d.redraw"             "d.shade"              "d.to.rast"
+ [10] "d.what.rast"          "d.what.vect"          "db.dropcolumn"
+ [13] "db.droptable"         "db.in.ogr"            "db.out.ogr"
+ [16] "db.test"              "db.univar"            "g.extension.all"
+ [19] "g.extension"          "g.gui.animation"      "g.gui.datacatalog"
+ [22] "g.gui.dbmgr"          "g.gui.gcp"            "g.gui.gmodeler"
+ [25] "g.gui.iclass"         "g.gui.mapswipe"       "g.gui.psmap"
+ [28] "g.gui.rlisetup"       "g.gui.timeline"       "g.gui.tplot"
+ [31] "g.gui.vdigit"         "g.manual"             "g.search.modules"
+ [34] "i.colors.enhance"     "i.image.mosaic"       "i.in.spotvgt"
+ [37] "i.oif"                "i.pansharpen"         "i.spectral"
+ [40] "i.tasscap"            "m.proj"               "r.blend"
+ [43] "r.buffer.lowmem"      "r.colors.stddev"      "r.fillnulls"
+ [46] "r.grow"               "r.import"             "r.in.aster"
+ [49] "r.in.srtm"            "r.in.wms"             "r.mask"
+ [52] "r.out.xyz"            "r.pack"               "r.plane"
+ [55] "r.reclass.area"       "r.rgb"                "r.shade"
+ [58] "r.tileset"            "r.unpack"             "r3.in.xyz"
+ [61] "t.create"             "t.info"               "t.list"
+ [64] "t.merge"              "t.rast.accdetect"     "t.rast.accumulate"
+ [67] "t.rast.aggregate"     "t.rast.aggregate.ds"  "t.rast.algebra"
+ [70] "t.rast.colors"        "t.rast.contour"       "t.rast.export"
+ [73] "t.rast.extract"       "t.rast.gapfill"       "t.rast.import"
+ [76] "t.rast.list"          "t.rast.mapcalc"       "t.rast.neighbors"
+ [79] "t.rast.out.vtk"       "t.rast.series"        "t.rast.to.rast3"
+ [82] "t.rast.to.vect"       "t.rast.univar"        "t.rast.what"
+ [85] "t.rast3d.algebra"     "t.rast3d.extract"     "t.rast3d.list"
+ [88] "t.rast3d.mapcalc"     "t.rast3d.univar"      "t.register"
+ [91] "t.remove"             "t.rename"             "t.sample"
+ [94] "t.select"             "t.shift"              "t.snap"
+ [97] "t.support"            "t.topology"           "t.unregister"
+[100] "t.vect.algebra"       "t.vect.db.select"     "t.vect.export"
+[103] "t.vect.extract"       "t.vect.import"        "t.vect.list"
+[106] "t.vect.observe.strds" "t.vect.univar"        "t.vect.what.strds"
+[109] "v.build.all"          "v.centroids"          "v.db.addcolumn"
+[112] "v.db.addtable"        "v.db.dropcolumn"      "v.db.droprow"
+[115] "v.db.droptable"       "v.db.join"            "v.db.reconnect.all"
+[118] "v.db.renamecolumn"    "v.db.univar"          "v.db.update"
+[121] "v.dissolve"           "v.import"             "v.in.e00"
+[124] "v.in.geonames"        "v.in.lines"           "v.in.mapgen"
+[127] "v.in.wfs"             "v.krige"              "v.pack"
+[130] "v.rast.stats"         "v.report"             "v.to.lines"
+[133] "v.unpack"             "v.what.strds"         "v.what.vect"
+[136] "wxpyimgview"
+t0 <- sub(".bat", "", list.files(paste(Sys.getenv("GRASS_ADDON_BASE"),
+"bin", sep="/"), pattern=".bat$"))
+> t0
+ [1] "m.ecad"                "r.basin"               "r.biodiversity"
+ [4] "r.euroeco"             "r.hypso"               "r.roughness.vector"
+ [7] "r.sun.daily"           "r.sun.hourly"          "r.width.funct"
+[10] "v.fixed.segmentpoints" "v.in.gbif"             "v.in.natura2000"
+[13] "v.in.redlist"          "v.stats"
+> WN_bat <- c(WN_bat, t0)
+> WN_bat
+  [1] "d.correlate"           "d.frame"               "d.out.file"
+  [4] "d.polar"               "d.rast.edit"           "d.rast.leg"
+  [7] "d.redraw"              "d.shade"               "d.to.rast"
+ [10] "d.what.rast"           "d.what.vect"           "db.dropcolumn"
+ [13] "db.droptable"          "db.in.ogr"             "db.out.ogr"
+ [16] "db.test"               "db.univar"             "g.extension.all"
+ [19] "g.extension"           "g.gui.animation"       "g.gui.datacatalog"
+ [22] "g.gui.dbmgr"           "g.gui.gcp"             "g.gui.gmodeler"
+ [25] "g.gui.iclass"          "g.gui.mapswipe"        "g.gui.psmap"
+ [28] "g.gui.rlisetup"        "g.gui.timeline"        "g.gui.tplot"
+ [31] "g.gui.vdigit"          "g.manual"              "g.search.modules"
+ [34] "i.colors.enhance"      "i.image.mosaic"        "i.in.spotvgt"
+ [37] "i.oif"                 "i.pansharpen"          "i.spectral"
+ [40] "i.tasscap"             "m.proj"                "r.blend"
+ [43] "r.buffer.lowmem"       "r.colors.stddev"       "r.fillnulls"
+ [46] "r.grow"                "r.import"              "r.in.aster"
+ [49] "r.in.srtm"             "r.in.wms"              "r.mask"
+ [52] "r.out.xyz"             "r.pack"                "r.plane"
+ [55] "r.reclass.area"        "r.rgb"                 "r.shade"
+ [58] "r.tileset"             "r.unpack"              "r3.in.xyz"
+ [61] "t.create"              "t.info"                "t.list"
+ [64] "t.merge"               "t.rast.accdetect"      "t.rast.accumulate"
+ [67] "t.rast.aggregate"      "t.rast.aggregate.ds"   "t.rast.algebra"
+ [70] "t.rast.colors"         "t.rast.contour"        "t.rast.export"
+ [73] "t.rast.extract"        "t.rast.gapfill"        "t.rast.import"
+ [76] "t.rast.list"           "t.rast.mapcalc"        "t.rast.neighbors"
+ [79] "t.rast.out.vtk"        "t.rast.series"         "t.rast.to.rast3"
+ [82] "t.rast.to.vect"        "t.rast.univar"         "t.rast.what"
+ [85] "t.rast3d.algebra"      "t.rast3d.extract"      "t.rast3d.list"
+ [88] "t.rast3d.mapcalc"      "t.rast3d.univar"       "t.register"
+ [91] "t.remove"              "t.rename"              "t.sample"
+ [94] "t.select"              "t.shift"               "t.snap"
+ [97] "t.support"             "t.topology"            "t.unregister"
+[100] "t.vect.algebra"        "t.vect.db.select"      "t.vect.export"
+[103] "t.vect.extract"        "t.vect.import"         "t.vect.list"
+[106] "t.vect.observe.strds"  "t.vect.univar"         "t.vect.what.strds"
+[109] "v.build.all"           "v.centroids"           "v.db.addcolumn"
+[112] "v.db.addtable"         "v.db.dropcolumn"       "v.db.droprow"
+[115] "v.db.droptable"        "v.db.join"             "v.db.reconnect.all"
+[118] "v.db.renamecolumn"     "v.db.univar"           "v.db.update"
+[121] "v.dissolve"            "v.import"              "v.in.e00"
+[124] "v.in.geonames"         "v.in.lines"            "v.in.mapgen"
+[127] "v.in.wfs"              "v.krige"               "v.pack"
+[130] "v.rast.stats"          "v.report"              "v.to.lines"
+[133] "v.unpack"              "v.what.strds"          "v.what.vect"
+[136] "wxpyimgview"           "m.ecad"                "r.basin"
+[139] "r.biodiversity"        "r.euroeco"             "r.hypso"
+[142] "r.roughness.vector"    "r.sun.daily"           "r.sun.hourly"
+[145] "r.width.funct"         "v.fixed.segmentpoints" "v.in.gbif"
+[148] "v.in.natura2000"       "v.in.redlist"          "v.stats"
+>
+
+r.roughness.vector is in the list of the script related bat-files.
+
+>Possibly run
+>
+>debug(parseGRASS)
+>parseGRASS("r.roughness.vector") 
+
+debug.txt <http://osgeo-org.1560.x6.nabble.com/file/n5244663/debug.txt>  
+attached.
+
+the last lines of debug:
+
+Browse[2]>
+debug: tr <- try(system(cmd0, intern = TRUE))
+Browse[2]>
+Error in system(cmd0, intern = TRUE) : 'r.roughness.vector.exe' not found
+debug: if (class(tr) == "try-error") stop(paste(cmd, "not found"))
+Browse[2]>
+Browse[2]>
+debug: stop(paste(cmd, "not found"))
+Browse[2]>
+Browse[2]>
+Error in parseGRASS("r.roughness.vector") : r.roughness.vector not found
+>	
+
+here on my side for addon scripts but also for GRASS own scripts it seems to
+append an .exe instead of .bat (see above); but I can't find this in the
+rgarss7 code.
+
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244663.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Tue Jan 12 06:18:59 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue, 12 Jan 2016 15:18:59 +0100
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <1452592212413-5244663.post@n6.nabble.com>
+References: <alpine.LFD.2.20.1601101000110.10870@reclus.nhh.no>
+ <1452455754410-5244459.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+ <1452509705632-5244520.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601111453510.18584@reclus.nhh.no>
+ <E953A98FD6EAA7479A68EE8C24491F6B80C85F3B@DALER.valuta.nhh.no>
+ <1452544394530-5244618.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601120040001.3099@reclus.nhh.no>
+ <1452588649985-5244654.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121029050.3235@reclus.nhh.no>
+ <1452592212413-5244663.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.20.1601121504320.3235@reclus.nhh.no>
+
+On Tue, 12 Jan 2016, Helmut Kudrnovsky wrote:
+
+>> OK. Please check that r.roughness.vector.bat is present in:
+>>
+>> C:\Users\xy\AppData\Roaming\GRASS7\addons\bin, or
+>> C:\Program Files\GRASS GIS 7.1.svn\bin 
+>
+> it is in the addon path: C:\Users\xxx\AppData\Roaming\GRASS7\addons\bin
+>
+> it works in winGRASS itself.
+>
+> r.roughness.vector elevation=elevation at PERMANENT slope=slope at rtestw64bit
+> aspect=aspect at rtestw64bit
+> ----
+> Check if input files exist ...
+> ----
+> Define default output names when not defined by user ...
+> ----
+> Calculate compass aspect values ...
+> ----
+> Calculate colatitude ...
+> ----
+> Calculate direction cosines ...
+> ----
+> Calculate sum of direction cosines ...
+> Calculating sum of X direction cosines ...
+> Calculating sum of Y direction cosines ...
+> Calculating sum of Z direction cosines ...
+> ----
+> Calculate vector strength ...
+> ----
+> Calculate inverted Fisher's K parameter ...
+> ----
+> Result maps:
+> elevation_vector_strength_3x3
+> elevation_fisher_1K_3x3
+> Calculations done.
+> ----
+> (Tue Jan 12 10:41:00 2016) Command finished (1 min 18 sec) 
+>
+> xml1.R
+
+Typo in:
+
+         if (get("SYS", envir=.GRASS_CACHE) == "WinNat" && nchar(WN_bat)) {
+
+should be
+
+         if (get("SYS", envir=.GRASS_CACHE) == "WinNat"
+             && nchar(WN_bat) == 0) {
+
+With this r.roughness.vector is found correctly with the *.bat extension, 
+for me anyway. The fresh Windows binary package from Winbuilder is here:
+
+http://win-builder.r-project.org/bEws3GQ47oph/rgrass7_0.1-4.zip
+
+This version has broken vector file exchange (problems removing temporary 
+files on Windows - work in progress), so is not yet ready for submission 
+to CRAN, but as the problems do not interact, it can be used to check the 
+correct running of parseGRASS(), doGRASS() and execGRASS() for addons on 
+Windows. Thanks for your patience!
+
+Best wishes,
+
+Roger
+
+>
+> "            WN_bat <- sub(".bat", "",
+>                list.files(paste(Sys.getenv("GISBASE"), "bin", sep="/"),
+>                pattern=".bat$"))
+>            if (nchar(Sys.getenv("GRASS_ADDON_BASE")) > 0) {
+>                t0 <- try(sub(".bat", "",
+>                   list.files(paste(Sys.getenv("GRASS_ADDON_BASE"),
+>                       "bin", sep="/"), pattern=".bat$")), silent=TRUE)
+>                if (class(t0) != "try-error" && is.character(t0) &&
+>                   nchar(t0) > 0)
+>                   WN_bat <- c(WN_bat, t0)
+>                assign("WN_bat", WN_bat, envir=.GRASS_CACHE)
+>            }"
+>
+> do it manually:
+>
+> WN_bat <- sub(".bat", "", list.files(paste(Sys.getenv("GISBASE"), "bin",
+> sep="/"), pattern=".bat$"))
+>> WN_bat
+>  [1] "d.correlate"          "d.frame"              "d.out.file"
+>  [4] "d.polar"              "d.rast.edit"          "d.rast.leg"
+>  [7] "d.redraw"             "d.shade"              "d.to.rast"
+> [10] "d.what.rast"          "d.what.vect"          "db.dropcolumn"
+> [13] "db.droptable"         "db.in.ogr"            "db.out.ogr"
+> [16] "db.test"              "db.univar"            "g.extension.all"
+> [19] "g.extension"          "g.gui.animation"      "g.gui.datacatalog"
+> [22] "g.gui.dbmgr"          "g.gui.gcp"            "g.gui.gmodeler"
+> [25] "g.gui.iclass"         "g.gui.mapswipe"       "g.gui.psmap"
+> [28] "g.gui.rlisetup"       "g.gui.timeline"       "g.gui.tplot"
+> [31] "g.gui.vdigit"         "g.manual"             "g.search.modules"
+> [34] "i.colors.enhance"     "i.image.mosaic"       "i.in.spotvgt"
+> [37] "i.oif"                "i.pansharpen"         "i.spectral"
+> [40] "i.tasscap"            "m.proj"               "r.blend"
+> [43] "r.buffer.lowmem"      "r.colors.stddev"      "r.fillnulls"
+> [46] "r.grow"               "r.import"             "r.in.aster"
+> [49] "r.in.srtm"            "r.in.wms"             "r.mask"
+> [52] "r.out.xyz"            "r.pack"               "r.plane"
+> [55] "r.reclass.area"       "r.rgb"                "r.shade"
+> [58] "r.tileset"            "r.unpack"             "r3.in.xyz"
+> [61] "t.create"             "t.info"               "t.list"
+> [64] "t.merge"              "t.rast.accdetect"     "t.rast.accumulate"
+> [67] "t.rast.aggregate"     "t.rast.aggregate.ds"  "t.rast.algebra"
+> [70] "t.rast.colors"        "t.rast.contour"       "t.rast.export"
+> [73] "t.rast.extract"       "t.rast.gapfill"       "t.rast.import"
+> [76] "t.rast.list"          "t.rast.mapcalc"       "t.rast.neighbors"
+> [79] "t.rast.out.vtk"       "t.rast.series"        "t.rast.to.rast3"
+> [82] "t.rast.to.vect"       "t.rast.univar"        "t.rast.what"
+> [85] "t.rast3d.algebra"     "t.rast3d.extract"     "t.rast3d.list"
+> [88] "t.rast3d.mapcalc"     "t.rast3d.univar"      "t.register"
+> [91] "t.remove"             "t.rename"             "t.sample"
+> [94] "t.select"             "t.shift"              "t.snap"
+> [97] "t.support"            "t.topology"           "t.unregister"
+> [100] "t.vect.algebra"       "t.vect.db.select"     "t.vect.export"
+> [103] "t.vect.extract"       "t.vect.import"        "t.vect.list"
+> [106] "t.vect.observe.strds" "t.vect.univar"        "t.vect.what.strds"
+> [109] "v.build.all"          "v.centroids"          "v.db.addcolumn"
+> [112] "v.db.addtable"        "v.db.dropcolumn"      "v.db.droprow"
+> [115] "v.db.droptable"       "v.db.join"            "v.db.reconnect.all"
+> [118] "v.db.renamecolumn"    "v.db.univar"          "v.db.update"
+> [121] "v.dissolve"           "v.import"             "v.in.e00"
+> [124] "v.in.geonames"        "v.in.lines"           "v.in.mapgen"
+> [127] "v.in.wfs"             "v.krige"              "v.pack"
+> [130] "v.rast.stats"         "v.report"             "v.to.lines"
+> [133] "v.unpack"             "v.what.strds"         "v.what.vect"
+> [136] "wxpyimgview"
+> t0 <- sub(".bat", "", list.files(paste(Sys.getenv("GRASS_ADDON_BASE"),
+> "bin", sep="/"), pattern=".bat$"))
+>> t0
+> [1] "m.ecad"                "r.basin"               "r.biodiversity"
+> [4] "r.euroeco"             "r.hypso"               "r.roughness.vector"
+> [7] "r.sun.daily"           "r.sun.hourly"          "r.width.funct"
+> [10] "v.fixed.segmentpoints" "v.in.gbif"             "v.in.natura2000"
+> [13] "v.in.redlist"          "v.stats"
+>> WN_bat <- c(WN_bat, t0)
+>> WN_bat
+>  [1] "d.correlate"           "d.frame"               "d.out.file"
+>  [4] "d.polar"               "d.rast.edit"           "d.rast.leg"
+>  [7] "d.redraw"              "d.shade"               "d.to.rast"
+> [10] "d.what.rast"           "d.what.vect"           "db.dropcolumn"
+> [13] "db.droptable"          "db.in.ogr"             "db.out.ogr"
+> [16] "db.test"               "db.univar"             "g.extension.all"
+> [19] "g.extension"           "g.gui.animation"       "g.gui.datacatalog"
+> [22] "g.gui.dbmgr"           "g.gui.gcp"             "g.gui.gmodeler"
+> [25] "g.gui.iclass"          "g.gui.mapswipe"        "g.gui.psmap"
+> [28] "g.gui.rlisetup"        "g.gui.timeline"        "g.gui.tplot"
+> [31] "g.gui.vdigit"          "g.manual"              "g.search.modules"
+> [34] "i.colors.enhance"      "i.image.mosaic"        "i.in.spotvgt"
+> [37] "i.oif"                 "i.pansharpen"          "i.spectral"
+> [40] "i.tasscap"             "m.proj"                "r.blend"
+> [43] "r.buffer.lowmem"       "r.colors.stddev"       "r.fillnulls"
+> [46] "r.grow"                "r.import"              "r.in.aster"
+> [49] "r.in.srtm"             "r.in.wms"              "r.mask"
+> [52] "r.out.xyz"             "r.pack"                "r.plane"
+> [55] "r.reclass.area"        "r.rgb"                 "r.shade"
+> [58] "r.tileset"             "r.unpack"              "r3.in.xyz"
+> [61] "t.create"              "t.info"                "t.list"
+> [64] "t.merge"               "t.rast.accdetect"      "t.rast.accumulate"
+> [67] "t.rast.aggregate"      "t.rast.aggregate.ds"   "t.rast.algebra"
+> [70] "t.rast.colors"         "t.rast.contour"        "t.rast.export"
+> [73] "t.rast.extract"        "t.rast.gapfill"        "t.rast.import"
+> [76] "t.rast.list"           "t.rast.mapcalc"        "t.rast.neighbors"
+> [79] "t.rast.out.vtk"        "t.rast.series"         "t.rast.to.rast3"
+> [82] "t.rast.to.vect"        "t.rast.univar"         "t.rast.what"
+> [85] "t.rast3d.algebra"      "t.rast3d.extract"      "t.rast3d.list"
+> [88] "t.rast3d.mapcalc"      "t.rast3d.univar"       "t.register"
+> [91] "t.remove"              "t.rename"              "t.sample"
+> [94] "t.select"              "t.shift"               "t.snap"
+> [97] "t.support"             "t.topology"            "t.unregister"
+> [100] "t.vect.algebra"        "t.vect.db.select"      "t.vect.export"
+> [103] "t.vect.extract"        "t.vect.import"         "t.vect.list"
+> [106] "t.vect.observe.strds"  "t.vect.univar"         "t.vect.what.strds"
+> [109] "v.build.all"           "v.centroids"           "v.db.addcolumn"
+> [112] "v.db.addtable"         "v.db.dropcolumn"       "v.db.droprow"
+> [115] "v.db.droptable"        "v.db.join"             "v.db.reconnect.all"
+> [118] "v.db.renamecolumn"     "v.db.univar"           "v.db.update"
+> [121] "v.dissolve"            "v.import"              "v.in.e00"
+> [124] "v.in.geonames"         "v.in.lines"            "v.in.mapgen"
+> [127] "v.in.wfs"              "v.krige"               "v.pack"
+> [130] "v.rast.stats"          "v.report"              "v.to.lines"
+> [133] "v.unpack"              "v.what.strds"          "v.what.vect"
+> [136] "wxpyimgview"           "m.ecad"                "r.basin"
+> [139] "r.biodiversity"        "r.euroeco"             "r.hypso"
+> [142] "r.roughness.vector"    "r.sun.daily"           "r.sun.hourly"
+> [145] "r.width.funct"         "v.fixed.segmentpoints" "v.in.gbif"
+> [148] "v.in.natura2000"       "v.in.redlist"          "v.stats"
+>>
+>
+> r.roughness.vector is in the list of the script related bat-files.
+>
+>> Possibly run
+>>
+>> debug(parseGRASS)
+>> parseGRASS("r.roughness.vector") 
+>
+> debug.txt <http://osgeo-org.1560.x6.nabble.com/file/n5244663/debug.txt> 
+> attached.
+>
+> the last lines of debug:
+>
+> Browse[2]>
+> debug: tr <- try(system(cmd0, intern = TRUE))
+> Browse[2]>
+> Error in system(cmd0, intern = TRUE) : 'r.roughness.vector.exe' not found
+> debug: if (class(tr) == "try-error") stop(paste(cmd, "not found"))
+> Browse[2]>
+> Browse[2]>
+> debug: stop(paste(cmd, "not found"))
+> Browse[2]>
+> Browse[2]>
+> Error in parseGRASS("r.roughness.vector") : r.roughness.vector not found
+>> 
+>
+> here on my side for addon scripts but also for GRASS own scripts it seems to
+> append an .exe instead of .bat (see above); but I can't find this in the
+> rgarss7 code.
+>
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244663.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From hellik at web.de  Tue Jan 12 07:44:35 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Tue, 12 Jan 2016 07:44:35 -0800 (PST)
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <alpine.LFD.2.20.1601121504320.3235@reclus.nhh.no>
+References: <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+ <1452509705632-5244520.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601111453510.18584@reclus.nhh.no>
+ <E953A98FD6EAA7479A68EE8C24491F6B80C85F3B@DALER.valuta.nhh.no>
+ <1452544394530-5244618.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601120040001.3099@reclus.nhh.no>
+ <1452588649985-5244654.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121029050.3235@reclus.nhh.no>
+ <1452592212413-5244663.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121504320.3235@reclus.nhh.no>
+Message-ID: <1452613475920-5244769.post@n6.nabble.com>
+
+>> xml1.R
+>
+>Typo in:
+>
+>         if (get("SYS", envir=.GRASS_CACHE) == "WinNat" && nchar(WN_bat)) {
+>
+>should be
+>
+>         if (get("SYS", envir=.GRASS_CACHE) == "WinNat"
+>            && nchar(WN_bat) == 0) {
+>
+>With this r.roughness.vector is found correctly with the *.bat extension,
+>for me anyway. The fresh Windows binary package from Winbuilder is here:
+>
+>http://win-builder.r-project.org/bEws3GQ47oph/rgrass7_0.1-4.zip
+
+-----------------------------------
+> utils:::menuInstallLocal()
+Paket ‘rgrass7’ erfolgreich ausgepackt und MD5 Summen abgeglichen
+
+> library(rgrass7)
+Loading required package: sp
+Loading required package: XML
+GRASS GIS interface loaded with GRASS version: GRASS 7.1.svn (2016)
+and location: nc_spm_08_grass7
+-----------------------------------
+> execGRASS("r.slope.aspect", elevation="elevation", slope="myslope",
+> aspect="$
+ 100%
+Aspect raster map <myaspect> complete
+Slope raster map <myslope> complete
+
+> execGRASS("r.roughness.vector", elevation="elevation", slope="myslope",
+> aspe$
+----
+Check if input files exist ...
+----
+Define default output names when not defined by user ...
+----
+Calculate compass aspect values ...
+ 100%
+----
+Calculate colatitude ...
+ 100%
+----
+Calculate direction cosines ...
+ 100%
+ 100%
+ 100%
+----
+Calculate sum of direction cosines ...
+Calculating sum of X direction cosines ...
+ 100%
+Calculating sum of Y direction cosines ...
+ 100%
+Calculating sum of Z direction cosines ...
+ 100%
+----
+Calculate vector strength ...
+ 100%
+----
+Calculate inverted Fisher's K parameter ...
+ 100%
+----
+Result maps:
+vectorstrength
+elevation_fisher_1K_3x3
+Calculations done.
+----
+>
+-----------------------------------
+> execGRASS("r.reclass.area", input="zipcodes",
+> output="zipcode_larger2000ha",$
+Generating a clumped raster file ...
+Pass 1 of 2...
+ 100%
+Generating renumbering scheme...
+ 100%
+Pass 2 of 2...
+ 100%
+r.clump complete. 16 clumps.
+Generating a reclass map with area size greater than or equal to
+2000.000000 hectares...
+ 100%
+ 100%
+Generating output raster map <zipcode_larger2000ha>...
+-----------------------------------
+
+confirmed, it works now. 
+
+great, thanks!
+
+
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244769.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Tue Jan 12 11:24:50 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue, 12 Jan 2016 20:24:50 +0100
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <1452613475920-5244769.post@n6.nabble.com>
+References: <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+ <1452509705632-5244520.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601111453510.18584@reclus.nhh.no>
+ <E953A98FD6EAA7479A68EE8C24491F6B80C85F3B@DALER.valuta.nhh.no>
+ <1452544394530-5244618.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601120040001.3099@reclus.nhh.no>
+ <1452588649985-5244654.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121029050.3235@reclus.nhh.no>
+ <1452592212413-5244663.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121504320.3235@reclus.nhh.no>
+ <1452613475920-5244769.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.20.1601122022210.20371@reclus.nhh.no>
+
+On Tue, 12 Jan 2016, Helmut Kudrnovsky wrote:
+
+>>> xml1.R
+>>
+>> Typo in:
+>>
+>>         if (get("SYS", envir=.GRASS_CACHE) == "WinNat" && nchar(WN_bat)) {
+>>
+>> should be
+>>
+>>         if (get("SYS", envir=.GRASS_CACHE) == "WinNat"
+>>            && nchar(WN_bat) == 0) {
+>>
+>> With this r.roughness.vector is found correctly with the *.bat extension,
+>> for me anyway. The fresh Windows binary package from Winbuilder is here:
+>>
+>> http://win-builder.r-project.org/bEws3GQ47oph/rgrass7_0.1-4.zip
+>
+> -----------------------------------
+>> utils:::menuInstallLocal()
+> Paket ‘rgrass7’ erfolgreich ausgepackt und MD5 Summen abgeglichen
+>
+>> library(rgrass7)
+> Loading required package: sp
+> Loading required package: XML
+> GRASS GIS interface loaded with GRASS version: GRASS 7.1.svn (2016)
+> and location: nc_spm_08_grass7
+> -----------------------------------
+>> execGRASS("r.slope.aspect", elevation="elevation", slope="myslope",
+>> aspect="$
+> 100%
+> Aspect raster map <myaspect> complete
+> Slope raster map <myslope> complete
+>
+>> execGRASS("r.roughness.vector", elevation="elevation", slope="myslope",
+>> aspe$
+> ----
+> Check if input files exist ...
+> ----
+> Define default output names when not defined by user ...
+> ----
+> Calculate compass aspect values ...
+> 100%
+> ----
+> Calculate colatitude ...
+> 100%
+> ----
+> Calculate direction cosines ...
+> 100%
+> 100%
+> 100%
+> ----
+> Calculate sum of direction cosines ...
+> Calculating sum of X direction cosines ...
+> 100%
+> Calculating sum of Y direction cosines ...
+> 100%
+> Calculating sum of Z direction cosines ...
+> 100%
+> ----
+> Calculate vector strength ...
+> 100%
+> ----
+> Calculate inverted Fisher's K parameter ...
+> 100%
+> ----
+> Result maps:
+> vectorstrength
+> elevation_fisher_1K_3x3
+> Calculations done.
+> ----
+>>
+> -----------------------------------
+>> execGRASS("r.reclass.area", input="zipcodes",
+>> output="zipcode_larger2000ha",$
+> Generating a clumped raster file ...
+> Pass 1 of 2...
+> 100%
+> Generating renumbering scheme...
+> 100%
+> Pass 2 of 2...
+> 100%
+> r.clump complete. 16 clumps.
+> Generating a reclass map with area size greater than or equal to
+> 2000.000000 hectares...
+> 100%
+> 100%
+> Generating output raster map <zipcode_larger2000ha>...
+> -----------------------------------
+>
+> confirmed, it works now. 
+>
+> great, thanks!
+>
+
+OK, thanks, as I've also made progress on the other problem (using 
+temporary SQLite files for vector transfer under Windows), I've submitted 
+to CRAN. Anyone who installed the 0.1-4 versions for testing will need to 
+install the CRAN version when/if it appears.
+
+Roger
+
+>
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244769.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From neteler at osgeo.org  Tue Jan 12 13:59:08 2016
+From: neteler at osgeo.org (Markus Neteler)
+Date: Tue, 12 Jan 2016 22:59:08 +0100
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <alpine.LFD.2.20.1601122022210.20371@reclus.nhh.no>
+References: <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+ <1452509705632-5244520.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601111453510.18584@reclus.nhh.no>
+ <E953A98FD6EAA7479A68EE8C24491F6B80C85F3B@DALER.valuta.nhh.no>
+ <1452544394530-5244618.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601120040001.3099@reclus.nhh.no>
+ <1452588649985-5244654.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121029050.3235@reclus.nhh.no>
+ <1452592212413-5244663.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121504320.3235@reclus.nhh.no>
+ <1452613475920-5244769.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601122022210.20371@reclus.nhh.no>
+Message-ID: <CALFmHhszf5mRP06mzohGmeOYOK8cniQDszZH3BEoOCzGpJmVPg@mail.gmail.com>
+
+On Tue, Jan 12, 2016 at 8:24 PM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+> On Tue, 12 Jan 2016, Helmut Kudrnovsky wrote:
+>> confirmed, it works now.
+>> great, thanks!
+>>
+> OK, thanks, as I've also made progress on the other problem (using temporary
+> SQLite files for vector transfer under Windows), I've submitted to CRAN.
+> Anyone who installed the 0.1-4 versions for testing will need to install the
+> CRAN version when/if it appears.
+
+That's great, thanks for discovering and solving!
+
+Markus
+
+From Roger.Bivand at nhh.no  Tue Jan 12 14:41:42 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue, 12 Jan 2016 23:41:42 +0100
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <CALFmHhszf5mRP06mzohGmeOYOK8cniQDszZH3BEoOCzGpJmVPg@mail.gmail.com>
+References: <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+ <1452509705632-5244520.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601111453510.18584@reclus.nhh.no>
+ <E953A98FD6EAA7479A68EE8C24491F6B80C85F3B@DALER.valuta.nhh.no>
+ <1452544394530-5244618.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601120040001.3099@reclus.nhh.no>
+ <1452588649985-5244654.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121029050.3235@reclus.nhh.no>
+ <1452592212413-5244663.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121504320.3235@reclus.nhh.no>
+ <1452613475920-5244769.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601122022210.20371@reclus.nhh.no>
+ <CALFmHhszf5mRP06mzohGmeOYOK8cniQDszZH3BEoOCzGpJmVPg@mail.gmail.com>
+Message-ID: <alpine.LFD.2.20.1601122338190.26297@reclus.nhh.no>
+
+On Tue, 12 Jan 2016, Markus Neteler wrote:
+
+> On Tue, Jan 12, 2016 at 8:24 PM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+>> On Tue, 12 Jan 2016, Helmut Kudrnovsky wrote:
+>>> confirmed, it works now.
+>>> great, thanks!
+>>>
+>> OK, thanks, as I've also made progress on the other problem (using temporary
+>> SQLite files for vector transfer under Windows), I've submitted to CRAN.
+>> Anyone who installed the 0.1-4 versions for testing will need to install the
+>> CRAN version when/if it appears.
+>
+> That's great, thanks for discovering and solving!
+
+On CRAN now (source package), Windows binary will follow. Thanks for help 
+in checking - if the *.py scripts all have *.bat in the locations checked, 
+they should be found.
+
+Does the order of the system and user bin folders matter? Should we care 
+if the addons are duplicated?
+
+Best wishes,
+
+Roger
+
+>
+> Markus
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From Roger.Bivand at nhh.no  Tue Jan 12 23:25:45 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed, 13 Jan 2016 08:25:45 +0100
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <alpine.LFD.2.20.1601122338190.26297@reclus.nhh.no>
+References: <alpine.LFD.2.20.1601110814560.662@reclus.nhh.no>
+ <1452509705632-5244520.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601111453510.18584@reclus.nhh.no>
+ <E953A98FD6EAA7479A68EE8C24491F6B80C85F3B@DALER.valuta.nhh.no>
+ <1452544394530-5244618.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601120040001.3099@reclus.nhh.no>
+ <1452588649985-5244654.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121029050.3235@reclus.nhh.no>
+ <1452592212413-5244663.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121504320.3235@reclus.nhh.no>
+ <1452613475920-5244769.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601122022210.20371@reclus.nhh.no>
+ <CALFmHhszf5mRP06mzohGmeOYOK8cniQDszZH3BEoOCzGpJmVPg@mail.gmail.com>
+ <alpine.LFD.2.20.1601122338190.26297@reclus.nhh.no>
+Message-ID: <alpine.LFD.2.20.1601130817460.3331@reclus.nhh.no>
+
+On Tue, 12 Jan 2016, Roger Bivand wrote:
+
+> On Tue, 12 Jan 2016, Markus Neteler wrote:
+>
+>>  On Tue, Jan 12, 2016 at 8:24 PM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+>> >  On Tue, 12 Jan 2016, Helmut Kudrnovsky wrote:
+>> > >  confirmed, it works now.
+>> > >  great, thanks!
+>> > > 
+>> >  OK, thanks, as I've also made progress on the other problem (using 
+>> >  temporary
+>> >  SQLite files for vector transfer under Windows), I've submitted to CRAN.
+>> >  Anyone who installed the 0.1-4 versions for testing will need to install 
+>> >  the
+>> >  CRAN version when/if it appears.
+>>
+>>  That's great, thanks for discovering and solving!
+>
+> On CRAN now (source package), Windows binary will follow. Thanks for help in 
+> checking - if the *.py scripts all have *.bat in the locations checked, they 
+> should be found.
+>
+> Does the order of the system and user bin folders matter? Should we care if 
+> the addons are duplicated?
+
+Maybe released too fast, unfortunately. For use of R in a running GRASS 
+session with addons, this version should be fine.
+
+However, it will not work for initGRASS(), which does not set 
+GRASS_ADDON_BASE or GRASS_ADDON_PATH.
+
+Where should I look to see where the correct values are stored on Unix 
+(Linux and OSX?) and Windows? I see: GRASS_ADDON_BASE as GNU/Linux is 
+$HOME/.grass7/addons, on MS Windows $APPDATA\GRASS7\addons in:
+
+https://grass.osgeo.org/grass70/manuals/variables.html
+
+Is %APPDATA% a predictable location on Windows?
+
+What happens if the user sets prefix= in g.extension?
+
+On Windows, adding GRASS_ADDON_BASE\bin to the PATH is sufficient (because 
+all scripts in /scripts have a matching *.bat in /bin. On Unix, we need 
+both /scripts (for Python scripts) and /bin for compiled extensions. Do we 
+need toolboxes?
+
+Best wishes,
+
+Roger
+
+>
+> Best wishes,
+>
+> Roger
+>
+>>
+>>  Markus
+>> 
+>
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From hellik at web.de  Wed Jan 13 01:54:15 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Wed, 13 Jan 2016 01:54:15 -0800 (PST)
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <alpine.LFD.2.20.1601130817460.3331@reclus.nhh.no>
+References: <alpine.LFD.2.20.1601120040001.3099@reclus.nhh.no>
+ <1452588649985-5244654.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121029050.3235@reclus.nhh.no>
+ <1452592212413-5244663.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121504320.3235@reclus.nhh.no>
+ <1452613475920-5244769.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601122022210.20371@reclus.nhh.no>
+ <CALFmHhszf5mRP06mzohGmeOYOK8cniQDszZH3BEoOCzGpJmVPg@mail.gmail.com>
+ <alpine.LFD.2.20.1601122338190.26297@reclus.nhh.no>
+ <alpine.LFD.2.20.1601130817460.3331@reclus.nhh.no>
+Message-ID: <1452678855669-5244927.post@n6.nabble.com>
+
+>
+>Is %APPDATA% a predictable location on Windows? 
+
+yes, %APPDATA% is predictable on Windows.
+
+we set it e.g. in the winGRASS standalone installer here:
+
+https://trac.osgeo.org/grass/browser/grass/branches/releasebranch_7_0/mswindows/GRASS-Installer.nsi.tmpl#L743 
+
+and on other places in the code.
+
+>Where should I look to see where the correct values are stored on Unix
+>(Linux and OSX?) and Windows? I see: GRASS_ADDON_BASE as GNU/Linux is
+>$HOME/.grass7/addons, on MS Windows $APPDATA\GRASS7\addons in:
+>
+>https://grass.osgeo.org/grass70/manuals/variables.html
+
+maybe some hints:
+
+https://trac.osgeo.org/grass/browser/grass/branches/releasebranch_7_0/scripts/g.extension/g.extension.py#L1053
+
+
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244927.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Wed Jan 13 04:07:09 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed, 13 Jan 2016 13:07:09 +0100
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <1452678855669-5244927.post@n6.nabble.com>
+References: <alpine.LFD.2.20.1601120040001.3099@reclus.nhh.no>
+ <1452588649985-5244654.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121029050.3235@reclus.nhh.no>
+ <1452592212413-5244663.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121504320.3235@reclus.nhh.no>
+ <1452613475920-5244769.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601122022210.20371@reclus.nhh.no>
+ <CALFmHhszf5mRP06mzohGmeOYOK8cniQDszZH3BEoOCzGpJmVPg@mail.gmail.com>
+ <alpine.LFD.2.20.1601122338190.26297@reclus.nhh.no>
+ <alpine.LFD.2.20.1601130817460.3331@reclus.nhh.no>
+ <1452678855669-5244927.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.20.1601131304370.5601@reclus.nhh.no>
+
+On Wed, 13 Jan 2016, Helmut Kudrnovsky wrote:
+
+>>> Is %APPDATA% a predictable location on Windows? 
+>
+> yes, %APPDATA% is predictable on Windows.
+
+Thanks. I've committed changes to R-forge, which seem to work for me for 
+Linux and Windows. The updated draft Windows binary is at:
+
+http://win-builder.r-project.org/KJJJkeazt7Sw/rgrass7_0.1-5.zip
+
+Could users of initGRASS() please check that the environment variables are 
+set correctly for addons? Some other changes (removing code not relevant 
+for GRASS7) were also made.
+
+Best wishes,
+
+Roger
+
+>
+> we set it e.g. in the winGRASS standalone installer here:
+>
+> https://trac.osgeo.org/grass/browser/grass/branches/releasebranch_7_0/mswindows/GRASS-Installer.nsi.tmpl#L743 
+>
+> and on other places in the code.
+>
+>> Where should I look to see where the correct values are stored on Unix
+>> (Linux and OSX?) and Windows? I see: GRASS_ADDON_BASE as GNU/Linux is
+>> $HOME/.grass7/addons, on MS Windows $APPDATA\GRASS7\addons in:
+>>
+>> https://grass.osgeo.org/grass70/manuals/variables.html
+>
+> maybe some hints:
+>
+> https://trac.osgeo.org/grass/browser/grass/branches/releasebranch_7_0/scripts/g.extension/g.extension.py#L1053
+>
+>
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244927.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From hellik at web.de  Wed Jan 13 04:56:21 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Wed, 13 Jan 2016 04:56:21 -0800 (PST)
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <alpine.LFD.2.20.1601131304370.5601@reclus.nhh.no>
+References: <alpine.LFD.2.20.1601121029050.3235@reclus.nhh.no>
+ <1452592212413-5244663.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121504320.3235@reclus.nhh.no>
+ <1452613475920-5244769.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601122022210.20371@reclus.nhh.no>
+ <CALFmHhszf5mRP06mzohGmeOYOK8cniQDszZH3BEoOCzGpJmVPg@mail.gmail.com>
+ <alpine.LFD.2.20.1601122338190.26297@reclus.nhh.no>
+ <alpine.LFD.2.20.1601130817460.3331@reclus.nhh.no>
+ <1452678855669-5244927.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601131304370.5601@reclus.nhh.no>
+Message-ID: <1452689781354-5244980.post@n6.nabble.com>
+
+>Thanks. I've committed changes to R-forge, which seem to work for me for
+>Linux and Windows. The updated draft Windows binary is at:
+>
+>http://win-builder.r-project.org/KJJJkeazt7Sw/rgrass7_0.1-5.zip
+
+> utils:::menuInstallLocal()
+Paket ‘rgrass7’ erfolgreich ausgepackt und MD5 Summen abgeglichen
+> 
+> library(rgrass7)
+Lade nötiges Paket: sp
+Lade nötiges Paket: XML
+GRASS GIS interface loaded with GRASS version: (GRASS not running)
+
+from the https://cran.r-project.org/web/packages/rgrass7/rgrass7.pdf
+
+Examples
+## Not run:
+initGRASS("/usr/bin/grass-7.0.0", home=tempdir())
+initGRASS("C:/GRASS", home=tempdir())
+## End(Not run)
+
+as an used windows user I've tried first with Windows-typical backslash ;-)
+
+initGRASS("C:\\Program Files\\GRASS GIS 7.1.svn", home=tempdir(),
+gisDbase="C:\\grassdata", location="nc_spm_08", mapset="user1")
+
+> initGRASS("C:\Program Files\GRASS GIS 7.1.svn", home=tempdir(),
+> location="C:\grassdata\nc_spm_08\", mapset="user1")
+Fehler: '\P' ist eine unbekannte Escape-Sequenz in der Zeichenkette
+beginnend mit ""C:\P"
+error: '\P' is an unkown escape sequence beginning with with ""C:\P"
+
+then I tried double backslash
+
+initGRASS("C:\\Program Files\\GRASS GIS 7.1.svn", home=tempdir(),
+gisDbase="C:\\grassdata", location="nc_spm_08", mapset="user1")
+
+> initGRASS("C:\\Program Files\\GRASS GIS 7.1.svn", home=tempdir(),
+> gisDbase="C:\\grassdata", location="nc_spm_08", mapset="user1")
+gisdbase    C:/grassdata 
+location    nc_spm_08 
+mapset      user1 
+rows        6 
+columns     8 
+north       222800 
+south       222740 
+west        642590 
+east        642670 
+nsres       10 
+ewres       10 
+projection  +proj=lcc +lat_1=36.16666666666666 +lat_2=34.33333333333334
++lat_0=33.75 +lon_0=-79 +x_0=609601.22 +y_0=0 +no_defs +a=6378137
++rf=298.257222101
++towgs84=0.000,0.000,0.000 +to_meter=1 
+
+and the slash mentioned in the manual example
+
+initGRASS("C:/Program Files/GRASS GIS 7.1.svn", home=tempdir(),
+gisDbase="C:/grassdata", location="nc_spm_08", mapset="user1")
+
+> initGRASS("C:/Program Files/GRASS GIS 7.1.svn", home=tempdir(),
+> gisDbase="C:/grassdata", location="nc_spm_08", mapset="user1")
+gisdbase    C:/grassdata 
+location    nc_spm_08 
+mapset      user1 
+rows        6 
+columns     8 
+north       222800 
+south       222740 
+west        642590 
+east        642670 
+nsres       10 
+ewres       10 
+projection  +proj=lcc +lat_1=36.16666666666666 +lat_2=34.33333333333334
++lat_0=33.75 +lon_0=-79 +x_0=609601.22 +y_0=0 +no_defs +a=6378137
++rf=298.257222101
++towgs84=0.000,0.000,0.000 +to_meter=1 
+
+not sure what R's normal notation of MS windows paths are (slash or double
+backslash), maybe an addition to the manual would be worth?
+
+will testing winGRASS modules and addons later.
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244980.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From hellik at web.de  Wed Jan 13 05:26:25 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Wed, 13 Jan 2016 05:26:25 -0800 (PST)
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <alpine.LFD.2.20.1601131304370.5601@reclus.nhh.no>
+References: <alpine.LFD.2.20.1601121029050.3235@reclus.nhh.no>
+ <1452592212413-5244663.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121504320.3235@reclus.nhh.no>
+ <1452613475920-5244769.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601122022210.20371@reclus.nhh.no>
+ <CALFmHhszf5mRP06mzohGmeOYOK8cniQDszZH3BEoOCzGpJmVPg@mail.gmail.com>
+ <alpine.LFD.2.20.1601122338190.26297@reclus.nhh.no>
+ <alpine.LFD.2.20.1601130817460.3331@reclus.nhh.no>
+ <1452678855669-5244927.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601131304370.5601@reclus.nhh.no>
+Message-ID: <1452691585925-5244989.post@n6.nabble.com>
+
+>http://win-builder.r-project.org/KJJJkeazt7Sw/rgrass7_0.1-5.zip
+>
+>Could users of initGRASS() please check that the environment variables are
+>set correctly for addons? 
+
+> sessionInfo()
+R version 3.2.3 (2015-12-10)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 7 x64 (build 7601) Service Pack 1
+
+locale:
+[1] LC_COLLATE=German_Austria.1252  LC_CTYPE=German_Austria.1252   
+LC_MONETARY=German_Austria.1252 LC_NUMERIC=C                   
+[5] LC_TIME=German_Austria.1252    
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] rgrass7_0.1-5 XML_3.98-1.3  sp_1.2-2     
+
+loaded via a namespace (and not attached):
+[1] grid_3.2.3      lattice_0.20-33
+
+> library(rgrass7)
+Lade nötiges Paket: sp
+Lade nötiges Paket: XML
+GRASS GIS interface loaded with GRASS version: (GRASS not running)
+
+> initGRASS("C:/Program Files/GRASS GIS 7.1.svn", home=tempdir(),
+> gisDbase="C:/grassdata", location="nc_spm_08", mapset="user1")
+gisdbase    C:/grassdata 
+location    nc_spm_08 
+mapset      user1 
+rows        6 
+columns     8 
+north       222800 
+south       222740 
+west        642590 
+east        642670 
+nsres       10 
+ewres       10 
+projection  +proj=lcc +lat_1=36.16666666666666 +lat_2=34.33333333333334
++lat_0=33.75 +lon_0=-79 +x_0=609601.22 +y_0=0 +no_defs +a=6378137
++rf=298.257222101 +towgs84=0.000,0.000,0.000 +to_meter=1 
+
+> execGRASS("g.region", raster="elevation", align="elevation", flags="a")
+
+> execGRASS("r.slope.aspect", elevation="elevation", slope="myslope",
+> aspect="myaspect")
+
+Expositions-Rasterkarte <myaspect> komplett.
+Neigungs-Rasterkarte <myslope> komplett.
+> execGRASS("r.roughness.vector", elevation="elevation", slope="myslope",
+> aspect="myaspect", strength="vectorstrength")
+----
+Check if input files exist ...
+----
+Define default output names when not defined by user ...
+----
+Calculate compass aspect values ...
+----
+Calculate colatitude ...
+----
+Calculate direction cosines ...
+----
+Calculate sum of direction cosines ...
+Calculating sum of X direction cosines ...
+
+Calculating sum of Y direction cosines ...
+
+Calculating sum of Z direction cosines ...
+
+----
+Calculate vector strength ...
+----
+Calculate inverted Fisher's K parameter ...
+----
+Result maps:
+vectorstrength
+elevation_fisher_1K_3x3
+Calculations done.
+----
+
+> execGRASS("r.reclass.area", input="zipcodes",
+> output="zipcode_larger2000ha", value=2000, mode="greater")
+Generating a clumped raster file ...
+Pass 1 of 2...
+
+Generating renumbering scheme...
+
+Pass 2 of 2...
+
+r.clump komplett. 16 clumps.
+Generating a reclass map with area size greater than or equal to
+2000.000000 hectares...
+
+Generating output raster map <zipcode_larger2000ha>...
+> 
+
+it seems to work properly in:
+
+R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+thanks!
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244989.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Wed Jan 13 05:42:41 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed, 13 Jan 2016 14:42:41 +0100
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <1452691585925-5244989.post@n6.nabble.com>
+References: <alpine.LFD.2.20.1601121029050.3235@reclus.nhh.no>
+ <1452592212413-5244663.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121504320.3235@reclus.nhh.no>
+ <1452613475920-5244769.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601122022210.20371@reclus.nhh.no>
+ <CALFmHhszf5mRP06mzohGmeOYOK8cniQDszZH3BEoOCzGpJmVPg@mail.gmail.com>
+ <alpine.LFD.2.20.1601122338190.26297@reclus.nhh.no>
+ <alpine.LFD.2.20.1601130817460.3331@reclus.nhh.no>
+ <1452678855669-5244927.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601131304370.5601@reclus.nhh.no>
+ <1452691585925-5244989.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.20.1601131440280.5601@reclus.nhh.no>
+
+On Wed, 13 Jan 2016, Helmut Kudrnovsky wrote:
+
+>> http://win-builder.r-project.org/KJJJkeazt7Sw/rgrass7_0.1-5.zip
+>>
+>> Could users of initGRASS() please check that the environment variables are
+>> set correctly for addons? 
+>
+>> sessionInfo()
+> R version 3.2.3 (2015-12-10)
+> Platform: x86_64-w64-mingw32/x64 (64-bit)
+> Running under: Windows 7 x64 (build 7601) Service Pack 1
+>
+> locale:
+> [1] LC_COLLATE=German_Austria.1252  LC_CTYPE=German_Austria.1252 
+> LC_MONETARY=German_Austria.1252 LC_NUMERIC=C 
+> [5] LC_TIME=German_Austria.1252 
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base 
+>
+> other attached packages:
+> [1] rgrass7_0.1-5 XML_3.98-1.3  sp_1.2-2 
+>
+> loaded via a namespace (and not attached):
+> [1] grid_3.2.3      lattice_0.20-33
+>
+>> library(rgrass7)
+> Lade nötiges Paket: sp
+> Lade nötiges Paket: XML
+> GRASS GIS interface loaded with GRASS version: (GRASS not running)
+>
+>> initGRASS("C:/Program Files/GRASS GIS 7.1.svn", home=tempdir(),
+>> gisDbase="C:/grassdata", location="nc_spm_08", mapset="user1")
+> gisdbase    C:/grassdata 
+> location    nc_spm_08 
+> mapset      user1 
+> rows        6 
+> columns     8 
+> north       222800 
+> south       222740 
+> west        642590 
+> east        642670 
+> nsres       10 
+> ewres       10 
+> projection  +proj=lcc +lat_1=36.16666666666666 +lat_2=34.33333333333334
+> +lat_0=33.75 +lon_0=-79 +x_0=609601.22 +y_0=0 +no_defs +a=6378137
+> +rf=298.257222101 +towgs84=0.000,0.000,0.000 +to_meter=1 
+>
+>> execGRASS("g.region", raster="elevation", align="elevation", flags="a")
+>
+>> execGRASS("r.slope.aspect", elevation="elevation", slope="myslope",
+>> aspect="myaspect")
+>
+> Expositions-Rasterkarte <myaspect> komplett.
+> Neigungs-Rasterkarte <myslope> komplett.
+>> execGRASS("r.roughness.vector", elevation="elevation", slope="myslope",
+>> aspect="myaspect", strength="vectorstrength")
+> ----
+> Check if input files exist ...
+> ----
+> Define default output names when not defined by user ...
+> ----
+> Calculate compass aspect values ...
+> ----
+> Calculate colatitude ...
+> ----
+> Calculate direction cosines ...
+> ----
+> Calculate sum of direction cosines ...
+> Calculating sum of X direction cosines ...
+>
+> Calculating sum of Y direction cosines ...
+>
+> Calculating sum of Z direction cosines ...
+>
+> ----
+> Calculate vector strength ...
+> ----
+> Calculate inverted Fisher's K parameter ...
+> ----
+> Result maps:
+> vectorstrength
+> elevation_fisher_1K_3x3
+> Calculations done.
+> ----
+>
+>> execGRASS("r.reclass.area", input="zipcodes",
+>> output="zipcode_larger2000ha", value=2000, mode="greater")
+> Generating a clumped raster file ...
+> Pass 1 of 2...
+>
+> Generating renumbering scheme...
+>
+> Pass 2 of 2...
+>
+> r.clump komplett. 16 clumps.
+> Generating a reclass map with area size greater than or equal to
+> 2000.000000 hectares...
+>
+> Generating output raster map <zipcode_larger2000ha>...
+>> 
+>
+> it seems to work properly in:
+>
+> R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
+> Copyright (C) 2015 The R Foundation for Statistical Computing
+> Platform: x86_64-w64-mingw32/x64 (64-bit)
+>
+> thanks!
+>
+
+Thanks very much for checking! Could someone please report on status for 
+OSX, and corroborate my finding that it works for my source installed 
+GRASS on Fedora - other Linux variants and installation mechanisms (Ubuntu 
+etc. installed binary?? may vary.
+
+Best wishes,
+
+Roger
+
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244989.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From p.vanbreugel at gmail.com  Wed Jan 13 09:05:53 2016
+From: p.vanbreugel at gmail.com (Paulo van Breugel)
+Date: Wed, 13 Jan 2016 18:05:53 +0100
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <alpine.LFD.2.20.1601131440280.5601@reclus.nhh.no>
+References: <alpine.LFD.2.20.1601121029050.3235@reclus.nhh.no>
+ <1452592212413-5244663.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601121504320.3235@reclus.nhh.no>
+ <1452613475920-5244769.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601122022210.20371@reclus.nhh.no>
+ <CALFmHhszf5mRP06mzohGmeOYOK8cniQDszZH3BEoOCzGpJmVPg@mail.gmail.com>
+ <alpine.LFD.2.20.1601122338190.26297@reclus.nhh.no>
+ <alpine.LFD.2.20.1601130817460.3331@reclus.nhh.no>
+ <1452678855669-5244927.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601131304370.5601@reclus.nhh.no>
+ <1452691585925-5244989.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601131440280.5601@reclus.nhh.no>
+Message-ID: <569683F1.8040903@gmail.com>
+
+
+
+On 13-01-16 14:42, Roger Bivand wrote:
+> On Wed, 13 Jan 2016, Helmut Kudrnovsky wrote:
+>
+>>> http://win-builder.r-project.org/KJJJkeazt7Sw/rgrass7_0.1-5.zip
+>>>
+>>> Could users of initGRASS() please check that the environment 
+>>> variables are
+>>> set correctly for addons? 
+>>
+>>> sessionInfo()
+>> R version 3.2.3 (2015-12-10)
+>> Platform: x86_64-w64-mingw32/x64 (64-bit)
+>> Running under: Windows 7 x64 (build 7601) Service Pack 1
+>>
+>> locale:
+>> [1] LC_COLLATE=German_Austria.1252  LC_CTYPE=German_Austria.1252 
+>> LC_MONETARY=German_Austria.1252 LC_NUMERIC=C [5] 
+>> LC_TIME=German_Austria.1252
+>> attached base packages:
+>> [1] stats     graphics  grDevices utils     datasets  methods base
+>> other attached packages:
+>> [1] rgrass7_0.1-5 XML_3.98-1.3  sp_1.2-2
+>> loaded via a namespace (and not attached):
+>> [1] grid_3.2.3      lattice_0.20-33
+>>
+>>> library(rgrass7)
+>> Lade nötiges Paket: sp
+>> Lade nötiges Paket: XML
+>> GRASS GIS interface loaded with GRASS version: (GRASS not running)
+>>
+>>> initGRASS("C:/Program Files/GRASS GIS 7.1.svn", home=tempdir(),
+>>> gisDbase="C:/grassdata", location="nc_spm_08", mapset="user1")
+>> gisdbase    C:/grassdata location    nc_spm_08 mapset      user1 
+>> rows        6 columns     8 north       222800 south 222740 
+>> west        642590 east        642670 nsres       10 ewres       10 
+>> projection  +proj=lcc +lat_1=36.16666666666666 +lat_2=34.33333333333334
+>> +lat_0=33.75 +lon_0=-79 +x_0=609601.22 +y_0=0 +no_defs +a=6378137
+>> +rf=298.257222101 +towgs84=0.000,0.000,0.000 +to_meter=1
+>>> execGRASS("g.region", raster="elevation", align="elevation", flags="a")
+>>
+>>> execGRASS("r.slope.aspect", elevation="elevation", slope="myslope",
+>>> aspect="myaspect")
+>>
+>> Expositions-Rasterkarte <myaspect> komplett.
+>> Neigungs-Rasterkarte <myslope> komplett.
+>>> execGRASS("r.roughness.vector", elevation="elevation", slope="myslope",
+>>> aspect="myaspect", strength="vectorstrength")
+>> ----
+>> Check if input files exist ...
+>> ----
+>> Define default output names when not defined by user ...
+>> ----
+>> Calculate compass aspect values ...
+>> ----
+>> Calculate colatitude ...
+>> ----
+>> Calculate direction cosines ...
+>> ----
+>> Calculate sum of direction cosines ...
+>> Calculating sum of X direction cosines ...
+>>
+>> Calculating sum of Y direction cosines ...
+>>
+>> Calculating sum of Z direction cosines ...
+>>
+>> ----
+>> Calculate vector strength ...
+>> ----
+>> Calculate inverted Fisher's K parameter ...
+>> ----
+>> Result maps:
+>> vectorstrength
+>> elevation_fisher_1K_3x3
+>> Calculations done.
+>> ----
+>>
+>>> execGRASS("r.reclass.area", input="zipcodes",
+>>> output="zipcode_larger2000ha", value=2000, mode="greater")
+>> Generating a clumped raster file ...
+>> Pass 1 of 2...
+>>
+>> Generating renumbering scheme...
+>>
+>> Pass 2 of 2...
+>>
+>> r.clump komplett. 16 clumps.
+>> Generating a reclass map with area size greater than or equal to
+>> 2000.000000 hectares...
+>>
+>> Generating output raster map <zipcode_larger2000ha>...
+>>>
+>>
+>> it seems to work properly in:
+>>
+>> R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
+>> Copyright (C) 2015 The R Foundation for Statistical Computing
+>> Platform: x86_64-w64-mingw32/x64 (64-bit)
+>>
+>> thanks!
+>>
+>
+> Thanks very much for checking! Could someone please report on status 
+> for OSX, and corroborate my finding that it works for my source 
+> installed GRASS on Fedora - other Linux variants and installation 
+> mechanisms (Ubuntu etc. installed binary?? may vary.
+>
+> Best wishes,
+>
+> Roger
+
+
+Hi Roger,
+
+thanks for this update, great! I just checked for Ubuntu 14.04. When 
+running R from within a GRASS session, I can now use installed GRASS 
+addons. Great! initGRASS doesn't seem to work though (I never use it, so 
+if I am overlooking something, please let me know). See below:
+
+> library(rgrass7)
+> initGRASS("/usr/local/grass7", home=tempdir())
+sh: 1: g.gisenv: not found
+sh: 1: g.gisenv: not found
+sh: 1: g.gisenv: not found
+sh: 1: g.gisenv: not found
+sh: 1: g.gisenv: not found
+sh: 1: g.version: not found
+Error in system(paste("g.version", get("addEXE", envir = .GRASS_CACHE),  :
+   error in running command
+
+> sessionInfo()
+R version 3.2.2 (2015-08-14)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 14.04.3 LTS
+
+locale:
+  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+  [3] LC_TIME=nl_NL.UTF-8        LC_COLLATE=en_US.UTF-8
+  [5] LC_MONETARY=nl_NL.UTF-8    LC_MESSAGES=en_US.UTF-8
+  [7] LC_PAPER=nl_NL.UTF-8       LC_NAME=C
+  [9] LC_ADDRESS=C               LC_TELEPHONE=C
+  [11] LC_MEASUREMENT=nl_NL.UTF-8 LC_IDENTIFICATION=C
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+other attached packages:
+[1] rgrass7_0.1-5 XML_3.98-1.3  sp_1.2-1
+loaded via a namespace (and not attached):
+[1] grid_3.2.2      lattice_0.20-33
+
+Best wishes,
+
+Paulo
+
+
+
+
+
+
+>
+>>
+>>
+>> -----
+>> best regards
+>> Helmut
+>> -- 
+>> View this message in context: 
+>> http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5244989.html
+>> Sent from the Grass - Stats mailing list archive at Nabble.com.
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats at lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20160113/56df5d37/attachment.html>
+
+From hellik at web.de  Wed Jan 13 09:11:55 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Wed, 13 Jan 2016 09:11:55 -0800 (PST)
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <569683F1.8040903@gmail.com>
+References: <1452613475920-5244769.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601122022210.20371@reclus.nhh.no>
+ <CALFmHhszf5mRP06mzohGmeOYOK8cniQDszZH3BEoOCzGpJmVPg@mail.gmail.com>
+ <alpine.LFD.2.20.1601122338190.26297@reclus.nhh.no>
+ <alpine.LFD.2.20.1601130817460.3331@reclus.nhh.no>
+ <1452678855669-5244927.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601131304370.5601@reclus.nhh.no>
+ <1452691585925-5244989.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601131440280.5601@reclus.nhh.no>
+ <569683F1.8040903@gmail.com>
+Message-ID: <1452705115410-5245064.post@n6.nabble.com>
+
+>> library(rgrass7)
+>> initGRASS("/usr/local/grass7", home=tempdir())
+>sh: 1: g.gisenv: not found
+>sh: 1: g.gisenv: not found
+>sh: 1: g.gisenv: not found
+>sh: 1: g.gisenv: not found
+>sh: 1: g.gisenv: not found
+>sh: 1: g.version: not found
+>Error in system(paste("g.version", get("addEXE", envir = .GRASS_CACHE),  : 
+>  error in running command
+
+just a quick test on windows here:
+
+> library(rgrass7)
+Lade nötiges Paket: sp
+Lade nötiges Paket: XML
+GRASS GIS interface loaded with GRASS version: (GRASS not running)
+
+> initGRASS("C:/Program Files/GRASS GIS 7.1.svn", home=tempdir())
+gisdbase    C:/Users/xxxxx~1/AppData/Local/Temp/Rtmpk93Gnb 
+location    file55c44229c0 
+mapset      file55c5711580b 
+rows        1 
+columns     1 
+north       1 
+south       0 
+west        0 
+east        1 
+nsres       1 
+ewres       1 
+projection  NA 
+
+is your GRASS really living in /usr/local/grass7 ?
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5245064.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From p.vanbreugel at gmail.com  Wed Jan 13 11:04:45 2016
+From: p.vanbreugel at gmail.com (Paulo van Breugel)
+Date: Wed, 13 Jan 2016 20:04:45 +0100
+Subject: [GRASS-stats] Using GRASS addons in R on Windows
+In-Reply-To: <1452705115410-5245064.post@n6.nabble.com>
+References: <1452613475920-5244769.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601122022210.20371@reclus.nhh.no>
+ <CALFmHhszf5mRP06mzohGmeOYOK8cniQDszZH3BEoOCzGpJmVPg@mail.gmail.com>
+ <alpine.LFD.2.20.1601122338190.26297@reclus.nhh.no>
+ <alpine.LFD.2.20.1601130817460.3331@reclus.nhh.no>
+ <1452678855669-5244927.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601131304370.5601@reclus.nhh.no>
+ <1452691585925-5244989.post@n6.nabble.com>
+ <alpine.LFD.2.20.1601131440280.5601@reclus.nhh.no>
+ <569683F1.8040903@gmail.com> <1452705115410-5245064.post@n6.nabble.com>
+Message-ID: <56969FCD.2010609@gmail.com>
+
+
+
+On 13-01-16 18:11, Helmut Kudrnovsky wrote:
+>>> library(rgrass7)
+>>> initGRASS("/usr/local/grass7", home=tempdir())
+>> sh: 1: g.gisenv: not found
+>> sh: 1: g.gisenv: not found
+>> sh: 1: g.gisenv: not found
+>> sh: 1: g.gisenv: not found
+>> sh: 1: g.gisenv: not found
+>> sh: 1: g.version: not found
+>> Error in system(paste("g.version", get("addEXE", envir = .GRASS_CACHE),  :
+>>   error in running command
+> just a quick test on windows here:
+>
+>> library(rgrass7)
+> Lade nötiges Paket: sp
+> Lade nötiges Paket: XML
+> GRASS GIS interface loaded with GRASS version: (GRASS not running)
+>
+>> initGRASS("C:/Program Files/GRASS GIS 7.1.svn", home=tempdir())
+> gisdbase    C:/Users/xxxxx~1/AppData/Local/Temp/Rtmpk93Gnb
+> location    file55c44229c0
+> mapset      file55c5711580b
+> rows        1
+> columns     1
+> north       1
+> south       0
+> west        0
+> east        1
+> nsres       1
+> ewres       1
+> projection  NA
+>
+> is your GRASS really living in /usr/local/grass7 ?
+
+You're right, sorry, it should have  been 
+"/usr/local/grass7/grass-7.1.svn". Now I get:
+
+> initGRASS("/usr/local/grass7/grass-7.1.svn", home=tempdir())
+gisdbase    /tmp/Rtmp11YxrX
+location    file17b23d9387e8
+mapset      file17b239be5145
+rows        1
+columns     1
+north       1
+south       0
+west        0
+east        1
+nsres       1
+ewres       1
+projection  NA
+
+Working with addons now work as well. So for Ubuntu 14.04 and GRASS 7.1 
+compiled from trunk I can now confirm it works.
+
+Thanks Helmut for the follow up and of course big thanks to Roger Bivand 
+for new version of rgrass7!
+
+Best wishes
+
+Paulo
+
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/Using-GRASS-addons-in-R-on-Windows-tp5244411p5245064.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+

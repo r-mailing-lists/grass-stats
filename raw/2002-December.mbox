@@ -1,0 +1,159 @@
+From Bodo.Ahrens at univie.ac.at  Thu Dec 12 08:16:36 2002
+From: Bodo.Ahrens at univie.ac.at (Bodo Ahrens)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] latlon
+Message-ID: <200212121416.36605.Bodo.Ahrens@univie.ac.at>
+
+Hi,
+the GRASS-R interface does not allow me to apply gmeta in a lat lon domain:
+
+G<-gmeta(interp=FALSE)
+Error in seq.default(from = G$w + (G$ewres/2), to = G$e - (G$ewres/2),  :
+        invalid (to - from)/by in seq(.)
+In addition: Warning message:
+NAs introduced by coercion
+
+ewres is set to zero!
+
+I tried this with GRASS R-library 1.11. If I remember correctly it was 
+possible in lat lon with an older lib.
+
+Any comments, hints (of course it works is something like lambert ...)
+
+Thankyou 
+Bodo
+
+-- 
+Dr. Bodo Ahrens
+Institut fuer Meteorologie und Geophysik, Universitaet Wien
+A-1090 Wien, Althanstrasse 14, AUSTRIA
+Tel.: ++43-1-4277-51917 
+Fax:  ++43-1-4277-9519
+E-mail: Bodo.Ahrens@univie.ac.at
+
+
+From Roger.Bivand at nhh.no  Thu Dec 12 15:35:23 2002
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] latlon
+In-Reply-To: <200212121416.36605.Bodo.Ahrens@univie.ac.at>
+Message-ID: <Pine.LNX.4.44.0212122126410.23075-100000@reclus.nhh.no>
+
+Hi Bodo,
+
+On Thu, 12 Dec 2002, Bodo Ahrens wrote:
+
+> Hi,
+> the GRASS-R interface does not allow me to apply gmeta in a lat lon domain:
+> 
+> G<-gmeta(interp=FALSE)
+> Error in seq.default(from = G$w + (G$ewres/2), to = G$e - (G$ewres/2),  :
+>         invalid (to - from)/by in seq(.)
+> In addition: Warning message:
+> NAs introduced by coercion
+> 
+> ewres is set to zero!
+> 
+There is something strange going on here. Although you set interp=FALSE, 
+the test getting the function to use the compiled interface is failing, so 
+the interpreted gets used anyway. Please do:
+
+> debug(gmeta)
+> is.loaded("gmeta", PACKAGE="grassR")
+> G<-gmeta(interp=FALSE)
+
+and send the output. The R debugger lets you step through the function - 
+you'll see that it jumps to the interpreted code (in which seq() is used) 
+if "gmeta" isn't loaded, then after META is assigned (when you see ML <- 
+length(META), enter print(META) - I guess that ll prints out fewer fields 
+than the others, and that the values are not being set correctly for this 
+case. The strangeness is why the interpreted code is being used - it looks 
+as though library(GRASS) didn't find the current GRASS session.
+
+
+> I tried this with GRASS R-library 1.11. If I remember correctly it was 
+> possible in lat lon with an older lib.
+> 
+> Any comments, hints (of course it works is something like lambert ...)
+> 
+
+Thanks for this report - please tell us how you get on.
+
+Roger
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From rsadler at agric.uwa.edu.au  Mon Dec 23 04:02:35 2002
+From: rsadler at agric.uwa.edu.au (rohan sadler)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] re: calculating box counting dimension in R
+Message-ID: <3E06D12B.8080005@agric.uwa.edu.au>
+
+Hi all,
+
+My aim is to calculate the box counting dimension of a binary dimension.
+
+I had no luck installing r.boxcount with Grass5, and found no help 
+searching the regular GRASS mailing list.
+
+However, I will be writing my own simple box counting function in R 
+because I am more familiar with it than general shell/C scripting 
+(500x500 raster matrices).
+
+If anybody has a solution that can save me some work then I will be 
+happy to hear it.
+
+Regards
+
+Rohan Sadler
+
+
+-- 
+PhD Student, Ecosystems Research Group (ERGO)
+School of Plant Biology (Botany), Faculty of Natural & Agricultural Sciences,
+The University of Western Australia, 35 Stirling Highway, Crawley  WA  6009, Australia
+
+Ph:  +61 8 9380 7914
+Fax: +61 8 9380 7925
+email: rsadler@agric.uwa.edu.au
+ERGO's web site:<http://www.botany.uwa.edu.au/ergo>
+
+
+
+
+From rsadler at agric.uwa.edu.au  Mon Dec 23 04:24:23 2002
+From: rsadler at agric.uwa.edu.au (rohan sadler)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] re: coxcounting in R
+Message-ID: <3E06D647.2060609@agric.uwa.edu.au>
+
+Hi all,
+
+Ignore most of my message about box counting for a raster image.... Not 
+a well-composed question.
+
+Any advice on box-counting sets in either R or Grass5 will however be 
+greatly appreciated.
+
+Rohan
+
+-- 
+PhD Student, Ecosystems Research Group (ERGO)
+School of Plant Biology (Botany), Faculty of Natural & Agricultural Sciences,
+The University of Western Australia, 35 Stirling Highway, Crawley  WA  6009, Australia
+
+Ph:  +61 8 9380 7914
+Fax: +61 8 9380 7925
+email: rsadler@agric.uwa.edu.au
+ERGO's web site:<http://www.botany.uwa.edu.au/ergo>
+
+
+
+
+

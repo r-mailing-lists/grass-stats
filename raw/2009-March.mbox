@@ -1,0 +1,2976 @@
+From hamish_b at yahoo.com  Sun Mar  1 04:41:12 2009
+From: hamish_b at yahoo.com (Hamish)
+Date: Sun Mar  1 04:43:38 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Calculating eigen values and %
+	varianceexplainedafter PCA analysis
+In-Reply-To: <1235734193.6865.30.camel@vertical>
+Message-ID: <964936.7713.qm@web110001.mail.gq1.yahoo.com>
+
+
+Nikos wrote:
+> It should be the case with i.pca as well since eigen_VALUES_ (=represent
+> the variances of the original dimensions that are "kept" in each
+> component) are important for the interpretation of what exactly are each
+> of the components. But, i.pca just does not report the eigen_VALUES_.
+> 
+> At some point some C-expert needs to have a look in the code (i.pca) and
+> correct the "bug" which does not let the eigen_VALUES_ from being
+> printed.
+
+done in devbr6 (6.5svn) please test, I'm not a multivariate stats guru
+and may have done something dumb so didn't port to other branches yet.
+
+I changed the i.pca output to be like:
+
+Eigen (vectors) and values:
+PC1 ( -0.63 -0.65 -0.43 ) 88.07
+PC2 ( 0.23 0.37 -0.90 ) 11.48
+PC3 ( 0.75 -0.66 -0.08 ) 0.45
+
+As it was previously sent to stderr via G_message() I don't feel bad about
+breaking output text compatibility. I wanted to add "%" to the values but
+due to the sprintf()+strcat() method in the code that was a pain, so I
+didn't.
+
+
+> >  If this is the case then both methods still differ significantly. Is
+> > this possible, and which should I use.
+> 
+> Please have a look at my comments/questions in link [2].
+> i.pca follows the "SVD" method. You performed the non-standartised PCA
+> using the covariance matrix. Note that you can use also the
+> standartised method by using the correlation matrix.
+
+does the r.mapcalc command at the end of the m.eigensystem help page*
+do that conversion, or ...? ie how can we test these against each other?
+how to do the standardized method?
+
+[*] (is "\-" there a typo or some old mapcalc syntax?)
+
+also ISTR somebody (Dylan?) doing a comparison with the R-stats interface.
+
+
+It would be nice to run tests using the Spearfish imagery dataset. After
+my own tests I noticed it matched what was used in the m.eigensystem help
+page.
+
+
+my results follow.
+
+Hamish
+
+
+----------------------------
+#Spearfish imagery sample dataset
+g.region rast=spot.ms.1
+
+
+# 'by-hand-method'
+G65> echo "3" > test_m.eigensystem    # number of input maps
+G65> r.covar map=spot.ms.1,spot.ms.2,spot.ms.3 >> test_m.eigensystem
+
+G65> cat test_m.eigensystem
+3
+462.876649 480.411218 281.758307 
+480.411218 513.015646 278.914813 
+281.758307 278.914813 336.326645 
+
+
+G65> m.eigensystem < test_m.eigensystem
+-----
+C The output is N sets of values. One E line and N V W lines
+C
+C  E   real  imaginary   percent-importance
+C  V   real  imaginary
+C  N   real  imaginary
+C  W   real  imaginary
+C      ...
+C
+C where E is the eigen value (and it relative importance)
+C and   V are the eigenvector for this eigenvalue.
+C       N are the normalized eigenvector for this eigenvalue.
+C       W are the N vector multiplied by the square root of the
+C         magnitude of the eigen value (E). 
+-----
+
+E      1159.7452017844         0.0000000000    88.38
+V         0.6910021591         0.0000000000
+V         0.7205280412         0.0000000000
+V         0.4805108400         0.0000000000
+N         0.6236808478         0.0000000000
+N         0.6503301526         0.0000000000
+N         0.4336967751         0.0000000000
+W        21.2394712045         0.0000000000
+W        22.1470141296         0.0000000000
+W        14.7695575384         0.0000000000
+
+E         5.9705414972         0.0000000000     0.45
+V         0.7119385973         0.0000000000
+V        -0.6358200627         0.0000000000
+V        -0.0703936743         0.0000000000
+N         0.7438340890         0.0000000000
+N        -0.6643053754         0.0000000000
+N        -0.0735473745         0.0000000000
+W         1.8175356507         0.0000000000
+W        -1.6232096923         0.0000000000
+W        -0.1797107407         0.0000000000
+
+E       146.5031967184         0.0000000000    11.16
+V         0.2265837636         0.0000000000
+V         0.3474697082         0.0000000000
+V        -0.8468727535         0.0000000000
+N         0.2402770238         0.0000000000
+N         0.3684685345         0.0000000000
+N        -0.8980522763         0.0000000000
+W         2.9082771721         0.0000000000
+W         4.4598880523         0.0000000000
+W       -10.8698904856         0.0000000000
+
+
+# 'all-in-one method' using r.covar+m.eigensystem:
+G65> (echo 3; r.covar spot.ms.1,spot.ms.2,spot.ms.3 ) | m.eigensystem
+
+Then, using the W vector, new maps are created: 
+r.mapcalc 'pc.1 = 21.2395*map.1 + 22.1470*map.2 + 14.7696*map.3'
+r.mapcalc 'pc.2 =  2.9083*map.1 +  4.4599*map.2  - 10.8699*map.3'
+r.mapcalc 'pc.3 =  1.8175*map.1  -  1.6232*map.2 \-  0.1797*map.3'
+
+(is "\-" above a typo or some old mapcalc syntax?)
+
+which look highly similar (but not identical) to i.pca output maps.
+(after 'r.colors color=grey')
+
+
+
+# 'automatic method'
+imagery60:G6.5svn> i.pca in=spot.ms.1,spot.ms.2,spot.ms.3 out=spot_pca
+
+Eigen (vectors) and values:
+PC1 ( -0.63 -0.65 -0.43 ) 88.07
+PC2 ( 0.23 0.37 -0.90 ) 11.48
+PC3 ( 0.75 -0.66 -0.08 ) 0.45
+
+
+
+      
+
+From hamish_b at yahoo.com  Sun Mar  1 04:59:59 2009
+From: hamish_b at yahoo.com (Hamish)
+Date: Sun Mar  1 05:00:04 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Calculating eigen values and %
+	varianceexplainedafter PCA analysis
+In-Reply-To: <964936.7713.qm@web110001.mail.gq1.yahoo.com>
+Message-ID: <105039.92796.qm@web110011.mail.gq1.yahoo.com>
+
+
+Hamish wrote:
+> # 'automatic method'
+> imagery60:G6.5svn> i.pca in=spot.ms.1,spot.ms.2,spot.ms.3 out=spot_pca
+> 
+> Eigen (vectors) and values:
+> PC1 ( -0.63 -0.65 -0.43 ) 88.07
+> PC2 ( 0.23 0.37 -0.90 ) 11.48
+> PC3 ( 0.75 -0.66 -0.08 ) 0.45
+
+changed to:
+Eigen values, (vectors), and [percent importance]:
+Eigenvalue 1: 1170.12 ( -0.63 -0.65 -0.43 ) [88.07%]
+Eigenvalue 2: 152.49 ( 0.23 0.37 -0.90 ) [11.48%]
+Eigenvalue 3: 6.01 ( 0.75 -0.66 -0.08 ) [0.45%]
+
+comments welcome.
+
+
+Hamish
+
+
+
+      
+
+From nikos.alexandris at felis.uni-freiburg.de  Sun Mar  1 06:36:51 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Sun Mar  1 06:33:23 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Calculating eigen values and %
+ varianceexplainedafter PCA analysis
+In-Reply-To: <105039.92796.qm@web110011.mail.gq1.yahoo.com>
+References: <105039.92796.qm@web110011.mail.gq1.yahoo.com>
+Message-ID: <1235907411.7016.54.camel@vertical>
+
+On Sun, 2009-03-01 at 01:59 -0800, Hamish wrote:
+> Hamish wrote:
+> > # 'automatic method'
+> > imagery60:G6.5svn> i.pca in=spot.ms.1,spot.ms.2,spot.ms.3 out=spot_pca
+> > 
+> > Eigen (vectors) and values:
+> > PC1 ( -0.63 -0.65 -0.43 ) 88.07
+> > PC2 ( 0.23 0.37 -0.90 ) 11.48
+> > PC3 ( 0.75 -0.66 -0.08 ) 0.45
+> 
+> changed to:
+> Eigen values, (vectors), and [percent importance]:
+> Eigenvalue 1: 1170.12 ( -0.63 -0.65 -0.43 ) [88.07%]
+> Eigenvalue 2: 152.49 ( 0.23 0.37 -0.90 ) [11.48%]
+> Eigenvalue 3: 6.01 ( 0.75 -0.66 -0.08 ) [0.45%]
+> 
+> comments welcome.
+> Hamish
+
+
+Congrats after I see that... it works :-p
+
+.
+
+Seriously now: Thank You Hamish!!
+Kindest regards, Nikos
+
+P.S. I overdid it with ideas below... :D
+---
+
+I am testing... (after the compilation completes). Even before testing I
+dould like to drop-in my idea about the output, that is "be more close
+to the _standards_ (=e.g. the books present the results)".
+
+   * Present first the variance (=eigenvalues) because it's the first
+thing you will look at to know "how much variance of the original data
+is _expressed_ in each new component.
+
+   * The importance, since it refers to the eigenvalue, it's better to
+come right after it.
+
+   * Present the loadings (eigenvectors) for each new component.
+
+   * Column-wise or row-wise? The results can be either presented
+column-wise, that is one column for each new component  _or_  row-wise,
+as they are currently printed. I think row-wise just looks better :-)
+
+"Some" examples... (only 2 for column-wise and all the rest row-wise...
+playing around).
+
+# column-wise examples ##############################################
+
+  PC1      PC2      PC3
+ 1170.12  152.49    6.01
+[88.07%] [11.48%] [0.47%]
+ -0.63     0.23     0.75
+ -0.65     0.37    -0.66
+ -0.43    -0.90    -0.08
+
+or
+
+#...and perhaps naming each row after
+# _original feature_ or
+# _original variable_ or
+# _original image_ or
+# _original dimension_ or
+# _original input_ ?
+
+
+Dimensions      PCA      PC2     PC3
+Variance    1170.12   152.49    6.01
+Importance  [88.07%] [11.48%] [0.47%]
+1st input     -0.63     0.23     0.75
+2nd input     -0.65     0.37    -0.66
+3rd input     -0.43    -0.90    -0.08
+
+or
+
+Dimensions         PCA      PC2      PC3
+Variance       1170.12   152.49     6.01
+Importance(%)    88.07    11.48     0.47
+1st input        -0.63     0.23     0.75
+2nd input        -0.65     0.37    -0.66
+3rd input        -0.43    -0.90    -0.08
+
+or
+
+[...]
+
+# row-wise examples ##############################################
+
+
+Eigenvalues, [importance] and (eigenvectors)
+PC1 1170.12 [88.07%] ( -0.63 -0.65 -0.43 )
+PC2  152.49 [11.48%] (  0.23  0.37 -0.90 )
+PC3    6.01  [0.45%] (  0.75 -0.66 -0.08 )
+
+
+or
+
+
+Eigenvalues, importance and (eigenvectors)
+PC1 1170.12 88.07% ( -0.63 -0.65 -0.43 )
+PC2  152.49 11.48% (  0.23  0.37 -0.90 )
+PC3    6.01  0.45% (  0.75 -0.66 -0.08 )
+
+
+or
+
+
+    Eigenvalues Importance Eigenvectors
+PC1 1170.12     88.07%     ( -0.63 -0.65 -0.43 )
+PC2  152.49     11.48%     (  0.23  0.37 -0.90 )
+PC3    6.01      0.45%     (  0.75 -0.66 -0.08 )
+
+
+or
+
+
+    Eigenvalues Importance Eigenvectors
+PC1  1170.12     88.07%     ( -0.63 -0.65 -0.43 )
+PC2   152.49     11.48%     (  0.23  0.37 -0.90 )
+PC3     6.01      0.45%     (  0.75 -0.66 -0.08 )
+
+
+or
+
+
+     Eigenvalues  %      Eigenvectors
+PC1  1170.12    88.07   ( -0.63 -0.65 -0.43 )
+PC2   152.49    11.48   (  0.23  0.37 -0.90 )
+PC3     6.01     0.45   (  0.75 -0.66 -0.08 )
+
+
+or
+
+
+     Eigenvalues        %            Eigenvectors
+PC1      1170.12    88.07   ( -0.63 -0.65 -0.43 )
+PC2       152.49    11.48   (  0.23  0.37 -0.90 )
+PC3         6.01     0.45   (  0.75 -0.66 -0.08 )
+
+
+or
+
+
+     Eigenvalues     %   Eigenvectors
+PC1  1170.12     88.07   ( -0.63 -0.65 -0.43 )
+PC2   152.49     11.48   (  0.23  0.37 -0.90 )
+PC3     6.01      0.45   (  0.75 -0.66 -0.08 )
+
+
+or
+
+
+     Eigenvalues [%] Eigenvectors
+PC1  1170.12 [88.07]  ( -0.63 -0.65 -0.43 )
+PC2   152.49 [11.48]  (  0.23  0.37 -0.90 )
+PC3     6.01  [0.45]  (  0.75 -0.66 -0.08 )
+
+
+or
+
+
+     Eigenvalues     [%] Eigenvectors
+PC1      1170.12 [88.07]  ( -0.63 -0.65 -0.43 )
+PC2       152.49 [11.48]  (  0.23  0.37 -0.90 )
+PC3         6.01  [0.45]  (  0.75 -0.66 -0.08 )
+
+
+or
+
+
+    Variance Variance(%) Eigenvectors
+PC1  1170.12  88.07     ( -0.63 -0.65 -0.43 )
+PC2   152.49  11.48     (  0.23  0.37 -0.90 )
+PC3     6.01   0.45     (  0.75 -0.66 -0.08 )
+
+
+or
+
+
+        Std     %        Eigenvectors
+PC1  1170.12  88.07 ( -0.63 -0.65 -0.43 )
+PC2   152.49  11.48 (  0.23  0.37 -0.90 )
+PC3     6.01   0.45 (  0.75 -0.66 -0.08 )
+
+
+From nikos.alexandris at felis.uni-freiburg.de  Sun Mar  1 06:46:04 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Sun Mar  1 06:42:36 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Calculating eigen values and %
+ varianceexplainedafter PCA analysis
+In-Reply-To: <964936.7713.qm@web110001.mail.gq1.yahoo.com>
+References: <964936.7713.qm@web110001.mail.gq1.yahoo.com>
+Message-ID: <1235907964.15973.3.camel@vertical>
+
+
+Nikos:
+> [...] i.pca just does not report the eigen_VALUES_. At some point some
+> C-expert needs to have a look in the code (i.pca) and correct the
+> "bug" which does not let the eigen_VALUES_ from being printed.
+
+
+Hamish:
+> done in devbr6 (6.5svn) please test, I'm not a multivariate stats guru
+> and may have done something dumb so didn't port to other branches yet.
+
+
+First test:
+
+[...]
+Following modules are missing the 'description.html' file in src code:
+----------------------------------------------------------------------
+GRASS GIS compilation log
+-------------------------
+Started compilation: Sun Mar  1 11:41:04 CET 2009
+--
+Errors in:
+/usr/local/src/grass6_devel/imagery/i.pca
+--
+In case of errors please change into the directory with error and run 'make'.
+If you get multiple errors, you need to deal with them in the order they
+appear in the error log. If you get an error building a library, you will
+also get errors from anything which uses the library.
+--
+Finished compilation: Sun Mar  1 11:46:34 CET 2009
+make: *** [default] Error 1
+nik@vertical:/usr/local/src/grass6_devel$ cd imagery/i.pca/
+nik@vertical:/usr/local/src/grass6_devel/imagery/i.pca$ make
+gcc -I/usr/local/src/grass6_devel/dist.x86_64-unknown-linux-gnu/include  -g -Wall       -DPACKAGE=\""grassmods"\"  -I/usr/local/src/grass6_devel/dist.x86_64-unknown-linux-gnu/include -o OBJ.x86_64-unknown-linux-gnu/support.o -c support.c
+support.c: In function ?write_history?:
+support.c:43: error: expected expression before ?<<? token
+support.c:46: error: expected expression before ?==? token
+support.c:49: error: expected expression before ?>>? token
+support.c:67: warning: format not a string literal and no format arguments
+make: *** [OBJ.x86_64-unknown-linux-gnu/support.o] Error 1
+
+
+# Am I doing something wrong?
+
+From nikos.alexandris at felis.uni-freiburg.de  Sun Mar  1 07:08:04 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Sun Mar  1 07:04:35 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Calculating eigen values and %
+ varianceexplainedafter PCA analysis
+In-Reply-To: <1235907964.15973.3.camel@vertical>
+References: <964936.7713.qm@web110001.mail.gq1.yahoo.com>
+	<1235907964.15973.3.camel@vertical>
+Message-ID: <1235909284.24615.3.camel@vertical>
+
+On Sun, 2009-03-01 at 12:46 +0100, Nikos Alexandris wrote:
+> Nikos:
+> > [...] i.pca just does not report the eigen_VALUES_. At some point some
+> > C-expert needs to have a look in the code (i.pca) and correct the
+> > "bug" which does not let the eigen_VALUES_ from being printed.
+> 
+> 
+> Hamish:
+> > done in devbr6 (6.5svn) please test, I'm not a multivariate stats guru
+> > and may have done something dumb so didn't port to other branches yet.
+> 
+> 
+> First test:
+[...]
+> Errors in:
+> /usr/local/src/grass6_devel/imagery/i.pca
+[...]
+> Finished compilation: Sun Mar  1 11:46:34 CET 2009
+> make: *** [default] Error 1
+> nik@vertical:/usr/local/src/grass6_devel$ cd imagery/i.pca/
+> nik@vertical:/usr/local/src/grass6_devel/imagery/i.pca$ make
+> gcc -I/usr/local/src/grass6_devel/dist.x86_64-unknown-linux-gnu/include  -g -Wall       -DPACKAGE=\""grassmods"\"  -I/usr/local/src/grass6_devel/dist.x86_64-unknown-linux-gnu/include -o OBJ.x86_64-unknown-linux-gnu/support.o -c support.c
+> support.c: In function ?write_history?:
+> support.c:43: error: expected expression before ?<<? token
+> support.c:46: error: expected expression before ?==? token
+> support.c:49: error: expected expression before ?>>? token
+> support.c:67: warning: format not a string literal and no format arguments
+> make: *** [OBJ.x86_64-unknown-linux-gnu/support.o] Error 1
+
+
+OK, I removed the lines below, compiled again and now it works.
+Perfect!!!
+
+43 +<<<<<<< .mine
+44      if (!to_std)
+45 -	G_message(_("Eigen values:"));
+
+47 +=======
+
+From hamish_b at yahoo.com  Sun Mar  1 07:49:19 2009
+From: hamish_b at yahoo.com (Hamish)
+Date: Sun Mar  1 07:49:22 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Calculating eigen values and %
+	varianceexplainedafter PCA analysis
+Message-ID: <61047.35614.qm@web110008.mail.gq1.yahoo.com>
+
+
+Nikos:
+>    * Present first the variance (=eigenvalues) because it's the first
+> thing you will look at to know "how much variance of
+> the original data is _expressed_ in each new component.
+> 
+>    * The importance, since it refers to the eigenvalue,
+> it's better to come right after it.
+
+to me it picks your eye more quickly if it is not buried in the middle.
+shrug. the important thing is that the numbers are correct & not confusing.
+
+>    * Present the loadings (eigenvectors) for each new
+> component.
+
+we are doing that already, right?
+
+ 
+>    * Column-wise or row-wise? The results can be either
+> presented column-wise, that is one column for each new component 
+> _or_  row-wise, as they are currently printed. I think row-wise just
+> looks better :-)
+
+maybe, but row-wise is slightly easier to code.
+
+
+> "Some" examples... (only 2 for column-wise and
+> all the rest row-wise... playing around).
+
+fancy tables are hard for the module output because it uses G_message()
+and G_message() condenses any whitespace (multiple spaces, tabs,..) to a
+single space. thus formatting is lost.
+
+and i.pca's main output is maps, not eigen data so I guess it makes sense
+to keep that text optional instead of sending to stdout. Perhaps a New flag to print summary report to stdout? (mmph, just cut&paste from history)
+
+
+for map history it's a bit better, but I can't end with a %.
+
+
+now 'r.info -h' output looks like:
+
+   Eigen values, (vectors), and [percent importance]:
+   PC1   1170.12 ( -0.63 -0.65 -0.43 ) [ 88.07% ]
+   PC2    152.49 (  0.23  0.37 -0.90 ) [ 11.48% ]
+   PC3      6.01 (  0.75 -0.66 -0.08 ) [  0.45% ]
+
+
+module output is same but not as pretty due to G_message() issue.
+
+
+Hamish
+
+
+
+      
+
+From nikos.alexandris at felis.uni-freiburg.de  Sun Mar  1 08:13:07 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Sun Mar  1 08:09:42 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Calculating eigen values and %
+ varianceexplainedafter PCA analysis
+In-Reply-To: <61047.35614.qm@web110008.mail.gq1.yahoo.com>
+References: <61047.35614.qm@web110008.mail.gq1.yahoo.com>
+Message-ID: <1235913187.28615.11.camel@vertical>
+
+
+Nikos:
+> >    * Present first the variance (=eigenvalues) because it's the
+> >first thing you will look at to know "how much variance of the
+> >original data is _expressed_ in each new component.
+> >    * The importance, since it refers to the eigenvalue, it's better
+> >to come right after it.
+
+Hamish:
+> to me it picks your eye more quickly if it is not buried in the
+> middle.
+> shrug. the important thing is that the numbers are correct & not
+> confusing.
+
+Yes, the important thing are the numbers. A clear output is also more
+"functional", if I may say so.
+
+
+
+> >    * Present the loadings (eigenvectors) for each new
+> > component.
+
+> we are doing that already, right?
+
+Absolutely. It's just the structure of the output what remains. I have
+no objections to whatever will be decided as long as the _numbers_ are
+there. Nonetheless, from a user's perspective, I presented my ideas
+about the output.
+
+
+
+> >    * Column-wise or row-wise? The results can be either
+> > presented column-wise, that is one column for each new component 
+> > _or_  row-wise, as they are currently printed. I think row-wise just
+> > looks better :-)
+
+> maybe, but row-wise is slightly easier to code.
+
+For the interpretation I think the way that the output will look like,
+is just a matter to get used to it. In fact, I think row-wise is easier
+than column-wise. Anyway, this is of minor importance.
+
+
+
+> > "Some" examples... (only 2 for column-wise and
+> > all the rest row-wise... playing around).
+
+> fancy tables are hard for the module output because it uses
+> G_message()
+> and G_message() condenses any whitespace (multiple spaces, tabs,..) to
+> a
+> single space. thus formatting is lost.
+> 
+> and i.pca's main output is maps, not eigen data so I guess it makes
+> sense
+> to keep that text optional instead of sending to stdout. Perhaps a New
+> flag to print summary report to stdout? (mmph, just cut&paste from
+> history)
+
+> for map history it's a bit better, but I can't end with a %.
+
+> now 'r.info -h' output looks like:
+> 
+>    Eigen values, (vectors), and [percent importance]:
+>    PC1   1170.12 ( -0.63 -0.65 -0.43 ) [ 88.07% ]
+>    PC2    152.49 (  0.23  0.37 -0.90 ) [ 11.48% ]
+>    PC3      6.01 (  0.75 -0.66 -0.08 ) [  0.45% ]
+> 
+> 
+> module output is same but not as pretty due to G_message() issue.
+
+Well, whatever is practical and achievable. I would be happy to see more
+suggestions upon this. But I like it now that it prints out the
+eigenvalues.
+
+Best regards, Nikos
+
+From nikos.alexandris at felis.uni-freiburg.de  Sun Mar  1 08:33:59 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Sun Mar  1 08:30:32 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Calculating eigen values and %
+ varianceexplainedafter PCA analysis
+In-Reply-To: <964936.7713.qm@web110001.mail.gq1.yahoo.com>
+References: <964936.7713.qm@web110001.mail.gq1.yahoo.com>
+Message-ID: <1235914439.28968.9.camel@vertical>
+
+
+Nikos:
+> > It should be the case with i.pca as well since eigen_VALUES_ (=represent
+> > the variances of the original dimensions that are "kept" in each
+> > component) are important for the interpretation of what exactly are each
+> > of the components. But, i.pca just does not report the eigen_VALUES_.
+> > 
+> > At some point some C-expert needs to have a look in the code (i.pca) and
+> > correct the "bug" which does not let the eigen_VALUES_ from being
+> > printed.
+
+Hamish:
+> done in devbr6 (6.5svn) please test, I'm not a multivariate stats guru
+> and may have done something dumb so didn't port to other branches yet.
+> 
+> I changed the i.pca output to be like:
+> 
+> Eigen (vectors) and values:
+> PC1 ( -0.63 -0.65 -0.43 ) 88.07
+> PC2 ( 0.23 0.37 -0.90 ) 11.48
+> PC3 ( 0.75 -0.66 -0.08 ) 0.45
+> 
+> As it was previously sent to stderr via G_message() I don't feel bad about
+> breaking output text compatibility. I wanted to add "%" to the values but
+> due to the sprintf()+strcat() method in the code that was a pain, so I
+> didn't.
+
+
+Wesley:
+> > >  If this is the case then both methods still differ significantly. Is
+> > > this possible, and which should I use.
+
+> > Please have a look at my comments/questions in link [2].
+> > i.pca follows the "SVD" method. You performed the non-standartised PCA
+> > using the covariance matrix. Note that you can use also the
+> > standartised method by using the correlation matrix.
+
+> does the r.mapcalc command at the end of the m.eigensystem help page*
+> do that conversion, or ...? ie how can we test these against each other?
+> how to do the standardized method?
+
+We can easily cross-compare now. I will run my test in GRASS and R.
+In GRASS:
+ * i.pca --> SVD without data centering method
+
+ * "r.covar" + "m.eigensystem" --> non-standardised PCA (about data
+centering I am unsure here, I will investigate the _numbers_)
+
+ * "r.covar -r" + "m.eigensystem" # note the "-r" flag --> standardised
+PCA (about data centering I am unsure, willing to test).
+
+
+> [*] (is "\-" there a typo or some old mapcalc syntax?)
+
+IMHO: yes.  Maybe it's some forgotten _backslash_ !?
+
+
+> also ISTR somebody (Dylan?) doing a comparison with the R-stats interface.
+> 
+> 
+> It would be nice to run tests using the Spearfish imagery dataset. After
+> my own tests I noticed it matched what was used in the m.eigensystem help
+> page.
+
+I will probably run the test with my own data. Since I just need to
+copy-paste the commands. I don't have the spearfish dataset currently.
+
+
+> my results follow.
+> 
+> Hamish
+> 
+> 
+> ----------------------------
+> #Spearfish imagery sample dataset
+> g.region rast=spot.ms.1
+> 
+> 
+> # 'by-hand-method'
+> G65> echo "3" > test_m.eigensystem    # number of input maps
+> G65> r.covar map=spot.ms.1,spot.ms.2,spot.ms.3 >> test_m.eigensystem
+> 
+> G65> cat test_m.eigensystem
+> 3
+> 462.876649 480.411218 281.758307 
+> 480.411218 513.015646 278.914813 
+> 281.758307 278.914813 336.326645 
+> 
+> 
+> G65> m.eigensystem < test_m.eigensystem
+> -----
+> C The output is N sets of values. One E line and N V W lines
+> C
+> C  E   real  imaginary   percent-importance
+> C  V   real  imaginary
+> C  N   real  imaginary
+> C  W   real  imaginary
+> C      ...
+> C
+> C where E is the eigen value (and it relative importance)
+> C and   V are the eigenvector for this eigenvalue.
+> C       N are the normalized eigenvector for this eigenvalue.
+> C       W are the N vector multiplied by the square root of the
+> C         magnitude of the eigen value (E). 
+> -----
+> 
+> E      1159.7452017844         0.0000000000    88.38
+> V         0.6910021591         0.0000000000
+> V         0.7205280412         0.0000000000
+> V         0.4805108400         0.0000000000
+> N         0.6236808478         0.0000000000
+> N         0.6503301526         0.0000000000
+> N         0.4336967751         0.0000000000
+> W        21.2394712045         0.0000000000
+> W        22.1470141296         0.0000000000
+> W        14.7695575384         0.0000000000
+> 
+> E         5.9705414972         0.0000000000     0.45
+> V         0.7119385973         0.0000000000
+> V        -0.6358200627         0.0000000000
+> V        -0.0703936743         0.0000000000
+> N         0.7438340890         0.0000000000
+> N        -0.6643053754         0.0000000000
+> N        -0.0735473745         0.0000000000
+> W         1.8175356507         0.0000000000
+> W        -1.6232096923         0.0000000000
+> W        -0.1797107407         0.0000000000
+> 
+> E       146.5031967184         0.0000000000    11.16
+> V         0.2265837636         0.0000000000
+> V         0.3474697082         0.0000000000
+> V        -0.8468727535         0.0000000000
+> N         0.2402770238         0.0000000000
+> N         0.3684685345         0.0000000000
+> N        -0.8980522763         0.0000000000
+> W         2.9082771721         0.0000000000
+> W         4.4598880523         0.0000000000
+> W       -10.8698904856         0.0000000000
+> 
+> 
+> # 'all-in-one method' using r.covar+m.eigensystem:
+> G65> (echo 3; r.covar spot.ms.1,spot.ms.2,spot.ms.3 ) | m.eigensystem
+> 
+> Then, using the W vector, new maps are created: 
+> r.mapcalc 'pc.1 = 21.2395*map.1 + 22.1470*map.2 + 14.7696*map.3'
+> r.mapcalc 'pc.2 =  2.9083*map.1 +  4.4599*map.2  - 10.8699*map.3'
+> r.mapcalc 'pc.3 =  1.8175*map.1  -  1.6232*map.2 \-  0.1797*map.3'
+> 
+> (is "\-" above a typo or some old mapcalc syntax?)
+Probably a typo.
+
+
+> which look highly similar (but not identical) to i.pca output maps.
+It's ok. R print's out lot's of decimals. Perhaps the difference is due
+to some rounding of the numbers.
+
+
+> (after 'r.colors color=grey')
+
+> # 'automatic method'
+> imagery60:G6.5svn> i.pca in=spot.ms.1,spot.ms.2,spot.ms.3 out=spot_pca
+> 
+> Eigen (vectors) and values:
+> PC1 ( -0.63 -0.65 -0.43 ) 88.07
+> PC2 ( 0.23 0.37 -0.90 ) 11.48
+> PC3 ( 0.75 -0.66 -0.08 ) 0.45
+
+From nikos.alexandris at felis.uni-freiburg.de  Mon Mar  2 10:05:31 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Mon Mar  2 10:02:01 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Calculating eigen values and
+ %varianceexplainedafter PCA analysis
+In-Reply-To: <49AC0A45020000730001923F@pta-emo.csir.co.za>
+References: <49AC0A45020000730001923F@pta-emo.csir.co.za>
+Message-ID: <1236006331.10123.7.camel@vertical>
+
+On Mon, 2009-03-02 at 16:33 +0200, Wesley Roberts wrote:
+> I would like to check out the new i.pca module described below in the
+> svn repository. Where can I find devbr6 (6.5svn)? So far I have only
+> been able to find 6.4svn.
+> 
+> Many thanks,
+> Wesley
+
+Wesley,
+
+you can grab the grass6_devel source code (now ="6.5") for example with
+the following command:
+svn checkout https://svn.osgeo.org/grass/grass/branches/develbranch_6
+grass6_devel
+
+Kind regards, Nikos
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Mar  3 01:27:41 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Mar  3 01:24:09 2009
+Subject: [GRASS-stats] Testing i.pca ~ prcomp(), m.eigensystem ~ princomp()
+Message-ID: <1236061661.14059.256.camel@vertical>
+
+
+Apologies for starting a new thread. My post is long and I thought it's
+better to start an extra-testing thread. I did some tests and I present
+them below in the following order:
+
+ 1. Briefly about PCA
+ 2. The modules/functions that implement PCA in GRASS & R
+ 3. My claims (Entitled Comments)
+ 4. Evidence (=the numbers derived from i.pca, prcomp, princomp,
+m.eigensystem using some MODIS surface reflectance bands).
+
+
+Finally all is clear _but_ one thing: the only "unknown" variable (to
+me) is still the Eigenvalue provided by i.pca. I can't nail this one:
+*** how is it calculated? *** Looks like it is some _weighted_
+variance... !??
+
+The only thing I noticed with some testing (not thoroughly though) is
+that the Eigenvalue (=Variance) reported by "i.pca" is ~0.58 of the
+variance reported by "prcomp()" (sdev^2) !? That is:
+
+     sqrt(Eigenvalue(i.pca)) / sdev(prcomp) = 0.58xxx
+
+
+Hamish, if you have the time (or anyone , could you please "translate"
+the code in "grass6_dev/imagery/i.pca/main.c", concerning the "eigval"
+variable, in some pseudocode. It is really the last thing to clarify ( I
+think ).
+
+
+Kindest regards, Nikos
+
+
+------------------------
+# 1. PCA ### ### ### ###
+
+*. PCA is performed via:
+
+   - method 1 (eigenvectors) : by determining the eigenvalues and
+eigenvectors of a given covariance or correlation matrix.
+
+         - covariance matrix -> non-standardised
+         - correlation matrix -> standardised
+
+   - method 2 (SVD): based on by a singular value decomposition of the
+data matrix. This is a more general solution to PCA than the
+"eigenvectors".
+
+     ...The difference between the two methods is explained in [1]...
+     ...SVD is used for numerical accuracy... (R Documentation)
+     ...Results between the two methos can differ a bit...
+
+     ...Data centering reduces the square mean error of 
+*approximating* the input data
+     ...Data scaling 
+
+
+*. PCA returns:
+
+   - eigenvalues (=variance _or_ sdev^2)
+   - eigenvectors (=loadings, rotation, weighting coefficient)
+
+
+
+-------------------------------------------
+# 2. Implementations of PCA ### ### ### ###
+
+* R's implementation of:
+
+   - method 1 (eigen) is the _princomp()_ function
+
+      -*applies*:
+         \data centering
+         \data scaling
+
+      -returns:
+         \sdev  -  standard deviation of principal components (that is:
+the sqrt(Variance)
+         \loadings  -  eigenvectors
+
+
+   - method 2 (SVD) is the _prcomp()_ function
+
+      -options:
+         \data centering (center= TRUE | FALSE) [default is TRUE]
+         \data scaling (scale=TRUE | FALSE) [default is FALSE]
+
+      -returns:
+         \sdev (as above)
+         \rotation (same as loadings)
+
+
+
+* GRASS' implementation of:
+
+   - method 1 (eigen) is the _m.eigensystem_ module
+
+      -returns:
+         E -> eigenvalue -> Variance(E) -> sdev(E)^2
+         V -> eigenvectors associated with E
+         N -> normalized eigenvectors V --> This is _data centering_.
+         W -> N vector multiplied by the square root of the magnitude of
+      the eigenvalue (E), in other words: W = N * sdev(E)
+         
+
+   - method 2 (SVD) is the   _i.pca_ module
+
+      -returns:
+         \Eigenvalues (latest version by Hamish)
+         \Eigenvectors
+
+
+
+-----------------------------
+# 3. Comments ### ### ### ###
+
+# 1: it is (?) meaningless to compare the numerical results
+(eigenvectors) of "i.pca" with the results of "m.eigensystem" since they
+implement two different algebraic solutions to PCA with different
+options (data centering is NOT performed by i.pca). The different
+algebraic solutions don't give big differences. Data centering does.
+
+
+# 2: "i.pca" corresponds to "prcomp( ,center=FALSE,scale=FALSE)" and
+"m.eigensystem" corresponds to "princomp()"
+
+
+# 3: The standard deviations (sdev) reported by prcomp(,center=TRUE,
+scale=FALSE) _match_ the variances (=eigenvalues = sdev^2) reported by
+"m.eigensystem".
+
+# 4: Obviously, "prcomp()" with center=TRUE and scaling=FALSE by default
+gives (almost) same results as "princomp()".
+
+
+
+------------------------------------------
+# 4. Comparing PCA results ### ### ### ###
+
+# prcomp() #############################################################
+
+### Details for prcomp {stats} from R Documentation
+The calculation is done by a singular value decomposition of the
+(centered and possibly scaled) data matrix, not by using eigen on the
+covariance matrix. This is generally the preferred method for numerical
+accuracy.
+## more details in [2]
+#Default settings of prcomp(): _center=TRUE_ and _scale=FALSE_
+
+### with center=FALSE, scale=FALSE
+prcomp(mod07, center=FALSE, scale=FALSE) <<== this corresponds to i.pca
+
+Standard deviations:
+[1] 4288.3788  476.8904  114.3971
+
+Rotation:
+                                    PC1        PC2        PC3
+MOD2007_242_500_sur_refl_b02 -0.6353238  0.7124070 -0.2980602
+MOD2007_242_500_sur_refl_b06 -0.6485551 -0.2826985  0.7067234
+MOD2007_242_500_sur_refl_b07 -0.4192135 -0.6423066 -0.6416403
+
+
+### with center=TRUE, scale=FALSE
+prcomp(mod07, center=TRUE, scale=FALSE)
+Standard deviations:
+[1] 857.5749 436.0928 108.5085
+
+Rotation:
+                                   PC1         PC2        PC3
+MOD2007_242_500_sur_refl_b02 0.4184468  0.83881578 -0.3482677
+MOD2007_242_500_sur_refl_b06 0.7249935 -0.07751872  0.6843794
+MOD2007_242_500_sur_refl_b07 0.5470710 -0.53886820 -0.6405735
+
+
+### with center=TRUE, scale=TRUE
+prcomp(mod07, center=TRUE, scale=TRUE)
+Standard deviations:
+[1] 1.5030740 0.8397807 0.1885121
+
+Rotation:
+                                   PC1        PC2        PC3
+MOD2007_242_500_sur_refl_b02 0.4807060  0.8202848 -0.3099267
+MOD2007_242_500_sur_refl_b06 0.6561893 -0.1020540  0.7476634
+MOD2007_242_500_sur_refl_b07 0.5816677 -0.5627768 -0.5873201
+
+
+### with center=FALSE, scale=TRUE
+prcomp(mod07, center=FALSE, scale=TRUE)
+Standard deviations:
+[1] 1.71889117 0.20787871 0.04689961
+
+Rotation:
+                                    PC1         PC2        PC3
+MOD2007_242_500_sur_refl_b02 -0.5747640  0.74015136 -0.3490305
+MOD2007_242_500_sur_refl_b06 -0.5812896 -0.06907305  0.8107597
+MOD2007_242_500_sur_refl_b07 -0.5759763 -0.66888331 -0.4699430
+
+
+# i.pca ############################################################## 
+
+# perform pca
+i.pca input=MOD07_b02,MOD07_b06,MOD07_b07 output=TEST
+
+Eigen values, (vectors), and [percent importance]:
+PC1 6307563.04 ( -0.64 -0.65 -0.42 ) [ 98.71% ]
+PC2 78023.63 ( -0.71 0.28 0.64 ) [ 1.22% ]
+PC3 4504.60 ( -0.30 0.71 -0.64 ) [ 0.07% ]
+
+### Comment: Comparing with prcomp()'s results it is obvious that
+"i.pca" implements the SVD method _without_ centering and _without_
+scaling the data prior to the analysis. ###
+
+
+
+
+# princomp() - cov #####################################################
+
+# Details for princomp {stats} from R Documentation
+The calculation is done using eigen on the correlation or covariance
+matrix
+
+
+### using _covariance_ matrix
+# prints only standard deviations
+princomp(mod07)
+
+Call:
+princomp(x = mod07)
+
+Standard deviations:
+  Comp.1   Comp.2   Comp.3 
+857.5737 436.0922 108.5083 
+
+ 3  variables and  350596 observations.
+
+
+# get loadings (=rotation = eigenvectors)
+(princomp(mod07))$loadings
+
+Loadings:
+                             Comp.1 Comp.2 Comp.3
+MOD2007_242_500_sur_refl_b02 -0.418  0.839  0.348
+MOD2007_242_500_sur_refl_b06 -0.725        -0.684
+MOD2007_242_500_sur_refl_b07 -0.547 -0.539  0.641
+
+               Comp.1 Comp.2 Comp.3
+SS loadings     1.000  1.000  1.000
+Proportion Var  0.333  0.333  0.333
+Cumulative Var  0.333  0.667  1.000
+
+
+
+# m.eigensystem - cov #################################################
+
+# Determine eigen values and vectors of _covariance_ matrix
+## Marked with "#" are the _N_'s that correspond to the eigenvectors
+derived from R's princomp() ##
+(echo 3; r.covar MOD07_b02,MOD07_b06,MOD07_b07)|m.eigensystem
+
+r.covar: complete ...
+100%
+E    778244.0258462029          .0000000000    79.20
+V          .5006581842          .0000000000
+V          .8256483300          .0000000000
+V          .6155834548          .0000000000
+N      #   .4372107421   #      .0000000000
+N      #   .7210155161   #      .0000000000
+N      #   .5375717557   #      .0000000000
+W       385.6991853500          .0000000000
+W       636.0664787886          .0000000000
+W       474.2358050886          .0000000000
+E    192494.5769628266          .0000000000    19.59
+V         -.8689798010          .0000000000
+V          .0996340298          .0000000000
+V          .5731134848          .0000000000
+N      #  -.8309940700   #      .0000000000
+N      #   .0952787255   #      .0000000000
+N      #   .5480609638   #      .0000000000
+W      -364.5920328433          .0000000000
+W        41.8027823088          .0000000000
+W       240.4573848757          .0000000000
+E     11876.4548199713          .0000000000     1.21
+V          .2872248982          .0000000000
+V         -.5731591248          .0000000000
+V          .5351449518          .0000000000
+N      #   .3439413070   #      .0000000000
+N      #  -.6863370819   #      .0000000000
+N      #   .6408165005   #      .0000000000
+W        37.4824307850          .0000000000
+W       -74.7964308085          .0000000000
+W        69.8356366100          .0000000000
+
+
+
+# princomp() - cov #####################################################
+
+### using _correlation_ matrix
+princomp(mod07, cor=TRUE)
+
+Call:
+princomp(x = mod07, cor = TRUE)
+
+Standard deviations:
+   Comp.1    Comp.2    Comp.3 
+1.5030740 0.8397807 0.1885121 
+
+ 3  variables and  350596 observations.
+
+
+# get loadings
+(princomp(mod07, cor=TRUE))$loadings
+
+Loadings:
+                             Comp.1 Comp.2 Comp.3
+MOD2007_242_500_sur_refl_b02 -0.481  0.820  0.310
+MOD2007_242_500_sur_refl_b06 -0.656 -0.102 -0.748
+MOD2007_242_500_sur_refl_b07 -0.582 -0.563  0.587
+
+               Comp.1 Comp.2 Comp.3
+SS loadings     1.000  1.000  1.000
+Proportion Var  0.333  0.333  0.333
+Cumulative Var  0.333  0.667  1.000
+
+
+
+
+# m.eigensystem - corr #################################################
+
+# Determine eigen values and vectors of _correlation_ matrix
+## Marked with "#" are the _N_'s that correspond to the eigenvectors
+derived from R's princomp() ##
+(echo 3; r.covar -r MOD07_b02,MOD07_b06,MOD07_b07)|m.eigensystem
+
+r.covar: complete ...
+ 100%
+E         2.2915877718          .0000000000    76.39
+V         -.5755655569          .0000000000
+V         -.7660355041          .0000000000
+V         -.6809380186          .0000000000
+ N     #   -.4896413269   #      .0000000000
+ N     #   -.6516766616   #      .0000000000
+ N     #   -.5792830912   #      .0000000000
+W         -.7412186091          .0000000000
+W         -.9865075560          .0000000000
+W         -.8769182329          .0000000000
+E          .6740687010          .0000000000    22.47
+V          .8667178982          .0000000000
+V         -.1116525720          .0000000000
+V         -.6069908335          .0000000000
+ N      #   .8145815825   #      .0000000000
+ N      #  -.1049362531   #      .0000000000
+ N      #  -.5704780699   #      .0000000000
+W          .6687852213          .0000000000
+W         -.0861544341          .0000000000
+W         -.4683721194          .0000000000
+E          .0343435272          .0000000000     1.14
+V          .2486404469          .0000000000
+V         -.6006166822          .0000000000
+V          .4655120098          .0000000000
+ N      #   .3109794470   #      .0000000000
+ N      #  -.7512029762   #      .0000000000
+ N      #   .5822249325   #      .0000000000
+W          .0576307320          .0000000000
+W         -.1392129859          .0000000000
+W          .1078979635          .0000000000
+
+
+[1] http://www.snl.salk.edu/~shlens/pub/notes/pca.pdf
+
+[2] Copy-pasted from R Documentation
+
+### prcomp() returns the following:
+
+   1. sdev
+          the standard deviations of the principal components (i.e.,
+          the square roots of the eigenvalues of the cov./cor. matrix,
+          though the calculation is actually done with the singular
+          values of the data matrix).
+
+   2. rotation
+          the matrix of variable loadings (i.e., a matrix whose
+          columns contain the eigenvectors). The function princomp
+          returns this in the element loadings.
+
+   * Note
+
+          The signs of the columns of the rotation matrix are
+          arbitrary, and so may differ between different programs
+          for PCA, and even between different builds of R.
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Mar  3 01:38:31 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Mar  3 01:34:58 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+ m.eigensystem ~ princomp()
+In-Reply-To: <1236061661.14059.256.camel@vertical>
+References: <1236061661.14059.256.camel@vertical>
+Message-ID: <1236062311.14059.264.camel@vertical>
+
+On Tue, 2009-03-03 at 07:27 +0100, Nikos Alexandris wrote:
+> # 2. Implementations of PCA ### ### ### ###
+> 
+> * R's implementation of:
+> 
+>    - method 1 (eigen) is the _princomp()_ function
+> 
+>       -*applies*:
+>          \data centering
+>          \data scaling
+
+Hmm... sorry, this should be _only_ data centering.
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Mar  3 02:06:53 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Mar  3 02:03:20 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Calculating eigen values
+ and%varianceexplainedafter PCA analysis
+In-Reply-To: <49ACEEDC0200007300019296@pta-emo.csir.co.za>
+References: <49ACEEDC0200007300019296@pta-emo.csir.co.za>
+Message-ID: <1236064013.16853.5.camel@vertical>
+
+Wesley:
+> I got the svn grass6_devel code from the location you suggested and have
+> now installed but with lots of errors. Here is the output from the
+> 'make' command (see below the lapack.h error). I understand that I need
+> to cd into the directory where the error occurred and run make inside
+> that directory. I do this for the gmath directory and I once again
+> receive an error message related to the lapack.h file. The same error
+> occurs when running make in other error locations.
+
+> /usr/local/src/grass6_devel/dist.i686-pc-linux-gnu/include/grass/lapack.h:5144:
+> error: expected declaration specifiers or ?...? before ?ftnlen?
+> make: *** [OBJ.i686-pc-linux-gnu/del2g.o] Error 1
+
+Wesley,
+
+what are the exact steps you are executing in order to compile
+grass6_devel?
+
+(assuming you work under linux) If you already had done a compilation
+before, did you "make distclean" before re-compiling?
+(or "sudo make distclean").
+
+
+> I dont have much more time to spend on this so would ideally just like
+> to get the i.pca working in development installation so that I can use
+> i.pca and get the variance and eigen values. In my tests run so far I
+> have seen that i.pca produces more realistic results, based on
+> qualitative assessment. As such, I will use i.pca instead of the
+> 'by-hand-method'
+
+If you don't mind to share some more info about the way you assess the
+quality of the components (just even mentioning some will be great - I
+am really interested in it).
+
+> 
+> Thanks for all your help wrt running pca in grass.
+> Wesley
+
+Thanks to the community and Hamish for his time.
+Nikos
+
+
+From hamish_b at yahoo.com  Tue Mar  3 06:26:36 2009
+From: hamish_b at yahoo.com (Hamish)
+Date: Tue Mar  3 06:26:39 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+	m.eigensystem ~ princomp()
+In-Reply-To: <1236061661.14059.256.camel@vertical>
+Message-ID: <237972.38578.qm@web110002.mail.gq1.yahoo.com>
+
+
+Nikos:
+
+> Finally all is clear _but_ one thing: the only "unknown" variable (to
+> me) is still the Eigenvalue provided by i.pca. I can't nail this one:
+> *** how is it calculated? *** Looks like it is some _weighted_
+> variance... !??
+....
+> Hamish, if you have the time (or anyone , could you please "translate"
+> the code in "grass6_dev/imagery/i.pca/main.c", concerning the "eigval"
+> variable, in some pseudocode. It is really the last thing to clarify ( I
+> think ).
+
+I don't really have the time, I am just about to leave the office for a
+few weeks.
+
+but quickly:
+
+for i.pca they are calculated by the eigen() function in lib/gmath/eigen.c
+see also lib/gmath/eigen_tools.c  
+
+unfortunately the programmer decided to use all one letter variables
+there and no comments.. but maybe the math is clear enough to tell which
+method is used.
+
+
+it will be really good to finally have all this documented.
+
+
+Hamish
+
+
+
+      
+
+From neteler at osgeo.org  Tue Mar  3 07:18:14 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Tue Mar  3 07:18:19 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <237972.38578.qm@web110002.mail.gq1.yahoo.com>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+Message-ID: <86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+
+On Tue, Mar 3, 2009 at 12:26 PM, Hamish <hamish_b@yahoo.com> wrote:
+...
+>
+> it will be really good to finally have all this documented.
+
+I find it hard to follow these long mails. Why not enjoying the
+GRASS Wiki to stabilize the documentation and comparisons?
+
+Markus
+From nikos.alexandris at felis.uni-freiburg.de  Tue Mar  3 08:26:18 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Mar  3 08:22:44 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+Message-ID: <1236086778.7537.3.camel@vertical>
+
+On Tue, 2009-03-03 at 13:18 +0100, Markus Neteler wrote:
+> On Tue, Mar 3, 2009 at 12:26 PM, Hamish <hamish_b@yahoo.com> wrote:
+> ...
+> >
+> > it will be really good to finally have all this documented.
+> 
+> I find it hard to follow these long mails. Why not enjoying the
+> GRASS Wiki to stabilize the documentation and comparisons?
+> 
+> Markus
+
+Yes, why not? Hmmm, you mean to put these stuff already in the Wiki
+before we are sure about the one last and very important variable
+(=eigenvalues reported by  i.pca)?
+
+Kind regards, Nikos 
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Mar  3 10:16:39 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Mar  3 10:13:06 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+ m.eigensystem ~ princomp()
+In-Reply-To: <237972.38578.qm@web110002.mail.gq1.yahoo.com>
+References: <237972.38578.qm@web110002.mail.gq1.yahoo.com>
+Message-ID: <1236093399.8054.27.camel@vertical>
+
+
+Nikos:
+> Eigenvalue provided by i.pca. I can't nail this one:
+> > *** how is it calculated? *** Looks like it is some _weighted_
+> > variance... !??
+> ....
+> > Hamish, if you have the time (or anyone , could you please "translate"
+> > the code in "grass6_dev/imagery/i.pca/main.c", concerning the "eigval"
+> > variable, in some pseudocode. It is really the last thing to clarify ( I
+> > think ).
+
+Hamish:
+> for i.pca they are calculated by the eigen() function in lib/gmath/eigen.c
+> see also lib/gmath/eigen_tools.c  
+
+
+I am trying to get a grip on eigen.c. The variables that refer to the
+eigenvalues are symbolised as:
+
+   double *lambda  OR  lambda
+
+which is the
+
+   double d[]  as defined  IN  G_tqli()  IN  eigen_tools.c
+
+And then there is this "fabs" in the way :-) I suppose it returns the
+absolute value of a signed number... It took me so long to figure this
+simple thing out. Well, there are so many variables... it's
+hard(=time-consuming) for the unexperienced eye to trace down the real
+math.
+
+As suggested by Markus, I will try to move this in the Wiki.
+Apologies for the long posts again, Nikos
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Mar  3 11:42:45 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Mar  3 11:39:14 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+Message-ID: <1236098565.10442.45.camel@vertical>
+
+Hi GRASS&R experts,
+
+After playing around with R's functions for PCA, I need to
+
+1. load GRASS raster maps in R
+2. Do something with the data
+   -involved workaround for NA's
+3. Get back the NA's
+4. Write back the transformed data in GRASS as new raster maps.
+
+
+So, this is rather a (general?) GRASS - R question: how is it done,
+after having calculated the principal components for a given set of
+GRASS raster maps in R, to create new GRASS raster maps with them? I
+mean how is it done to write the transformed values back to the right
+coordinates?
+
+Is there a clear example on the web using the writeRAST6()function?
+
+
+Below an example.
+Regards, Nikos
+-------------------------------------------------------------------------
+
+ # launch R from within GRASS
+R
+
+
+ # load spgrass6, and projection parameters
+library(spgrass6)
+G <- gmeta6()
+
+
+ # load data
+modis_2006_250m <- readRAST6 (c('MOD2006_239_250_sur_refl_b01',
+'MOD2006_239_250_sur_refl_b02'))
+
+
+ # workaround NA's as explained by Dylan [1]
+modis_2006_250m.values <- which(!is.na(modis_2006_250m@data
+$MOD2006_239_250_sur_refl_b01) & !is.na(modis_2006_250m@data
+$MOD2006_239_250_sur_refl_b02))
+
+
+ # create object without NA's
+mod06_250m <- modis_2006_250m@data[modis_2006_250m.values, ]
+
+
+ # perform pca based on SVD (default with center=TRUE, scale=FALSE)
+prcomp.mod06_250m <- prcomp(mod06_250m)
+
+
+ # check eigenvalues
+summary(prcomp.mod06_250m)
+
+Importance of components:
+                           PC1      PC2
+Standard deviation     3183.53 330.0584
+Proportion of Variance    0.99   0.0106
+Cumulative Proportion     0.99   1.0000
+
+
+ # check eigenvectors (=rotation)
+prcomp.mod06_250m$rotation
+
+                                    PC1        PC2
+MOD2006_239_250_sur_refl_b01 -0.3640966 -0.9313612
+MOD2006_239_250_sur_refl_b02 -0.9313612  0.3640966
+
+
+ # write back to GRASS the transformed data as new RASTER maps?
+--> Any help here on how to get the values to the right coordinates? Is
+it enough to just use some <--
+
+
+
+
+=======================================================================
+Extra info: comparing the resulted PC's from both R and GRASS
+=======================================================================
+ # compare with i.pca
+i.pca input="MOD06_250_b01,MOD06_250_b02" output="TEST06_250m_b12"
+rescale=0,0
+
+Eigen values, (vectors), and [percent importance]:
+   PC1 3481240.24 (  0.36  0.93 ) [ 98.92% ]
+   PC2  37875.46 (  0.93 -0.36 ) [  1.08% ]
+
+
+   ### Note ###
+The signs of the eigenvectors exactly the opposite. Therefore we expect
+that the Principal Components deriving from R's "prcomp()" will be the
+opposite of the Components deriving from "i.pca"
+   ### #### ###
+
+
+ # get summary for PC's produced by "prcomp()"
+summary(prcomp.mod06_250m$x)
+      PC1                 PC2          
+ Min.   :-10167.54   Min.   :-3919.99  
+ 1st Qu.: -3422.88   1st Qu.: -167.49  
+ Median : -3119.27   Median :   45.32  
+ Mean   : -3135.72   Mean   :   21.60  
+ 3rd Qu.: -2851.33   3rd Qu.:  239.13  
+ Max.   :   -64.22   Max.   : 1611.15
+
+
+ # get variances for PC's produce by "prcomp()"
+var(prcomp.mod06_250m$x[, 1])
+[1] 302107.8
+
+var(prcomp.mod06_250m$x[, 2])
+[1] 108471.9
+
+
+ # compare with PC's from GRASS
+
+### kept are only commonly reported parameters by GRASS' "r.univar" and
+R's "summary()" ###
+
+
+ # for GRASS' PC1
+r.univar TEST2006_250m_b12.1
+
+[...]
+n: 350879
+minimum: 64.2261
+maximum: 10166.7
+...
+mean: 3139.65
+mean of absolute values: 3139.65
+standard deviation: 543.404
+variance: 295287
+
+
+ # for GRASS' PC2
+r.univar TEST2006_250m_b12.2
+
+ 100%
+total null and non-null cells: 1023328
+total null cells: 672449
+
+Of the non-null cells:
+----------------------
+n: 350879
+minimum: -1609.93
+maximum: 3922.17
+
+mean: -22.0414
+...
+variance: 108444
+
+######## Result is #########
+### almost identical :-) ###
+############################
+
+From debeaudette at ucdavis.edu  Tue Mar  3 11:53:43 2009
+From: debeaudette at ucdavis.edu (Dylan Beaudette)
+Date: Tue Mar  3 11:53:12 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <1236098565.10442.45.camel@vertical>
+References: <1236098565.10442.45.camel@vertical>
+Message-ID: <200903030853.44008.dylan.beaudette@gmail.com>
+
+On Tuesday 03 March 2009, Nikos Alexandris wrote:
+> Hi GRASS&R experts,
+>
+> After playing around with R's functions for PCA, I need to
+>
+> 1. load GRASS raster maps in R
+> 2. Do something with the data
+>    -involved workaround for NA's
+> 3. Get back the NA's
+> 4. Write back the transformed data in GRASS as new raster maps.
+>
+>
+> So, this is rather a (general?) GRASS - R question: how is it done,
+> after having calculated the principal components for a given set of
+> GRASS raster maps in R, to create new GRASS raster maps with them? I
+> mean how is it done to write the transformed values back to the right
+> coordinates?
+>
+> Is there a clear example on the web using the writeRAST6()function?
+>
+
+Does this help:
+http://casoilresource.lawr.ucdavis.edu/drupal/node/664
+
+Cheers,
+
+Dylan
+
+
+> Below an example.
+> Regards, Nikos
+> -------------------------------------------------------------------------
+>
+>  # launch R from within GRASS
+> R
+>
+>
+>  # load spgrass6, and projection parameters
+> library(spgrass6)
+> G <- gmeta6()
+>
+>
+>  # load data
+> modis_2006_250m <- readRAST6 (c('MOD2006_239_250_sur_refl_b01',
+> 'MOD2006_239_250_sur_refl_b02'))
+>
+>
+>  # workaround NA's as explained by Dylan [1]
+> modis_2006_250m.values <- which(!is.na(modis_2006_250m@data
+> $MOD2006_239_250_sur_refl_b01) & !is.na(modis_2006_250m@data
+> $MOD2006_239_250_sur_refl_b02))
+>
+>
+>  # create object without NA's
+> mod06_250m <- modis_2006_250m@data[modis_2006_250m.values, ]
+>
+>
+>  # perform pca based on SVD (default with center=TRUE, scale=FALSE)
+> prcomp.mod06_250m <- prcomp(mod06_250m)
+>
+>
+>  # check eigenvalues
+> summary(prcomp.mod06_250m)
+>
+> Importance of components:
+>                            PC1      PC2
+> Standard deviation     3183.53 330.0584
+> Proportion of Variance    0.99   0.0106
+> Cumulative Proportion     0.99   1.0000
+>
+>
+>  # check eigenvectors (=rotation)
+> prcomp.mod06_250m$rotation
+>
+>                                     PC1        PC2
+> MOD2006_239_250_sur_refl_b01 -0.3640966 -0.9313612
+> MOD2006_239_250_sur_refl_b02 -0.9313612  0.3640966
+>
+>
+>  # write back to GRASS the transformed data as new RASTER maps?
+> --> Any help here on how to get the values to the right coordinates? Is
+> it enough to just use some <--
+>
+>
+>
+>
+> =======================================================================
+> Extra info: comparing the resulted PC's from both R and GRASS
+> =======================================================================
+>  # compare with i.pca
+> i.pca input="MOD06_250_b01,MOD06_250_b02" output="TEST06_250m_b12"
+> rescale=0,0
+>
+> Eigen values, (vectors), and [percent importance]:
+>    PC1 3481240.24 (  0.36  0.93 ) [ 98.92% ]
+>    PC2  37875.46 (  0.93 -0.36 ) [  1.08% ]
+>
+>
+>    ### Note ###
+> The signs of the eigenvectors exactly the opposite. Therefore we expect
+> that the Principal Components deriving from R's "prcomp()" will be the
+> opposite of the Components deriving from "i.pca"
+>    ### #### ###
+>
+>
+>  # get summary for PC's produced by "prcomp()"
+> summary(prcomp.mod06_250m$x)
+>       PC1                 PC2
+>  Min.   :-10167.54   Min.   :-3919.99
+>  1st Qu.: -3422.88   1st Qu.: -167.49
+>  Median : -3119.27   Median :   45.32
+>  Mean   : -3135.72   Mean   :   21.60
+>  3rd Qu.: -2851.33   3rd Qu.:  239.13
+>  Max.   :   -64.22   Max.   : 1611.15
+>
+>
+>  # get variances for PC's produce by "prcomp()"
+> var(prcomp.mod06_250m$x[, 1])
+> [1] 302107.8
+>
+> var(prcomp.mod06_250m$x[, 2])
+> [1] 108471.9
+>
+>
+>  # compare with PC's from GRASS
+>
+> ### kept are only commonly reported parameters by GRASS' "r.univar" and
+> R's "summary()" ###
+>
+>
+>  # for GRASS' PC1
+> r.univar TEST2006_250m_b12.1
+>
+> [...]
+> n: 350879
+> minimum: 64.2261
+> maximum: 10166.7
+> ...
+> mean: 3139.65
+> mean of absolute values: 3139.65
+> standard deviation: 543.404
+> variance: 295287
+>
+>
+>  # for GRASS' PC2
+> r.univar TEST2006_250m_b12.2
+>
+>  100%
+> total null and non-null cells: 1023328
+> total null cells: 672449
+>
+> Of the non-null cells:
+> ----------------------
+> n: 350879
+> minimum: -1609.93
+> maximum: 3922.17
+>
+> mean: -22.0414
+> ...
+> variance: 108444
+>
+> ######## Result is #########
+> ### almost identical :-) ###
+> ############################
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+
+
+-- 
+Dylan Beaudette
+Soil Resource Laboratory
+http://casoilresource.lawr.ucdavis.edu/
+University of California at Davis
+530.754.7341
+From nikos.alexandris at felis.uni-freiburg.de  Tue Mar  3 12:05:15 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Mar  3 12:01:42 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <200903030853.44008.dylan.beaudette@gmail.com>
+References: <1236098565.10442.45.camel@vertical>
+	<200903030853.44008.dylan.beaudette@gmail.com>
+Message-ID: <1236099915.11396.12.camel@vertical>
+
+On Tue, 2009-03-03 at 08:53 -0800, Dylan Beaudette wrote:
+> 
+> Does this help:
+> http://casoilresource.lawr.ucdavis.edu/drupal/node/664
+> 
+> Cheers,
+> 
+> Dylan
+
+:DDDDDD  Amazing, I need to rest. How in the world did I forget that
+when I wanted (but forgot) to cite the same page for the workaround??
+
+:DDD
+
+Cheers, Nikos
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Mar 10 04:53:46 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Mar 10 04:50:02 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <1236086778.7537.3.camel@vertical>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+	<1236086778.7537.3.camel@vertical>
+Message-ID: <1236675226.16530.1.camel@vertical>
+
+On Tue, 2009-03-03 at 14:26 +0100, Nikos Alexandris wrote:
+> On Tue, 2009-03-03 at 13:18 +0100, Markus Neteler wrote:
+> > On Tue, Mar 3, 2009 at 12:26 PM, Hamish <hamish_b@yahoo.com> wrote:
+> > ...
+> > >
+> > > it will be really good to finally have all this documented.
+> > 
+> > I find it hard to follow these long mails. Why not enjoying the
+> > GRASS Wiki to stabilize the documentation and comparisons?
+> > 
+> > Markus
+> 
+> Yes, why not? Hmmm, you mean to put these stuff already in the Wiki
+> before we are sure about the one last and very important variable
+> (=eigenvalues reported by  i.pca)?
+> 
+> Kind regards, Nikos 
+
+I've started the PCA grass-wiki page. I am trying to build it... step by
+step. Expert advice is always welcome and highly appreciated.
+
+http://grass.osgeo.org/wiki/Principal_Component_Analysis
+
+Kind regards, Nikos
+
+From Roger.Bivand at nhh.no  Tue Mar 10 06:48:38 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Mar 10 06:48:41 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <1236675226.16530.1.camel@vertical>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+	<1236086778.7537.3.camel@vertical>
+	<1236675226.16530.1.camel@vertical>
+Message-ID: <alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+
+On Tue, 10 Mar 2009, Nikos Alexandris wrote:
+
+> On Tue, 2009-03-03 at 14:26 +0100, Nikos Alexandris wrote:
+>> On Tue, 2009-03-03 at 13:18 +0100, Markus Neteler wrote:
+>>> On Tue, Mar 3, 2009 at 12:26 PM, Hamish <hamish_b@yahoo.com> wrote:
+>>> ...
+>>>>
+>>>> it will be really good to finally have all this documented.
+>>>
+>>> I find it hard to follow these long mails. Why not enjoying the
+>>> GRASS Wiki to stabilize the documentation and comparisons?
+>>>
+>>> Markus
+>>
+>> Yes, why not? Hmmm, you mean to put these stuff already in the Wiki
+>> before we are sure about the one last and very important variable
+>> (=eigenvalues reported by  i.pca)?
+>>
+>> Kind regards, Nikos
+>
+> I've started the PCA grass-wiki page. I am trying to build it... step by
+> step. Expert advice is always welcome and highly appreciated.
+>
+> http://grass.osgeo.org/wiki/Principal_Component_Analysis
+
+Good, thanks. There you say that you are using "some MODIS surface 
+reflectance products". I guess it will be easier to check things if the 
+data (GRASS location) are available, so that others can try the same 
+calculations. Would it be possible to make one or more test sets 
+available, and link them from thw Wiki?
+
+Roger
+
+>
+> Kind regards, Nikos
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Mar 10 15:20:06 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Mar 10 15:16:20 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+	<1236086778.7537.3.camel@vertical> <1236675226.16530.1.camel@vertical>
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+Message-ID: <1236712806.6833.4.camel@vertical>
+
+
+ Nikos:
+> > I've started the PCA grass-wiki page. I am trying to build it... step by
+> > step. Expert advice is always welcome and highly appreciated.
+> > http://grass.osgeo.org/wiki/Principal_Component_Analysis
+
+
+ Roger:
+> Good, thanks. There you say that you are using "some MODIS surface 
+> reflectance products". I guess it will be easier to check things if the 
+> data (GRASS location) are available, so that others can try the same 
+> calculations. Would it be possible to make one or more test sets 
+> available, and link them from thw Wiki?
+
+
+Absolutely! I need some time though (=some days?, currently
+overloaded :-).
+
+Kindest regards, Nikos
+
+P.S. I was informed today that I have to wait another 2 weeks to get the
+book "Applied Spatial Data Analysis with R" :-(
+
+From hamish_b at yahoo.com  Thu Mar 12 03:26:26 2009
+From: hamish_b at yahoo.com (Hamish)
+Date: Thu Mar 12 03:26:29 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+	m.eigensystem ~ princomp()
+Message-ID: <764200.22482.qm@web110016.mail.gq1.yahoo.com>
+
+
+Nikos:
+> > http://grass.osgeo.org/wiki/Principal_Component_Analysis
+
+Roger:
+> Good, thanks. There you say that you are using "some MODIS
+> surface reflectance products". I guess it will be easier to
+> check things if the data (GRASS location) are available, so
+> that others can try the same calculations. Would it be possible
+> to make one or more test sets available, and link them from thw
+> Wiki?
+
+better yet, use the standard Spearfish SPOT imagery sample dataset
+for the examples. (as m.eigensystem and now i.pca help page
+examples do, probably others)
+
+is there a way to change text color in MediaWiki? it might be
+easier to highlight m.eigensystem output rows by color instead
+of '#'s.
+
+
+idea for possible google summer of code 2009 project: overhaul i.*
+modules/lib for grass7. US$4.5k bounty :)
+
+
+cheers,
+Hamish
+
+
+
+      
+
+From nikos.alexandris at felis.uni-freiburg.de  Sun Mar 22 18:53:09 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Sun Mar 22 18:55:13 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <1236712806.6833.4.camel@vertical>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+	<1236086778.7537.3.camel@vertical> <1236675226.16530.1.camel@vertical>
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+	<1236712806.6833.4.camel@vertical>
+Message-ID: <1237762389.10657.18.camel@vertical>
+
+Roger:
+> > Good, thanks. There you say that you are using "some MODIS surface 
+> > reflectance products". I guess it will be easier to check things if the 
+> > data (GRASS location) are available, so that others can try the same 
+> > calculations. Would it be possible to make one or more test sets 
+> > available, and link them from thw Wiki?
+
+Finally,
+
+I am, sort of, free again :-). I have prepaired a grass-location
+containing the 3 modis bands I've used for all PCA related examples. I
+will eventually upload them in gregis [1] but if there is another place
+(GRASS-wiki?) to upload them would be also ok.
+
+Nikos:
+> P.S. I was informed today that I have to wait another 2 weeks to get the
+> book "Applied Spatial Data Analysis with R" :-(
+
+I have received a copy of the book. Just excellent. I would like to see
+more books like this one :-). Congratulations to the authors.
+
+Cheers, Nikos
+---
+
+[1] http://gregis.berlios.de
+
+From nikos.alexandris at felis.uni-freiburg.de  Sun Mar 22 19:00:21 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Sun Mar 22 19:02:24 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <764200.22482.qm@web110016.mail.gq1.yahoo.com>
+References: <764200.22482.qm@web110016.mail.gq1.yahoo.com>
+Message-ID: <1237762821.10657.24.camel@vertical>
+
+
+> Roger:
+> > Good, thanks. There you say that you are using "some MODIS
+> > surface reflectance products". I guess it will be easier to
+> > check things if the data (GRASS location) are available, so
+> > that others can try the same calculations. Would it be possible
+> > to make one or more test sets available, and link them from thw
+> > Wiki?
+
+Hamish:
+> better yet, use the standard Spearfish SPOT imagery sample dataset
+> for the examples. (as m.eigensystem and now i.pca help page
+> examples do, probably others)
+
+I will eventually try to re-perform all test with spearfish as well.
+Except if someone else, interested in PCA, is willing to do it :-p.
+
+Sorry that I haven't done that before. I preferred to play around with
+data from my projects.
+
+Kind regards, Nikos
+
+From neteler at osgeo.org  Mon Mar 23 03:50:02 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Mon Mar 23 03:50:07 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <764200.22482.qm@web110016.mail.gq1.yahoo.com>
+References: <764200.22482.qm@web110016.mail.gq1.yahoo.com>
+Message-ID: <86782b610903230050n1cc30822q35c8044ff5dfcada@mail.gmail.com>
+
+On Thu, Mar 12, 2009 at 8:26 AM, Hamish <hamish_b@yahoo.com> wrote:
+>
+> Nikos:
+>> > http://grass.osgeo.org/wiki/Principal_Component_Analysis
+>
+...
+> better yet, use the standard Spearfish SPOT imagery sample dataset
+> for the examples. (as m.eigensystem and now i.pca help page
+> examples do, probably others)
+
+Let me suggest the Landsat imagery in the North Carolina location
+which are more recent (the Spearfish *imagery* sample dataset
+isn't that great).
+
+Markus
+From nikos.alexandris at felis.uni-freiburg.de  Tue Mar 31 01:01:49 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Mar 31 01:03:40 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <1237762389.10657.18.camel@vertical>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+	<1236086778.7537.3.camel@vertical> <1236675226.16530.1.camel@vertical>
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+	<1236712806.6833.4.camel@vertical> <1237762389.10657.18.camel@vertical>
+Message-ID: <1238475709.12361.17.camel@vertical>
+
+
+Roger:
+> > > Good, thanks. There you say that you are using "some MODIS surface 
+> > > reflectance products". I guess it will be easier to check things if the 
+> > > data (GRASS location) are available, so that others can try the same 
+> > > calculations. Would it be possible to make one or more test sets 
+> > > available, and link them from thw Wiki?
+
+Nikos:
+> Finally,
+> I am, sort of, free again :-).
+
+Sorry for being late. Couldn't make it earlier. I've updated the
+wiki-page [1].
+
+
+> I have prepaired a grass-location
+> containing the 3 modis bands I've used for all PCA related examples. I
+> will eventually upload them in gregis [check previous post] but if there is another place
+> (GRASS-wiki?) to upload them would be also ok.
+
+I have currently some access problem in gregis this why I can't upload
+the MODIS bands there. Is there any other place to put them for now?
+
+
+Now, I am more confused than before. Or maybe not...
+
+There seems to be no problem with the SPOT images, that is, the results
+of i.pca are (almost) identical with the results of R's prcomp(x,
+center=TRUE) *with* centering. This is completely different than with
+the example using MODIS data. 
+
+Perhaps it depends on the range of the input data?! The SPOT bands are
+up to max. 255. The MODIS bands are:
+
+# band 2
+r.info -r mod_b2
+
+min=0
+max=5504
+
+# band 6
+r.info -r mod_b6
+
+min=93
+max=5488
+
+# band 7
+r.info -r mod_b7
+
+min=0
+max=4133
+
+
+I ran the same PCA tests (in R) with the _rescaled_ as like with the
+"original" MODIS bands (using r.rescale) but no luck, I get the same
+contradictory results: _i.pca_ matches with _prcomp(x, center=FALSE)_.
+
+I suspect that the range of the input data is the reason... but I am not
+sure.  This is why I tried to repeat the test with _rescaled_ MODIS
+bands. Given that the "r.rescale" products are kind of a "rules" file
+under the "cats" directory, is "r.rescale" safe? Should I instead
+rescale the data with r.mapcalc or is there no difference between
+r.rescale and r.mapcalc? 
+
+All explained in the *under construction* wiki. Kind regards, Nikos
+---
+
+[1] http://grass.osgeo.org/wiki/Principal_Component_Analysis
+
+From edzer.pebesma at uni-muenster.de  Tue Mar 31 06:56:04 2009
+From: edzer.pebesma at uni-muenster.de (Edzer Pebesma)
+Date: Tue Mar 31 07:13:21 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+	m.eigensystem ~ princomp()
+In-Reply-To: <1238475709.12361.17.camel@vertical>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+	<1236086778.7537.3.camel@vertical> <1236675226.16530.1.camel@vertical>
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+	<1236712806.6833.4.camel@vertical> <1237762389.10657.18.camel@vertical>
+	<1238475709.12361.17.camel@vertical>
+Message-ID: <8270a008306800638e9682517ced5eec.squirrel@webmail.geo.uu.nl>
+
+I tried to improve the wiki page, but never got access.
+--
+Edzer
+
+
+>
+> Roger:
+>> > > Good, thanks. There you say that you are using "some MODIS surface
+>> > > reflectance products". I guess it will be easier to check things if
+>> the
+>> > > data (GRASS location) are available, so that others can try the same
+>> > > calculations. Would it be possible to make one or more test sets
+>> > > available, and link them from thw Wiki?
+>
+> Nikos:
+>> Finally,
+>> I am, sort of, free again :-).
+>
+> Sorry for being late. Couldn't make it earlier. I've updated the
+> wiki-page [1].
+>
+>
+>> I have prepaired a grass-location
+>> containing the 3 modis bands I've used for all PCA related examples. I
+>> will eventually upload them in gregis [check previous post] but if there
+>> is another place
+>> (GRASS-wiki?) to upload them would be also ok.
+>
+> I have currently some access problem in gregis this why I can't upload
+> the MODIS bands there. Is there any other place to put them for now?
+>
+>
+> Now, I am more confused than before. Or maybe not...
+>
+> There seems to be no problem with the SPOT images, that is, the results
+> of i.pca are (almost) identical with the results of R's prcomp(x,
+> center=TRUE) *with* centering. This is completely different than with
+> the example using MODIS data.
+>
+> Perhaps it depends on the range of the input data?! The SPOT bands are
+> up to max. 255. The MODIS bands are:
+>
+> # band 2
+> r.info -r mod_b2
+>
+> min=0
+> max=5504
+>
+> # band 6
+> r.info -r mod_b6
+>
+> min=93
+> max=5488
+>
+> # band 7
+> r.info -r mod_b7
+>
+> min=0
+> max=4133
+>
+>
+> I ran the same PCA tests (in R) with the _rescaled_ as like with the
+> "original" MODIS bands (using r.rescale) but no luck, I get the same
+> contradictory results: _i.pca_ matches with _prcomp(x, center=FALSE)_.
+>
+> I suspect that the range of the input data is the reason... but I am not
+> sure.  This is why I tried to repeat the test with _rescaled_ MODIS
+> bands. Given that the "r.rescale" products are kind of a "rules" file
+> under the "cats" directory, is "r.rescale" safe? Should I instead
+> rescale the data with r.mapcalc or is there no difference between
+> r.rescale and r.mapcalc?
+>
+> All explained in the *under construction* wiki. Kind regards, Nikos
+> ---
+>
+> [1] http://grass.osgeo.org/wiki/Principal_Component_Analysis
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Mar 31 10:30:10 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Mar 31 10:31:58 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <49D1C8C2.1080903@gmail.com>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+	<1236086778.7537.3.camel@vertical> <1236675226.16530.1.camel@vertical>
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+	<1236712806.6833.4.camel@vertical> <1237762389.10657.18.camel@vertical>
+	<1238475709.12361.17.camel@vertical>  <49D1C8C2.1080903@gmail.com>
+Message-ID: <1238509810.7669.8.camel@vertical>
+
+Agustin:
+> Nikos, I'm probably missing a message (I do not see which is
+> exactly the difference between the spot and the modis example),
+
+Hi Agus. The difference is:
+
+Using SPOT (range up to max. 255):
+i.pca == prcomp(x, center=TRUE, scale=FALSE)
+
+Using MODIS (range varries between bands, up to max. ~5500):
+i.pca == prcomp(x, center=FALSE, scale=FALSE)
+
+
+>  but Perhaps you must use r.mapcalc to rescale and not r.rescale, or
+> if using r.rescale you must use r.mapcalc afterwards to rewrite the
+> output raster, as r.rescale is modifying the categories only and not
+> the actual raster values which is what i.pca is probably using. Maybe,
+> as i.pca is quite old, it considers the categories only up to 255. In
+> any case, using r.mapcalc you know better what you are doing.
+
+That's the confirmation I needed. I think rescaling the MODIS data to
+0~255 will confirm that:
+
+IF "r.info -r" =< max. 255
+THEN i.pca == prcomp(x, center=TRUE, scale=FALSE)
+
+
+> Also, note that you must rescale
+> using the mean, not max min values. In other words
+> r.mapcalc "band1c = band1 - mean(band1)"
+
+Thanks for the tip. Maybe this can be added in the grass-wiki FAQ !?
+
+Cheers, Nikos
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Mar 31 10:33:25 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Mar 31 10:35:18 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+	m.eigensystem ~ princomp()
+In-Reply-To: <8270a008306800638e9682517ced5eec.squirrel@webmail.geo.uu.nl>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+	<1236086778.7537.3.camel@vertical> <1236675226.16530.1.camel@vertical>
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+	<1236712806.6833.4.camel@vertical> <1237762389.10657.18.camel@vertical>
+	<1238475709.12361.17.camel@vertical>
+	<8270a008306800638e9682517ced5eec.squirrel@webmail.geo.uu.nl>
+Message-ID: <1238510005.7669.11.camel@vertical>
+
+On Tue, 2009-03-31 at 12:56 +0200, Edzer Pebesma wrote:
+> I tried to improve the wiki page, but never got access.
+> --
+> Edzer
+
+Edzer, it definitely needs to be improved. Hopefully you'll get access
+while the thing is boiling.
+
+@admins: Please, we need access ;-)
+Kindest regards, Nikos
+
+From markus.metz.giswork at googlemail.com  Tue Mar 31 11:00:50 2009
+From: markus.metz.giswork at googlemail.com (Markus Metz)
+Date: Tue Mar 31 11:00:59 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+	m.eigensystem ~ princomp()
+In-Reply-To: <1238509810.7669.8.camel@vertical>
+References: <1236061661.14059.256.camel@vertical>	<237972.38578.qm@web110002.mail.gq1.yahoo.com>	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>	<1236086778.7537.3.camel@vertical>
+	<1236675226.16530.1.camel@vertical>	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>	<1236712806.6833.4.camel@vertical>
+	<1237762389.10657.18.camel@vertical>	<1238475709.12361.17.camel@vertical>
+	<49D1C8C2.1080903@gmail.com> <1238509810.7669.8.camel@vertical>
+Message-ID: <49D23022.7000407@googlemail.com>
+
+
+Nikos Alexandris wrote:
+> Agustin:
+>   
+>> Nikos, I'm probably missing a message (I do not see which is
+>> exactly the difference between the spot and the modis example),
+>>     
+>
+> Hi Agus. The difference is:
+>
+> Using SPOT (range up to max. 255):
+> i.pca == prcomp(x, center=TRUE, scale=FALSE)
+>
+> Using MODIS (range varries between bands, up to max. ~5500):
+>   
+Sure? Valid range: -100 - 16000 for MODIS e.g. Surface Reflectance 8-Day 
+L3 Global 500m.
+As I would use the max possible for SPOT (255) I would also use the max 
+possible for other sensors, not the observed max, otherwise statistics 
+that don't do proper normalization on the fly are not comparable between 
+different sensors.
+But any PCA should do normalization beforehand, not sure what R or i.pca 
+are doing.
+Please excuse my random comments :-)
+
+From edzer.pebesma at uni-muenster.de  Tue Mar 31 11:06:07 2009
+From: edzer.pebesma at uni-muenster.de (Edzer Pebesma)
+Date: Tue Mar 31 11:06:11 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+	m.eigensystem ~ princomp()
+In-Reply-To: <1238510005.7669.11.camel@vertical>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+	<1236086778.7537.3.camel@vertical> <1236675226.16530.1.camel@vertical>
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+	<1236712806.6833.4.camel@vertical> <1237762389.10657.18.camel@vertical>
+	<1238475709.12361.17.camel@vertical>
+	<8270a008306800638e9682517ced5eec.squirrel@webmail.geo.uu.nl>
+	<1238510005.7669.11.camel@vertical>
+Message-ID: <d8a521140e1342ee35d2f3786a42058b.squirrel@webmail.geo.uu.nl>
+
+With Markus' help I got access, and corrected/extended quite a few things,
+including why R sometimes doesn't print loadings (when they're close to
+0).
+
+I do worry about the wiki that states results are "similar" between R and
+grass, when the differences appear e.g. in the third or second digit of a
+loading (eigenvector value). Clearly something is is going on, here.
+--
+Edzer
+
+> On Tue, 2009-03-31 at 12:56 +0200, Edzer Pebesma wrote:
+>> I tried to improve the wiki page, but never got access.
+>> --
+>> Edzer
+>
+> Edzer, it definitely needs to be improved. Hopefully you'll get access
+> while the thing is boiling.
+>
+> @admins: Please, we need access ;-)
+> Kindest regards, Nikos
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Mar 31 11:07:29 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Mar 31 11:09:18 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <49D23022.7000407@googlemail.com>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+	<1236086778.7537.3.camel@vertical> <1236675226.16530.1.camel@vertical>
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+	<1236712806.6833.4.camel@vertical> <1237762389.10657.18.camel@vertical>
+	<1238475709.12361.17.camel@vertical>  <49D1C8C2.1080903@gmail.com>
+	<1238509810.7669.8.camel@vertical>  <49D23022.7000407@googlemail.com>
+Message-ID: <1238512049.7669.30.camel@vertical>
+
+
+Agustin:   
+> >> Nikos, I'm probably missing a message (I do not see which is
+> >> exactly the difference between the spot and the modis example),
+> >>     
+
+Nikos:
+> > Hi Agus. The difference is:
+> > Using SPOT (range up to max. 255):
+> > i.pca == prcomp(x, center=TRUE, scale=FALSE)
+> > Using MODIS (range varries between bands, up to max. ~5500):
+[...]
+
+Markus M:
+> Sure? Valid range: -100 - 16000 for MODIS e.g. Surface Reflectance 8-Day 
+> L3 Global 500m.
+
+I am referring to the range of the specific MODIS bands that I've used,
+that is:
+# band 2
+r.info -r mod_b2
+
+min=0
+max=5504
+
+# band 6
+r.info -r mod_b6
+
+min=93
+max=5488
+
+# band 7
+r.info -r mod_b7
+
+min=0
+max=4133
+
+
+> As I would use the max possible for SPOT (255) I would also use the max 
+> possible for other sensors, not the observed max, otherwise statistics 
+> that don't do proper normalization on the fly are not comparable between 
+> different sensors.
+
+> But any PCA should do normalization beforehand, not sure what R or i.pca 
+> are doing.
+
+That's the question _now_ (if I am right with my tests): why isn't
+normalisation (=data centering in this case) performed with the MODIS
+bands I use?
+
+
+> Please excuse my random comments :-)
+
+Markus, your comments are required :-)
+Cheers, Nikos
+
+From neteler at osgeo.org  Tue Mar 31 11:13:29 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Tue Mar 31 11:13:34 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <49D23022.7000407@googlemail.com>
+References: <1236061661.14059.256.camel@vertical>
+	<1236086778.7537.3.camel@vertical> <1236675226.16530.1.camel@vertical>
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+	<1236712806.6833.4.camel@vertical>
+	<1237762389.10657.18.camel@vertical>
+	<1238475709.12361.17.camel@vertical> <49D1C8C2.1080903@gmail.com>
+	<1238509810.7669.8.camel@vertical> <49D23022.7000407@googlemail.com>
+Message-ID: <86782b610903310813j2b162951r372a65dbf27d0bf2@mail.gmail.com>
+
+On Tue, Mar 31, 2009 at 5:00 PM, Markus Metz
+<markus.metz.giswork@googlemail.com> wrote:
+> Nikos Alexandris wrote:
+>> Using MODIS (range varries between bands, up to max. ~5500):
+>>
+>
+> Sure? Valid range: -100 - 16000 for MODIS e.g. Surface Reflectance 8-Day L3
+> Global 500m.
+
+Remember that you have to rescale these data first:
+
+https://lpdaac.usgs.gov/lpdaac/products/modis_products_table
+-> MOD09Q1  	Terra  	Surface Reflectance Bands 1?2  	Tile  	250m  	8 Day
+    https://lpdaac.usgs.gov/lpdaac/products/modis_products_table/surface_reflectance/8_day_l3_global_250m/v5/terra
+   -> layers
+
+... MULTIPLY BY SCALE FACTOR ...
+
+best,
+Markus
+From nikos.alexandris at felis.uni-freiburg.de  Tue Mar 31 11:14:18 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Mar 31 11:16:07 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <86782b610903310813j2b162951r372a65dbf27d0bf2@mail.gmail.com>
+References: <1236061661.14059.256.camel@vertical>
+	<1236086778.7537.3.camel@vertical> <1236675226.16530.1.camel@vertical>
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+	<1236712806.6833.4.camel@vertical> <1237762389.10657.18.camel@vertical>
+	<1238475709.12361.17.camel@vertical> <49D1C8C2.1080903@gmail.com>
+	<1238509810.7669.8.camel@vertical> <49D23022.7000407@googlemail.com>
+	<86782b610903310813j2b162951r372a65dbf27d0bf2@mail.gmail.com>
+Message-ID: <1238512458.8504.1.camel@vertical>
+
+On Tue, 2009-03-31 at 17:13 +0200, Markus Neteler wrote:
+> On Tue, Mar 31, 2009 at 5:00 PM, Markus Metz
+> <markus.metz.giswork@googlemail.com> wrote:
+> > Nikos Alexandris wrote:
+> >> Using MODIS (range varries between bands, up to max. ~5500):
+> >>
+> >
+> > Sure? Valid range: -100 - 16000 for MODIS e.g. Surface Reflectance 8-Day L3
+> > Global 500m.
+> 
+> Remember that you have to rescale these data first:
+> 
+> https://lpdaac.usgs.gov/lpdaac/products/modis_products_table
+> -> MOD09Q1  	Terra  	Surface Reflectance Bands 1?2  	Tile  	250m  	8 Day
+>     https://lpdaac.usgs.gov/lpdaac/products/modis_products_table/surface_reflectance/8_day_l3_global_250m/v5/terra
+>    -> layers
+> 
+> ... MULTIPLY BY SCALE FACTOR ...
+
+> best,
+> Markus
+
+Yep, I know that. But why is it wrong to just use them as they are?
+Regards, Nikos
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Mar 31 11:16:06 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Mar 31 11:17:55 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+	m.eigensystem ~ princomp()
+In-Reply-To: <d8a521140e1342ee35d2f3786a42058b.squirrel@webmail.geo.uu.nl>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+	<1236086778.7537.3.camel@vertical> <1236675226.16530.1.camel@vertical>
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+	<1236712806.6833.4.camel@vertical> <1237762389.10657.18.camel@vertical>
+	<1238475709.12361.17.camel@vertical>
+	<8270a008306800638e9682517ced5eec.squirrel@webmail.geo.uu.nl>
+	<1238510005.7669.11.camel@vertical>
+	<d8a521140e1342ee35d2f3786a42058b.squirrel@webmail.geo.uu.nl>
+Message-ID: <1238512566.8504.3.camel@vertical>
+
+Edzer:
+> With Markus' help I got access, and corrected/extended quite a few things,
+> including why R sometimes doesn't print loadings (when they're close to
+> 0).
+
+Great!
+
+
+> I do worry about the wiki that states results are "similar" between R and
+> grass, when the differences appear e.g. in the third or second digit of a
+> loading (eigenvector value). Clearly something is is going on, here.
+
+So you think it's really important? Isn't it a matter of pixel-inclusion
+in the various algorithms/programs?
+
+Nikos
+
+From markus.metz.giswork at googlemail.com  Tue Mar 31 11:26:56 2009
+From: markus.metz.giswork at googlemail.com (Markus Metz)
+Date: Tue Mar 31 11:27:01 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+	m.eigensystem ~ princomp()
+In-Reply-To: <1238512049.7669.30.camel@vertical>
+References: <1236061661.14059.256.camel@vertical>	
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>	
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>	
+	<1236086778.7537.3.camel@vertical>
+	<1236675226.16530.1.camel@vertical>	
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>	
+	<1236712806.6833.4.camel@vertical>
+	<1237762389.10657.18.camel@vertical>	
+	<1238475709.12361.17.camel@vertical> <49D1C8C2.1080903@gmail.com>	
+	<1238509810.7669.8.camel@vertical>
+	<49D23022.7000407@googlemail.com>
+	<1238512049.7669.30.camel@vertical>
+Message-ID: <49D23640.5000906@googlemail.com>
+
+
+Nikos Alexandris wrote:
+> Nikos:
+>   
+>>> Hi Agus. The difference is:
+>>> Using SPOT (range up to max. 255):
+>>>       
+That implied to me that the max possible value of SPOT was used, not the 
+max observed (often the max observed is also the max possible). In my 
+experience, when comparing imagery or derived products from different 
+sensors, the least errors occur if everything is rescaled to the same 
+range, e.g. 0 - 255 for surface reflectance or -1 - 1 for NDVI, whatever 
+is convenient or appropriate.
+Note that the scale factor for MODIS is 0.0001 which would give you a 
+new range of -0.01 - 1.6 (I hope I got my math right), not 0 - 255 as 
+for e.g. SPOT or Landsat.
+
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Mar 31 11:43:32 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Mar 31 11:45:22 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <49D23640.5000906@googlemail.com>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+	<1236086778.7537.3.camel@vertical> <1236675226.16530.1.camel@vertical>
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+	<1236712806.6833.4.camel@vertical> <1237762389.10657.18.camel@vertical>
+	<1238475709.12361.17.camel@vertical>  <49D1C8C2.1080903@gmail.com>
+	<1238509810.7669.8.camel@vertical>  <49D23022.7000407@googlemail.com>
+	<1238512049.7669.30.camel@vertical> <49D23640.5000906@googlemail.com>
+Message-ID: <1238514212.10221.6.camel@vertical>
+
+
+Nikos:  
+> >>> Hi Agus. The difference is:
+> >>> Using SPOT (range up to max. 255):
+
+Markus M:  
+> That implied to me that the max possible value of SPOT was used, not the 
+> max observed (often the max observed is also the max possible).
+
+Right. Sorry for not being precise.
+
+
+> In my experience, when comparing imagery or derived products from different 
+> sensors, the least errors occur if everything is rescaled to the same 
+> range, e.g. 0 - 255 for surface reflectance or -1 - 1 for NDVI, whatever 
+> is convenient or appropriate.
+
+> Note that the scale factor for MODIS is 0.0001 which would give you a 
+> new range of -0.01 - 1.6 (I hope I got my math right), not 0 - 255 as 
+> for e.g. SPOT or Landsat.
+
+The thing is by multiplying by 0.0001 thing are worse concerning the
+*eigenvalues* (the eigenvectors are the same):
+
+
+# using the MODIS bands as they are
+r.info -r mod_b2
+
+min=0
+max=5504
+
+
+# use of i.pca gives
+r.info -h pca_mod_b267.1
+
+[...]
+Data Description:
+   generated by i.pca
+Comments:
+   Eigen values, (vectors), and [percent importance]:
+   PC1 6307563.04 (-0.6353,-0.6485,-0.4192)[98.71%]
+   PC2  78023.63 (-0.7124, 0.2828, 0.6422)[1.22%]
+   PC3   4504.60 (-0.2979, 0.7067,-0.6417)[0.07%]
+   
+
+# using MODIS bands multiplied by 0.0001
+r.info -r mod_b2_x
+
+min=0
+max=0.5504
+
+
+# using i.pca gives
+r.info -h pca.mod_x.1
+
+[...]   
+Data Description:
+   generated by i.pca
+Comments:
+   Eigen values, (vectors), and [percent importance]:
+   PC1      0.06 (-0.6353,-0.6485,-0.4192)[98.71%]
+   PC2      0.00 (-0.7124, 0.2828, 0.6422)[1.22%]
+   PC3      0.00 (-0.2979, 0.7067,-0.6417)[0.07%]
+
+From markus.metz.giswork at googlemail.com  Tue Mar 31 12:18:34 2009
+From: markus.metz.giswork at googlemail.com (Markus Metz)
+Date: Tue Mar 31 12:18:40 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+	m.eigensystem ~ princomp()
+In-Reply-To: <1238514212.10221.6.camel@vertical>
+References: <1236061661.14059.256.camel@vertical>	
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>	
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>	
+	<1236086778.7537.3.camel@vertical>
+	<1236675226.16530.1.camel@vertical>	
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>	
+	<1236712806.6833.4.camel@vertical>
+	<1237762389.10657.18.camel@vertical>	
+	<1238475709.12361.17.camel@vertical> <49D1C8C2.1080903@gmail.com>	
+	<1238509810.7669.8.camel@vertical>
+	<49D23022.7000407@googlemail.com>	
+	<1238512049.7669.30.camel@vertical>
+	<49D23640.5000906@googlemail.com>
+	<1238514212.10221.6.camel@vertical>
+Message-ID: <49D2425A.1000703@googlemail.com>
+
+
+Nikos Alexandris wrote:
+>
+> The thing is by multiplying by 0.0001 thing are worse concerning the
+> *eigenvalues* (the eigenvectors are the same):
+>
+>
+> # using the MODIS bands as they are
+> r.info -r mod_b2
+>
+> min=0
+> max=5504
+>
+>
+> # use of i.pca gives
+> r.info -h pca_mod_b267.1
+>
+> [...]
+> Data Description:
+>    generated by i.pca
+> Comments:
+>    Eigen values, (vectors), and [percent importance]:
+>    PC1 6307563.04 (-0.6353,-0.6485,-0.4192)[98.71%]
+>    PC2  78023.63 (-0.7124, 0.2828, 0.6422)[1.22%]
+>    PC3   4504.60 (-0.2979, 0.7067,-0.6417)[0.07%]
+>    
+>
+> # using MODIS bands multiplied by 0.0001
+> r.info -r mod_b2_x
+>
+> min=0
+> max=0.5504
+>
+>
+> # using i.pca gives
+> r.info -h pca.mod_x.1
+>
+> [...]   
+> Data Description:
+>    generated by i.pca
+> Comments:
+>    Eigen values, (vectors), and [percent importance]:
+>    PC1      0.06 (-0.6353,-0.6485,-0.4192)[98.71%]
+>    PC2      0.00 (-0.7124, 0.2828, 0.6422)[1.22%]
+>    PC3      0.00 (-0.2979, 0.7067,-0.6417)[0.07%]
+>
+>   
+OK, I don't have the full discussion on i.pca in my head, so I don't 
+know how much sense my comments make. The loadings and percentages 
+explained variance are identical, that's good. The Eigenvalues are not, 
+it seems they were calculated from unstandardised (raw) values. For 
+imagery processing, that may be desired, for other applications AFAIK it 
+is required that input variables variables (here different bands) are 
+standardised first so they can be combined and principal components 
+extracted. I'm more familiar with non-spatial PCA, so it's high time I 
+read the manual of i.pca, and the new wiki page on it...
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Mar 31 14:40:23 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Mar 31 14:42:12 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <49D2425A.1000703@googlemail.com>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+	<1236086778.7537.3.camel@vertical> <1236675226.16530.1.camel@vertical>
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+	<1236712806.6833.4.camel@vertical> <1237762389.10657.18.camel@vertical>
+	<1238475709.12361.17.camel@vertical>  <49D1C8C2.1080903@gmail.com>
+	<1238509810.7669.8.camel@vertical>  <49D23022.7000407@googlemail.com>
+	<1238512049.7669.30.camel@vertical> <49D23640.5000906@googlemail.com>
+	<1238514212.10221.6.camel@vertical> <49D2425A.1000703@googlemail.com>
+Message-ID: <1238524823.6215.10.camel@vertical>
+
+
+Nikos:
+> > The thing is by multiplying by 0.0001 thing are worse concerning the
+> > *eigenvalues* (the eigenvectors are the same):
+
+> > # use of i.pca gives
+> > r.info -h pca_mod_b267.1
+[...]
+> >    Eigen values, (vectors), and [percent importance]:
+> >    PC1 6307563.04 (-0.6353,-0.6485,-0.4192)[98.71%]
+> >    PC2  78023.63 (-0.7124, 0.2828, 0.6422)[1.22%]
+> >    PC3   4504.60 (-0.2979, 0.7067,-0.6417)[0.07%]
+
+> > # using i.pca gives
+> > r.info -h pca.mod_x.1
+[...]
+> >    Eigen values, (vectors), and [percent importance]:
+> >    PC1      0.06 (-0.6353,-0.6485,-0.4192)[98.71%]
+> >    PC2      0.00 (-0.7124, 0.2828, 0.6422)[1.22%]
+> >    PC3      0.00 (-0.2979, 0.7067,-0.6417)[0.07%]
+
+
+Markus M:   
+> OK, I don't have the full discussion on i.pca in my head, so I don't 
+> know how much sense my comments make. The loadings and percentages 
+> explained variance are identical, that's good.
+
+Yep.
+
+
+> The Eigenvalues are not, it seems they were calculated from unstandardised (raw) values.
+
+Note: the percent importance is nothing else than just transforemd
+eigenvalues (that is: sum-up all eigenvalues and say the sum is the
+100%, take then the percent of each eigenvalue).
+
+The fact that the 2nd an d 3rd eigenvalues  in the above example are
+0.00 is a (another) print-out/report issue I think.
+
+However, the multiplication of the MODIS bands with the recommended
+factor (0.0001) does nothing to the way i.pca treats the data.
+
+##
+I am convinced that i.pca wrongly _depends_ currently on the range of
+the input data whether to apply data centering or not.
+
+I just need to rescale the MODIS bands in to 0,255 and confirm my
+skepsis. If I am wrong then it might be even more complicated!!
+##
+
+
+>  For imagery processing, that may be desired, for other applications AFAIK it 
+> is required that input variables variables (here different bands) are 
+> standardised first so they can be combined and principal components 
+> extracted. 
+
+As Augustin Lobo and others suggested, data centering should be
+performed. And me, with my limited knowledge and experience think the
+same.
+
+
+> I'm more familiar with non-spatial PCA, so it's high time I read the
+> manual of i.pca, and the new wiki page on it...
+
+Markus, I might missed to update some important sentences. So "handle
+with care" :-)
+
+Cheers, Nikos
+
+From edzer.pebesma at uni-muenster.de  Tue Mar 31 16:01:16 2009
+From: edzer.pebesma at uni-muenster.de (Edzer Pebesma)
+Date: Tue Mar 31 16:01:23 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+	m.eigensystem ~ princomp()
+In-Reply-To: <1238524823.6215.10.camel@vertical>
+References: <1236061661.14059.256.camel@vertical>	<237972.38578.qm@web110002.mail.gq1.yahoo.com>	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>	<1236086778.7537.3.camel@vertical>
+	<1236675226.16530.1.camel@vertical>	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>	<1236712806.6833.4.camel@vertical>
+	<1237762389.10657.18.camel@vertical>	<1238475709.12361.17.camel@vertical>
+	<49D1C8C2.1080903@gmail.com>	<1238509810.7669.8.camel@vertical>
+	<49D23022.7000407@googlemail.com>	<1238512049.7669.30.camel@vertical>
+	<49D23640.5000906@googlemail.com>	<1238514212.10221.6.camel@vertical>
+	<49D2425A.1000703@googlemail.com>
+	<1238524823.6215.10.camel@vertical>
+Message-ID: <49D2768C.8080403@uni-muenster.de>
+
+
+
+Nikos Alexandris wrote:
+>
+>> I'm more familiar with non-spatial PCA, so it's high time I read the
+>> manual of i.pca, and the new wiki page on it...
+>>     
+I think there's no such thing as spatial or non-spatial PCA. There's
+just PCA.
+
+-- 
+Edzer Pebesma
+Institute for Geoinformatics (ifgi), University of M?nster
+Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+8333081, Fax: +49 251 8339763 http://ifgi.uni-muenster.de/
+http://www.springer.com/978-0-387-78170-9 e.pebesma@wwu.de
+
+From edzer.pebesma at uni-muenster.de  Tue Mar 31 15:48:49 2009
+From: edzer.pebesma at uni-muenster.de (Edzer Pebesma)
+Date: Tue Mar 31 16:16:28 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+	m.eigensystem ~ princomp()
+In-Reply-To: <1238512566.8504.3.camel@vertical>
+References: <1236061661.14059.256.camel@vertical>	
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>	
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>	
+	<1236086778.7537.3.camel@vertical>
+	<1236675226.16530.1.camel@vertical>	
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>	
+	<1236712806.6833.4.camel@vertical>
+	<1237762389.10657.18.camel@vertical>	
+	<1238475709.12361.17.camel@vertical>	
+	<8270a008306800638e9682517ced5eec.squirrel@webmail.geo.uu.nl>	
+	<1238510005.7669.11.camel@vertical>	
+	<d8a521140e1342ee35d2f3786a42058b.squirrel@webmail.geo.uu.nl>
+	<1238512566.8504.3.camel@vertical>
+Message-ID: <49D273A1.4010704@uni-muenster.de>
+
+Nikos Alexandris wrote:
+> Edzer:
+>   
+> I do worry about the wiki that states results are "similar" between R and
+>> grass, when the differences appear e.g. in the third or second digit of a
+>> loading (eigenvector value). Clearly something is is going on, here.
+>>     
+>
+> So you think it's really important? Isn't it a matter of pixel-inclusion
+> in the various algorithms/programs?
+>   
+Well, it's just much larger than I could imaging numerical dispersion
+would give; if you mean by pixel-inclusion different methods how missing
+values are treated, then I can understand it a bit better, given that
+there are substantial amounts of them. The wiki might mention this
+possibility. (Although I don't see why grass wouldn't ignore partially
+missing valued pixels)
+
+Note that I didn't run the examples, I was just surprised. When I
+compare different software implementations of an algorithm, I usually
+don't stop worrying until differences happen beyond digit 5.
+
+-- 
+Edzer Pebesma
+Institute for Geoinformatics (ifgi), University of M?nster
+Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+8333081, Fax: +49 251 8339763 http://ifgi.uni-muenster.de/
+http://www.springer.com/978-0-387-78170-9 e.pebesma@wwu.de
+

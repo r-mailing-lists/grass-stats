@@ -1,0 +1,1524 @@
+From giuseppe.amatulli at gmail.com  Fri Apr  1 10:00:16 2016
+From: giuseppe.amatulli at gmail.com (Giuseppe Amatulli)
+Date: Fri, 1 Apr 2016 13:00:16 -0400
+Subject: [GRASS-stats] Summers schools in Geo-Data Processing
+Message-ID: <CAKoiDH+XDg8sU_UkZacMDaHkxTM_Vn3p+y9NCtk7bUVt1oVe_A@mail.gmail.com>
+
+Apologies for cross-posting:
+
+We are pleased to announce: *R**egistration open now for two Summer Schools*
+organized by www.spatial-ecology.net held at the University of Basilicata,
+Matera, Italy:
+
+*- Spatio-Temporal Data Analyses Using Free and Open Source Software
+**(6th-10th
+June 2016)*
+
+*An immersion 5 day experience opening new horizons on the use of the vast
+potentials of the Linux environment and the command line approach to
+process data using Bash, AWK, Python, GRASS, QGIS, GDAL/OGR, R, PKtools,
+Openforis. **We will guide newbies who have never used a command line
+terminal to a stage which will allow them to understand and use very
+advanced open source data processing routines. Our focus is to enhance the
+approach of self-learning allowing participants to keep on progressing and
+updating their skills in a continuously evolving technological environment.*
+
+*----------------------------------------------------*
+
+*- Hands-on Open Source Drone Mapping and High Performance Computing for
+Big Geo-Data **(13th-17th June 2016)*
+
+*Another 5 day immersion experience on advanced data processing using high
+performance computers (HPC) and emerging technologies such as drone
+mapping, rasdaman (Fastest Array Database on Earth) and cloud computing. We
+provide a walk-through journey from the introduction of Linux operating
+system and different open source software (Python, GRASS, GDAL/OGR, R,
+PKtools, Openforis) to capturing data out in the field using an Unmanned
+Aerial Vehicle, to complex image processing and data analyses. We focus on
+how maximising computation performance using multicore on single computer,
+switching to distributed clusters of computers (using grid engine
+scheduler) and ultimately data analytics with cutting edge rasdaman
+software (Big Data Analytics Server).*
+
+
+More information and registrations:
+
+www.spatial-ecology.net/upcoming-events
+
+https://www.facebook.com/spatialecology
+<http://www.spatial-ecology.net/upcoming-events>> see events
+info at spatial-ecology.net
+
+-- 
+Giuseppe Amatulli, Ph.D.
+
+Department of Ecology and Evolutionary Biology, Yale University.
+Jetz Lab, OML Room 405
+
+P.O. Box 208106
+165 PROSPECT ST
+New Haven, CT 06520-8106
+Teaching: spatial-ecology.net
+Work:  http://sbsc.yale.edu/giuseppe-amatulli
+<http://www.spatial-ecology.net>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20160401/b631ee27/attachment.html>
+
+From baerroger at outlook.com  Sat Apr 16 10:47:34 2016
+From: baerroger at outlook.com (=?iso-8859-1?B?Um9nZXIgQuRy?=)
+Date: Sat, 16 Apr 2016 19:47:34 +0200
+Subject: [GRASS-stats] [R-sig-Geo] GISRC environment variable using
+	initGRASS
+In-Reply-To: <alpine.LFD.2.20.1604152046460.24113@reclus.nhh.no>
+References: <DUB129-W573D763DAB1ABA9C09EF8BA5680@phx.gbl>,
+ <alpine.LFD.2.20.1604152046460.24113@reclus.nhh.no>
+Message-ID: <DUB129-W37F72276A9CB4D0E442F5BA5690@phx.gbl>
+
+Thanks for the support!Please see below my comments.
+
+> Date: Fri, 15 Apr 2016 20:58:15 +0200
+> From: Roger.Bivand at nhh.no
+> To: baerroger at outlook.com
+> CC: r-sig-geo at r-project.org
+> Subject: Re: [R-sig-Geo] GISRC environment variable using initGRASS
+> 
+> On Fri, 15 Apr 2016, Roger Bär wrote:
+> 
+> > I am currently using the R package "rgrass7" (Version: 0.1-6) in order 
+> > to command GRASS GIS (Windows7, OSGEO4W installation).
+> >
+> > I use R in order to start a GRASS environment and to script my 
+> > geoprocessing. Both is working fine. However, I have problems with 
+> > storing and calling the GRASS gisenv variables. Every time when I call 
+> > "initGRASS" a file called "junk" is created containing GRASS gisenv 
+> > variables.
+> >
+> 
+> What the file is called is probably immaterial.
+> 
+> >
+> > Looking at the source of the initGRASS function the section below 
+> > puzzeled me somehow:
+> >
+> >  59   Sys.setenv(GISRC = paste(Sys.getenv("HOME"), "\\.grassrc7", 
+> >  60     sep = ""))
+> 
+> This is setting GISRC to a value
+
+ Yes. The absolute path to the file (containing settings for GISDBASE, LOCATION_NAME and MAPSET) 
+
+> >  61   if (file.exists(Sys.getenv("GISRC")) && !override) 
+> >  62     stop("A GISRC file already exists; to override, set override=TRUE")
+> >  63  Sys.setenv(GISRC = "junk")
+> 
+> This is setting it again in the working directory - I don't recall why - 
+> probably frustration years ago with Windows.
+
+I really do not understand the "junk" (line 63). Because GISRC is set to "junk" the subsequent lines of code will write the GISRC environment variables to a newly created file called "junk" in the home folder. 
+Shouldn't this line not rather be omitted? 
+(The GRASS environment variables would then be written to ".grassrc7", which in my opinion would be correct)
+
+> 
+> >  64  cat("GISDBASE:", getwd(), "\n", file = Sys.getenv("GISRC"))
+> >  65  cat("LOCATION_NAME: <UNKNOWN>", "\n", file = Sys.getenv("GISRC"), 
+> >  66     append = TRUE)
+> >  67  cat("MAPSET: <UNKNOWN>", "\n", file = Sys.getenv("GISRC"), 
+> >  68     append = TRUE)
+> >  69  gisrc <- ifelse(use_g.dirseps.exe, system(paste("g.dirseps.exe -g", 
+> >  70     shQuote(Sys.getenv("GISRC"))), intern = TRUE), Sys.getenv("GISRC"))
+> >  71   assign("addEXE", .addexe(), envir = .GRASS_CACHE)
+> >   72  Sys.setenv(GISRC = gisrc)
+> >
+> 
+> And this sets it again. It is set, otherwise GRASS wouldn't work; 
+> programmatically you'd have to use Sys.getenv("GISRC") to get the value. 
+> Please provide a use case where this matters, and consider moving this 
+> thread to the statsgrass list.
+
+Sorry, I do not understand what you mean with "provide a use case where this matters". What do you mean with "this"?
+I added the thread to the grass-stat list (and will remove r-sig from the cc the next time).
+Roger
+
+> 
+> Hope this helps (doesn't clarify, but that's legacy Windows),
+> 
+> Roger
+> 
+> > First, why is initGRASS using ".grassrc7" for storing the GISRC file? 
+> > InitGRASS is looking for the GISRC file under ".grassrc7" (line 59). However, in the package documentation [1], the GISRC file is called ".gisrc". Moreover, the GRASS documentation says that the GISRC file is stored under "/.grass7/rc"
+> >
+> > Second, what is the purpose of assigning "junk" to the GISRC environment variable? 
+> > GISRC is set to "junk" (line 63) and then the GISRC value ("junk") is assigned again back to system variable GISRC. Unless I misinterpreded the code, it does not make much sense to me. Shouldn't the enviroment varibales not be written (line 64 - 68) to ".grassrc7" rather than to "junk"?
+> >
+> >
+> >
+> > I would appreciate any support or hints!
+> >
+> > Regards,
+> > Roger
+> >
+> > [1] http://https//cran.r-project.org/web/packages/rgrass7/rgrass7.pdf
+> > [2] http://grass.osgeo.org/grass70/manuals/variables.html
+> >
+> > _______________________________________________
+> > R-sig-Geo mailing list
+> > R-sig-Geo at r-project.org
+> > https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+> >
+> 
+> -- 
+> Roger Bivand
+> Department of Economics, Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 91 00
+> e-mail: Roger.Bivand at nhh.no
+> http://orcid.org/0000-0003-2392-6140
+> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+> http://depsy.org/person/434412
+ 		 	   		  
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20160416/3e8de234/attachment.html>
+
+From Roger.Bivand at nhh.no  Sun Apr 17 11:11:06 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun, 17 Apr 2016 20:11:06 +0200
+Subject: [GRASS-stats] [R-sig-Geo] GISRC environment variable using
+	initGRASS
+In-Reply-To: <DUB129-W37F72276A9CB4D0E442F5BA5690@phx.gbl>
+References: <DUB129-W573D763DAB1ABA9C09EF8BA5680@phx.gbl>,
+ <alpine.LFD.2.20.1604152046460.24113@reclus.nhh.no>
+ <DUB129-W37F72276A9CB4D0E442F5BA5690@phx.gbl>
+Message-ID: <alpine.LFD.2.20.1604171952030.23946@reclus.nhh.no>
+
+On Sat, 16 Apr 2016, Roger Bär wrote:
+
+> Thanks for the support!Please see below my comments.
+>
+>> Date: Fri, 15 Apr 2016 20:58:15 +0200
+>> From: Roger.Bivand at nhh.no
+>> To: baerroger at outlook.com
+>> CC: r-sig-geo at r-project.org
+>> Subject: Re: [R-sig-Geo] GISRC environment variable using initGRASS
+>>
+>> On Fri, 15 Apr 2016, Roger Bär wrote:
+>>
+>>> I am currently using the R package "rgrass7" (Version: 0.1-6) in order
+>>> to command GRASS GIS (Windows7, OSGEO4W installation).
+>>>
+>>> I use R in order to start a GRASS environment and to script my
+>>> geoprocessing. Both is working fine. However, I have problems with
+>>> storing and calling the GRASS gisenv variables. Every time when I call
+>>> "initGRASS" a file called "junk" is created containing GRASS gisenv
+>>> variables.
+>>>
+>>
+>> What the file is called is probably immaterial.
+>>
+>>>
+>>> Looking at the source of the initGRASS function the section below
+>>> puzzeled me somehow:
+>>>
+>>>  59   Sys.setenv(GISRC = paste(Sys.getenv("HOME"), "\\.grassrc7",
+>>>  60     sep = ""))
+>>
+>> This is setting GISRC to a value
+>
+> Yes. The absolute path to the file (containing settings for GISDBASE, 
+> LOCATION_NAME and MAPSET)
+>
+>>>  61   if (file.exists(Sys.getenv("GISRC")) && !override)
+>>>  62     stop("A GISRC file already exists; to override, set override=TRUE")
+>>>  63  Sys.setenv(GISRC = "junk")
+>>
+>> This is setting it again in the working directory - I don't recall why -
+>> probably frustration years ago with Windows.
+>
+> I really do not understand the "junk" (line 63). Because GISRC is set to 
+> "junk" the subsequent lines of code will write the GISRC environment 
+> variables to a newly created file called "junk" in the home folder. 
+> Shouldn't this line not rather be omitted? (The GRASS environment 
+> variables would then be written to ".grassrc7", which in my opinion 
+> would be correct)
+
+The name of the file is immaterial, but from an R script should only be 
+accessed from the value of the environment variable.
+
+>
+>>
+>>>  64  cat("GISDBASE:", getwd(), "\n", file = Sys.getenv("GISRC"))
+>>>  65  cat("LOCATION_NAME: <UNKNOWN>", "\n", file = Sys.getenv("GISRC"),
+>>>  66     append = TRUE)
+>>>  67  cat("MAPSET: <UNKNOWN>", "\n", file = Sys.getenv("GISRC"),
+>>>  68     append = TRUE)
+>>>  69  gisrc <- ifelse(use_g.dirseps.exe, system(paste("g.dirseps.exe -g",
+>>>  70     shQuote(Sys.getenv("GISRC"))), intern = TRUE), Sys.getenv("GISRC"))
+>>>  71   assign("addEXE", .addexe(), envir = .GRASS_CACHE)
+>>>   72  Sys.setenv(GISRC = gisrc)
+>>>
+>>
+>> And this sets it again. It is set, otherwise GRASS wouldn't work;
+>> programmatically you'd have to use Sys.getenv("GISRC") to get the value.
+>> Please provide a use case where this matters, and consider moving this
+>> thread to the statsgrass list.
+>
+> Sorry, I do not understand what you mean with "provide a use case where 
+> this matters". What do you mean with "this"?
+
+The use of an arbitrary name in a throw-away location is of no 
+significance, and could in the future be a short random name. My guess is 
+that the use of "junk" may have come from different file permissions on 
+unix and windows systems - if override is TRUE, R might end up trying to 
+write to a file that some other process is still blocking.
+
+Unless you can provide an R script that I can run in WinNat (not OSGeo4W - 
+I do not have the time or patience to install multiple Windows versions of 
+GRASS that I never use), and which demonstrates that something more is 
+involved than the name of a temporary file, I can't help, because I do not 
+see any real problem - the name if the file is arbitrary, and in the R 
+session is accesses by Sys.getenv().
+
+> I added the thread to the grass-stat list (and will remove r-sig from 
+> the cc the next time).
+
+OK,
+
+Roger (Bi)
+
+> Roger
+>
+>>
+>> Hope this helps (doesn't clarify, but that's legacy Windows),
+>>
+>> Roger
+>>
+>>> First, why is initGRASS using ".grassrc7" for storing the GISRC file?
+>>> InitGRASS is looking for the GISRC file under ".grassrc7" (line 59). However, in the package documentation [1], the GISRC file is called ".gisrc". Moreover, the GRASS documentation says that the GISRC file is stored under "/.grass7/rc"
+>>>
+>>> Second, what is the purpose of assigning "junk" to the GISRC environment variable?
+>>> GISRC is set to "junk" (line 63) and then the GISRC value ("junk") is assigned again back to system variable GISRC. Unless I misinterpreded the code, it does not make much sense to me. Shouldn't the enviroment varibales not be written (line 64 - 68) to ".grassrc7" rather than to "junk"?
+>>>
+>>>
+>>>
+>>> I would appreciate any support or hints!
+>>>
+>>> Regards,
+>>> Roger
+>>>
+>>> [1] http://https//cran.r-project.org/web/packages/rgrass7/rgrass7.pdf
+>>> [2] http://grass.osgeo.org/grass70/manuals/variables.html
+>>>
+>>> _______________________________________________
+>>> R-sig-Geo mailing list
+>>> R-sig-Geo at r-project.org
+>>> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+>>>
+>>
+>> --
+>> Roger Bivand
+>> Department of Economics, Norwegian School of Economics,
+>> Helleveien 30, N-5045 Bergen, Norway.
+>> voice: +47 55 95 93 55; fax +47 55 95 91 00
+>> e-mail: Roger.Bivand at nhh.no
+>> http://orcid.org/0000-0003-2392-6140
+>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>> http://depsy.org/person/434412
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From baerroger at outlook.com  Mon Apr 18 01:06:54 2016
+From: baerroger at outlook.com (=?iso-8859-1?B?Um9nZXIgQuRy?=)
+Date: Mon, 18 Apr 2016 10:06:54 +0200
+Subject: [GRASS-stats] [R-sig-Geo] GISRC environment variable using
+	initGRASS
+In-Reply-To: <alpine.LFD.2.20.1604171952030.23946@reclus.nhh.no>
+References: <DUB129-W573D763DAB1ABA9C09EF8BA5680@phx.gbl>,
+ <alpine.LFD.2.20.1604152046460.24113@reclus.nhh.no>
+ <DUB129-W37F72276A9CB4D0E442F5BA5690@phx.gbl>,
+ <alpine.LFD.2.20.1604171952030.23946@reclus.nhh.no>
+Message-ID: <DUB129-W75C23992FD4ABCE8C38B80A56B0@phx.gbl>
+
+
+
+----------------------------------------
+> Date: Sun, 17 Apr 2016 20:11:06 +0200
+> From: Roger.Bivand at nhh.no
+> To: baerroger at outlook.com
+> CC: grass-stats at lists.osgeo.org
+> Subject: RE: [R-sig-Geo] GISRC environment variable using initGRASS
+>
+> On Sat, 16 Apr 2016, Roger Bär wrote:
+>
+>> Thanks for the support!Please see below my comments.
+>>
+>>> Date: Fri, 15 Apr 2016 20:58:15 +0200
+>>> From: Roger.Bivand at nhh.no
+>>> To: baerroger at outlook.com
+>>> CC: r-sig-geo at r-project.org
+>>> Subject: Re: [R-sig-Geo] GISRC environment variable using initGRASS
+>>>
+>>> On Fri, 15 Apr 2016, Roger Bär wrote:
+>>>
+>>>> I am currently using the R package "rgrass7" (Version: 0.1-6) in order
+>>>> to command GRASS GIS (Windows7, OSGEO4W installation).
+>>>>
+>>>> I use R in order to start a GRASS environment and to script my
+>>>> geoprocessing. Both is working fine. However, I have problems with
+>>>> storing and calling the GRASS gisenv variables. Every time when I call
+>>>> "initGRASS" a file called "junk" is created containing GRASS gisenv
+>>>> variables.
+>>>>
+>>>
+>>> What the file is called is probably immaterial.
+>>>
+>>>>
+>>>> Looking at the source of the initGRASS function the section below
+>>>> puzzeled me somehow:
+>>>>
+>>>> 59 Sys.setenv(GISRC = paste(Sys.getenv("HOME"), "\\.grassrc7",
+>>>> 60 sep = ""))
+>>>
+>>> This is setting GISRC to a value
+>>
+>> Yes. The absolute path to the file (containing settings for GISDBASE,
+>> LOCATION_NAME and MAPSET)
+>>
+>>>> 61 if (file.exists(Sys.getenv("GISRC")) && !override)
+>>>> 62 stop("A GISRC file already exists; to override, set override=TRUE")
+>>>> 63 Sys.setenv(GISRC = "junk")
+>>>
+>>> This is setting it again in the working directory - I don't recall why -
+>>> probably frustration years ago with Windows.
+>>
+>> I really do not understand the "junk" (line 63). Because GISRC is set to
+>> "junk" the subsequent lines of code will write the GISRC environment
+>> variables to a newly created file called "junk" in the home folder.
+>> Shouldn't this line not rather be omitted? (The GRASS environment
+>> variables would then be written to ".grassrc7", which in my opinion
+>> would be correct)
+>
+> The name of the file is immaterial, but from an R script should only be
+> accessed from the value of the environment variable.
+>
+
+Ok.
+
+>>
+>>>
+>>>> 64 cat("GISDBASE:", getwd(), "\n", file = Sys.getenv("GISRC"))
+>>>> 65 cat("LOCATION_NAME: <UNKNOWN>", "\n", file = Sys.getenv("GISRC"),
+>>>> 66 append = TRUE)
+>>>> 67 cat("MAPSET: <UNKNOWN>", "\n", file = Sys.getenv("GISRC"),
+>>>> 68 append = TRUE)
+>>>> 69 gisrc <- ifelse(use_g.dirseps.exe, system(paste("g.dirseps.exe -g",
+>>>> 70 shQuote(Sys.getenv("GISRC"))), intern = TRUE), Sys.getenv("GISRC"))
+>>>> 71 assign("addEXE", .addexe(), envir = .GRASS_CACHE)
+>>>> 72 Sys.setenv(GISRC = gisrc)
+>>>>
+>>>
+>>> And this sets it again. It is set, otherwise GRASS wouldn't work;
+>>> programmatically you'd have to use Sys.getenv("GISRC") to get the value.
+>>> Please provide a use case where this matters, and consider moving this
+>>> thread to the statsgrass list.
+>>
+>> Sorry, I do not understand what you mean with "provide a use case where
+>> this matters". What do you mean with "this"?
+>
+> The use of an arbitrary name in a throw-away location is of no
+> significance, and could in the future be a short random name. My guess is
+> that the use of "junk" may have come from different file permissions on
+> unix and windows systems - if override is TRUE, R might end up trying to
+> write to a file that some other process is still blocking.
+>
+
+Ok. 
+
+> Unless you can provide an R script that I can run in WinNat (not OSGeo4W -
+> I do not have the time or patience to install multiple Windows versions of
+> GRASS that I never use), and which demonstrates that something more is
+> involved than the name of a temporary file, I can't help, because I do not
+> see any real problem - the name if the file is arbitrary, and in the R
+> session is accesses by Sys.getenv().
+
+Ok, I get that. 
+The main issue was to keept the directory clean since access my grass data from different operating system. But thinks it's not worth to spend more time on this issue. (I'll survive the junk file in my workspace)
+
+Thanks you anyway!
+
+
+Regards,
+Roger  (Bä)
+
+
+
+
+>> I added the thread to the grass-stat list (and will remove r-sig from
+>> the cc the next time).
+>
+> OK,
+>
+> Roger (Bi)
+>
+>> Roger
+>>
+>>>
+>>> Hope this helps (doesn't clarify, but that's legacy Windows),
+>>>
+>>> Roger
+>>>
+>>>> First, why is initGRASS using ".grassrc7" for storing the GISRC file?
+>>>> InitGRASS is looking for the GISRC file under ".grassrc7" (line 59). However, in the package documentation [1], the GISRC file is called ".gisrc". Moreover, the GRASS documentation says that the GISRC file is stored under "/.grass7/rc"
+>>>>
+>>>> Second, what is the purpose of assigning "junk" to the GISRC environment variable?
+>>>> GISRC is set to "junk" (line 63) and then the GISRC value ("junk") is assigned again back to system variable GISRC. Unless I misinterpreded the code, it does not make much sense to me. Shouldn't the enviroment varibales not be written (line 64 - 68) to ".grassrc7" rather than to "junk"?
+>>>>
+>>>>
+>>>>
+>>>> I would appreciate any support or hints!
+>>>>
+>>>> Regards,
+>>>> Roger
+>>>>
+>>>> [1] http://https//cran.r-project.org/web/packages/rgrass7/rgrass7.pdf
+>>>> [2] http://grass.osgeo.org/grass70/manuals/variables.html
+>>>>
+>>>> _______________________________________________
+>>>> R-sig-Geo mailing list
+>>>> R-sig-Geo at r-project.org
+>>>> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+>>>>
+>>>
+>>> --
+>>> Roger Bivand
+>>> Department of Economics, Norwegian School of Economics,
+>>> Helleveien 30, N-5045 Bergen, Norway.
+>>> voice: +47 55 95 93 55; fax +47 55 95 91 00
+>>> e-mail: Roger.Bivand at nhh.no
+>>> http://orcid.org/0000-0003-2392-6140
+>>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>>> http://depsy.org/person/434412
+>>
+>
+> --
+> Roger Bivand
+> Department of Economics, Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 91 00
+> e-mail: Roger.Bivand at nhh.no
+> http://orcid.org/0000-0003-2392-6140
+> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+> http://depsy.org/person/434412
+ 		 	   		  
+
+From Roger.Bivand at nhh.no  Mon Apr 18 01:40:02 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon, 18 Apr 2016 10:40:02 +0200
+Subject: [GRASS-stats] [R-sig-Geo] GISRC environment variable using
+	initGRASS
+In-Reply-To: <DUB129-W75C23992FD4ABCE8C38B80A56B0@phx.gbl>
+References: <DUB129-W573D763DAB1ABA9C09EF8BA5680@phx.gbl>,
+ <alpine.LFD.2.20.1604152046460.24113@reclus.nhh.no>
+ <DUB129-W37F72276A9CB4D0E442F5BA5690@phx.gbl>,
+ <alpine.LFD.2.20.1604171952030.23946@reclus.nhh.no>
+ <DUB129-W75C23992FD4ABCE8C38B80A56B0@phx.gbl>
+Message-ID: <alpine.LFD.2.20.1604181036270.5042@reclus.nhh.no>
+
+On Mon, 18 Apr 2016, Roger Bär wrote:
+
+>
+>
+> ----------------------------------------
+>> Date: Sun, 17 Apr 2016 20:11:06 +0200
+>> From: Roger.Bivand at nhh.no
+>> To: baerroger at outlook.com
+>> CC: grass-stats at lists.osgeo.org
+>> Subject: RE: [R-sig-Geo] GISRC environment variable using initGRASS
+>>
+>> On Sat, 16 Apr 2016, Roger Bär wrote:
+>>
+>>> Thanks for the support!Please see below my comments.
+>>>
+>>>> Date: Fri, 15 Apr 2016 20:58:15 +0200
+>>>> From: Roger.Bivand at nhh.no
+>>>> To: baerroger at outlook.com
+>>>> CC: r-sig-geo at r-project.org
+>>>> Subject: Re: [R-sig-Geo] GISRC environment variable using initGRASS
+>>>>
+>>>> On Fri, 15 Apr 2016, Roger Bär wrote:
+>>>>
+>>>>> I am currently using the R package "rgrass7" (Version: 0.1-6) in order
+>>>>> to command GRASS GIS (Windows7, OSGEO4W installation).
+>>>>>
+>>>>> I use R in order to start a GRASS environment and to script my
+>>>>> geoprocessing. Both is working fine. However, I have problems with
+>>>>> storing and calling the GRASS gisenv variables. Every time when I call
+>>>>> "initGRASS" a file called "junk" is created containing GRASS gisenv
+>>>>> variables.
+>>>>>
+>>>>
+>>>> What the file is called is probably immaterial.
+>>>>
+>>>>>
+>>>>> Looking at the source of the initGRASS function the section below
+>>>>> puzzeled me somehow:
+>>>>>
+>>>>> 59 Sys.setenv(GISRC = paste(Sys.getenv("HOME"), "\\.grassrc7",
+>>>>> 60 sep = ""))
+>>>>
+>>>> This is setting GISRC to a value
+>>>
+>>> Yes. The absolute path to the file (containing settings for GISDBASE,
+>>> LOCATION_NAME and MAPSET)
+>>>
+>>>>> 61 if (file.exists(Sys.getenv("GISRC")) && !override)
+>>>>> 62 stop("A GISRC file already exists; to override, set override=TRUE")
+>>>>> 63 Sys.setenv(GISRC = "junk")
+>>>>
+>>>> This is setting it again in the working directory - I don't recall why -
+>>>> probably frustration years ago with Windows.
+>>>
+>>> I really do not understand the "junk" (line 63). Because GISRC is set to
+>>> "junk" the subsequent lines of code will write the GISRC environment
+>>> variables to a newly created file called "junk" in the home folder.
+>>> Shouldn't this line not rather be omitted? (The GRASS environment
+>>> variables would then be written to ".grassrc7", which in my opinion
+>>> would be correct)
+>>
+>> The name of the file is immaterial, but from an R script should only be
+>> accessed from the value of the environment variable.
+>>
+>
+> Ok.
+>
+>>>
+>>>>
+>>>>> 64 cat("GISDBASE:", getwd(), "\n", file = Sys.getenv("GISRC"))
+>>>>> 65 cat("LOCATION_NAME: <UNKNOWN>", "\n", file = Sys.getenv("GISRC"),
+>>>>> 66 append = TRUE)
+>>>>> 67 cat("MAPSET: <UNKNOWN>", "\n", file = Sys.getenv("GISRC"),
+>>>>> 68 append = TRUE)
+>>>>> 69 gisrc <- ifelse(use_g.dirseps.exe, system(paste("g.dirseps.exe -g",
+>>>>> 70 shQuote(Sys.getenv("GISRC"))), intern = TRUE), Sys.getenv("GISRC"))
+>>>>> 71 assign("addEXE", .addexe(), envir = .GRASS_CACHE)
+>>>>> 72 Sys.setenv(GISRC = gisrc)
+>>>>>
+>>>>
+>>>> And this sets it again. It is set, otherwise GRASS wouldn't work;
+>>>> programmatically you'd have to use Sys.getenv("GISRC") to get the value.
+>>>> Please provide a use case where this matters, and consider moving this
+>>>> thread to the statsgrass list.
+>>>
+>>> Sorry, I do not understand what you mean with "provide a use case where
+>>> this matters". What do you mean with "this"?
+>>
+>> The use of an arbitrary name in a throw-away location is of no
+>> significance, and could in the future be a short random name. My guess is
+>> that the use of "junk" may have come from different file permissions on
+>> unix and windows systems - if override is TRUE, R might end up trying to
+>> write to a file that some other process is still blocking.
+>>
+>
+> Ok. 
+>
+>> Unless you can provide an R script that I can run in WinNat (not OSGeo4W -
+>> I do not have the time or patience to install multiple Windows versions of
+>> GRASS that I never use), and which demonstrates that something more is
+>> involved than the name of a temporary file, I can't help, because I do not
+>> see any real problem - the name if the file is arbitrary, and in the R
+>> session is accesses by Sys.getenv().
+>
+> Ok, I get that. The main issue was to keept the directory clean since 
+> access my grass data from different operating system. But thinks it's 
+> not worth to spend more time on this issue. (I'll survive the junk file 
+> in my workspace)
+
+Would it help to try to add an argument to initGRASS() to try to delete 
+the file pointed at by GISRC on exit from the R session?
+
+In many cases, the file is in R's temporary directory (home=tempdir()), so 
+gets removed automatically, but if you are using a non-temporary home=, 
+the file stays there.
+
+Roger (Bi)
+
+>
+> Thanks you anyway!
+>
+>
+> Regards,
+> Roger  (Bä)
+>
+>
+>
+>
+>>> I added the thread to the grass-stat list (and will remove r-sig from
+>>> the cc the next time).
+>>
+>> OK,
+>>
+>> Roger (Bi)
+>>
+>>> Roger
+>>>
+>>>>
+>>>> Hope this helps (doesn't clarify, but that's legacy Windows),
+>>>>
+>>>> Roger
+>>>>
+>>>>> First, why is initGRASS using ".grassrc7" for storing the GISRC file?
+>>>>> InitGRASS is looking for the GISRC file under ".grassrc7" (line 59). However, in the package documentation [1], the GISRC file is called ".gisrc". Moreover, the GRASS documentation says that the GISRC file is stored under "/.grass7/rc"
+>>>>>
+>>>>> Second, what is the purpose of assigning "junk" to the GISRC environment variable?
+>>>>> GISRC is set to "junk" (line 63) and then the GISRC value ("junk") is assigned again back to system variable GISRC. Unless I misinterpreded the code, it does not make much sense to me. Shouldn't the enviroment varibales not be written (line 64 - 68) to ".grassrc7" rather than to "junk"?
+>>>>>
+>>>>>
+>>>>>
+>>>>> I would appreciate any support or hints!
+>>>>>
+>>>>> Regards,
+>>>>> Roger
+>>>>>
+>>>>> [1] http://https//cran.r-project.org/web/packages/rgrass7/rgrass7.pdf
+>>>>> [2] http://grass.osgeo.org/grass70/manuals/variables.html
+>>>>>
+>>>>> _______________________________________________
+>>>>> R-sig-Geo mailing list
+>>>>> R-sig-Geo at r-project.org
+>>>>> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+>>>>>
+>>>>
+>>>> --
+>>>> Roger Bivand
+>>>> Department of Economics, Norwegian School of Economics,
+>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>> voice: +47 55 95 93 55; fax +47 55 95 91 00
+>>>> e-mail: Roger.Bivand at nhh.no
+>>>> http://orcid.org/0000-0003-2392-6140
+>>>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>>>> http://depsy.org/person/434412
+>>>
+>>
+>> --
+>> Roger Bivand
+>> Department of Economics, Norwegian School of Economics,
+>> Helleveien 30, N-5045 Bergen, Norway.
+>> voice: +47 55 95 93 55; fax +47 55 95 91 00
+>> e-mail: Roger.Bivand at nhh.no
+>> http://orcid.org/0000-0003-2392-6140
+>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>> http://depsy.org/person/434412
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From baerroger at outlook.com  Mon Apr 18 02:52:26 2016
+From: baerroger at outlook.com (=?iso-8859-1?B?Um9nZXIgQuRy?=)
+Date: Mon, 18 Apr 2016 11:52:26 +0200
+Subject: [GRASS-stats] [R-sig-Geo] GISRC environment variable using
+	initGRASS
+In-Reply-To: <alpine.LFD.2.20.1604181036270.5042@reclus.nhh.no>
+References: <DUB129-W573D763DAB1ABA9C09EF8BA5680@phx.gbl>,
+ <alpine.LFD.2.20.1604152046460.24113@reclus.nhh.no>
+ <DUB129-W37F72276A9CB4D0E442F5BA5690@phx.gbl>,
+ <alpine.LFD.2.20.1604171952030.23946@reclus.nhh.no>
+ <DUB129-W75C23992FD4ABCE8C38B80A56B0@phx.gbl>,
+ <alpine.LFD.2.20.1604181036270.5042@reclus.nhh.no>
+Message-ID: <DUB129-W74206686FA1A0C7359A3D8A56B0@phx.gbl>
+
+----------------------------------------
+> Date: Mon, 18 Apr 2016 10:40:02 +0200
+> From: Roger.Bivand at nhh.no
+> To: baerroger at outlook.com
+> CC: grass-stats at lists.osgeo.org
+> Subject: RE: [R-sig-Geo] GISRC environment variable using initGRASS
+>
+> On Mon, 18 Apr 2016, Roger Bär wrote:
+>
+>>
+>>
+>> ----------------------------------------
+>>> Date: Sun, 17 Apr 2016 20:11:06 +0200
+>>> From: Roger.Bivand at nhh.no
+>>> To: baerroger at outlook.com
+>>> CC: grass-stats at lists.osgeo.org
+>>> Subject: RE: [R-sig-Geo] GISRC environment variable using initGRASS
+>>>
+>>> On Sat, 16 Apr 2016, Roger Bär wrote:
+>>>
+>>>> Thanks for the support!Please see below my comments.
+>>>>
+>>>>> Date: Fri, 15 Apr 2016 20:58:15 +0200
+>>>>> From: Roger.Bivand at nhh.no
+>>>>> To: baerroger at outlook.com
+>>>>> CC: r-sig-geo at r-project.org
+>>>>> Subject: Re: [R-sig-Geo] GISRC environment variable using initGRASS
+>>>>>
+>>>>> On Fri, 15 Apr 2016, Roger Bär wrote:
+>>>>>
+>>>>>> I am currently using the R package "rgrass7" (Version: 0.1-6) in order
+>>>>>> to command GRASS GIS (Windows7, OSGEO4W installation).
+>>>>>>
+>>>>>> I use R in order to start a GRASS environment and to script my
+>>>>>> geoprocessing. Both is working fine. However, I have problems with
+>>>>>> storing and calling the GRASS gisenv variables. Every time when I call
+>>>>>> "initGRASS" a file called "junk" is created containing GRASS gisenv
+>>>>>> variables.
+>>>>>>
+>>>>>
+>>>>> What the file is called is probably immaterial.
+>>>>>
+>>>>>>
+>>>>>> Looking at the source of the initGRASS function the section below
+>>>>>> puzzeled me somehow:
+>>>>>>
+>>>>>> 59 Sys.setenv(GISRC = paste(Sys.getenv("HOME"), "\\.grassrc7",
+>>>>>> 60 sep = ""))
+>>>>>
+>>>>> This is setting GISRC to a value
+>>>>
+>>>> Yes. The absolute path to the file (containing settings for GISDBASE,
+>>>> LOCATION_NAME and MAPSET)
+>>>>
+>>>>>> 61 if (file.exists(Sys.getenv("GISRC")) && !override)
+>>>>>> 62 stop("A GISRC file already exists; to override, set override=TRUE")
+>>>>>> 63 Sys.setenv(GISRC = "junk")
+>>>>>
+>>>>> This is setting it again in the working directory - I don't recall why -
+>>>>> probably frustration years ago with Windows.
+>>>>
+>>>> I really do not understand the "junk" (line 63). Because GISRC is set to
+>>>> "junk" the subsequent lines of code will write the GISRC environment
+>>>> variables to a newly created file called "junk" in the home folder.
+>>>> Shouldn't this line not rather be omitted? (The GRASS environment
+>>>> variables would then be written to ".grassrc7", which in my opinion
+>>>> would be correct)
+>>>
+>>> The name of the file is immaterial, but from an R script should only be
+>>> accessed from the value of the environment variable.
+>>>
+>>
+>> Ok.
+>>
+>>>>
+>>>>>
+>>>>>> 64 cat("GISDBASE:", getwd(), "\n", file = Sys.getenv("GISRC"))
+>>>>>> 65 cat("LOCATION_NAME: <UNKNOWN>", "\n", file = Sys.getenv("GISRC"),
+>>>>>> 66 append = TRUE)
+>>>>>> 67 cat("MAPSET: <UNKNOWN>", "\n", file = Sys.getenv("GISRC"),
+>>>>>> 68 append = TRUE)
+>>>>>> 69 gisrc <- ifelse(use_g.dirseps.exe, system(paste("g.dirseps.exe -g",
+>>>>>> 70 shQuote(Sys.getenv("GISRC"))), intern = TRUE), Sys.getenv("GISRC"))
+>>>>>> 71 assign("addEXE", .addexe(), envir = .GRASS_CACHE)
+>>>>>> 72 Sys.setenv(GISRC = gisrc)
+>>>>>>
+>>>>>
+>>>>> And this sets it again. It is set, otherwise GRASS wouldn't work;
+>>>>> programmatically you'd have to use Sys.getenv("GISRC") to get the value.
+>>>>> Please provide a use case where this matters, and consider moving this
+>>>>> thread to the statsgrass list.
+>>>>
+>>>> Sorry, I do not understand what you mean with "provide a use case where
+>>>> this matters". What do you mean with "this"?
+>>>
+>>> The use of an arbitrary name in a throw-away location is of no
+>>> significance, and could in the future be a short random name. My guess is
+>>> that the use of "junk" may have come from different file permissions on
+>>> unix and windows systems - if override is TRUE, R might end up trying to
+>>> write to a file that some other process is still blocking.
+>>>
+>>
+>> Ok.
+>>
+>>> Unless you can provide an R script that I can run in WinNat (not OSGeo4W -
+>>> I do not have the time or patience to install multiple Windows versions of
+>>> GRASS that I never use), and which demonstrates that something more is
+>>> involved than the name of a temporary file, I can't help, because I do not
+>>> see any real problem - the name if the file is arbitrary, and in the R
+>>> session is accesses by Sys.getenv().
+>>
+>> Ok, I get that. The main issue was to keept the directory clean since
+>> access my grass data from different operating system. But thinks it's
+>> not worth to spend more time on this issue. (I'll survive the junk file
+>> in my workspace)
+>
+> Would it help to try to add an argument to initGRASS() to try to delete
+> the file pointed at by GISRC on exit from the R session?
+>
+> In many cases, the file is in R's temporary directory (home=tempdir()), so
+> gets removed automatically, but if you are using a non-temporary home=,
+> the file stays there.
+>
+> Roger (Bi)
+
+Yes,  that would solve my issue indeed.  
+Because I am using initGRASS mostly in a permanent home with all my project data.
+
+Roger (Bä)
+
+
+>> Thanks you anyway!
+>>
+>>
+>> Regards,
+>> Roger (Bä)
+>>
+>>
+>>
+>>
+>>>> I added the thread to the grass-stat list (and will remove r-sig from
+>>>> the cc the next time).
+>>>
+>>> OK,
+>>>
+>>> Roger (Bi)
+>>>
+>>>> Roger
+>>>>
+>>>>>
+>>>>> Hope this helps (doesn't clarify, but that's legacy Windows),
+>>>>>
+>>>>> Roger
+>>>>>
+>>>>>> First, why is initGRASS using ".grassrc7" for storing the GISRC file?
+>>>>>> InitGRASS is looking for the GISRC file under ".grassrc7" (line 59). However, in the package documentation [1], the GISRC file is called ".gisrc". Moreover, the GRASS documentation says that the GISRC file is stored under "/.grass7/rc"
+>>>>>>
+>>>>>> Second, what is the purpose of assigning "junk" to the GISRC environment variable?
+>>>>>> GISRC is set to "junk" (line 63) and then the GISRC value ("junk") is assigned again back to system variable GISRC. Unless I misinterpreded the code, it does not make much sense to me. Shouldn't the enviroment varibales not be written (line 64 - 68) to ".grassrc7" rather than to "junk"?
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> I would appreciate any support or hints!
+>>>>>>
+>>>>>> Regards,
+>>>>>> Roger
+>>>>>>
+>>>>>> [1] http://https//cran.r-project.org/web/packages/rgrass7/rgrass7.pdf
+>>>>>> [2] http://grass.osgeo.org/grass70/manuals/variables.html
+>>>>>>
+>>>>>> _______________________________________________
+>>>>>> R-sig-Geo mailing list
+>>>>>> R-sig-Geo at r-project.org
+>>>>>> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+>>>>>>
+>>>>>
+>>>>> --
+>>>>> Roger Bivand
+>>>>> Department of Economics, Norwegian School of Economics,
+>>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>>> voice: +47 55 95 93 55; fax +47 55 95 91 00
+>>>>> e-mail: Roger.Bivand at nhh.no
+>>>>> http://orcid.org/0000-0003-2392-6140
+>>>>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>>>>> http://depsy.org/person/434412
+>>>>
+>>>
+>>> --
+>>> Roger Bivand
+>>> Department of Economics, Norwegian School of Economics,
+>>> Helleveien 30, N-5045 Bergen, Norway.
+>>> voice: +47 55 95 93 55; fax +47 55 95 91 00
+>>> e-mail: Roger.Bivand at nhh.no
+>>> http://orcid.org/0000-0003-2392-6140
+>>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>>> http://depsy.org/person/434412
+>
+> --
+> Roger Bivand
+> Department of Economics, Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 91 00
+> e-mail: Roger.Bivand at nhh.no
+> http://orcid.org/0000-0003-2392-6140
+> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+> http://depsy.org/person/434412
+ 		 	   		  
+
+From Roger.Bivand at nhh.no  Mon Apr 18 04:28:48 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon, 18 Apr 2016 13:28:48 +0200
+Subject: [GRASS-stats] [R-sig-Geo] GISRC environment variable using
+	initGRASS
+In-Reply-To: <DUB129-W74206686FA1A0C7359A3D8A56B0@phx.gbl>
+References: <DUB129-W573D763DAB1ABA9C09EF8BA5680@phx.gbl>,
+ <alpine.LFD.2.20.1604152046460.24113@reclus.nhh.no>
+ <DUB129-W37F72276A9CB4D0E442F5BA5690@phx.gbl>,
+ <alpine.LFD.2.20.1604171952030.23946@reclus.nhh.no>
+ <DUB129-W75C23992FD4ABCE8C38B80A56B0@phx.gbl>,
+ <alpine.LFD.2.20.1604181036270.5042@reclus.nhh.no>
+ <DUB129-W74206686FA1A0C7359A3D8A56B0@phx.gbl>
+Message-ID: <alpine.LFD.2.20.1604181322570.5042@reclus.nhh.no>
+
+On Mon, 18 Apr 2016, Roger Bär wrote:
+
+> ----------------------------------------
+>> Date: Mon, 18 Apr 2016 10:40:02 +0200
+>> From: Roger.Bivand at nhh.no
+>> To: baerroger at outlook.com
+>> CC: grass-stats at lists.osgeo.org
+>> Subject: RE: [R-sig-Geo] GISRC environment variable using initGRASS
+>>
+>> On Mon, 18 Apr 2016, Roger Bär wrote:
+>>
+>>>
+>>>
+>>> ----------------------------------------
+>>>> Date: Sun, 17 Apr 2016 20:11:06 +0200
+>>>> From: Roger.Bivand at nhh.no
+>>>> To: baerroger at outlook.com
+>>>> CC: grass-stats at lists.osgeo.org
+>>>> Subject: RE: [R-sig-Geo] GISRC environment variable using initGRASS
+>>>>
+>>>> On Sat, 16 Apr 2016, Roger Bär wrote:
+>>>>
+>>>>> Thanks for the support!Please see below my comments.
+>>>>>
+>>>>>> Date: Fri, 15 Apr 2016 20:58:15 +0200
+>>>>>> From: Roger.Bivand at nhh.no
+>>>>>> To: baerroger at outlook.com
+>>>>>> CC: r-sig-geo at r-project.org
+>>>>>> Subject: Re: [R-sig-Geo] GISRC environment variable using initGRASS
+>>>>>>
+>>>>>> On Fri, 15 Apr 2016, Roger Bär wrote:
+>>>>>>
+>>>>>>> I am currently using the R package "rgrass7" (Version: 0.1-6) in order
+>>>>>>> to command GRASS GIS (Windows7, OSGEO4W installation).
+>>>>>>>
+>>>>>>> I use R in order to start a GRASS environment and to script my
+>>>>>>> geoprocessing. Both is working fine. However, I have problems with
+>>>>>>> storing and calling the GRASS gisenv variables. Every time when I call
+>>>>>>> "initGRASS" a file called "junk" is created containing GRASS gisenv
+>>>>>>> variables.
+>>>>>>>
+>>>>>>
+>>>>>> What the file is called is probably immaterial.
+>>>>>>
+>>>>>>>
+>>>>>>> Looking at the source of the initGRASS function the section below
+>>>>>>> puzzeled me somehow:
+>>>>>>>
+>>>>>>> 59 Sys.setenv(GISRC = paste(Sys.getenv("HOME"), "\\.grassrc7",
+>>>>>>> 60 sep = ""))
+>>>>>>
+>>>>>> This is setting GISRC to a value
+>>>>>
+>>>>> Yes. The absolute path to the file (containing settings for GISDBASE,
+>>>>> LOCATION_NAME and MAPSET)
+>>>>>
+>>>>>>> 61 if (file.exists(Sys.getenv("GISRC")) && !override)
+>>>>>>> 62 stop("A GISRC file already exists; to override, set override=TRUE")
+>>>>>>> 63 Sys.setenv(GISRC = "junk")
+>>>>>>
+>>>>>> This is setting it again in the working directory - I don't recall why -
+>>>>>> probably frustration years ago with Windows.
+>>>>>
+>>>>> I really do not understand the "junk" (line 63). Because GISRC is set to
+>>>>> "junk" the subsequent lines of code will write the GISRC environment
+>>>>> variables to a newly created file called "junk" in the home folder.
+>>>>> Shouldn't this line not rather be omitted? (The GRASS environment
+>>>>> variables would then be written to ".grassrc7", which in my opinion
+>>>>> would be correct)
+>>>>
+>>>> The name of the file is immaterial, but from an R script should only be
+>>>> accessed from the value of the environment variable.
+>>>>
+>>>
+>>> Ok.
+>>>
+>>>>>
+>>>>>>
+>>>>>>> 64 cat("GISDBASE:", getwd(), "\n", file = Sys.getenv("GISRC"))
+>>>>>>> 65 cat("LOCATION_NAME: <UNKNOWN>", "\n", file = Sys.getenv("GISRC"),
+>>>>>>> 66 append = TRUE)
+>>>>>>> 67 cat("MAPSET: <UNKNOWN>", "\n", file = Sys.getenv("GISRC"),
+>>>>>>> 68 append = TRUE)
+>>>>>>> 69 gisrc <- ifelse(use_g.dirseps.exe, system(paste("g.dirseps.exe -g",
+>>>>>>> 70 shQuote(Sys.getenv("GISRC"))), intern = TRUE), Sys.getenv("GISRC"))
+>>>>>>> 71 assign("addEXE", .addexe(), envir = .GRASS_CACHE)
+>>>>>>> 72 Sys.setenv(GISRC = gisrc)
+>>>>>>>
+>>>>>>
+>>>>>> And this sets it again. It is set, otherwise GRASS wouldn't work;
+>>>>>> programmatically you'd have to use Sys.getenv("GISRC") to get the value.
+>>>>>> Please provide a use case where this matters, and consider moving this
+>>>>>> thread to the statsgrass list.
+>>>>>
+>>>>> Sorry, I do not understand what you mean with "provide a use case where
+>>>>> this matters". What do you mean with "this"?
+>>>>
+>>>> The use of an arbitrary name in a throw-away location is of no
+>>>> significance, and could in the future be a short random name. My guess is
+>>>> that the use of "junk" may have come from different file permissions on
+>>>> unix and windows systems - if override is TRUE, R might end up trying to
+>>>> write to a file that some other process is still blocking.
+>>>>
+>>>
+>>> Ok.
+>>>
+>>>> Unless you can provide an R script that I can run in WinNat (not OSGeo4W -
+>>>> I do not have the time or patience to install multiple Windows versions of
+>>>> GRASS that I never use), and which demonstrates that something more is
+>>>> involved than the name of a temporary file, I can't help, because I do not
+>>>> see any real problem - the name if the file is arbitrary, and in the R
+>>>> session is accesses by Sys.getenv().
+>>>
+>>> Ok, I get that. The main issue was to keept the directory clean since
+>>> access my grass data from different operating system. But thinks it's
+>>> not worth to spend more time on this issue. (I'll survive the junk file
+>>> in my workspace)
+>>
+>> Would it help to try to add an argument to initGRASS() to try to delete
+>> the file pointed at by GISRC on exit from the R session?
+>>
+>> In many cases, the file is in R's temporary directory (home=tempdir()), so
+>> gets removed automatically, but if you are using a non-temporary home=,
+>> the file stays there.
+>>
+>> Roger (Bi)
+>
+> Yes, that would solve my issue indeed.  Because I am using initGRASS 
+> mostly in a permanent home with all my project data.
+
+Please download a development version from:
+
+http://win-builder.r-project.org/JZw14G61RjVk
+
+Set remove_GISRC=TRUE in the initGRASS() call, and use remove_GISRC() when 
+you are through with this instance. I have included code to try to unlink 
+the file and unset the environment variable when the R session terminates, 
+but so far without success - you will need to remove it as described 
+unless I see a way round a race condition.
+
+Roger (Bi)
+
+>
+> Roger (Bä)
+>
+>
+>>> Thanks you anyway!
+>>>
+>>>
+>>> Regards,
+>>> Roger (Bä)
+>>>
+>>>
+>>>
+>>>
+>>>>> I added the thread to the grass-stat list (and will remove r-sig from
+>>>>> the cc the next time).
+>>>>
+>>>> OK,
+>>>>
+>>>> Roger (Bi)
+>>>>
+>>>>> Roger
+>>>>>
+>>>>>>
+>>>>>> Hope this helps (doesn't clarify, but that's legacy Windows),
+>>>>>>
+>>>>>> Roger
+>>>>>>
+>>>>>>> First, why is initGRASS using ".grassrc7" for storing the GISRC file?
+>>>>>>> InitGRASS is looking for the GISRC file under ".grassrc7" (line 59). However, in the package documentation [1], the GISRC file is called ".gisrc". Moreover, the GRASS documentation says that the GISRC file is stored under "/.grass7/rc"
+>>>>>>>
+>>>>>>> Second, what is the purpose of assigning "junk" to the GISRC environment variable?
+>>>>>>> GISRC is set to "junk" (line 63) and then the GISRC value ("junk") is assigned again back to system variable GISRC. Unless I misinterpreded the code, it does not make much sense to me. Shouldn't the enviroment varibales not be written (line 64 - 68) to ".grassrc7" rather than to "junk"?
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> I would appreciate any support or hints!
+>>>>>>>
+>>>>>>> Regards,
+>>>>>>> Roger
+>>>>>>>
+>>>>>>> [1] http://https//cran.r-project.org/web/packages/rgrass7/rgrass7.pdf
+>>>>>>> [2] http://grass.osgeo.org/grass70/manuals/variables.html
+>>>>>>>
+>>>>>>> _______________________________________________
+>>>>>>> R-sig-Geo mailing list
+>>>>>>> R-sig-Geo at r-project.org
+>>>>>>> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+>>>>>>>
+>>>>>>
+>>>>>> --
+>>>>>> Roger Bivand
+>>>>>> Department of Economics, Norwegian School of Economics,
+>>>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>>>> voice: +47 55 95 93 55; fax +47 55 95 91 00
+>>>>>> e-mail: Roger.Bivand at nhh.no
+>>>>>> http://orcid.org/0000-0003-2392-6140
+>>>>>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>>>>>> http://depsy.org/person/434412
+>>>>>
+>>>>
+>>>> --
+>>>> Roger Bivand
+>>>> Department of Economics, Norwegian School of Economics,
+>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>> voice: +47 55 95 93 55; fax +47 55 95 91 00
+>>>> e-mail: Roger.Bivand at nhh.no
+>>>> http://orcid.org/0000-0003-2392-6140
+>>>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>>>> http://depsy.org/person/434412
+>>
+>> --
+>> Roger Bivand
+>> Department of Economics, Norwegian School of Economics,
+>> Helleveien 30, N-5045 Bergen, Norway.
+>> voice: +47 55 95 93 55; fax +47 55 95 91 00
+>> e-mail: Roger.Bivand at nhh.no
+>> http://orcid.org/0000-0003-2392-6140
+>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>> http://depsy.org/person/434412
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From baerroger at outlook.com  Tue Apr 19 06:41:25 2016
+From: baerroger at outlook.com (=?iso-8859-1?B?Um9nZXIgQuRy?=)
+Date: Tue, 19 Apr 2016 15:41:25 +0200
+Subject: [GRASS-stats] [R-sig-Geo] GISRC environment variable using
+	initGRASS
+In-Reply-To: <alpine.LFD.2.20.1604181322570.5042@reclus.nhh.no>
+References: <DUB129-W573D763DAB1ABA9C09EF8BA5680@phx.gbl>,
+ <alpine.LFD.2.20.1604152046460.24113@reclus.nhh.no>
+ <DUB129-W37F72276A9CB4D0E442F5BA5690@phx.gbl>,
+ <alpine.LFD.2.20.1604171952030.23946@reclus.nhh.no>
+ <DUB129-W75C23992FD4ABCE8C38B80A56B0@phx.gbl>,
+ <alpine.LFD.2.20.1604181036270.5042@reclus.nhh.no>,
+ <DUB129-W74206686FA1A0C7359A3D8A56B0@phx.gbl>,
+ <alpine.LFD.2.20.1604181322570.5042@reclus.nhh.no>
+Message-ID: <DUB129-W59900458151F9FF9DDED1CA56C0@phx.gbl>
+
+
+
+----------------------------------------
+> Date: Mon, 18 Apr 2016 13:28:48 +0200
+> From: Roger.Bivand at nhh.no
+> To: baerroger at outlook.com
+> CC: grass-stats at lists.osgeo.org
+> Subject: RE: [R-sig-Geo] GISRC environment variable using initGRASS
+>
+> On Mon, 18 Apr 2016, Roger Bär wrote:
+>
+>> ----------------------------------------
+>>> Date: Mon, 18 Apr 2016 10:40:02 +0200
+>>> From: Roger.Bivand at nhh.no
+>>> To: baerroger at outlook.com
+>>> CC: grass-stats at lists.osgeo.org
+>>> Subject: RE: [R-sig-Geo] GISRC environment variable using initGRASS
+>>>
+>>> On Mon, 18 Apr 2016, Roger Bär wrote:
+>>>
+>>>>
+>>>>
+>>>> ----------------------------------------
+>>>>> Date: Sun, 17 Apr 2016 20:11:06 +0200
+>>>>> From: Roger.Bivand at nhh.no
+>>>>> To: baerroger at outlook.com
+>>>>> CC: grass-stats at lists.osgeo.org
+>>>>> Subject: RE: [R-sig-Geo] GISRC environment variable using initGRASS
+>>>>>
+>>>>> On Sat, 16 Apr 2016, Roger Bär wrote:
+>>>>>
+>>>>>> Thanks for the support!Please see below my comments.
+>>>>>>
+>>>>>>> Date: Fri, 15 Apr 2016 20:58:15 +0200
+>>>>>>> From: Roger.Bivand at nhh.no
+>>>>>>> To: baerroger at outlook.com
+>>>>>>> CC: r-sig-geo at r-project.org
+>>>>>>> Subject: Re: [R-sig-Geo] GISRC environment variable using initGRASS
+>>>>>>>
+>>>>>>> On Fri, 15 Apr 2016, Roger Bär wrote:
+>>>>>>>
+>>>>>>>> I am currently using the R package "rgrass7" (Version: 0.1-6) in order
+>>>>>>>> to command GRASS GIS (Windows7, OSGEO4W installation).
+>>>>>>>>
+>>>>>>>> I use R in order to start a GRASS environment and to script my
+>>>>>>>> geoprocessing. Both is working fine. However, I have problems with
+>>>>>>>> storing and calling the GRASS gisenv variables. Every time when I call
+>>>>>>>> "initGRASS" a file called "junk" is created containing GRASS gisenv
+>>>>>>>> variables.
+>>>>>>>>
+>>>>>>>
+>>>>>>> What the file is called is probably immaterial.
+>>>>>>>
+>>>>>>>>
+>>>>>>>> Looking at the source of the initGRASS function the section below
+>>>>>>>> puzzeled me somehow:
+>>>>>>>>
+>>>>>>>> 59 Sys.setenv(GISRC = paste(Sys.getenv("HOME"), "\\.grassrc7",
+>>>>>>>> 60 sep = ""))
+>>>>>>>
+>>>>>>> This is setting GISRC to a value
+>>>>>>
+>>>>>> Yes. The absolute path to the file (containing settings for GISDBASE,
+>>>>>> LOCATION_NAME and MAPSET)
+>>>>>>
+>>>>>>>> 61 if (file.exists(Sys.getenv("GISRC")) && !override)
+>>>>>>>> 62 stop("A GISRC file already exists; to override, set override=TRUE")
+>>>>>>>> 63 Sys.setenv(GISRC = "junk")
+>>>>>>>
+>>>>>>> This is setting it again in the working directory - I don't recall why -
+>>>>>>> probably frustration years ago with Windows.
+>>>>>>
+>>>>>> I really do not understand the "junk" (line 63). Because GISRC is set to
+>>>>>> "junk" the subsequent lines of code will write the GISRC environment
+>>>>>> variables to a newly created file called "junk" in the home folder.
+>>>>>> Shouldn't this line not rather be omitted? (The GRASS environment
+>>>>>> variables would then be written to ".grassrc7", which in my opinion
+>>>>>> would be correct)
+>>>>>
+>>>>> The name of the file is immaterial, but from an R script should only be
+>>>>> accessed from the value of the environment variable.
+>>>>>
+>>>>
+>>>> Ok.
+>>>>
+>>>>>>
+>>>>>>>
+>>>>>>>> 64 cat("GISDBASE:", getwd(), "\n", file = Sys.getenv("GISRC"))
+>>>>>>>> 65 cat("LOCATION_NAME: <UNKNOWN>", "\n", file = Sys.getenv("GISRC"),
+>>>>>>>> 66 append = TRUE)
+>>>>>>>> 67 cat("MAPSET: <UNKNOWN>", "\n", file = Sys.getenv("GISRC"),
+>>>>>>>> 68 append = TRUE)
+>>>>>>>> 69 gisrc <- ifelse(use_g.dirseps.exe, system(paste("g.dirseps.exe -g",
+>>>>>>>> 70 shQuote(Sys.getenv("GISRC"))), intern = TRUE), Sys.getenv("GISRC"))
+>>>>>>>> 71 assign("addEXE", .addexe(), envir = .GRASS_CACHE)
+>>>>>>>> 72 Sys.setenv(GISRC = gisrc)
+>>>>>>>>
+>>>>>>>
+>>>>>>> And this sets it again. It is set, otherwise GRASS wouldn't work;
+>>>>>>> programmatically you'd have to use Sys.getenv("GISRC") to get the value.
+>>>>>>> Please provide a use case where this matters, and consider moving this
+>>>>>>> thread to the statsgrass list.
+>>>>>>
+>>>>>> Sorry, I do not understand what you mean with "provide a use case where
+>>>>>> this matters". What do you mean with "this"?
+>>>>>
+>>>>> The use of an arbitrary name in a throw-away location is of no
+>>>>> significance, and could in the future be a short random name. My guess is
+>>>>> that the use of "junk" may have come from different file permissions on
+>>>>> unix and windows systems - if override is TRUE, R might end up trying to
+>>>>> write to a file that some other process is still blocking.
+>>>>>
+>>>>
+>>>> Ok.
+>>>>
+>>>>> Unless you can provide an R script that I can run in WinNat (not OSGeo4W -
+>>>>> I do not have the time or patience to install multiple Windows versions of
+>>>>> GRASS that I never use), and which demonstrates that something more is
+>>>>> involved than the name of a temporary file, I can't help, because I do not
+>>>>> see any real problem - the name if the file is arbitrary, and in the R
+>>>>> session is accesses by Sys.getenv().
+>>>>
+>>>> Ok, I get that. The main issue was to keept the directory clean since
+>>>> access my grass data from different operating system. But thinks it's
+>>>> not worth to spend more time on this issue. (I'll survive the junk file
+>>>> in my workspace)
+>>>
+>>> Would it help to try to add an argument to initGRASS() to try to delete
+>>> the file pointed at by GISRC on exit from the R session?
+>>>
+>>> In many cases, the file is in R's temporary directory (home=tempdir()), so
+>>> gets removed automatically, but if you are using a non-temporary home=,
+>>> the file stays there.
+>>>
+>>> Roger (Bi)
+>>
+>> Yes, that would solve my issue indeed. Because I am using initGRASS
+>> mostly in a permanent home with all my project data.
+>
+> Please download a development version from:
+>
+> http://win-builder.r-project.org/JZw14G61RjVk
+>
+> Set remove_GISRC=TRUE in the initGRASS() call, and use remove_GISRC() when
+> you are through with this instance. I have included code to try to unlink
+> the file and unset the environment variable when the R session terminates,
+> but so far without success - you will need to remove it as described
+> unless I see a way round a race condition.
+>
+> Roger (Bi)
+>
+
+
+Ok, thanks!
+Roger (Bä)
+
+>>
+>> Roger (Bä)
+>>
+>>
+>>>> Thanks you anyway!
+>>>>
+>>>>
+>>>> Regards,
+>>>> Roger (Bä)
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>>> I added the thread to the grass-stat list (and will remove r-sig from
+>>>>>> the cc the next time).
+>>>>>
+>>>>> OK,
+>>>>>
+>>>>> Roger (Bi)
+>>>>>
+>>>>>> Roger
+>>>>>>
+>>>>>>>
+>>>>>>> Hope this helps (doesn't clarify, but that's legacy Windows),
+>>>>>>>
+>>>>>>> Roger
+>>>>>>>
+>>>>>>>> First, why is initGRASS using ".grassrc7" for storing the GISRC file?
+>>>>>>>> InitGRASS is looking for the GISRC file under ".grassrc7" (line 59). However, in the package documentation [1], the GISRC file is called ".gisrc". Moreover, the GRASS documentation says that the GISRC file is stored under "/.grass7/rc"
+>>>>>>>>
+>>>>>>>> Second, what is the purpose of assigning "junk" to the GISRC environment variable?
+>>>>>>>> GISRC is set to "junk" (line 63) and then the GISRC value ("junk") is assigned again back to system variable GISRC. Unless I misinterpreded the code, it does not make much sense to me. Shouldn't the enviroment varibales not be written (line 64 - 68) to ".grassrc7" rather than to "junk"?
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> I would appreciate any support or hints!
+>>>>>>>>
+>>>>>>>> Regards,
+>>>>>>>> Roger
+>>>>>>>>
+>>>>>>>> [1] http://https//cran.r-project.org/web/packages/rgrass7/rgrass7.pdf
+>>>>>>>> [2] http://grass.osgeo.org/grass70/manuals/variables.html
+>>>>>>>>
+>>>>>>>> _______________________________________________
+>>>>>>>> R-sig-Geo mailing list
+>>>>>>>> R-sig-Geo at r-project.org
+>>>>>>>> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+>>>>>>>>
+>>>>>>>
+>>>>>>> --
+>>>>>>> Roger Bivand
+>>>>>>> Department of Economics, Norwegian School of Economics,
+>>>>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>>>>> voice: +47 55 95 93 55; fax +47 55 95 91 00
+>>>>>>> e-mail: Roger.Bivand at nhh.no
+>>>>>>> http://orcid.org/0000-0003-2392-6140
+>>>>>>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>>>>>>> http://depsy.org/person/434412
+>>>>>>
+>>>>>
+>>>>> --
+>>>>> Roger Bivand
+>>>>> Department of Economics, Norwegian School of Economics,
+>>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>>> voice: +47 55 95 93 55; fax +47 55 95 91 00
+>>>>> e-mail: Roger.Bivand at nhh.no
+>>>>> http://orcid.org/0000-0003-2392-6140
+>>>>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>>>>> http://depsy.org/person/434412
+>>>
+>>> --
+>>> Roger Bivand
+>>> Department of Economics, Norwegian School of Economics,
+>>> Helleveien 30, N-5045 Bergen, Norway.
+>>> voice: +47 55 95 93 55; fax +47 55 95 91 00
+>>> e-mail: Roger.Bivand at nhh.no
+>>> http://orcid.org/0000-0003-2392-6140
+>>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>>> http://depsy.org/person/434412
+>
+> --
+> Roger Bivand
+> Department of Economics, Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 91 00
+> e-mail: Roger.Bivand at nhh.no
+> http://orcid.org/0000-0003-2392-6140
+> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+> http://depsy.org/person/434412
+ 		 	   		  
+
+From Roger.Bivand at nhh.no  Mon Apr 25 10:22:50 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon, 25 Apr 2016 19:22:50 +0200
+Subject: [GRASS-stats] Using d.mon and friends in GRASS 7 from script
+Message-ID: <alpine.LFD.2.20.1604251915110.23000@reclus.nhh.no>
+
+Hi,
+
+A Linux user of rgrass7 (7.0.3) has fould that the GRASS initialisation in 
+rgrass7::initGRASS() does not permit the successful use of d.mon and 
+friends. One problem already found is that initGRASS does not set the 
+GRASS_PYTHON environment variable. When this is corrected manually, d.mon 
+start=wx0 seems to work, but no window appears. Lines are added to GISRC, 
+but no PID, so:
+
+> Sys.setenv("GRASS_PYTHON"="/usr/bin/python")
+> execGRASS("g.gui", ui="wxpython")
+Launching <wxpython> GUI in the background, please wait...
+
+That did work, the windows appeared, but the graphics window doesn't seem 
+to be seen by d.mon.
+
+> execGRASS("g.gisenv", flags="n")
+GISDBASE=/tmp/RtmpJ9bb8r
+LOCATION_NAME=file2fe95902e5af
+MAPSET=file2fe926c02e7c
+GRASS_GUI=text
+> execGRASS("d.mon", flags="l")
+No monitors running
+> execGRASS("d.mon", start="wx0")
+> execGRASS("g.gisenv", flags="n")
+GISDBASE=/tmp/RtmpJ9bb8r
+LOCATION_NAME=file2fe95902e5af
+MAPSET=file2fe926c02e7c
+GRASS_GUI=text
+MONITOR_WX0_ENVFILE=/tmp/RtmpJ9bb8r/file2fe95902e5af/file2fe926c02e7c/.tmp/localhost.localdomain/12758.0.env
+MONITOR_WX0_CMDFILE=/tmp/RtmpJ9bb8r/file2fe95902e5af/file2fe926c02e7c/.tmp/localhost.localdomain/12758.0.cmd
+MONITOR=wx0
+MONITOR_WX0_MAPFILE=/tmp/RtmpJ9bb8r/file2fe95902e5af/file2fe926c02e7c/.tmp/localhost.localdomain/12758.0.ppm
+> execGRASS("d.mon", flags="l")
+wx0
+List of running monitors:
+> execGRASS("d.mon", stop="wx0")
+Error in execGRASS("d.mon", stop = "wx0") : The command:
+d.mon stop=wx0
+produced an error (1) during execution:
+ERROR: PID file not found
+
+Does anyone have any insights?
+
+Roger
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+

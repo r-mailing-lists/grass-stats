@@ -1,0 +1,379 @@
+{
+  "list": "grass-stats",
+  "description": "",
+  "month": "2009-08",
+  "messages": [
+    {
+      "id": "msg-19d902894aee",
+      "message_id": "<4A7C7000.7040908@gmail.com>",
+      "from_name": "Anne Ghisla",
+      "from_email_hash": "76b5549c7147a8a19200fcf2cd8a2f587eb1ad0387226d7fc6d2a772bc42ed2c",
+      "date": "2009-08-07T14:19:19Z",
+      "subject": "[GRASS-stats] [Report #11] Kriging with GRASS and R: v.autokrige port to wxPython and more",
+      "subject_clean": "[GRASS-stats] [Report #11] Kriging with GRASS and R: v.autokrige port to wxPython and more",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "-----BEGIN PGP SIGNED MESSAGE-----\nHash: SHA1\n\nHello all and sorry for cross-posting,\n\nthis week I worked on error handling by GUI, adding controls on input\ndata and parameters and hiding Run and Plot buttons unless all options\nare suitable.\nVariogram plotting is on its way - I discarded matplotlib to avoid\nfurther dependencies, in favour of wx.lib.plot.\n\nbest regards,\n\nAnne\n\n\n-----BEGIN PGP SIGNATURE-----\nVersion: GnuPG v1.4.9 (MingW32)\nComment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/\n\niEYEARECAAYFAkp8cAAACgkQzZ3g4YwFFgb3ggCfaO4BeTfAmM4ISuh7K/j+87qq\niqwAoJ7jaz6XMiIuZMOZnMBvfdIlt0nX\n=2VfU\n-----END PGP SIGNATURE-----",
+      "body_snippet": "-----BEGIN PGP SIGNED MESSAGE-----\nHash: SHA1\n\nHello all and sorry for cross-posting,\n\nthis week I worked on error handling by GUI, adding controls on input\ndata and parameters and hiding Run and Plot",
+      "thread_id": "thread-19d902894aee",
+      "thread_depth": 0,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-01867ed7a6ea",
+      "message_id": "<86782b610908131542v76abb31ehf0eb4682f3d4fad@mail.gmail.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "7ac5ec27e07d088b60f1057a2e6f073bc9436bfcca2e796f93aa91ffa8c6633a",
+      "date": "2009-08-13T18:49:39Z",
+      "subject": "[GRASS-stats] Mapset issue with vector data via OGR plugin",
+      "subject_clean": "[GRASS-stats] Mapset issue with vector data via OGR plugin",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nI have some troubles when the vector map name contains the\n@mapset part:\n\n\nR\nR version 2.9.1 (2009-06-26)\n...\n> library(spgrass6)\nLoading required package: sp\nLoading required package: rgdal\nGeospatial Data Abstraction Library extensions to R successfully loaded\nLoaded GDAL runtime: GDAL 1.7.0dev, released 2008/11/26\nPath to GDAL shared files: /usr/local/share/gdal\nLoaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008\nPath to PROJ.4 shared files: (autodetected)\nLoading required package: XML\n\n> data <- readVECT6(\"rand5k_elev_filt@neteler\", type= 'point')\nError in ogrInfo(dsn = dsn, layer = layer, input_field_name_encoding =\ninput_field_name_encoding) :\n  Cannot open file\n\nwhile this works:\n\n> data <- readVECT6(\"rand5k_elev_filt\", type= 'point')\nOGR data source with driver: GRASS\nSource: \"/home/neteler/grassdata/spearfish60/neteler/vector/rand5k_elev_filt/head\",\nlayer: \"1\"\nwith 4885 features and 5 fields\nFeature type: wkbPoint with 2 dimensions\n\nI have used update.packages() and should have the latest sp* packages.\nI tried to debug the problem but failed...\n\nCan anyone confirm this problem?\n\nthanks\nMarkus",
+      "body_snippet": "Hi,\n\nI have some troubles when the vector map name contains the\n@mapset part:\n\n\nR\nR version 2.9.1 (2009-06-26)\n...\n> library(spgrass6)\nLoading required package: sp\nLoading required package: rgdal\nGeos",
+      "thread_id": "thread-01867ed7a6ea",
+      "thread_depth": 0,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-fa3e6aac448a",
+      "message_id": "<alpine.LRH.2.00.0908141133450.1876@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2009-08-14T05:40:13Z",
+      "subject": "[GRASS-stats] Mapset issue with vector data via OGR plugin",
+      "subject_clean": "[GRASS-stats] Mapset issue with vector data via OGR plugin",
+      "in_reply_to": "<86782b610908131542v76abb31ehf0eb4682f3d4fad@mail.gmail.com>",
+      "references": [
+        "<86782b610908131542v76abb31ehf0eb4682f3d4fad@mail.gmail.com>"
+      ],
+      "body_plain": "On Fri, 14 Aug 2009, Markus Neteler wrote:\n\n> Hi,\n>\n> I have some troubles when the vector map name contains the\n> @mapset part:\n>\n\nHi,\n\nThis is a consequence of the plugin only searching in the current user's \nmapset, so using extra code to scan other mapsets:\n\n         if (is.null(mapset)) mapset <- .g_findfile(vname[1], type=\"vector\")\n         dsn <- paste(gg$GISDBASE, gg$LOCATION_NAME, mapset,\n             \"vector\", vname, \"head\", sep=\"/\")\n\nwhere .g_findfile() runs g.findfile. This seems to fail when @mapset is \ngiven. I guess that the work-around is to use the argument \nmapset=\"neteler\" in readVECT6() and readRAST6() for now, but I could look \nat trying to detect the @ and use it (in the plugin case only) to assign \nto a null mapset, throwing an error if mapset is non-null and @ is used.\n\nHope this helps,\n\nRoger\n\n>\n> R\n> R version 2.9.1 (2009-06-26)\n> ...\n>> library(spgrass6)\n> Loading required package: sp\n> Loading required package: rgdal\n> Geospatial Data Abstraction Library extensions to R successfully loaded\n> Loaded GDAL runtime: GDAL 1.7.0dev, released 2008/11/26\n> Path to GDAL shared files: /usr/local/share/gdal\n> Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008\n> Path to PROJ.4 shared files: (autodetected)\n> Loading required package: XML\n>\n>> data <- readVECT6(\"rand5k_elev_filt@neteler\", type= 'point')\n> Error in ogrInfo(dsn = dsn, layer = layer, input_field_name_encoding =\n> input_field_name_encoding) :\n>  Cannot open file\n>\n> while this works:\n>\n>> data <- readVECT6(\"rand5k_elev_filt\", type= 'point')\n> OGR data source with driver: GRASS\n> Source: \"/home/neteler/grassdata/spearfish60/neteler/vector/rand5k_elev_filt/head\",\n> layer: \"1\"\n> with 4885 features and 5 fields\n> Feature type: wkbPoint with 2 dimensions\n>\n> I have used update.packages() and should have the latest sp* packages.\n> I tried to debug the problem but failed...\n>\n> Can anyone confirm this problem?\n>\n> thanks\n> Markus\n> _______________________________________________\n> grass-stats mailing list\n> grass-stats@lists.osgeo.org\n> http://lists.osgeo.org/mailman/listinfo/grass-stats\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Fri, 14 Aug 2009, Markus Neteler wrote:\n\n> Hi,\n>\n> I have some troubles when the vector map name contains the\n> @mapset part:\n>\n\nHi,\n\nThis is a consequence of the plugin only searching in the curre",
+      "thread_id": "thread-01867ed7a6ea",
+      "thread_depth": 1,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-0c26d5271922",
+      "message_id": "<86782b610908140248u6279bf9fga722b516ace6a733@mail.gmail.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "7ac5ec27e07d088b60f1057a2e6f073bc9436bfcca2e796f93aa91ffa8c6633a",
+      "date": "2009-08-14T05:48:52Z",
+      "subject": "[GRASS-stats] Mapset issue with vector data via OGR plugin",
+      "subject_clean": "[GRASS-stats] Mapset issue with vector data via OGR plugin",
+      "in_reply_to": "<alpine.LRH.2.00.0908141133450.1876@reclus.nhh.no>",
+      "references": [
+        "<86782b610908131542v76abb31ehf0eb4682f3d4fad@mail.gmail.com>",
+        "<alpine.LRH.2.00.0908141133450.1876@reclus.nhh.no>"
+      ],
+      "body_plain": "On Fri, Aug 14, 2009 at 11:40 AM, Roger Bivand<Roger.Bivand@nhh.no> wrote:\n> On Fri, 14 Aug 2009, Markus Neteler wrote:\n>> I have some troubles when the vector map name contains the\n>> @mapset part:\n>\n> This is a consequence of the plugin only searching in the current user's\n> mapset, so using extra code to scan other mapsets:\n>\n> ? ? ? ?if (is.null(mapset)) mapset <- .g_findfile(vname[1], type=\"vector\")\n> ? ? ? ?dsn <- paste(gg$GISDBASE, gg$LOCATION_NAME, mapset,\n> ? ? ? ? ? ?\"vector\", vname, \"head\", sep=\"/\")\n>\n> where .g_findfile() runs g.findfile. This seems to fail when @mapset is\n> given.\n\nI have made a test:\n\nGRASS 6.5.svn (spearfish60):~ > g.findfile element=vector\nfile=rand5k_elev_filt@neteler mapset=neteler\nname='rand5k_elev_filt@neteler'\nmapset='neteler'\nfullname='rand5k_elev_filt@neteler'\nfile='/home/neteler/grassdata/spearfish60/neteler/vector/rand5k_elev_filt'\n\nGRASS 6.5.svn (spearfish60):~ > g.findfile element=vector\nfile=rand5k_elev_filt@claus mapset=neteler\nERROR: Parameter 'file' contains reference to <claus> mapset, but mapset\n       parameter <neteler> does not correspond\n\nAt least it does not crash...\n\n> I guess that the work-around is to use the argument mapset=\"neteler\"\n> in readVECT6() and readRAST6() for now, but I could look at trying to detect\n> the @ and use it (in the plugin case only) to assign to a null mapset,\n> throwing an error if mapset is non-null and @ is used.\n\nThis would be nice. I am currently testing \"v.krige.py\" from Anne\nand it (I guess the underlying GRASS wxGUI part) adds automatically\nthe @mapset part to the map even when it is in the current mapset.\n\nI am not sure how to solve that in order to make the R code overly\ncomplex.\n\n> Hope this helps,\n\nThanks for you explanations (and potential error trapping),\nMarkus",
+      "body_snippet": "On Fri, Aug 14, 2009 at 11:40 AM, Roger Bivand<Roger.Bivand@nhh.no> wrote:\n> On Fri, 14 Aug 2009, Markus Neteler wrote:\n>> I have some troubles when the vector map name contains the\n>> @mapset part:\n>",
+      "thread_id": "thread-01867ed7a6ea",
+      "thread_depth": 2,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-6bdb5e762e5d",
+      "message_id": "<4A8567A9.1080000@gmail.com>",
+      "from_name": "Anne Ghisla",
+      "from_email_hash": "76b5549c7147a8a19200fcf2cd8a2f587eb1ad0387226d7fc6d2a772bc42ed2c",
+      "date": "2009-08-14T09:33:31Z",
+      "subject": "[GRASS-stats] [Report #12 - end SoC] Kriging with GRASS and R: v.autokrige port to wxPython and more",
+      "subject_clean": "[GRASS-stats] [Report #12 - end SoC] Kriging with GRASS and R: v.autokrige port to wxPython and more",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "-----BEGIN PGP SIGNED MESSAGE-----\nHash: SHA1\n\nHello all and sorry for cross-posting,\n\nthis is last SoC report - bringing variogram plotting into v.krige!\nAfter a long time searching for the lightest and cleanest\nimplementation, R plotting raised as the best solution. On user demand,\na R graphics window plots variogram and refreshes it, without\ninterfering with wxGUI.\nDocumentation includes a full example using Spearfish dataset and all\ninformations about dependencies.\n\nMany thanks to all who have helped me writing v.krige: GRASS and R\ndevelopers, OSGeo SoC crew, wise friends, all testers.\nI hope this module will attract people towards GRASS and R, and provide\na valid alternative to closed-source kriging tools.\n\nbest regards,\n\nAnne\n- --\n\n\n\n-----BEGIN PGP SIGNATURE-----\nVersion: GnuPG v1.4.9 (MingW32)\nComment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/\n\niEYEARECAAYFAkqFZ6gACgkQzZ3g4YwFFgZa0wCfX6PXr2Jk746TohFzvRbk1DiP\niZcAmwc13YIECWcsN118iSVfYYdHhBsk\n=buEX\n-----END PGP SIGNATURE-----",
+      "body_snippet": "-----BEGIN PGP SIGNED MESSAGE-----\nHash: SHA1\n\nHello all and sorry for cross-posting,\n\nthis is last SoC report - bringing variogram plotting into v.krige!\nAfter a long time searching for the lightest ",
+      "thread_id": "thread-6bdb5e762e5d",
+      "thread_depth": 0,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-7ba047b628a9",
+      "message_id": "<alpine.LRH.2.00.0908141810150.3262@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2009-08-14T12:22:42Z",
+      "subject": "[GRASS-stats] Mapset issue with vector data via OGR plugin",
+      "subject_clean": "[GRASS-stats] Mapset issue with vector data via OGR plugin",
+      "in_reply_to": "<86782b610908140248u6279bf9fga722b516ace6a733@mail.gmail.com>",
+      "references": [
+        "<86782b610908131542v76abb31ehf0eb4682f3d4fad@mail.gmail.com>",
+        "<alpine.LRH.2.00.0908141133450.1876@reclus.nhh.no>",
+        "<86782b610908140248u6279bf9fga722b516ace6a733@mail.gmail.com>"
+      ],
+      "body_plain": "On Fri, 14 Aug 2009, Markus Neteler wrote:\n\n> On Fri, Aug 14, 2009 at 11:40 AM, Roger Bivand<Roger.Bivand@nhh.no> wrote:\n>> On Fri, 14 Aug 2009, Markus Neteler wrote:\n>>> I have some troubles when the vector map name contains the\n>>> @mapset part:\n>>\n>> This is a consequence of the plugin only searching in the current user's\n>> mapset, so using extra code to scan other mapsets:\n>>\n>> ? ? ? ?if (is.null(mapset)) mapset <- .g_findfile(vname[1], type=\"vector\")\n>> ? ? ? ?dsn <- paste(gg$GISDBASE, gg$LOCATION_NAME, mapset,\n>> ? ? ? ? ? ?\"vector\", vname, \"head\", sep=\"/\")\n>>\n>> where .g_findfile() runs g.findfile. This seems to fail when @mapset is\n>> given.\n\nCould you try out the revisions on sourceforge CVS:\n\ncvs -z3 \\\n-d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial co \\\n-P spgrass6\n\nI think it works, but checking wouldn't hurt!\n\nBest wishes,\n\nRoger\n\n>\n> I have made a test:\n>\n> GRASS 6.5.svn (spearfish60):~ > g.findfile element=vector\n> file=rand5k_elev_filt@neteler mapset=neteler\n> name='rand5k_elev_filt@neteler'\n> mapset='neteler'\n> fullname='rand5k_elev_filt@neteler'\n> file='/home/neteler/grassdata/spearfish60/neteler/vector/rand5k_elev_filt'\n>\n> GRASS 6.5.svn (spearfish60):~ > g.findfile element=vector\n> file=rand5k_elev_filt@claus mapset=neteler\n> ERROR: Parameter 'file' contains reference to <claus> mapset, but mapset\n>       parameter <neteler> does not correspond\n>\n> At least it does not crash...\n>\n>> I guess that the work-around is to use the argument mapset=\"neteler\"\n>> in readVECT6() and readRAST6() for now, but I could look at trying to detect\n>> the @ and use it (in the plugin case only) to assign to a null mapset,\n>> throwing an error if mapset is non-null and @ is used.\n>\n> This would be nice. I am currently testing \"v.krige.py\" from Anne\n> and it (I guess the underlying GRASS wxGUI part) adds automatically\n> the @mapset part to the map even when it is in the current mapset.\n>\n> I am not sure how to solve that in order to make the R code overly\n> complex.\n>\n>> Hope this helps,\n>\n> Thanks for you explanations (and potential error trapping),\n> Markus\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Fri, 14 Aug 2009, Markus Neteler wrote:\n\n> On Fri, Aug 14, 2009 at 11:40 AM, Roger Bivand<Roger.Bivand@nhh.no> wrote:\n>> On Fri, 14 Aug 2009, Markus Neteler wrote:\n>>> I have some troubles when the",
+      "thread_id": "thread-01867ed7a6ea",
+      "thread_depth": 3,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-746d4593097e",
+      "message_id": "<86782b610908141013p5f3d1273hfe1f591a91e391f@mail.gmail.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "7ac5ec27e07d088b60f1057a2e6f073bc9436bfcca2e796f93aa91ffa8c6633a",
+      "date": "2009-08-14T13:19:51Z",
+      "subject": "[GRASS-stats] Mapset issue with vector data via OGR plugin",
+      "subject_clean": "[GRASS-stats] Mapset issue with vector data via OGR plugin",
+      "in_reply_to": "<alpine.LRH.2.00.0908141810150.3262@reclus.nhh.no>",
+      "references": [
+        "<86782b610908131542v76abb31ehf0eb4682f3d4fad@mail.gmail.com>",
+        "<alpine.LRH.2.00.0908141133450.1876@reclus.nhh.no>",
+        "<86782b610908140248u6279bf9fga722b516ace6a733@mail.gmail.com>",
+        "<alpine.LRH.2.00.0908141810150.3262@reclus.nhh.no>"
+      ],
+      "body_plain": "Dear Roger,\n\nOn Fri, Aug 14, 2009 at 6:22 PM, Roger Bivand<Roger.Bivand@nhh.no> wrote:\n> On Fri, 14 Aug 2009, Markus Neteler wrote:\n>\n>> On Fri, Aug 14, 2009 at 11:40 AM, Roger Bivand<Roger.Bivand@nhh.no> wrote:\n>>>\n>>> On Fri, 14 Aug 2009, Markus Neteler wrote:\n>>>>\n>>>> I have some troubles when the vector map name contains the\n>>>> @mapset part:\n>>>\n>>> This is a consequence of the plugin only searching in the current user's\n>>> mapset, so using extra code to scan other mapsets:\n>>>\n>>> ? ? ? ?if (is.null(mapset)) mapset <- .g_findfile(vname[1],\n>>> type=\"vector\")\n>>> ? ? ? ?dsn <- paste(gg$GISDBASE, gg$LOCATION_NAME, mapset,\n>>> ? ? ? ? ? ?\"vector\", vname, \"head\", sep=\"/\")\n>>>\n>>> where .g_findfile() runs g.findfile. This seems to fail when @mapset is\n>>> given.\n>\n> Could you try out the revisions on sourceforge CVS:\n>\n> cvs -z3 \\\n> -d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial co \\\n> -P spgrass6\n>\n> I think it works, but checking wouldn't hurt!\n\nGreat, it works now:\n\n# Test 1, now ok:\n> data <- readVECT6(\"rand5k_elev_filt@neteler\", type= 'point')\nOGR data source with driver: GRASS\nSource: \"/home/neteler/grassdata/spearfish60/neteler/vector/rand5k_elev_filt/head\",\nlayer: \"1\"\nwith 4885 features and 5 fields\nFeature type: wkbPoint with 2 dimensions\n\n# Test2, ok as before\n> data <- readVECT6(\"rand5k_elev_filt\", type= 'point')\nOGR data source with driver: GRASS\nSource: \"/home/neteler/grassdata/spearfish60/neteler/vector/rand5k_elev_filt/head\",\nlayer: \"1\"\nwith 4885 features and 5 fields\nFeature type: wkbPoint with 2 dimensions\n\n# Test 3: nonsense input\n> data <- readVECT6(\"rand5k_elev_filt@neteler\", type= 'point', mapset=\"benno\")\nError in ogrInfo(dsn = dsn, layer = layer, input_field_name_encoding =\ninput_field_name_encoding) :\n  Cannot open file\n\nThanks for the quick fix,\nMarkus",
+      "body_snippet": "Dear Roger,\n\nOn Fri, Aug 14, 2009 at 6:22 PM, Roger Bivand<Roger.Bivand@nhh.no> wrote:\n> On Fri, 14 Aug 2009, Markus Neteler wrote:\n>\n>> On Fri, Aug 14, 2009 at 11:40 AM, Roger Bivand<Roger.Bivand@nhh",
+      "thread_id": "thread-01867ed7a6ea",
+      "thread_depth": 4,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-334e4f7b9341",
+      "message_id": "<1250279670.4740.10.camel@vertical>",
+      "from_name": "Nikos Alexandris",
+      "from_email_hash": "47181e5f107d519f08f28540bf6dbed639b2bd739fe43a01f4ad554b54e99484",
+      "date": "2009-08-14T15:54:35Z",
+      "subject": "[GRASS-stats] [Report #12 - end SoC] Kriging with GRASS and R: v.autokrige port to wxPython and more",
+      "subject_clean": "[GRASS-stats] [Report #12 - end SoC] Kriging with GRASS and R: v.autokrige port to wxPython and more",
+      "in_reply_to": "<4A8567A9.1080000@gmail.com>",
+      "references": [
+        "<4A8567A9.1080000@gmail.com>"
+      ],
+      "body_plain": "On Fri, 2009-08-14 at 15:33 +0200, Anne Ghisla wrote:\n> -----BEGIN PGP SIGNED MESSAGE-----\n> Hash: SHA1\n> \n> Hello all and sorry for cross-posting,\n> \n> this is last SoC report - bringing variogram plotting into v.krige!\n> After a long time searching for the lightest and cleanest\n> implementation, R plotting raised as the best solution. On user demand,\n> a R graphics window plots variogram and refreshes it, without\n> interfering with wxGUI.\n> Documentation includes a full example using Spearfish dataset and all\n> informations about dependencies.\n> \n> Many thanks to all who have helped me writing v.krige: GRASS and R\n> developers, OSGeo SoC crew, wise friends, all testers.\n> I hope this module will attract people towards GRASS and R, and provide\n> a valid alternative to closed-source kriging tools.\n> \n> best regards,\n> Anne\n\nGreat work!\nThank you, Nikos",
+      "body_snippet": "On Fri, 2009-08-14 at 15:33 +0200, Anne Ghisla wrote:\n> -----BEGIN PGP SIGNED MESSAGE-----\n> Hash: SHA1\n> \n> Hello all and sorry for cross-posting,\n> \n> this is last SoC report - bringing variogram pl",
+      "thread_id": "thread-6bdb5e762e5d",
+      "thread_depth": 1,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-02a8ee575f89",
+      "message_id": "<86782b610908161045t5004351aja0b690daf9c68cf4@mail.gmail.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "7ac5ec27e07d088b60f1057a2e6f073bc9436bfcca2e796f93aa91ffa8c6633a",
+      "date": "2009-08-16T13:45:55Z",
+      "subject": "[GRASS-stats] Scatterplot \"thinning\" (points reduction)?",
+      "subject_clean": "[GRASS-stats] Scatterplot \"thinning\" (points reduction)?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nI am plotting elevation against temperature and have the problem that\nincluding all points leads to heavy slow graphs... Reducing the raster\nresolution is not a solution since it does not maintain the characteristics\nof the graph (since GRASS is using nearest neighbor).\n\nSince I am plotting in many cases one point almost over the other\na reduction should be reasonable - question is how to do that?\n\nI am speaking about 3 plots in one graph, say \"original\", \"interim\"\nand \"final\" (so, one plot() and two points()).\n\nAny advice welcome,\nMarkus",
+      "body_snippet": "Hi,\n\nI am plotting elevation against temperature and have the problem that\nincluding all points leads to heavy slow graphs... Reducing the raster\nresolution is not a solution since it does not maintai",
+      "thread_id": "thread-02a8ee575f89",
+      "thread_depth": 0,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-9b90b5c19839",
+      "message_id": "<3c5546140908161102g3452ba7cp2e9ef9573702c8e0@mail.gmail.com>",
+      "from_name": "Dylan Beaudette",
+      "from_email_hash": "7c20155ca48d79149860fd59c6ecfd0102a020d5b1ab9c12459a9a47e1089d4c",
+      "date": "2009-08-16T14:02:59Z",
+      "subject": "[GRASS-stats] Scatterplot \"thinning\" (points reduction)?",
+      "subject_clean": "[GRASS-stats] Scatterplot \"thinning\" (points reduction)?",
+      "in_reply_to": "<86782b610908161045t5004351aja0b690daf9c68cf4@mail.gmail.com>",
+      "references": [
+        "<86782b610908161045t5004351aja0b690daf9c68cf4@mail.gmail.com>"
+      ],
+      "body_plain": "Hi Markus,\n\nCan you sample the original maps with v.random + v.what.rast first?\nOr, after reading in the raster data into R, only compare every nth\ncell? You can generate a sequence to index every nth cell like this:\n\ns <- seq(from=1, to=n, by=10)\n\nThen, subset your spatial data frame like this:\n\nspdf[s,]\n\nAnother approach would be to use a density estimate in parameter space:\n\nlibrary(MASS)\nx <- rnorm(1000)\ny <- rnorm(1000)\ndd <- kde2d(x,y)\ncontour(dd)\npersp(dd, theta=-30, phi=30, d=5)\nimage(dd)\n\n\nCheers,\n\nDylan\n\nOn Sun, Aug 16, 2009 at 10:45 AM, Markus Neteler<neteler@osgeo.org> wrote:\n> Hi,\n>\n> I am plotting elevation against temperature and have the problem that\n> including all points leads to heavy slow graphs... Reducing the raster\n> resolution is not a solution since it does not maintain the characteristics\n> of the graph (since GRASS is using nearest neighbor).\n>\n> Since I am plotting in many cases one point almost over the other\n> a reduction should be reasonable - question is how to do that?\n>\n> I am speaking about 3 plots in one graph, say \"original\", \"interim\"\n> and \"final\" (so, one plot() and two points()).\n>\n> Any advice welcome,\n> Markus\n> _______________________________________________\n> grass-stats mailing list\n> grass-stats@lists.osgeo.org\n> http://lists.osgeo.org/mailman/listinfo/grass-stats\n>",
+      "body_snippet": "Hi Markus,\n\nCan you sample the original maps with v.random + v.what.rast first?\nOr, after reading in the raster data into R, only compare every nth\ncell? You can generate a sequence to index every nth",
+      "thread_id": "thread-02a8ee575f89",
+      "thread_depth": 1,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-177512e0cc52",
+      "message_id": "<86782b610908161544n4876df57tec1b06a142ccf079@mail.gmail.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "7ac5ec27e07d088b60f1057a2e6f073bc9436bfcca2e796f93aa91ffa8c6633a",
+      "date": "2009-08-16T18:44:25Z",
+      "subject": "[GRASS-stats] Scatterplot \"thinning\" (points reduction)?",
+      "subject_clean": "[GRASS-stats] Scatterplot \"thinning\" (points reduction)?",
+      "in_reply_to": "<3c5546140908161102g3452ba7cp2e9ef9573702c8e0@mail.gmail.com>",
+      "references": [
+        "<86782b610908161045t5004351aja0b690daf9c68cf4@mail.gmail.com>",
+        "<3c5546140908161102g3452ba7cp2e9ef9573702c8e0@mail.gmail.com>"
+      ],
+      "body_plain": "Hi Dylan,\n\nOn Sun, Aug 16, 2009 at 8:02 PM, Dylan\nBeaudette<dylan.beaudette@gmail.com> wrote:\n> Hi Markus,\n>\n> Can you sample the original maps with v.random + v.what.rast first?\n\nThis gave me the idea: spsample() - I just read page 118 in \"Applied\nspatial data analysis with R\" (great book, http://www.asdar-book.org/ !).\n\nBut apparently I am missing something... (I am certainly reading too fast):\n\n# Spearfish example\n> mydata <- readRAST6(c(\"elevation.dem\",\"soils\"))\n> subdata <- spsample(mydata, 500, type= \"random\")\n\nLooks good but...\n\n> str(subdata)\nFormal class 'SpatialPoints' [package \"sp\"] with 3 slots\n  ..@ coords     : num [1:497, 1:2] 600572 596804 599446 597732 600336 ...\n  .. ..- attr(*, \"dimnames\")=List of 2\n  .. .. ..$ : NULL\n  .. .. ..$ : chr [1:2] \"x\" \"y\"\n  ..@ bbox       : num [1:2, 1:2] 590022 4914167 608953 4927981\n  .. ..- attr(*, \"dimnames\")=List of 2\n  .. .. ..$ : chr [1:2] \"x\" \"y\"\n  .. .. ..$ : chr [1:2] \"min\" \"max\"\n  ..@ proj4string:Formal class 'CRS' [package \"sp\"] with 1 slots\n  .. .. ..@ projargs: chr \" +proj=utm +zone=13 +a=6378206.4\n+rf=294.9786982 +no_defs\n+nadgrids=/home/neteler/grass65/dist.x86_64-unknown-linux-gnu/etc/nad\"|\n__truncated__\n\n... where are the data?\n\nThe original looks like:\n> str(mydata)\nFormal class 'SpatialGridDataFrame' [package \"sp\"] with 6 slots\n  ..@ data       :'data.frame': 2654802 obs. of  2 variables:\n  .. ..$ elevation.dem: int [1:2654802] NA NA NA NA NA NA NA NA NA NA ...\n  .. ..$ soils        : int [1:2654802] NA NA NA NA NA NA NA NA NA NA ...\n  ..@ grid       :Formal class 'GridTopology' [package \"sp\"] with 3 slots\n  .. .. ..@ cellcentre.offset: Named num [1:2] 590015 4914025\n  .. .. .. ..- attr(*, \"names\")= chr [1:2] \"x\" \"y\"\n  .. .. ..@ cellsize         : num [1:2] 10 10\n  .. .. ..@ cells.dim        : int [1:2] 1899 1398\n  ..@ grid.index : int(0)\n  ..@ coords     : num [1:2, 1:2] 590015 608995 4914025 4927995\n  .. ..- attr(*, \"dimnames\")=List of 2\n  .. .. ..$ : NULL\n  .. .. ..$ : chr [1:2] \"x\" \"y\"\n  ..@ bbox       : num [1:2, 1:2] 590010 4914020 609000 4928000\n  .. ..- attr(*, \"dimnames\")=List of 2\n  .. .. ..$ : chr [1:2] \"x\" \"y\"\n  .. .. ..$ : chr [1:2] \"min\" \"max\"\n  ..@ proj4string:Formal class 'CRS' [package \"sp\"] with 1 slots\n  .. .. ..@ projargs: chr \" +proj=utm +zone=13 +a=6378206.4\n+rf=294.9786982 +no_defs\n+nadgrids=/home/neteler/grass65/dist.x86_64-unknown-linux-gnu/etc/nad\"|\n__truncated__\n\nAccording to\nshowMethods(\"spsample\")\ngrids are supported... I guess I am missing a trivial bit, might be\nthe time here...\n\nthanks\nMarkus",
+      "body_snippet": "Hi Dylan,\n\nOn Sun, Aug 16, 2009 at 8:02 PM, Dylan\nBeaudette<dylan.beaudette@gmail.com> wrote:\n> Hi Markus,\n>\n> Can you sample the original maps with v.random + v.what.rast first?\n\nThis gave me the ide",
+      "thread_id": "thread-02a8ee575f89",
+      "thread_depth": 2,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-abeb870f2e65",
+      "message_id": "<alpine.LRH.2.00.0908170923470.16834@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2009-08-17T03:33:24Z",
+      "subject": "[GRASS-stats] Scatterplot \"thinning\" (points reduction)?",
+      "subject_clean": "[GRASS-stats] Scatterplot \"thinning\" (points reduction)?",
+      "in_reply_to": "<86782b610908161045t5004351aja0b690daf9c68cf4@mail.gmail.com>",
+      "references": [
+        "<86782b610908161045t5004351aja0b690daf9c68cf4@mail.gmail.com>"
+      ],
+      "body_plain": "On Sun, 16 Aug 2009, Markus Neteler wrote:\n\n> Hi,\n>\n> I am plotting elevation against temperature and have the problem that\n> including all points leads to heavy slow graphs... Reducing the raster\n> resolution is not a solution since it does not maintain the characteristics\n> of the graph (since GRASS is using nearest neighbor).\n\nOne point initially. I'm assuming that you are using a Linux platform - on \nthis platform, there is an order of magnitude speedup if you plot on \nscreen without \"cairo\", the default x11 type= - try using type=\"Xlib\", \nwhich is much faster but not so refined.\n\nGiven that, consider the cex= argument for varying symbol size, and maybe \nthe pch=\".\" possibility for using a single pt. point. They still all get \ndrawn, so there is no time saving, but they may be more visible.\n\nFor very large data sets, consider hexbin() in the hexbin package - I'm \nnot sure how best to display three data sets. For single scatterplots, it \nis very powerful. Maybe contours of 2D densities of the extra data sets \ncould be overlaid over a base hexbin plot? There is an informative \nvignette in hexbin.\n\nHope this helps,\n\nRoger\n\n>\n> Since I am plotting in many cases one point almost over the other\n> a reduction should be reasonable - question is how to do that?\n>\n> I am speaking about 3 plots in one graph, say \"original\", \"interim\"\n> and \"final\" (so, one plot() and two points()).\n>\n> Any advice welcome,\n> Markus\n> _______________________________________________\n> grass-stats mailing list\n> grass-stats@lists.osgeo.org\n> http://lists.osgeo.org/mailman/listinfo/grass-stats\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Sun, 16 Aug 2009, Markus Neteler wrote:\n\n> Hi,\n>\n> I am plotting elevation against temperature and have the problem that\n> including all points leads to heavy slow graphs... Reducing the raster\n> r",
+      "thread_id": "thread-02a8ee575f89",
+      "thread_depth": 1,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-8c9eae9b1935",
+      "message_id": "<86782b610908170138w5c642e0sb1448ac21898e566@mail.gmail.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "7ac5ec27e07d088b60f1057a2e6f073bc9436bfcca2e796f93aa91ffa8c6633a",
+      "date": "2009-08-17T04:38:16Z",
+      "subject": "[GRASS-stats] Scatterplot \"thinning\" (points reduction)?",
+      "subject_clean": "[GRASS-stats] Scatterplot \"thinning\" (points reduction)?",
+      "in_reply_to": "<alpine.LRH.2.00.0908170923470.16834@reclus.nhh.no>",
+      "references": [
+        "<86782b610908161045t5004351aja0b690daf9c68cf4@mail.gmail.com>",
+        "<alpine.LRH.2.00.0908170923470.16834@reclus.nhh.no>"
+      ],
+      "body_plain": "On Mon, Aug 17, 2009 at 9:33 AM, Roger Bivand<Roger.Bivand@nhh.no> wrote:\n> On Sun, 16 Aug 2009, Markus Neteler wrote:\n>\n>> Hi,\n>>\n>> I am plotting elevation against temperature and have the problem that\n>> including all points leads to heavy slow graphs... Reducing the raster\n>> resolution is not a solution since it does not maintain the\n>> characteristics\n>> of the graph (since GRASS is using nearest neighbor).\n>\n> One point initially. I'm assuming that you are using a Linux platform - on\n> this platform, there is an order of magnitude speedup if you plot on screen\n> without \"cairo\", the default x11 type= - try using type=\"Xlib\", which is\n> much faster but not so refined.\n\n(yes, Linux)\nI have searched around bit I am not entirely sure to which function\nthis type parameter belongs.\n\n> Given that, consider the cex= argument for varying symbol size, and maybe\n> the pch=\".\" possibility for using a single pt. point. They still all get\n> drawn, so there is no time saving, but they may be more visible.\n\nI am currently plotting like this:\nplot(data$dem ~ data$raw)\npoints(data$dem ~ data$filt2, col=\"yellow\", cex=0.5, pch=3)\npoints(data$dem ~ data$rst, col=\"green\", xlab=\"LST value [?C]\",\nylab=\"elevation [m]\", pch=2)\nabline(lm(data$dem ~ data$raw))\nabline(lm(data$dem ~ data$filt2), col=\"yellow\")\nabline(lm(data$dem ~ data$rst), col=\"green\", xlab=\"LST value [?C]\",\nylab=\"elevation [m]\")\n\nSo the backgound (largest) cloud comes in back circles,\nthe interim (smaller) in yellow crosses with many of them in the circles,\nand the upper point could (smallest) in green triangles.\nI guess the real problem are the 826896 * 3 points in the plot.\n\n> For very large data sets, consider hexbin() in the hexbin package - I'm not\n> sure how best to display three data sets. For single scatterplots, it is\n> very powerful. Maybe contours of 2D densities of the extra data sets could\n> be overlaid over a base hexbin plot? There is an informative vignette in\n> hexbin.\n\nOh, this is interesting! Thanks,\nMarkus",
+      "body_snippet": "On Mon, Aug 17, 2009 at 9:33 AM, Roger Bivand<Roger.Bivand@nhh.no> wrote:\n> On Sun, 16 Aug 2009, Markus Neteler wrote:\n>\n>> Hi,\n>>\n>> I am plotting elevation against temperature and have the problem t",
+      "thread_id": "thread-02a8ee575f89",
+      "thread_depth": 2,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-7d44389cb12f",
+      "message_id": "<alpine.LRH.2.00.0908171039550.16834@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2009-08-17T04:43:37Z",
+      "subject": "[GRASS-stats] Scatterplot \"thinning\" (points reduction)?",
+      "subject_clean": "[GRASS-stats] Scatterplot \"thinning\" (points reduction)?",
+      "in_reply_to": "<86782b610908170138w5c642e0sb1448ac21898e566@mail.gmail.com>",
+      "references": [
+        "<86782b610908161045t5004351aja0b690daf9c68cf4@mail.gmail.com>",
+        "<alpine.LRH.2.00.0908170923470.16834@reclus.nhh.no>",
+        "<86782b610908170138w5c642e0sb1448ac21898e566@mail.gmail.com>"
+      ],
+      "body_plain": "On Mon, 17 Aug 2009, Markus Neteler wrote:\n\n> On Mon, Aug 17, 2009 at 9:33 AM, Roger Bivand<Roger.Bivand@nhh.no> wrote:\n>> On Sun, 16 Aug 2009, Markus Neteler wrote:\n>>\n>>> Hi,\n>>>\n>>> I am plotting elevation against temperature and have the problem that\n>>> including all points leads to heavy slow graphs... Reducing the raster\n>>> resolution is not a solution since it does not maintain the\n>>> characteristics\n>>> of the graph (since GRASS is using nearest neighbor).\n>>\n>> One point initially. I'm assuming that you are using a Linux platform - on\n>> this platform, there is an order of magnitude speedup if you plot on screen\n>> without \"cairo\", the default x11 type= - try using type=\"Xlib\", which is\n>> much faster but not so refined.\n>\n> (yes, Linux)\n> I have searched around bit I am not entirely sure to which function\n> this type parameter belongs.\n\nIn x11() to open the screen graphics device - by default it opens by \nitself with type=\"cairo\" when needed, you you have to open it manually \nwith the non-default type, or use use X11.options() to have the \nautomatically opened devices used \"Xlib\". Generally, \"cairo\" is \npreferable, but slower. I'd probably leave \"cairo\", and use hexbin() \ninstead.\n\nRoger\n\n>\n>> Given that, consider the cex= argument for varying symbol size, and maybe\n>> the pch=\".\" possibility for using a single pt. point. They still all get\n>> drawn, so there is no time saving, but they may be more visible.\n>\n> I am currently plotting like this:\n> plot(data$dem ~ data$raw)\n> points(data$dem ~ data$filt2, col=\"yellow\", cex=0.5, pch=3)\n> points(data$dem ~ data$rst, col=\"green\", xlab=\"LST value [?C]\",\n> ylab=\"elevation [m]\", pch=2)\n> abline(lm(data$dem ~ data$raw))\n> abline(lm(data$dem ~ data$filt2), col=\"yellow\")\n> abline(lm(data$dem ~ data$rst), col=\"green\", xlab=\"LST value [?C]\",\n> ylab=\"elevation [m]\")\n>\n> So the backgound (largest) cloud comes in back circles,\n> the interim (smaller) in yellow crosses with many of them in the circles,\n> and the upper point could (smallest) in green triangles.\n> I guess the real problem are the 826896 * 3 points in the plot.\n>\n>> For very large data sets, consider hexbin() in the hexbin package - I'm not\n>> sure how best to display three data sets. For single scatterplots, it is\n>> very powerful. Maybe contours of 2D densities of the extra data sets could\n>> be overlaid over a base hexbin plot? There is an informative vignette in\n>> hexbin.\n>\n> Oh, this is interesting! Thanks,\n> Markus\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Mon, 17 Aug 2009, Markus Neteler wrote:\n\n> On Mon, Aug 17, 2009 at 9:33 AM, Roger Bivand<Roger.Bivand@nhh.no> wrote:\n>> On Sun, 16 Aug 2009, Markus Neteler wrote:\n>>\n>>> Hi,\n>>>\n>>> I am plotting e",
+      "thread_id": "thread-02a8ee575f89",
+      "thread_depth": 3,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-e8cc41a9b120",
+      "message_id": "<BLU0-SMTP65C32D4FFC4E8C0E267437C7010@phx.gbl>",
+      "from_name": "Darren Norris",
+      "from_email_hash": "8053b561ca0f62874fad0e179cd2219a83e65442d08f222199219f8540f13acd",
+      "date": "2009-08-17T12:41:54Z",
+      "subject": "re. [GRASS-stats] Scatterplot \"thinning\" (points reduction)?]",
+      "subject_clean": "re. [GRASS-stats] Scatterplot \"thinning\" (points reduction)?]",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi Markus,\n\nIf the earlier suggestions don't achieve what you are after have a look \nat the graphical functionality of R package ggplot2 (see \nhttp://had.co.nz/ for examples) .\n\nCould also try sending a email to the package list at \nggplot2@googlegroups.com. There are many with experience of plotting / \nrepresenting graphically large datasets; sure they can provide help.\nDarren",
+      "body_snippet": "Hi Markus,\n\nIf the earlier suggestions don't achieve what you are after have a look \nat the graphical functionality of R package ggplot2 (see \nhttp://had.co.nz/ for examples) .\n\nCould also try sending",
+      "thread_id": "thread-e8cc41a9b120",
+      "thread_depth": 0,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-5ad5a0800c92",
+      "message_id": "<200908170955.23383.dylan.beaudette@gmail.com>",
+      "from_name": "Dylan Beaudette",
+      "from_email_hash": "c8db3086db71c5566870602fe31cc591fd90ebe11a5037d2f9b7996369565292",
+      "date": "2009-08-17T12:52:16Z",
+      "subject": "[GRASS-stats] Scatterplot \"thinning\" (points reduction)?",
+      "subject_clean": "[GRASS-stats] Scatterplot \"thinning\" (points reduction)?",
+      "in_reply_to": "<86782b610908170138w5c642e0sb1448ac21898e566@mail.gmail.com>",
+      "references": [
+        "<86782b610908161045t5004351aja0b690daf9c68cf4@mail.gmail.com>",
+        "<alpine.LRH.2.00.0908170923470.16834@reclus.nhh.no>",
+        "<86782b610908170138w5c642e0sb1448ac21898e566@mail.gmail.com>"
+      ],
+      "body_plain": "On Monday 17 August 2009, Markus Neteler wrote:\n> On Mon, Aug 17, 2009 at 9:33 AM, Roger Bivand<Roger.Bivand@nhh.no> wrote:\n> > On Sun, 16 Aug 2009, Markus Neteler wrote:\n> >> Hi,\n> >>\n> >> I am plotting elevation against temperature and have the problem that\n> >> including all points leads to heavy slow graphs... Reducing the raster\n> >> resolution is not a solution since it does not maintain the\n> >> characteristics\n> >> of the graph (since GRASS is using nearest neighbor).\n> >\n> > One point initially. I'm assuming that you are using a Linux platform -\n> > on this platform, there is an order of magnitude speedup if you plot on\n> > screen without \"cairo\", the default x11 type= - try using type=\"Xlib\",\n> > which is much faster but not so refined.\n>\n> (yes, Linux)\n> I have searched around bit I am not entirely sure to which function\n> this type parameter belongs.\n>\n> > Given that, consider the cex= argument for varying symbol size, and maybe\n> > the pch=\".\" possibility for using a single pt. point. They still all get\n> > drawn, so there is no time saving, but they may be more visible.\n>\n> I am currently plotting like this:\n> plot(data$dem ~ data$raw)\n> points(data$dem ~ data$filt2, col=\"yellow\", cex=0.5, pch=3)\n> points(data$dem ~ data$rst, col=\"green\", xlab=\"LST value [?C]\",\n> ylab=\"elevation [m]\", pch=2)\n> abline(lm(data$dem ~ data$raw))\n> abline(lm(data$dem ~ data$filt2), col=\"yellow\")\n> abline(lm(data$dem ~ data$rst), col=\"green\", xlab=\"LST value [?C]\",\n> ylab=\"elevation [m]\")\n\njust a quick note on style:\n\n# simpler notation:\nplot(dem ~ raw, data=data, xlab=\"LST value [?C]\", ylab=\"elevation [m]\")\npoints(dem ~ filt2, data=data, col=\"yellow\", cex=0.5, pch=3)\npoints(dem ~ rst, data=data, col=\"green\", pch=2)\n\n\nalso note that 'xlab' and other related commands need to be put into a  \nhigh-level plotting command like 'plot()'\n\nfinally, you might be able to make the plot in one command with some \nincantation of xyplot() from the lattice package. \n\ndid you have a chance to try the kde2() function from MASS?\n\nCheers, \nDylan\n\n\n\n> So the backgound (largest) cloud comes in back circles,\n> the interim (smaller) in yellow crosses with many of them in the circles,\n> and the upper point could (smallest) in green triangles.\n> I guess the real problem are the 826896 * 3 points in the plot.\n>\n> > For very large data sets, consider hexbin() in the hexbin package - I'm\n> > not sure how best to display three data sets. For single scatterplots, it\n> > is very powerful. Maybe contours of 2D densities of the extra data sets\n> > could be overlaid over a base hexbin plot? There is an informative\n> > vignette in hexbin.\n>\n> Oh, this is interesting! Thanks,\n> Markus\n> _______________________________________________\n> grass-stats mailing list\n> grass-stats@lists.osgeo.org\n> http://lists.osgeo.org/mailman/listinfo/grass-stats\n\n\n\n-- \nDylan Beaudette\nSoil Resource Laboratory\nhttp://casoilresource.lawr.ucdavis.edu/\nUniversity of California at Davis\n530.754.7341",
+      "body_snippet": "On Monday 17 August 2009, Markus Neteler wrote:\n> On Mon, Aug 17, 2009 at 9:33 AM, Roger Bivand<Roger.Bivand@nhh.no> wrote:\n> > On Sun, 16 Aug 2009, Markus Neteler wrote:\n> >> Hi,\n> >>\n> >> I am plott",
+      "thread_id": "thread-02a8ee575f89",
+      "thread_depth": 3,
+      "month": "2009-08"
+    },
+    {
+      "id": "msg-bc543872bcd2",
+      "message_id": "<86782b610908171006q46c6076qf75ce46f068cf2ff@mail.gmail.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "7ac5ec27e07d088b60f1057a2e6f073bc9436bfcca2e796f93aa91ffa8c6633a",
+      "date": "2009-08-17T13:06:22Z",
+      "subject": "[GRASS-stats] Scatterplot \"thinning\" (points reduction)?",
+      "subject_clean": "[GRASS-stats] Scatterplot \"thinning\" (points reduction)?",
+      "in_reply_to": "<200908170955.23383.dylan.beaudette@gmail.com>",
+      "references": [
+        "<86782b610908161045t5004351aja0b690daf9c68cf4@mail.gmail.com>",
+        "<alpine.LRH.2.00.0908170923470.16834@reclus.nhh.no>",
+        "<86782b610908170138w5c642e0sb1448ac21898e566@mail.gmail.com>",
+        "<200908170955.23383.dylan.beaudette@gmail.com>"
+      ],
+      "body_plain": "On Mon, Aug 17, 2009 at 6:55 PM, Dylan Beaudette<debeaudette@ucdavis.edu> wrote:\n> On Monday 17 August 2009, Markus Neteler wrote:\n>> On Mon, Aug 17, 2009 at 9:33 AM, Roger Bivand<Roger.Bivand@nhh.no> wrote:\n>> > On Sun, 16 Aug 2009, Markus Neteler wrote:\n...\n> just a quick note on style:\n>\n> # simpler notation:\n> plot(dem ~ raw, data=data, xlab=\"LST value [?C]\", ylab=\"elevation [m]\")\n> points(dem ~ filt2, data=data, col=\"yellow\", cex=0.5, pch=3)\n> points(dem ~ rst, data=data, col=\"green\", pch=2)\n\nGood point, thanks.\n\n> also note that 'xlab' and other related commands need to be put into a\n> high-level plotting command like 'plot()'\n\nSorry, I messed it up in my previous email: of course it works as you\nindicate above...\n\n> finally, you might be able to make the plot in one command with some\n> incantation of xyplot() from the lattice package.\n>\n> did you have a chance to try the kde2() function from MASS?\n\nWill try!\n\nBest\nMarkus",
+      "body_snippet": "On Mon, Aug 17, 2009 at 6:55 PM, Dylan Beaudette<debeaudette@ucdavis.edu> wrote:\n> On Monday 17 August 2009, Markus Neteler wrote:\n>> On Mon, Aug 17, 2009 at 9:33 AM, Roger Bivand<Roger.Bivand@nhh.no>",
+      "thread_id": "thread-02a8ee575f89",
+      "thread_depth": 4,
+      "month": "2009-08"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-19d902894aee",
+      "subject": "[GRASS-stats] [Report #11] Kriging with GRASS and R: v.autokrige port to wxPython and more",
+      "message_count": 1,
+      "participants": [
+        "Anne Ghisla"
+      ],
+      "started": "2009-08-07T14:19:19Z",
+      "last_reply": "2009-08-07T14:19:19Z",
+      "root_message_id": "msg-19d902894aee"
+    },
+    {
+      "id": "thread-01867ed7a6ea",
+      "subject": "[GRASS-stats] Mapset issue with vector data via OGR plugin",
+      "message_count": 5,
+      "participants": [
+        "Markus Neteler",
+        "Roger Bivand"
+      ],
+      "started": "2009-08-13T18:49:39Z",
+      "last_reply": "2009-08-14T13:19:51Z",
+      "root_message_id": "msg-01867ed7a6ea"
+    },
+    {
+      "id": "thread-6bdb5e762e5d",
+      "subject": "[GRASS-stats] [Report #12 - end SoC] Kriging with GRASS and R: v.autokrige port to wxPython and more",
+      "message_count": 2,
+      "participants": [
+        "Anne Ghisla",
+        "Nikos Alexandris"
+      ],
+      "started": "2009-08-14T09:33:31Z",
+      "last_reply": "2009-08-14T15:54:35Z",
+      "root_message_id": "msg-6bdb5e762e5d"
+    },
+    {
+      "id": "thread-02a8ee575f89",
+      "subject": "[GRASS-stats] Scatterplot \"thinning\" (points reduction)?",
+      "message_count": 8,
+      "participants": [
+        "Dylan Beaudette",
+        "Markus Neteler",
+        "Roger Bivand"
+      ],
+      "started": "2009-08-16T13:45:55Z",
+      "last_reply": "2009-08-17T13:06:22Z",
+      "root_message_id": "msg-02a8ee575f89"
+    },
+    {
+      "id": "thread-e8cc41a9b120",
+      "subject": "re. [GRASS-stats] Scatterplot \"thinning\" (points reduction)?]",
+      "message_count": 1,
+      "participants": [
+        "Darren Norris"
+      ],
+      "started": "2009-08-17T12:41:54Z",
+      "last_reply": "2009-08-17T12:41:54Z",
+      "root_message_id": "msg-e8cc41a9b120"
+    }
+  ]
+}

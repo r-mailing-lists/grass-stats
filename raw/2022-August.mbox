@@ -1,0 +1,245 @@
+From bernardo_brandaum at yahoo.com.br  Fri Aug 26 03:56:22 2022
+From: bernardo_brandaum at yahoo.com.br (Bernardo Santos)
+Date: Fri, 26 Aug 2022 10:56:22 +0000 (UTC)
+Subject: [GRASS-stats] Running r-grass examples when building a R package
+References: <543514930.146669.1661511382252.ref@mail.yahoo.com>
+Message-ID: <543514930.146669.1661511382252@mail.yahoo.com>
+
+Dear all,
+I am building a R package and some of the functions use rgrass to connect to a GRASS project and run thingfs within GRASS.I have now set up a webpage for the package using pkgdown in integrated to Github actions. This means when I push new commits all the examples of R functions are run again and the webpage is updated with the results of the examples. Here is the webpage:?https://ninanor.github.io/oneimpact/
+All works fine, except the functions calling GRASS. When I run the examples form my local computer everything works, but in the Github actions it does not run, apparently because the command
+system("grass78 --config path", intern = T)to find the GRASS folder and use within rgrass::initGRASS does not work, so the connection between R and GRASS do not exist.
+Does someone in the group has experience with that and could help with hints to solve it?Is there a recommended way to make sure Github actions know where GRASS is and use it?
+BestBernardo
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20220826/74d5161e/attachment.htm>
+
+From Roger.Bivand at nhh.no  Fri Aug 26 04:09:56 2022
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri, 26 Aug 2022 11:09:56 +0000
+Subject: [GRASS-stats] Running r-grass examples when building a R package
+In-Reply-To: <543514930.146669.1661511382252@mail.yahoo.com>
+References: <543514930.146669.1661511382252.ref@mail.yahoo.com>
+ <543514930.146669.1661511382252@mail.yahoo.com>
+Message-ID: <OSWP279MB04713961BF3B1B488C8FF75BEE759@OSWP279MB0471.NORP279.PROD.OUTLOOK.COM>
+
+Please also see
+https://github.com/rsbivand/rgrass/issues/64 and perhaps give more context - is this the public github repo
+https://github.com/NINAnor/oneimpact/ ?
+
+Roger
+
+---
+Roger Bivand
+Emeritus Professor
+Department of Economics
+Norwegian School of Economics, Bergen, Norway
+
+________________________________
+Fra: grass-stats <grass-stats-bounces at lists.osgeo.org> p? vegne av Bernardo Santos via grass-stats <grass-stats at lists.osgeo.org>
+Sendt: fredag 26. august 2022, 12:56
+Til: grass-stats at lists.osgeo.org <grass-stats at lists.osgeo.org>; GRASS User List <grass-user at lists.osgeo.org>
+Emne: [GRASS-stats] Running r-grass examples when building a R package
+
+Dear all,
+
+I am building a R package and some of the functions use rgrass to connect to a GRASS project and run thingfs within GRASS.
+I have now set up a webpage for the package using pkgdown in integrated to Github actions. This means when I push new commits all the examples of R functions are run again and the webpage is updated with the results of the examples. Here is the webpage: https://ninanor.github.io/oneimpact/<https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fninanor.github.io%2Foneimpact%2F&data=05%7C01%7Croger.bivand%40nhh.no%7C9ee806160e144928a19908da8751a4d1%7C33a15b2f849941998d56f20b5aa91af2%7C0%7C0%7C637971081981258278%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=DGuKqYQDHFgwT3qY%2BjzglZF1mboRdv2fx7ETXdmYRJ0%3D&reserved=0>
+
+All works fine, except the functions calling GRASS. When I run the examples form my local computer everything works, but in the Github actions it does not run, apparently because the command
+
+
+system<https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Frdrr.io%2Fr%2Fbase%2Fsystem.html&data=05%7C01%7Croger.bivand%40nhh.no%7C9ee806160e144928a19908da8751a4d1%7C33a15b2f849941998d56f20b5aa91af2%7C0%7C0%7C637971081981258278%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=PWx9f7SSQY6EQn2nPNsCFAdIjT3hp3T6Kk7S9%2BAKnDs%3D&reserved=0>("grass78 --config path", intern = T)
+
+to find the GRASS folder and use within rgrass::initGRASS does not work, so the connection between R and GRASS do not exist.
+
+Does someone in the group has experience with that and could help with hints to solve it?
+Is there a recommended way to make sure Github actions know where GRASS is and use it?
+
+Best
+Bernardo
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20220826/0c12e948/attachment.htm>
+
+From floris.vanderhaeghe at inbo.be  Fri Aug 26 05:36:37 2022
+From: floris.vanderhaeghe at inbo.be (Floris Vanderhaeghe)
+Date: Fri, 26 Aug 2022 14:36:37 +0200
+Subject: [GRASS-stats] Running r-grass examples when building a R package
+In-Reply-To: <OSWP279MB04713961BF3B1B488C8FF75BEE759@OSWP279MB0471.NORP279.PROD.OUTLOOK.COM>
+References: <543514930.146669.1661511382252.ref@mail.yahoo.com>
+ <543514930.146669.1661511382252@mail.yahoo.com>
+ <OSWP279MB04713961BF3B1B488C8FF75BEE759@OSWP279MB0471.NORP279.PROD.OUTLOOK.COM>
+Message-ID: <44e6cf80-9d21-8c50-1aad-bc9ab230d09e@inbo.be>
+
+Hi Bernardo,
+
+The presented system() command requires grass to be in the system's 
+PATH. An alternative is to use the R package link2GI 
+<https://r-spatial.github.io/link2GI/> to get the gisBase argument of 
+initGRASS(); AFAIK it has been updated to also support GRASS 8.
+
+Possible approach copied from an R markdown document:
+
+gisbase_grass <-
+ ? if (interactive()) {
+ ??? if (.Platform$OS.type == "windows") 
+link2GI::paramGRASSw()$gisbase_GRASS[1] else {
+ ????? link2GI::paramGRASSx()$gisbase_GRASS[1]
+ ??? }
+ ? } else params$gisbase_grass
+
+
+Regards
+
+Floris
+
+
+Op 26/08/2022 om 13:09 schreef Roger Bivand:
+> Please also see
+> https://github.com/rsbivand/rgrass/issues/64?and perhaps give more 
+> context - is this the public github repo
+> https://github.com/NINAnor/oneimpact/??
+>
+> Roger
+>
+> ---
+> Roger Bivand
+> Emeritus Professor
+> Department of Economics
+> Norwegian School of Economics, Bergen, Norway
+>
+> ------------------------------------------------------------------------
+> *Fra:* grass-stats <grass-stats-bounces at lists.osgeo.org> p? vegne av 
+> Bernardo Santos via grass-stats <grass-stats at lists.osgeo.org>
+> *Sendt:* fredag 26. august 2022, 12:56
+> *Til:* grass-stats at lists.osgeo.org <grass-stats at lists.osgeo.org>; 
+> GRASS User List <grass-user at lists.osgeo.org>
+> *Emne:* [GRASS-stats] Running r-grass examples when building a R package
+>
+> Dear all,
+>
+> I am building a R package and some of the functions use rgrass to 
+> connect to a GRASS project and run thingfs within GRASS.
+> I have now set up a webpage for the package using pkgdown in 
+> integrated to Github actions. This means when I push new commits all 
+> the examples of R functions are run again and the webpage is updated 
+> with the results of the examples. Here is the webpage: 
+> https://ninanor.github.io/oneimpact/ 
+> <https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fninanor.github.io%2Foneimpact%2F&data=05%7C01%7Croger.bivand%40nhh.no%7C9ee806160e144928a19908da8751a4d1%7C33a15b2f849941998d56f20b5aa91af2%7C0%7C0%7C637971081981258278%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=DGuKqYQDHFgwT3qY%2BjzglZF1mboRdv2fx7ETXdmYRJ0%3D&reserved=0>
+>
+> All works fine, except the functions calling GRASS. When I run the 
+> examples form my local computer everything works, but in the Github 
+> actions it does not run, apparently because the command
+>
+> |system 
+> <https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Frdrr.io%2Fr%2Fbase%2Fsystem.html&data=05%7C01%7Croger.bivand%40nhh.no%7C9ee806160e144928a19908da8751a4d1%7C33a15b2f849941998d56f20b5aa91af2%7C0%7C0%7C637971081981258278%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=PWx9f7SSQY6EQn2nPNsCFAdIjT3hp3T6Kk7S9%2BAKnDs%3D&reserved=0>("grass78 
+> --config path", intern = T)|
+> to find the GRASS folder and use within rgrass::initGRASS does not 
+> work, so the connection between R and GRASS do not exist.
+>
+> Does someone in the group has experience with that and could help with 
+> hints to solve it?
+> Is there a recommended way to make sure Github actions know where 
+> GRASS is and use it?
+>
+> Best
+> Bernardo
+>
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20220826/d37c7c77/attachment-0001.htm>
+
+From bernardo_brandaum at yahoo.com.br  Tue Aug 30 04:18:44 2022
+From: bernardo_brandaum at yahoo.com.br (Bernardo Santos)
+Date: Tue, 30 Aug 2022 11:18:44 +0000 (UTC)
+Subject: [GRASS-stats] [GRASS-user] Running r-grass examples when
+ building a R package
+In-Reply-To: <HE1PR0202MB2794A961F754AA5649DA5FB09E759@HE1PR0202MB2794.eurprd02.prod.outlook.com>
+References: <543514930.146669.1661511382252.ref@mail.yahoo.com>
+ <543514930.146669.1661511382252@mail.yahoo.com>
+ <HE1PR0202MB2794A961F754AA5649DA5FB09E759@HE1PR0202MB2794.eurprd02.prod.outlook.com>
+Message-ID: <545893746.1680677.1661858324346@mail.yahoo.com>
+
+ Hi Stefan,(and thanks Roger and Floris for replying as well)
+Your solution worked perfectly, Stefan. Thanks a lot!In the case of continuous integration within Github as it is the case, it seems we must ask GRASS to be installed in the virtual machine.
+This could be done with Stefan's suggestion, adding these lines to the yaml file within .github/workflows:
+- name: Install GRASS GIS and other dependencies? ? ? ? run: |? ? ? ? ? sudo apt-get update -qq? ? ? ? ? sudo apt-get install -y -qq grass grass-dev grass-doc wget
+You can also see it here:?Install GRASS for CI by ninsbl ? Pull Request #11 ? NINAnor/oneimpact (github.com)
+I guess this could be documented for GRASS/R users somewhere? Maybe in some wiki?Any suggestion on where to add this?
+
+BestBernardo
+
+    Em sexta-feira, 26 de agosto de 2022 13:27:46 GMT+2, Stefan Blumentrath <stefan.blumentrath at nina.no> escreveu:  
+ 
+  <!--#yiv0852532148 _filtered {} _filtered {} _filtered {} _filtered {}#yiv0852532148 #yiv0852532148 p.yiv0852532148MsoNormal, #yiv0852532148 li.yiv0852532148MsoNormal, #yiv0852532148 div.yiv0852532148MsoNormal {margin:0cm;font-size:11.0pt;font-family:"Calibri", sans-serif;}#yiv0852532148 a:link, #yiv0852532148 span.yiv0852532148MsoHyperlink {color:blue;text-decoration:underline;}#yiv0852532148 pre {margin:0cm;margin-bottom:.0001pt;font-size:10.0pt;font-family:"Courier New";}#yiv0852532148 span.yiv0852532148HTMLPreformattedChar {font-family:Consolas;}#yiv0852532148 span.yiv0852532148ydpa6a6511er-in {}#yiv0852532148 span.yiv0852532148ydpa6a6511efu {}#yiv0852532148 span.yiv0852532148ydpa6a6511eop {}#yiv0852532148 span.yiv0852532148ydpa6a6511est {}#yiv0852532148 span.yiv0852532148ydpa6a6511ecn {}#yiv0852532148 span.yiv0852532148EmailStyle26 {font-family:"Calibri", sans-serif;color:windowtext;}#yiv0852532148 .yiv0852532148MsoChpDefault {font-size:10.0pt;} _filtered {}#yiv0852532148 div.yiv0852532148WordSection1 {}-->
+Hi Bernardo,
+ 
+ ?
+ 
+Seems like GRASS GIS isn`t installed on the CI VM.
+ 
+ ?
+ 
+Please see:
+ 
+https://github.com/NINAnor/oneimpact/pulls
+ 
+ ?
+ 
+You may add UbuntuGIS PPAs if you want other versions than shipped by plain Ubuntu.
+ 
+ ?
+ 
+Cheers
+ 
+Stefan
+ 
+ ?
+ 
+From: grass-user <grass-user-bounces at lists.osgeo.org>On Behalf Of Bernardo Santos via grass-user
+Sent: fredag 26. august 2022 12:56
+To: grass-stats at lists.osgeo.org; GRASS User List <grass-user at lists.osgeo.org>
+Subject: [GRASS-user] Running r-grass examples when building a R package
+ 
+ ?
+ 
+Dear all,
+ 
+ ?
+ 
+I am building a R package and some of the functions use rgrass to connect to a GRASS project and run thingfs within GRASS.
+ 
+I have now set up a webpage for the package using pkgdown in integrated to Github actions. This means when I push new commits all the examples of R functions are run again and the webpage is updated with the results of the examples. Here is the webpage:?https://ninanor.github.io/oneimpact/
+ 
+ ?
+ 
+All works fine, except the functions calling GRASS. When I run the examples form my local computer everything works, but in the Github actions it does not run, apparently because the command
+ 
+ ?
+ system("grass78 --config path", intern = T) 
+to find the GRASS folder and use within rgrass::initGRASS does not work, so the connection between R and GRASS do not exist.
+ 
+ ?
+ 
+Does someone in the group has experience with that and could help with hints to solve it?
+ 
+Is there a recommended way to make sure Github actions know where GRASS is and use it?
+ 
+ ?
+ 
+Best
+ 
+Bernardo
+   
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20220830/c68bd036/attachment.htm>
+

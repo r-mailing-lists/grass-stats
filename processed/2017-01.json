@@ -1,0 +1,95 @@
+{
+  "list": "grass-stats",
+  "description": "",
+  "month": "2017-01",
+  "messages": [
+    {
+      "id": "msg-04ec5955a57a",
+      "message_id": "<1483658004211-5302223.post@n6.nabble.com>",
+      "from_name": "helekua",
+      "from_email_hash": "04c2eadd61bfd3d88701b2ec6ea2eff575028beaa6b2584e182df909669d5256",
+      "date": "2017-01-05T23:13:24Z",
+      "subject": "[GRASS-stats] Parameter error in when using r.horizons",
+      "subject_clean": "[GRASS-stats] Parameter error in when using r.horizons",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi All,\n\nI am a new GRASS user and would like to pull horizon data for multiple\npoints off of a DEM.  I have been able to use the grass console to\naccomplish this but I will need to run thousands of points from a gridded\ndataset.  I was hoping to apply a function or loop in R to accomplish this\nhowever I am getting the following error in R while listing parameters. \n\nUsing Windows 10, R x64 3.3.2, rstudio 1.0.136 in a Grass GIS session\n\n\n*Section of code:*\nlibrary(rgrass7)\n\ndoGRASS(\"r.horizon\", flags = c(\"d\"), parameters = list(elevation =\n\"w001001\",\n                  direction = 0.0, step = 180.0, \n                  coordinates = -155.447804131,19.3115222633, \n                  file = \"test_horizon1.csv\"))\n\n*Error:* \nError in doGRASS(\"r.horizon\", flags = flags, parameters = parameters) : \n  Invalid parameter name: \n>\n\n\n\nAny suggestions would be most appreciated.\n\nThanks,\nHeidi\n\n\n\n--\nView this message in context: http://osgeo-org.1560.x6.nabble.com/Parameter-error-in-when-using-r-horizons-tp5302223.html\nSent from the Grass - Stats mailing list archive at Nabble.com.",
+      "body_snippet": "Hi All,\n\nI am a new GRASS user and would like to pull horizon data for multiple\npoints off of a DEM.  I have been able to use the grass console to\naccomplish this but I will need to run thousands of p",
+      "thread_id": "thread-04ec5955a57a",
+      "thread_depth": 0,
+      "month": "2017-01"
+    },
+    {
+      "id": "msg-310efd2a32c6",
+      "message_id": "<alpine.LFD.2.20.1701061040540.2700@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2017-01-06T09:45:22Z",
+      "subject": "[GRASS-stats] Parameter error in when using r.horizons",
+      "subject_clean": "[GRASS-stats] Parameter error in when using r.horizons",
+      "in_reply_to": "<1483658004211-5302223.post@n6.nabble.com>",
+      "references": [
+        "<1483658004211-5302223.post@n6.nabble.com>"
+      ],
+      "body_plain": "On Fri, 6 Jan 2017, helekua wrote:\n\n> Hi All,\n>\n> I am a new GRASS user and would like to pull horizon data for multiple\n> points off of a DEM.  I have been able to use the grass console to\n> accomplish this but I will need to run thousands of points from a gridded\n> dataset.  I was hoping to apply a function or loop in R to accomplish this\n> however I am getting the following error in R while listing parameters. \n>\n> Using Windows 10, R x64 3.3.2, rstudio 1.0.136 in a Grass GIS session\n>\n>\n> *Section of code:*\n> library(rgrass7)\n>\n> doGRASS(\"r.horizon\", flags = c(\"d\"), parameters = list(elevation =\n> \"w001001\",\n>                  direction = 0.0, step = 180.0,\n>                  coordinates = -155.447804131,19.3115222633,\n\n\nUse a numeric vector: coordinates = c(-155.447804131,19.3115222633), as \nnow the comma in -155.447804131,19.3115222633 is seen as starting a new \nparameter:\n\n> list(elevation = \"w001001\", direction = 0.0, step = 180.0, coordinates = \n-155.447804131,19.3115222633, file = \"test_horizon1.csv\")\n$elevation\n[1] \"w001001\"\n\n$direction\n[1] 0\n\n$step\n[1] 180\n\n$coordinates\n[1] -155.4478\n\n[[5]]\n[1] 19.31152\n\n$file\n[1] \"test_horizon1.csv\"\n\nwith the fifth list component having no name - hence the non-informative \nerror message.\n\nA more modern approach is to say:\n\n> doGRASS(\"r.horizon\", flags = c(\"d\"), elevation = \"w001001\", direction = \n0.0, step = 180.0, coordinates = c(-155.447804131,19.3115222633), file = \n\"test_horizon1.csv\")\n[1] \"r.horizon -d elevation=w001001 direction=0 step=180 \ncoordinates=-155.447804131,19.3115222633 file=test_horizon1.csv\"\nattr(,\"cmd\")\n[1] \"r.horizon\"\n\ntreating the unnamed R function arguments as GRASS parameters.\n\nLooping over coordinates= vectors should be feasible.\n\nHope this helps,\n\nRoger\n\n>                  file = \"test_horizon1.csv\"))\n>\n> *Error:* \n> Error in doGRASS(\"r.horizon\", flags = flags, parameters = parameters) :\n>  Invalid parameter name: \n>>\n>\n>\n>\n> Any suggestions would be most appreciated.\n>\n> Thanks,\n> Heidi\n>\n>\n>\n> --\n> View this message in context: http://osgeo-org.1560.x6.nabble.com/Parameter-error-in-when-using-r-horizons-tp5302223.html\n> Sent from the Grass - Stats mailing list archive at Nabble.com.\n> _______________________________________________\n> grass-stats mailing list\n> grass-stats at lists.osgeo.org\n> http://lists.osgeo.org/mailman/listinfo/grass-stats\n\n-- \nRoger Bivand\nDepartment of Economics, Norwegian School of Economics,\nHelleveien 30, N-5045 Bergen, Norway.\nvoice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no\nhttp://orcid.org/0000-0003-2392-6140\nhttps://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en\nhttp://depsy.org/person/434412",
+      "body_snippet": "On Fri, 6 Jan 2017, helekua wrote:\n\n> Hi All,\n>\n> I am a new GRASS user and would like to pull horizon data for multiple\n> points off of a DEM.  I have been able to use the grass console to\n> accompli",
+      "thread_id": "thread-04ec5955a57a",
+      "thread_depth": 1,
+      "month": "2017-01"
+    },
+    {
+      "id": "msg-20a4c83f77b0",
+      "message_id": "<1483737760613-5302375.post@n6.nabble.com>",
+      "from_name": "helekua",
+      "from_email_hash": "04c2eadd61bfd3d88701b2ec6ea2eff575028beaa6b2584e182df909669d5256",
+      "date": "2017-01-06T21:22:40Z",
+      "subject": "[GRASS-stats] Parameter error in when using r.horizons",
+      "subject_clean": "[GRASS-stats] Parameter error in when using r.horizons",
+      "in_reply_to": "<alpine.LFD.2.20.1701061040540.2700@reclus.nhh.no>",
+      "references": [
+        "<1483658004211-5302223.post@n6.nabble.com>",
+        "<alpine.LFD.2.20.1701061040540.2700@reclus.nhh.no>"
+      ],
+      "body_plain": "Thanks Roger, this solution worked perfect.  I'm no longer receiving the\nerror.\n\nCheers,\nHeidi\n\n\n\n--\nView this message in context: http://osgeo-org.1560.x6.nabble.com/Parameter-error-in-when-using-r-horizons-tp5302223p5302375.html\nSent from the Grass - Stats mailing list archive at Nabble.com.",
+      "body_snippet": "Thanks Roger, this solution worked perfect.  I'm no longer receiving the\nerror.\n\nCheers,\nHeidi\n\n\n\n--\nView this message in context: http://osgeo-org.1560.x6.nabble.com/Parameter-error-in-when-using-r-h",
+      "thread_id": "thread-04ec5955a57a",
+      "thread_depth": 2,
+      "month": "2017-01"
+    },
+    {
+      "id": "msg-dabceb78fee9",
+      "message_id": "<CALFmHhuN_NJ9cHJ-OawJx=RPm0mn7R9gfgiE90ewwzkkwc1ADg@mail.gmail.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "7ac5ec27e07d088b60f1057a2e6f073bc9436bfcca2e796f93aa91ffa8c6633a",
+      "date": "2017-01-08T18:05:34Z",
+      "subject": "[GRASS-stats] Parameter error in when using r.horizons",
+      "subject_clean": "[GRASS-stats] Parameter error in when using r.horizons",
+      "in_reply_to": "<1483737760613-5302375.post@n6.nabble.com>",
+      "references": [
+        "<1483658004211-5302223.post@n6.nabble.com>",
+        "<alpine.LFD.2.20.1701061040540.2700@reclus.nhh.no>",
+        "<1483737760613-5302375.post@n6.nabble.com>"
+      ],
+      "body_plain": "On Fri, Jan 6, 2017 at 10:22 PM, helekua <hneedham at hawaii.edu> wrote:\n> Thanks Roger, this solution worked perfect.  I'm no longer receiving the\n> error.\n\nPlease consider to add a note or example here:\n\nhttps://grasswiki.osgeo.org/wiki/R_statistics/rgrass7\n\nthanks\nMarkus",
+      "body_snippet": "On Fri, Jan 6, 2017 at 10:22 PM, helekua <hneedham at hawaii.edu> wrote:\n> Thanks Roger, this solution worked perfect.  I'm no longer receiving the\n> error.\n\nPlease consider to add a note or example h",
+      "thread_id": "thread-04ec5955a57a",
+      "thread_depth": 3,
+      "month": "2017-01"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-04ec5955a57a",
+      "subject": "[GRASS-stats] Parameter error in when using r.horizons",
+      "message_count": 4,
+      "participants": [
+        "Markus Neteler",
+        "Roger Bivand",
+        "helekua"
+      ],
+      "started": "2017-01-05T23:13:24Z",
+      "last_reply": "2017-01-08T18:05:34Z",
+      "root_message_id": "msg-04ec5955a57a"
+    }
+  ]
+}

@@ -1,0 +1,518 @@
+From villers.alexandre at gmail.com  Thu Oct  6 06:55:10 2011
+From: villers.alexandre at gmail.com (Alexandre Villers)
+Date: Thu Oct  6 09:41:39 2011
+Subject: [GRASS-stats] Number of pixels in the mask with circular r.neighbors
+Message-ID: <4E8D890E.7040707@gmail.com>
+
+Dear list,
+
+I calculated with r.neighbors (method=circular) the number of pixels 
+whose value=1. I would like to be able to transform this as the 
+proportion of cell with 1. From the manual, it is not clear if above r = 
+9 cells in diameter, the mask always contains r? - 4 * (r-1) pixels.
+Does anyone know this ?
+
+Best regards
+
+Alexandre
+From markus.metz.giswork at googlemail.com  Fri Oct  7 05:34:20 2011
+From: markus.metz.giswork at googlemail.com (Markus Metz)
+Date: Fri Oct  7 09:36:17 2011
+Subject: [GRASS-stats] new module for multiple regression with large raster
+	maps
+Message-ID: <CAG+h=FF=G7bMgt8QnAF8LfM9HTUBUd2e0tBU4WyRgPDP_7ZXRw@mail.gmail.com>
+
+There is a new module r.regression.multi as grass7 add-on to calculate
+multiple regressions with raster maps. The motivation for this module
+is to calculate regression coefficients and statistics for very large
+datasets, too large for e.g. R. The module uses less than 3 MB memory
+for 400 million cells with one response variable and 8 predictors.
+Including residuals, this makes a total of 4 billion numbers.
+Calculation takes about 4 minutes for this dataset on my laptop. In
+addition to the slope estimates, statistics provided are R squared,
+adjusted R squared, F, AIC, corrected AIC, BIC for the full model, and
+F, AIC, corrected AIC, BIC for each predictor. Results are identical
+to those produced by R (with smaller test datasets).
+
+Markus M
+From jan.blanke at gmx.de  Thu Oct 20 09:40:28 2011
+From: jan.blanke at gmx.de (Jan Hendrik Blanke)
+Date: Thu Oct 20 10:58:54 2011
+Subject: [GRASS-stats] error spgrass6 readRAST6
+Message-ID: <20111020134028.193660@gmx.net>
+
+Hi,
+
+I am interested in using the GRASS/R interface spgrass6 and recently executed the code given in the book "Open Source GIS - A Grass GIS Approach" for the North Carolina dataset. Reading the first vector files (precipitation) works perfectly, but when it comes to the first raster layer, I receive the following error message:
+
+"Error in deleteDataset(DS): GDAL Error 1: Deleting C:Documents and Settings/.../GIS DataBase/North-Carolina/user1/.tmp/elev_state_500m failed:
+Permission denied"
+
+I executed the following commands in the GRASS Command Line:
+
+g.region vect=precip_30ynormals res=1000 -ap
+R
+library(spgrass6)
+precip30n <- readVECT6("precip_30ynormals", ignore.stderr=TRUE)
+...
+elev <- readRAST6("elev_state_500m", ignore.stderr=TRUE)
+
+After the last command, the given error message appears. The same happens when I try to apply readRAST6 to personal data. ReadVECT6 again works fine.
+I don't think the error is due to the space in the path of the data as the same happen when I choose a location with no space.
+I guess the same problem appeared already here:
+
+https://stat.ethz.ch/pipermail/r-sig-geo/2011-May/011734.html
+
+But I am neither using large or fancy data (just the given sample data) nor do I use initGRASS. I just follow the instructions given in the book. I am using GRASS 6.4.1 and R 2.12.2 and also tried R 2.13.2. The software runs under Windows XP.
+
+I would appreciate if you could give me your thoughts. Thank you a lot for your efforts.
+
+Cheers,
+
+Jan
+
+
+-- 
+NEU: FreePhone - 0ct/min Handyspartarif mit Geld-zur?ck-Garantie!		
+Jetzt informieren: http://www.gmx.net/de/go/freephone
+From neteler at osgeo.org  Thu Oct 20 14:44:36 2011
+From: neteler at osgeo.org (Markus Neteler)
+Date: Thu Oct 20 16:20:36 2011
+Subject: [GRASS-stats] error spgrass6 readRAST6
+In-Reply-To: <20111020134028.193660@gmx.net>
+References: <20111020134028.193660@gmx.net>
+Message-ID: <CALFmHhuKY9y8T+KeAzrM48JmoiSwRTZoJR7wX40bT2oUqti-TQ@mail.gmail.com>
+
+On Thu, Oct 20, 2011 at 3:40 PM, Jan Hendrik Blanke <jan.blanke@gmx.de> wrote:
+> Hi,
+>
+> I am interested in using the GRASS/R interface spgrass6 and recently executed the code given in the book "Open Source GIS - A Grass GIS Approach" for the North Carolina dataset. Reading the first vector files (precipitation) works perfectly, but when it comes to the first raster layer, I receive the following error message:
+>
+> "Error in deleteDataset(DS): GDAL Error 1: Deleting C:Documents and Settings/.../GIS DataBase/North-Carolina/user1/.tmp/elev_state_500m failed:
+> Permission denied"
+
+In that error message I observe "C:Documents and Settings/" which is not
+"C://Documents and Settings/" (or with \\). Somehow it gets lost.
+
+> I executed the following commands in the GRASS Command Line:
+>
+> g.region vect=precip_30ynormals res=1000 -ap
+> R
+> library(spgrass6)
+> precip30n <- readVECT6("precip_30ynormals", ignore.stderr=TRUE)
+> ...
+> elev <- readRAST6("elev_state_500m", ignore.stderr=TRUE)
+>
+> After the last command, the given error message appears. The same happens when I try to apply readRAST6 to personal data. ReadVECT6 again works fine.
+
+That's interesting. Perhaps some path quoting is missing in  readRAST6()
+which is present in readVECT6()? Or the called raster export function
+from GRASS is an issue - we would need to know which is used.
+
+...
+> I am using GRASS 6.4.1 and R 2.12.2 and also tried R 2.13.2. The software runs under Windows XP.
+
+I don't know if the GDAL-GRASS plugin is used under Windows.
+
+Markus
+From r.m.krug at gmail.com  Fri Oct 21 04:51:22 2011
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Fri Oct 21 07:13:14 2011
+Subject: [GRASS-stats] error spgrass6 readRAST6
+In-Reply-To: <CALFmHhuKY9y8T+KeAzrM48JmoiSwRTZoJR7wX40bT2oUqti-TQ@mail.gmail.com>
+References: <20111020134028.193660@gmx.net>
+	<CALFmHhuKY9y8T+KeAzrM48JmoiSwRTZoJR7wX40bT2oUqti-TQ@mail.gmail.com>
+Message-ID: <CAGhLh6EwnmCJ=EQEdTFv=GNZrW6a_RMcYSLoK1QpfraMHYb5EA@mail.gmail.com>
+
+On Thu, Oct 20, 2011 at 8:44 PM, Markus Neteler <neteler@osgeo.org> wrote:
+
+> On Thu, Oct 20, 2011 at 3:40 PM, Jan Hendrik Blanke <jan.blanke@gmx.de>
+> wrote:
+> > Hi,
+> >
+> > I am interested in using the GRASS/R interface spgrass6 and recently
+> executed the code given in the book "Open Source GIS - A Grass GIS Approach"
+> for the North Carolina dataset. Reading the first vector files
+> (precipitation) works perfectly, but when it comes to the first raster
+> layer, I receive the following error message:
+> >
+> > "Error in deleteDataset(DS): GDAL Error 1: Deleting C:Documents and
+> Settings/.../GIS DataBase/North-Carolina/user1/.tmp/elev_state_500m failed:
+> > Permission denied"
+>
+> In that error message I observe "C:Documents and Settings/" which is not
+> "C://Documents and Settings/" (or with \\). Somehow it gets lost.
+>
+> > I executed the following commands in the GRASS Command Line:
+> >
+> > g.region vect=precip_30ynormals res=1000 -ap
+> > R
+> > library(spgrass6)
+> > precip30n <- readVECT6("precip_30ynormals", ignore.stderr=TRUE)
+> > ...
+> > elev <- readRAST6("elev_state_500m", ignore.stderr=TRUE)
+> >
+> > After the last command, the given error message appears. The same happens
+> when I try to apply readRAST6 to personal data. ReadVECT6 again works fine.
+>
+> That's interesting. Perhaps some path quoting is missing in  readRAST6()
+> which is present in readVECT6()? Or the called raster export function
+> from GRASS is an issue - we would need to know which is used.
+>
+>
+I would suggest to try the following option combinations for readRAST6 to
+see what is causing it:
+
+readRAST6("elev_state_500m", ignore.stderr=TRUE,
+*plugin = FALSE,
+useGDAL = FALSE*
+)
+
+In this case neither the plugin nor gdal is used.
+
+You could also try any other combination (NULL, TRUE and FALSE are allowed
+values) - please report back which one is working, so that it can be
+narrowed down where the problem lies.
+
+Cheers,
+
+Rainer
+
+> ...
+> > I am using GRASS 6.4.1 and R 2.12.2 and also tried R 2.13.2. The software
+> runs under Windows XP.
+>
+> I don't know if the GDAL-GRASS plugin is used under Windows.
+>
+> Markus
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology,
+UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax (F):       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer@krugs.de
+
+Skype:      RMkrug
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20111021/c47285ef/attachment.html
+From hamish_b at yahoo.com  Fri Oct 28 00:58:11 2011
+From: hamish_b at yahoo.com (Hamish)
+Date: Fri Oct 28 08:06:00 2011
+Subject: [GRASS-stats] Little r
+Message-ID: <1319777891.87613.YahooMailClassic@web110007.mail.gq1.yahoo.com>
+
+Hi there,
+
+I just came across this, perhaps it makes some task easier for
+someone:
+
+
+$ apt-cache show littler
+...
+Description: GNU R scripting and command-line front-end
+The 'r' (aka 'littler') program provides a leightweight binary wrapper around
+the GNU R language and environment for statistical computing and graphics.
+.
+While R can be used in batch mode, the r binary adds full support for
+both 'shebang'-style scripting (i.e. using a  hashmark-exclamation-path
+expression as the first line in scripts) as well as command-line use in
+standard Unix pipelines. In other words, r provides the R language without
+the environment.
+
+
+
+Hamish
+From tepp at life.ku.dk  Fri Oct 28 04:41:45 2011
+From: tepp at life.ku.dk (toke)
+Date: Fri Oct 28 11:57:26 2011
+Subject: [GRASS-stats] Problem with v.distance in spgrass6 package in R
+Message-ID: <1319791305536-6939286.post@n2.nabble.com>
+
+
+I think that I might have found a bug in spgrass6 or I might be doing
+something wrong. When I call v.distance within R it seems to calculate but
+it do not update the column of interest.
+
+Im using the the following software:
+
+platform    x86_64-pc-linux-gnu 10.10          
+language   R                            
+version.string R version 2.13.2 (2011-09-30)
+
+Here are my script
+
+R
+
+#calling library
+library(spgrass6)
+# checking GRASS setup
+gmeta6()
+
+output:
+gisdbase    /home/toke/Desktop/PHD/databehandling/artikel_3/gis/grassdb
+location    mapset
+mapset      aalborg
+rows        1200
+columns     1100
+north       6328400
+south       6316400
+west        551800
+east        562800
+nsres       10
+ewres       10
+projection  +proj=utm +no_defs +zone=32 +a=6378137 +rf=298.257222101
++to_meter=1
+
+# reading spatial files from GRASS database
+recrea_h <-readVECT6("recrea_h")
+area_b1 <-readVECT6("area_b1")
+
+execGRASS("v.distance", flags=c("overwrite"), from="recrea_h", to="area_b1",
+from_type="centroid", to_type="area", dmax=as.integer(1),
++ upload="to_attr", column="area_b1", to_column="value")
+100%
+100%
+84 categories - no nearest feature found
+235 categories read from the map
+235 categories exist in the table
+235 categories read from the map exist in the table
+235 records updated
+v.distance complete.
+
+The column is not updated even though it seems that it is actually are
+calculating.
+
+The same calculation in GRASS works.
+
+Cheers Toke  
+
+
+--
+View this message in context: http://osgeo-org.1803224.n2.nabble.com/Problem-with-v-distance-in-spgrass6-package-in-R-tp6939286p6939286.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+From Roger.Bivand at nhh.no  Fri Oct 28 04:59:25 2011
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri Oct 28 12:16:34 2011
+Subject: [GRASS-stats] Problem with v.distance in spgrass6 package in R
+In-Reply-To: <1319791305536-6939286.post@n2.nabble.com>
+References: <1319791305536-6939286.post@n2.nabble.com>
+Message-ID: <alpine.LRH.2.00.1110281056450.28342@reclus.nhh.no>
+
+On Fri, 28 Oct 2011, toke wrote:
+
+>
+> I think that I might have found a bug in spgrass6 or I might be doing
+> something wrong. When I call v.distance within R it seems to calculate but
+> it do not update the column of interest.
+>
+> Im using the the following software:
+>
+> platform    x86_64-pc-linux-gnu 10.10
+> language   R
+> version.string R version 2.13.2 (2011-09-30)
+>
+> Here are my script
+>
+> R
+>
+> #calling library
+> library(spgrass6)
+> # checking GRASS setup
+> gmeta6()
+>
+> output:
+> gisdbase    /home/toke/Desktop/PHD/databehandling/artikel_3/gis/grassdb
+> location    mapset
+> mapset      aalborg
+> rows        1200
+> columns     1100
+> north       6328400
+> south       6316400
+> west        551800
+> east        562800
+> nsres       10
+> ewres       10
+> projection  +proj=utm +no_defs +zone=32 +a=6378137 +rf=298.257222101
+> +to_meter=1
+>
+> # reading spatial files from GRASS database
+> recrea_h <-readVECT6("recrea_h")
+> area_b1 <-readVECT6("area_b1")
+>
+> execGRASS("v.distance", flags=c("overwrite"), from="recrea_h", to="area_b1",
+> from_type="centroid", to_type="area", dmax=as.integer(1),
+> + upload="to_attr", column="area_b1", to_column="value")
+> 100%
+> 100%
+> 84 categories - no nearest feature found
+> 235 categories read from the map
+> 235 categories exist in the table
+> 235 categories read from the map exist in the table
+> 235 records updated
+> v.distance complete.
+>
+> The column is not updated even though it seems that it is actually are
+> calculating.
+>
+> The same calculation in GRASS works.
+
+Please show your exact GRASS command line - otherwise we can only conclude 
+that you are asking for different things. You are asking for a maximum 
+distance of integer 1 metres here, so you should look carefully at the 84 
+categories - no nearest feature found message - did that also appear in 
+the output from running the command directly in GRASS?
+
+Roger
+
+>
+> Cheers Toke
+>
+>
+> --
+> View this message in context: http://osgeo-org.1803224.n2.nabble.com/Problem-with-v-distance-in-spgrass6-package-in-R-tp6939286p6939286.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From tepp at life.ku.dk  Fri Oct 28 05:53:55 2011
+From: tepp at life.ku.dk (toke)
+Date: Fri Oct 28 13:13:33 2011
+Subject: [GRASS-stats] Re: Problem with v.distance in spgrass6 package in R
+In-Reply-To: <alpine.LRH.2.00.1110281056450.28342@reclus.nhh.no>
+References: <1319791305536-6939286.post@n2.nabble.com>
+	<alpine.LRH.2.00.1110281056450.28342@reclus.nhh.no>
+Message-ID: <1319795635825-6939508.post@n2.nabble.com>
+
+Hi Roger Thank you for your fast responds 
+
+Here are the GRASS command. Which works  
+
+v.distance from=recrea_h to=area_b1  from_type=centroid to_type=area dmax=1
+upload=to_attr column=area_b1 to_column=value
+
+It should be similar to this in R using the spgrass6 package  
+
+execGRASS("v.distance",from="recrea_h", to="area_b1",
+from_type="centroid", to_type="area", dmax=as.integer(1),
+upload="to_attr", column="area_b1", to_column="value")
+
+the "84 categories with no nearest feature found" is to be expected as they
+are more than 1 meter away. What I want to do, in this command, is to take
+information in one polygon and give it to the other polygon given that they
+are less than 1 meter away. 
+
+here is a map of the polygons:      
+https://www.dropbox.com/gallery/2874375/1/map?h=25554e
+https://www.dropbox.com/gallery/2874375/1/map?h=25554e  
+
+Cheers Toke 
+
+PS. I also tried doing simple distance calculations from a point feature to
+area feature. It did not work.
+
+
+--
+View this message in context: http://osgeo-org.1803224.n2.nabble.com/Problem-with-v-distance-in-spgrass6-package-in-R-tp6939286p6939508.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+From Roger.Bivand at nhh.no  Fri Oct 28 06:11:18 2011
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri Oct 28 13:31:43 2011
+Subject: [GRASS-stats] Re: Problem with v.distance in spgrass6 package in R
+In-Reply-To: <1319795635825-6939508.post@n2.nabble.com>
+References: <1319791305536-6939286.post@n2.nabble.com>
+	<alpine.LRH.2.00.1110281056450.28342@reclus.nhh.no>
+	<1319795635825-6939508.post@n2.nabble.com>
+Message-ID: <alpine.LRH.2.00.1110281206590.28342@reclus.nhh.no>
+
+On Fri, 28 Oct 2011, toke wrote:
+
+> Hi Roger Thank you for your fast responds
+>
+> Here are the GRASS command. Which works
+>
+> v.distance from=recrea_h to=area_b1  from_type=centroid to_type=area dmax=1
+> upload=to_attr column=area_b1 to_column=value
+>
+> It should be similar to this in R using the spgrass6 package
+>
+> execGRASS("v.distance",from="recrea_h", to="area_b1",
+> from_type="centroid", to_type="area", dmax=as.integer(1),
+> upload="to_attr", column="area_b1", to_column="value")
+>
+> the "84 categories with no nearest feature found" is to be expected as they
+> are more than 1 meter away. What I want to do, in this command, is to take
+> information in one polygon and give it to the other polygon given that they
+> are less than 1 meter away.
+
+In the latest spgrass6, please set an option to display code going out to 
+GRASS:
+
+set.echoCmdOption(TRUE)
+
+before running execGRASS(), and report whether the GRASS command shown is 
+identical with or different from the command line version, quoting both 
+verbatim with all output.
+
+Your figures are no help at all, I'm afraid.
+
+To make progress, please try to reproduce this in spearfish, so that we 
+are looking at the same thing. Please also report your GRASS platform and 
+version for reference.
+
+Roger
+
+>
+> here is a map of the polygons:
+> https://www.dropbox.com/gallery/2874375/1/map?h=25554e
+> https://www.dropbox.com/gallery/2874375/1/map?h=25554e
+>
+> Cheers Toke
+>
+> PS. I also tried doing simple distance calculations from a point feature to
+> area feature. It did not work.
+>
+>
+> --
+> View this message in context: http://osgeo-org.1803224.n2.nabble.com/Problem-with-v-distance-in-spgrass6-package-in-R-tp6939286p6939508.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+

@@ -1,0 +1,184 @@
+From alobo at ija.csic.es  Thu May  8 14:03:25 2003
+From: alobo at ija.csic.es (Agustin Lobo)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] proj4
+Message-ID: <Pine.OSF.3.91.1030508200014.24678h-100000@paleo.ija.csic.es>
+
+Hi!
+
+Does anyone know if there is a package to
+call proj4 from R (or python)?
+(proj4: library to make coordinate conversions
+betwee different projections, http://remotesensing.org/proj/)
+
+Thanks
+
+Agus
+
+Dr. Agustin Lobo
+Instituto de Ciencias de la Tierra (CSIC)
+Lluis Sole Sabaris s/n
+08028 Barcelona SPAIN
+tel 34 93409 5410
+fax 34 93411 0012
+alobo@ija.csic.es
+
+
+
+
+From Roger.Bivand at nhh.no  Thu May  8 14:27:24 2003
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] proj4
+In-Reply-To: <Pine.OSF.3.91.1030508200014.24678h-100000@paleo.ija.csic.es>
+Message-ID: <Pine.LNX.4.44.0305082024590.13281-100000@reclus.nhh.no>
+
+On Thu, 8 May 2003, Agustin Lobo wrote:
+
+> 
+> Hi!
+> 
+> Does anyone know if there is a package to
+> call proj4 from R (or python)?
+> (proj4: library to make coordinate conversions
+> betwee different projections, http://remotesensing.org/proj/)
+> 
+
+I've been working on one, based on Barry Rowlingson's code from his draft 
+Rmap package. How soon do you need it, and on what platform? I'm trying to 
+write class objects for coordinates, projection arguments, etc., so any 
+early release will be subject to change.
+
+Roger
+
+> Thanks
+> 
+> Agus
+> 
+> Dr. Agustin Lobo
+> Instituto de Ciencias de la Tierra (CSIC)
+> Lluis Sole Sabaris s/n
+> 08028 Barcelona SPAIN
+> tel 34 93409 5410
+> fax 34 93411 0012
+> alobo@ija.csic.es
+> 
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From rn001 at cebas.csic.es  Mon May 19 13:25:19 2003
+From: rn001 at cebas.csic.es (javier garcia - CEBAS)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] 3D geostatistics
+Message-ID: <200305191713.h4JHD7I15747@natura.cebas.csic.es>
+
+Hi,
+
+I've got gstat and I know that it is possible to use sites file of GRASS, 
+with x, y, and z coordinates. But  what is the best way to work with 3D data?
+I would like to know if someone has used 3D data in GRASS and has 
+interpolated these results to produce output maps. 
+Some time ago I used GSTAT to produce 2D gaussian simulations and the output 
+was writen in GRASS, but I can't imagine how to do this with 3D. Perhaps is 
+it possible to produce a stack of raster maps? If so, how do I specify the 
+vertical resolution of output (distance between maps)? Is this possible?
+
+Perhaps it is better to use the GRASS Grid 3D Modules. But these are not 
+compiled by default. Do they work right yet? Is it possible to use GSTAT to 
+produce Grid3D maps?
+
+If the way is
+
+As you can see, I'm lost in this. I just would like to receive an advice 
+about these topics.
+
+Thanks and best wishes
+
+Javier
+----------
+ 
+
+
+From e.pebesma at geog.uu.nl  Tue May 20 04:56:54 2003
+From: e.pebesma at geog.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] 3D geostatistics
+References: <200305191713.h4JHD7I15747@natura.cebas.csic.es>
+Message-ID: <3EC9EDD6.DDE85596@geog.uu.nl>
+
+Javier,
+
+you can "feed" gstat with 3D data in a sites list (haven't checked
+this, but it should work); you can then interpolate on a series
+of 2D (flat) grids, specifying the height of each grid layer by
+
+set zmap=10.0; 
+#    set height of mask map(s) to 10 when observations are 3-D. [0.0] 
+
+or you can interpolate to a 3D grid, defined in a sites list, by using
+
+data(): 'locations';
+output: 'sites.out';
+
+where 'locations' and 'sites.out' are the prediction locations and
+output predictions sites lists, respectively.
+
+Best regards,
+--
+Edzer
+
+
+From neteler at itc.it  Wed May 28 08:51:18 2003
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Re: [GRASSweb-list]spam prevention
+In-Reply-To: <20030528112638.C29404@itc.it>; from neteler@itc.it on Wed, May 28, 2003 at 11:26:38AM +0200
+References: <p05210600baf95873e90d@[192.168.1.2]> <20030527220311.D26957@itc.it> <p05210603baf9a68a73e1@[192.168.1.2]> <20030528112638.C29404@itc.it>
+Message-ID: <20030528145118.D29404@itc.it>
+
+(cc 'grass5' etc)
+
+A suggestion arrived to protect the GRASS mailing list archives
+from automated spam email address harvesters:
+
+On Wed, May 28, 2003 at 11:26:38AM +0200, Markus Neteler wrote:
+[...]
+> On Tue, May 27, 2003 at 06:19:18PM -0700, Chuck Soper wrote:
+> > Everyone must enter a generic 
+> > username and password to search the web archives. Example: 
+> > http://search.lists.apple.com/cocoa-dev
+> 
+> Ah - this is a nice idea.
+
+OK, now I have added the same trick here.
+
+All mailing list archives on grass.itc.it should be closed now for 
+harvesters, but everybody can enter with the public password which
+is printed in the authentication message (user: archives, pw: archives).
+
+Thanks for this idea,
+
+ Markus
+
+-- 
+Markus Neteler
+
+ITC-irst, Istituto per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+                 http://mpa.itc.it
+
+

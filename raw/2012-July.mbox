@@ -1,0 +1,214 @@
+From wenzeslaus at gmail.com  Wed Jul 18 06:45:17 2012
+From: wenzeslaus at gmail.com (Vaclav Petras)
+Date: Wed, 18 Jul 2012 15:45:17 +0200
+Subject: [GRASS-stats] Using Rcpp to interface GRASS from R and vice versa
+Message-ID: <CABo5uVv-fMFhnBqUbjBTqCK6=anyF3iUtL4iTRmCcsYMDKAg=Q@mail.gmail.com>
+
+Hello grass-stats,
+
+I've tried the R packages Rcpp [1] and inline [2] to write a function
+which returns values from a GRASS raster map using GRASS C functions.
+In attached demo function returns only one value but more complex
+objects can be returned too. There is also an option to pass C++
+classes and R data frames.
+
+In general Rcpp (+inline) can be used to write efficient C++ code and
+use it in R. In case of GRASS and R it can be used to access large
+raster datasets from R without the need to load everything to memory.
+
+There is also another possibility. One can use Rcpp with RInside
+package [3] and write C/C++ code which calls R internally. So GRASS
+module which does some specific computations in R but handles memory
+itself can be created. Note that RInside is R instance within C++
+program, it can run any R code.
+
+I'm sending a very simplified example how things are working. For
+running it, you need latest R, Rcpp package and inline package [4].
+Tested only on GNU/Linux (Ubuntu) but Rcpp should work even on MS
+Windows.
+
+I'm interested (as an programmer) in this topic and I would like to
+write something which uses these possibilities. I'm not experienced
+with R so I'm not sure which way to go. So there are several
+questions.
+
+* Would it be useful to have something like R raster package [5] but
+with GRASS raster maps as data format (direct access to GRASS maps
+from R within GRASS session)?
+
+* Should some GRASS modules or even wxGUI provide some R functionality?
+
+* Not sure, but I think that something like R-based raster calculator
+can be also created. Would be this helpful?
+
+* Why are Rcpp and inline not used in spgrass6 [6]? Is there some
+other reason than Rcpp is relatively new so it may be considered as
+unstable?
+
+* Would it be more useful to bring some functionality from GRASS to R
+or in the opposite way, trying to use Rcpp within spgrass6 (or
+spgrass7) or just to have some general tools or just to create a guide
+how to combine things?
+
+
+Comments and suggestions are welcome.
+
+Vaclav Petras
+
+[1] http://cran.r-project.org/web/packages/Rcpp/
+[2] http://cran.r-project.org/web/packages/inline/
+[3] http://cran.r-project.org/web/packages/RInside/
+[4] http://cran.r-project.org/bin/
+[5] http://cran.r-project.org/web/packages/raster/
+[6] http://cran.r-project.org/web/packages/spgrass6/
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: test_rgrass.R
+Type: application/octet-stream
+Size: 1353 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20120718/7159034d/attachment.obj>
+
+From Carlo.Rondinini at uniroma1.it  Wed Jul 18 13:02:06 2012
+From: Carlo.Rondinini at uniroma1.it (Carlo.Rondinini at uniroma1.it)
+Date: Wed, 18 Jul 2012 22:02:06 +0200
+Subject: [GRASS-stats] AUTO: Carlo Rondinini is out of office
+Message-ID: <OF873E5A3A.F20EEFE6-ONC1257A3F.006E0E7D-C1257A3F.006E0E7E@Uniroma1.it>
+
+
+
+Sono fuori dall'ufficio da Ven 06/07/2012 fino a Lun 23/07/2012.
+
+I will be back to work on Monday 23
+
+Ciao
+
+Carlo
+
+
+Nota: Questa ? una risposta automatizzata al messaggio  "grass-stats Digest, Vol 63, Issue 1" inviata il 18/07/2012 21:00:19.
+
+Questa ? l'unica notifica che verr? ricevuta mentre la persona ? assente.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20120718/0e9e5277/attachment.html>
+
+From Roger.Bivand at nhh.no  Thu Jul 19 11:50:20 2012
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu, 19 Jul 2012 20:50:20 +0200 (CEST)
+Subject: [GRASS-stats] Using Rcpp to interface GRASS from R and vice
+ versa
+In-Reply-To: <CABo5uVv-fMFhnBqUbjBTqCK6=anyF3iUtL4iTRmCcsYMDKAg=Q@mail.gmail.com>
+References: <CABo5uVv-fMFhnBqUbjBTqCK6=anyF3iUtL4iTRmCcsYMDKAg=Q@mail.gmail.com>
+Message-ID: <alpine.LRH.2.02.1207192025110.6684@reclus.nhh.no>
+
+On Wed, 18 Jul 2012, Vaclav Petras wrote:
+
+> Hello grass-stats,
+>
+> I've tried the R packages Rcpp [1] and inline [2] to write a function
+> which returns values from a GRASS raster map using GRASS C functions.
+> In attached demo function returns only one value but more complex
+> objects can be returned too. There is also an option to pass C++
+> classes and R data frames.
+>
+> In general Rcpp (+inline) can be used to write efficient C++ code and
+> use it in R. In case of GRASS and R it can be used to access large
+> raster datasets from R without the need to load everything to memory.
+>
+> There is also another possibility. One can use Rcpp with RInside
+> package [3] and write C/C++ code which calls R internally. So GRASS
+> module which does some specific computations in R but handles memory
+> itself can be created. Note that RInside is R instance within C++
+> program, it can run any R code.
+>
+> I'm sending a very simplified example how things are working. For
+> running it, you need latest R, Rcpp package and inline package [4].
+> Tested only on GNU/Linux (Ubuntu) but Rcpp should work even on MS
+> Windows.
+>
+> I'm interested (as an programmer) in this topic and I would like to
+> write something which uses these possibilities. I'm not experienced
+> with R so I'm not sure which way to go. So there are several
+> questions.
+>
+> * Would it be useful to have something like R raster package [5] but
+> with GRASS raster maps as data format (direct access to GRASS maps
+> from R within GRASS session)?
+>
+> * Should some GRASS modules or even wxGUI provide some R functionality?
+>
+> * Not sure, but I think that something like R-based raster calculator
+> can be also created. Would be this helpful?
+>
+> * Why are Rcpp and inline not used in spgrass6 [6]? Is there some
+> other reason than Rcpp is relatively new so it may be considered as
+> unstable?
+
+The original GRASS package for R shipped with a frozen copy of the GRASS 
+5.* libraries as source code. This was not a good idea, and was very hard 
+to maintain. Linking against GRASS 6.* and 7.* libraries has not been seen 
+as being easy to maintain either, hence the use of GDAL as an interface 
+via intermediate files. As you probably know, Rcpp has only been around 
+for a short time, and additionally, GRASS is not written in C++, so that 
+many of the benefits of Rcpp in handling classes, including S4 reference 
+classes in R, are not exploited. spgrass6 needs to run cross-platform, and 
+has managed this even where GRASS is 64-bit and R 32, or vice-versa. 
+Linking would make this more difficult for users.
+
+Writing a loosely-coupled interface between the raster package via rgdal 
+and spgrass6 (or using r.*.bin on the GRASS side) would be of potential 
+value, but so far users haven't been asking for it. I don't see that Rcpp 
+would help in general terms here, but it might be interesting to see use 
+cases and alternative implementations.
+
+I can see that putting some R functionality inside GRASS using RInside may 
+be interesting, such as the v.krige addon, getting to R via Python, but 
+because the GRASS GUI also matters, it may be that going through Python is 
+as good a choice. Again, use cases and alternative implementations would 
+be needed to see which routes are helpful.
+
+GRASS functionality is available in R through execGRASS() in spgrass6, 
+which apes the interface descriptions exposed by GRASS modules for the 
+GUI; it only uses the R system(), so is loosely coupled, but has turned 
+out to be quite flexible and powerful.
+
+This may seem depressing, but stability, cross-platform implementation, 
+and maintainability really do matter. It isn't impossible that Rcpp could 
+help, as could RInside, but it is much more attractive in setting where 
+the code to be linked to R is a C++ library, probably a smallish one, with 
+no other interaction with the user. GRASS isn't C++, is a collection of 
+modules, and does interact with the user in other ways, like the GUI(s).
+
+Thanks for a stimulating post!
+
+Roger
+
+
+>
+> * Would it be more useful to bring some functionality from GRASS to R
+> or in the opposite way, trying to use Rcpp within spgrass6 (or
+> spgrass7) or just to have some general tools or just to create a guide
+> how to combine things?
+>
+>
+> Comments and suggestions are welcome.
+>
+> Vaclav Petras
+>
+> [1] http://cran.r-project.org/web/packages/Rcpp/
+> [2] http://cran.r-project.org/web/packages/inline/
+> [3] http://cran.r-project.org/web/packages/RInside/
+> [4] http://cran.r-project.org/bin/
+> [5] http://cran.r-project.org/web/packages/raster/
+> [6] http://cran.r-project.org/web/packages/spgrass6/
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand at nhh.no
+
+

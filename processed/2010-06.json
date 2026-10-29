@@ -1,0 +1,101 @@
+{
+  "list": "grass-stats",
+  "description": "",
+  "month": "2010-06",
+  "messages": [
+    {
+      "id": "msg-38fc6bead7f2",
+      "message_id": "<AANLkTim7eqYH-lceoqweAyE0BL1xIMXEa7A1kINHcVnz@mail.gmail.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "7ac5ec27e07d088b60f1057a2e6f073bc9436bfcca2e796f93aa91ffa8c6633a",
+      "date": "2010-06-11T18:43:20Z",
+      "subject": "[GRASS-stats] readRAST6() issue with NODATA",
+      "subject_clean": "[GRASS-stats] readRAST6() issue with NODATA",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear Roger,\n\nhope all is well.\n\nI came across an issue with readRAST6():\n\n> library(spgrass6)\nLoading required package: sp\nLoading required package: rgdal\nGeospatial Data Abstraction Library extensions to R successfully loaded\nLoaded GDAL runtime: GDAL 1.5.2, released 2008/05/29\nPath to GDAL shared files: /home/neteler/binaries/share/gdal\nLoaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008\nPath to PROJ.4 shared files: (autodetected)\nLoading required package: XML\nGRASS GIS interface loaded with GRASS version: 6.4.0svn\nand location: patUTM32\n> mydata_raw <-readRAST6(c(\"thresh_annual_over_11_celsius_2001_2008_avg\", \"italy_dem20_PHD_zone\"), cat=c(FALSE, FALSE))\n/home/neteler/grassdata/patUTM32/zanzara_satellite/.tmp/fep/thresh_annual_over_11_celsius_2001_2008_avg\nhas GDAL driver GTiff\nand has 601 rows and 1011 columns\nWARNING: The given nodata value is present in rasterband\n         <italy_dem20_PHD_zone> and would lead to data loss. Please specify\n         a different nodata value with the nodata parameter.\nERROR: Raster export aborted.\n\nDebugging r.out.gdal, I found that the value 10 was used.\n\n\nGRASS 6.4.0svn (patUTM32): > r.info -r italy_dem20_PHD_zone\nmin=0\nmax=3890\nGRASS 6.4.0svn (patUTM32): > r.info -t italy_dem20_PHD_zone\ndatatype=CELL\n\nI hacked in -99999 as NODATA value in the r.out.gdal calls\n(spgrass6/R/bin_link.R).\n\nI have no idea why 10 was used but from GRASS 6.4 onwards the r.out.gdal\nmodule has an intelligent NODATA selection thanks to Markus Metz. I can\nimagine what you don't want to clutter the code with conditions, but here it\nwould be great to let the NODATA selection job to r.out.gdal rather than\nusing the current r.info tricks.\n\nWhat do you think?\n\nBest,\nMarkus\n\nPS: off for 2 weeks now",
+      "body_snippet": "Dear Roger,\n\nhope all is well.\n\nI came across an issue with readRAST6():\n\n> library(spgrass6)\nLoading required package: sp\nLoading required package: rgdal\nGeospatial Data Abstraction Library extension",
+      "thread_id": "thread-38fc6bead7f2",
+      "thread_depth": 0,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-0ac24c6f1ed5",
+      "message_id": "<alpine.LRH.2.00.1006120647320.22837@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2010-06-12T00:51:19Z",
+      "subject": "[GRASS-stats] readRAST6() issue with NODATA",
+      "subject_clean": "[GRASS-stats] readRAST6() issue with NODATA",
+      "in_reply_to": "<AANLkTim7eqYH-lceoqweAyE0BL1xIMXEa7A1kINHcVnz@mail.gmail.com>",
+      "references": [
+        "<AANLkTim7eqYH-lceoqweAyE0BL1xIMXEa7A1kINHcVnz@mail.gmail.com>"
+      ],
+      "body_plain": "On Sat, 12 Jun 2010, Markus Neteler wrote:\n\n> Dear Roger,\n>\n> hope all is well.\n>\n> I came across an issue with readRAST6():\n>\n>> library(spgrass6)\n> Loading required package: sp\n> Loading required package: rgdal\n> Geospatial Data Abstraction Library extensions to R successfully loaded\n> Loaded GDAL runtime: GDAL 1.5.2, released 2008/05/29\n> Path to GDAL shared files: /home/neteler/binaries/share/gdal\n> Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008\n> Path to PROJ.4 shared files: (autodetected)\n> Loading required package: XML\n> GRASS GIS interface loaded with GRASS version: 6.4.0svn\n> and location: patUTM32\n>> mydata_raw <-readRAST6(c(\"thresh_annual_over_11_celsius_2001_2008_avg\", \"italy_dem20_PHD_zone\"), cat=c(FALSE, FALSE))\n> /home/neteler/grassdata/patUTM32/zanzara_satellite/.tmp/fep/thresh_annual_over_11_celsius_2001_2008_avg\n> has GDAL driver GTiff\n> and has 601 rows and 1011 columns\n> WARNING: The given nodata value is present in rasterband\n>         <italy_dem20_PHD_zone> and would lead to data loss. Please specify\n>         a different nodata value with the nodata parameter.\n> ERROR: Raster export aborted.\n>\n> Debugging r.out.gdal, I found that the value 10 was used.\n>\n>\n> GRASS 6.4.0svn (patUTM32): > r.info -r italy_dem20_PHD_zone\n> min=0\n> max=3890\n> GRASS 6.4.0svn (patUTM32): > r.info -t italy_dem20_PHD_zone\n> datatype=CELL\n>\n> I hacked in -99999 as NODATA value in the r.out.gdal calls\n> (spgrass6/R/bin_link.R).\n>\n> I have no idea why 10 was used but from GRASS 6.4 onwards the r.out.gdal\n> module has an intelligent NODATA selection thanks to Markus Metz. I can\n> imagine what you don't want to clutter the code with conditions, but here it\n> would be great to let the NODATA selection job to r.out.gdal rather than\n> using the current r.info tricks.\n\nDear Markus,\n\nThe tricks were there for the time when r.out.gdal didn't find its own \nvalue, and for the null parameter for r.out.bin. I've moved them down to \nthe r.out.bin branch only, and modified the execGRASS() call to r.out.gdal \nto omit the nodata= argument by default when NODATA=NULL.\n\nCommitted to sourceforge CVS, project r-spatial, module spgrass6. Could \nyou check this and let me know if the problem is resolved?\n\nBest wishes,\n\nRoger\n\n>\n> What do you think?\n>\n> Best,\n> Markus\n>\n> PS: off for 2 weeks now\n> _______________________________________________\n> grass-stats mailing list\n> grass-stats@lists.osgeo.org\n> http://lists.osgeo.org/mailman/listinfo/grass-stats\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Sat, 12 Jun 2010, Markus Neteler wrote:\n\n> Dear Roger,\n>\n> hope all is well.\n>\n> I came across an issue with readRAST6():\n>\n>> library(spgrass6)\n> Loading required package: sp\n> Loading required pa",
+      "thread_id": "thread-38fc6bead7f2",
+      "thread_depth": 1,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-a7038a77b44d",
+      "message_id": "<4C167F1F.1040300@gmail.com>",
+      "from_name": "Leonardo Hardtke",
+      "from_email_hash": "68471135d05ae28f8376a47a590e3a7067e121d6aa961ac57380644ee071cebc",
+      "date": "2010-06-14T15:12:56Z",
+      "subject": "[GRASS-stats] random subset in R",
+      "subject_clean": "[GRASS-stats] random subset in R",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi list,\nI'm tryng to do a simple random subset of spatial points in R and don't \nknow how....\nI tried:\n\nlibrary(spgrass6)\nhs=readVECT6(\"HSd01@Hot_Spot\") (3500 point) #SpatialPointDataFrame\nhs_smpl=spsample(hs, 200, \"random\")  #->SpatialPoints\n\nthe question is... how do I attach the right data?\nThanks!\n\nLeonardo Hardtke",
+      "body_snippet": "Hi list,\nI'm tryng to do a simple random subset of spatial points in R and don't \nknow how....\nI tried:\n\nlibrary(spgrass6)\nhs=readVECT6(\"HSd01@Hot_Spot\") (3500 point) #SpatialPointDataFrame\nhs_smpl=sp",
+      "thread_id": "thread-a7038a77b44d",
+      "thread_depth": 0,
+      "month": "2010-06"
+    },
+    {
+      "id": "msg-e9b788f4cc0d",
+      "message_id": "<alpine.LRH.2.00.1006142115540.1053@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2010-06-14T15:21:19Z",
+      "subject": "[GRASS-stats] random subset in R",
+      "subject_clean": "[GRASS-stats] random subset in R",
+      "in_reply_to": "<4C167F1F.1040300@gmail.com>",
+      "references": [
+        "<4C167F1F.1040300@gmail.com>"
+      ],
+      "body_plain": "On Mon, 14 Jun 2010, Leonardo Hardtke wrote:\n\n> Hi list,\n> I'm tryng to do a simple random subset of spatial points in R and don't know \n> how....\n> I tried:\n>\n> library(spgrass6)\n> hs=readVECT6(\"HSd01@Hot_Spot\") (3500 point) #SpatialPointDataFrame\n> hs_smpl=spsample(hs, 200, \"random\")  #->SpatialPoints\n\nWhy do you thing that this is a subsample of your points? It is a sample \nof 200 points in the bounding box of your points, I think. To subsample, \ngenerate a new object by subsetting on row indices in the sample:\n\nlibrary(sp)\ndata(meuse)\ncoordinates(meuse) <- c(\"x\", \"y\")\nnrow(meuse)\nplot(meuse, axes=TRUE)\nplot(spsample(meuse, n=50, type=\"random\"), col=\"red\", add=TRUE)\nplot(meuse[sample(x=nrow(meuse), size=50),], col=\"blue\", pch=16, add=TRUE)\n\n\nHope this helps,\n\nRoger\n\n>\n> the question is... how do I attach the right data?\n> Thanks!\n>\n> Leonardo Hardtke\n> _______________________________________________\n> grass-stats mailing list\n> grass-stats@lists.osgeo.org\n> http://lists.osgeo.org/mailman/listinfo/grass-stats\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Mon, 14 Jun 2010, Leonardo Hardtke wrote:\n\n> Hi list,\n> I'm tryng to do a simple random subset of spatial points in R and don't know \n> how....\n> I tried:\n>\n> library(spgrass6)\n> hs=readVECT6(\"HSd0",
+      "thread_id": "thread-a7038a77b44d",
+      "thread_depth": 1,
+      "month": "2010-06"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-38fc6bead7f2",
+      "subject": "[GRASS-stats] readRAST6() issue with NODATA",
+      "message_count": 2,
+      "participants": [
+        "Markus Neteler",
+        "Roger Bivand"
+      ],
+      "started": "2010-06-11T18:43:20Z",
+      "last_reply": "2010-06-12T00:51:19Z",
+      "root_message_id": "msg-38fc6bead7f2"
+    },
+    {
+      "id": "thread-a7038a77b44d",
+      "subject": "[GRASS-stats] random subset in R",
+      "message_count": 2,
+      "participants": [
+        "Leonardo Hardtke",
+        "Roger Bivand"
+      ],
+      "started": "2010-06-14T15:12:56Z",
+      "last_reply": "2010-06-14T15:21:19Z",
+      "root_message_id": "msg-a7038a77b44d"
+    }
+  ]
+}

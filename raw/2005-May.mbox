@@ -1,0 +1,167 @@
+From gcb2101 at columbia.edu  Wed May 11 11:43:28 2005
+From: gcb2101 at columbia.edu (Gregory Booma)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Help - Inconsistent behavior, GRASS/R win/mac
+Message-ID: <1115826208.42822820f2bf1@cubmail.cc.columbia.edu>
+
+STATSGRASS list,
+
+I've written an R script (see below) to create a new unique-id for
+each row of a data.frame object. The script runs fine on .dbf and
+.csv files created in ArcGIS 9.0 and Excel on Windows XP, but not
+on those created in GRASS 6.0 and Excel on MacOSX 10.3.9. In GRASS,
+I create the .dbf with v.in.ogr, and .csv with db.select output
+piped to a file. When running the script (on Mac) on files created
+on the Mac I get:
+
+Error in "$<-.data.frame"(`*tmp*`, "newid", value = c(NA, NA, NA,
+NA,  : replacement has 1059 rows, data has 1976
+
+Using files created in Windows (and still running the script on Mac)
+it runs without error.
+
+My script is as follows:
+
+# sort by unit-id and area (ascending, descending,
+# respectively) and take frequencies of unit-id
+
+df[order(POVID,-AREA),]
+freqtable <- as.data.frame(table(df$POVID))
+
+# code a unique id that is effectively a concatenation
+# of the unit-id, sorted ascending, and its position in a sequence
+# of duplicates (sequence = 1 if no duplicates), sorted descending
+# by unit land area
+
+for (i in 1:nrow(freqtable)){
+	match <- which(df$POVID==freqtable$Var1[i])
+	for (j in 1:length(match)){
+		df$newid[match[j]] <- as.integer(df$POVID[match[j]]*10+j)
+		}
+    }
+
+I've tinkered with different methods in R and tried saving files in
+different ways - all to no avail. If anyone has a workaround for
+this or can help me troubleshoot the problem I'd greatly appreciate
+it.
+
+Many thanks in advance,
+
+Greg
+
+--------------------------
+Greg Booma
+CIESIN - Columbia U.
+gcb2101 [at] columbia.edu
+
+
+
+From gcb2101 at columbia.edu  Wed May 11 16:59:37 2005
+From: gcb2101 at columbia.edu (Gregory Booma)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Help - Inconsistent behavior, GRASS/R win/mac
+In-Reply-To: <1115826208.42822820f2bf1@cubmail.cc.columbia.edu>
+References: <1115826208.42822820f2bf1@cubmail.cc.columbia.edu>
+Message-ID: <1115845177.42827239e17ec@cubmail.cc.columbia.edu>
+
+Answering my own post:
+
+Quoting Gregory Booma <gcb2101@columbia.edu>:
+
+> The script runs fine on .dbf and
+> .csv files created in ArcGIS 9.0 and Excel on Windows XP, but not
+> on those created in GRASS 6.0 and Excel on MacOSX 10.3.9.
+
+This is wrong. It turns out that the error is in my 'order' line in
+the script. The two Windows files I was using had been pre-ordered,
+allowing the script to run just fine.
+
+The solution is to save the ordered data.frame as an object, as
+follows:
+
+attach(df)
+newdf <- df[order(POVID,-AREA),]
+freqtable <- as.data.frame(table(newdf$POVID))
+
+for (i in 1:nrow(freqtable)){
+	match <- which(newdf$POVID==freqtable$Var1[i])
+	for (j in 1:length(match)){
+		newdf$newid[match[j]] <- as.integer(newdf$POVID[match[j]]*10+j)
+		}
+    }
+
+Note that I included attach() in the script this time. Just easier
+than having to remember.
+
+Hope this is useful,
+
+Greg
+
+
+
+
+From Roger.Bivand at nhh.no  Thu May 12 05:03:31 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Help - Inconsistent behavior, GRASS/R win/mac
+In-Reply-To: <1115845177.42827239e17ec@cubmail.cc.columbia.edu>
+Message-ID: <Pine.LNX.4.44.0505121100480.11044-100000@reclus.nhh.no>
+
+On Wed, 11 May 2005, Gregory Booma wrote:
+
+> Answering my own post:
+> 
+> Quoting Gregory Booma <gcb2101@columbia.edu>:
+> 
+> > The script runs fine on .dbf and
+> > .csv files created in ArcGIS 9.0 and Excel on Windows XP, but not
+> > on those created in GRASS 6.0 and Excel on MacOSX 10.3.9.
+> 
+> This is wrong. It turns out that the error is in my 'order' line in
+> the script. The two Windows files I was using had been pre-ordered,
+> allowing the script to run just fine.
+
+Well spotted! These kinds of things do happen, and only care can help. In 
+the sp package in R, we'll be trying to make sure the geometry objects get 
+associated with the correct rows in the attribute data frames, but this 
+isn't in place yet. Your question reinforces the need to provide help 
+within the objects themselves.
+
+> 
+> The solution is to save the ordered data.frame as an object, as
+> follows:
+> 
+> attach(df)
+> newdf <- df[order(POVID,-AREA),]
+> freqtable <- as.data.frame(table(newdf$POVID))
+> 
+> for (i in 1:nrow(freqtable)){
+> 	match <- which(newdf$POVID==freqtable$Var1[i])
+> 	for (j in 1:length(match)){
+> 		newdf$newid[match[j]] <- as.integer(newdf$POVID[match[j]]*10+j)
+> 		}
+>     }
+> 
+> Note that I included attach() in the script this time. Just easier
+> than having to remember.
+> 
+> Hope this is useful,
+> 
+> Greg
+> 
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+

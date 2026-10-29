@@ -1,0 +1,3612 @@
+From eric.momsen at gmail.com  Tue Mar  6 14:31:19 2012
+From: eric.momsen at gmail.com (Eric Momsen)
+Date: Tue Mar  6 14:32:11 2012
+Subject: [GRASS-stats] readRAST6 and readVECT6 errors with grass70
+Message-ID: <CAO7hk-JQmYN5_zVGf1DXxqF7cmz6jUVW55WHEUJpvOohRnZLCQ@mail.gmail.com>
+
+Hello!
+
+I have been trying to get spgrass6 working in a Debian environment,
+and have started from scratch with both GRASS 6.4.3 and GRASS 7.0.  I
+previously had the same errors in "old" installations of both 6 and 7,
+after following the advice in the listserve archive I am half way
+there.  Since the behavior had been the same for both, I was suprised
+it didn't resolve the issue completely!  Any suggestions would be
+appreciated.
+
+I hope it is OK to include all 3 questions here, since they all relate
+to spgrass6.  Here is a listing of sessionInfo and various Debian
+package versions:  http://pastebin.com/68XST1vK
+
+
+My installation of spgrass6 is working now with GRASS 6.4.3, I can
+read and write vectors and rasters.
+
+1.  I am getting one warning message, is this OK, or am I missing some
+dependency still?
+
+> spear <- readRAST6(c("elevation.dem", "geology"), cat = c(FALSE, TRUE))
+Warning message:
+statistics not supported by this driver
+
+The program does continue to successfully import the data.
+
+
+Moving onto GRASS 7:
+
+2.  readRAST6 gives an error in grass70, output as follows:
+
+> spear <- readRAST6(c("geology", "elevation.dem"), cat=c(TRUE, FALSE),
++ useGDAL=FALSE)
+Command: r.info
+Description: Outputs basic information about a raster map.
+Keywords: raster, metadata, history
+Parameters:
+  name: map, type: string, required: yes, multiple: no
+  keydesc: name, keydesc_count: 1
+[Name of raster map]
+Flags:
+  name: g [Print raster array information only] {FALSE}
+  name: r [Print range only] {FALSE}
+  name: e [Print extended metadata information only] {FALSE}
+  name: h [Print raster history instead of info] {FALSE}
+  name: verbose [Verbose module output] {FALSE}
+  name: quiet [Quiet module output] {FALSE}
+Error in doGRASS(cmd, flags = flags, ..., parameters = parameters,
+echoCmd = echoCmd) :
+  Invalid flag value: t
+
+I checked that r.info works:
+> system("r.info geology")
+ +----------------------------------------------------------------------------+
+ | Layer:    geology                        Date: Mon May  4 10:00:14 1987 :  |
+ | Mapset:   PERMANENT                      Login of Creator: grass           |
+ | Location: spearfish70
+.
+.
+.
+
+
+I see that -t is in the GRASS6.4.3 version of r.info, but not in the
+GRASS7.0 version of r.info.
+
+I'm not sure what to do next here.
+
+
+3.  readVECT6 causes R to exit.
+
+> bugsDF <- readVECT6("bugsites")
+GRASS 7.0.svn (spearfish70):~ >
+
+I went back to check that the bugsites map was available:
+> system("v.info bugsites")
+ +----------------------------------------------------------------------------+
+ | Name:            bugsites                                                  |
+ | Mapset:          PERMANENT                                                 |
+ | Location:        spearfish70                                               |
+ | Database:        /home/shared/research/GRASSDATA                           |
+.
+.
+.
+
+And then tried the debug tool to see where things went wrong...
+
+complete output at: http://pastebin.com/dJFsRSBC  with the final lines as:
+
+debug: res <- readOGR(dsn, layer = as.character(layer), verbose =
+!ignore.stderr,
+    pointDropZ = pointDropZ)
+Browse[2]>
+GRASS 7.0.svn (spearfish70):~ >
+
+
+I found a 2009 post regarding readOGR / readVECT6 and some versioning
+issues: https://stat.ethz.ch/pipermail/r-sig-geo/2009-April/005553.html
+but I installed both rgdal and spgrass6 inside of R as packages.  So
+I'm not sure if this older post is still applicable, especially since
+it works in GRASS 6.4.3.  Any suggestions for what to try next?
+
+
+Thanks in advance for any help provided.
+
+Eric
+From Roger.Bivand at nhh.no  Tue Mar  6 15:25:17 2012
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Mar  6 15:26:17 2012
+Subject: [GRASS-stats] readRAST6 and readVECT6 errors with grass70
+In-Reply-To: <CAO7hk-JQmYN5_zVGf1DXxqF7cmz6jUVW55WHEUJpvOohRnZLCQ@mail.gmail.com>
+References: <CAO7hk-JQmYN5_zVGf1DXxqF7cmz6jUVW55WHEUJpvOohRnZLCQ@mail.gmail.com>
+Message-ID: <alpine.LRH.2.02.1203062111140.24316@reclus.nhh.no>
+
+On Tue, 6 Mar 2012, Eric Momsen wrote:
+
+> Hello!
+>
+> I have been trying to get spgrass6 working in a Debian environment,
+> and have started from scratch with both GRASS 6.4.3 and GRASS 7.0.  I
+> previously had the same errors in "old" installations of both 6 and 7,
+> after following the advice in the listserve archive I am half way
+> there.  Since the behavior had been the same for both, I was suprised
+> it didn't resolve the issue completely!  Any suggestions would be
+> appreciated.
+>
+> I hope it is OK to include all 3 questions here, since they all relate
+> to spgrass6.  Here is a listing of sessionInfo and various Debian
+> package versions:  http://pastebin.com/68XST1vK
+>
+>
+> My installation of spgrass6 is working now with GRASS 6.4.3, I can
+> read and write vectors and rasters.
+>
+> 1.  I am getting one warning message, is this OK, or am I missing some
+> dependency still?
+>
+>> spear <- readRAST6(c("elevation.dem", "geology"), cat = c(FALSE, TRUE))
+> Warning message:
+> statistics not supported by this driver
+>
+> The program does continue to successfully import the data.
+
+Not a problem - an artefact of calling GDALinfo() on the temporary file.
+
+>
+>
+> Moving onto GRASS 7:
+>
+> 2.  readRAST6 gives an error in grass70, output as follows:
+>
+>> spear <- readRAST6(c("geology", "elevation.dem"), cat=c(TRUE, FALSE),
+> + useGDAL=FALSE)
+
+r.info is called twice, once with -t, once with -r. In GRASS 7, all of 
+have been collected in -g, which simply breaks compatibility - arguably, 
+-t could have been left in place. When I find time to build a GRASS 7, 
+I'll try to accommodate the broken flag. -r is retained, so it is only on 
+line 48 in R/bin_link.R that any change is required.
+
+> Command: r.info
+> Description: Outputs basic information about a raster map.
+> Keywords: raster, metadata, history
+> Parameters:
+>  name: map, type: string, required: yes, multiple: no
+>  keydesc: name, keydesc_count: 1
+> [Name of raster map]
+> Flags:
+>  name: g [Print raster array information only] {FALSE}
+>  name: r [Print range only] {FALSE}
+>  name: e [Print extended metadata information only] {FALSE}
+>  name: h [Print raster history instead of info] {FALSE}
+>  name: verbose [Verbose module output] {FALSE}
+>  name: quiet [Quiet module output] {FALSE}
+> Error in doGRASS(cmd, flags = flags, ..., parameters = parameters,
+> echoCmd = echoCmd) :
+>  Invalid flag value: t
+>
+> I checked that r.info works:
+>> system("r.info geology")
+> +----------------------------------------------------------------------------+
+> | Layer:    geology                        Date: Mon May  4 10:00:14 1987 :  |
+> | Mapset:   PERMANENT                      Login of Creator: grass           |
+> | Location: spearfish70
+> .
+> .
+> .
+>
+>
+> I see that -t is in the GRASS6.4.3 version of r.info, but not in the
+> GRASS7.0 version of r.info.
+>
+> I'm not sure what to do next here.
+>
+>
+> 3.  readVECT6 causes R to exit.
+>
+>> bugsDF <- readVECT6("bugsites")
+> GRASS 7.0.svn (spearfish70):~ >
+>
+> I went back to check that the bugsites map was available:
+>> system("v.info bugsites")
+> +----------------------------------------------------------------------------+
+> | Name:            bugsites                                                  |
+> | Mapset:          PERMANENT                                                 |
+> | Location:        spearfish70                                               |
+> | Database:        /home/shared/research/GRASSDATA                           |
+> .
+> .
+> .
+>
+> And then tried the debug tool to see where things went wrong...
+>
+> complete output at: http://pastebin.com/dJFsRSBC  with the final lines as:
+>
+> debug: res <- readOGR(dsn, layer = as.character(layer), verbose =
+> !ignore.stderr,
+>    pointDropZ = pointDropZ)
+> Browse[2]>
+
+I'll look at this later, looks like a broken shapefile.
+
+Roger
+
+> GRASS 7.0.svn (spearfish70):~ >
+>
+>
+> I found a 2009 post regarding readOGR / readVECT6 and some versioning
+> issues: https://stat.ethz.ch/pipermail/r-sig-geo/2009-April/005553.html
+> but I installed both rgdal and spgrass6 inside of R as packages.  So
+> I'm not sure if this older post is still applicable, especially since
+> it works in GRASS 6.4.3.  Any suggestions for what to try next?
+>
+>
+> Thanks in advance for any help provided.
+>
+> Eric
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From eric.momsen at gmail.com  Tue Mar  6 17:23:52 2012
+From: eric.momsen at gmail.com (Eric Momsen)
+Date: Tue Mar  6 17:24:17 2012
+Subject: [GRASS-stats] readRAST6 and readVECT6 errors with grass70
+In-Reply-To: <alpine.LRH.2.02.1203062111140.24316@reclus.nhh.no>
+References: <CAO7hk-JQmYN5_zVGf1DXxqF7cmz6jUVW55WHEUJpvOohRnZLCQ@mail.gmail.com>
+	<alpine.LRH.2.02.1203062111140.24316@reclus.nhh.no>
+Message-ID: <CAO7hk-+SqrvzzucVxB0V91W5DggXo8qbDkXQHqBwv_qL1tnTFg@mail.gmail.com>
+
+Thank you for the quick response!  I've added follow up after the points below.
+
+On Tue, Mar 6, 2012 at 2:25 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Tue, 6 Mar 2012, Eric Momsen wrote:
+>
+>> Hello!
+>>
+>> I have been trying to get spgrass6 working in a Debian environment,
+>> and have started from scratch with both GRASS 6.4.3 and GRASS 7.0. ?I
+>> previously had the same errors in "old" installations of both 6 and 7,
+>> after following the advice in the listserve archive I am half way
+>> there. ?Since the behavior had been the same for both, I was suprised
+>> it didn't resolve the issue completely! ?Any suggestions would be
+>> appreciated.
+>>
+>> I hope it is OK to include all 3 questions here, since they all relate
+>> to spgrass6. ?Here is a listing of sessionInfo and various Debian
+>> package versions: ?http://pastebin.com/68XST1vK
+>>
+>>
+>> My installation of spgrass6 is working now with GRASS 6.4.3, I can
+>> read and write vectors and rasters.
+>>
+>> 1. ?I am getting one warning message, is this OK, or am I missing some
+>> dependency still?
+>>
+>>> spear <- readRAST6(c("elevation.dem", "geology"), cat = c(FALSE, TRUE))
+>>
+>> Warning message:
+>> statistics not supported by this driver
+>>
+>> The program does continue to successfully import the data.
+>
+>
+> Not a problem - an artefact of calling GDALinfo() on the temporary file.
+
+Great.  After all the real errors I've caused, it is nice to have
+reached a point where I can ignore the warnings.
+
+>
+>
+>>
+>>
+>> Moving onto GRASS 7:
+>>
+>> 2. ?readRAST6 gives an error in grass70, output as follows:
+>>
+>>> spear <- readRAST6(c("geology", "elevation.dem"), cat=c(TRUE, FALSE),
+>>
+>> + useGDAL=FALSE)
+>
+>
+> r.info is called twice, once with -t, once with -r. In GRASS 7, all of have
+> been collected in -g, which simply breaks compatibility - arguably, -t could
+> have been left in place. When I find time to build a GRASS 7, I'll try to
+> accommodate the broken flag. -r is retained, so it is only on line 48 in
+> R/bin_link.R that any change is required.
+>
+
+I changed the flag as suggested and readRAST6 now works for my installation.
+
+>> Command: r.info
+>> Description: Outputs basic information about a raster map.
+>> Keywords: raster, metadata, history
+>> Parameters:
+>> ?name: map, type: string, required: yes, multiple: no
+>> ?keydesc: name, keydesc_count: 1
+>> [Name of raster map]
+>> Flags:
+>> ?name: g [Print raster array information only] {FALSE}
+>> ?name: r [Print range only] {FALSE}
+>> ?name: e [Print extended metadata information only] {FALSE}
+>> ?name: h [Print raster history instead of info] {FALSE}
+>> ?name: verbose [Verbose module output] {FALSE}
+>> ?name: quiet [Quiet module output] {FALSE}
+>> Error in doGRASS(cmd, flags = flags, ..., parameters = parameters,
+>> echoCmd = echoCmd) :
+>> ?Invalid flag value: t
+>>
+>> I checked that r.info works:
+>>>
+>>> system("r.info geology")
+>>
+>>
+>> +----------------------------------------------------------------------------+
+>> | Layer: ? ?geology ? ? ? ? ? ? ? ? ? ? ? ?Date: Mon May ?4 10:00:14 1987
+>> : ?|
+>> | Mapset: ? PERMANENT ? ? ? ? ? ? ? ? ? ? ?Login of Creator: grass
+>> ? |
+>> | Location: spearfish70
+>> .
+>> .
+>> .
+>>
+>>
+>> I see that -t is in the GRASS6.4.3 version of r.info, but not in the
+>> GRASS7.0 version of r.info.
+>>
+>> I'm not sure what to do next here.
+>>
+>>
+>> 3. ?readVECT6 causes R to exit.
+>>
+>>> bugsDF <- readVECT6("bugsites")
+>>
+>> GRASS 7.0.svn (spearfish70):~ >
+>>
+>> I went back to check that the bugsites map was available:
+>>>
+>>> system("v.info bugsites")
+>>
+>>
+>> +----------------------------------------------------------------------------+
+>> | Name: ? ? ? ? ? ?bugsites
+>> ? ?|
+>> | Mapset: ? ? ? ? ?PERMANENT
+>> ? |
+>> | Location: ? ? ? ?spearfish70
+>> ? |
+>> | Database: ? ? ? ?/home/shared/research/GRASSDATA
+>> ? |
+>> .
+>> .
+>> .
+>>
+>> And then tried the debug tool to see where things went wrong...
+>>
+>> complete output at: http://pastebin.com/dJFsRSBC ?with the final lines as:
+>>
+>> debug: res <- readOGR(dsn, layer = as.character(layer), verbose =
+>> !ignore.stderr,
+>> ? pointDropZ = pointDropZ)
+>> Browse[2]>
+>
+>
+> I'll look at this later, looks like a broken shapefile.
+
+I wasn't sure if you meant my local shapefile was broken?  So I
+checked the function on my real data as well as a fresh download of
+spearfish.  Neither worked.  I also tried it in a spearfish60
+location.
+
+My spearfish70 is simply spearfish60 after `v.build all` has been run.
+
+>
+> Roger
+>
+>> GRASS 7.0.svn (spearfish70):~ >
+>>
+>>
+>> I found a 2009 post regarding readOGR / readVECT6 and some versioning
+>> issues: https://stat.ethz.ch/pipermail/r-sig-geo/2009-April/005553.html
+>> but I installed both rgdal and spgrass6 inside of R as packages. ?So
+>> I'm not sure if this older post is still applicable, especially since
+>> it works in GRASS 6.4.3. ?Any suggestions for what to try next?
+>>
+>>
+>> Thanks in advance for any help provided.
+>>
+>> Eric
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>
+> --
+> Roger Bivand
+> Department of Economics, NHH Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+From Roger.Bivand at nhh.no  Thu Mar  8 05:42:18 2012
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Mar  8 05:42:51 2012
+Subject: [GRASS-stats] readRAST6 and readVECT6 errors with grass70
+In-Reply-To: <CAO7hk-+SqrvzzucVxB0V91W5DggXo8qbDkXQHqBwv_qL1tnTFg@mail.gmail.com>
+References: <CAO7hk-JQmYN5_zVGf1DXxqF7cmz6jUVW55WHEUJpvOohRnZLCQ@mail.gmail.com>
+	<alpine.LRH.2.02.1203062111140.24316@reclus.nhh.no>
+	<CAO7hk-+SqrvzzucVxB0V91W5DggXo8qbDkXQHqBwv_qL1tnTFg@mail.gmail.com>
+Message-ID: <alpine.LRH.2.02.1203081129430.3907@reclus.nhh.no>
+
+I've committed changes to spgrass6 on R-forge, project rspatial as 
+revision 1224, which address the r.info flag issue, and another issue 
+related to my using GDAL 1.9.0, which is less forgiving about overwriting 
+vector files in the temporary directory (but not the cause of your vector 
+problem). I always compile GDAL, GEOS, etc. from source, and do not see 
+any issues with spearfish vector files converted to GRASS 7 (but had to 
+enable sqlite in GRASS to avoid problems). I am always sceptical about 
+Linux binary builds, and cannot replicate this issue (but which may mean 
+that rgdal is broken in some odd way if it was also installed using binary 
+dependencies). Can you run:
+
+wget http://cran.r-project.org/src/contrib/rgdal_0.7-8.tar.gz
+R CMD check rgdal_0.7-8.tar.gz
+
+to test the package on your platform?
+
+If you check out rspatial, you will be able to do R CMD check on spgrass6 
+too in its current development revision:
+
+svn checkout svn://scm.r-forge.r-project.org/svnroot/rspatial/
+cd rspatial/pkg
+(start GRASS7 in spearfish)
+R CMD check spgrass6
+
+Roger
+
+
+
+On Tue, 6 Mar 2012, Eric Momsen wrote:
+
+> Thank you for the quick response!  I've added follow up after the points below.
+>
+> On Tue, Mar 6, 2012 at 2:25 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> On Tue, 6 Mar 2012, Eric Momsen wrote:
+>>
+>>> Hello!
+>>>
+>>> I have been trying to get spgrass6 working in a Debian environment,
+>>> and have started from scratch with both GRASS 6.4.3 and GRASS 7.0. ?I
+>>> previously had the same errors in "old" installations of both 6 and 7,
+>>> after following the advice in the listserve archive I am half way
+>>> there. ?Since the behavior had been the same for both, I was suprised
+>>> it didn't resolve the issue completely! ?Any suggestions would be
+>>> appreciated.
+>>>
+>>> I hope it is OK to include all 3 questions here, since they all relate
+>>> to spgrass6. ?Here is a listing of sessionInfo and various Debian
+>>> package versions: ?http://pastebin.com/68XST1vK
+>>>
+>>>
+>>> My installation of spgrass6 is working now with GRASS 6.4.3, I can
+>>> read and write vectors and rasters.
+>>>
+>>> 1. ?I am getting one warning message, is this OK, or am I missing some
+>>> dependency still?
+>>>
+>>>> spear <- readRAST6(c("elevation.dem", "geology"), cat = c(FALSE, TRUE))
+>>>
+>>> Warning message:
+>>> statistics not supported by this driver
+>>>
+>>> The program does continue to successfully import the data.
+>>
+>>
+>> Not a problem - an artefact of calling GDALinfo() on the temporary file.
+>
+> Great.  After all the real errors I've caused, it is nice to have
+> reached a point where I can ignore the warnings.
+>
+>>
+>>
+>>>
+>>>
+>>> Moving onto GRASS 7:
+>>>
+>>> 2. ?readRAST6 gives an error in grass70, output as follows:
+>>>
+>>>> spear <- readRAST6(c("geology", "elevation.dem"), cat=c(TRUE, FALSE),
+>>>
+>>> + useGDAL=FALSE)
+>>
+>>
+>> r.info is called twice, once with -t, once with -r. In GRASS 7, all of have
+>> been collected in -g, which simply breaks compatibility - arguably, -t could
+>> have been left in place. When I find time to build a GRASS 7, I'll try to
+>> accommodate the broken flag. -r is retained, so it is only on line 48 in
+>> R/bin_link.R that any change is required.
+>>
+>
+> I changed the flag as suggested and readRAST6 now works for my installation.
+>
+>>> Command: r.info
+>>> Description: Outputs basic information about a raster map.
+>>> Keywords: raster, metadata, history
+>>> Parameters:
+>>> ?name: map, type: string, required: yes, multiple: no
+>>> ?keydesc: name, keydesc_count: 1
+>>> [Name of raster map]
+>>> Flags:
+>>> ?name: g [Print raster array information only] {FALSE}
+>>> ?name: r [Print range only] {FALSE}
+>>> ?name: e [Print extended metadata information only] {FALSE}
+>>> ?name: h [Print raster history instead of info] {FALSE}
+>>> ?name: verbose [Verbose module output] {FALSE}
+>>> ?name: quiet [Quiet module output] {FALSE}
+>>> Error in doGRASS(cmd, flags = flags, ..., parameters = parameters,
+>>> echoCmd = echoCmd) :
+>>> ?Invalid flag value: t
+>>>
+>>> I checked that r.info works:
+>>>>
+>>>> system("r.info geology")
+>>>
+>>>
+>>> +----------------------------------------------------------------------------+
+>>> | Layer: ? ?geology ? ? ? ? ? ? ? ? ? ? ? ?Date: Mon May ?4 10:00:14 1987
+>>> : ?|
+>>> | Mapset: ? PERMANENT ? ? ? ? ? ? ? ? ? ? ?Login of Creator: grass
+>>> ? |
+>>> | Location: spearfish70
+>>> .
+>>> .
+>>> .
+>>>
+>>>
+>>> I see that -t is in the GRASS6.4.3 version of r.info, but not in the
+>>> GRASS7.0 version of r.info.
+>>>
+>>> I'm not sure what to do next here.
+>>>
+>>>
+>>> 3. ?readVECT6 causes R to exit.
+>>>
+>>>> bugsDF <- readVECT6("bugsites")
+>>>
+>>> GRASS 7.0.svn (spearfish70):~ >
+>>>
+>>> I went back to check that the bugsites map was available:
+>>>>
+>>>> system("v.info bugsites")
+>>>
+>>>
+>>> +----------------------------------------------------------------------------+
+>>> | Name: ? ? ? ? ? ?bugsites
+>>> ? ?|
+>>> | Mapset: ? ? ? ? ?PERMANENT
+>>> ? |
+>>> | Location: ? ? ? ?spearfish70
+>>> ? |
+>>> | Database: ? ? ? ?/home/shared/research/GRASSDATA
+>>> ? |
+>>> .
+>>> .
+>>> .
+>>>
+>>> And then tried the debug tool to see where things went wrong...
+>>>
+>>> complete output at: http://pastebin.com/dJFsRSBC ?with the final lines as:
+>>>
+>>> debug: res <- readOGR(dsn, layer = as.character(layer), verbose =
+>>> !ignore.stderr,
+>>> ? pointDropZ = pointDropZ)
+>>> Browse[2]>
+>>
+>>
+>> I'll look at this later, looks like a broken shapefile.
+>
+> I wasn't sure if you meant my local shapefile was broken?  So I
+> checked the function on my real data as well as a fresh download of
+> spearfish.  Neither worked.  I also tried it in a spearfish60
+> location.
+>
+> My spearfish70 is simply spearfish60 after `v.build all` has been run.
+>
+>>
+>> Roger
+>>
+>>> GRASS 7.0.svn (spearfish70):~ >
+>>>
+>>>
+>>> I found a 2009 post regarding readOGR / readVECT6 and some versioning
+>>> issues: https://stat.ethz.ch/pipermail/r-sig-geo/2009-April/005553.html
+>>> but I installed both rgdal and spgrass6 inside of R as packages. ?So
+>>> I'm not sure if this older post is still applicable, especially since
+>>> it works in GRASS 6.4.3. ?Any suggestions for what to try next?
+>>>
+>>>
+>>> Thanks in advance for any help provided.
+>>>
+>>> Eric
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats@lists.osgeo.org
+>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>
+>>
+>> --
+>> Roger Bivand
+>> Department of Economics, NHH Norwegian School of Economics,
+>> Helleveien 30, N-5045 Bergen, Norway.
+>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>> e-mail: Roger.Bivand@nhh.no
+>>
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From eric.momsen at gmail.com  Thu Mar  8 11:46:01 2012
+From: eric.momsen at gmail.com (Eric Momsen)
+Date: Thu Mar  8 11:46:45 2012
+Subject: [GRASS-stats] readRAST6 and readVECT6 errors with grass70
+In-Reply-To: <alpine.LRH.2.02.1203081129430.3907@reclus.nhh.no>
+References: <CAO7hk-JQmYN5_zVGf1DXxqF7cmz6jUVW55WHEUJpvOohRnZLCQ@mail.gmail.com>
+	<alpine.LRH.2.02.1203062111140.24316@reclus.nhh.no>
+	<CAO7hk-+SqrvzzucVxB0V91W5DggXo8qbDkXQHqBwv_qL1tnTFg@mail.gmail.com>
+	<alpine.LRH.2.02.1203081129430.3907@reclus.nhh.no>
+Message-ID: <CAO7hk-J_V6c3JqPvK+pd9r3YkNbfPiorkbikgEec_VXU8Q5XwQ@mail.gmail.com>
+
+On Thu, Mar 8, 2012 at 4:42 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> I've committed changes to spgrass6 on R-forge, project rspatial as revision
+> 1224, which address the r.info flag issue, and another issue related to my
+> using GDAL 1.9.0, which is less forgiving about overwriting vector files in
+> the temporary directory (but not the cause of your vector problem). I always
+> compile GDAL, GEOS, etc. from source, and do not see any issues with
+> spearfish vector files converted to GRASS 7 (but had to enable sqlite in
+> GRASS to avoid problems). I am always sceptical about Linux binary builds,
+> and cannot replicate this issue (but which may mean that rgdal is broken in
+> some odd way if it was also installed using binary dependencies). Can you
+> run:
+>
+> wget http://cran.r-project.org/src/contrib/rgdal_0.7-8.tar.gz
+> R CMD check rgdal_0.7-8.tar.gz
+>
+> to test the package on your platform?
+
+It seemed OK, ( http://pastebin.com/gykPF4EX ), the only problems were
+with the manual:
+
+* checking PDF version of manual ... WARNING
+LaTeX errors when creating PDF version.
+This typically indicates Rd problems.
+* checking PDF version of manual without hyperrefs or index ... ERROR
+Re-running with no redirection of stdout/stderr.
+Hmm ... looks like a package
+Error in texi2dvi("Rd2.tex", pdf = (out_ext == "pdf"), quiet = FALSE,  :
+  pdflatex is not available
+Error in running tools::texi2dvi
+You may want to clean up by 'rm -rf /tmp/RtmpqvwW8e/Rd2pdf69b337d4f332'
+
+>
+> If you check out rspatial, you will be able to do R CMD check on spgrass6
+> too in its current development revision:
+>
+> svn checkout svn://scm.r-forge.r-project.org/svnroot/rspatial/
+> cd rspatial/pkg
+> (start GRASS7 in spearfish)
+> R CMD check spgrass6
+
+
+full output at:  http://pastebin.com/n6a7SGXh
+
+Everything was OK until:
+
+* checking examples ... ERROR
+Running examples in ?spgrass6-Ex.R? failed
+The error most likely occurred in:
+
+> ### Name: readRAST6
+
+
+I did not (yet) move anything or install as packages in R, just ran R
+CMD where the downloaded file was at.
+
+Thanks for your help so far, any suggestion for what to try next?
+
+Eric
+
+>
+> Roger
+>
+>
+>
+>
+> On Tue, 6 Mar 2012, Eric Momsen wrote:
+>
+>> Thank you for the quick response! ?I've added follow up after the points
+>> below.
+>>
+>> On Tue, Mar 6, 2012 at 2:25 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>>>
+>>> On Tue, 6 Mar 2012, Eric Momsen wrote:
+>>>
+>>>> Hello!
+>>>>
+>>>> I have been trying to get spgrass6 working in a Debian environment,
+>>>> and have started from scratch with both GRASS 6.4.3 and GRASS 7.0. ?I
+>>>> previously had the same errors in "old" installations of both 6 and 7,
+>>>> after following the advice in the listserve archive I am half way
+>>>> there. ?Since the behavior had been the same for both, I was suprised
+>>>> it didn't resolve the issue completely! ?Any suggestions would be
+>>>> appreciated.
+>>>>
+>>>> I hope it is OK to include all 3 questions here, since they all relate
+>>>> to spgrass6. ?Here is a listing of sessionInfo and various Debian
+>>>> package versions: ?http://pastebin.com/68XST1vK
+>>>>
+>>>>
+>>>> My installation of spgrass6 is working now with GRASS 6.4.3, I can
+>>>> read and write vectors and rasters.
+>>>>
+>>>> 1. ?I am getting one warning message, is this OK, or am I missing some
+>>>> dependency still?
+>>>>
+>>>>> spear <- readRAST6(c("elevation.dem", "geology"), cat = c(FALSE, TRUE))
+>>>>
+>>>>
+>>>> Warning message:
+>>>> statistics not supported by this driver
+>>>>
+>>>> The program does continue to successfully import the data.
+>>>
+>>>
+>>>
+>>> Not a problem - an artefact of calling GDALinfo() on the temporary file.
+>>
+>>
+>> Great. ?After all the real errors I've caused, it is nice to have
+>> reached a point where I can ignore the warnings.
+>>
+>>>
+>>>
+>>>>
+>>>>
+>>>> Moving onto GRASS 7:
+>>>>
+>>>> 2. ?readRAST6 gives an error in grass70, output as follows:
+>>>>
+>>>>> spear <- readRAST6(c("geology", "elevation.dem"), cat=c(TRUE, FALSE),
+>>>>
+>>>>
+>>>> + useGDAL=FALSE)
+>>>
+>>>
+>>>
+>>> r.info is called twice, once with -t, once with -r. In GRASS 7, all of
+>>> have
+>>> been collected in -g, which simply breaks compatibility - arguably, -t
+>>> could
+>>> have been left in place. When I find time to build a GRASS 7, I'll try to
+>>> accommodate the broken flag. -r is retained, so it is only on line 48 in
+>>> R/bin_link.R that any change is required.
+>>>
+>>
+>> I changed the flag as suggested and readRAST6 now works for my
+>> installation.
+>>
+>>>> Command: r.info
+>>>> Description: Outputs basic information about a raster map.
+>>>> Keywords: raster, metadata, history
+>>>> Parameters:
+>>>> ?name: map, type: string, required: yes, multiple: no
+>>>> ?keydesc: name, keydesc_count: 1
+>>>> [Name of raster map]
+>>>> Flags:
+>>>> ?name: g [Print raster array information only] {FALSE}
+>>>> ?name: r [Print range only] {FALSE}
+>>>> ?name: e [Print extended metadata information only] {FALSE}
+>>>> ?name: h [Print raster history instead of info] {FALSE}
+>>>> ?name: verbose [Verbose module output] {FALSE}
+>>>> ?name: quiet [Quiet module output] {FALSE}
+>>>> Error in doGRASS(cmd, flags = flags, ..., parameters = parameters,
+>>>> echoCmd = echoCmd) :
+>>>> ?Invalid flag value: t
+>>>>
+>>>> I checked that r.info works:
+>>>>>
+>>>>>
+>>>>> system("r.info geology")
+>>>>
+>>>>
+>>>>
+>>>>
+>>>> +----------------------------------------------------------------------------+
+>>>> | Layer: ? ?geology ? ? ? ? ? ? ? ? ? ? ? ?Date: Mon May ?4 10:00:14
+>>>> 1987
+>>>> : ?|
+>>>> | Mapset: ? PERMANENT ? ? ? ? ? ? ? ? ? ? ?Login of Creator: grass
+>>>> ? |
+>>>> | Location: spearfish70
+>>>> .
+>>>> .
+>>>> .
+>>>>
+>>>>
+>>>> I see that -t is in the GRASS6.4.3 version of r.info, but not in the
+>>>> GRASS7.0 version of r.info.
+>>>>
+>>>> I'm not sure what to do next here.
+>>>>
+>>>>
+>>>> 3. ?readVECT6 causes R to exit.
+>>>>
+>>>>> bugsDF <- readVECT6("bugsites")
+>>>>
+>>>>
+>>>> GRASS 7.0.svn (spearfish70):~ >
+>>>>
+>>>> I went back to check that the bugsites map was available:
+>>>>>
+>>>>>
+>>>>> system("v.info bugsites")
+>>>>
+>>>>
+>>>>
+>>>>
+>>>> +----------------------------------------------------------------------------+
+>>>> | Name: ? ? ? ? ? ?bugsites
+>>>> ? ?|
+>>>> | Mapset: ? ? ? ? ?PERMANENT
+>>>> ? |
+>>>> | Location: ? ? ? ?spearfish70
+>>>> ? |
+>>>> | Database: ? ? ? ?/home/shared/research/GRASSDATA
+>>>> ? |
+>>>> .
+>>>> .
+>>>> .
+>>>>
+>>>> And then tried the debug tool to see where things went wrong...
+>>>>
+>>>> complete output at: http://pastebin.com/dJFsRSBC ?with the final lines
+>>>> as:
+>>>>
+>>>> debug: res <- readOGR(dsn, layer = as.character(layer), verbose =
+>>>> !ignore.stderr,
+>>>> ? pointDropZ = pointDropZ)
+>>>> Browse[2]>
+>>>
+>>>
+>>>
+>>> I'll look at this later, looks like a broken shapefile.
+>>
+>>
+>> I wasn't sure if you meant my local shapefile was broken? ?So I
+>> checked the function on my real data as well as a fresh download of
+>> spearfish. ?Neither worked. ?I also tried it in a spearfish60
+>> location.
+>>
+>> My spearfish70 is simply spearfish60 after `v.build all` has been run.
+>>
+>>>
+>>> Roger
+>>>
+>>>> GRASS 7.0.svn (spearfish70):~ >
+>>>>
+>>>>
+>>>> I found a 2009 post regarding readOGR / readVECT6 and some versioning
+>>>> issues: https://stat.ethz.ch/pipermail/r-sig-geo/2009-April/005553.html
+>>>> but I installed both rgdal and spgrass6 inside of R as packages. ?So
+>>>> I'm not sure if this older post is still applicable, especially since
+>>>> it works in GRASS 6.4.3. ?Any suggestions for what to try next?
+>>>>
+>>>>
+>>>> Thanks in advance for any help provided.
+>>>>
+>>>> Eric
+>>>> _______________________________________________
+>>>> grass-stats mailing list
+>>>> grass-stats@lists.osgeo.org
+>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>
+>>>
+>>> --
+>>> Roger Bivand
+>>> Department of Economics, NHH Norwegian School of Economics,
+>>> Helleveien 30, N-5045 Bergen, Norway.
+>>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>> e-mail: Roger.Bivand@nhh.no
+>>>
+>>
+>
+> --
+> Roger Bivand
+> Department of Economics, NHH Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+From Roger.Bivand at nhh.no  Thu Mar  8 14:39:27 2012
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Mar  8 14:39:46 2012
+Subject: [GRASS-stats] readRAST6 and readVECT6 errors with grass70
+In-Reply-To: <CAO7hk-J_V6c3JqPvK+pd9r3YkNbfPiorkbikgEec_VXU8Q5XwQ@mail.gmail.com>
+References: <CAO7hk-JQmYN5_zVGf1DXxqF7cmz6jUVW55WHEUJpvOohRnZLCQ@mail.gmail.com>
+	<alpine.LRH.2.02.1203062111140.24316@reclus.nhh.no>
+	<CAO7hk-+SqrvzzucVxB0V91W5DggXo8qbDkXQHqBwv_qL1tnTFg@mail.gmail.com>
+	<alpine.LRH.2.02.1203081129430.3907@reclus.nhh.no>
+	<CAO7hk-J_V6c3JqPvK+pd9r3YkNbfPiorkbikgEec_VXU8Q5XwQ@mail.gmail.com>
+Message-ID: <alpine.LRH.2.02.1203082028430.9646@reclus.nhh.no>
+
+Eric,
+
+The check of spgrass6 gets through readRAST6() with two rasters, which 
+sets plugin=FALSE (twice, once not using GDAL, once using GDAL). It fails 
+either in readRAST6(elevation.dem", plugin=TRUE, mapset="PERMANENT") if 
+"GRASS" %in% gdalDrivers()$name or at writeRAST6(spear, "sqdemSP", 
+zcol="sqdem").
+
+My prejudice is to suspect the plugin. Can you do:
+
+library(rgdal)
+"GRASS" %in% gdalDrivers()$name
+"GRASS" %in% ogrDrivers()$name
+
+If they are TRUE, then the smoking gun is some dependency mixup in the 
+GDAL GRASS plugin drivers, possibly pointing to a stale plugin, a stale 
+GRASS version linked to GRASS, or something like that. Managing plugins 
+across multiple versions of GRASS and/or GDAL is for very off-piste people 
+who like excitement, I'm afraid.
+
+The rgdal check suggests that the standard GDAL and OGR drivers work when 
+GRASS is not in the picture.
+
+Roger
+
+On Thu, 8 Mar 2012, Eric Momsen wrote:
+
+> On Thu, Mar 8, 2012 at 4:42 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> I've committed changes to spgrass6 on R-forge, project rspatial as revision
+>> 1224, which address the r.info flag issue, and another issue related to my
+>> using GDAL 1.9.0, which is less forgiving about overwriting vector files in
+>> the temporary directory (but not the cause of your vector problem). I always
+>> compile GDAL, GEOS, etc. from source, and do not see any issues with
+>> spearfish vector files converted to GRASS 7 (but had to enable sqlite in
+>> GRASS to avoid problems). I am always sceptical about Linux binary builds,
+>> and cannot replicate this issue (but which may mean that rgdal is broken in
+>> some odd way if it was also installed using binary dependencies). Can you
+>> run:
+>>
+>> wget http://cran.r-project.org/src/contrib/rgdal_0.7-8.tar.gz
+>> R CMD check rgdal_0.7-8.tar.gz
+>>
+>> to test the package on your platform?
+>
+> It seemed OK, ( http://pastebin.com/gykPF4EX ), the only problems were
+> with the manual:
+>
+> * checking PDF version of manual ... WARNING
+> LaTeX errors when creating PDF version.
+> This typically indicates Rd problems.
+> * checking PDF version of manual without hyperrefs or index ... ERROR
+> Re-running with no redirection of stdout/stderr.
+> Hmm ... looks like a package
+> Error in texi2dvi("Rd2.tex", pdf = (out_ext == "pdf"), quiet = FALSE,  :
+>  pdflatex is not available
+> Error in running tools::texi2dvi
+> You may want to clean up by 'rm -rf /tmp/RtmpqvwW8e/Rd2pdf69b337d4f332'
+>
+>>
+>> If you check out rspatial, you will be able to do R CMD check on spgrass6
+>> too in its current development revision:
+>>
+>> svn checkout svn://scm.r-forge.r-project.org/svnroot/rspatial/
+>> cd rspatial/pkg
+>> (start GRASS7 in spearfish)
+>> R CMD check spgrass6
+>
+>
+> full output at:  http://pastebin.com/n6a7SGXh
+>
+> Everything was OK until:
+>
+> * checking examples ... ERROR
+> Running examples in ?spgrass6-Ex.R? failed
+> The error most likely occurred in:
+>
+>> ### Name: readRAST6
+>
+>
+> I did not (yet) move anything or install as packages in R, just ran R
+> CMD where the downloaded file was at.
+>
+> Thanks for your help so far, any suggestion for what to try next?
+>
+> Eric
+>
+>>
+>> Roger
+>>
+>>
+>>
+>>
+>> On Tue, 6 Mar 2012, Eric Momsen wrote:
+>>
+>>> Thank you for the quick response! ?I've added follow up after the points
+>>> below.
+>>>
+>>> On Tue, Mar 6, 2012 at 2:25 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>>>>
+>>>> On Tue, 6 Mar 2012, Eric Momsen wrote:
+>>>>
+>>>>> Hello!
+>>>>>
+>>>>> I have been trying to get spgrass6 working in a Debian environment,
+>>>>> and have started from scratch with both GRASS 6.4.3 and GRASS 7.0. ?I
+>>>>> previously had the same errors in "old" installations of both 6 and 7,
+>>>>> after following the advice in the listserve archive I am half way
+>>>>> there. ?Since the behavior had been the same for both, I was suprised
+>>>>> it didn't resolve the issue completely! ?Any suggestions would be
+>>>>> appreciated.
+>>>>>
+>>>>> I hope it is OK to include all 3 questions here, since they all relate
+>>>>> to spgrass6. ?Here is a listing of sessionInfo and various Debian
+>>>>> package versions: ?http://pastebin.com/68XST1vK
+>>>>>
+>>>>>
+>>>>> My installation of spgrass6 is working now with GRASS 6.4.3, I can
+>>>>> read and write vectors and rasters.
+>>>>>
+>>>>> 1. ?I am getting one warning message, is this OK, or am I missing some
+>>>>> dependency still?
+>>>>>
+>>>>>> spear <- readRAST6(c("elevation.dem", "geology"), cat = c(FALSE, TRUE))
+>>>>>
+>>>>>
+>>>>> Warning message:
+>>>>> statistics not supported by this driver
+>>>>>
+>>>>> The program does continue to successfully import the data.
+>>>>
+>>>>
+>>>>
+>>>> Not a problem - an artefact of calling GDALinfo() on the temporary file.
+>>>
+>>>
+>>> Great. ?After all the real errors I've caused, it is nice to have
+>>> reached a point where I can ignore the warnings.
+>>>
+>>>>
+>>>>
+>>>>>
+>>>>>
+>>>>> Moving onto GRASS 7:
+>>>>>
+>>>>> 2. ?readRAST6 gives an error in grass70, output as follows:
+>>>>>
+>>>>>> spear <- readRAST6(c("geology", "elevation.dem"), cat=c(TRUE, FALSE),
+>>>>>
+>>>>>
+>>>>> + useGDAL=FALSE)
+>>>>
+>>>>
+>>>>
+>>>> r.info is called twice, once with -t, once with -r. In GRASS 7, all of
+>>>> have
+>>>> been collected in -g, which simply breaks compatibility - arguably, -t
+>>>> could
+>>>> have been left in place. When I find time to build a GRASS 7, I'll try to
+>>>> accommodate the broken flag. -r is retained, so it is only on line 48 in
+>>>> R/bin_link.R that any change is required.
+>>>>
+>>>
+>>> I changed the flag as suggested and readRAST6 now works for my
+>>> installation.
+>>>
+>>>>> Command: r.info
+>>>>> Description: Outputs basic information about a raster map.
+>>>>> Keywords: raster, metadata, history
+>>>>> Parameters:
+>>>>> ?name: map, type: string, required: yes, multiple: no
+>>>>> ?keydesc: name, keydesc_count: 1
+>>>>> [Name of raster map]
+>>>>> Flags:
+>>>>> ?name: g [Print raster array information only] {FALSE}
+>>>>> ?name: r [Print range only] {FALSE}
+>>>>> ?name: e [Print extended metadata information only] {FALSE}
+>>>>> ?name: h [Print raster history instead of info] {FALSE}
+>>>>> ?name: verbose [Verbose module output] {FALSE}
+>>>>> ?name: quiet [Quiet module output] {FALSE}
+>>>>> Error in doGRASS(cmd, flags = flags, ..., parameters = parameters,
+>>>>> echoCmd = echoCmd) :
+>>>>> ?Invalid flag value: t
+>>>>>
+>>>>> I checked that r.info works:
+>>>>>>
+>>>>>>
+>>>>>> system("r.info geology")
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>> +----------------------------------------------------------------------------+
+>>>>> | Layer: ? ?geology ? ? ? ? ? ? ? ? ? ? ? ?Date: Mon May ?4 10:00:14
+>>>>> 1987
+>>>>> : ?|
+>>>>> | Mapset: ? PERMANENT ? ? ? ? ? ? ? ? ? ? ?Login of Creator: grass
+>>>>> ? |
+>>>>> | Location: spearfish70
+>>>>> .
+>>>>> .
+>>>>> .
+>>>>>
+>>>>>
+>>>>> I see that -t is in the GRASS6.4.3 version of r.info, but not in the
+>>>>> GRASS7.0 version of r.info.
+>>>>>
+>>>>> I'm not sure what to do next here.
+>>>>>
+>>>>>
+>>>>> 3. ?readVECT6 causes R to exit.
+>>>>>
+>>>>>> bugsDF <- readVECT6("bugsites")
+>>>>>
+>>>>>
+>>>>> GRASS 7.0.svn (spearfish70):~ >
+>>>>>
+>>>>> I went back to check that the bugsites map was available:
+>>>>>>
+>>>>>>
+>>>>>> system("v.info bugsites")
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>> +----------------------------------------------------------------------------+
+>>>>> | Name: ? ? ? ? ? ?bugsites
+>>>>> ? ?|
+>>>>> | Mapset: ? ? ? ? ?PERMANENT
+>>>>> ? |
+>>>>> | Location: ? ? ? ?spearfish70
+>>>>> ? |
+>>>>> | Database: ? ? ? ?/home/shared/research/GRASSDATA
+>>>>> ? |
+>>>>> .
+>>>>> .
+>>>>> .
+>>>>>
+>>>>> And then tried the debug tool to see where things went wrong...
+>>>>>
+>>>>> complete output at: http://pastebin.com/dJFsRSBC ?with the final lines
+>>>>> as:
+>>>>>
+>>>>> debug: res <- readOGR(dsn, layer = as.character(layer), verbose =
+>>>>> !ignore.stderr,
+>>>>> ? pointDropZ = pointDropZ)
+>>>>> Browse[2]>
+>>>>
+>>>>
+>>>>
+>>>> I'll look at this later, looks like a broken shapefile.
+>>>
+>>>
+>>> I wasn't sure if you meant my local shapefile was broken? ?So I
+>>> checked the function on my real data as well as a fresh download of
+>>> spearfish. ?Neither worked. ?I also tried it in a spearfish60
+>>> location.
+>>>
+>>> My spearfish70 is simply spearfish60 after `v.build all` has been run.
+>>>
+>>>>
+>>>> Roger
+>>>>
+>>>>> GRASS 7.0.svn (spearfish70):~ >
+>>>>>
+>>>>>
+>>>>> I found a 2009 post regarding readOGR / readVECT6 and some versioning
+>>>>> issues: https://stat.ethz.ch/pipermail/r-sig-geo/2009-April/005553.html
+>>>>> but I installed both rgdal and spgrass6 inside of R as packages. ?So
+>>>>> I'm not sure if this older post is still applicable, especially since
+>>>>> it works in GRASS 6.4.3. ?Any suggestions for what to try next?
+>>>>>
+>>>>>
+>>>>> Thanks in advance for any help provided.
+>>>>>
+>>>>> Eric
+>>>>> _______________________________________________
+>>>>> grass-stats mailing list
+>>>>> grass-stats@lists.osgeo.org
+>>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>>
+>>>>
+>>>> --
+>>>> Roger Bivand
+>>>> Department of Economics, NHH Norwegian School of Economics,
+>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>>> e-mail: Roger.Bivand@nhh.no
+>>>>
+>>>
+>>
+>> --
+>> Roger Bivand
+>> Department of Economics, NHH Norwegian School of Economics,
+>> Helleveien 30, N-5045 Bergen, Norway.
+>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>> e-mail: Roger.Bivand@nhh.no
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From eric.momsen at gmail.com  Fri Mar  9 16:20:58 2012
+From: eric.momsen at gmail.com (Eric Momsen)
+Date: Fri Mar  9 16:28:12 2012
+Subject: [GRASS-stats] readRAST6 and readVECT6 errors with grass70
+In-Reply-To: <alpine.LRH.2.02.1203082028430.9646@reclus.nhh.no>
+References: <CAO7hk-JQmYN5_zVGf1DXxqF7cmz6jUVW55WHEUJpvOohRnZLCQ@mail.gmail.com>
+	<alpine.LRH.2.02.1203062111140.24316@reclus.nhh.no>
+	<CAO7hk-+SqrvzzucVxB0V91W5DggXo8qbDkXQHqBwv_qL1tnTFg@mail.gmail.com>
+	<alpine.LRH.2.02.1203081129430.3907@reclus.nhh.no>
+	<CAO7hk-J_V6c3JqPvK+pd9r3YkNbfPiorkbikgEec_VXU8Q5XwQ@mail.gmail.com>
+	<alpine.LRH.2.02.1203082028430.9646@reclus.nhh.no>
+Message-ID: <CAO7hk-KX-ps-=MhLAOs50Wk_hixwkktHkEz2tvQ_=kn-x4rKxQ@mail.gmail.com>
+
+Roger,
+
+Thanks for your help and guidance.  I have tried to sort out the
+dependencies and get the gdal-grass plugin to look at grass7.  I can't
+get it to configure, details in line with your previous email.
+
+This is the plugin I have downloaded:
+http://download.osgeo.org/gdal/
+"Get the GDAL/OGR-GRASS plugin - file: gdal-grass-1.4.3.tar.gz (or later)"
+
+I've seen this closed ticket about the plugin not working with grass7
+( http://trac.osgeo.org/gdal/ticket/2953  ) but it sounds like you
+don't have any problems with it.  So I assume it should work.   I was
+able to get this same plugin to configure against grass 6.4.
+
+I am trying to configure it directly from what was downloaded, without
+any patches.
+
+Am I using the right plug in?
+Are there some extra/different steps for grass7?
+I assume I need this plugin to use spgrass6 (and v.krige from in
+grass), or is there something else I should try?
+
+It feels like I'm missing just one key point to get everything to work
+beautifully!
+
+Regards,
+Eric
+
+
+On Thu, Mar 8, 2012 at 1:39 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> Eric,
+>
+> The check of spgrass6 gets through readRAST6() with two rasters, which sets
+> plugin=FALSE (twice, once not using GDAL, once using GDAL). It fails either
+> in readRAST6(elevation.dem", plugin=TRUE, mapset="PERMANENT") if "GRASS"
+> %in% gdalDrivers()$name or at writeRAST6(spear, "sqdemSP", zcol="sqdem").
+>
+> My prejudice is to suspect the plugin. Can you do:
+>
+> library(rgdal)
+> "GRASS" %in% gdalDrivers()$name
+> "GRASS" %in% ogrDrivers()$name
+>
+
+Both were TRUE.
+
+> If they are TRUE, then the smoking gun is some dependency mixup in the GDAL
+> GRASS plugin drivers, possibly pointing to a stale plugin, a stale GRASS
+> version linked to GRASS, or something like that. Managing plugins across
+> multiple versions of GRASS and/or GDAL is for very off-piste people who like
+> excitement, I'm afraid.
+
+The plug in wasn't even something I was aware of (The system admin had
+installed grass 6.4, I was adding grass 7.0 later when the admin was
+busy.)  My understanding is that for the GDAL-GRASS plug in he had
+used a Debian package, and based on your comments now, it makes sense
+that this is tied to GRASS 6.4 when it was first installed.
+
+I didn't review the GDAL installation procedure, since it was already
+installed.  !  Seems that was a mistake.  I downloaded the source code
+for the plug in and attempted to compile it.  I had added grass to the
+.conf , which didn't work, then tried LD_LIBRARY_PATH to go directly
+to my new grass installation, and still it doesn't seem to find the
+libraries:
+
+root@gisdev:/opt/gdal-grass-1.4.3# ./configure
+--with-gdal=/usr/local/bin/gdal-config
+--with-grass=/usr/local/grass-7.0.svn
+checking for gcc... gcc
+checking for C compiler default output file name... a.out
+checking whether the C compiler works... yes
+checking whether we are cross compiling... no
+checking for suffix of executables...
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether gcc accepts -g... yes
+checking for gcc option to accept ANSI C... none needed
+checking for g++... g++
+checking whether we are using the GNU C++ compiler... yes
+checking whether g++ accepts -g... yes
+checking for ranlib... ranlib
+checking for g++ -shared ... yes
+user supplied gdal-config (/usr/local/bin/gdal-config)
+using /usr/local/lib/gdalplugins as GDAL shared library autoload directory
+checking for G_asprintf in -lgrass_gis... no
+configure: error: --with-grass=/usr/local/grass-7.0.svn requested, but
+libraries not found!  Perhaps you need to set LD_LIBRARY_PATH to
+include /usr/local/grass-7.0.svn/lib?
+
+double checking to answer the output's question:
+root@gisdev:/opt/gdal-grass-1.4.3# $LD_LIBRARY_PATH
+bash: /usr/local/grass-7.0.svn/lib: Is a directory
+
+I tried this:
+./configure --with-gdal=/usr/local/bin/gdal-config
+--with-grass=/usr/local/grass-6.4.3svn/
+and it configured successfully (without any changes to LD_LIBRARY_PATH
+or the .conf files).
+
+>
+> The rgdal check suggests that the standard GDAL and OGR drivers work when
+> GRASS is not in the picture.
+>
+> Roger
+>
+>
+> On Thu, 8 Mar 2012, Eric Momsen wrote:
+>
+>> On Thu, Mar 8, 2012 at 4:42 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>>>
+>>> I've committed changes to spgrass6 on R-forge, project rspatial as
+>>> revision
+>>> 1224, which address the r.info flag issue, and another issue related to
+>>> my
+>>> using GDAL 1.9.0, which is less forgiving about overwriting vector files
+>>> in
+>>> the temporary directory (but not the cause of your vector problem). I
+>>> always
+>>> compile GDAL, GEOS, etc. from source, and do not see any issues with
+>>> spearfish vector files converted to GRASS 7 (but had to enable sqlite in
+>>> GRASS to avoid problems). I am always sceptical about Linux binary
+>>> builds,
+>>> and cannot replicate this issue (but which may mean that rgdal is broken
+>>> in
+>>> some odd way if it was also installed using binary dependencies). Can you
+>>> run:
+>>>
+>>> wget http://cran.r-project.org/src/contrib/rgdal_0.7-8.tar.gz
+>>> R CMD check rgdal_0.7-8.tar.gz
+>>>
+>>> to test the package on your platform?
+>>
+>>
+>> It seemed OK, ( http://pastebin.com/gykPF4EX ), the only problems were
+>> with the manual:
+>>
+>> * checking PDF version of manual ... WARNING
+>> LaTeX errors when creating PDF version.
+>> This typically indicates Rd problems.
+>> * checking PDF version of manual without hyperrefs or index ... ERROR
+>> Re-running with no redirection of stdout/stderr.
+>> Hmm ... looks like a package
+>> Error in texi2dvi("Rd2.tex", pdf = (out_ext == "pdf"), quiet = FALSE, ?:
+>> ?pdflatex is not available
+>> Error in running tools::texi2dvi
+>> You may want to clean up by 'rm -rf /tmp/RtmpqvwW8e/Rd2pdf69b337d4f332'
+>>
+>>>
+>>> If you check out rspatial, you will be able to do R CMD check on spgrass6
+>>> too in its current development revision:
+>>>
+>>> svn checkout svn://scm.r-forge.r-project.org/svnroot/rspatial/
+>>> cd rspatial/pkg
+>>> (start GRASS7 in spearfish)
+>>> R CMD check spgrass6
+>>
+>>
+>>
+>> full output at: ?http://pastebin.com/n6a7SGXh
+>>
+>> Everything was OK until:
+>>
+>> * checking examples ... ERROR
+>> Running examples in ?spgrass6-Ex.R? failed
+>> The error most likely occurred in:
+>>
+>>> ### Name: readRAST6
+>>
+>>
+>>
+>> I did not (yet) move anything or install as packages in R, just ran R
+>> CMD where the downloaded file was at.
+>>
+>> Thanks for your help so far, any suggestion for what to try next?
+>>
+>> Eric
+>>
+>>>
+>>> Roger
+>>>
+>>>
+>>>
+>>>
+>>> On Tue, 6 Mar 2012, Eric Momsen wrote:
+>>>
+>>>> Thank you for the quick response! ?I've added follow up after the points
+>>>> below.
+>>>>
+>>>> On Tue, Mar 6, 2012 at 2:25 PM, Roger Bivand <Roger.Bivand@nhh.no>
+>>>> wrote:
+>>>>>
+>>>>>
+>>>>> On Tue, 6 Mar 2012, Eric Momsen wrote:
+>>>>>
+>>>>>> Hello!
+>>>>>>
+>>>>>> I have been trying to get spgrass6 working in a Debian environment,
+>>>>>> and have started from scratch with both GRASS 6.4.3 and GRASS 7.0. ?I
+>>>>>> previously had the same errors in "old" installations of both 6 and 7,
+>>>>>> after following the advice in the listserve archive I am half way
+>>>>>> there. ?Since the behavior had been the same for both, I was suprised
+>>>>>> it didn't resolve the issue completely! ?Any suggestions would be
+>>>>>> appreciated.
+>>>>>>
+>>>>>> I hope it is OK to include all 3 questions here, since they all relate
+>>>>>> to spgrass6. ?Here is a listing of sessionInfo and various Debian
+>>>>>> package versions: ?http://pastebin.com/68XST1vK
+>>>>>>
+>>>>>>
+>>>>>> My installation of spgrass6 is working now with GRASS 6.4.3, I can
+>>>>>> read and write vectors and rasters.
+>>>>>>
+>>>>>> 1. ?I am getting one warning message, is this OK, or am I missing some
+>>>>>> dependency still?
+>>>>>>
+>>>>>>> spear <- readRAST6(c("elevation.dem", "geology"), cat = c(FALSE,
+>>>>>>> TRUE))
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> Warning message:
+>>>>>> statistics not supported by this driver
+>>>>>>
+>>>>>> The program does continue to successfully import the data.
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>> Not a problem - an artefact of calling GDALinfo() on the temporary
+>>>>> file.
+>>>>
+>>>>
+>>>>
+>>>> Great. ?After all the real errors I've caused, it is nice to have
+>>>> reached a point where I can ignore the warnings.
+>>>>
+>>>>>
+>>>>>
+>>>>>>
+>>>>>>
+>>>>>> Moving onto GRASS 7:
+>>>>>>
+>>>>>> 2. ?readRAST6 gives an error in grass70, output as follows:
+>>>>>>
+>>>>>>> spear <- readRAST6(c("geology", "elevation.dem"), cat=c(TRUE, FALSE),
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> + useGDAL=FALSE)
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>> r.info is called twice, once with -t, once with -r. In GRASS 7, all of
+>>>>> have
+>>>>> been collected in -g, which simply breaks compatibility - arguably, -t
+>>>>> could
+>>>>> have been left in place. When I find time to build a GRASS 7, I'll try
+>>>>> to
+>>>>> accommodate the broken flag. -r is retained, so it is only on line 48
+>>>>> in
+>>>>> R/bin_link.R that any change is required.
+>>>>>
+>>>>
+>>>> I changed the flag as suggested and readRAST6 now works for my
+>>>> installation.
+>>>>
+>>>>>> Command: r.info
+>>>>>> Description: Outputs basic information about a raster map.
+>>>>>> Keywords: raster, metadata, history
+>>>>>> Parameters:
+>>>>>> ?name: map, type: string, required: yes, multiple: no
+>>>>>> ?keydesc: name, keydesc_count: 1
+>>>>>> [Name of raster map]
+>>>>>> Flags:
+>>>>>> ?name: g [Print raster array information only] {FALSE}
+>>>>>> ?name: r [Print range only] {FALSE}
+>>>>>> ?name: e [Print extended metadata information only] {FALSE}
+>>>>>> ?name: h [Print raster history instead of info] {FALSE}
+>>>>>> ?name: verbose [Verbose module output] {FALSE}
+>>>>>> ?name: quiet [Quiet module output] {FALSE}
+>>>>>> Error in doGRASS(cmd, flags = flags, ..., parameters = parameters,
+>>>>>> echoCmd = echoCmd) :
+>>>>>> ?Invalid flag value: t
+>>>>>>
+>>>>>> I checked that r.info works:
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> system("r.info geology")
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> +----------------------------------------------------------------------------+
+>>>>>> | Layer: ? ?geology ? ? ? ? ? ? ? ? ? ? ? ?Date: Mon May ?4 10:00:14
+>>>>>> 1987
+>>>>>> : ?|
+>>>>>> | Mapset: ? PERMANENT ? ? ? ? ? ? ? ? ? ? ?Login of Creator: grass
+>>>>>> ? |
+>>>>>> | Location: spearfish70
+>>>>>> .
+>>>>>> .
+>>>>>> .
+>>>>>>
+>>>>>>
+>>>>>> I see that -t is in the GRASS6.4.3 version of r.info, but not in the
+>>>>>> GRASS7.0 version of r.info.
+>>>>>>
+>>>>>> I'm not sure what to do next here.
+>>>>>>
+>>>>>>
+>>>>>> 3. ?readVECT6 causes R to exit.
+>>>>>>
+>>>>>>> bugsDF <- readVECT6("bugsites")
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> GRASS 7.0.svn (spearfish70):~ >
+>>>>>>
+>>>>>> I went back to check that the bugsites map was available:
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> system("v.info bugsites")
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> +----------------------------------------------------------------------------+
+>>>>>> | Name: ? ? ? ? ? ?bugsites
+>>>>>> ? ?|
+>>>>>> | Mapset: ? ? ? ? ?PERMANENT
+>>>>>> ? |
+>>>>>> | Location: ? ? ? ?spearfish70
+>>>>>> ? |
+>>>>>> | Database: ? ? ? ?/home/shared/research/GRASSDATA
+>>>>>> ? |
+>>>>>> .
+>>>>>> .
+>>>>>> .
+>>>>>>
+>>>>>> And then tried the debug tool to see where things went wrong...
+>>>>>>
+>>>>>> complete output at: http://pastebin.com/dJFsRSBC ?with the final lines
+>>>>>> as:
+>>>>>>
+>>>>>> debug: res <- readOGR(dsn, layer = as.character(layer), verbose =
+>>>>>> !ignore.stderr,
+>>>>>> ? pointDropZ = pointDropZ)
+>>>>>> Browse[2]>
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>> I'll look at this later, looks like a broken shapefile.
+>>>>
+>>>>
+>>>>
+>>>> I wasn't sure if you meant my local shapefile was broken? ?So I
+>>>> checked the function on my real data as well as a fresh download of
+>>>> spearfish. ?Neither worked. ?I also tried it in a spearfish60
+>>>> location.
+>>>>
+>>>> My spearfish70 is simply spearfish60 after `v.build all` has been run.
+>>>>
+>>>>>
+>>>>> Roger
+>>>>>
+>>>>>> GRASS 7.0.svn (spearfish70):~ >
+>>>>>>
+>>>>>>
+>>>>>> I found a 2009 post regarding readOGR / readVECT6 and some versioning
+>>>>>> issues:
+>>>>>> https://stat.ethz.ch/pipermail/r-sig-geo/2009-April/005553.html
+>>>>>> but I installed both rgdal and spgrass6 inside of R as packages. ?So
+>>>>>> I'm not sure if this older post is still applicable, especially since
+>>>>>> it works in GRASS 6.4.3. ?Any suggestions for what to try next?
+>>>>>>
+>>>>>>
+>>>>>> Thanks in advance for any help provided.
+>>>>>>
+>>>>>> Eric
+>>>>>> _______________________________________________
+>>>>>> grass-stats mailing list
+>>>>>> grass-stats@lists.osgeo.org
+>>>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>>>
+>>>>>
+>>>>> --
+>>>>> Roger Bivand
+>>>>> Department of Economics, NHH Norwegian School of Economics,
+>>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>>>> e-mail: Roger.Bivand@nhh.no
+>>>>>
+>>>>
+>>>
+>>> --
+>>> Roger Bivand
+>>> Department of Economics, NHH Norwegian School of Economics,
+>>> Helleveien 30, N-5045 Bergen, Norway.
+>>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>> e-mail: Roger.Bivand@nhh.no
+>>
+>>
+>
+> --
+> Roger Bivand
+> Department of Economics, NHH Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+From Roger.Bivand at nhh.no  Sat Mar 10 10:33:17 2012
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sat Mar 10 10:33:07 2012
+Subject: [GRASS-stats] readRAST6 and readVECT6 errors with grass70
+In-Reply-To: <CAO7hk-KX-ps-=MhLAOs50Wk_hixwkktHkEz2tvQ_=kn-x4rKxQ@mail.gmail.com>
+References: <CAO7hk-JQmYN5_zVGf1DXxqF7cmz6jUVW55WHEUJpvOohRnZLCQ@mail.gmail.com>
+	<alpine.LRH.2.02.1203062111140.24316@reclus.nhh.no>
+	<CAO7hk-+SqrvzzucVxB0V91W5DggXo8qbDkXQHqBwv_qL1tnTFg@mail.gmail.com>
+	<alpine.LRH.2.02.1203081129430.3907@reclus.nhh.no>
+	<CAO7hk-J_V6c3JqPvK+pd9r3YkNbfPiorkbikgEec_VXU8Q5XwQ@mail.gmail.com>
+	<alpine.LRH.2.02.1203082028430.9646@reclus.nhh.no>
+	<CAO7hk-KX-ps-=MhLAOs50Wk_hixwkktHkEz2tvQ_=kn-x4rKxQ@mail.gmail.com>
+Message-ID: <alpine.LRH.2.02.1203101627440.16344@reclus.nhh.no>
+
+On Fri, 9 Mar 2012, Eric Momsen wrote:
+
+> Roger,
+>
+> Thanks for your help and guidance.  I have tried to sort out the
+> dependencies and get the gdal-grass plugin to look at grass7.  I can't
+> get it to configure, details in line with your previous email.
+>
+> This is the plugin I have downloaded:
+> http://download.osgeo.org/gdal/
+> "Get the GDAL/OGR-GRASS plugin - file: gdal-grass-1.4.3.tar.gz (or later)"
+>
+> I've seen this closed ticket about the plugin not working with grass7
+> ( http://trac.osgeo.org/gdal/ticket/2953  ) but it sounds like you
+> don't have any problems with it.  So I assume it should work.   I was
+> able to get this same plugin to configure against grass 6.4.
+
+I never use the plugin at all, I only install and uninstall to check that 
+it works for GRASS 6. It causes a great deal of trouble for Debian/Ubuntu 
+users installing binary GDAL. I advise against its use unless the user 
+builds it for a specific GRASS version. The separate 
+gdal-grass plugin is deprecated - one adds the path to the GRASS 
+installation in ./configure to GDAL when installing from source. The 
+problem is the round tour:
+
+install GDAL without the GRASS plugin,
+install GRASS linking against that GDAL,
+re-install GDAL with the path to GRASS given in ./configure.
+
+However, any GDAL or GRASS upgrade will break the plugin.
+
+Try to get rid of the plugin altogether, and try again, please. It may 
+live under /usr/local somewhere.
+
+Roger
+
+>
+> I am trying to configure it directly from what was downloaded, without
+> any patches.
+>
+> Am I using the right plug in?
+> Are there some extra/different steps for grass7?
+> I assume I need this plugin to use spgrass6 (and v.krige from in
+> grass), or is there something else I should try?
+>
+> It feels like I'm missing just one key point to get everything to work
+> beautifully!
+>
+> Regards,
+> Eric
+>
+>
+> On Thu, Mar 8, 2012 at 1:39 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> Eric,
+>>
+>> The check of spgrass6 gets through readRAST6() with two rasters, which sets
+>> plugin=FALSE (twice, once not using GDAL, once using GDAL). It fails either
+>> in readRAST6(elevation.dem", plugin=TRUE, mapset="PERMANENT") if "GRASS"
+>> %in% gdalDrivers()$name or at writeRAST6(spear, "sqdemSP", zcol="sqdem").
+>>
+>> My prejudice is to suspect the plugin. Can you do:
+>>
+>> library(rgdal)
+>> "GRASS" %in% gdalDrivers()$name
+>> "GRASS" %in% ogrDrivers()$name
+>>
+>
+> Both were TRUE.
+>
+>> If they are TRUE, then the smoking gun is some dependency mixup in the GDAL
+>> GRASS plugin drivers, possibly pointing to a stale plugin, a stale GRASS
+>> version linked to GRASS, or something like that. Managing plugins across
+>> multiple versions of GRASS and/or GDAL is for very off-piste people who like
+>> excitement, I'm afraid.
+>
+> The plug in wasn't even something I was aware of (The system admin had
+> installed grass 6.4, I was adding grass 7.0 later when the admin was
+> busy.)  My understanding is that for the GDAL-GRASS plug in he had
+> used a Debian package, and based on your comments now, it makes sense
+> that this is tied to GRASS 6.4 when it was first installed.
+>
+> I didn't review the GDAL installation procedure, since it was already
+> installed.  !  Seems that was a mistake.  I downloaded the source code
+> for the plug in and attempted to compile it.  I had added grass to the
+> .conf , which didn't work, then tried LD_LIBRARY_PATH to go directly
+> to my new grass installation, and still it doesn't seem to find the
+> libraries:
+>
+> root@gisdev:/opt/gdal-grass-1.4.3# ./configure
+> --with-gdal=/usr/local/bin/gdal-config
+> --with-grass=/usr/local/grass-7.0.svn
+> checking for gcc... gcc
+> checking for C compiler default output file name... a.out
+> checking whether the C compiler works... yes
+> checking whether we are cross compiling... no
+> checking for suffix of executables...
+> checking for suffix of object files... o
+> checking whether we are using the GNU C compiler... yes
+> checking whether gcc accepts -g... yes
+> checking for gcc option to accept ANSI C... none needed
+> checking for g++... g++
+> checking whether we are using the GNU C++ compiler... yes
+> checking whether g++ accepts -g... yes
+> checking for ranlib... ranlib
+> checking for g++ -shared ... yes
+> user supplied gdal-config (/usr/local/bin/gdal-config)
+> using /usr/local/lib/gdalplugins as GDAL shared library autoload directory
+> checking for G_asprintf in -lgrass_gis... no
+> configure: error: --with-grass=/usr/local/grass-7.0.svn requested, but
+> libraries not found!  Perhaps you need to set LD_LIBRARY_PATH to
+> include /usr/local/grass-7.0.svn/lib?
+>
+> double checking to answer the output's question:
+> root@gisdev:/opt/gdal-grass-1.4.3# $LD_LIBRARY_PATH
+> bash: /usr/local/grass-7.0.svn/lib: Is a directory
+>
+> I tried this:
+> ./configure --with-gdal=/usr/local/bin/gdal-config
+> --with-grass=/usr/local/grass-6.4.3svn/
+> and it configured successfully (without any changes to LD_LIBRARY_PATH
+> or the .conf files).
+>
+>>
+>> The rgdal check suggests that the standard GDAL and OGR drivers work when
+>> GRASS is not in the picture.
+>>
+>> Roger
+>>
+>>
+>> On Thu, 8 Mar 2012, Eric Momsen wrote:
+>>
+>>> On Thu, Mar 8, 2012 at 4:42 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>>>>
+>>>> I've committed changes to spgrass6 on R-forge, project rspatial as
+>>>> revision
+>>>> 1224, which address the r.info flag issue, and another issue related to
+>>>> my
+>>>> using GDAL 1.9.0, which is less forgiving about overwriting vector files
+>>>> in
+>>>> the temporary directory (but not the cause of your vector problem). I
+>>>> always
+>>>> compile GDAL, GEOS, etc. from source, and do not see any issues with
+>>>> spearfish vector files converted to GRASS 7 (but had to enable sqlite in
+>>>> GRASS to avoid problems). I am always sceptical about Linux binary
+>>>> builds,
+>>>> and cannot replicate this issue (but which may mean that rgdal is broken
+>>>> in
+>>>> some odd way if it was also installed using binary dependencies). Can you
+>>>> run:
+>>>>
+>>>> wget http://cran.r-project.org/src/contrib/rgdal_0.7-8.tar.gz
+>>>> R CMD check rgdal_0.7-8.tar.gz
+>>>>
+>>>> to test the package on your platform?
+>>>
+>>>
+>>> It seemed OK, ( http://pastebin.com/gykPF4EX ), the only problems were
+>>> with the manual:
+>>>
+>>> * checking PDF version of manual ... WARNING
+>>> LaTeX errors when creating PDF version.
+>>> This typically indicates Rd problems.
+>>> * checking PDF version of manual without hyperrefs or index ... ERROR
+>>> Re-running with no redirection of stdout/stderr.
+>>> Hmm ... looks like a package
+>>> Error in texi2dvi("Rd2.tex", pdf = (out_ext == "pdf"), quiet = FALSE, ?:
+>>> ?pdflatex is not available
+>>> Error in running tools::texi2dvi
+>>> You may want to clean up by 'rm -rf /tmp/RtmpqvwW8e/Rd2pdf69b337d4f332'
+>>>
+>>>>
+>>>> If you check out rspatial, you will be able to do R CMD check on spgrass6
+>>>> too in its current development revision:
+>>>>
+>>>> svn checkout svn://scm.r-forge.r-project.org/svnroot/rspatial/
+>>>> cd rspatial/pkg
+>>>> (start GRASS7 in spearfish)
+>>>> R CMD check spgrass6
+>>>
+>>>
+>>>
+>>> full output at: ?http://pastebin.com/n6a7SGXh
+>>>
+>>> Everything was OK until:
+>>>
+>>> * checking examples ... ERROR
+>>> Running examples in ?spgrass6-Ex.R? failed
+>>> The error most likely occurred in:
+>>>
+>>>> ### Name: readRAST6
+>>>
+>>>
+>>>
+>>> I did not (yet) move anything or install as packages in R, just ran R
+>>> CMD where the downloaded file was at.
+>>>
+>>> Thanks for your help so far, any suggestion for what to try next?
+>>>
+>>> Eric
+>>>
+>>>>
+>>>> Roger
+>>>>
+>>>>
+>>>>
+>>>>
+>>>> On Tue, 6 Mar 2012, Eric Momsen wrote:
+>>>>
+>>>>> Thank you for the quick response! ?I've added follow up after the points
+>>>>> below.
+>>>>>
+>>>>> On Tue, Mar 6, 2012 at 2:25 PM, Roger Bivand <Roger.Bivand@nhh.no>
+>>>>> wrote:
+>>>>>>
+>>>>>>
+>>>>>> On Tue, 6 Mar 2012, Eric Momsen wrote:
+>>>>>>
+>>>>>>> Hello!
+>>>>>>>
+>>>>>>> I have been trying to get spgrass6 working in a Debian environment,
+>>>>>>> and have started from scratch with both GRASS 6.4.3 and GRASS 7.0. ?I
+>>>>>>> previously had the same errors in "old" installations of both 6 and 7,
+>>>>>>> after following the advice in the listserve archive I am half way
+>>>>>>> there. ?Since the behavior had been the same for both, I was suprised
+>>>>>>> it didn't resolve the issue completely! ?Any suggestions would be
+>>>>>>> appreciated.
+>>>>>>>
+>>>>>>> I hope it is OK to include all 3 questions here, since they all relate
+>>>>>>> to spgrass6. ?Here is a listing of sessionInfo and various Debian
+>>>>>>> package versions: ?http://pastebin.com/68XST1vK
+>>>>>>>
+>>>>>>>
+>>>>>>> My installation of spgrass6 is working now with GRASS 6.4.3, I can
+>>>>>>> read and write vectors and rasters.
+>>>>>>>
+>>>>>>> 1. ?I am getting one warning message, is this OK, or am I missing some
+>>>>>>> dependency still?
+>>>>>>>
+>>>>>>>> spear <- readRAST6(c("elevation.dem", "geology"), cat = c(FALSE,
+>>>>>>>> TRUE))
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> Warning message:
+>>>>>>> statistics not supported by this driver
+>>>>>>>
+>>>>>>> The program does continue to successfully import the data.
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> Not a problem - an artefact of calling GDALinfo() on the temporary
+>>>>>> file.
+>>>>>
+>>>>>
+>>>>>
+>>>>> Great. ?After all the real errors I've caused, it is nice to have
+>>>>> reached a point where I can ignore the warnings.
+>>>>>
+>>>>>>
+>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> Moving onto GRASS 7:
+>>>>>>>
+>>>>>>> 2. ?readRAST6 gives an error in grass70, output as follows:
+>>>>>>>
+>>>>>>>> spear <- readRAST6(c("geology", "elevation.dem"), cat=c(TRUE, FALSE),
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> + useGDAL=FALSE)
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> r.info is called twice, once with -t, once with -r. In GRASS 7, all of
+>>>>>> have
+>>>>>> been collected in -g, which simply breaks compatibility - arguably, -t
+>>>>>> could
+>>>>>> have been left in place. When I find time to build a GRASS 7, I'll try
+>>>>>> to
+>>>>>> accommodate the broken flag. -r is retained, so it is only on line 48
+>>>>>> in
+>>>>>> R/bin_link.R that any change is required.
+>>>>>>
+>>>>>
+>>>>> I changed the flag as suggested and readRAST6 now works for my
+>>>>> installation.
+>>>>>
+>>>>>>> Command: r.info
+>>>>>>> Description: Outputs basic information about a raster map.
+>>>>>>> Keywords: raster, metadata, history
+>>>>>>> Parameters:
+>>>>>>> ?name: map, type: string, required: yes, multiple: no
+>>>>>>> ?keydesc: name, keydesc_count: 1
+>>>>>>> [Name of raster map]
+>>>>>>> Flags:
+>>>>>>> ?name: g [Print raster array information only] {FALSE}
+>>>>>>> ?name: r [Print range only] {FALSE}
+>>>>>>> ?name: e [Print extended metadata information only] {FALSE}
+>>>>>>> ?name: h [Print raster history instead of info] {FALSE}
+>>>>>>> ?name: verbose [Verbose module output] {FALSE}
+>>>>>>> ?name: quiet [Quiet module output] {FALSE}
+>>>>>>> Error in doGRASS(cmd, flags = flags, ..., parameters = parameters,
+>>>>>>> echoCmd = echoCmd) :
+>>>>>>> ?Invalid flag value: t
+>>>>>>>
+>>>>>>> I checked that r.info works:
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> system("r.info geology")
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> +----------------------------------------------------------------------------+
+>>>>>>> | Layer: ? ?geology ? ? ? ? ? ? ? ? ? ? ? ?Date: Mon May ?4 10:00:14
+>>>>>>> 1987
+>>>>>>> : ?|
+>>>>>>> | Mapset: ? PERMANENT ? ? ? ? ? ? ? ? ? ? ?Login of Creator: grass
+>>>>>>> ? |
+>>>>>>> | Location: spearfish70
+>>>>>>> .
+>>>>>>> .
+>>>>>>> .
+>>>>>>>
+>>>>>>>
+>>>>>>> I see that -t is in the GRASS6.4.3 version of r.info, but not in the
+>>>>>>> GRASS7.0 version of r.info.
+>>>>>>>
+>>>>>>> I'm not sure what to do next here.
+>>>>>>>
+>>>>>>>
+>>>>>>> 3. ?readVECT6 causes R to exit.
+>>>>>>>
+>>>>>>>> bugsDF <- readVECT6("bugsites")
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> GRASS 7.0.svn (spearfish70):~ >
+>>>>>>>
+>>>>>>> I went back to check that the bugsites map was available:
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> system("v.info bugsites")
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> +----------------------------------------------------------------------------+
+>>>>>>> | Name: ? ? ? ? ? ?bugsites
+>>>>>>> ? ?|
+>>>>>>> | Mapset: ? ? ? ? ?PERMANENT
+>>>>>>> ? |
+>>>>>>> | Location: ? ? ? ?spearfish70
+>>>>>>> ? |
+>>>>>>> | Database: ? ? ? ?/home/shared/research/GRASSDATA
+>>>>>>> ? |
+>>>>>>> .
+>>>>>>> .
+>>>>>>> .
+>>>>>>>
+>>>>>>> And then tried the debug tool to see where things went wrong...
+>>>>>>>
+>>>>>>> complete output at: http://pastebin.com/dJFsRSBC ?with the final lines
+>>>>>>> as:
+>>>>>>>
+>>>>>>> debug: res <- readOGR(dsn, layer = as.character(layer), verbose =
+>>>>>>> !ignore.stderr,
+>>>>>>> ? pointDropZ = pointDropZ)
+>>>>>>> Browse[2]>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> I'll look at this later, looks like a broken shapefile.
+>>>>>
+>>>>>
+>>>>>
+>>>>> I wasn't sure if you meant my local shapefile was broken? ?So I
+>>>>> checked the function on my real data as well as a fresh download of
+>>>>> spearfish. ?Neither worked. ?I also tried it in a spearfish60
+>>>>> location.
+>>>>>
+>>>>> My spearfish70 is simply spearfish60 after `v.build all` has been run.
+>>>>>
+>>>>>>
+>>>>>> Roger
+>>>>>>
+>>>>>>> GRASS 7.0.svn (spearfish70):~ >
+>>>>>>>
+>>>>>>>
+>>>>>>> I found a 2009 post regarding readOGR / readVECT6 and some versioning
+>>>>>>> issues:
+>>>>>>> https://stat.ethz.ch/pipermail/r-sig-geo/2009-April/005553.html
+>>>>>>> but I installed both rgdal and spgrass6 inside of R as packages. ?So
+>>>>>>> I'm not sure if this older post is still applicable, especially since
+>>>>>>> it works in GRASS 6.4.3. ?Any suggestions for what to try next?
+>>>>>>>
+>>>>>>>
+>>>>>>> Thanks in advance for any help provided.
+>>>>>>>
+>>>>>>> Eric
+>>>>>>> _______________________________________________
+>>>>>>> grass-stats mailing list
+>>>>>>> grass-stats@lists.osgeo.org
+>>>>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>>>>
+>>>>>>
+>>>>>> --
+>>>>>> Roger Bivand
+>>>>>> Department of Economics, NHH Norwegian School of Economics,
+>>>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>>>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>>>>> e-mail: Roger.Bivand@nhh.no
+>>>>>>
+>>>>>
+>>>>
+>>>> --
+>>>> Roger Bivand
+>>>> Department of Economics, NHH Norwegian School of Economics,
+>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>>> e-mail: Roger.Bivand@nhh.no
+>>>
+>>>
+>>
+>> --
+>> Roger Bivand
+>> Department of Economics, NHH Norwegian School of Economics,
+>> Helleveien 30, N-5045 Bergen, Norway.
+>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>> e-mail: Roger.Bivand@nhh.no
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From eric.momsen at gmail.com  Thu Mar 15 12:46:24 2012
+From: eric.momsen at gmail.com (Eric Momsen)
+Date: Thu Mar 15 12:47:30 2012
+Subject: [GRASS-stats] readRAST6 and readVECT6 errors with grass70
+In-Reply-To: <alpine.LRH.2.02.1203101627440.16344@reclus.nhh.no>
+References: <CAO7hk-JQmYN5_zVGf1DXxqF7cmz6jUVW55WHEUJpvOohRnZLCQ@mail.gmail.com>
+	<alpine.LRH.2.02.1203062111140.24316@reclus.nhh.no>
+	<CAO7hk-+SqrvzzucVxB0V91W5DggXo8qbDkXQHqBwv_qL1tnTFg@mail.gmail.com>
+	<alpine.LRH.2.02.1203081129430.3907@reclus.nhh.no>
+	<CAO7hk-J_V6c3JqPvK+pd9r3YkNbfPiorkbikgEec_VXU8Q5XwQ@mail.gmail.com>
+	<alpine.LRH.2.02.1203082028430.9646@reclus.nhh.no>
+	<CAO7hk-KX-ps-=MhLAOs50Wk_hixwkktHkEz2tvQ_=kn-x4rKxQ@mail.gmail.com>
+	<alpine.LRH.2.02.1203101627440.16344@reclus.nhh.no>
+Message-ID: <CAO7hk-Kb5W41-kH2w+iUFKi-N=uzL4Snn0SJQ3-Qk-hnTARaUw@mail.gmail.com>
+
+Success!  Thank you!!
+
+I tried last weekend to remove the gdal-grass plug in and to sort out
+the gdal reinstallation, I found at least 3 versions of gdal from
+debian repositories and from source on our server.  I was not able to
+get gdal to compile with grass, so this week we set up a new virtual
+machine to start over with a clean install and without multiple
+versions of grass and gdal.
+
+I installed gdal (w/o grass) then grass (w/ gdal).  I successfully
+configuring gdal w/ grass.  But the make failed.  I went ahead with
+testing in R/spgrass6 just to see what would happen... and it worked
+for loading both vector and rasters from grass into R.  I don't have
+the gdal-grass plugin OR gdal installed w/ grass support.  The check
+of spgrass6 worked (except for the documentation.)
+
+Should I be concerned that some other features won't work later on?
+
+Since it is running, I don't know if it is worth the time to track
+down the make error, or if a different place would be better to start
+a new discussion.  But just in case, here is the configure results and
+make error  http://pastebin.com/34kgysxz
+
+It seems there is are many different (sometimes conflicting)
+procedures for installing gdal/grass/spgrass6.  For example
+http://trac.osgeo.org/gdal/wiki/GRASS recommends the plug in.
+
+a.  Is my confusion due to my lack of experience with unix/open
+source/Debian/etc
+or
+b.  Could/should I help update any of this documentation and/or post
+the installation procedure I followed somewhere?
+
+Regards,
+Eric
+
+
+On Sat, Mar 10, 2012 at 9:33 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Fri, 9 Mar 2012, Eric Momsen wrote:
+>
+>> Roger,
+>>
+>> Thanks for your help and guidance. ?I have tried to sort out the
+>> dependencies and get the gdal-grass plugin to look at grass7. ?I can't
+>> get it to configure, details in line with your previous email.
+>>
+>> This is the plugin I have downloaded:
+>> http://download.osgeo.org/gdal/
+>> "Get the GDAL/OGR-GRASS plugin - file: gdal-grass-1.4.3.tar.gz (or later)"
+>>
+>> I've seen this closed ticket about the plugin not working with grass7
+>> ( http://trac.osgeo.org/gdal/ticket/2953 ?) but it sounds like you
+>> don't have any problems with it. ?So I assume it should work. ? I was
+>> able to get this same plugin to configure against grass 6.4.
+>
+>
+> I never use the plugin at all, I only install and uninstall to check that it
+> works for GRASS 6. It causes a great deal of trouble for Debian/Ubuntu users
+> installing binary GDAL. I advise against its use unless the user builds it
+> for a specific GRASS version. The separate gdal-grass plugin is deprecated -
+> one adds the path to the GRASS installation in ./configure to GDAL when
+> installing from source. The problem is the round tour:
+>
+> install GDAL without the GRASS plugin,
+> install GRASS linking against that GDAL,
+> re-install GDAL with the path to GRASS given in ./configure.
+>
+> However, any GDAL or GRASS upgrade will break the plugin.
+>
+> Try to get rid of the plugin altogether, and try again, please. It may live
+> under /usr/local somewhere.
+>
+> Roger
+>
+>
+>>
+>> I am trying to configure it directly from what was downloaded, without
+>> any patches.
+>>
+>> Am I using the right plug in?
+>> Are there some extra/different steps for grass7?
+>> I assume I need this plugin to use spgrass6 (and v.krige from in
+>> grass), or is there something else I should try?
+>>
+>> It feels like I'm missing just one key point to get everything to work
+>> beautifully!
+>>
+>> Regards,
+>> Eric
+>>
+>>
+>> On Thu, Mar 8, 2012 at 1:39 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>>>
+>>> Eric,
+>>>
+>>> The check of spgrass6 gets through readRAST6() with two rasters, which
+>>> sets
+>>> plugin=FALSE (twice, once not using GDAL, once using GDAL). It fails
+>>> either
+>>> in readRAST6(elevation.dem", plugin=TRUE, mapset="PERMANENT") if "GRASS"
+>>> %in% gdalDrivers()$name or at writeRAST6(spear, "sqdemSP", zcol="sqdem").
+>>>
+>>> My prejudice is to suspect the plugin. Can you do:
+>>>
+>>> library(rgdal)
+>>> "GRASS" %in% gdalDrivers()$name
+>>> "GRASS" %in% ogrDrivers()$name
+>>>
+>>
+>> Both were TRUE.
+>>
+>>> If they are TRUE, then the smoking gun is some dependency mixup in the
+>>> GDAL
+>>> GRASS plugin drivers, possibly pointing to a stale plugin, a stale GRASS
+>>> version linked to GRASS, or something like that. Managing plugins across
+>>> multiple versions of GRASS and/or GDAL is for very off-piste people who
+>>> like
+>>> excitement, I'm afraid.
+>>
+>>
+>> The plug in wasn't even something I was aware of (The system admin had
+>> installed grass 6.4, I was adding grass 7.0 later when the admin was
+>> busy.) ?My understanding is that for the GDAL-GRASS plug in he had
+>> used a Debian package, and based on your comments now, it makes sense
+>> that this is tied to GRASS 6.4 when it was first installed.
+>>
+>> I didn't review the GDAL installation procedure, since it was already
+>> installed. ?! ?Seems that was a mistake. ?I downloaded the source code
+>> for the plug in and attempted to compile it. ?I had added grass to the
+>> .conf , which didn't work, then tried LD_LIBRARY_PATH to go directly
+>> to my new grass installation, and still it doesn't seem to find the
+>> libraries:
+>>
+>> root@gisdev:/opt/gdal-grass-1.4.3# ./configure
+>> --with-gdal=/usr/local/bin/gdal-config
+>> --with-grass=/usr/local/grass-7.0.svn
+>> checking for gcc... gcc
+>> checking for C compiler default output file name... a.out
+>> checking whether the C compiler works... yes
+>> checking whether we are cross compiling... no
+>> checking for suffix of executables...
+>> checking for suffix of object files... o
+>> checking whether we are using the GNU C compiler... yes
+>> checking whether gcc accepts -g... yes
+>> checking for gcc option to accept ANSI C... none needed
+>> checking for g++... g++
+>> checking whether we are using the GNU C++ compiler... yes
+>> checking whether g++ accepts -g... yes
+>> checking for ranlib... ranlib
+>> checking for g++ -shared ... yes
+>> user supplied gdal-config (/usr/local/bin/gdal-config)
+>> using /usr/local/lib/gdalplugins as GDAL shared library autoload directory
+>> checking for G_asprintf in -lgrass_gis... no
+>> configure: error: --with-grass=/usr/local/grass-7.0.svn requested, but
+>> libraries not found! ?Perhaps you need to set LD_LIBRARY_PATH to
+>> include /usr/local/grass-7.0.svn/lib?
+>>
+>> double checking to answer the output's question:
+>> root@gisdev:/opt/gdal-grass-1.4.3# $LD_LIBRARY_PATH
+>> bash: /usr/local/grass-7.0.svn/lib: Is a directory
+>>
+>> I tried this:
+>> ./configure --with-gdal=/usr/local/bin/gdal-config
+>> --with-grass=/usr/local/grass-6.4.3svn/
+>> and it configured successfully (without any changes to LD_LIBRARY_PATH
+>> or the .conf files).
+>>
+>>>
+>>> The rgdal check suggests that the standard GDAL and OGR drivers work when
+>>> GRASS is not in the picture.
+>>>
+>>> Roger
+>>>
+>>>
+>>> On Thu, 8 Mar 2012, Eric Momsen wrote:
+>>>
+>>>> On Thu, Mar 8, 2012 at 4:42 AM, Roger Bivand <Roger.Bivand@nhh.no>
+>>>> wrote:
+>>>>>
+>>>>>
+>>>>> I've committed changes to spgrass6 on R-forge, project rspatial as
+>>>>> revision
+>>>>> 1224, which address the r.info flag issue, and another issue related to
+>>>>> my
+>>>>> using GDAL 1.9.0, which is less forgiving about overwriting vector
+>>>>> files
+>>>>> in
+>>>>> the temporary directory (but not the cause of your vector problem). I
+>>>>> always
+>>>>> compile GDAL, GEOS, etc. from source, and do not see any issues with
+>>>>> spearfish vector files converted to GRASS 7 (but had to enable sqlite
+>>>>> in
+>>>>> GRASS to avoid problems). I am always sceptical about Linux binary
+>>>>> builds,
+>>>>> and cannot replicate this issue (but which may mean that rgdal is
+>>>>> broken
+>>>>> in
+>>>>> some odd way if it was also installed using binary dependencies). Can
+>>>>> you
+>>>>> run:
+>>>>>
+>>>>> wget http://cran.r-project.org/src/contrib/rgdal_0.7-8.tar.gz
+>>>>> R CMD check rgdal_0.7-8.tar.gz
+>>>>>
+>>>>> to test the package on your platform?
+>>>>
+>>>>
+>>>>
+>>>> It seemed OK, ( http://pastebin.com/gykPF4EX ), the only problems were
+>>>> with the manual:
+>>>>
+>>>> * checking PDF version of manual ... WARNING
+>>>> LaTeX errors when creating PDF version.
+>>>> This typically indicates Rd problems.
+>>>> * checking PDF version of manual without hyperrefs or index ... ERROR
+>>>> Re-running with no redirection of stdout/stderr.
+>>>> Hmm ... looks like a package
+>>>> Error in texi2dvi("Rd2.tex", pdf = (out_ext == "pdf"), quiet = FALSE, ?:
+>>>> ?pdflatex is not available
+>>>> Error in running tools::texi2dvi
+>>>> You may want to clean up by 'rm -rf /tmp/RtmpqvwW8e/Rd2pdf69b337d4f332'
+>>>>
+>>>>>
+>>>>> If you check out rspatial, you will be able to do R CMD check on
+>>>>> spgrass6
+>>>>> too in its current development revision:
+>>>>>
+>>>>> svn checkout svn://scm.r-forge.r-project.org/svnroot/rspatial/
+>>>>> cd rspatial/pkg
+>>>>> (start GRASS7 in spearfish)
+>>>>> R CMD check spgrass6
+>>>>
+>>>>
+>>>>
+>>>>
+>>>> full output at: ?http://pastebin.com/n6a7SGXh
+>>>>
+>>>> Everything was OK until:
+>>>>
+>>>> * checking examples ... ERROR
+>>>> Running examples in ?spgrass6-Ex.R? failed
+>>>> The error most likely occurred in:
+>>>>
+>>>>> ### Name: readRAST6
+>>>>
+>>>>
+>>>>
+>>>>
+>>>> I did not (yet) move anything or install as packages in R, just ran R
+>>>> CMD where the downloaded file was at.
+>>>>
+>>>> Thanks for your help so far, any suggestion for what to try next?
+>>>>
+>>>> Eric
+>>>>
+>>>>>
+>>>>> Roger
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>> On Tue, 6 Mar 2012, Eric Momsen wrote:
+>>>>>
+>>>>>> Thank you for the quick response! ?I've added follow up after the
+>>>>>> points
+>>>>>> below.
+>>>>>>
+>>>>>> On Tue, Mar 6, 2012 at 2:25 PM, Roger Bivand <Roger.Bivand@nhh.no>
+>>>>>> wrote:
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> On Tue, 6 Mar 2012, Eric Momsen wrote:
+>>>>>>>
+>>>>>>>> Hello!
+>>>>>>>>
+>>>>>>>> I have been trying to get spgrass6 working in a Debian environment,
+>>>>>>>> and have started from scratch with both GRASS 6.4.3 and GRASS 7.0.
+>>>>>>>> ?I
+>>>>>>>> previously had the same errors in "old" installations of both 6 and
+>>>>>>>> 7,
+>>>>>>>> after following the advice in the listserve archive I am half way
+>>>>>>>> there. ?Since the behavior had been the same for both, I was
+>>>>>>>> suprised
+>>>>>>>> it didn't resolve the issue completely! ?Any suggestions would be
+>>>>>>>> appreciated.
+>>>>>>>>
+>>>>>>>> I hope it is OK to include all 3 questions here, since they all
+>>>>>>>> relate
+>>>>>>>> to spgrass6. ?Here is a listing of sessionInfo and various Debian
+>>>>>>>> package versions: ?http://pastebin.com/68XST1vK
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> My installation of spgrass6 is working now with GRASS 6.4.3, I can
+>>>>>>>> read and write vectors and rasters.
+>>>>>>>>
+>>>>>>>> 1. ?I am getting one warning message, is this OK, or am I missing
+>>>>>>>> some
+>>>>>>>> dependency still?
+>>>>>>>>
+>>>>>>>>> spear <- readRAST6(c("elevation.dem", "geology"), cat = c(FALSE,
+>>>>>>>>> TRUE))
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> Warning message:
+>>>>>>>> statistics not supported by this driver
+>>>>>>>>
+>>>>>>>> The program does continue to successfully import the data.
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> Not a problem - an artefact of calling GDALinfo() on the temporary
+>>>>>>> file.
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> Great. ?After all the real errors I've caused, it is nice to have
+>>>>>> reached a point where I can ignore the warnings.
+>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> Moving onto GRASS 7:
+>>>>>>>>
+>>>>>>>> 2. ?readRAST6 gives an error in grass70, output as follows:
+>>>>>>>>
+>>>>>>>>> spear <- readRAST6(c("geology", "elevation.dem"), cat=c(TRUE,
+>>>>>>>>> FALSE),
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> + useGDAL=FALSE)
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> r.info is called twice, once with -t, once with -r. In GRASS 7, all
+>>>>>>> of
+>>>>>>> have
+>>>>>>> been collected in -g, which simply breaks compatibility - arguably,
+>>>>>>> -t
+>>>>>>> could
+>>>>>>> have been left in place. When I find time to build a GRASS 7, I'll
+>>>>>>> try
+>>>>>>> to
+>>>>>>> accommodate the broken flag. -r is retained, so it is only on line 48
+>>>>>>> in
+>>>>>>> R/bin_link.R that any change is required.
+>>>>>>>
+>>>>>>
+>>>>>> I changed the flag as suggested and readRAST6 now works for my
+>>>>>> installation.
+>>>>>>
+>>>>>>>> Command: r.info
+>>>>>>>> Description: Outputs basic information about a raster map.
+>>>>>>>> Keywords: raster, metadata, history
+>>>>>>>> Parameters:
+>>>>>>>> ?name: map, type: string, required: yes, multiple: no
+>>>>>>>> ?keydesc: name, keydesc_count: 1
+>>>>>>>> [Name of raster map]
+>>>>>>>> Flags:
+>>>>>>>> ?name: g [Print raster array information only] {FALSE}
+>>>>>>>> ?name: r [Print range only] {FALSE}
+>>>>>>>> ?name: e [Print extended metadata information only] {FALSE}
+>>>>>>>> ?name: h [Print raster history instead of info] {FALSE}
+>>>>>>>> ?name: verbose [Verbose module output] {FALSE}
+>>>>>>>> ?name: quiet [Quiet module output] {FALSE}
+>>>>>>>> Error in doGRASS(cmd, flags = flags, ..., parameters = parameters,
+>>>>>>>> echoCmd = echoCmd) :
+>>>>>>>> ?Invalid flag value: t
+>>>>>>>>
+>>>>>>>> I checked that r.info works:
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> system("r.info geology")
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> +----------------------------------------------------------------------------+
+>>>>>>>> | Layer: ? ?geology ? ? ? ? ? ? ? ? ? ? ? ?Date: Mon May ?4 10:00:14
+>>>>>>>> 1987
+>>>>>>>> : ?|
+>>>>>>>> | Mapset: ? PERMANENT ? ? ? ? ? ? ? ? ? ? ?Login of Creator: grass
+>>>>>>>> ? |
+>>>>>>>> | Location: spearfish70
+>>>>>>>> .
+>>>>>>>> .
+>>>>>>>> .
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> I see that -t is in the GRASS6.4.3 version of r.info, but not in the
+>>>>>>>> GRASS7.0 version of r.info.
+>>>>>>>>
+>>>>>>>> I'm not sure what to do next here.
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> 3. ?readVECT6 causes R to exit.
+>>>>>>>>
+>>>>>>>>> bugsDF <- readVECT6("bugsites")
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> GRASS 7.0.svn (spearfish70):~ >
+>>>>>>>>
+>>>>>>>> I went back to check that the bugsites map was available:
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> system("v.info bugsites")
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> +----------------------------------------------------------------------------+
+>>>>>>>> | Name: ? ? ? ? ? ?bugsites
+>>>>>>>> ? ?|
+>>>>>>>> | Mapset: ? ? ? ? ?PERMANENT
+>>>>>>>> ? |
+>>>>>>>> | Location: ? ? ? ?spearfish70
+>>>>>>>> ? |
+>>>>>>>> | Database: ? ? ? ?/home/shared/research/GRASSDATA
+>>>>>>>> ? |
+>>>>>>>> .
+>>>>>>>> .
+>>>>>>>> .
+>>>>>>>>
+>>>>>>>> And then tried the debug tool to see where things went wrong...
+>>>>>>>>
+>>>>>>>> complete output at: http://pastebin.com/dJFsRSBC ?with the final
+>>>>>>>> lines
+>>>>>>>> as:
+>>>>>>>>
+>>>>>>>> debug: res <- readOGR(dsn, layer = as.character(layer), verbose =
+>>>>>>>> !ignore.stderr,
+>>>>>>>> ? pointDropZ = pointDropZ)
+>>>>>>>> Browse[2]>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> I'll look at this later, looks like a broken shapefile.
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> I wasn't sure if you meant my local shapefile was broken? ?So I
+>>>>>> checked the function on my real data as well as a fresh download of
+>>>>>> spearfish. ?Neither worked. ?I also tried it in a spearfish60
+>>>>>> location.
+>>>>>>
+>>>>>> My spearfish70 is simply spearfish60 after `v.build all` has been run.
+>>>>>>
+>>>>>>>
+>>>>>>> Roger
+>>>>>>>
+>>>>>>>> GRASS 7.0.svn (spearfish70):~ >
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> I found a 2009 post regarding readOGR / readVECT6 and some
+>>>>>>>> versioning
+>>>>>>>> issues:
+>>>>>>>> https://stat.ethz.ch/pipermail/r-sig-geo/2009-April/005553.html
+>>>>>>>> but I installed both rgdal and spgrass6 inside of R as packages. ?So
+>>>>>>>> I'm not sure if this older post is still applicable, especially
+>>>>>>>> since
+>>>>>>>> it works in GRASS 6.4.3. ?Any suggestions for what to try next?
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> Thanks in advance for any help provided.
+>>>>>>>>
+>>>>>>>> Eric
+>>>>>>>> _______________________________________________
+>>>>>>>> grass-stats mailing list
+>>>>>>>> grass-stats@lists.osgeo.org
+>>>>>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>>>>>
+>>>>>>>
+>>>>>>> --
+>>>>>>> Roger Bivand
+>>>>>>> Department of Economics, NHH Norwegian School of Economics,
+>>>>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>>>>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>>>>>> e-mail: Roger.Bivand@nhh.no
+>>>>>>>
+>>>>>>
+>>>>>
+>>>>> --
+>>>>> Roger Bivand
+>>>>> Department of Economics, NHH Norwegian School of Economics,
+>>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>>>> e-mail: Roger.Bivand@nhh.no
+>>>>
+>>>>
+>>>>
+>>>
+>>> --
+>>> Roger Bivand
+>>> Department of Economics, NHH Norwegian School of Economics,
+>>> Helleveien 30, N-5045 Bergen, Norway.
+>>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>> e-mail: Roger.Bivand@nhh.no
+>>
+>>
+>
+> --
+> Roger Bivand
+> Department of Economics, NHH Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+From Roger.Bivand at nhh.no  Thu Mar 15 16:12:39 2012
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Mar 15 16:12:39 2012
+Subject: [GRASS-stats] readRAST6 and readVECT6 errors with grass70
+In-Reply-To: <CAO7hk-Kb5W41-kH2w+iUFKi-N=uzL4Snn0SJQ3-Qk-hnTARaUw@mail.gmail.com>
+References: <CAO7hk-JQmYN5_zVGf1DXxqF7cmz6jUVW55WHEUJpvOohRnZLCQ@mail.gmail.com>
+	<alpine.LRH.2.02.1203062111140.24316@reclus.nhh.no>
+	<CAO7hk-+SqrvzzucVxB0V91W5DggXo8qbDkXQHqBwv_qL1tnTFg@mail.gmail.com>
+	<alpine.LRH.2.02.1203081129430.3907@reclus.nhh.no>
+	<CAO7hk-J_V6c3JqPvK+pd9r3YkNbfPiorkbikgEec_VXU8Q5XwQ@mail.gmail.com>
+	<alpine.LRH.2.02.1203082028430.9646@reclus.nhh.no>
+	<CAO7hk-KX-ps-=MhLAOs50Wk_hixwkktHkEz2tvQ_=kn-x4rKxQ@mail.gmail.com>
+	<alpine.LRH.2.02.1203101627440.16344@reclus.nhh.no>
+	<CAO7hk-Kb5W41-kH2w+iUFKi-N=uzL4Snn0SJQ3-Qk-hnTARaUw@mail.gmail.com>
+Message-ID: <alpine.LRH.2.02.1203152107410.11619@reclus.nhh.no>
+
+On Thu, 15 Mar 2012, Eric Momsen wrote:
+
+> Success!  Thank you!!
+>
+> I tried last weekend to remove the gdal-grass plug in and to sort out
+> the gdal reinstallation, I found at least 3 versions of gdal from
+> debian repositories and from source on our server.  I was not able to
+> get gdal to compile with grass, so this week we set up a new virtual
+> machine to start over with a clean install and without multiple
+> versions of grass and gdal.
+>
+> I installed gdal (w/o grass) then grass (w/ gdal).  I successfully
+> configuring gdal w/ grass.  But the make failed.  I went ahead with
+> testing in R/spgrass6 just to see what would happen... and it worked
+> for loading both vector and rasters from grass into R.  I don't have
+> the gdal-grass plugin OR gdal installed w/ grass support.  The check
+> of spgrass6 worked (except for the documentation.)
+>
+> Should I be concerned that some other features won't work later on?
+>
+> Since it is running, I don't know if it is worth the time to track
+> down the make error, or if a different place would be better to start
+> a new discussion.  But just in case, here is the configure results and
+> make error  http://pastebin.com/34kgysxz
+
+My unequivocal advice is alway to avoid the GRASS plugins in GDAL. Any 
+changes in the system, or multiple installs, alway lead to chaos. There is 
+also no guarantee that the plugin will stay synchronised with GRASS7, so 
+there anyone using it is asking for trouble IMHO (unless they are the 
+developer actually maintaining the (vector) plugin. It might be nice to 
+ask GDAL to install the raster and vector plugins as two configure 
+options.
+
+>
+> It seems there is are many different (sometimes conflicting)
+> procedures for installing gdal/grass/spgrass6.  For example
+> http://trac.osgeo.org/gdal/wiki/GRASS recommends the plug in.
+>
+
+The person proffering the advice doesn't have to clrear up afterwards.
+
+> a.  Is my confusion due to my lack of experience with unix/open
+> source/Debian/etc
+> or
+> b.  Could/should I help update any of this documentation and/or post
+> the installation procedure I followed somewhere?
+>
+
+I think you've done very creditably given the level of difficulty.
+
+Best wishes,
+
+Roger
+
+> Regards,
+> Eric
+>
+>
+> On Sat, Mar 10, 2012 at 9:33 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> On Fri, 9 Mar 2012, Eric Momsen wrote:
+>>
+>>> Roger,
+>>>
+>>> Thanks for your help and guidance. ?I have tried to sort out the
+>>> dependencies and get the gdal-grass plugin to look at grass7. ?I can't
+>>> get it to configure, details in line with your previous email.
+>>>
+>>> This is the plugin I have downloaded:
+>>> http://download.osgeo.org/gdal/
+>>> "Get the GDAL/OGR-GRASS plugin - file: gdal-grass-1.4.3.tar.gz (or later)"
+>>>
+>>> I've seen this closed ticket about the plugin not working with grass7
+>>> ( http://trac.osgeo.org/gdal/ticket/2953 ?) but it sounds like you
+>>> don't have any problems with it. ?So I assume it should work. ? I was
+>>> able to get this same plugin to configure against grass 6.4.
+>>
+>>
+>> I never use the plugin at all, I only install and uninstall to check that it
+>> works for GRASS 6. It causes a great deal of trouble for Debian/Ubuntu users
+>> installing binary GDAL. I advise against its use unless the user builds it
+>> for a specific GRASS version. The separate gdal-grass plugin is deprecated -
+>> one adds the path to the GRASS installation in ./configure to GDAL when
+>> installing from source. The problem is the round tour:
+>>
+>> install GDAL without the GRASS plugin,
+>> install GRASS linking against that GDAL,
+>> re-install GDAL with the path to GRASS given in ./configure.
+>>
+>> However, any GDAL or GRASS upgrade will break the plugin.
+>>
+>> Try to get rid of the plugin altogether, and try again, please. It may live
+>> under /usr/local somewhere.
+>>
+>> Roger
+>>
+>>
+>>>
+>>> I am trying to configure it directly from what was downloaded, without
+>>> any patches.
+>>>
+>>> Am I using the right plug in?
+>>> Are there some extra/different steps for grass7?
+>>> I assume I need this plugin to use spgrass6 (and v.krige from in
+>>> grass), or is there something else I should try?
+>>>
+>>> It feels like I'm missing just one key point to get everything to work
+>>> beautifully!
+>>>
+>>> Regards,
+>>> Eric
+>>>
+>>>
+>>> On Thu, Mar 8, 2012 at 1:39 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>>>>
+>>>> Eric,
+>>>>
+>>>> The check of spgrass6 gets through readRAST6() with two rasters, which
+>>>> sets
+>>>> plugin=FALSE (twice, once not using GDAL, once using GDAL). It fails
+>>>> either
+>>>> in readRAST6(elevation.dem", plugin=TRUE, mapset="PERMANENT") if "GRASS"
+>>>> %in% gdalDrivers()$name or at writeRAST6(spear, "sqdemSP", zcol="sqdem").
+>>>>
+>>>> My prejudice is to suspect the plugin. Can you do:
+>>>>
+>>>> library(rgdal)
+>>>> "GRASS" %in% gdalDrivers()$name
+>>>> "GRASS" %in% ogrDrivers()$name
+>>>>
+>>>
+>>> Both were TRUE.
+>>>
+>>>> If they are TRUE, then the smoking gun is some dependency mixup in the
+>>>> GDAL
+>>>> GRASS plugin drivers, possibly pointing to a stale plugin, a stale GRASS
+>>>> version linked to GRASS, or something like that. Managing plugins across
+>>>> multiple versions of GRASS and/or GDAL is for very off-piste people who
+>>>> like
+>>>> excitement, I'm afraid.
+>>>
+>>>
+>>> The plug in wasn't even something I was aware of (The system admin had
+>>> installed grass 6.4, I was adding grass 7.0 later when the admin was
+>>> busy.) ?My understanding is that for the GDAL-GRASS plug in he had
+>>> used a Debian package, and based on your comments now, it makes sense
+>>> that this is tied to GRASS 6.4 when it was first installed.
+>>>
+>>> I didn't review the GDAL installation procedure, since it was already
+>>> installed. ?! ?Seems that was a mistake. ?I downloaded the source code
+>>> for the plug in and attempted to compile it. ?I had added grass to the
+>>> .conf , which didn't work, then tried LD_LIBRARY_PATH to go directly
+>>> to my new grass installation, and still it doesn't seem to find the
+>>> libraries:
+>>>
+>>> root@gisdev:/opt/gdal-grass-1.4.3# ./configure
+>>> --with-gdal=/usr/local/bin/gdal-config
+>>> --with-grass=/usr/local/grass-7.0.svn
+>>> checking for gcc... gcc
+>>> checking for C compiler default output file name... a.out
+>>> checking whether the C compiler works... yes
+>>> checking whether we are cross compiling... no
+>>> checking for suffix of executables...
+>>> checking for suffix of object files... o
+>>> checking whether we are using the GNU C compiler... yes
+>>> checking whether gcc accepts -g... yes
+>>> checking for gcc option to accept ANSI C... none needed
+>>> checking for g++... g++
+>>> checking whether we are using the GNU C++ compiler... yes
+>>> checking whether g++ accepts -g... yes
+>>> checking for ranlib... ranlib
+>>> checking for g++ -shared ... yes
+>>> user supplied gdal-config (/usr/local/bin/gdal-config)
+>>> using /usr/local/lib/gdalplugins as GDAL shared library autoload directory
+>>> checking for G_asprintf in -lgrass_gis... no
+>>> configure: error: --with-grass=/usr/local/grass-7.0.svn requested, but
+>>> libraries not found! ?Perhaps you need to set LD_LIBRARY_PATH to
+>>> include /usr/local/grass-7.0.svn/lib?
+>>>
+>>> double checking to answer the output's question:
+>>> root@gisdev:/opt/gdal-grass-1.4.3# $LD_LIBRARY_PATH
+>>> bash: /usr/local/grass-7.0.svn/lib: Is a directory
+>>>
+>>> I tried this:
+>>> ./configure --with-gdal=/usr/local/bin/gdal-config
+>>> --with-grass=/usr/local/grass-6.4.3svn/
+>>> and it configured successfully (without any changes to LD_LIBRARY_PATH
+>>> or the .conf files).
+>>>
+>>>>
+>>>> The rgdal check suggests that the standard GDAL and OGR drivers work when
+>>>> GRASS is not in the picture.
+>>>>
+>>>> Roger
+>>>>
+>>>>
+>>>> On Thu, 8 Mar 2012, Eric Momsen wrote:
+>>>>
+>>>>> On Thu, Mar 8, 2012 at 4:42 AM, Roger Bivand <Roger.Bivand@nhh.no>
+>>>>> wrote:
+>>>>>>
+>>>>>>
+>>>>>> I've committed changes to spgrass6 on R-forge, project rspatial as
+>>>>>> revision
+>>>>>> 1224, which address the r.info flag issue, and another issue related to
+>>>>>> my
+>>>>>> using GDAL 1.9.0, which is less forgiving about overwriting vector
+>>>>>> files
+>>>>>> in
+>>>>>> the temporary directory (but not the cause of your vector problem). I
+>>>>>> always
+>>>>>> compile GDAL, GEOS, etc. from source, and do not see any issues with
+>>>>>> spearfish vector files converted to GRASS 7 (but had to enable sqlite
+>>>>>> in
+>>>>>> GRASS to avoid problems). I am always sceptical about Linux binary
+>>>>>> builds,
+>>>>>> and cannot replicate this issue (but which may mean that rgdal is
+>>>>>> broken
+>>>>>> in
+>>>>>> some odd way if it was also installed using binary dependencies). Can
+>>>>>> you
+>>>>>> run:
+>>>>>>
+>>>>>> wget http://cran.r-project.org/src/contrib/rgdal_0.7-8.tar.gz
+>>>>>> R CMD check rgdal_0.7-8.tar.gz
+>>>>>>
+>>>>>> to test the package on your platform?
+>>>>>
+>>>>>
+>>>>>
+>>>>> It seemed OK, ( http://pastebin.com/gykPF4EX ), the only problems were
+>>>>> with the manual:
+>>>>>
+>>>>> * checking PDF version of manual ... WARNING
+>>>>> LaTeX errors when creating PDF version.
+>>>>> This typically indicates Rd problems.
+>>>>> * checking PDF version of manual without hyperrefs or index ... ERROR
+>>>>> Re-running with no redirection of stdout/stderr.
+>>>>> Hmm ... looks like a package
+>>>>> Error in texi2dvi("Rd2.tex", pdf = (out_ext == "pdf"), quiet = FALSE, ?:
+>>>>> ?pdflatex is not available
+>>>>> Error in running tools::texi2dvi
+>>>>> You may want to clean up by 'rm -rf /tmp/RtmpqvwW8e/Rd2pdf69b337d4f332'
+>>>>>
+>>>>>>
+>>>>>> If you check out rspatial, you will be able to do R CMD check on
+>>>>>> spgrass6
+>>>>>> too in its current development revision:
+>>>>>>
+>>>>>> svn checkout svn://scm.r-forge.r-project.org/svnroot/rspatial/
+>>>>>> cd rspatial/pkg
+>>>>>> (start GRASS7 in spearfish)
+>>>>>> R CMD check spgrass6
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>> full output at: ?http://pastebin.com/n6a7SGXh
+>>>>>
+>>>>> Everything was OK until:
+>>>>>
+>>>>> * checking examples ... ERROR
+>>>>> Running examples in ?spgrass6-Ex.R? failed
+>>>>> The error most likely occurred in:
+>>>>>
+>>>>>> ### Name: readRAST6
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>> I did not (yet) move anything or install as packages in R, just ran R
+>>>>> CMD where the downloaded file was at.
+>>>>>
+>>>>> Thanks for your help so far, any suggestion for what to try next?
+>>>>>
+>>>>> Eric
+>>>>>
+>>>>>>
+>>>>>> Roger
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> On Tue, 6 Mar 2012, Eric Momsen wrote:
+>>>>>>
+>>>>>>> Thank you for the quick response! ?I've added follow up after the
+>>>>>>> points
+>>>>>>> below.
+>>>>>>>
+>>>>>>> On Tue, Mar 6, 2012 at 2:25 PM, Roger Bivand <Roger.Bivand@nhh.no>
+>>>>>>> wrote:
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> On Tue, 6 Mar 2012, Eric Momsen wrote:
+>>>>>>>>
+>>>>>>>>> Hello!
+>>>>>>>>>
+>>>>>>>>> I have been trying to get spgrass6 working in a Debian environment,
+>>>>>>>>> and have started from scratch with both GRASS 6.4.3 and GRASS 7.0.
+>>>>>>>>> ?I
+>>>>>>>>> previously had the same errors in "old" installations of both 6 and
+>>>>>>>>> 7,
+>>>>>>>>> after following the advice in the listserve archive I am half way
+>>>>>>>>> there. ?Since the behavior had been the same for both, I was
+>>>>>>>>> suprised
+>>>>>>>>> it didn't resolve the issue completely! ?Any suggestions would be
+>>>>>>>>> appreciated.
+>>>>>>>>>
+>>>>>>>>> I hope it is OK to include all 3 questions here, since they all
+>>>>>>>>> relate
+>>>>>>>>> to spgrass6. ?Here is a listing of sessionInfo and various Debian
+>>>>>>>>> package versions: ?http://pastebin.com/68XST1vK
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> My installation of spgrass6 is working now with GRASS 6.4.3, I can
+>>>>>>>>> read and write vectors and rasters.
+>>>>>>>>>
+>>>>>>>>> 1. ?I am getting one warning message, is this OK, or am I missing
+>>>>>>>>> some
+>>>>>>>>> dependency still?
+>>>>>>>>>
+>>>>>>>>>> spear <- readRAST6(c("elevation.dem", "geology"), cat = c(FALSE,
+>>>>>>>>>> TRUE))
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Warning message:
+>>>>>>>>> statistics not supported by this driver
+>>>>>>>>>
+>>>>>>>>> The program does continue to successfully import the data.
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> Not a problem - an artefact of calling GDALinfo() on the temporary
+>>>>>>>> file.
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> Great. ?After all the real errors I've caused, it is nice to have
+>>>>>>> reached a point where I can ignore the warnings.
+>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Moving onto GRASS 7:
+>>>>>>>>>
+>>>>>>>>> 2. ?readRAST6 gives an error in grass70, output as follows:
+>>>>>>>>>
+>>>>>>>>>> spear <- readRAST6(c("geology", "elevation.dem"), cat=c(TRUE,
+>>>>>>>>>> FALSE),
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> + useGDAL=FALSE)
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> r.info is called twice, once with -t, once with -r. In GRASS 7, all
+>>>>>>>> of
+>>>>>>>> have
+>>>>>>>> been collected in -g, which simply breaks compatibility - arguably,
+>>>>>>>> -t
+>>>>>>>> could
+>>>>>>>> have been left in place. When I find time to build a GRASS 7, I'll
+>>>>>>>> try
+>>>>>>>> to
+>>>>>>>> accommodate the broken flag. -r is retained, so it is only on line 48
+>>>>>>>> in
+>>>>>>>> R/bin_link.R that any change is required.
+>>>>>>>>
+>>>>>>>
+>>>>>>> I changed the flag as suggested and readRAST6 now works for my
+>>>>>>> installation.
+>>>>>>>
+>>>>>>>>> Command: r.info
+>>>>>>>>> Description: Outputs basic information about a raster map.
+>>>>>>>>> Keywords: raster, metadata, history
+>>>>>>>>> Parameters:
+>>>>>>>>> ?name: map, type: string, required: yes, multiple: no
+>>>>>>>>> ?keydesc: name, keydesc_count: 1
+>>>>>>>>> [Name of raster map]
+>>>>>>>>> Flags:
+>>>>>>>>> ?name: g [Print raster array information only] {FALSE}
+>>>>>>>>> ?name: r [Print range only] {FALSE}
+>>>>>>>>> ?name: e [Print extended metadata information only] {FALSE}
+>>>>>>>>> ?name: h [Print raster history instead of info] {FALSE}
+>>>>>>>>> ?name: verbose [Verbose module output] {FALSE}
+>>>>>>>>> ?name: quiet [Quiet module output] {FALSE}
+>>>>>>>>> Error in doGRASS(cmd, flags = flags, ..., parameters = parameters,
+>>>>>>>>> echoCmd = echoCmd) :
+>>>>>>>>> ?Invalid flag value: t
+>>>>>>>>>
+>>>>>>>>> I checked that r.info works:
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> system("r.info geology")
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> +----------------------------------------------------------------------------+
+>>>>>>>>> | Layer: ? ?geology ? ? ? ? ? ? ? ? ? ? ? ?Date: Mon May ?4 10:00:14
+>>>>>>>>> 1987
+>>>>>>>>> : ?|
+>>>>>>>>> | Mapset: ? PERMANENT ? ? ? ? ? ? ? ? ? ? ?Login of Creator: grass
+>>>>>>>>> ? |
+>>>>>>>>> | Location: spearfish70
+>>>>>>>>> .
+>>>>>>>>> .
+>>>>>>>>> .
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> I see that -t is in the GRASS6.4.3 version of r.info, but not in the
+>>>>>>>>> GRASS7.0 version of r.info.
+>>>>>>>>>
+>>>>>>>>> I'm not sure what to do next here.
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> 3. ?readVECT6 causes R to exit.
+>>>>>>>>>
+>>>>>>>>>> bugsDF <- readVECT6("bugsites")
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> GRASS 7.0.svn (spearfish70):~ >
+>>>>>>>>>
+>>>>>>>>> I went back to check that the bugsites map was available:
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> system("v.info bugsites")
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> +----------------------------------------------------------------------------+
+>>>>>>>>> | Name: ? ? ? ? ? ?bugsites
+>>>>>>>>> ? ?|
+>>>>>>>>> | Mapset: ? ? ? ? ?PERMANENT
+>>>>>>>>> ? |
+>>>>>>>>> | Location: ? ? ? ?spearfish70
+>>>>>>>>> ? |
+>>>>>>>>> | Database: ? ? ? ?/home/shared/research/GRASSDATA
+>>>>>>>>> ? |
+>>>>>>>>> .
+>>>>>>>>> .
+>>>>>>>>> .
+>>>>>>>>>
+>>>>>>>>> And then tried the debug tool to see where things went wrong...
+>>>>>>>>>
+>>>>>>>>> complete output at: http://pastebin.com/dJFsRSBC ?with the final
+>>>>>>>>> lines
+>>>>>>>>> as:
+>>>>>>>>>
+>>>>>>>>> debug: res <- readOGR(dsn, layer = as.character(layer), verbose =
+>>>>>>>>> !ignore.stderr,
+>>>>>>>>> ? pointDropZ = pointDropZ)
+>>>>>>>>> Browse[2]>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> I'll look at this later, looks like a broken shapefile.
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> I wasn't sure if you meant my local shapefile was broken? ?So I
+>>>>>>> checked the function on my real data as well as a fresh download of
+>>>>>>> spearfish. ?Neither worked. ?I also tried it in a spearfish60
+>>>>>>> location.
+>>>>>>>
+>>>>>>> My spearfish70 is simply spearfish60 after `v.build all` has been run.
+>>>>>>>
+>>>>>>>>
+>>>>>>>> Roger
+>>>>>>>>
+>>>>>>>>> GRASS 7.0.svn (spearfish70):~ >
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> I found a 2009 post regarding readOGR / readVECT6 and some
+>>>>>>>>> versioning
+>>>>>>>>> issues:
+>>>>>>>>> https://stat.ethz.ch/pipermail/r-sig-geo/2009-April/005553.html
+>>>>>>>>> but I installed both rgdal and spgrass6 inside of R as packages. ?So
+>>>>>>>>> I'm not sure if this older post is still applicable, especially
+>>>>>>>>> since
+>>>>>>>>> it works in GRASS 6.4.3. ?Any suggestions for what to try next?
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Thanks in advance for any help provided.
+>>>>>>>>>
+>>>>>>>>> Eric
+>>>>>>>>> _______________________________________________
+>>>>>>>>> grass-stats mailing list
+>>>>>>>>> grass-stats@lists.osgeo.org
+>>>>>>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> --
+>>>>>>>> Roger Bivand
+>>>>>>>> Department of Economics, NHH Norwegian School of Economics,
+>>>>>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>>>>>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>>>>>>> e-mail: Roger.Bivand@nhh.no
+>>>>>>>>
+>>>>>>>
+>>>>>>
+>>>>>> --
+>>>>>> Roger Bivand
+>>>>>> Department of Economics, NHH Norwegian School of Economics,
+>>>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>>>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>>>>> e-mail: Roger.Bivand@nhh.no
+>>>>>
+>>>>>
+>>>>>
+>>>>
+>>>> --
+>>>> Roger Bivand
+>>>> Department of Economics, NHH Norwegian School of Economics,
+>>>> Helleveien 30, N-5045 Bergen, Norway.
+>>>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>>> e-mail: Roger.Bivand@nhh.no
+>>>
+>>>
+>>
+>> --
+>> Roger Bivand
+>> Department of Economics, NHH Norwegian School of Economics,
+>> Helleveien 30, N-5045 Bergen, Norway.
+>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>> e-mail: Roger.Bivand@nhh.no
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From villers.alexandre at gmail.com  Mon Mar 19 08:59:39 2012
+From: villers.alexandre at gmail.com (Alexandre Villers)
+Date: Mon Mar 19 09:00:26 2012
+Subject: [GRASS-stats] administration rights: unable to use the flag
+	"overwrite" with spgrass6
+Message-ID: <4F672DBB.2090903@gmail.com>
+
+Dear list,
+
+I am unable to use the "overwrite" flag (e.g. with v.in.ogr) when 
+working from within R with spgrass6 on a windows 7 x64bits machine 
+(v.in.ogr.exe is not allowed to delete the file). It is apparently an 
+administrator rights issue as it works fine when I specifiy gisDbase 
+using a folder on my external hard disk. The problem is that I am the 
+administrator on this computer... and that I wouldn't expect any error 
+as the tempdir() function creates folder in my personal folder in Users 
+where I should have the rights anyway.
+
+Has anyone experienced such issue with windows 7 ?
+Thanks in advance.
+
+Alex
+
+
+R version 2.14.2 (2012-02-29)
+Platform: x86_64-pc-mingw32/x64 (64-bit)
+
+locale:
+[1] LC_COLLATE=English_United Kingdom.1252  LC_CTYPE=English_United 
+Kingdom.1252    LC_MONETARY=English_United Kingdom.1252 LC_NUMERIC=C
+[5] LC_TIME=English_United Kingdom.1252
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] spgrass6_0.7-9 XML_3.9-4.1    sp_0.9-97
+
+loaded via a namespace (and not attached):
+[1] grid_2.14.2    lattice_0.20-0
+From Roger.Bivand at nhh.no  Mon Mar 19 11:26:35 2012
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon Mar 19 11:26:43 2012
+Subject: [GRASS-stats] administration rights: unable to use the flag
+	"overwrite" with spgrass6
+In-Reply-To: <4F672DBB.2090903@gmail.com>
+References: <4F672DBB.2090903@gmail.com>
+Message-ID: <alpine.LRH.2.02.1203191625040.28678@reclus.nhh.no>
+
+On Mon, 19 Mar 2012, Alexandre Villers wrote:
+
+> Dear list,
+>
+> I am unable to use the "overwrite" flag (e.g. with v.in.ogr) when working 
+> from within R with spgrass6 on a windows 7 x64bits machine (v.in.ogr.exe is 
+> not allowed to delete the file). It is apparently an administrator rights 
+> issue as it works fine when I specifiy gisDbase using a folder on my external 
+> hard disk. The problem is that I am the administrator on this computer... and 
+> that I wouldn't expect any error as the tempdir() function creates folder in 
+> my personal folder in Users where I should have the rights anyway.
+
+I've now tried to install two GRASS 7 Windows binaries (19/3 and 12/3), 
+and both are broken (no g.region.exe). If you can show me where a working 
+GRASS 7 Windows binary can be found, I may look at this.
+
+Roger
+
+>
+> Has anyone experienced such issue with windows 7 ?
+> Thanks in advance.
+>
+> Alex
+>
+>
+> R version 2.14.2 (2012-02-29)
+> Platform: x86_64-pc-mingw32/x64 (64-bit)
+>
+> locale:
+> [1] LC_COLLATE=English_United Kingdom.1252  LC_CTYPE=English_United 
+> Kingdom.1252    LC_MONETARY=English_United Kingdom.1252 LC_NUMERIC=C
+> [5] LC_TIME=English_United Kingdom.1252
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base
+>
+> other attached packages:
+> [1] spgrass6_0.7-9 XML_3.9-4.1    sp_0.9-97
+>
+> loaded via a namespace (and not attached):
+> [1] grid_2.14.2    lattice_0.20-0
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From Roger.Bivand at nhh.no  Mon Mar 19 11:40:48 2012
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon Mar 19 11:40:48 2012
+Subject: [GRASS-stats] administration rights: unable to use the flag
+	"overwrite" with spgrass6
+In-Reply-To: <alpine.LRH.2.02.1203191625040.28678@reclus.nhh.no>
+References: <4F672DBB.2090903@gmail.com>
+	<alpine.LRH.2.02.1203191625040.28678@reclus.nhh.no>
+Message-ID: <alpine.LRH.2.02.1203191639420.28678@reclus.nhh.no>
+
+On Mon, 19 Mar 2012, Roger Bivand wrote:
+
+> On Mon, 19 Mar 2012, Alexandre Villers wrote:
+>
+>> Dear list,
+>> 
+>> I am unable to use the "overwrite" flag (e.g. with v.in.ogr) when working 
+>> from within R with spgrass6 on a windows 7 x64bits machine (v.in.ogr.exe is 
+>> not allowed to delete the file). It is apparently an administrator rights 
+>> issue as it works fine when I specifiy gisDbase using a folder on my 
+>> external hard disk. The problem is that I am the administrator on this 
+>> computer... and that I wouldn't expect any error as the tempdir() function 
+>> creates folder in my personal folder in Users where I should have the 
+>> rights anyway.
+>
+> I've now tried to install two GRASS 7 Windows binaries (19/3 and 12/3), and 
+> both are broken (no g.region.exe). If you can show me where a working GRASS 7 
+> Windows binary can be found, I may look at this.
+
+>From the error logs on Martin's site, the binary has been badly broken 
+from 11 March, with a long error log. 10 March looks more or less OK.
+
+Roger
+
+>
+> Roger
+>
+>> 
+>> Has anyone experienced such issue with windows 7 ?
+>> Thanks in advance.
+>> 
+>> Alex
+>> 
+>> 
+>> R version 2.14.2 (2012-02-29)
+>> Platform: x86_64-pc-mingw32/x64 (64-bit)
+>> 
+>> locale:
+>> [1] LC_COLLATE=English_United Kingdom.1252  LC_CTYPE=English_United 
+>> Kingdom.1252    LC_MONETARY=English_United Kingdom.1252 LC_NUMERIC=C
+>> [5] LC_TIME=English_United Kingdom.1252
+>> 
+>> attached base packages:
+>> [1] stats     graphics  grDevices utils     datasets  methods   base
+>> 
+>> other attached packages:
+>> [1] spgrass6_0.7-9 XML_3.9-4.1    sp_0.9-97
+>> 
+>> loaded via a namespace (and not attached):
+>> [1] grid_2.14.2    lattice_0.20-0
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>> 
+>
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From villers.alexandre at gmail.com  Tue Mar 20 06:47:47 2012
+From: villers.alexandre at gmail.com (Alexandre Villers)
+Date: Tue Mar 20 06:48:13 2012
+Subject: [GRASS-stats] administration rights: unable to use the flag
+	"overwrite" with spgrass6
+In-Reply-To: <alpine.LRH.2.02.1203191625040.28678@reclus.nhh.no>
+References: <4F672DBB.2090903@gmail.com>
+	<alpine.LRH.2.02.1203191625040.28678@reclus.nhh.no>
+Message-ID: <4F686053.8060204@gmail.com>
+
+Good afternoon,
+
+Sorry, I forgot to mention that I was using GRASS 6.4.1 on Windows 7, 
+not GRASS 7...
+Best regards
+
+Alex
+
+
+On 19/03/2012 17:26, Roger Bivand wrote:
+> On Mon, 19 Mar 2012, Alexandre Villers wrote:
+>
+>> Dear list,
+>>
+>> I am unable to use the "overwrite" flag (e.g. with v.in.ogr) when 
+>> working from within R with spgrass6 on a windows 7 x64bits machine 
+>> (v.in.ogr.exe is not allowed to delete the file). It is apparently an 
+>> administrator rights issue as it works fine when I specifiy gisDbase 
+>> using a folder on my external hard disk. The problem is that I am the 
+>> administrator on this computer... and that I wouldn't expect any 
+>> error as the tempdir() function creates folder in my personal folder 
+>> in Users where I should have the rights anyway.
+>
+> I've now tried to install two GRASS 7 Windows binaries (19/3 and 
+> 12/3), and both are broken (no g.region.exe). If you can show me where 
+> a working GRASS 7 Windows binary can be found, I may look at this.
+>
+> Roger
+>
+>>
+>> Has anyone experienced such issue with windows 7 ?
+>> Thanks in advance.
+>>
+>> Alex
+>>
+>>
+>> R version 2.14.2 (2012-02-29)
+>> Platform: x86_64-pc-mingw32/x64 (64-bit)
+>>
+>> locale:
+>> [1] LC_COLLATE=English_United Kingdom.1252  LC_CTYPE=English_United 
+>> Kingdom.1252    LC_MONETARY=English_United Kingdom.1252 LC_NUMERIC=C
+>> [5] LC_TIME=English_United Kingdom.1252
+>>
+>> attached base packages:
+>> [1] stats     graphics  grDevices utils     datasets  methods   base
+>>
+>> other attached packages:
+>> [1] spgrass6_0.7-9 XML_3.9-4.1    sp_0.9-97
+>>
+>> loaded via a namespace (and not attached):
+>> [1] grid_2.14.2    lattice_0.20-0
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>
+
+From Roger.Bivand at nhh.no  Tue Mar 20 15:09:18 2012
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Mar 20 15:09:21 2012
+Subject: [GRASS-stats] administration rights: unable to use the flag
+	"overwrite" with spgrass6
+In-Reply-To: <4F686053.8060204@gmail.com>
+References: <4F672DBB.2090903@gmail.com>
+	<alpine.LRH.2.02.1203191625040.28678@reclus.nhh.no>
+	<4F686053.8060204@gmail.com>
+Message-ID: <alpine.LRH.2.02.1203201959430.2458@reclus.nhh.no>
+
+On Tue, 20 Mar 2012, Alexandre Villers wrote:
+
+> Good afternoon,
+>
+> Sorry, I forgot to mention that I was using GRASS 6.4.1 on Windows 7, not 
+> GRASS 7...
+> Best regards
+
+OK. I don't have 6.4.1 but have 6.4.2 on Windows 7. Please provide an 
+example using spearfish which illustrates the problem. I also need the 
+version number of GDAL (printed when rgdal loads). I cannot reproduce your 
+problem beyond seeing messages that (raster) files cannot be deleted, but 
+which do not matter as the whole location/mapset/.tmp folder where the 
+temporary files are stored is emptied when GRASS exits.
+
+Roger
+
+>
+> Alex
+>
+>
+> On 19/03/2012 17:26, Roger Bivand wrote:
+>> On Mon, 19 Mar 2012, Alexandre Villers wrote:
+>> 
+>>> Dear list,
+>>> 
+>>> I am unable to use the "overwrite" flag (e.g. with v.in.ogr) when working 
+>>> from within R with spgrass6 on a windows 7 x64bits machine (v.in.ogr.exe 
+>>> is not allowed to delete the file). It is apparently an administrator 
+>>> rights issue as it works fine when I specifiy gisDbase using a folder on 
+>>> my external hard disk. The problem is that I am the administrator on this 
+>>> computer... and that I wouldn't expect any error as the tempdir() function 
+>>> creates folder in my personal folder in Users where I should have the 
+>>> rights anyway.
+>> 
+>> I've now tried to install two GRASS 7 Windows binaries (19/3 and 12/3), and 
+>> both are broken (no g.region.exe). If you can show me where a working GRASS 
+>> 7 Windows binary can be found, I may look at this.
+>> 
+>> Roger
+>> 
+>>> 
+>>> Has anyone experienced such issue with windows 7 ?
+>>> Thanks in advance.
+>>> 
+>>> Alex
+>>> 
+>>> 
+>>> R version 2.14.2 (2012-02-29)
+>>> Platform: x86_64-pc-mingw32/x64 (64-bit)
+>>> 
+>>> locale:
+>>> [1] LC_COLLATE=English_United Kingdom.1252  LC_CTYPE=English_United 
+>>> Kingdom.1252    LC_MONETARY=English_United Kingdom.1252 LC_NUMERIC=C
+>>> [5] LC_TIME=English_United Kingdom.1252
+>>> 
+>>> attached base packages:
+>>> [1] stats     graphics  grDevices utils     datasets  methods   base
+>>> 
+>>> other attached packages:
+>>> [1] spgrass6_0.7-9 XML_3.9-4.1    sp_0.9-97
+>>> 
+>>> loaded via a namespace (and not attached):
+>>> [1] grid_2.14.2    lattice_0.20-0
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats@lists.osgeo.org
+>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>> 
+>> 
+>
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+

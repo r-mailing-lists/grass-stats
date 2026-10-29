@@ -1,0 +1,480 @@
+From jarekj at amu.edu.pl  Wed Mar  5 15:50:51 2008
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Wed Mar  5 15:51:06 2008
+Subject: [GRASS-stats] clustering
+Message-ID: <47CF07AB.9090602@amu.edu.pl>
+
+Hi
+
+question about clustering : I try to use R to clustering for large 
+raster data set (40000 px at least, commonly 2 500 000) but from package 
+cluster only` clara `works (works fine and fast about 2 seconds on 
+largest data set) and no other methods (daisy first of all) work. The 
+message I recive is that `vector is too long` probably it means too large...
+
+Question is simple is there any alternative for cluster package (I think 
+about fuzzy clasifications) for R? Generally in R are more than few 
+culustering packages, but before I try to test them, with such dataset I 
+shall rather look for another tool?
+
+
+Jarek
+
+
+From Roger.Bivand at nhh.no  Thu Mar  6 02:47:41 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Mar  6 02:47:43 2008
+Subject: [GRASS-stats] clustering
+In-Reply-To: <47CF07AB.9090602@amu.edu.pl>
+References: <47CF07AB.9090602@amu.edu.pl>
+Message-ID: <Pine.LNX.4.64.0803060833520.12708@reclus.nhh.no>
+
+On Wed, 5 Mar 2008, Jarek Jasiewicz wrote:
+
+> Hi
+>
+> question about clustering : I try to use R to clustering for large raster 
+> data set (40000 px at least, commonly 2 500 000) but from package cluster 
+> only` clara `works (works fine and fast about 2 seconds on largest data set) 
+> and no other methods (daisy first of all) work. The message I recive is that 
+> `vector is too long` probably it means too large...
+>
+> Question is simple is there any alternative for cluster package (I think 
+> about fuzzy clasifications) for R? Generally in R are more than few 
+> culustering packages, but before I try to test them, with such dataset I 
+> shall rather look for another tool?
+>
+
+Have you looked at the Cluster Task View?
+
+http://cran.r-project.org/web/views/Cluster.html
+
+Admittedly, many of the methods in these packages are not written to scale 
+up, but to illustrate the implementation of methods in principle. If you 
+try to start a list of methods that don't fail for 40K, and contact the 
+maintainer of the task view (Bettina Gruen), I expect that she and 
+Friedrich Leisch would consider including a paragraph on the suitability 
+of the methods they list for larger data sets. I would also look to see 
+whether the Bioconductor statistics task view:
+
+http://www.bioconductor.org/packages/release/Statistics.html
+
+which has a clustering subview, is relevant - gene array data are also 
+typically very large. In general, I think that "cluster" as a word is 
+often used with "machine learning" and "pattern recognition", so the 
+references and links may be rather disorganised.
+
+Hope this helps,
+
+Roger
+
+>
+> Jarek
+>
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From jarekj at amu.edu.pl  Fri Mar  7 03:18:25 2008
+From: jarekj at amu.edu.pl (=?ISO-8859-2?Q?Jaros=B3aw_Jasiewicz?=)
+Date: Fri Mar  7 03:18:36 2008
+Subject: [GRASS-stats] Identifing lines with cats in SpatialLinesDataFrame
+Message-ID: <47D0FA51.5070901@amu.edu.pl>
+
+Hi!
+
+problem concern   lines imported to from GRASS, we assume that every 
+line has its own category
+
+As I rot in the one of the sp man, lines ARE NOT coneted with its 
+atributes so this means that are not identified by its category, but I 
+tried on small sample where I calculate generalised direction of line:
+
+dirs=c()
+for (i in 1:length(v@lines)) {
+    tv=coordinates(v)[[i]][[1]]
+    tl=lm(tv[,1]~tv[,2]) #dir as coef
+    td=atan(coef(tl)[2])*(180/pi) #coef to degrees
+    dirs=c(dirs,td) vector with degrees
+... 
+}
+
+lins=data.frame(v$cat,dirs)
+
+I checked direcitons and its look that categories are well subsripted to 
+its lines
+
+Is that assumption correct? - I of course every line have its own category??
+And what about identifing lines with its ID it is its ID from GRASS??? 
+suppose not.
+
+Jarek
+
+P.S here is piece  of SpatialLinesDataFrame:
+
+Formal class 'SpatialLinesDataFrame' [package "sp"] with 4 slots
+  ..@ data       :'data.frame': 30 obs. of  3 variables:
+  .. ..$ cat    : num [1:30] 10 107 115 140 158 191 206 207 210 227 ...
+  .. ..$ rzad   : num [1:30] 1 1 3 1 3 1 2 1 1 1 ...
+  .. ..$ link_to: num [1:30] 11 107 11 140 115 191 158 207 210 227 ...
+  ..@ lines      :List of 30
+  .. ..$ :Formal class 'Lines' [package "sp"] with 2 slots
+  .. .. .. ..@ Lines:List of 1
+  .. .. .. .. ..$ :Formal class 'Line' [package "sp"] with 1 slots
+  .. .. .. .. .. .. ..@ coords: num [1:5, 1:2] 3592150 3592130 3592110 
+3592090 3591850 ...
+  .. .. .. ..@ ID   : chr "0"
+  .. ..$ :Formal class 'Lines' [package "sp"] with 2 slots
+  .. .. .. ..@ Lines:List of 1
+  .. .. .. .. ..$ :Formal class 'Line' [package "sp"] with 1 slots
+  .. .. .. .. .. .. ..@ coords: num [1:6, 1:2] 3590210 3590210 3590190 
+3590190 3590170 ...
+  .. .. .. ..@ ID   : chr "1"
+  .. ..$ :Formal class 'Lines' [package "sp"] with 2 slots
+  .. .. .. ..@ Lines:List of 1
+  .. .. .. .. ..$ :Formal class 'Line' [package "sp"] with 1 slots
+  .. .. .. .. .. .. ..@ coords: num [1:8, 1:2] 3592110 3591930 3591930 
+3591910 3591910 ...
+  .. .. .. ..@ ID   : chr "2"
+  .. ..$ :Formal class 'Lines' [package "sp"] with 2 slots
+  .. .. .. ..@ Lines:List of 1
+  .. .. .. .. ..$ :Formal class 'Line' [package "sp"] with 1 slots
+  .. .. .. .. .. .. ..@ coords: num [1:5, 1:2] 3590430 3590350 3590210 
+3590190
+From Roger.Bivand at nhh.no  Fri Mar  7 04:04:09 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri Mar  7 04:04:13 2008
+Subject: [GRASS-stats] Identifing lines with cats in SpatialLinesDataFrame
+In-Reply-To: <47D0FA51.5070901@amu.edu.pl>
+References: <47D0FA51.5070901@amu.edu.pl>
+Message-ID: <Pine.LNX.4.64.0803070952540.16374@reclus.nhh.no>
+
+On Fri, 7 Mar 2008, Jaros?aw Jasiewicz wrote:
+
+> Hi!
+>
+> problem concern   lines imported to from GRASS, we assume that every line has 
+> its own category
+>
+> As I rot in the one of the sp man, lines ARE NOT coneted with its atributes 
+> so this means that are not identified by its category, but I tried on small 
+> sample where I calculate generalised direction of line:
+
+Why? SpatialLinesDataFrames are like SpatialPolygonsDataFrames, with 
+agreement between
+
+sapply(slot(v, "lines"), function(x) slot(x, "ID"))
+
+and
+
+rownames(slot(v, "data"))
+
+But a Lines object with an ID may contain more than one Line object, and 
+they do not have IDs.
+
+>
+> dirs=c()
+> for (i in 1:length(v@lines)) {
+>    tv=coordinates(v)[[i]][[1]]
+
+You are assuming that there is only one Line object in each Lines object
+
+>    tl=lm(tv[,1]~tv[,2]) #dir as coef
+>    td=atan(coef(tl)[2])*(180/pi) #coef to degrees
+>    dirs=c(dirs,td) vector with degrees
+> ... }
+>
+
+Extending with c() is much slower than saying
+
+dir <- numeric(length(slot(v, "lines")))
+
+by the way.
+
+> lins=data.frame(v$cat,dirs)
+>
+> I checked direcitons and its look that categories are well subsripted to its 
+> lines
+>
+> Is that assumption correct? - I of course every line have its own category??
+> And what about identifing lines with its ID it is its ID from GRASS???
+
+Look at ?"spChFIDs-methods" in maptools to set as.character(cat) as the ID 
+- the current ID is the shapefile FID. Maybe look at ?"spCbind-methods" 
+too, to add the dirs vector to v.
+
+Roger
+
+> suppose not.
+>
+> Jarek
+>
+> P.S here is piece  of SpatialLinesDataFrame:
+>
+> Formal class 'SpatialLinesDataFrame' [package "sp"] with 4 slots
+>  ..@ data       :'data.frame': 30 obs. of  3 variables:
+>  .. ..$ cat    : num [1:30] 10 107 115 140 158 191 206 207 210 227 ...
+>  .. ..$ rzad   : num [1:30] 1 1 3 1 3 1 2 1 1 1 ...
+>  .. ..$ link_to: num [1:30] 11 107 11 140 115 191 158 207 210 227 ...
+>  ..@ lines      :List of 30
+>  .. ..$ :Formal class 'Lines' [package "sp"] with 2 slots
+>  .. .. .. ..@ Lines:List of 1
+>  .. .. .. .. ..$ :Formal class 'Line' [package "sp"] with 1 slots
+>  .. .. .. .. .. .. ..@ coords: num [1:5, 1:2] 3592150 3592130 3592110 
+> 3592090 3591850 ...
+>  .. .. .. ..@ ID   : chr "0"
+>  .. ..$ :Formal class 'Lines' [package "sp"] with 2 slots
+>  .. .. .. ..@ Lines:List of 1
+>  .. .. .. .. ..$ :Formal class 'Line' [package "sp"] with 1 slots
+>  .. .. .. .. .. .. ..@ coords: num [1:6, 1:2] 3590210 3590210 3590190 
+> 3590190 3590170 ...
+>  .. .. .. ..@ ID   : chr "1"
+>  .. ..$ :Formal class 'Lines' [package "sp"] with 2 slots
+>  .. .. .. ..@ Lines:List of 1
+>  .. .. .. .. ..$ :Formal class 'Line' [package "sp"] with 1 slots
+>  .. .. .. .. .. .. ..@ coords: num [1:8, 1:2] 3592110 3591930 3591930 
+> 3591910 3591910 ...
+>  .. .. .. ..@ ID   : chr "2"
+>  .. ..$ :Formal class 'Lines' [package "sp"] with 2 slots
+>  .. .. .. ..@ Lines:List of 1
+>  .. .. .. .. ..$ :Formal class 'Line' [package "sp"] with 1 slots
+>  .. .. .. .. .. .. ..@ coords: num [1:5, 1:2] 3590430 3590350 3590210 
+> 3590190
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From jarekj at amu.edu.pl  Mon Mar 10 12:09:28 2008
+From: jarekj at amu.edu.pl (=?ISO-8859-2?Q?Jaros=B3aw_Jasiewicz?=)
+Date: Mon Mar 10 12:09:36 2008
+Subject: [GRASS-stats] unexpected error with readVECT6
+Message-ID: <47D55D38.4050407@amu.edu.pl>
+
+Hi
+
+I try to read vector line file with following 775 lines:
+
+v.info results:
+
++----------------------------------------------------------------------------+
+ | Layer:           
+zb@trzy_mapy                                              |
+ | Mapset:          
+trzy_mapy                                                 |
+ | Location:        
+polska                                                    |
+ | Database:        
+/home/jarekj/grassdata                                    |
+ | 
+Title:                                                                     |
+ | Map scale:       
+1:1                                                       |
+ | Map format:      
+native                                                    |
+ | Name of creator: 
+jarekj                                                    |
+ | 
+Organization:                                                              |
+ | Source date:     Mon Mar 10 16:03:03 
+2008                                  |
+ |----------------------------------------------------------------------------|
+ |   Type of Map:  vector (level: 
+2)                                          |
+ |                                                                            
+|
+ |   Number of points:       0               Number of areas:      
+0          |
+ |   Number of lines:        775             Number of islands:    
+0          |
+ |   Number of boundaries:   0               Number of faces:      
+0          |
+ |   Number of centroids:    0               Number of kernels:    
+0          |
+ |                                                                            
+|
+ |   Map is 3D:              
+0                                                |
+ |   Number of dblinks:      
+1                                                |
+ |                                                                            
+|
+ |         Projection: Transverse 
+Mercator                                    |
+ |               N:    470423.4220965    S:    
+429940.9545465                 |
+ |               E:    561987.1623495    W:    
+539556.8766255                 |
+ |                                                                            
+|
+ |   Digitization threshold: 
+0                                                |
+ |   
+Comments:                                                                |
+ |                                                                            
+|
+ +----------------------------------------------------------------------------+
+
+
+
+
+
+........
+Geospatial Data Abstraction Library extensions to R successfully loaded
+ > v=readVECT6("zb", type="line")
+Exporting 775 points/lines...
+ 100%
+775 features written
+OGR data source with driver: ESRI Shapefile
+Source: "/home/jarekj/grassdata/polska/trzy_mapy/.tmp/jarekj-desktop", 
+layer: "zb"
+with  775  rows and  1  columns
+Error in Polygons(srl, ID = IDss[i]) : srl not a list of Polygon objects
+ > ls()
+character(0)
+
+
+why polygon????????
+
+Jarek
+From Roger.Bivand at nhh.no  Mon Mar 10 15:21:06 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon Mar 10 15:21:09 2008
+Subject: [GRASS-stats] unexpected error with readVECT6
+In-Reply-To: <47D55D38.4050407@amu.edu.pl>
+References: <47D55D38.4050407@amu.edu.pl>
+Message-ID: <Pine.LNX.4.64.0803102016510.6769@reclus.nhh.no>
+
+On Mon, 10 Mar 2008, Jaros?aw Jasiewicz wrote:
+
+> Hi
+>
+> I try to read vector line file with following 775 lines:
+>
+> v.info results:
+>
+> +----------------------------------------------------------------------------+
+> |  Layer: 
+> zb@trzy_mapy                                              |
+> |  Mapset: 
+> trzy_mapy                                                 |
+> |  Location: 
+> polska                                                    |
+> |  Database: 
+> /home/jarekj/grassdata                                    |
+> | 
+> Title:                                                                     |
+> |  Map scale: 
+> 1:1                                                       |
+> |  Map format: 
+> native                                                    |
+> |  Name of creator: 
+> jarekj                                                    |
+> | 
+> Organization:                                                              |
+> |  Source date:     Mon Mar 10 16:03:03 
+> 2008                                  |
+> | ----------------------------------------------------------------------------|
+> |    Type of Map:  vector (level: 
+> 2)                                          |
+> | 
+> | 
+> |    Number of points:       0               Number of areas: 
+> 0          |
+> |    Number of lines:        775             Number of islands: 
+> 0          |
+> |    Number of boundaries:   0               Number of faces: 
+> 0          |
+> |    Number of centroids:    0               Number of kernels: 
+> 0          |
+> | 
+> | 
+> |    Map is 3D: 
+> 0                                                |
+> |    Number of dblinks: 
+> 1                                                |
+> | 
+> | 
+> |          Projection: Transverse 
+> Mercator                                    |
+> |                N:    470423.4220965    S: 
+> 429940.9545465                 |
+> |                E:    561987.1623495    W: 
+> 539556.8766255                 |
+> | 
+> | 
+> |    Digitization threshold: 
+> 0                                                |
+> | 
+> Comments:                                                                |
+> | 
+> | 
+> +----------------------------------------------------------------------------+
+>
+>
+>
+>
+>
+> ........
+> Geospatial Data Abstraction Library extensions to R successfully loaded
+>>  v=readVECT6("zb", type="line")
+
+The help page gives a relevant example. The problem is the possible 
+existence of duplicates in the accompanying data frame. If there are known 
+to be no duplicates, or it does not matter, use remove.duplicates=FALSE 
+and then the final step assembling (lines or) polygons will not be carried 
+out. There is a bug too, but I think that for your case, setting the 
+argument will be a better resolution.
+
+Please let me know if this helps,
+
+Roger
+
+> Exporting 775 points/lines...
+> 100%
+> 775 features written
+> OGR data source with driver: ESRI Shapefile
+> Source: "/home/jarekj/grassdata/polska/trzy_mapy/.tmp/jarekj-desktop", layer: 
+> "zb"
+> with  775  rows and  1  columns
+> Error in Polygons(srl, ID = IDss[i]) : srl not a list of Polygon objects
+>>  ls()
+> character(0)
+>
+>
+> why polygon????????
+>
+> Jarek
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+

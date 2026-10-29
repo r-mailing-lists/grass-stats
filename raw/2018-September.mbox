@@ -1,0 +1,2104 @@
+From veroandreo at gmail.com  Sun Sep 16 07:17:05 2018
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Sun, 16 Sep 2018 16:17:05 +0200
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+	thru osgeo4w)
+Message-ID: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+
+Hello,
+
+I am preparing a one week GRASS GIS course and I mostly expect Windows
+users, so I recommend to install from OSGeo4W that allows to easily install
+also QGIS, msys (to get nice bash tricks) and other libraries that are then
+needed for some grass add-ons.
+
+The last day of the course, I'll show the connection with R. Now, starting
+R within a grass session works as expected. But I get errors when trying to
+initialize GRASS (installed from OSGeo4W) from R console. I am following
+the instructions in the wiki [0]
+
+First, I had to change the slashes from windows type, to linux type
+(because I got:
+Error: '\O' in an unrecognized escape in character string ""C:\O").
+
+After that, I get the following:
+
+> initGRASS(gisBase = 'C:/OSGeo4W64/apps/grass/grass-7.4.0', gisDbase =
+'C:/Users/RETA/Documents/grassdata', location = 'nc_spm_08_grass7', mapset
+= 'user1', SG='elevation')
+Error in if (!compatible) { : argumento tiene longitud cero
+Además: Warning messages:
+1: In system(paste("g.dirseps.exe -g", shQuote(Sys.getenv("GISRC"))), :
+comando ejecutado 'g.dirseps.exe -g "junk"' tiene estatus 309
+2: In system(paste("g.dirseps.exe -g", shQuote(gisDbase)), intern = TRUE) :
+comando ejecutado 'g.dirseps.exe -g "C:/Users/RETA/Documents/grassdata"'
+tiene estatus 309
+3: In dir.create(loc_path) :
+cannot create dir 'NA\nc_spm_08_grass7', reason 'No such file or directory'
+4: In dir.create(paste(loc_path, "PERMANENT", sep = "/")) :
+cannot create dir 'NA\nc_spm_08_grass7\PERMANENT', reason 'No such file or
+directory'
+5: In dir.create(paste(loc_path, mapset, sep = "/")) :
+cannot create dir 'NA\nc_spm_08_grass7\user1', reason 'No such file or
+directory'
+6: In system(paste("g.version", get("addEXE", envir = .GRASS_CACHE), :
+comando ejecutado 'g.version.exe' tiene estatus 309
+
+Any hints? I also attach a screenshot with the message that appears (I
+cannot copy/paste the text in that message)
+
+Thanks much in advance!
+Vero
+
+[0] https://grasswiki.osgeo.org/wiki/R_statistics/rgrass7#GRASS_within_R
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20180916/aa135216/attachment-0001.html>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: Rgui_2018-09-13_22-19-45.png
+Type: image/png
+Size: 54646 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20180916/aa135216/attachment-0001.png>
+
+From hellik at web.de  Sun Sep 16 07:25:55 2018
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Sun, 16 Sep 2018 07:25:55 -0700 (MST)
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+	thru osgeo4w)
+In-Reply-To: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+Message-ID: <1537107955895-0.post@n6.nabble.com>
+
+Veronica Andreo wrote
+> Hello,
+> 
+> I am preparing a one week GRASS GIS course and I mostly expect Windows
+> users, so I recommend to install from OSGeo4W that allows to easily
+> install
+> also QGIS, msys (to get nice bash tricks) and other libraries that are
+> then
+> needed for some grass add-ons.
+> 
+> The last day of the course, I'll show the connection with R. Now, starting
+> R within a grass session works as expected. But I get errors when trying
+> to
+> initialize GRASS (installed from OSGeo4W) from R console. I am following
+> the instructions in the wiki [0]
+> 
+> First, I had to change the slashes from windows type, to linux type
+> (because I got:
+> Error: '\O' in an unrecognized escape in character string ""C:\O").
+> 
+> After that, I get the following:
+> 
+>> initGRASS(gisBase = 'C:/OSGeo4W64/apps/grass/grass-7.4.0', gisDbase =
+> 'C:/Users/RETA/Documents/grassdata', location = 'nc_spm_08_grass7', mapset
+> = 'user1', SG='elevation')
+> Error in if (!compatible) { : argumento tiene longitud cero
+> Además: Warning messages:
+> 1: In system(paste("g.dirseps.exe -g", shQuote(Sys.getenv("GISRC"))), :
+> comando ejecutado 'g.dirseps.exe -g "junk"' tiene estatus 309
+> 2: In system(paste("g.dirseps.exe -g", shQuote(gisDbase)), intern = TRUE)
+> :
+> comando ejecutado 'g.dirseps.exe -g "C:/Users/RETA/Documents/grassdata"'
+> tiene estatus 309
+> 3: In dir.create(loc_path) :
+> cannot create dir 'NA\nc_spm_08_grass7', reason 'No such file or
+> directory'
+> 4: In dir.create(paste(loc_path, "PERMANENT", sep = "/")) :
+> cannot create dir 'NA\nc_spm_08_grass7\PERMANENT', reason 'No such file or
+> directory'
+> 5: In dir.create(paste(loc_path, mapset, sep = "/")) :
+> cannot create dir 'NA\nc_spm_08_grass7\user1', reason 'No such file or
+> directory'
+> 6: In system(paste("g.version", get("addEXE", envir = .GRASS_CACHE), :
+> comando ejecutado 'g.version.exe' tiene estatus 309
+> 
+> Any hints? I also attach a screenshot with the message that appears (I
+> cannot copy/paste the text in that message)
+> 
+> Thanks much in advance!
+> Vero
+> 
+> [0] https://grasswiki.osgeo.org/wiki/R_statistics/rgrass7#GRASS_within_R
+> 
+> _______________________________________________
+> grass-stats mailing list
+
+> grass-stats at .osgeo
+
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+> 
+> Rgui_2018-09-13_22-19-45.png (73K)
+> &lt;http://osgeo-org.1560.x6.nabble.com/attachment/5378245/0/Rgui_2018-09-13_22-19-45.png&gt;
+
+it's a missing dll.
+
+Are you invoking R from inside the OSGeo4W command console?
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+
+From Roger.Bivand at nhh.no  Sun Sep 16 07:32:10 2018
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun, 16 Sep 2018 14:32:10 +0000
+Subject: [GRASS-stats] Error when starting grass from R (grass
+	installed	thru osgeo4w)
+In-Reply-To: <1537107955895-0.post@n6.nabble.com>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>,
+ <1537107955895-0.post@n6.nabble.com>
+Message-ID: <CF511784783D0B52.6e60d335-ffb1-4b9a-9c17-0a9ff28df204@mail.outlook.com>
+
+Note that rgrass7 has not been tested on OSGeo4W for many years, so the logic differences from Windows may no longer hold. Using Live has often been a better choice, but as I never use QGIS, I've no experience. Reports on issues with OSGei4W welcome.
+
+Roger
+
+Roger Bivand
+Norwegian School of Economics
+Bergen, Norway
+
+
+
+Fra: Helmut Kudrnovsky
+Sendt: søndag 16. september, 16.26
+Emne: Re: [GRASS-stats] Error when starting grass from R (grass installedthru osgeo4w)
+Til: grass-stats at lists.osgeo.org
+
+
+Veronica Andreo wrote > Hello, > > I am preparing a one week GRASS GIS course and I mostly expect Windows > users, so I recommend to install from OSGeo4W that allows to easily > install > also QGIS, msys (to get nice bash tricks) and other libraries that are > then > needed for some grass add-ons. > > The last day of the course, I'll show the connection with R. Now, starting > R within a grass session works as expected. But I get errors when trying > to > initialize GRASS (installed from OSGeo4W) from R console. I am following > the instructions in the wiki [0] > > First, I had to change the slashes from windows type, to linux type > (because I got: > Error: '\O' in an unrecognized escape in character string ""C:\O"). > > After that, I get the following: > >> initGRASS(gisBase = 'C:/OSGeo4W64/apps/grass/grass-7.4.0', gisDbase = > 'C:/Users/RETA/Documents/grassdata', location = 'nc_spm_08_grass7', mapset > = 'user1', SG='elevation') > Error in if (!compatible) { : argumento tiene longitud cero > Además: Warning messages: > 1: In system(paste("g.dirseps.exe -g", shQuote(Sys.getenv("GISRC"))), : > comando ejecutado 'g.dirseps.exe -g "junk"' tiene estatus 309 > 2: In system(paste("g.dirseps.exe -g", shQuote(gisDbase)), intern = TRUE) > : > comando ejecutado 'g.dirseps.exe -g "C:/Users/RETA/Documents/grassdata"' > tiene estatus 309 > 3: In dir.create(loc_path) : > cannot create dir 'NA\nc_spm_08_grass7', reason 'No such file or > directory' > 4: In dir.create(paste(loc_path, "PERMANENT", sep = "/")) : > cannot create dir 'NA\nc_spm_08_grass7\PERMANENT', reason 'No such file or > directory' > 5: In dir.create(paste(loc_path, mapset, sep = "/")) : > cannot create dir 'NA\nc_spm_08_grass7\user1', reason 'No such file or > directory' > 6: In system(paste("g.version", get("addEXE", envir = .GRASS_CACHE), : > comando ejecutado 'g.version.exe' tiene estatus 309 > > Any hints? I also attach a screenshot with the message that appears (I > cannot copy/paste the text in that message) > > Thanks much in advance! > Vero > > [0] https://grasswiki.osgeo.org/wiki/R_statistics/rgrass7#GRASS_within_R > > _______________________________________________ > grass-stats mailing list > grass-stats at .osgeo > https://lists.osgeo.org/mailman/listinfo/grass-stats > > Rgui_2018-09-13_22-19-45.png (73K) > <http://osgeo-org.1560.x6.nabble.com/attachment/5378245/0/Rgui_2018-09-13_22-19-45.png> it's a missing dll. Are you invoking R from inside the OSGeo4W command console? ----- best regards Helmut -- Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html _______________________________________________ grass-stats mailing list grass-stats at lists.osgeo.org https://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20180916/b906dc82/attachment.html>
+
+From hellik at web.de  Sun Sep 16 07:37:11 2018
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Sun, 16 Sep 2018 07:37:11 -0700 (MST)
+Subject: [GRASS-stats] Error when starting grass from R (grass
+	installed	thru osgeo4w)
+In-Reply-To: <CF511784783D0B52.6e60d335-ffb1-4b9a-9c17-0a9ff28df204@mail.outlook.com>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>
+ <CF511784783D0B52.6e60d335-ffb1-4b9a-9c17-0a9ff28df204@mail.outlook.com>
+Message-ID: <1537108631724-0.post@n6.nabble.com>
+
+Roger Bivand wrote
+> Note that rgrass7 has not been tested on OSGeo4W for many years, so the
+> logic differences from Windows may no longer hold. Using Live has often
+> been a better choice, but as I never use QGIS, I've no experience. Reports
+> on issues with OSGei4W welcome.
+> 
+> Roger
+> 
+> Roger Bivand
+> Norwegian School of Economics
+> Bergen, Norway
+> 
+> 
+> 
+> Fra: Helmut Kudrnovsky
+> Sendt: søndag 16. september, 16.26
+> Emne: Re: [GRASS-stats] Error when starting grass from R (grass
+> installedthru osgeo4w)
+> Til: 
+
+> grass-stats at .osgeo
+
+> 
+> 
+> Veronica Andreo wrote > Hello, > > I am preparing a one week GRASS GIS
+> course and I mostly expect Windows > users, so I recommend to install from
+> OSGeo4W that allows to easily > install > also QGIS, msys (to get nice
+> bash tricks) and other libraries that are > then > needed for some grass
+> add-ons. > > The last day of the course, I'll show the connection with R.
+> Now, starting > R within a grass session works as expected. But I get
+> errors when trying > to > initialize GRASS (installed from OSGeo4W) from R
+> console. I am following > the instructions in the wiki [0] > > First, I
+> had to change the slashes from windows type, to linux type > (because I
+> got: > Error: '\O' in an unrecognized escape in character string ""C:\O").
+> > > After that, I get the following: > >> initGRASS(gisBase =
+> 'C:/OSGeo4W64/apps/grass/grass-7.4.0', gisDbase = >
+> 'C:/Users/RETA/Documents/grassdata', location = 'nc_spm_08_grass7', mapset
+> > = 'user1', SG='elevation') > Error in if (!compatible) { : argumento
+> tiene longitud cero > Además: Warning messages: > 1: In
+> system(paste("g.dirseps.exe -g", shQuote(Sys.getenv("GISRC"))), : >
+> comando ejecutado 'g.dirseps.exe -g "junk"' tiene estatus 309 > 2: In
+> system(paste("g.dirseps.exe -g", shQuote(gisDbase)), intern = TRUE) > : >
+> comando ejecutado 'g.dirseps.exe -g "C:/Users/RETA/Documents/grassdata"' >
+> tiene estatus 309 > 3: In dir.create(loc_path) : > cannot create dir
+> 'NA\nc_spm_08_grass7', reason 'No such file or > directory' > 4: In
+> dir.create(paste(loc_path, "PERMANENT", sep = "/")) : > cannot create dir
+> 'NA\nc_spm_08_grass7\PERMANENT', reason 'No such file or > directory' > 5:
+> In dir.create(paste(loc_path, mapset, sep = "/")) : > cannot create dir
+> 'NA\nc_spm_08_grass7\user1', reason 'No such file or > directory' > 6: In
+> system(paste("g.version", get("addEXE", envir = .GRASS_CACHE), : > comando
+> ejecutado 'g.version.exe' tiene estatus 309 > > Any hints? I also attach a
+> screenshot with the message that appears (I > cannot copy/paste the text
+> in that message) > > Thanks much in advance! > Vero > > [0]
+> https://grasswiki.osgeo.org/wiki/R_statistics/rgrass7#GRASS_within_R > >
+> _______________________________________________ > grass-stats mailing list
+> > grass-stats at .osgeo >
+> https://lists.osgeo.org/mailman/listinfo/grass-stats > >
+> Rgui_2018-09-13_22-19-45.png (73K) >
+> &lt;http://osgeo-org.1560.x6.nabble.com/attachment/5378245/0/Rgui_2018-09-13_22-19-45.png&gt;
+> it's a missing dll. Are you invoking R from inside the OSGeo4W command
+> console? ----- best regards Helmut -- Sent from:
+> http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+> _______________________________________________ grass-stats mailing list 
+
+> grass-stats at .osgeo
+
+>  https://lists.osgeo.org/mailman/listinfo/grass-stats
+> 
+> 
+> _______________________________________________
+> grass-stats mailing list
+
+> grass-stats at .osgeo
+
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+
+Working for years now winGRASS-R only in OSGeo4w, I would call it well
+tested.
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+
+From veroandreo at gmail.com  Sun Sep 16 07:42:43 2018
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Sun, 16 Sep 2018 16:42:43 +0200
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+ thru osgeo4w)
+In-Reply-To: <1537107955895-0.post@n6.nabble.com>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>
+Message-ID: <CAAMki4HVS3L9OERBRrcZVAr8jz36f-6G=vkc8X9zBKgHK-s+8w@mail.gmail.com>
+
+Hi Helli, Roger
+
+No, I just opened R console (installed outside OSGeo4W) and from there, I
+tried to init grass.
+Should I open R from OSGeo4W command console and then init grass there? Is
+that the workflow?
+
+best,
+Vero
+
+El dom., 16 sept. 2018 a las 16:25, Helmut Kudrnovsky (<hellik at web.de>)
+escribió:
+
+> Veronica Andreo wrote
+> > Hello,
+> >
+> > I am preparing a one week GRASS GIS course and I mostly expect Windows
+> > users, so I recommend to install from OSGeo4W that allows to easily
+> > install
+> > also QGIS, msys (to get nice bash tricks) and other libraries that are
+> > then
+> > needed for some grass add-ons.
+> >
+> > The last day of the course, I'll show the connection with R. Now,
+> starting
+> > R within a grass session works as expected. But I get errors when trying
+> > to
+> > initialize GRASS (installed from OSGeo4W) from R console. I am following
+> > the instructions in the wiki [0]
+> >
+> > First, I had to change the slashes from windows type, to linux type
+> > (because I got:
+> > Error: '\O' in an unrecognized escape in character string ""C:\O").
+> >
+> > After that, I get the following:
+> >
+> >> initGRASS(gisBase = 'C:/OSGeo4W64/apps/grass/grass-7.4.0', gisDbase =
+> > 'C:/Users/RETA/Documents/grassdata', location = 'nc_spm_08_grass7',
+> mapset
+> > = 'user1', SG='elevation')
+> > Error in if (!compatible) { : argumento tiene longitud cero
+> > Además: Warning messages:
+> > 1: In system(paste("g.dirseps.exe -g", shQuote(Sys.getenv("GISRC"))), :
+> > comando ejecutado 'g.dirseps.exe -g "junk"' tiene estatus 309
+> > 2: In system(paste("g.dirseps.exe -g", shQuote(gisDbase)), intern = TRUE)
+> > :
+> > comando ejecutado 'g.dirseps.exe -g "C:/Users/RETA/Documents/grassdata"'
+> > tiene estatus 309
+> > 3: In dir.create(loc_path) :
+> > cannot create dir 'NA\nc_spm_08_grass7', reason 'No such file or
+> > directory'
+> > 4: In dir.create(paste(loc_path, "PERMANENT", sep = "/")) :
+> > cannot create dir 'NA\nc_spm_08_grass7\PERMANENT', reason 'No such file
+> or
+> > directory'
+> > 5: In dir.create(paste(loc_path, mapset, sep = "/")) :
+> > cannot create dir 'NA\nc_spm_08_grass7\user1', reason 'No such file or
+> > directory'
+> > 6: In system(paste("g.version", get("addEXE", envir = .GRASS_CACHE), :
+> > comando ejecutado 'g.version.exe' tiene estatus 309
+> >
+> > Any hints? I also attach a screenshot with the message that appears (I
+> > cannot copy/paste the text in that message)
+> >
+> > Thanks much in advance!
+> > Vero
+> >
+> > [0] https://grasswiki.osgeo.org/wiki/R_statistics/rgrass7#GRASS_within_R
+> >
+> > _______________________________________________
+> > grass-stats mailing list
+>
+> > grass-stats at .osgeo
+>
+> > https://lists.osgeo.org/mailman/listinfo/grass-stats
+> >
+> > Rgui_2018-09-13_22-19-45.png (73K)
+> > &lt;
+> http://osgeo-org.1560.x6.nabble.com/attachment/5378245/0/Rgui_2018-09-13_22-19-45.png&gt
+> ;
+>
+> it's a missing dll.
+>
+> Are you invoking R from inside the OSGeo4W command console?
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20180916/380cce01/attachment-0001.html>
+
+From Roger.Bivand at nhh.no  Sun Sep 16 07:44:03 2018
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun, 16 Sep 2018 14:44:03 +0000
+Subject: [GRASS-stats] Error when starting grass from R
+	(grass	installed	thru osgeo4w)
+In-Reply-To: <1537108631724-0.post@n6.nabble.com>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>
+ <CF511784783D0B52.6e60d335-ffb1-4b9a-9c17-0a9ff28df204@mail.outlook.com>,
+ <1537108631724-0.post@n6.nabble.com>
+Message-ID: <CF511784783D0B52.d4161a6a-b0e5-40e2-8c4e-9649d45adca3@mail.outlook.com>
+
+OK, thanks for confirming that OSGeo4W remains feasible for rgrass7; I don't have access. Does usability include initGRASS()? This would be most fragile because environment variables are being set, and condition on Windows and OSGeo4W.
+
+Roger
+
+
+Fra: Helmut Kudrnovsky
+Sendt: søndag 16. september, 16.37
+Emne: Re: [GRASS-stats] Error when starting grass from R (grassinstalledthru osgeo4w)
+Til: grass-stats at lists.osgeo.org
+
+
+Roger Bivand wrote > Note that rgrass7 has not been tested on OSGeo4W for many years, so the > logic differences from Windows may no longer hold. Using Live has often > been a better choice, but as I never use QGIS, I've no experience. Reports > on issues with OSGei4W welcome. > > Roger > > Roger Bivand > Norwegian School of Economics > Bergen, Norway > > > > Fra: Helmut Kudrnovsky > Sendt: søndag 16. september, 16.26 > Emne: Re: [GRASS-stats] Error when starting grass from R (grass > installedthru osgeo4w) > Til: > grass-stats at .osgeo > > > Veronica Andreo wrote > Hello, > > I am preparing a one week GRASS GIS > course and I mostly expect Windows > users, so I recommend to install from > OSGeo4W that allows to easily > install > also QGIS, msys (to get nice > bash tricks) and other libraries that are > then > needed for some grass > add-ons. > > The last day of the course, I'll show the connection with R. > Now, starting > R within a grass session works as expected. But I get > errors when trying > to > initialize GRASS (installed from OSGeo4W) from R > console. I am following > the instructions in the wiki [0] > > First, I > had to change the slashes from windows type, to linux type > (because I > got: > Error: '\O' in an unrecognized escape in character string ""C:\O"). > > > After that, I get the following: > >> initGRASS(gisBase = > 'C:/OSGeo4W64/apps/grass/grass-7.4.0', gisDbase = > > 'C:/Users/RETA/Documents/grassdata', location = 'nc_spm_08_grass7', mapset > > = 'user1', SG='elevation') > Error in if (!compatible) { : argumento > tiene longitud cero > Además: Warning messages: > 1: In > system(paste("g.dirseps.exe -g", shQuote(Sys.getenv("GISRC"))), : > > comando ejecutado 'g.dirseps.exe -g "junk"' tiene estatus 309 > 2: In > system(paste("g.dirseps.exe -g", shQuote(gisDbase)), intern = TRUE) > : > > comando ejecutado 'g.dirseps.exe -g "C:/Users/RETA/Documents/grassdata"' > > tiene estatus 309 > 3: In dir.create(loc_path) : > cannot create dir > 'NA\nc_spm_08_grass7', reason 'No such file or > directory' > 4: In > dir.create(paste(loc_path, "PERMANENT", sep = "/")) : > cannot create dir > 'NA\nc_spm_08_grass7\PERMANENT', reason 'No such file or > directory' > 5: > In dir.create(paste(loc_path, mapset, sep = "/")) : > cannot create dir > 'NA\nc_spm_08_grass7\user1', reason 'No such file or > directory' > 6: In > system(paste("g.version", get("addEXE", envir = .GRASS_CACHE), : > comando > ejecutado 'g.version.exe' tiene estatus 309 > > Any hints? I also attach a > screenshot with the message that appears (I > cannot copy/paste the text > in that message) > > Thanks much in advance! > Vero > > [0] > https://grasswiki.osgeo.org/wiki/R_statistics/rgrass7#GRASS_within_R > > > _______________________________________________ > grass-stats mailing list > > grass-stats at .osgeo > > https://lists.osgeo.org/mailman/listinfo/grass-stats > > > Rgui_2018-09-13_22-19-45.png (73K) > > <http://osgeo-org.1560.x6.nabble.com/attachment/5378245/0/Rgui_2018-09-13_22-19-45.png> > it's a missing dll. Are you invoking R from inside the OSGeo4W command > console? ----- best regards Helmut -- Sent from: > http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html > _______________________________________________ grass-stats mailing list > grass-stats at .osgeo > https://lists.osgeo.org/mailman/listinfo/grass-stats > > > _______________________________________________ > grass-stats mailing list > grass-stats at .osgeo > https://lists.osgeo.org/mailman/listinfo/grass-stats Working for years now winGRASS-R only in OSGeo4w, I would call it well tested. ----- best regards Helmut -- Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html _______________________________________________ grass-stats mailing list grass-stats at lists.osgeo.org https://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20180916/72405a3b/attachment.html>
+
+From Roger.Bivand at nhh.no  Sun Sep 16 07:48:48 2018
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun, 16 Sep 2018 14:48:48 +0000
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+ thru osgeo4w)
+In-Reply-To: <CAAMki4HVS3L9OERBRrcZVAr8jz36f-6G=vkc8X9zBKgHK-s+8w@mail.gmail.com>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>,
+ <CAAMki4HVS3L9OERBRrcZVAr8jz36f-6G=vkc8X9zBKgHK-s+8w@mail.gmail.com>
+Message-ID: <CF511784783D0B52.e74b8ee3-85e5-4ad9-a0c9-f0076ead98b7@mail.outlook.com>
+
+Sorry, no idea. Testing was from R for Windows using initGRASS(), but a long time ago. Starting R from within GRASS, picking up the environment variables already created during GRASS startup msy be less fragile, as you are using an existing location.
+
+Roger
+
+Roger Bivand
+Norwegian School of Economics
+Bergen, Norway
+
+
+
+
+On Sun, Sep 16, 2018 at 4:43 PM +0200, "Veronica Andreo" <veroandreo at gmail.com<mailto:veroandreo at gmail.com>> wrote:
+
+Hi Helli, Roger
+
+No, I just opened R console (installed outside OSGeo4W) and from there, I tried to init grass.
+Should I open R from OSGeo4W command console and then init grass there? Is that the workflow?
+
+best,
+Vero
+
+El dom., 16 sept. 2018 a las 16:25, Helmut Kudrnovsky (<hellik at web.de<mailto:hellik at web.de>>) escribió:
+Veronica Andreo wrote
+> Hello,
+>
+> I am preparing a one week GRASS GIS course and I mostly expect Windows
+> users, so I recommend to install from OSGeo4W that allows to easily
+> install
+> also QGIS, msys (to get nice bash tricks) and other libraries that are
+> then
+> needed for some grass add-ons.
+>
+> The last day of the course, I'll show the connection with R. Now, starting
+> R within a grass session works as expected. But I get errors when trying
+> to
+> initialize GRASS (installed from OSGeo4W) from R console. I am following
+> the instructions in the wiki [0]
+>
+> First, I had to change the slashes from windows type, to linux type
+> (because I got:
+> Error: '\O' in an unrecognized escape in character string ""C:\O").
+>
+> After that, I get the following:
+>
+>> initGRASS(gisBase = 'C:/OSGeo4W64/apps/grass/grass-7.4.0', gisDbase =
+> 'C:/Users/RETA/Documents/grassdata', location = 'nc_spm_08_grass7', mapset
+> = 'user1', SG='elevation')
+> Error in if (!compatible) { : argumento tiene longitud cero
+> Además: Warning messages:
+> 1: In system(paste("g.dirseps.exe -g", shQuote(Sys.getenv("GISRC"))), :
+> comando ejecutado 'g.dirseps.exe -g "junk"' tiene estatus 309
+> 2: In system(paste("g.dirseps.exe -g", shQuote(gisDbase)), intern = TRUE)
+> :
+> comando ejecutado 'g.dirseps.exe -g "C:/Users/RETA/Documents/grassdata"'
+> tiene estatus 309
+> 3: In dir.create(loc_path) :
+> cannot create dir 'NA\nc_spm_08_grass7', reason 'No such file or
+> directory'
+> 4: In dir.create(paste(loc_path, "PERMANENT", sep = "/")) :
+> cannot create dir 'NA\nc_spm_08_grass7\PERMANENT', reason 'No such file or
+> directory'
+> 5: In dir.create(paste(loc_path, mapset, sep = "/")) :
+> cannot create dir 'NA\nc_spm_08_grass7\user1', reason 'No such file or
+> directory'
+> 6: In system(paste("g.version", get("addEXE", envir = .GRASS_CACHE), :
+> comando ejecutado 'g.version.exe' tiene estatus 309
+>
+> Any hints? I also attach a screenshot with the message that appears (I
+> cannot copy/paste the text in that message)
+>
+> Thanks much in advance!
+> Vero
+>
+> [0] https://grasswiki.osgeo.org/wiki/R_statistics/rgrass7#GRASS_within_R
+>
+> _______________________________________________
+> grass-stats mailing list
+
+> grass-stats at .osgeo
+
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+> Rgui_2018-09-13_22-19-45.png (73K)
+> &lt;http://osgeo-org.1560.x6.nabble.com/attachment/5378245/0/Rgui_2018-09-13_22-19-45.png&gt;
+
+it's a missing dll.
+
+Are you invoking R from inside the OSGeo4W command console?
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+_______________________________________________
+grass-stats mailing list
+grass-stats at lists.osgeo.org<mailto:grass-stats at lists.osgeo.org>
+https://lists.osgeo.org/mailman/listinfo/grass-stats
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20180916/30002ed7/attachment-0001.html>
+
+From hellik at web.de  Sun Sep 16 08:00:14 2018
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Sun, 16 Sep 2018 08:00:14 -0700 (MST)
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+	thru osgeo4w)
+In-Reply-To: <CAAMki4HVS3L9OERBRrcZVAr8jz36f-6G=vkc8X9zBKgHK-s+8w@mail.gmail.com>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>
+ <CAAMki4HVS3L9OERBRrcZVAr8jz36f-6G=vkc8X9zBKgHK-s+8w@mail.gmail.com>
+Message-ID: <1537110014352-0.post@n6.nabble.com>
+
+>Should I open R from OSGeo4W command console and then init grass there? Is
+that the workflow?
+
+Yes, that's the workflow.
+
+because environment variables for e.g. gdal, proj4 etc have to be set. And
+that's nicely done in the OSGeo4W command line
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+
+From veroandreo at gmail.com  Sun Sep 16 08:04:45 2018
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Sun, 16 Sep 2018 17:04:45 +0200
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+ thru osgeo4w)
+In-Reply-To: <1537110014352-0.post@n6.nabble.com>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>
+ <CAAMki4HVS3L9OERBRrcZVAr8jz36f-6G=vkc8X9zBKgHK-s+8w@mail.gmail.com>
+ <1537110014352-0.post@n6.nabble.com>
+Message-ID: <CAAMki4ELss6JN2BqDOrGFv=E+TnKm40S7CrLyTDW0aWtSU+W+A@mail.gmail.com>
+
+Perfect, will test and report back in case of any issue.
+Thanks, Helli :)
+
+El dom., 16 sept. 2018 a las 17:00, Helmut Kudrnovsky (<hellik at web.de>)
+escribió:
+
+> >Should I open R from OSGeo4W command console and then init grass there? Is
+> that the workflow?
+>
+> Yes, that's the workflow.
+>
+> because environment variables for e.g. gdal, proj4 etc have to be set. And
+> that's nicely done in the OSGeo4W command line
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20180916/7478076f/attachment.html>
+
+From hellik at web.de  Sun Sep 16 14:15:46 2018
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Sun, 16 Sep 2018 14:15:46 -0700 (MST)
+Subject: [GRASS-stats] Error when starting grass from R
+	(grass	installed	thru osgeo4w)
+In-Reply-To: <CF511784783D0B52.d4161a6a-b0e5-40e2-8c4e-9649d45adca3@mail.outlook.com>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>
+ <CF511784783D0B52.6e60d335-ffb1-4b9a-9c17-0a9ff28df204@mail.outlook.com>
+ <1537108631724-0.post@n6.nabble.com>
+ <CF511784783D0B52.d4161a6a-b0e5-40e2-8c4e-9649d45adca3@mail.outlook.com>
+Message-ID: <1537132546148-0.post@n6.nabble.com>
+
+>OK, thanks for confirming that OSGeo4W remains feasible for rgrass7; I don't
+have access. Does usability >include initGRASS()? This would be most fragile
+because environment variables are being set, and >condition on Windows and
+OSGeo4W.
+
+R within a GRASS session works quite well so far.
+
+did a fresh svn up of 
+
+svn://r-forge.r-project.org/svnroot/spgrass
+
+and quickly screened pkg\rgrass7\R\initGRASS.R:
+
+e.g.
+
+        Sys.setenv(GRASS_PROJSHARE=paste(Sys.getenv("GISBASE"),
+            "\\proj", sep=""))
+
+AFAIK at least the GRASS7.4.x line doesn't use anymore an own copy of the
+PROJSHARE files; instead it uses the PROJ files itself; that's for all
+platforms (linux, MacOS, MS Windows, ...).
+
+e.g. in OSGeo4W 64bit it's defined as:
+
+SET OSGEO4W_ROOT=C:\OSGeo4W64
+set GRASS_PROJSHARE=%OSGEO4W_ROOT%\share\proj
+
+only in the standalone installer, it's still defined as:
+
+set GRASS_PROJSHARE=%GISBASE%\share\proj
+
+because it's bundled in the installer.
+
+e.g.
+
+            Sys.setenv(PATH=paste(Sys.getenv("GISBASE"), "\\extrabin;",
+                Sys.getenv("PATH"), sep=""))
+
+there is no C:\OSGeo4W64\apps\grass\grass-7.4.1, because all of the
+dependencies etc are living e.g. in 
+C:\OSGeo4W64\bin, C:\OSGeo4W64\lib, ...
+
+I'm not sure about this one:
+
+[...]
+        Sys.setenv(GISBASE=gisBase)
+        if (missing(home)) home <- Sys.getenv("USERPROFILE")
+[...]
+        Sys.setenv(GISRC=paste(Sys.getenv("HOME"), "\\.grassrc7", sep=""))
+
+in winGRASS (standalone, OSGeo4W), the rc file lives in
+C:\Users\YourUserName\AppData\Roaming\GRASS7 and not in %USERPROFILE%
+
+and it seems around these lines:
+
+[...]
+        Sys.setenv(GISRC="junk")
+        cat("GISDBASE:", getwd(), "\n", file=Sys.getenv("GISRC"))
+        cat("LOCATION_NAME: <UNKNOWN>", "\n", file=Sys.getenv("GISRC"),
+            append=TRUE)
+        cat("MAPSET: <UNKNOWN>", "\n", file=Sys.getenv("GISRC"),
+            append=TRUE)
+        gisrc <- ifelse (use_g.dirseps.exe, system(paste("g.dirseps.exe -g",
+            shQuote(Sys.getenv("GISRC"))), intern=TRUE),
+            Sys.getenv("GISRC"))
+[...]
+
+initGRASS gets in trouble in OSGeo4W.
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+
+From veroandreo at gmail.com  Sun Sep 16 17:19:49 2018
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Mon, 17 Sep 2018 02:19:49 +0200
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+ thru osgeo4w)
+In-Reply-To: <1537132546148-0.post@n6.nabble.com>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>
+ <CF511784783D0B52.6e60d335-ffb1-4b9a-9c17-0a9ff28df204@mail.outlook.com>
+ <1537108631724-0.post@n6.nabble.com>
+ <CF511784783D0B52.d4161a6a-b0e5-40e2-8c4e-9649d45adca3@mail.outlook.com>
+ <1537132546148-0.post@n6.nabble.com>
+Message-ID: <CAAMki4GgFqcCdqL0RHeU-XQOq4CY4A5J0VsfrrFch3QgMoFaOQ@mail.gmail.com>
+
+Hi again,
+
+So, I tested as suggested:
+1. Open R console within OSGeo4W Shell,
+2. library(rgrass7)
+3. initGRASS(gisBase = 'C:/OSGeo4W64/apps/grass/grass-7.4.0', gisDbase =
+'C:/Users/RETA/Documents/grassdata', location = 'nc_spm_08_grass7', mapset
+= 'user1', SG='elevation')
+
+and I now get:
+unused argument (gisDbase = 'C:/Users/RETA/Documents/grassdata')
+
+anything else to test/set?
+
+best,
+Vero
+
+
+El dom., 16 sept. 2018 a las 23:15, Helmut Kudrnovsky (<hellik at web.de>)
+escribió:
+
+> >OK, thanks for confirming that OSGeo4W remains feasible for rgrass7; I
+> don't
+> have access. Does usability >include initGRASS()? This would be most
+> fragile
+> because environment variables are being set, and >condition on Windows and
+> OSGeo4W.
+>
+> R within a GRASS session works quite well so far.
+>
+> did a fresh svn up of
+>
+> svn://r-forge.r-project.org/svnroot/spgrass
+>
+> and quickly screened pkg\rgrass7\R\initGRASS.R:
+>
+> e.g.
+>
+>         Sys.setenv(GRASS_PROJSHARE=paste(Sys.getenv("GISBASE"),
+>             "\\proj", sep=""))
+>
+> AFAIK at least the GRASS7.4.x line doesn't use anymore an own copy of the
+> PROJSHARE files; instead it uses the PROJ files itself; that's for all
+> platforms (linux, MacOS, MS Windows, ...).
+>
+> e.g. in OSGeo4W 64bit it's defined as:
+>
+> SET OSGEO4W_ROOT=C:\OSGeo4W64
+> set GRASS_PROJSHARE=%OSGEO4W_ROOT%\share\proj
+>
+> only in the standalone installer, it's still defined as:
+>
+> set GRASS_PROJSHARE=%GISBASE%\share\proj
+>
+> because it's bundled in the installer.
+>
+> e.g.
+>
+>             Sys.setenv(PATH=paste(Sys.getenv("GISBASE"), "\\extrabin;",
+>                 Sys.getenv("PATH"), sep=""))
+>
+> there is no C:\OSGeo4W64\apps\grass\grass-7.4.1, because all of the
+> dependencies etc are living e.g. in
+> C:\OSGeo4W64\bin, C:\OSGeo4W64\lib, ...
+>
+> I'm not sure about this one:
+>
+> [...]
+>         Sys.setenv(GISBASE=gisBase)
+>         if (missing(home)) home <- Sys.getenv("USERPROFILE")
+> [...]
+>         Sys.setenv(GISRC=paste(Sys.getenv("HOME"), "\\.grassrc7", sep=""))
+>
+> in winGRASS (standalone, OSGeo4W), the rc file lives in
+> C:\Users\YourUserName\AppData\Roaming\GRASS7 and not in %USERPROFILE%
+>
+> and it seems around these lines:
+>
+> [...]
+>         Sys.setenv(GISRC="junk")
+>         cat("GISDBASE:", getwd(), "\n", file=Sys.getenv("GISRC"))
+>         cat("LOCATION_NAME: <UNKNOWN>", "\n", file=Sys.getenv("GISRC"),
+>             append=TRUE)
+>         cat("MAPSET: <UNKNOWN>", "\n", file=Sys.getenv("GISRC"),
+>             append=TRUE)
+>         gisrc <- ifelse (use_g.dirseps.exe, system(paste("g.dirseps.exe
+> -g",
+>             shQuote(Sys.getenv("GISRC"))), intern=TRUE),
+>             Sys.getenv("GISRC"))
+> [...]
+>
+> initGRASS gets in trouble in OSGeo4W.
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20180917/fbd87361/attachment.html>
+
+From Roger.Bivand at nhh.no  Wed Sep 19 12:31:12 2018
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed, 19 Sep 2018 19:31:12 +0000
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+ thru osgeo4w)
+In-Reply-To: <CAAMki4GgFqcCdqL0RHeU-XQOq4CY4A5J0VsfrrFch3QgMoFaOQ@mail.gmail.com>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>
+ <CF511784783D0B52.6e60d335-ffb1-4b9a-9c17-0a9ff28df204@mail.outlook.com>
+ <1537108631724-0.post@n6.nabble.com>
+ <CF511784783D0B52.d4161a6a-b0e5-40e2-8c4e-9649d45adca3@mail.outlook.com>
+ <1537132546148-0.post@n6.nabble.com>,
+ <CAAMki4GgFqcCdqL0RHeU-XQOq4CY4A5J0VsfrrFch3QgMoFaOQ@mail.gmail.com>
+Message-ID: <CF511784783D0B52.66f0bd65-3b3e-4390-9688-24038a16bb89@mail.outlook.com>
+
+Sorry for the delay, now have access to an old laptop with Windows. When do you need this resolved?
+
+Roger
+
+Roger Bivand
+Norwegian School of Economics
+Bergen, Norway
+
+
+
+Fra: Veronica Andreo
+Sendt: mandag 17. september, 02.20
+Emne: Re: [GRASS-stats] Error when starting grass from R (grass installed thru osgeo4w)
+Til: Helmut Kudrnovsky
+Kopi: grass-stats at lists.osgeo.org
+
+
+Hi again,
+
+So, I tested as suggested:
+1. Open R console within OSGeo4W Shell,
+2. library(rgrass7)
+3. initGRASS(gisBase = 'C:/OSGeo4W64/apps/grass/grass-7.4.0', gisDbase = 'C:/Users/RETA/Documents/grassdata', location = 'nc_spm_08_grass7', mapset = 'user1', SG='elevation')
+
+and I now get:
+unused argument (gisDbase = 'C:/Users/RETA/Documents/grassdata')
+
+anything else to test/set?
+
+best,
+Vero
+
+
+El dom., 16 sept. 2018 a las 23:15, Helmut Kudrnovsky (<hellik at web.de<mailto:hellik at web.de>>) escribió:
+>OK, thanks for confirming that OSGeo4W remains feasible for rgrass7; I don't
+have access. Does usability >include initGRASS()? This would be most fragile
+because environment variables are being set, and >condition on Windows and
+OSGeo4W.
+
+R within a GRASS session works quite well so far.
+
+did a fresh svn up of
+
+svn://r-forge.r-project.org/svnroot/spgrass<http://r-forge.r-project.org/svnroot/spgrass>
+
+and quickly screened pkg\rgrass7\R\initGRASS.R:
+
+e.g.
+
+        Sys.setenv(GRASS_PROJSHARE=paste(Sys.getenv("GISBASE"),
+            "\\proj", sep=""))
+
+AFAIK at least the GRASS7.4.x line doesn't use anymore an own copy of the
+PROJSHARE files; instead it uses the PROJ files itself; that's for all
+platforms (linux, MacOS, MS Windows, ...).
+
+e.g. in OSGeo4W 64bit it's defined as:
+
+SET OSGEO4W_ROOT=C:\OSGeo4W64
+set GRASS_PROJSHARE=%OSGEO4W_ROOT%\share\proj
+
+only in the standalone installer, it's still defined as:
+
+set GRASS_PROJSHARE=%GISBASE%\share\proj
+
+because it's bundled in the installer.
+
+e.g.
+
+            Sys.setenv(PATH=paste(Sys.getenv("GISBASE"), "\\extrabin;",
+                Sys.getenv("PATH"), sep=""))
+
+there is no C:\OSGeo4W64\apps\grass\grass-7.4.1, because all of the
+dependencies etc are living e.g. in
+C:\OSGeo4W64\bin, C:\OSGeo4W64\lib, ...
+
+I'm not sure about this one:
+
+[...]
+        Sys.setenv(GISBASE=gisBase)
+        if (missing(home)) home <- Sys.getenv("USERPROFILE")
+[...]
+        Sys.setenv(GISRC=paste(Sys.getenv("HOME"), "\\.grassrc7", sep=""))
+
+in winGRASS (standalone, OSGeo4W), the rc file lives in
+C:\Users\YourUserName\AppData\Roaming\GRASS7 and not in %USERPROFILE%
+
+and it seems around these lines:
+
+[...]
+        Sys.setenv(GISRC="junk")
+        cat("GISDBASE:", getwd(), "\n", file=Sys.getenv("GISRC"))
+        cat("LOCATION_NAME: <UNKNOWN>", "\n", file=Sys.getenv("GISRC"),
+            append=TRUE)
+        cat("MAPSET: <UNKNOWN>", "\n", file=Sys.getenv("GISRC"),
+            append=TRUE)
+        gisrc <- ifelse (use_g.dirseps.exe, system(paste("g.dirseps.exe -g",
+            shQuote(Sys.getenv("GISRC"))), intern=TRUE),
+            Sys.getenv("GISRC"))
+[...]
+
+initGRASS gets in trouble in OSGeo4W.
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+_______________________________________________
+grass-stats mailing list
+grass-stats at lists.osgeo.org<mailto:grass-stats at lists.osgeo.org>
+https://lists.osgeo.org/mailman/listinfo/grass-stats
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20180919/aeceb4b3/attachment.html>
+
+From veroandreo at gmail.com  Wed Sep 19 12:50:12 2018
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Wed, 19 Sep 2018 16:50:12 -0300
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+ thru osgeo4w)
+In-Reply-To: <CF511784783D0B52.66f0bd65-3b3e-4390-9688-24038a16bb89@mail.outlook.com>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>
+ <CF511784783D0B52.6e60d335-ffb1-4b9a-9c17-0a9ff28df204@mail.outlook.com>
+ <1537108631724-0.post@n6.nabble.com>
+ <CF511784783D0B52.d4161a6a-b0e5-40e2-8c4e-9649d45adca3@mail.outlook.com>
+ <1537132546148-0.post@n6.nabble.com>
+ <CAAMki4GgFqcCdqL0RHeU-XQOq4CY4A5J0VsfrrFch3QgMoFaOQ@mail.gmail.com>
+ <CF511784783D0B52.66f0bd65-3b3e-4390-9688-24038a16bb89@mail.outlook.com>
+Message-ID: <CAAMki4EPqHus_ysPP_gEPWfErDMa3CH6Ty4-zT2Mn0=kfhnd+Q@mail.gmail.com>
+
+Hello Roger,
+
+Thanks for coming back to this thread. The course, I'll teach starts on
+October 22. So, we have 4+ weeks :)
+
+Let me know how I can help with testing.
+Thanks again
+
+Vero
+
+El mié., 19 sep. 2018 16:31, Roger Bivand <Roger.Bivand at nhh.no> escribió:
+
+> Sorry for the delay, now have access to an old laptop with Windows. When
+> do you need this resolved?
+>
+> Roger
+>
+> Roger Bivand
+> Norwegian School of Economics
+> Bergen, Norway
+>
+>
+>
+> Fra: Veronica Andreo
+> Sendt: mandag 17. september, 02.20
+> Emne: Re: [GRASS-stats] Error when starting grass from R (grass installed
+> thru osgeo4w)
+> Til: Helmut Kudrnovsky
+> Kopi: grass-stats at lists.osgeo.org
+>
+>
+> Hi again,
+>
+> So, I tested as suggested:
+> 1. Open R console within OSGeo4W Shell,
+> 2. library(rgrass7)
+> 3. initGRASS(gisBase = 'C:/OSGeo4W64/apps/grass/grass-7.4.0', gisDbase =
+> 'C:/Users/RETA/Documents/grassdata', location = 'nc_spm_08_grass7', mapset
+> = 'user1', SG='elevation')
+>
+> and I now get:
+> unused argument (gisDbase = 'C:/Users/RETA/Documents/grassdata')
+>
+> anything else to test/set?
+>
+> best,
+> Vero
+>
+>
+> El dom., 16 sept. 2018 a las 23:15, Helmut Kudrnovsky (<hellik at web.de>)
+> escribió:
+>
+> >OK, thanks for confirming that OSGeo4W remains feasible for rgrass7; I
+> don't
+> have access. Does usability >include initGRASS()? This would be most
+> fragile
+> because environment variables are being set, and >condition on Windows and
+> OSGeo4W.
+>
+> R within a GRASS session works quite well so far.
+>
+> did a fresh svn up of
+>
+> svn://r-forge.r-project.org/svnroot/spgrass
+>
+> and quickly screened pkg\rgrass7\R\initGRASS.R:
+>
+> e.g.
+>
+>         Sys.setenv(GRASS_PROJSHARE=paste(Sys.getenv("GISBASE"),
+>             "\\proj", sep=""))
+>
+> AFAIK at least the GRASS7.4.x line doesn't use anymore an own copy of the
+> PROJSHARE files; instead it uses the PROJ files itself; that's for all
+> platforms (linux, MacOS, MS Windows, ...).
+>
+> e.g. in OSGeo4W 64bit it's defined as:
+>
+> SET OSGEO4W_ROOT=C:\OSGeo4W64
+> set GRASS_PROJSHARE=%OSGEO4W_ROOT%\share\proj
+>
+> only in the standalone installer, it's still defined as:
+>
+> set GRASS_PROJSHARE=%GISBASE%\share\proj
+>
+> because it's bundled in the installer.
+>
+> e.g.
+>
+>             Sys.setenv(PATH=paste(Sys.getenv("GISBASE"), "\\extrabin;",
+>                 Sys.getenv("PATH"), sep=""))
+>
+> there is no C:\OSGeo4W64\apps\grass\grass-7.4.1, because all of the
+> dependencies etc are living e.g. in
+> C:\OSGeo4W64\bin, C:\OSGeo4W64\lib, ...
+>
+> I'm not sure about this one:
+>
+> [...]
+>         Sys.setenv(GISBASE=gisBase)
+>         if (missing(home)) home <- Sys.getenv("USERPROFILE")
+> [...]
+>         Sys.setenv(GISRC=paste(Sys.getenv("HOME"), "\\.grassrc7", sep=""))
+>
+> in winGRASS (standalone, OSGeo4W), the rc file lives in
+> C:\Users\YourUserName\AppData\Roaming\GRASS7 and not in %USERPROFILE%
+>
+> and it seems around these lines:
+>
+> [...]
+>         Sys.setenv(GISRC="junk")
+>         cat("GISDBASE:", getwd(), "\n", file=Sys.getenv("GISRC"))
+>         cat("LOCATION_NAME: <UNKNOWN>", "\n", file=Sys.getenv("GISRC"),
+>             append=TRUE)
+>         cat("MAPSET: <UNKNOWN>", "\n", file=Sys.getenv("GISRC"),
+>             append=TRUE)
+>         gisrc <- ifelse (use_g.dirseps.exe, system(paste("g.dirseps.exe
+> -g",
+>             shQuote(Sys.getenv("GISRC"))), intern=TRUE),
+>             Sys.getenv("GISRC"))
+> [...]
+>
+> initGRASS gets in trouble in OSGeo4W.
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20180919/effd26c1/attachment-0001.html>
+
+From Roger.Bivand at nhh.no  Sun Sep 23 12:22:57 2018
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun, 23 Sep 2018 21:22:57 +0200
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+ thru osgeo4w)
+In-Reply-To: <CAAMki4EPqHus_ysPP_gEPWfErDMa3CH6Ty4-zT2Mn0=kfhnd+Q@mail.gmail.com>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>
+ <CF511784783D0B52.6e60d335-ffb1-4b9a-9c17-0a9ff28df204@mail.outlook.com>
+ <1537108631724-0.post@n6.nabble.com>
+ <CF511784783D0B52.d4161a6a-b0e5-40e2-8c4e-9649d45adca3@mail.outlook.com>
+ <1537132546148-0.post@n6.nabble.com>
+ <CAAMki4GgFqcCdqL0RHeU-XQOq4CY4A5J0VsfrrFch3QgMoFaOQ@mail.gmail.com>
+ <CF511784783D0B52.66f0bd65-3b3e-4390-9688-24038a16bb89@mail.outlook.com>
+ <CAAMki4EPqHus_ysPP_gEPWfErDMa3CH6Ty4-zT2Mn0=kfhnd+Q@mail.gmail.com>
+Message-ID: <alpine.LFD.2.21.1809232107240.12875@reclus.nhh.no>
+
+On Wed, 19 Sep 2018, Veronica Andreo wrote:
+
+> Hello Roger,
+>
+> Thanks for coming back to this thread. The course, I'll teach starts on
+> October 22. So, we have 4+ weeks :)
+
+I could reproduce the problem after starting the OSGeo4W console from the 
+desktop shortcut icon.
+
+The problem seems to be that OSGeo4W's console starts in a directory for 
+which the user does not have write access (for me from a desktop shortcut 
+C:\Users\Public\Desktop\OSGeo4W). Because rgrass7::initGRASS() needs to 
+write a GISRC file in the working directory, it needs write access. When I 
+changed working directory to one to which I did have write access, the 
+current CRAN binary rgrass7 loaded correctly under OSGeo4W for a 
+throw-away location. I haven't yet tried with a pre-existing location.
+
+Could you check and see whether this seems reasonable?
+
+If so, I'll add a check for write access in the working directory to give 
+a more sensible error message.
+
+Best wishes,
+
+Roger
+
+>
+> Let me know how I can help with testing.
+> Thanks again
+>
+> Vero
+>
+> El mié., 19 sep. 2018 16:31, Roger Bivand <Roger.Bivand at nhh.no> escribió:
+>
+>> Sorry for the delay, now have access to an old laptop with Windows. When
+>> do you need this resolved?
+>>
+>> Roger
+>>
+>> Roger Bivand
+>> Norwegian School of Economics
+>> Bergen, Norway
+>>
+>>
+>>
+>> Fra: Veronica Andreo
+>> Sendt: mandag 17. september, 02.20
+>> Emne: Re: [GRASS-stats] Error when starting grass from R (grass installed
+>> thru osgeo4w)
+>> Til: Helmut Kudrnovsky
+>> Kopi: grass-stats at lists.osgeo.org
+>>
+>>
+>> Hi again,
+>>
+>> So, I tested as suggested:
+>> 1. Open R console within OSGeo4W Shell,
+>> 2. library(rgrass7)
+>> 3. initGRASS(gisBase = 'C:/OSGeo4W64/apps/grass/grass-7.4.0', gisDbase =
+>> 'C:/Users/RETA/Documents/grassdata', location = 'nc_spm_08_grass7', mapset
+>> = 'user1', SG='elevation')
+>>
+>> and I now get:
+>> unused argument (gisDbase = 'C:/Users/RETA/Documents/grassdata')
+>>
+>> anything else to test/set?
+>>
+>> best,
+>> Vero
+>>
+>>
+>> El dom., 16 sept. 2018 a las 23:15, Helmut Kudrnovsky (<hellik at web.de>)
+>> escribió:
+>>
+>>> OK, thanks for confirming that OSGeo4W remains feasible for rgrass7; I
+>> don't
+>> have access. Does usability >include initGRASS()? This would be most
+>> fragile
+>> because environment variables are being set, and >condition on Windows and
+>> OSGeo4W.
+>>
+>> R within a GRASS session works quite well so far.
+>>
+>> did a fresh svn up of
+>>
+>> svn://r-forge.r-project.org/svnroot/spgrass
+>>
+>> and quickly screened pkg\rgrass7\R\initGRASS.R:
+>>
+>> e.g.
+>>
+>>         Sys.setenv(GRASS_PROJSHARE=paste(Sys.getenv("GISBASE"),
+>>             "\\proj", sep=""))
+>>
+>> AFAIK at least the GRASS7.4.x line doesn't use anymore an own copy of the
+>> PROJSHARE files; instead it uses the PROJ files itself; that's for all
+>> platforms (linux, MacOS, MS Windows, ...).
+>>
+>> e.g. in OSGeo4W 64bit it's defined as:
+>>
+>> SET OSGEO4W_ROOT=C:\OSGeo4W64
+>> set GRASS_PROJSHARE=%OSGEO4W_ROOT%\share\proj
+>>
+>> only in the standalone installer, it's still defined as:
+>>
+>> set GRASS_PROJSHARE=%GISBASE%\share\proj
+>>
+>> because it's bundled in the installer.
+>>
+>> e.g.
+>>
+>>             Sys.setenv(PATH=paste(Sys.getenv("GISBASE"), "\\extrabin;",
+>>                 Sys.getenv("PATH"), sep=""))
+>>
+>> there is no C:\OSGeo4W64\apps\grass\grass-7.4.1, because all of the
+>> dependencies etc are living e.g. in
+>> C:\OSGeo4W64\bin, C:\OSGeo4W64\lib, ...
+>>
+>> I'm not sure about this one:
+>>
+>> [...]
+>>         Sys.setenv(GISBASE=gisBase)
+>>         if (missing(home)) home <- Sys.getenv("USERPROFILE")
+>> [...]
+>>         Sys.setenv(GISRC=paste(Sys.getenv("HOME"), "\\.grassrc7", sep=""))
+>>
+>> in winGRASS (standalone, OSGeo4W), the rc file lives in
+>> C:\Users\YourUserName\AppData\Roaming\GRASS7 and not in %USERPROFILE%
+>>
+>> and it seems around these lines:
+>>
+>> [...]
+>>         Sys.setenv(GISRC="junk")
+>>         cat("GISDBASE:", getwd(), "\n", file=Sys.getenv("GISRC"))
+>>         cat("LOCATION_NAME: <UNKNOWN>", "\n", file=Sys.getenv("GISRC"),
+>>             append=TRUE)
+>>         cat("MAPSET: <UNKNOWN>", "\n", file=Sys.getenv("GISRC"),
+>>             append=TRUE)
+>>         gisrc <- ifelse (use_g.dirseps.exe, system(paste("g.dirseps.exe
+>> -g",
+>>             shQuote(Sys.getenv("GISRC"))), intern=TRUE),
+>>             Sys.getenv("GISRC"))
+>> [...]
+>>
+>> initGRASS gets in trouble in OSGeo4W.
+>>
+>>
+>>
+>> -----
+>> best regards
+>> Helmut
+>> --
+>> Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats at lists.osgeo.org
+>> https://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>>
+>>
+>>
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+
+From hellik at web.de  Sun Sep 23 13:24:40 2018
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Sun, 23 Sep 2018 13:24:40 -0700 (MST)
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+	thru osgeo4w)
+In-Reply-To: <alpine.LFD.2.21.1809232107240.12875@reclus.nhh.no>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>
+ <CF511784783D0B52.6e60d335-ffb1-4b9a-9c17-0a9ff28df204@mail.outlook.com>
+ <1537108631724-0.post@n6.nabble.com>
+ <CF511784783D0B52.d4161a6a-b0e5-40e2-8c4e-9649d45adca3@mail.outlook.com>
+ <1537132546148-0.post@n6.nabble.com>
+ <CAAMki4GgFqcCdqL0RHeU-XQOq4CY4A5J0VsfrrFch3QgMoFaOQ@mail.gmail.com>
+ <CF511784783D0B52.66f0bd65-3b3e-4390-9688-24038a16bb89@mail.outlook.com>
+ <CAAMki4EPqHus_ysPP_gEPWfErDMa3CH6Ty4-zT2Mn0=kfhnd+Q@mail.gmail.com>
+ <alpine.LFD.2.21.1809232107240.12875@reclus.nhh.no>
+Message-ID: <1537734280170-0.post@n6.nabble.com>
+
+>I could reproduce the problem after starting the OSGeo4W console from the
+>desktop shortcut icon.
+>
+>The problem seems to be that OSGeo4W's console starts in a directory for
+>which the user does not have write access (for me from a desktop shortcut
+>C:\Users\Public\Desktop\OSGeo4W). Because rgrass7::initGRASS() needs to
+>write a GISRC file in the working directory, it needs write access. When I
+>changed working directory to one to which I did have write access, the
+>current CRAN binary rgrass7 loaded correctly under OSGeo4W for a
+>throw-away location. I haven't yet tried with a pre-existing location.
+>
+>Could you check and see whether this seems reasonable?
+>
+>If so, I'll add a check for write access in the working directory to give
+>a more sensible error message.
+
+tested here with an existing location while changed the working directory to
+writable directory:
+
+----------------------
+run o-help for a list of available commands
+C:\>d:
+
+D:\>cd temp
+
+D:\temp>cd testR
+
+D:\temp\testR>R
+
+R version 3.4.4 (2018-03-15) -- "Someone to Lean On"
+Copyright (C) 2018 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R ist freie Software und kommt OHNE JEGLICHE GARANTIE.
+Sie sind eingeladen, es unter bestimmten Bedingungen weiter zu verbreiten.
+Tippen Sie 'license()' or 'licence()' für Details dazu.
+
+R ist ein Gemeinschaftsprojekt mit vielen Beitragenden.
+Tippen Sie 'contributors()' für mehr Information und 'citation()',
+um zu erfahren, wie R oder R packages in Publikationen zitiert werden
+können.
+
+Tippen Sie 'demo()' für einige Demos, 'help()' für on-line Hilfe, oder
+'help.start()' für eine HTML Browserschnittstelle zur Hilfe.
+Tippen Sie 'q()', um R zu verlassen.
+
+> library(rgrass7)
+Lade nötiges Paket: sp
+Lade nötiges Paket: XML
+GRASS GIS interface loaded with GRASS version: (GRASS not running)
+> initGRASS(gisBase = "C:/OSGeo4W64/apps/grass/grass-7.4.1",
++ gisDbase = "D:/grassdata/", location = "nc_spm_08_grass7",
++ mapset = "user1", SG="elevation")
+gisdbase    D:/grassdata/
+location    nc_spm_08_grass7
+mapset      user1
+rows        474
+columns     526
+north       228527.2
+south       215018.2
+west        629980
+east        644971
+nsres       28.5
+ewres       28.5
+projection  +proj=lcc +lat_1=36.16666666666666 +lat_2=34.33333333333334
++lat_0=33.75 +lon_0=-79 +x_0=609601.22 +y_0=0 +no_defs +a=6378137
++rf=298.257222101 +towgs84=0.000,0.000,0.000 +to_meter=1
+Warnmeldung:
+In dir.create(gisDbase) : 'D:\grassdata' existiert bereits
+> g <- gmeta()
+> g
+gisdbase    D:/grassdata/
+location    nc_spm_08_grass7
+mapset      user1
+rows        474
+columns     526
+north       228527.2
+south       215018.2
+west        629980
+east        644971
+nsres       28.5
+ewres       28.5
+projection  +proj=lcc +lat_1=36.16666666666666 +lat_2=34.33333333333334
++lat_0=33.75 +lon_0=-79 +x_0=609601.22 +y_0=0 +no_defs +a=6378137
++rf=298.257222101 +towgs84=0.000,0.000,0.000 +to_meter=1
+>
+---------------------
+
+yes, the issue is that OSGeo4W's console starts in a directory for
+which the user does not have write access.
+
+changing to a directory with write access starting grass from R works as
+expected.
+
+I'll change the wiki accordingly.
+
+>If so, I'll add a check for write access in the working directory to give
+>a more sensible error message.
+
+that would be helpful.
+
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+
+From Roger.Bivand at nhh.no  Mon Sep 24 02:24:29 2018
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon, 24 Sep 2018 11:24:29 +0200
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+ thru osgeo4w)
+In-Reply-To: <1537734280170-0.post@n6.nabble.com>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>
+ <CF511784783D0B52.6e60d335-ffb1-4b9a-9c17-0a9ff28df204@mail.outlook.com>
+ <1537108631724-0.post@n6.nabble.com>
+ <CF511784783D0B52.d4161a6a-b0e5-40e2-8c4e-9649d45adca3@mail.outlook.com>
+ <1537132546148-0.post@n6.nabble.com>
+ <CAAMki4GgFqcCdqL0RHeU-XQOq4CY4A5J0VsfrrFch3QgMoFaOQ@mail.gmail.com>
+ <CF511784783D0B52.66f0bd65-3b3e-4390-9688-24038a16bb89@mail.outlook.com>
+ <CAAMki4EPqHus_ysPP_gEPWfErDMa3CH6Ty4-zT2Mn0=kfhnd+Q@mail.gmail.com>
+ <alpine.LFD.2.21.1809232107240.12875@reclus.nhh.no>
+ <1537734280170-0.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.21.1809241115420.32377@reclus.nhh.no>
+
+On Sun, 23 Sep 2018, Helmut Kudrnovsky wrote:
+
+>> I could reproduce the problem after starting the OSGeo4W console from the
+>> desktop shortcut icon.
+>>
+>> The problem seems to be that OSGeo4W's console starts in a directory for
+>> which the user does not have write access (for me from a desktop shortcut
+>> C:\Users\Public\Desktop\OSGeo4W). Because rgrass7::initGRASS() needs to
+>> write a GISRC file in the working directory, it needs write access. When I
+>> changed working directory to one to which I did have write access, the
+>> current CRAN binary rgrass7 loaded correctly under OSGeo4W for a
+>> throw-away location. I haven't yet tried with a pre-existing location.
+>>
+>> Could you check and see whether this seems reasonable?
+>>
+>> If so, I'll add a check for write access in the working directory to give
+>> a more sensible error message.
+>
+
+Committed in r65 on https://r-forge.r-project.org/projects/spgrass/; the 
+change tests whether the working directory is writable, and if not puts 
+the temporary GISRC in an R temporary file. I checked Vero's scenario of 
+using initGRASS under OSGeo4W with an existing location (screenshot 
+attached) from the OSGeo4W console. I also corrected the PROJ shared files 
+location for GRASS (I hope). I can provide a Windows binary package 
+off-list if need be.
+
+Please let me know if this gets things working.
+
+I'm also concerned to know how rgrass7 should be maintained going forward? 
+Should it be on github/r-spatial ? Should it migrate to sf/raster classes?
+
+Best wishes,
+
+Roger
+
+> tested here with an existing location while changed the working directory to
+> writable directory:
+>
+> ----------------------
+> run o-help for a list of available commands
+> C:\>d:
+>
+> D:\>cd temp
+>
+> D:\temp>cd testR
+>
+> D:\temp\testR>R
+>
+> R version 3.4.4 (2018-03-15) -- "Someone to Lean On"
+> Copyright (C) 2018 The R Foundation for Statistical Computing
+> Platform: x86_64-w64-mingw32/x64 (64-bit)
+>
+> R ist freie Software und kommt OHNE JEGLICHE GARANTIE.
+> Sie sind eingeladen, es unter bestimmten Bedingungen weiter zu verbreiten.
+> Tippen Sie 'license()' or 'licence()' für Details dazu.
+>
+> R ist ein Gemeinschaftsprojekt mit vielen Beitragenden.
+> Tippen Sie 'contributors()' für mehr Information und 'citation()',
+> um zu erfahren, wie R oder R packages in Publikationen zitiert werden
+> können.
+>
+> Tippen Sie 'demo()' für einige Demos, 'help()' für on-line Hilfe, oder
+> 'help.start()' für eine HTML Browserschnittstelle zur Hilfe.
+> Tippen Sie 'q()', um R zu verlassen.
+>
+>> library(rgrass7)
+> Lade nötiges Paket: sp
+> Lade nötiges Paket: XML
+> GRASS GIS interface loaded with GRASS version: (GRASS not running)
+>> initGRASS(gisBase = "C:/OSGeo4W64/apps/grass/grass-7.4.1",
+> + gisDbase = "D:/grassdata/", location = "nc_spm_08_grass7",
+> + mapset = "user1", SG="elevation")
+> gisdbase    D:/grassdata/
+> location    nc_spm_08_grass7
+> mapset      user1
+> rows        474
+> columns     526
+> north       228527.2
+> south       215018.2
+> west        629980
+> east        644971
+> nsres       28.5
+> ewres       28.5
+> projection  +proj=lcc +lat_1=36.16666666666666 +lat_2=34.33333333333334
+> +lat_0=33.75 +lon_0=-79 +x_0=609601.22 +y_0=0 +no_defs +a=6378137
+> +rf=298.257222101 +towgs84=0.000,0.000,0.000 +to_meter=1
+> Warnmeldung:
+> In dir.create(gisDbase) : 'D:\grassdata' existiert bereits
+>> g <- gmeta()
+>> g
+> gisdbase    D:/grassdata/
+> location    nc_spm_08_grass7
+> mapset      user1
+> rows        474
+> columns     526
+> north       228527.2
+> south       215018.2
+> west        629980
+> east        644971
+> nsres       28.5
+> ewres       28.5
+> projection  +proj=lcc +lat_1=36.16666666666666 +lat_2=34.33333333333334
+> +lat_0=33.75 +lon_0=-79 +x_0=609601.22 +y_0=0 +no_defs +a=6378137
+> +rf=298.257222101 +towgs84=0.000,0.000,0.000 +to_meter=1
+>>
+> ---------------------
+>
+> yes, the issue is that OSGeo4W's console starts in a directory for
+> which the user does not have write access.
+>
+> changing to a directory with write access starting grass from R works as
+> expected.
+>
+> I'll change the wiki accordingly.
+>
+>> If so, I'll add a check for write access in the working directory to give
+>> a more sensible error message.
+>
+> that would be helpful.
+>
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: w10_osgeo4w_loc.png
+Type: image/png
+Size: 39127 bytes
+Desc: 
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20180924/8138eb8c/attachment-0001.png>
+
+From veroandreo at gmail.com  Mon Sep 24 06:05:49 2018
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Mon, 24 Sep 2018 15:05:49 +0200
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+ thru osgeo4w)
+In-Reply-To: <alpine.LFD.2.21.1809241115420.32377@reclus.nhh.no>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>
+ <CF511784783D0B52.6e60d335-ffb1-4b9a-9c17-0a9ff28df204@mail.outlook.com>
+ <1537108631724-0.post@n6.nabble.com>
+ <CF511784783D0B52.d4161a6a-b0e5-40e2-8c4e-9649d45adca3@mail.outlook.com>
+ <1537132546148-0.post@n6.nabble.com>
+ <CAAMki4GgFqcCdqL0RHeU-XQOq4CY4A5J0VsfrrFch3QgMoFaOQ@mail.gmail.com>
+ <CF511784783D0B52.66f0bd65-3b3e-4390-9688-24038a16bb89@mail.outlook.com>
+ <CAAMki4EPqHus_ysPP_gEPWfErDMa3CH6Ty4-zT2Mn0=kfhnd+Q@mail.gmail.com>
+ <alpine.LFD.2.21.1809232107240.12875@reclus.nhh.no>
+ <1537734280170-0.post@n6.nabble.com>
+ <alpine.LFD.2.21.1809241115420.32377@reclus.nhh.no>
+Message-ID: <CAAMki4EAEnkTcG0nrMFnsMri4svxcGZdCvbdqEyO-Nz42sQpSA@mail.gmail.com>
+
+El lun., 24 sep. 2018 6:24, Roger Bivand <Roger.Bivand at nhh.no> escribió:
+
+> On Sun, 23 Sep 2018, Helmut Kudrnovsky wrote:
+>
+> >> I could reproduce the problem after starting the OSGeo4W console from
+> the
+> >> desktop shortcut icon.
+> >>
+> >> The problem seems to be that OSGeo4W's console starts in a directory for
+> >> which the user does not have write access (for me from a desktop
+> shortcut
+> >> C:\Users\Public\Desktop\OSGeo4W). Because rgrass7::initGRASS() needs to
+> >> write a GISRC file in the working directory, it needs write access.
+> When I
+> >> changed working directory to one to which I did have write access, the
+> >> current CRAN binary rgrass7 loaded correctly under OSGeo4W for a
+> >> throw-away location. I haven't yet tried with a pre-existing location.
+> >>
+> >> Could you check and see whether this seems reasonable?
+> >>
+> >> If so, I'll add a check for write access in the working directory to
+> give
+> >> a more sensible error message.
+> >
+>
+> Committed in r65 on https://r-forge.r-project.org/projects/spgrass/; the
+> change tests whether the working directory is writable, and if not puts
+> the temporary GISRC in an R temporary file. I checked Vero's scenario of
+> using initGRASS under OSGeo4W with an existing location (screenshot
+> attached) from the OSGeo4W console.
+
+
+This is great! I could only test now, and after changing to a folder with
+writing permission, all works perfectly!
+Thanks so much, Roger and Helli :)
+
+
+> I also corrected the PROJ shared files location for GRASS (I hope). I can
+> provide a Windows binary package
+> off-list if need be.
+>
+
+How to find/test for the location of PROJ shared files?
+
+
+> Please let me know if this gets things working.
+>
+> I'm also concerned to know how rgrass7 should be maintained going forward?
+> Should it be on github/r-spatial ? Should it migrate to sf/raster classes?
+>
+
+IMHO, moving to sf/raster classes seems reasonable. However, if it is too
+much of a hassle or there's no consensus, going from sp to sf is just one
+line in R once a GRASS vector has been read in and, for the raster data, as
+well.
+
+Thanks again!
+
+Best,
+Vero
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20180924/d1fff3f8/attachment.html>
+
+From hellik at web.de  Mon Sep 24 08:21:04 2018
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Mon, 24 Sep 2018 08:21:04 -0700 (MST)
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+	thru osgeo4w)
+In-Reply-To: <CAAMki4EAEnkTcG0nrMFnsMri4svxcGZdCvbdqEyO-Nz42sQpSA@mail.gmail.com>
+References: <1537108631724-0.post@n6.nabble.com>
+ <CF511784783D0B52.d4161a6a-b0e5-40e2-8c4e-9649d45adca3@mail.outlook.com>
+ <1537132546148-0.post@n6.nabble.com>
+ <CAAMki4GgFqcCdqL0RHeU-XQOq4CY4A5J0VsfrrFch3QgMoFaOQ@mail.gmail.com>
+ <CF511784783D0B52.66f0bd65-3b3e-4390-9688-24038a16bb89@mail.outlook.com>
+ <CAAMki4EPqHus_ysPP_gEPWfErDMa3CH6Ty4-zT2Mn0=kfhnd+Q@mail.gmail.com>
+ <alpine.LFD.2.21.1809232107240.12875@reclus.nhh.no>
+ <1537734280170-0.post@n6.nabble.com>
+ <alpine.LFD.2.21.1809241115420.32377@reclus.nhh.no>
+ <CAAMki4EAEnkTcG0nrMFnsMri4svxcGZdCvbdqEyO-Nz42sQpSA@mail.gmail.com>
+Message-ID: <1537802464209-0.post@n6.nabble.com>
+
+
+>How to find/test for the location of PROJ shared files?
+
+see
+
+https://r-forge.r-project.org/scm/viewvc.php/pkg/rgrass7/R/initGRASS.R?root=spgrass&r1=55&r2=64
+
+for a diff
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+
+From Roger.Bivand at nhh.no  Mon Sep 24 12:16:52 2018
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon, 24 Sep 2018 21:16:52 +0200
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+ thru osgeo4w)
+In-Reply-To: <CAAMki4EAEnkTcG0nrMFnsMri4svxcGZdCvbdqEyO-Nz42sQpSA@mail.gmail.com>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>
+ <CF511784783D0B52.6e60d335-ffb1-4b9a-9c17-0a9ff28df204@mail.outlook.com>
+ <1537108631724-0.post@n6.nabble.com>
+ <CF511784783D0B52.d4161a6a-b0e5-40e2-8c4e-9649d45adca3@mail.outlook.com>
+ <1537132546148-0.post@n6.nabble.com>
+ <CAAMki4GgFqcCdqL0RHeU-XQOq4CY4A5J0VsfrrFch3QgMoFaOQ@mail.gmail.com>
+ <CF511784783D0B52.66f0bd65-3b3e-4390-9688-24038a16bb89@mail.outlook.com>
+ <CAAMki4EPqHus_ysPP_gEPWfErDMa3CH6Ty4-zT2Mn0=kfhnd+Q@mail.gmail.com>
+ <alpine.LFD.2.21.1809232107240.12875@reclus.nhh.no>
+ <1537734280170-0.post@n6.nabble.com>
+ <alpine.LFD.2.21.1809241115420.32377@reclus.nhh.no>
+ <CAAMki4EAEnkTcG0nrMFnsMri4svxcGZdCvbdqEyO-Nz42sQpSA@mail.gmail.com>
+Message-ID: <alpine.LFD.2.21.1809242110160.12868@reclus.nhh.no>
+
+On Mon, 24 Sep 2018, Veronica Andreo wrote:
+
+> El lun., 24 sep. 2018 6:24, Roger Bivand <Roger.Bivand at nhh.no> escribió:
+>
+>> On Sun, 23 Sep 2018, Helmut Kudrnovsky wrote:
+>>
+>>>> I could reproduce the problem after starting the OSGeo4W console from
+>> the
+>>>> desktop shortcut icon.
+>>>>
+>>>> The problem seems to be that OSGeo4W's console starts in a directory for
+>>>> which the user does not have write access (for me from a desktop
+>> shortcut
+>>>> C:\Users\Public\Desktop\OSGeo4W). Because rgrass7::initGRASS() needs to
+>>>> write a GISRC file in the working directory, it needs write access.
+>> When I
+>>>> changed working directory to one to which I did have write access, the
+>>>> current CRAN binary rgrass7 loaded correctly under OSGeo4W for a
+>>>> throw-away location. I haven't yet tried with a pre-existing location.
+>>>>
+>>>> Could you check and see whether this seems reasonable?
+>>>>
+>>>> If so, I'll add a check for write access in the working directory to
+>> give
+>>>> a more sensible error message.
+>>>
+>>
+>> Committed in r65 on https://r-forge.r-project.org/projects/spgrass/; the
+>> change tests whether the working directory is writable, and if not puts
+>> the temporary GISRC in an R temporary file. I checked Vero's scenario of
+>> using initGRASS under OSGeo4W with an existing location (screenshot
+>> attached) from the OSGeo4W console.
+>
+>
+> This is great! I could only test now, and after changing to a folder with
+> writing permission, all works perfectly!
+> Thanks so much, Roger and Helli :)
+
+It should work even in a directory without write permission - now it tests 
+first rather than failing. Probably the default should be to use a 
+temporary file for GISRC anyway, but ten years ago that seemed 
+challenging.
+
+>
+>
+>> I also corrected the PROJ shared files location for GRASS (I hope). I can
+>> provide a Windows binary package
+>> off-list if need be.
+>>
+>
+> How to find/test for the location of PROJ shared files?
+>
+
+You don't need to, it's just to do with correcting a carry-over from file 
+organization in GRASS 6 that had not been correct for GRASS 7 when 
+setting up environment variables for GRASS.
+
+>
+>> Please let me know if this gets things working.
+>>
+>> I'm also concerned to know how rgrass7 should be maintained going forward?
+>> Should it be on github/r-spatial ? Should it migrate to sf/raster classes?
+>>
+>
+> IMHO, moving to sf/raster classes seems reasonable. However, if it is too
+> much of a hassle or there's no consensus, going from sp to sf is just one
+> line in R once a GRASS vector has been read in and, for the raster data, as
+> well.
+>
+
+I already have a trial sf/raster github repo, but the recent edits are not 
+present there. It only uses sf for vector, but is stuck with sp/raster for 
+raster, so was waiting for stars or similar to provide something newer. 
+I'll try to combine the two at some stage, but not soon.
+
+Best wishes,
+
+Roger
+
+> Thanks again!
+>
+> Best,
+> Vero
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+
+From veroandreo at gmail.com  Mon Sep 24 15:53:39 2018
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Tue, 25 Sep 2018 00:53:39 +0200
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+ thru osgeo4w)
+In-Reply-To: <alpine.LFD.2.21.1809242110160.12868@reclus.nhh.no>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>
+ <CF511784783D0B52.6e60d335-ffb1-4b9a-9c17-0a9ff28df204@mail.outlook.com>
+ <1537108631724-0.post@n6.nabble.com>
+ <CF511784783D0B52.d4161a6a-b0e5-40e2-8c4e-9649d45adca3@mail.outlook.com>
+ <1537132546148-0.post@n6.nabble.com>
+ <CAAMki4GgFqcCdqL0RHeU-XQOq4CY4A5J0VsfrrFch3QgMoFaOQ@mail.gmail.com>
+ <CF511784783D0B52.66f0bd65-3b3e-4390-9688-24038a16bb89@mail.outlook.com>
+ <CAAMki4EPqHus_ysPP_gEPWfErDMa3CH6Ty4-zT2Mn0=kfhnd+Q@mail.gmail.com>
+ <alpine.LFD.2.21.1809232107240.12875@reclus.nhh.no>
+ <1537734280170-0.post@n6.nabble.com>
+ <alpine.LFD.2.21.1809241115420.32377@reclus.nhh.no>
+ <CAAMki4EAEnkTcG0nrMFnsMri4svxcGZdCvbdqEyO-Nz42sQpSA@mail.gmail.com>
+ <alpine.LFD.2.21.1809242110160.12868@reclus.nhh.no>
+Message-ID: <CAAMki4Hv1e1aKj8WCcbSF+ybHWSr=JXU5iZHwpep2pAU=gwf4A@mail.gmail.com>
+
+Hi Roger,
+
+[...]
+
+> It should work even in a directory without write permission - now it tests
+> first rather than failing. Probably the default should be to use a
+> temporary file for GISRC anyway, but ten years ago that seemed
+> challenging.
+> >
+> >> I also corrected the PROJ shared files location for GRASS (I hope). I
+> can
+> >> provide a Windows binary package
+> >> off-list if need be.
+> >>
+> > How to find/test for the location of PROJ shared files?
+> >
+> You don't need to, it's just to do with correcting a carry-over from file
+> organization in GRASS 6 that had not been correct for GRASS 7 when
+> setting up environment variables for GRASS.
+>
+> >> Please let me know if this gets things working.
+> >>
+> >> I'm also concerned to know how rgrass7 should be maintained going
+> forward?
+> >> Should it be on github/r-spatial ? Should it migrate to sf/raster
+> classes?
+> >>
+> >
+> > IMHO, moving to sf/raster classes seems reasonable. However, if it is too
+> > much of a hassle or there's no consensus, going from sp to sf is just one
+> > line in R once a GRASS vector has been read in and, for the raster data,
+> as
+> > well.
+>
+> I already have a trial sf/raster github repo, but the recent edits are not
+> present there. It only uses sf for vector, but is stuck with sp/raster for
+> raster, so was waiting for stars or similar to provide something newer.
+>
+
+star given :)
+Didn't know about this repo. I think github/r-spatial is also probably the
+better place to hold the official rgrass7 in the (near?) future
+
+Cheers,
+Vero
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20180925/bbc2f234/attachment.html>
+
+From Roger.Bivand at nhh.no  Tue Sep 25 01:40:33 2018
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue, 25 Sep 2018 10:40:33 +0200
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+ thru osgeo4w)
+In-Reply-To: <CAAMki4Hv1e1aKj8WCcbSF+ybHWSr=JXU5iZHwpep2pAU=gwf4A@mail.gmail.com>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>
+ <CF511784783D0B52.6e60d335-ffb1-4b9a-9c17-0a9ff28df204@mail.outlook.com>
+ <1537108631724-0.post@n6.nabble.com>
+ <CF511784783D0B52.d4161a6a-b0e5-40e2-8c4e-9649d45adca3@mail.outlook.com>
+ <1537132546148-0.post@n6.nabble.com>
+ <CAAMki4GgFqcCdqL0RHeU-XQOq4CY4A5J0VsfrrFch3QgMoFaOQ@mail.gmail.com>
+ <CF511784783D0B52.66f0bd65-3b3e-4390-9688-24038a16bb89@mail.outlook.com>
+ <CAAMki4EPqHus_ysPP_gEPWfErDMa3CH6Ty4-zT2Mn0=kfhnd+Q@mail.gmail.com>
+ <alpine.LFD.2.21.1809232107240.12875@reclus.nhh.no>
+ <1537734280170-0.post@n6.nabble.com>
+ <alpine.LFD.2.21.1809241115420.32377@reclus.nhh.no>
+ <CAAMki4EAEnkTcG0nrMFnsMri4svxcGZdCvbdqEyO-Nz42sQpSA@mail.gmail.com>
+ <alpine.LFD.2.21.1809242110160.12868@reclus.nhh.no>
+ <CAAMki4Hv1e1aKj8WCcbSF+ybHWSr=JXU5iZHwpep2pAU=gwf4A@mail.gmail.com>
+Message-ID: <alpine.LFD.2.21.1809251031300.28959@reclus.nhh.no>
+
+On Tue, 25 Sep 2018, Veronica Andreo wrote:
+
+> Hi Roger,
+>
+> [...]
+>
+>> It should work even in a directory without write permission - now it tests
+>> first rather than failing. Probably the default should be to use a
+>> temporary file for GISRC anyway, but ten years ago that seemed
+>> challenging.
+>>>
+>>>> I also corrected the PROJ shared files location for GRASS (I hope). I
+>> can
+>>>> provide a Windows binary package
+>>>> off-list if need be.
+>>>>
+>>> How to find/test for the location of PROJ shared files?
+>>>
+>> You don't need to, it's just to do with correcting a carry-over from file
+>> organization in GRASS 6 that had not been correct for GRASS 7 when
+>> setting up environment variables for GRASS.
+>>
+>>>> Please let me know if this gets things working.
+>>>>
+>>>> I'm also concerned to know how rgrass7 should be maintained going
+>> forward?
+>>>> Should it be on github/r-spatial ? Should it migrate to sf/raster
+>> classes?
+>>>>
+>>>
+>>> IMHO, moving to sf/raster classes seems reasonable. However, if it is too
+>>> much of a hassle or there's no consensus, going from sp to sf is just one
+>>> line in R once a GRASS vector has been read in and, for the raster data,
+>> as
+>>> well.
+>>
+>> I already have a trial sf/raster github repo, but the recent edits are not
+>> present there. It only uses sf for vector, but is stuck with sp/raster for
+>> raster, so was waiting for stars or similar to provide something newer.
+>>
+>
+> star given :)
+> Didn't know about this repo. I think github/r-spatial is also probably the
+> better place to hold the official rgrass7 in the (near?) future
+
+Yes, but until we know whether getClass("Raster") in the raster Package is 
+a stable target match for GRASS raster layers (as sp::SpatialGridDataFrame 
+has been), we don't know how to drop the sp dependency. raster still 
+depends on sp and suggests rgdal; it now also suggests sf, so maybe in a 
+little while an R/GRASS interface could be just sf/rgdal-based. To support 
+existing workflows, a legacy mode would be needed, I think. So rgrass7 
+would load in legacy mode, but pivot to sf/raster if legacy mode was set 
+FALSE? The r-spatial/stars project is making some progress as Edzer 
+described in Pruchonice, but is split between local arrays and/or 
+cloud-based representations. When stars reaches a sweet spot, rgrass7 can 
+follow it for the R-side representation.
+
+Best wishes,
+
+Roger
+
+>
+> Cheers,
+> Vero
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+
+From Roger.Bivand at nhh.no  Fri Sep 28 01:25:02 2018
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri, 28 Sep 2018 10:25:02 +0200
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+ thru osgeo4w)
+In-Reply-To: <alpine.LFD.2.21.1809251031300.28959@reclus.nhh.no>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>
+ <CF511784783D0B52.6e60d335-ffb1-4b9a-9c17-0a9ff28df204@mail.outlook.com>
+ <1537108631724-0.post@n6.nabble.com>
+ <CF511784783D0B52.d4161a6a-b0e5-40e2-8c4e-9649d45adca3@mail.outlook.com>
+ <1537132546148-0.post@n6.nabble.com>
+ <CAAMki4GgFqcCdqL0RHeU-XQOq4CY4A5J0VsfrrFch3QgMoFaOQ@mail.gmail.com>
+ <CF511784783D0B52.66f0bd65-3b3e-4390-9688-24038a16bb89@mail.outlook.com>
+ <CAAMki4EPqHus_ysPP_gEPWfErDMa3CH6Ty4-zT2Mn0=kfhnd+Q@mail.gmail.com>
+ <alpine.LFD.2.21.1809232107240.12875@reclus.nhh.no>
+ <1537734280170-0.post@n6.nabble.com>
+ <alpine.LFD.2.21.1809241115420.32377@reclus.nhh.no>
+ <CAAMki4EAEnkTcG0nrMFnsMri4svxcGZdCvbdqEyO-Nz42sQpSA@mail.gmail.com>
+ <alpine.LFD.2.21.1809242110160.12868@reclus.nhh.no>
+ <CAAMki4Hv1e1aKj8WCcbSF+ybHWSr=JXU5iZHwpep2pAU=gwf4A@mail.gmail.com>
+ <alpine.LFD.2.21.1809251031300.28959@reclus.nhh.no>
+Message-ID: <alpine.LFD.2.21.1809281023560.4654@reclus.nhh.no>
+
+Package rgrass7_0.1-12.tar.gz is on its way to CRAN, with work-around for 
+OSGeo4W no write access console startup directory.
+
+Roger
+
+On Tue, 25 Sep 2018, Roger Bivand wrote:
+
+> On Tue, 25 Sep 2018, Veronica Andreo wrote:
+>
+>>  Hi Roger,
+>>
+>>  [...]
+>>
+>>>  It should work even in a directory without write permission - now it
+>>>  tests
+>>>  first rather than failing. Probably the default should be to use a
+>>>  temporary file for GISRC anyway, but ten years ago that seemed
+>>>  challenging.
+>>>>
+>>>>>  I also corrected the PROJ shared files location for GRASS (I hope). I
+>>>  can
+>>>>>  provide a Windows binary package
+>>>>>  off-list if need be.
+>>>>>
+>>>>  How to find/test for the location of PROJ shared files?
+>>>>
+>>>  You don't need to, it's just to do with correcting a carry-over from file
+>>>  organization in GRASS 6 that had not been correct for GRASS 7 when
+>>>  setting up environment variables for GRASS.
+>>>
+>>>>>  Please let me know if this gets things working.
+>>>>>
+>>>>>  I'm also concerned to know how rgrass7 should be maintained going
+>>>  forward?
+>>>>>  Should it be on github/r-spatial ? Should it migrate to sf/raster
+>>>  classes?
+>>>>> 
+>>>>
+>>>>  IMHO, moving to sf/raster classes seems reasonable. However, if it is
+>>>>  too
+>>>>  much of a hassle or there's no consensus, going from sp to sf is just
+>>>>  one
+>>>>  line in R once a GRASS vector has been read in and, for the raster data,
+>>>  as
+>>>>  well.
+>>>
+>>>  I already have a trial sf/raster github repo, but the recent edits are
+>>>  not
+>>>  present there. It only uses sf for vector, but is stuck with sp/raster
+>>>  for
+>>>  raster, so was waiting for stars or similar to provide something newer.
+>>> 
+>>
+>>  star given :)
+>>  Didn't know about this repo. I think github/r-spatial is also probably the
+>>  better place to hold the official rgrass7 in the (near?) future
+>
+> Yes, but until we know whether getClass("Raster") in the raster Package is a 
+> stable target match for GRASS raster layers (as sp::SpatialGridDataFrame has 
+> been), we don't know how to drop the sp dependency. raster still depends on 
+> sp and suggests rgdal; it now also suggests sf, so maybe in a little while an 
+> R/GRASS interface could be just sf/rgdal-based. To support existing 
+> workflows, a legacy mode would be needed, I think. So rgrass7 would load in 
+> legacy mode, but pivot to sf/raster if legacy mode was set FALSE? The 
+> r-spatial/stars project is making some progress as Edzer described in 
+> Pruchonice, but is split between local arrays and/or cloud-based 
+> representations. When stars reaches a sweet spot, rgrass7 can follow it for 
+> the R-side representation.
+>
+> Best wishes,
+>
+> Roger
+>
+>>
+>>  Cheers,
+>>  Vero
+>> 
+>
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+

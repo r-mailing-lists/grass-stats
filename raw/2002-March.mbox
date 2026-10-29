@@ -1,0 +1,178 @@
+From kristanb at moscow.com  Tue Mar 19 16:57:54 2002
+From: kristanb at moscow.com (Bill Kristan)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] Extracting coordinates of contours from R
+Message-ID: <200203192158.NAA79432@whale.fsr.net>
+
+Has anyone found a way to extract contours from R in a way that can be used 
+as vectors in GRASS? I want to take the contours from a kernel density 
+estimate from the package "sm" (using display="slice") and use them in GRASS. 
+As far as I know all of the contour functions in R only plot to the screen, 
+but the contours are not returned.
+
+Another possible way to do this is to use R-GRASS packages kde2d.G function, 
+import the resulting raster map into GRASS and then do the contouring there. 
+However, kde2d.G gives probability densities, whereas I'm trying to get 
+contours that enclose a particular proportion of the cumulative probability. 
+I would be just as happy to do the contouring in GRASS, if anyone can give me 
+a hint about how to get cumulative probability contours.
+
+Thanks for the help,
+
+Bill Kristan.
+
+
+From Roger.Bivand at nhh.no  Tue Mar 19 17:34:07 2002
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] Extracting coordinates of contours from R
+In-Reply-To: <200203192158.NAA79432@whale.fsr.net>
+Message-ID: <Pine.LNX.4.21.0203192319500.8742-100000@reclus.nhh.no>
+
+On Tue, 19 Mar 2002, Bill Kristan wrote:
+
+> Has anyone found a way to extract contours from R in a way that can be used 
+> as vectors in GRASS? I want to take the contours from a kernel density 
+> estimate from the package "sm" (using display="slice") and use them in GRASS. 
+> As far as I know all of the contour functions in R only plot to the screen, 
+> but the contours are not returned.
+> 
+An interesting idea! Looking at src/main/plot3d.c, it seems to be
+possible, with a good deal of work. The functions do_contour() and
+contour() in the C code are the ones involved, I think. I'm not sure how
+to return the contours, though, probably as a list of polylines. In fact
+contour() spends a lot of effort on label placement, and is quite worried
+about contour polylines with too many segments.
+
+If you felt able to look at this, I imagine that Ross Ihaka and Paul
+Murrell would be interested.
+
+> Another possible way to do this is to use R-GRASS packages kde2d.G function, 
+> import the resulting raster map into GRASS and then do the contouring there. 
+> However, kde2d.G gives probability densities, whereas I'm trying to get 
+> contours that enclose a particular proportion of the cumulative probability. 
+> I would be just as happy to do the contouring in GRASS, if anyone can give me 
+> a hint about how to get cumulative probability contours.
+> 
+Could you set the bits of z that you don't want to NA, move the raster to
+GRASS, and do it there? I'm not sure though how to get the outline to
+r.thin and r.line into a vector representation.
+
+Roger
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+and: Department of Geography and Regional Development, University of
+Gdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.
+
+
+From alobo at ija.csic.es  Wed Mar 20 05:48:52 2002
+From: alobo at ija.csic.es (Agustin Lobo)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] Extracting coordinates of contours from R
+In-Reply-To: <200203192158.NAA79432@whale.fsr.net>
+Message-ID: <Pine.OSF.3.96.1020320114245.11462F-100000@ija.csic.es>
+
+And also function contours(). The most general approach would be 
+writing a dxf file, but the problem is that these functions
+(at least countours, which is plot3d.c) do not have the option
+of providing the xy coordinates of the vertices (i.e., 2 vectors
+that could actually be plotted with lines()). 
+
+Agus
+
+Dr. Agustin Lobo
+Instituto de Ciencias de la Tierra (CSIC)
+Lluis Sole Sabaris s/n
+08028 Barcelona SPAIN
+tel 34 93409 5410
+fax 34 93411 0012
+alobo@ija.csic.es
+
+
+On Tue, 19 Mar 2002, Bill Kristan wrote:
+
+> Has anyone found a way to extract contours from R in a way that can be used 
+> as vectors in GRASS? I want to take the contours from a kernel density 
+> estimate from the package "sm" (using display="slice") and use them in GRASS. 
+> As far as I know all of the contour functions in R only plot to the screen, 
+> but the contours are not returned.
+> 
+> Another possible way to do this is to use R-GRASS packages kde2d.G function, 
+> import the resulting raster map into GRASS and then do the contouring there. 
+> However, kde2d.G gives probability densities, whereas I'm trying to get 
+> contours that enclose a particular proportion of the cumulative probability. 
+> I would be just as happy to do the contouring in GRASS, if anyone can give me 
+> a hint about how to get cumulative probability contours.
+> 
+> Thanks for the help,
+> 
+> Bill Kristan.
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+
+From alobo at ija.csic.es  Fri Mar 22 03:45:35 2002
+From: alobo at ija.csic.es (Agustin Lobo)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] R contour(): x,y output
+Message-ID: <Pine.OSF.3.96.1020322094421.4540F-100000@ija.csic.es>
+
+I forward this message (with permission) 
+as I think that it is interesting for the 
+list.
+
+Agus
+
+Dr. Agustin Lobo
+Instituto de Ciencias de la Tierra (CSIC)
+Lluis Sole Sabaris s/n
+08028 Barcelona SPAIN
+tel 34 93409 5410
+fax 34 93411 0012
+alobo@ija.csic.es
+
+
+---------- Forwarded message ----------
+Date: Thu, 21 Mar 2002 10:37:08 +1200
+From: Paul Murrell <p.murrell@auckland.ac.nz>
+To: Agustin Lobo <alobo@ija.csic.es>
+Subject: Re: suggestion
+
+Hi
+
+
+> Paul,
+> your TODO list in
+> http://developer.r-project.org/paul-todo.html
+> mentions
+> "* I am compiling a list of missing features or inconsistencies in R
+> graphics that I'd like to get to..."
+>
+> Related to this, would it be possible to get the x,y coordinates
+> of the vertices in the contours() function? I mean a couple
+> of vectors that could be plotted with lines(). Having this, it
+> would be possible to write a a function to write these
+> coordinates to a file in dxf format, which would be very
+> useful for linking R to GIS packs.
+
+
+I agree this is a good idea.  There is a plan to do just such a thing in
+order to make contour plotting possible in the lattice package.  The bad
+news:  I suspect the next time I'll get a chance to try and do this is
+probably only for R1.6 (i.e., for around September some time I think).
+Would that still be useful to you?
+
+Paul
+
+
+
+

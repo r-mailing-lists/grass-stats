@@ -1,0 +1,892 @@
+From carlos.grohmann at gmail.com  Tue Aug  7 10:44:00 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] compare several maps
+Message-ID: <bd07447b0708070744p14c2bf2djae800201850d683b@mail.gmail.com>
+
+What do you guys think is a good approach to compare several raster
+maps at the same time? correlation matrix? some graphical output?
+density plots?
+
+cheers
+
+carlos
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Visiting Researcher at Kingston University London - UK
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+
+
+From jarekj at amu.edu.pl  Tue Aug  7 12:32:12 2007
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] compare several maps
+In-Reply-To: <bd07447b0708070744p14c2bf2djae800201850d683b@mail.gmail.com>
+References: <bd07447b0708070744p14c2bf2djae800201850d683b@mail.gmail.com>
+Message-ID: <46B89E8C.6030602@amu.edu.pl>
+
+Carlos "Gu?no" Grohmann wrote:
+> What do you guys think is a good approach to compare several raster
+> maps at the same time? correlation matrix? some graphical output?
+> density plots?
+>
+> cheers
+>
+> carlos
+>
+>   
+well, give us more detail what do you need
+
+
+From carlos.grohmann at gmail.com  Tue Aug  7 13:24:42 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] compare several maps
+In-Reply-To: <46B89E8C.6030602@amu.edu.pl>
+References: <bd07447b0708070744p14c2bf2djae800201850d683b@mail.gmail.com>
+	<46B89E8C.6030602@amu.edu.pl>
+Message-ID: <bd07447b0708071024u4d9c4711hbd940010c1c34c41@mail.gmail.com>
+
+Sure, sorry about that.
+
+I am analyzing various methods of calculation of surface roughness. So
+I will have several maps, produced with different methods, at
+different scales and with different datasets.
+All maps are calculated with moving-window procedures. I'll have maps
+calculated  with neighborhoods of 3,5,7,9,11,.. pixels, over DEMs with
+5,10,25,50,90 meters resolution, using probably three different
+methods.
+
+So I'll end up with tens of maps! I was wondering what would be a good
+approach to compare them. I was thinking to rescale all maps to a
+common range (say, 0-255) first, and then compare.
+
+I guess it makes sense to compare like this:
+
+DEM_10m - Window_Size_3x3 - method A/B/C
+DEM_10m - Window_Size_5x5 - method A/B/C
+
+and so on for each dem resolution and window size.
+
+carlos
+
+
+On 8/7/07, Jarek Jasiewicz <jarekj@amu.edu.pl> wrote:
+> Carlos "Gu?no" Grohmann wrote:
+> > What do you guys think is a good approach to compare several raster
+> > maps at the same time? correlation matrix? some graphical output?
+> > density plots?
+> >
+> > cheers
+> >
+> > carlos
+> >
+> >
+> well, give us more detail what do you need
+>
+
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Visiting Researcher at Kingston University London - UK
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+
+
+From jgarcia at ija.csic.es  Wed Aug  8 09:55:06 2007
+From: jgarcia at ija.csic.es (javier garcia-pintado)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] R-GRASS link problem
+Message-ID: <46B9CB3A.3020500@ija.csic.es>
+
+Hi;
+I've already reported this problem to the R list, but it is probable
+that the source of the problem is GRASS (5.4) instead of R.
+I'm using the library GRASS in R to carry out a sequence of operation in
+a set of GRASS maps.
+After a couple of loops I obtain the warning message:
+"Too many open raster files"
+and the communication between R and GRASS does not work anymore for that
+moment on.
+
+The fact is that I'm opening a sequence of maps, but the destination
+name in R is always the same, so it does not seem to be an R problem but
+a GRASS one.
+
+Could you advise me about how to solve this?
+
+Thanks and best regards,
+
+Javier
+------------------------
+
+-- 
+Javier Garc?a-Pintado
+Institute of Earth Sciences Jaume Almera (CSIC)
+Lluis Sole Sabaris s/n, 08028 Barcelona
+Phone: +34 934095410
+Fax:   +34 934110012
+e-mail:jgarcia@ija.csic.es 
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: jgarcia.vcf
+Type: text/x-vcard
+Size: 337 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20070808/92416cd1/jgarcia.vcf
+From Roger.Bivand at nhh.no  Wed Aug  8 10:24:58 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] R-GRASS link problem
+In-Reply-To: <46B9CB3A.3020500@ija.csic.es>
+References: <46B9CB3A.3020500@ija.csic.es>
+Message-ID: <Pine.LNX.4.64.0708081613500.24449@reclus.nhh.no>
+
+On Wed, 8 Aug 2007, javier garcia-pintado wrote:
+
+> Hi;
+> I've already reported this problem to the R list, but it is probable
+> that the source of the problem is GRASS (5.4) instead of R.
+
+You wrote to R-help, not to R-sig-geo, which is the correct list on the R 
+side.
+
+> I'm using the library GRASS in R to carry out a sequence of operation in
+> a set of GRASS maps.
+> After a couple of loops I obtain the warning message:
+> "Too many open raster files"
+> and the communication between R and GRASS does not work anymore for that
+> moment on.
+>
+> The fact is that I'm opening a sequence of maps, but the destination
+> name in R is always the same, so it does not seem to be an R problem but
+> a GRASS one.
+>
+
+The GRASS package for legacy GRASS 5 has its own copy of the GRASS library 
+files that it calls, and the problem occurs when the number of "open" 
+files exceeds MAXFILES 256. You can change this in src/include/G.h and 
+re-build if you like, but since the C source of rastget shows you, it is 
+careful to close the file handles, line 214 in src/rastget.c. This leads 
+me to think that this is an OS story, and so we need to know your OS. 
+Here, Windows or cygwin may behave very differently when freeing system 
+resources from say Linux.
+
+For me on Linux, running example(rast.get) outside GRASS (I do not have a 
+working GRASS 5 installation any more) and then running:
+
+for (i in 1:260) {
+  print(i)
+  exget <- rast.get(G, rlist=c("ex.Zn.grid.in", "ex.tr3.in",
+   "ex.Zn.grid.o.in"), catlabels=as.logical(c(FALSE, FALSE, TRUE)))
+}
+
+did not show any problems.
+
+Roger
+
+> Could you advise me about how to solve this?
+>
+> Thanks and best regards,
+>
+> Javier
+> ------------------------
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From neteler at itc.it  Wed Aug  8 16:35:55 2007
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] R-GRASS link problem
+In-Reply-To: <Pine.LNX.4.64.0708081613500.24449@reclus.nhh.no>
+References: <46B9CB3A.3020500@ija.csic.es>
+	<Pine.LNX.4.64.0708081613500.24449@reclus.nhh.no>
+Message-ID: <12061387.post@talk.nabble.com>
+
+
+Hi,
+
+just to note that these limitations no longer exist in recent GRASS 6.
+
+Markus
+
+
+Roger Bivand wrote:
+> 
+> On Wed, 8 Aug 2007, javier garcia-pintado wrote:
+> 
+>> Hi;
+>> I've already reported this problem to the R list, but it is probable
+>> that the source of the problem is GRASS (5.4) instead of R.
+> 
+> You wrote to R-help, not to R-sig-geo, which is the correct list on the R 
+> side.
+> 
+>> I'm using the library GRASS in R to carry out a sequence of operation in
+>> a set of GRASS maps.
+>> After a couple of loops I obtain the warning message:
+>> "Too many open raster files"
+>> and the communication between R and GRASS does not work anymore for that
+>> moment on.
+>>
+>> The fact is that I'm opening a sequence of maps, but the destination
+>> name in R is always the same, so it does not seem to be an R problem but
+>> a GRASS one.
+>>
+> 
+> The GRASS package for legacy GRASS 5 has its own copy of the GRASS library 
+> files that it calls, and the problem occurs when the number of "open" 
+> files exceeds MAXFILES 256. You can change this in src/include/G.h and 
+> re-build if you like, but since the C source of rastget shows you, it is 
+> careful to close the file handles, line 214 in src/rastget.c. This leads 
+> me to think that this is an OS story, and so we need to know your OS. 
+> Here, Windows or cygwin may behave very differently when freeing system 
+> resources from say Linux.
+> 
+> For me on Linux, running example(rast.get) outside GRASS (I do not have a 
+> working GRASS 5 installation any more) and then running:
+> 
+> for (i in 1:260) {
+>   print(i)
+>   exget <- rast.get(G, rlist=c("ex.Zn.grid.in", "ex.tr3.in",
+>    "ex.Zn.grid.o.in"), catlabels=as.logical(c(FALSE, FALSE, TRUE)))
+> }
+> 
+> did not show any problems.
+> 
+> Roger
+> 
+>> Could you advise me about how to solve this?
+>>
+>> Thanks and best regards,
+>>
+>> Javier
+>> ------------------------
+>>
+>>
+> 
+> -- 
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+> 
+
+-- 
+View this message in context: http://www.nabble.com/R-GRASS-link-problem-tf4236573.html#a12061387
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+
+From carlos.grohmann at gmail.com  Wed Aug  8 17:07:31 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] compare several maps
+In-Reply-To: <46B9BFF0.3040107@geobabble.org>
+References: <bd07447b0708070744p14c2bf2djae800201850d683b@mail.gmail.com>
+	<46B9BFF0.3040107@geobabble.org>
+Message-ID: <bd07447b0708081407n2eace4ccs7d73b63a3d5fb9ae@mail.gmail.com>
+
+Thanks for the paper, William. Sounds very interesting.
+
+Carlos
+
+
+
+On 8/8/07, William Hargrove <hnw@geobabble.org> wrote:
+> Carlos:
+>
+> Have a look at our Mapcurves method:
+> http://research.esd.ornl.gov/~hnw/MapCurvesPaper_JGS2006.pdf
+>
+> Hope this helps,
+>
+> Bill H.
+>
+> Carlos "Gu?no" Grohmann wrote:
+>
+> >What do you guys think is a good approach to compare several raster
+> >maps at the same time? correlation matrix? some graphical output?
+> >density plots?
+> >
+> >cheers
+> >
+> >carlos
+> >
+> >
+> >
+>
+>
+> --
+> William W. Hargrove
+> Eastern Forest Threat Assessment Center
+> USDA Forest Service
+> Southern Research Station
+> 200 WT Weaver Boulevard
+> Asheville, NC  28804-3454
+>
+> working remotely at:
+>
+> Computer Science & Mathematics Division
+> Oak Ridge National Laboratory
+> P.O. Box 2008, M.S. 6016
+> Building 5600, Room I322
+> Oak Ridge, TN  37831-6016
+> (865) 241-2748
+> (865) 235-4753 (cell)
+> (865) 576-5491 (fax)
+> hnw@geobabble.org
+> http://www.geobabble.org/~hnw
+> FedEx/UPS, use "Bethel Valley Rd."
+>
+>
+
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Visiting Researcher at Kingston University London - UK
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+
+
+From jarekj at amu.edu.pl  Thu Aug  9 12:29:38 2007
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] compare several maps
+In-Reply-To: <bd07447b0708071024u4d9c4711hbd940010c1c34c41@mail.gmail.com>
+References: <bd07447b0708070744p14c2bf2djae800201850d683b@mail.gmail.com>	<46B89E8C.6030602@amu.edu.pl>
+	<bd07447b0708071024u4d9c4711hbd940010c1c34c41@mail.gmail.com>
+Message-ID: <46BB40F2.9070700@amu.edu.pl>
+
+Carlos "Gu?no" Grohmann wrote:
+> Sure, sorry about that.
+>
+> I am analyzing various methods of calculation of surface roughness. So
+> I will have several maps, produced with different methods, at
+> different scales and with different datasets.
+> All maps are calculated with moving-window procedures. I'll have maps
+> calculated  with neighborhoods of 3,5,7,9,11,.. pixels, over DEMs with
+> 5,10,25,50,90 meters resolution, using probably three different
+> methods.
+>
+> So I'll end up with tens of maps! I was wondering what would be a good
+> approach to compare them. I was thinking to rescale all maps to a
+> common range (say, 0-255) first, and then compare.
+>
+> I guess it makes sense to compare like this:
+>
+> DEM_10m - Window_Size_3x3 - method A/B/C
+> DEM_10m - Window_Size_5x5 - method A/B/C
+>
+> and so on for each dem resolution and window size.
+>
+> carlos
+>
+>
+> On 8/7/07, Jarek Jasiewicz <jarekj@amu.edu.pl> wrote:
+>   
+>> Carlos "Gu?no" Grohmann wrote:
+>>     
+>>> What do you guys think is a good approach to compare several raster
+>>> maps at the same time? correlation matrix? some graphical output?
+>>> density plots?
+>>>
+>>> cheers
+>>>
+>>> carlos
+>>>
+>>>
+>>>       
+>> well, give us more detail what do you need
+>>
+>>     
+>
+>
+>   
+difficult question, correlation matrix seems not to be good method, if 
+you want to compare data produced with different resolution and 
+different moving window (i.e pixel with greater area will have in all 
+paces teh same value will cover  group of small pixels with compleatly 
+deferent walue)
+
+maybe autocorellation in individual map will  be  interesting parameter
+density plots also seems interesting
+
+
+From carlos.grohmann at gmail.com  Thu Aug  9 17:47:32 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] compare several maps - starting with the easier stuff..
+Message-ID: <bd07447b0708091447x70d24aaeq948a511a1a77dd67@mail.gmail.com>
+
+Well, continuing with my quest of comparing multiple maps, I though I
+could do with some graphics first. So I would have a visual idea of
+how things are going.
+This is my idea: a simple XY plot, with neighborhood size (used to
+calculate surface roughness) in the X-axis and mean values on the
+Y-axis, so I'll end up with three curves, one for each method.
+The problem is that each method returns a different range of values,
+so how is there a way to scale all the values to a common range (say,
+0-1) in R? so I don't need to use r.recode in all my maps?
+
+I found the function scale(),  but it always returns a matrix, and I
+am importing the rasters in a dataframe:
+
+maps <-readRAST6(c("k3","k5","k7","k9","k11","k13","k15","k17","k19","k21","k31","k51","k101"));
+mapsdf <- as(maps, "data.frame");
+mapsdf=mapsdf[,-14]
+mapsdf=mapsdf[,-14]
+plot(c(3,5,7,9,11,13,15,17,19,21,31,51,101),mean(mapsdf), type="b")
+
+I pretty sure there is a better way to do this...
+
+cheers
+
+Carlos
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Visiting Researcher at Kingston University London - UK
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+
+
+From jarekj at amu.edu.pl  Fri Aug 10 04:05:36 2007
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] compare several maps - starting with the easier
+	stuff..
+In-Reply-To: <bd07447b0708091447x70d24aaeq948a511a1a77dd67@mail.gmail.com>
+References: <bd07447b0708091447x70d24aaeq948a511a1a77dd67@mail.gmail.com>
+Message-ID: <46BC1C50.7080003@amu.edu.pl>
+
+Carlos "Gu?no" Grohmann wrote:
+> Well, continuing with my quest of comparing multiple maps, I though I
+> could do with some graphics first. So I would have a visual idea of
+> how things are going.
+> This is my idea: a simple XY plot, with neighborhood size (used to
+> calculate surface roughness) in the X-axis and mean values on the
+> Y-axis, so I'll end up with three curves, one for each method.
+> The problem is that each method returns a different range of values,
+> so how is there a way to scale all the values to a common range (say,
+> 0-1) in R? so I don't need to use r.recode in all my maps?
+>
+> I found the function scale(),  but it always returns a matrix, and I
+> am importing the rasters in a dataframe:
+>
+> maps <-readRAST6(c("k3","k5","k7","k9","k11","k13","k15","k17","k19","k21","k31","k51","k101"));
+> mapsdf <- as(maps, "data.frame");
+> mapsdf=mapsdf[,-14]
+> mapsdf=mapsdf[,-14]
+> plot(c(3,5,7,9,11,13,15,17,19,21,31,51,101),mean(mapsdf), type="b")
+>
+> I pretty sure there is a better way to do this...
+>
+> cheers
+>
+> Carlos
+>
+>   
+in R?
+plot(x=map$scale, y=map$mean, xlim=c(0,1).....) for all plots
+or write the loop if there is lots of plots
+I use that method to create multiple cross-sections from DEM
+
+Jarek
+
+
+From lanczos at t-zones.sk  Tue Aug 14 17:32:31 2007
+From: lanczos at t-zones.sk (Tomas Lanczos)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] kriging, fit.variogram - negative range, S-JTSK
+Message-ID: <46C21F6F.8040003@t-zones.sk>
+
+I constructed a variogram for spatial data in S-JTSK, following a 
+procedure like here: http://casoilresource.lawr.ucdavis.edu/drupal/node/438
+
+When I am trying to fit a variogram spherical or exponential model I am 
+getting an error message about negative range. I have a suspicion that 
+it is because in S-JTSK we are using negative vaules for coordinates, 
+even I don't see any reason why could it be a problem ... am I right? If 
+not, what can be the reason?
+
+Thanks a lot in advance
+
+Tomas
+
+
+From Roger.Bivand at nhh.no  Sun Aug 26 14:32:53 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Re: [R-sig-Geo] R + GRASS in win XP
+In-Reply-To: <Pine.LNX.4.64.0708260757320.30138@reclus.nhh.no>
+References: <Prayer.1.0.12.0708252048510.22914@amos.qub.ac.uk>
+	<Pine.LNX.4.64.0708260757320.30138@reclus.nhh.no>
+Message-ID: <Pine.LNX.4.64.0708262027550.2525@reclus.nhh.no>
+
+On Sun, 26 Aug 2007, Roger Bivand wrote:
+
+> On Sat, 25 Aug 2007, Michal Gallay wrote:
+>
+>> Dear R Users,
+>>
+>> recently I've attempted to run R with GRASS from QGIS GRASS shell in
+>> Windows XP. It was my first try and didn't work.
+>
+> Until very recently, the QGIS/GRASS combination changed so often that it
+> wasn't feasible to try to make any interface work. The solution was to
+> read and write temporary files manually.
+>
+> In order to make progress, the exact QGIS release (0.8.1?), and R output
+> from sessionInfo() is needed, as well as your commands on (say) spearfish,
+> and the verbatin error message and th output of traceback(). My guess is
+> that the OS is being recognised in R as "windows", and that file paths are
+> being constructed for Cygwin (which works), and which is currently the
+> only style available. Almost certainly there are PATH issues too, that is
+> that GRASS program executables are not being found, but without more
+> information, it is difficult to check.
+>
+> It is possible that the 0.8.1 release note for Windows:
+>
+> "If you install QGIS in a path containing spaces (for example "C:\Program
+> Files\Quantum GIS") you may experience problems with certain features, in
+> particular the GRASS toolbox functions"
+
+It was a combination of path variables with spaces and the apparent need 
+to call GRASS commands with *.exe extensions from within R in the GRASS 
+shell under GRASS Tools (QGIS 0.8.1). From spgrass6-0.4-1, QGIS/msys/GRASS 
+is supported - package revision just submitted to CRAN.
+
+Roger
+
+>
+> is relevant.
+>
+> Hope this helps,
+>
+> Roger
+>
+>>
+>> Would you know if it is actually possible to run R from GRASS shell in
+>> windows environment?
+>>
+>> I launched GRASS Shell from QGIS menu, which works via Mingw32 navigated
+>> to R directory, successfully started R from GRASS Shell and loaded spgrass6
+>> package in R.
+>>
+>> The following "system()" R command didn't work for GRASS commands. I
+>> suspect it is related to Mingw32 emulator, but to be honest I haven't got
+>> yet to deep into UNIX-Windows programs.
+>>
+>> Thank you very much for any hints for steps forward.
+>>
+>> Michal
+>>
+>> --
+>> Michal Gallay
+>>
+>> Postgraduate Research Student
+>> School of Geography, Archaeology and Palaeoecology
+>> Queen's University
+>> Belfast BT7 1NN
+>> Northern Ireland
+>>
+>> Tel: +44(0)2890 273929
+>> Fax: +44(0)2890 973212
+>> email: mgallay01@qub.ac.uk
+>> www: www.qub.ac.uk/geog
+>>
+>> _______________________________________________
+>> R-sig-Geo mailing list
+>> R-sig-Geo@stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+>>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From neteler at itc.it  Sun Aug 26 15:53:06 2007
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Re: [R-sig-Geo] R + GRASS in win XP
+In-Reply-To: <Pine.LNX.4.64.0708262027550.2525@reclus.nhh.no>
+References: <Prayer.1.0.12.0708252048510.22914@amos.qub.ac.uk>
+	<Pine.LNX.4.64.0708260757320.30138@reclus.nhh.no>
+	<Pine.LNX.4.64.0708262027550.2525@reclus.nhh.no>
+Message-ID: <20070826195306.GB20301@bartok.itc.it>
+
+Dear Roger,
+
+On Sun, Aug 26, 2007 at 08:32:53PM +0200, Roger Bivand wrote:
+...
+> It was a combination of path variables with spaces and the apparent need to 
+> call GRASS commands with *.exe extensions from within R in the GRASS shell 
+> under GRASS Tools (QGIS 0.8.1). From spgrass6-0.4-1, QGIS/msys/GRASS is 
+> supported - package revision just submitted to CRAN.
+
+wow, that's great! How much time does it take to percolate through CRAN?
+
+Markus
+
+------------------
+ITC -> dall'1 marzo 2007 Fondazione Bruno Kessler
+ITC -> since 1 March 2007 Fondazione Bruno Kessler
+------------------
+
+
+From giohappy at gmail.com  Sun Aug 26 19:19:40 2007
+From: giohappy at gmail.com (G. Allegri)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Re: [R-sig-Geo] R + GRASS in win XP
+In-Reply-To: <20070826195306.GB20301@bartok.itc.it>
+References: <Prayer.1.0.12.0708252048510.22914@amos.qub.ac.uk>
+	<Pine.LNX.4.64.0708260757320.30138@reclus.nhh.no>
+	<Pine.LNX.4.64.0708262027550.2525@reclus.nhh.no>
+	<20070826195306.GB20301@bartok.itc.it>
+Message-ID: <e12429640708261619y5112d868u490e8ea55c5c4d53@mail.gmail.com>
+
+That's a great news! It's exactly what my Windows users collegues were
+asking for...
+
+2007/8/26, Markus Neteler <neteler@itc.it>:
+>
+> Dear Roger,
+>
+> On Sun, Aug 26, 2007 at 08:32:53PM +0200, Roger Bivand wrote:
+> ...
+> > It was a combination of path variables with spaces and the apparent need
+> to
+> > call GRASS commands with *.exe extensions from within R in the GRASS
+> shell
+> > under GRASS Tools (QGIS 0.8.1). From spgrass6-0.4-1, QGIS/msys/GRASS is
+> > supported - package revision just submitted to CRAN.
+>
+> wow, that's great! How much time does it take to percolate through CRAN?
+>
+> Markus
+>
+> ------------------
+> ITC -> dall'1 marzo 2007 Fondazione Bruno Kessler
+> ITC -> since 1 March 2007 Fondazione Bruno Kessler
+> ------------------
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20070827/8fe1296c/attachment.html
+From Roger.Bivand at nhh.no  Mon Aug 27 00:15:11 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Re: [R-sig-Geo] R + GRASS in win XP
+In-Reply-To: <20070826195306.GB20301@bartok.itc.it>
+References: <Prayer.1.0.12.0708252048510.22914@amos.qub.ac.uk>
+	<Pine.LNX.4.64.0708260757320.30138@reclus.nhh.no>
+	<Pine.LNX.4.64.0708262027550.2525@reclus.nhh.no>
+	<20070826195306.GB20301@bartok.itc.it>
+Message-ID: <Pine.LNX.4.64.0708270557420.4254@reclus.nhh.no>
+
+On Sun, 26 Aug 2007, Markus Neteler wrote:
+
+> Dear Roger,
+>
+> On Sun, Aug 26, 2007 at 08:32:53PM +0200, Roger Bivand wrote:
+> ...
+>> It was a combination of path variables with spaces and the apparent need to
+>> call GRASS commands with *.exe extensions from within R in the GRASS shell
+>> under GRASS Tools (QGIS 0.8.1). From spgrass6-0.4-1, QGIS/msys/GRASS is
+>> supported - package revision just submitted to CRAN.
+>
+> wow, that's great! How much time does it take to percolate through CRAN?
+
+It was submitted Sunday evening CET, so if we are lucky, the source will 
+get to CRAN on Monday, and the Windows binary package will be built 
+automatically about midday Tuesday CET.
+
+The current source is on the Sourceforge r-spatial project, module 
+spgrass6. I've put an unofficial Windows binary on:
+
+http://spatial.nhh.no/R/etc/spgrass6_0.4-1.zip
+
+if anybody would like to risk trying it. I think that there are still 
+issues to be resolved, because R Windows system() is probably unaware that 
+it is talking to MSYS on a bash shell, rather than an unadorned Windows 
+command prompt. So far, quoting and paths seem fragile, but the examples 
+all work.
+
+I'd be grateful for feedback. If we need any improvements before FOSS4G, 
+that should be OK, but best for a specific QGIS public release to avoid 
+any "moving target" issues.
+
+Best wishes,
+
+Roger
+
+>
+> Markus
+>
+> ------------------
+> ITC -> dall'1 marzo 2007 Fondazione Bruno Kessler
+> ITC -> since 1 March 2007 Fondazione Bruno Kessler
+> ------------------
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From Agustin.Lobo at ija.csic.es  Fri Aug 31 05:16:59 2007
+From: Agustin.Lobo at ija.csic.es (Agustin Lobo)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Re: [R-sig-Geo] R + GRASS in win XP
+In-Reply-To: <Pine.LNX.4.64.0708262027550.2525@reclus.nhh.no>
+References: <Prayer.1.0.12.0708252048510.22914@amos.qub.ac.uk>	<Pine.LNX.4.64.0708260757320.30138@reclus.nhh.no>
+	<Pine.LNX.4.64.0708262027550.2525@reclus.nhh.no>
+Message-ID: <46D7DC8B.2000201@ija.csic.es>
+
+Roger,
+
+Roger Bivand escribi?:
+> On Sun, 26 Aug 2007, Roger Bivand wrote:
+
+> It was a combination of path variables with spaces and the apparent need 
+> to call GRASS commands with *.exe extensions from within R in the GRASS 
+> shell under GRASS Tools (QGIS 0.8.1). From spgrass6-0.4-1, QGIS/msys/GRASS 
+> is supported - package revision just submitted to CRAN.
+> 
+> Roger
+> 
+
+what does "QGIS/msys/GRASS is supported" mean? Can R be used as a Qgis 
+pluggin? Also for linux?
+
+Thanks
+
+Agus
+-- 
+Dr. Agustin Lobo
+Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+LLuis Sole Sabaris s/n
+08028 Barcelona
+Spain
+Tel. 34 934095410
+Fax. 34 934110012
+email: Agustin.Lobo@ija.csic.es
+http://www.ija.csic.es/gt/obster
+
+
+From Roger.Bivand at nhh.no  Fri Aug 31 18:37:36 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Re: [R-sig-Geo] R + GRASS in win XP
+In-Reply-To: <46D7DC8B.2000201@ija.csic.es>
+References: <Prayer.1.0.12.0708252048510.22914@amos.qub.ac.uk>
+	<Pine.LNX.4.64.0708260757320.30138@reclus.nhh.no>
+	<Pine.LNX.4.64.0708262027550.2525@reclus.nhh.no>
+	<46D7DC8B.2000201@ija.csic.es>
+Message-ID: <Pine.LNX.4.64.0709010033340.18662@reclus.nhh.no>
+
+On Fri, 31 Aug 2007, Agustin Lobo wrote:
+
+> Roger,
+>
+> Roger Bivand escribi?:
+>>  On Sun, 26 Aug 2007, Roger Bivand wrote:
+>
+>>  It was a combination of path variables with spaces and the apparent need
+>>  to call GRASS commands with *.exe extensions from within R in the GRASS
+>>  shell under GRASS Tools (QGIS 0.8.1). From spgrass6-0.4-1, QGIS/msys/GRASS
+>>  is supported - package revision just submitted to CRAN.
+>>
+>>  Roger
+>> 
+>
+> what does "QGIS/msys/GRASS is supported" mean? Can R be used as a Qgis 
+> pluggin? Also for linux?
+
+No, only that R will work when run in the GRASS Tools -> GRASS shell 
+inside QGIS under Windows with the MSYS-built GRASS modules. I do not know 
+whether the QGIS Linux version includes a similar GRASS Tools, but if so, 
+the shell ought to run R in the normal way. Running library(spgrass6) 
+gives access to GRASS.
+
+Roger
+
+>
+> Thanks
+>
+> Agus
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no

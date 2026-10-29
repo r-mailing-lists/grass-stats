@@ -1,0 +1,4454 @@
+From hamish_b at yahoo.com  Wed Apr  1 03:10:41 2009
+From: hamish_b at yahoo.com (Hamish)
+Date: Wed Apr  1 03:11:12 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+	m.eigensystem ~ princomp()
+Message-ID: <525584.25977.qm@web110003.mail.gq1.yahoo.com>
+
+
+Markus Neteler wrote:
+> > Remember that you have to rescale these data first:
+> > 
+> > https://lpdaac.usgs.gov/lpdaac/products/modis_products_table
+> > -> MOD09Q1      Terra 
+>     Surface Reflectance Bands 1?2 
+>     Tile      250m 
+>     8 Day
+> >     https://lpdaac.usgs.gov/lpdaac/products/modis_products_table/surface_reflectance/8_day_l3_global_250m/v5/terra
+> >    -> layers
+> > 
+> > ... MULTIPLY BY SCALE FACTOR ...
+
+Nikos wrote:
+> Yep, I know that. But why is it wrong to just use them as they are?
+
+
+FWIW, the MODIS/Aqua Chlorophyll-a product requires more than simple
+linear rescaling:
+  r.mapcalc "${map}.chlor_A = 10^(($Slope * $map) + $Intercept)"
+
+http://grass.osgeo.org/wiki/MODIS#Processing_2
+
+
+so you may need to take care if working directly with raw 0-65535 data.
+
+
+Hamish
+
+
+
+      
+
+From markus.metz.giswork at googlemail.com  Wed Apr  1 11:59:16 2009
+From: markus.metz.giswork at googlemail.com (Markus Metz)
+Date: Wed Apr  1 11:59:27 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+	m.eigensystem ~ princomp()
+In-Reply-To: <49D2768C.8080403@uni-muenster.de>
+References: <1236061661.14059.256.camel@vertical>	<237972.38578.qm@web110002.mail.gq1.yahoo.com>	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>	<1236086778.7537.3.camel@vertical>
+	<1236675226.16530.1.camel@vertical>	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>	<1236712806.6833.4.camel@vertical>
+	<1237762389.10657.18.camel@vertical>	<1238475709.12361.17.camel@vertical>
+	<49D1C8C2.1080903@gmail.com>	<1238509810.7669.8.camel@vertical>
+	<49D23022.7000407@googlemail.com>	<1238512049.7669.30.camel@vertical>
+	<49D23640.5000906@googlemail.com>	<1238514212.10221.6.camel@vertical>
+	<49D2425A.1000703@googlemail.com>
+	<1238524823.6215.10.camel@vertical>
+	<49D2768C.8080403@uni-muenster.de>
+Message-ID: <49D38F54.8000100@googlemail.com>
+
+
+Edzer Pebesma wrote:
+> Markus Metz wrote:
+>   
+>>> I'm more familiar with non-spatial PCA, so it's high time I read the
+>>> manual of i.pca, and the new wiki page on it...
+>>>     
+>>>       
+> I think there's no such thing as spatial or non-spatial PCA. There's
+> just PCA.
+>   
+That was a feeble attempt to buy time to go through some statistics 
+literature ;-)
+
+So it seems that this thread is about the different values for 
+eigenvalues. AFAIKT, the answer is in the very first post of this thread 
+[1]. It seems that i.pca output is supposed to be identical to 
+prcomp(center=FALSE, scale=FALSE) output in R, because a PCA is 
+scale-sensitive and the eigenvalue as reported by i.pca is the variance 
+of the raw, unstandardised data. If outputs are not identical, either R 
+or grass do some hidden modification or there is a bug in either grass 
+or R (all within limits, e.g. identical up to the 5th digit in 
+scientific format is fine?).
+
+Some textbooks give a rule of thumb for further analysis to use only 
+components with an eigenvalue >=1 which obviously only works if the 
+eigenvalue is calculated from standardised values (center=TRUE, 
+scale=TRUE or e.g. r.mapcalc standardised_map = (map - mean) / stddev). 
+E.g., comparing the results of MODIS raw and MODIS scaled with 0.0001 
+should give <eigenvalue #x of MODIS scaled> = 1E-8 * <eigenvalue #x of 
+MODIS raw>.
+
+BTW, the rescaling method of i.pca is not very convincing, as pointed 
+out by Augustin Lobo. IMHO, fool-proof would be normalization (x - mean) 
+/ stddev.
+
+[1] http://lists.osgeo.org/pipermail/grass-user/2009-March/049306.html
+From edzer.pebesma at uni-muenster.de  Wed Apr  1 12:21:24 2009
+From: edzer.pebesma at uni-muenster.de (Edzer Pebesma)
+Date: Wed Apr  1 12:21:28 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+	m.eigensystem ~ princomp()
+In-Reply-To: <49D38F54.8000100@googlemail.com>
+References: <1236061661.14059.256.camel@vertical>	<237972.38578.qm@web110002.mail.gq1.yahoo.com>	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>	<1236086778.7537.3.camel@vertical>
+	<1236675226.16530.1.camel@vertical>	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>	<1236712806.6833.4.camel@vertical>
+	<1237762389.10657.18.camel@vertical>	<1238475709.12361.17.camel@vertical>
+	<49D1C8C2.1080903@gmail.com>	<1238509810.7669.8.camel@vertical>
+	<49D23022.7000407@googlemail.com>	<1238512049.7669.30.camel@vertical>
+	<49D23640.5000906@googlemail.com>	<1238514212.10221.6.camel@vertical>
+	<49D2425A.1000703@googlemail.com>
+	<1238524823.6215.10.camel@vertical>
+	<49D2768C.8080403@uni-muenster.de>
+	<49D38F54.8000100@googlemail.com>
+Message-ID: <49D39484.8040000@uni-muenster.de>
+
+Markus, a few notes:
+
+- if you do PCA on uncentered data, by computing the eigenvalues of the
+uncentered covariance matrix, this implies that bands with a larger mean
+will get more influence on the final PCAs. I have sofar not managed
+finding an argument why this would be desirable.
+- if you do PCA on (band-mean)/sd(band), it means that you first
+normalize (scale) each variable to mean zero and unit variance. This
+procedure is identical to doing PCA on the correlation matrix. It means
+that, unlike for unscaled variables, variables with larger variance will
+not get more influence on the PCA than others. For image analysis I can
+see a place for both; if bands with low variance indicate insignificant
+and perhaps noisy information, you may downweight them. Or not, if they
+contain (equally) important information. Scaling becomes urgent when you
+compute PCAs from a mix of things with uncomparable units, such as image
+bands and DTMs.
+- Only in case of normalized variables, or equivalently PCA on
+correlations, it makes sense to select PC's with an eigenvalue larger
+than 1. The reasoning is fairly weak, but goes like this: if a PC has
+eigenvalue > 1, it explains more variance than any of the original
+variables, which all have variance 1.
+
+Maybe I should Cc: this to the wiki.
+--
+Edzer
+
+Markus Metz wrote:
+>
+> Edzer Pebesma wrote:
+>> Markus Metz wrote:
+>>  
+>>>> I'm more familiar with non-spatial PCA, so it's high time I read the
+>>>> manual of i.pca, and the new wiki page on it...
+>>>>           
+>> I think there's no such thing as spatial or non-spatial PCA. There's
+>> just PCA.
+>>   
+> That was a feeble attempt to buy time to go through some statistics
+> literature ;-)
+>
+> So it seems that this thread is about the different values for
+> eigenvalues. AFAIKT, the answer is in the very first post of this
+> thread [1]. It seems that i.pca output is supposed to be identical to
+> prcomp(center=FALSE, scale=FALSE) output in R, because a PCA is
+> scale-sensitive and the eigenvalue as reported by i.pca is the
+> variance of the raw, unstandardised data. If outputs are not
+> identical, either R or grass do some hidden modification or there is a
+> bug in either grass or R (all within limits, e.g. identical up to the
+> 5th digit in scientific format is fine?).
+>
+> Some textbooks give a rule of thumb for further analysis to use only
+> components with an eigenvalue >=1 which obviously only works if the
+> eigenvalue is calculated from standardised values (center=TRUE,
+> scale=TRUE or e.g. r.mapcalc standardised_map = (map - mean) /
+> stddev). E.g., comparing the results of MODIS raw and MODIS scaled
+> with 0.0001 should give <eigenvalue #x of MODIS scaled> = 1E-8 *
+> <eigenvalue #x of MODIS raw>.
+>
+> BTW, the rescaling method of i.pca is not very convincing, as pointed
+> out by Augustin Lobo. IMHO, fool-proof would be normalization (x -
+> mean) / stddev.
+>
+> [1] http://lists.osgeo.org/pipermail/grass-user/2009-March/049306.html
+
+-- 
+Edzer Pebesma
+Institute for Geoinformatics (ifgi), University of M?nster
+Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+8333081, Fax: +49 251 8339763 http://ifgi.uni-muenster.de/
+http://www.springer.com/978-0-387-78170-9 e.pebesma@wwu.de
+
+From markus.metz.giswork at googlemail.com  Wed Apr  1 12:57:05 2009
+From: markus.metz.giswork at googlemail.com (Markus Metz)
+Date: Wed Apr  1 12:57:09 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+	m.eigensystem ~ princomp()
+In-Reply-To: <49D39484.8040000@uni-muenster.de>
+References: <1236061661.14059.256.camel@vertical>	<237972.38578.qm@web110002.mail.gq1.yahoo.com>	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>	<1236086778.7537.3.camel@vertical>
+	<1236675226.16530.1.camel@vertical>	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>	<1236712806.6833.4.camel@vertical>
+	<1237762389.10657.18.camel@vertical>	<1238475709.12361.17.camel@vertical>
+	<49D1C8C2.1080903@gmail.com>	<1238509810.7669.8.camel@vertical>
+	<49D23022.7000407@googlemail.com>	<1238512049.7669.30.camel@vertical>
+	<49D23640.5000906@googlemail.com>	<1238514212.10221.6.camel@vertical>
+	<49D2425A.1000703@googlemail.com>
+	<1238524823.6215.10.camel@vertical>
+	<49D2768C.8080403@uni-muenster.de>
+	<49D38F54.8000100@googlemail.com>
+	<49D39484.8040000@uni-muenster.de>
+Message-ID: <49D39CE1.6060504@googlemail.com>
+
+
+Edzer Pebesma wrote:
+> Markus, a few notes:
+>
+> - if you do PCA on uncentered data, by computing the eigenvalues of the
+> uncentered covariance matrix, this implies that bands with a larger mean
+> will get more influence on the final PCAs. I have sofar not managed
+> finding an argument why this would be desirable.
+>   
+Add it to wiki? E.g. bands entered in a PCA should have the same mean, 
+but normalization is also an option.
+> - if you do PCA on (band-mean)/sd(band), it means that you first
+> normalize (scale) 
+I think scale and normalize are two different things.
+> each variable to mean zero and unit variance. This
+> procedure is identical to doing PCA on the correlation matrix. It means
+> that, unlike for unscaled variables, variables with larger variance will
+> not get more influence on the PCA than others. For image analysis I can
+> see a place for both; if bands with low variance indicate insignificant
+> and perhaps noisy information, you may downweight them. 
+Variance is dependent on range, I would rather use something like 
+coefficient of variation (stddev/mean) to get some scale-independent 
+indicator on the amount of information in a given band. A downscaled 
+band (e.g. MODIS scale of 0.0001) has still the same information but 
+lower variance.
+> - Only in case of normalized variables, or equivalently PCA on
+> correlations, it makes sense to select PC's with an eigenvalue larger
+> than 1. The reasoning is fairly weak, but goes like this: if a PC has
+> eigenvalue > 1, it explains more variance than any of the original
+> variables, which all have variance 1.
+>   
+Sounds good to me, why should I use a component that explains less than 
+any of the original bands? And the whole purpose of a PCA is variable 
+reduction to get a new set of variables, each explaining the whole 
+dataset better than one of the original variables/bands. A PCA produces 
+as many components as input variables, so some selection is usually 
+necessary for further processing, could also be % explained variance. 
+OTOH, sometimes only the first component is of interest. There may be 
+exceptions for imagery processing, e.g. haze reduction (would have to 
+read up on imagery processing too to say anything more about where 
+components with eigenvalue < 1 could be useful).
+
+From edzer.pebesma at uni-muenster.de  Wed Apr  1 13:26:10 2009
+From: edzer.pebesma at uni-muenster.de (Edzer Pebesma)
+Date: Wed Apr  1 13:26:13 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+	m.eigensystem ~ princomp()
+In-Reply-To: <49D39CE1.6060504@googlemail.com>
+References: <1236061661.14059.256.camel@vertical>	<237972.38578.qm@web110002.mail.gq1.yahoo.com>	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>	<1236086778.7537.3.camel@vertical>
+	<1236675226.16530.1.camel@vertical>	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>	<1236712806.6833.4.camel@vertical>
+	<1237762389.10657.18.camel@vertical>	<1238475709.12361.17.camel@vertical>
+	<49D1C8C2.1080903@gmail.com>	<1238509810.7669.8.camel@vertical>
+	<49D23022.7000407@googlemail.com>	<1238512049.7669.30.camel@vertical>
+	<49D23640.5000906@googlemail.com>	<1238514212.10221.6.camel@vertical>
+	<49D2425A.1000703@googlemail.com>
+	<1238524823.6215.10.camel@vertical>
+	<49D2768C.8080403@uni-muenster.de>
+	<49D38F54.8000100@googlemail.com>
+	<49D39484.8040000@uni-muenster.de>
+	<49D39CE1.6060504@googlemail.com>
+Message-ID: <49D3A3B2.1020003@uni-muenster.de>
+
+Markus Metz wrote:
+>
+> Edzer Pebesma wrote:
+>> Markus, a few notes:
+>>
+>> - if you do PCA on uncentered data, by computing the eigenvalues of the
+>> uncentered covariance matrix, this implies that bands with a larger mean
+>> will get more influence on the final PCAs. I have sofar not managed
+>> finding an argument why this would be desirable.
+>>   
+> Add it to wiki? E.g. bands entered in a PCA should have the same mean,
+> but normalization is also an option.
+>> - if you do PCA on (band-mean)/sd(band), it means that you first
+>> normalize (scale) 
+> I think scale and normalize are two different things.
+I believe that in statistics these two words don't have a generally
+accepted definition. They're useful as long as you explain what you mean
+by them.
+>> each variable to mean zero and unit variance. This
+>> procedure is identical to doing PCA on the correlation matrix. It means
+>> that, unlike for unscaled variables, variables with larger variance will
+>> not get more influence on the PCA than others. For image analysis I can
+>> see a place for both; if bands with low variance indicate insignificant
+>> and perhaps noisy information, you may downweight them. 
+> Variance is dependent on range, I would rather use something like
+> coefficient of variation (stddev/mean) to get some scale-independent
+> indicator on the amount of information in a given band. A downscaled
+> band (e.g. MODIS scale of 0.0001) has still the same information but
+> lower variance.
+This may make sense for some (or many) cases, but not all.
+>> - Only in case of normalized variables, or equivalently PCA on
+>> correlations, it makes sense to select PC's with an eigenvalue larger
+>> than 1. The reasoning is fairly weak, but goes like this: if a PC has
+>> eigenvalue > 1, it explains more variance than any of the original
+>> variables, which all have variance 1.
+>>   
+> Sounds good to me, why should I use a component that explains less
+> than any of the original bands? And the whole purpose of a PCA is
+> variable reduction to get a new set of variables, each explaining the
+> whole dataset better than one of the original variables/bands. A PCA
+> produces as many components as input variables, so some selection is
+> usually necessary for further processing, could also be % explained
+> variance. OTOH, sometimes only the first component is of interest.
+> There may be exceptions for imagery processing, e.g. haze reduction
+> (would have to read up on imagery processing too to say anything more
+> about where components with eigenvalue < 1 could be useful).
+>
+Well, PCA only captures covariance or correlation, meaning linear
+relationships, and it may be the case that the most interesting features
+are non-linear. For instance, NDVI is the ratio of a sum over a
+difference (or reversed?), which cannot be expressed as a linear
+combination of bands. The first PCA(s?) usually express brightness, only
+later ones give more interesting features resulting from more complex
+interactions of bands (notably differences) -- loadings usually have the
+same sign for the first PC, and mixed signs for later PC's. John C.
+Davis in "statistics and data analysis for geologists" called this the
+"size and shape effect". The most interesting PC's may have a EV smaller
+than 1, when they come from correlation matrices. Geochemists don't shy
+away from interpreting 7 or more factors.
+
+Other interesting "features" of PCA are that it (a) ignores for two
+bands whether they are adjacent in wavelength or not, and (b) ignores
+for two pixels whether they are adjacent in space or not. At least for
+"solving" problem (b), there's the max/min autocorrelation factors (by
+Switzer et al) or MNF (max. noise fraction, by Green et al) -- are these
+things available in grass, or in R?
+
+-- 
+Edzer Pebesma
+Institute for Geoinformatics (ifgi), University of M?nster
+Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+8333081, Fax: +49 251 8339763 http://ifgi.uni-muenster.de/
+http://www.springer.com/978-0-387-78170-9 e.pebesma@wwu.de
+
+From nikos.alexandris at felis.uni-freiburg.de  Wed Apr  1 19:33:21 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed Apr  1 19:33:22 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <49D38F54.8000100@googlemail.com>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+	<1236086778.7537.3.camel@vertical> <1236675226.16530.1.camel@vertical>
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+	<1236712806.6833.4.camel@vertical> <1237762389.10657.18.camel@vertical>
+	<1238475709.12361.17.camel@vertical>  <49D1C8C2.1080903@gmail.com>
+	<1238509810.7669.8.camel@vertical>  <49D23022.7000407@googlemail.com>
+	<1238512049.7669.30.camel@vertical> <49D23640.5000906@googlemail.com>
+	<1238514212.10221.6.camel@vertical> <49D2425A.1000703@googlemail.com>
+	<1238524823.6215.10.camel@vertical> <49D2768C.8080403@uni-muenster.de>
+	<49D38F54.8000100@googlemail.com>
+Message-ID: <1238628801.6206.47.camel@vertical>
+
+Markus:
+> It seems that i.pca output is supposed to be identical to 
+> prcomp(center=FALSE, scale=FALSE) output in R, because a PCA is 
+> scale-sensitive and the eigenvalue as reported by i.pca is the variance 
+> of the raw, unstandardised data.
+
+The "thing" is that with the SPOT data all seems fine and "i.pca ==
+prcomp(x, center=TRUE, scale=FALSE)" which is not the case for the MODIS
+bands I work with.
+
+
+> If outputs are not identical, either R or grass do some hidden
+> modification or there is a bug in either grass or R (all within
+> limits, e.g. identical up to the 5th digit in scientific format is
+> fine?).
+> Some textbooks give a rule of thumb for further analysis to use only 
+> components with an eigenvalue >=1
+
+I think this depends on what you are trying to achieve. Of course,
+components with small(-er) eigenvalues include more "noizzze". In my
+change detection project I used *only* components with eigenvalues < 1.
+
+
+> which obviously only works if the eigenvalue is calculated from
+> standardised values (center=TRUE, scale=TRUE or e.g. r.mapcalc
+> standardised_map = (map - mean) / stddev).
+
+> E.g., comparing the results of MODIS raw and MODIS scaled with 0.0001 
+> should give <eigenvalue #x of MODIS scaled> = 1E-8 * <eigenvalue #x of
+> MODIS raw>.
+
+I didn't find the time to rescale and re-test. I will... at some
+point :-)
+
+
+> BTW, the rescaling method of i.pca is not very convincing, as pointed 
+> out by Augustin Lobo. IMHO, fool-proof would be normalization (x -
+> mean) / stddev.
+
+Kind regards, Nikos
+
+From nikos.alexandris at felis.uni-freiburg.de  Wed Apr  1 19:36:04 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed Apr  1 19:36:04 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <49D39484.8040000@uni-muenster.de>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+	<1236086778.7537.3.camel@vertical> <1236675226.16530.1.camel@vertical>
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+	<1236712806.6833.4.camel@vertical> <1237762389.10657.18.camel@vertical>
+	<1238475709.12361.17.camel@vertical>  <49D1C8C2.1080903@gmail.com>
+	<1238509810.7669.8.camel@vertical>  <49D23022.7000407@googlemail.com>
+	<1238512049.7669.30.camel@vertical> <49D23640.5000906@googlemail.com>
+	<1238514212.10221.6.camel@vertical> <49D2425A.1000703@googlemail.com>
+	<1238524823.6215.10.camel@vertical> <49D2768C.8080403@uni-muenster.de>
+	<49D38F54.8000100@googlemail.com>  <49D39484.8040000@uni-muenster.de>
+Message-ID: <1238628964.6206.48.camel@vertical>
+
+On Wed, 2009-04-01 at 18:21 +0200, Edzer Pebesma wrote:
+> Markus, a few notes:
+> 
+> - if you do PCA on uncentered data, by computing the eigenvalues of the
+> uncentered covariance matrix, this implies that bands with a larger mean
+> will get more influence on the final PCAs. I have sofar not managed
+> finding an argument why this would be desirable.
+> - if you do PCA on (band-mean)/sd(band), it means that you first
+> normalize (scale) each variable to mean zero and unit variance. This
+> procedure is identical to doing PCA on the correlation matrix. It means
+> that, unlike for unscaled variables, variables with larger variance will
+> not get more influence on the PCA than others. For image analysis I can
+> see a place for both; if bands with low variance indicate insignificant
+> and perhaps noisy information, you may downweight them. Or not, if they
+> contain (equally) important information. Scaling becomes urgent when you
+> compute PCAs from a mix of things with uncomparable units, such as image
+> bands and DTMs.
+> - Only in case of normalized variables, or equivalently PCA on
+> correlations, it makes sense to select PC's with an eigenvalue larger
+> than 1. The reasoning is fairly weak, but goes like this: if a PC has
+> eigenvalue > 1, it explains more variance than any of the original
+> variables, which all have variance 1.
+> 
+> Maybe I should Cc: this to the wiki.
+> --
+> Edzer
+
+Nice to see this expert-comments! Really helpful to understand the
+process better.
+
+Thanks, Nikos
+
+From markus.metz.giswork at googlemail.com  Thu Apr  2 03:49:56 2009
+From: markus.metz.giswork at googlemail.com (Markus Metz)
+Date: Thu Apr  2 03:50:01 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(),
+	m.eigensystem ~ princomp()
+In-Reply-To: <49D3A3B2.1020003@uni-muenster.de>
+References: <1236061661.14059.256.camel@vertical>	<237972.38578.qm@web110002.mail.gq1.yahoo.com>	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>	<1236086778.7537.3.camel@vertical>
+	<1236675226.16530.1.camel@vertical>	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>	<1236712806.6833.4.camel@vertical>
+	<1237762389.10657.18.camel@vertical>	<1238475709.12361.17.camel@vertical>
+	<49D1C8C2.1080903@gmail.com>	<1238509810.7669.8.camel@vertical>
+	<49D23022.7000407@googlemail.com>	<1238512049.7669.30.camel@vertical>
+	<49D23640.5000906@googlemail.com>	<1238514212.10221.6.camel@vertical>
+	<49D2425A.1000703@googlemail.com>
+	<1238524823.6215.10.camel@vertical>
+	<49D2768C.8080403@uni-muenster.de>
+	<49D38F54.8000100@googlemail.com>
+	<49D39484.8040000@uni-muenster.de>
+	<49D39CE1.6060504@googlemail.com>
+	<49D3A3B2.1020003@uni-muenster.de>
+Message-ID: <49D46E24.5030402@googlemail.com>
+
+
+Edzer Pebesma wrote:
+> Markus Metz wrote:
+>   
+>> I think scale and normalize are two different things.
+>>     
+> I believe that in statistics these two words don't have a generally
+> accepted definition. They're useful as long as you explain what you mean
+> by them.
+>   
+At least in the statistics literature I use, these two methods are 
+differently defined. Scaling is like r.rescale, and normalization 
+converts data to a mean of 0 and a stddev of 1, the data distribution is 
+changed to a standard normal distribution. But usually I wouldn't worry 
+too much about terms as long as it is explained what they mean.
+> Well, PCA only captures covariance or correlation, meaning linear
+> relationships, and it may be the case that the most interesting features
+> are non-linear. 
+So if a PCA does not capture non-linear relationships, I don't see how 
+it could help to use PC's that explain nearly no variation in the 
+dataset. And you could do e.g. a log transform first, or whatever else 
+is appropriate to convert the suspected type of non-linear relation to a 
+linear relation and then feed the transformed variables to a PCA.
+> For instance, NDVI is the ratio of a sum over a
+> difference (or reversed?), which cannot be expressed as a linear
+> combination of bands. 
+Not directly, but being a normalized difference (should be standardised 
+not normalized) it can be approximated with linear combinations, i.e. 
+there is at least some correlation between the raw bands and a 
+normalized difference calculated from them.
+> The first PCA(s?) usually express brightness, only
+> later ones give more interesting features resulting from more complex
+> interactions of bands (notably differences) -- loadings usually have the
+> same sign for the first PC, and mixed signs for later PC's. John C.
+> Davis in "statistics and data analysis for geologists" called this the
+> "size and shape effect". The most interesting PC's may have a EV smaller
+> than 1, when they come from correlation matrices. Geochemists don't shy
+> away from interpreting 7 or more factors.
+>   
+The question is not the number of factors, but what criteria to use to 
+select and interpret the resulting PCs. What makes a PC interesting can 
+be the amount of explained variance, but also the dominant variables in 
+it. BTW, some textbooks recommend to use only rotated PCs if a rotation 
+could be performed. In a mathematical sense, the sign of the loadings is 
+arbitrary because the absolute value as well as the result of a PCA will 
+stay the same after new_var = -old_var. The same sign for the first PC 
+and so on is not generally valid and with regard to imagery probably 
+only applies to surface reflectance or radiation measured at the sensor, 
+and I would guess is dependent on the number of bands and the wavelength 
+captured by each.
+All this is however far from the i.pca eigenvalue problem, going towards 
+comments on the general use of PCAs for remote sensing and as such 
+probably only of interest to the grass-stats ml.
+
+From nikos.alexandris at felis.uni-freiburg.de  Thu Apr  2 07:28:05 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Thu Apr  2 07:28:04 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <1238628801.6206.47.camel@vertical>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+	<1236086778.7537.3.camel@vertical> <1236675226.16530.1.camel@vertical>
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+	<1236712806.6833.4.camel@vertical> <1237762389.10657.18.camel@vertical>
+	<1238475709.12361.17.camel@vertical>  <49D1C8C2.1080903@gmail.com>
+	<1238509810.7669.8.camel@vertical>  <49D23022.7000407@googlemail.com>
+	<1238512049.7669.30.camel@vertical> <49D23640.5000906@googlemail.com>
+	<1238514212.10221.6.camel@vertical> <49D2425A.1000703@googlemail.com>
+	<1238524823.6215.10.camel@vertical> <49D2768C.8080403@uni-muenster.de>
+	<49D38F54.8000100@googlemail.com> <1238628801.6206.47.camel@vertical>
+Message-ID: <1238671685.6214.1.camel@vertical>
+
+Nikos:
+> > If outputs are not identical, either R or grass do some hidden
+> > modification or there is a bug in either grass or R (all within
+> > limits, e.g. identical up to the 5th digit in scientific format is
+> > fine?).
+> > Some textbooks give a rule of thumb for further analysis to use only
+> > components with an eigenvalue >=1
+
+> I think this depends on what you are trying to achieve. Of course,
+> components with small(-er) eigenvalues include more "noizzze". In my
+> change detection project I used *only* components with eigenvalues <
+> 1.
+
+Hmm.. Markus, I was too quick yesterday. That's not true. All of the
+PC's I've used have "eigenvalue > 1". Sorry :-p
+
+From jarekj at amu.edu.pl  Fri Apr  3 01:19:01 2009
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Fri Apr  3 01:25:51 2009
+Subject: [GRASS-stats] spgrass problem importing category 999 when plugin is
+	FALSE
+Message-ID: <49D59C45.8070108@amu.edu.pl>
+
+Hi
+
+I during batch processing of couple of maps I found strange behaviour of 
+readRAST6 when I import cell map with value 999.
+Instead of 999 Na is imported (?? _
+
+It is for me completely strange, so I test it with folowing:
+
+echo "test_map=999"|r.mapclac
+R
+library(spgrass6)
+testNoPlugin=readRAST6("test_map",plugin=FALSE)
+
+summary(testNoPlugin@data)
+
+     test      Min.   :    NA 1st Qu.:    NA Median :    NA Mean   :   
+NaN 3rd Qu.:    NA Max.   :    NA NA's   :156740
+
+testPlugin=readRAST6("test_map",plugin=TRUE)
+
+summary(testPlugin@data)
+
+     test   Min.   :999 1st Qu.:999 Median :999 Mean   :999 3rd Qu.:999 
+Max.   :999 
+
+
+It is very strange for me but I tested it on several maps. I think 
+someone could try to reproduce this.
+
+Jarek
+
+
+BTW:
+
+R version 2.8.1 (2008-12-22)
+
+
+library(spgrass6)
+Loading required package: sp
+Loading required package: rgdal
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Loaded GDAL runtime: GDAL 1.5.3, released 2008/09/09
+GDAL_DATA: /usr/local/lib/R/site-library/rgdal/gdal
+Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+PROJ_LIB: /usr/local/lib/R/site-library/rgdal/proj
+GRASS GIS interface loaded with GRASS version: 6.5.svn
+and location: Rzeki
+
+Package: spgrass6
+Version: 0.5-16
+Date: 2008-11-13
+Built: R 2.8.1; ; 2009-01-02 14:02:31; unix
+
+
+
+
+From neteler at osgeo.org  Fri Apr  3 02:59:17 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Fri Apr  3 02:59:21 2009
+Subject: [GRASS-stats] spgrass problem importing category 999 when plugin 
+	is FALSE
+In-Reply-To: <49D59C45.8070108@amu.edu.pl>
+References: <49D59C45.8070108@amu.edu.pl>
+Message-ID: <86782b610904022359k1b3c67d5h7f853fea9939572a@mail.gmail.com>
+
+Here my tests which look ok:
+
+GRASS 6.5.svn (portugal):> echo "test_map=999"|r.mapcalc
+ 100%
+GRASS 6.5.svn (portugal):> R
+
+R version 2.8.1 (2008-12-22)
+...
+> library(spgrass6)
+Loading required package: sp
+Loading required package: rgdal
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Loaded GDAL runtime: GDAL 1.6.0, released 2008/11/26
+Path to GDAL shared files: /usr/local/share/gdal
+Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+Path to PROJ.4 shared files: (autodetected)
+GRASS GIS interface loaded with GRASS version: 6.5.svn
+and location: portugal
+> testNoPlugin=readRAST6("test_map",plugin=FALSE)
+/home/neteler/grassdata/portugal/PERMANENT/.tmp/localhost/test_map has
+GDAL driver GTiff
+and has 1 rows and 1 columns
+>
+> summary(testNoPlugin@data)
+    test_map
+ Min.   :999
+ 1st Qu.:999
+ Median :999
+ Mean   :999
+ 3rd Qu.:999
+ Max.   :999
+>
+> testPlugin=readRAST6("test_map",plugin=TRUE)
+/home/neteler/grassdata/portugal/PERMANENT/cellhd/test_map has GDAL driver GRASS
+and has 1 rows and 1 columns
+> summary(testNoPlugin@data)
+    test_map
+ Min.   :999
+ 1st Qu.:999
+ Median :999
+ Mean   :999
+ 3rd Qu.:999
+ Max.   :999
+
+Markus
+
+
+2009/4/3 Jarek Jasiewicz <jarekj@amu.edu.pl>:
+> Hi
+>
+> I during batch processing of couple of maps I found strange behaviour of
+> readRAST6 when I import cell map with value 999.
+> Instead of 999 Na is imported (?? _
+>
+> It is for me completely strange, so I test it with folowing:
+>
+> echo "test_map=999"|r.mapclac
+> R
+> library(spgrass6)
+> testNoPlugin=readRAST6("test_map",plugin=FALSE)
+>
+> summary(testNoPlugin@data)
+>
+> ? ?test ? ? ?Min. ? : ? ?NA 1st Qu.: ? ?NA Median : ? ?NA Mean ? : ? NaN 3rd
+> Qu.: ? ?NA Max. ? : ? ?NA NA's ? :156740
+>
+> testPlugin=readRAST6("test_map",plugin=TRUE)
+>
+> summary(testPlugin@data)
+>
+> ? ?test ? Min. ? :999 1st Qu.:999 Median :999 Mean ? :999 3rd Qu.:999 Max.
+> :999
+>
+> It is very strange for me but I tested it on several maps. I think someone
+> could try to reproduce this.
+>
+> Jarek
+>
+>
+> BTW:
+>
+> R version 2.8.1 (2008-12-22)
+>
+>
+> library(spgrass6)
+> Loading required package: sp
+> Loading required package: rgdal
+> Geospatial Data Abstraction Library extensions to R successfully loaded
+> Loaded GDAL runtime: GDAL 1.5.3, released 2008/09/09
+> GDAL_DATA: /usr/local/lib/R/site-library/rgdal/gdal
+> Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+> PROJ_LIB: /usr/local/lib/R/site-library/rgdal/proj
+> GRASS GIS interface loaded with GRASS version: 6.5.svn
+> and location: Rzeki
+>
+> Package: spgrass6
+> Version: 0.5-16
+> Date: 2008-11-13
+> Built: R 2.8.1; ; 2009-01-02 14:02:31; unix
+>
+>
+>
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+From Roger.Bivand at nhh.no  Fri Apr  3 03:07:45 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri Apr  3 03:07:49 2009
+Subject: [GRASS-stats] spgrass problem importing category 999 when plugin
+	is FALSE
+In-Reply-To: <49D59C45.8070108@amu.edu.pl>
+References: <49D59C45.8070108@amu.edu.pl>
+Message-ID: <alpine.LRH.2.00.0904030854310.9417@reclus.nhh.no>
+
+On Fri, 3 Apr 2009, Jarek Jasiewicz wrote:
+
+> Hi
+>
+> I during batch processing of couple of maps I found strange behaviour of 
+> readRAST6 when I import cell map with value 999.
+> Instead of 999 Na is imported (?? _
+>
+> It is for me completely strange, so I test it with folowing:
+
+OK. This is a consequence of trying to guess the NODATA value to pass to 
+r.out.gdal, and I don't see it in 0.5-19 (my local slightly changed from 
+CRAN latest 0.5-18). For certain range values retrieved from r.info, 
+NODATA is assigned the value 999 (R/bin_link.R, about line 113). Please 
+try 0.5-18, I suspect that the condition was changed. Alternatively, set 
+NODATA to a suitable value outside the range of the data. Note that I 
+don't have a 6.5 GRASS, and if r.info output has changed format, the 
+parsing will be wrong, and
+(!is.numeric(lres$min) || !is.finite(as.double(lres$min)) will be
+triggered, setting NODATA to 999.
+
+What does r.info test_map look like in 6.5? In 6.3 it is:
+
+> system("r.info test_map")
+
++----------------------------------------------------------------------------+
+| Layer:    test_map                       Date: Fri Apr  3 08:41:58 2009    |
+| Mapset:   rsb                            Login of Creator: rsb             |
+| Location: spearfish60                                                      |
+| DataBase: /home/rsb/topics/grassdata                                       |
+| Title:     ( test_map )                                                    |
+| Timestamp: none                                                            |
+|----------------------------------------------------------------------------|
+|                                                                            |
+|   Type of Map:  raster               Number of Categories: 999             |
+|   Data Type:    CELL                                                       |
+|   Rows:         143                                                        |
+|   Columns:      190                                                        |
+|   Total Cells:  27170                                                      |
+|        Projection: UTM (zone 13)                                           |
+|            N:    4928010    S:    4913700   Res: 100.06993007              |
+|            E:     609000    W:     589980   Res: 100.10526316              |
+|   Range of data:    min = 999  max = 999                                   |
+|                                                                            |
+|   Data Description:                                                        |
+|    generated by r.mapcalc                                                  |
+|                                                                            |
+|   Comments:                                                                |
+|    999                                                                     |
+|                                                                            |
++----------------------------------------------------------------------------+
+
+I guess that there is a smarter way of getting the raster min/max too, 
+isn't there?
+
+Hope this helps,
+
+Roger
+
+>
+> echo "test_map=999"|r.mapclac
+> R
+> library(spgrass6)
+> testNoPlugin=readRAST6("test_map",plugin=FALSE)
+>
+> summary(testNoPlugin@data)
+>
+>    test      Min.   :    NA 1st Qu.:    NA Median :    NA Mean   :   NaN 3rd 
+> Qu.:    NA Max.   :    NA NA's   :156740
+>
+> testPlugin=readRAST6("test_map",plugin=TRUE)
+>
+> summary(testPlugin@data)
+>
+>    test   Min.   :999 1st Qu.:999 Median :999 Mean   :999 3rd Qu.:999 Max. 
+> :999 
+>
+> It is very strange for me but I tested it on several maps. I think someone 
+> could try to reproduce this.
+>
+> Jarek
+>
+>
+> BTW:
+>
+> R version 2.8.1 (2008-12-22)
+>
+>
+> library(spgrass6)
+> Loading required package: sp
+> Loading required package: rgdal
+> Geospatial Data Abstraction Library extensions to R successfully loaded
+> Loaded GDAL runtime: GDAL 1.5.3, released 2008/09/09
+> GDAL_DATA: /usr/local/lib/R/site-library/rgdal/gdal
+> Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+> PROJ_LIB: /usr/local/lib/R/site-library/rgdal/proj
+> GRASS GIS interface loaded with GRASS version: 6.5.svn
+> and location: Rzeki
+>
+> Package: spgrass6
+> Version: 0.5-16
+> Date: 2008-11-13
+> Built: R 2.8.1; ; 2009-01-02 14:02:31; unix
+>
+>
+>
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From neteler at osgeo.org  Fri Apr  3 03:25:42 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Fri Apr  3 03:25:46 2009
+Subject: [GRASS-stats] spgrass problem importing category 999 when plugin 
+	is FALSE
+In-Reply-To: <alpine.LRH.2.00.0904030854310.9417@reclus.nhh.no>
+References: <49D59C45.8070108@amu.edu.pl>
+	<alpine.LRH.2.00.0904030854310.9417@reclus.nhh.no>
+Message-ID: <86782b610904030025q641f4f68qccb06bb9da146b0e@mail.gmail.com>
+
+On Fri, Apr 3, 2009 at 9:07 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Fri, 3 Apr 2009, Jarek Jasiewicz wrote:
+>
+>> Hi
+>>
+>> I during batch processing of couple of maps I found strange behaviour of
+>> readRAST6 when I import cell map with value 999.
+>> Instead of 999 Na is imported (?? _
+>>
+>> It is for me completely strange, so I test it with folowing:
+>
+> OK. This is a consequence of trying to guess the NODATA value to pass to
+> r.out.gdal,
+
+The C version of r.out.gdal has a nodata parameter.
+
+> and I don't see it in 0.5-19 (my local slightly changed from
+> CRAN latest 0.5-18). For certain range values retrieved from r.info, NODATA
+> is assigned the value 999 (R/bin_link.R, about line 113). Please try 0.5-18,
+> I suspect that the condition was changed. Alternatively, set NODATA to a
+> suitable value outside the range of the data. Note that I don't have a 6.5
+> GRASS, and if r.info output has changed format, the parsing will be wrong,
+
+It didn't change the format to my knowledge. BUT:
+To get the range, use
+r.info -r test_map
+min=999
+max=999
+
+The parsing of plain r.info will fail in non-English locales (or enforce C
+locale).
+
+...
+> I guess that there is a smarter way of getting the raster min/max too, isn't
+> there?
+
+Yes, please always use the script output flags which are not subject to locale
+and way easier to parse. If missing in a module, we are happy to add it.
+It also exists in GRASS 6.3:
+http://trac.osgeo.org/grass/browser/grass/branches/releasebranch_6_3/raster/r.info/main.c#L74
+
+Best
+Markus
+From Roger.Bivand at nhh.no  Fri Apr  3 05:00:03 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri Apr  3 05:00:05 2009
+Subject: [GRASS-stats] spgrass problem importing category 999 when plugin
+	is FALSE
+In-Reply-To: <86782b610904030025q641f4f68qccb06bb9da146b0e@mail.gmail.com>
+References: <49D59C45.8070108@amu.edu.pl>
+	<alpine.LRH.2.00.0904030854310.9417@reclus.nhh.no>
+	<86782b610904030025q641f4f68qccb06bb9da146b0e@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.0904031042460.9417@reclus.nhh.no>
+
+On Fri, 3 Apr 2009, Markus Neteler wrote:
+
+> On Fri, Apr 3, 2009 at 9:07 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> On Fri, 3 Apr 2009, Jarek Jasiewicz wrote:
+>>
+>>> Hi
+>>>
+>>> I during batch processing of couple of maps I found strange behaviour of
+>>> readRAST6 when I import cell map with value 999.
+>>> Instead of 999 Na is imported (?? _
+>>>
+>>> It is for me completely strange, so I test it with folowing:
+>>
+>> OK. This is a consequence of trying to guess the NODATA value to pass to
+>> r.out.gdal,
+>
+> The C version of r.out.gdal has a nodata parameter.
+
+Yes, this is what is used, NODATA is the argument name in readRAST6.
+
+>
+>> and I don't see it in 0.5-19 (my local slightly changed from
+>> CRAN latest 0.5-18). For certain range values retrieved from r.info, NODATA
+>> is assigned the value 999 (R/bin_link.R, about line 113). Please try 0.5-18,
+>> I suspect that the condition was changed. Alternatively, set NODATA to a
+>> suitable value outside the range of the data. Note that I don't have a 6.5
+>> GRASS, and if r.info output has changed format, the parsing will be wrong,
+>
+> It didn't change the format to my knowledge. BUT:
+> To get the range, use
+> r.info -r test_map
+> min=999
+> max=999
+>
+> The parsing of plain r.info will fail in non-English locales (or enforce C
+> locale).
+
+I use r.info -r test_map in the function, but was replying without 
+checking properly, sorry.
+
+I guess it's an spgrass6 version issue.
+
+Best wishes,
+
+Roger
+
+>
+> ...
+>> I guess that there is a smarter way of getting the raster min/max too, isn't
+>> there?
+>
+> Yes, please always use the script output flags which are not subject to locale
+> and way easier to parse. If missing in a module, we are happy to add it.
+> It also exists in GRASS 6.3:
+> http://trac.osgeo.org/grass/browser/grass/branches/releasebranch_6_3/raster/r.info/main.c#L74
+>
+> Best
+> Markus
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From nikos.alexandris at felis.uni-freiburg.de  Sat Apr  4 14:45:06 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Sat Apr  4 14:45:03 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca ~ prcomp(), 
+	m.eigensystem ~ princomp()
+In-Reply-To: <1237762389.10657.18.camel@vertical>
+References: <1236061661.14059.256.camel@vertical>
+	<237972.38578.qm@web110002.mail.gq1.yahoo.com>
+	<86782b610903030418t3d66d25eg4fb726876b288036@mail.gmail.com>
+	<1236086778.7537.3.camel@vertical> <1236675226.16530.1.camel@vertical>
+	<alpine.LRH.2.00.0903101146000.812@reclus.nhh.no>
+	<1236712806.6833.4.camel@vertical> <1237762389.10657.18.camel@vertical>
+Message-ID: <1238870706.11446.19.camel@vertical>
+
+On Sun, 2009-03-22 at 23:53 +0100, Nikos Alexandris wrote:
+> I have prepaired a grass-location
+> containing the 3 modis bands I've used for all PCA related examples. I
+> will eventually upload them in gregis [1]
+
+If anyone would like to try what I tried here are the MODIS bands:
+
+# grass location
+https://git.berlios.de/cgi-bin/gitweb.cgi?p=gregis;a=blob_plain;f=peloponnesos/modis_peloponnese_postfire07.zip;hb=peloponnese
+
+# geotiffs
+https://git.berlios.de/cgi-bin/gitweb.cgi?p=gregis;a=blob_plain;f=peloponnesos/modis_peloponnese_postfire07_GeoTiff.zip;hb=peloponnese
+
+Cheers, Nikos
+
+
+From jarekj at amu.edu.pl  Thu Apr  9 13:51:14 2009
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Thu Apr  9 13:51:21 2009
+Subject: [GRASS-stats] problem with specific type of polygon
+Message-ID: <49DE3592.4000109@amu.edu.pl>
+
+Hi
+it is difficult to reproduce on spearfish, because there are no data 
+like this
+
+I vextorised watershed file and at the end of some watershed I have 
+sutructure like on picture below (rather tipical for watershed):
+
+                                |
+                                |
+                           +  |  
+                __________|_
+                                |_|_
+                                   |_|_
+                                      |_|_
+                                         |_|
+
+
+ Addationaly every square on right-down "stream" has his own centeroid 
+but with the same cateogry like main centeroid
+
+I import these data to R with readVECT6 and I have more object than 
+shoud be, because every square became a separtate vector with his own 
+attributes (some of atrributes are multipied).
+
+In grass I can treat such group as one object by its category number but 
+in R? How to force R to treat these group of polygons as one obiect
+
+Jarek
+From Roger.Bivand at nhh.no  Thu Apr  9 16:02:11 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Apr  9 16:02:24 2009
+Subject: [GRASS-stats] problem with specific type of polygon
+In-Reply-To: <49DE3592.4000109@amu.edu.pl>
+References: <49DE3592.4000109@amu.edu.pl>
+Message-ID: <alpine.LRH.2.00.0904092158230.9599@reclus.nhh.no>
+
+On Thu, 9 Apr 2009, Jarek Jasiewicz wrote:
+
+> Hi
+> it is difficult to reproduce on spearfish, because there are no data like 
+> this
+>
+> I vextorised watershed file and at the end of some watershed I have 
+> sutructure like on picture below (rather tipical for watershed):
+>
+>                               |
+>                               |
+>                          +  |                 __________|_
+>                               |_|_
+>                                  |_|_
+>                                     |_|_
+>                                        |_|
+>
+>
+> Addationaly every square on right-down "stream" has his own centeroid but 
+> with the same cateogry like main centeroid
+>
+> I import these data to R with readVECT6 and I have more object than shoud be, 
+> because every square became a separtate vector with his own attributes (some 
+> of atrributes are multipied).
+>
+> In grass I can treat such group as one object by its category number but in 
+> R? How to force R to treat these group of polygons as one obiect
+
+Jarek:
+
+An attempt is made in the code with the remove.duplicates= argument. In 
+addition for polygons, you can try unionSpatialPolygons() in maptools to 
+force the objects belonging together into the same Polygons object.
+
+Hope this helps,
+
+Roger
+
+>
+> Jarek
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From jarekj at amu.edu.pl  Fri Apr 10 01:42:18 2009
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Fri Apr 10 01:42:29 2009
+Subject: [GRASS-stats] problem with specific type of polygon
+In-Reply-To: <alpine.LRH.2.00.0904092158230.9599@reclus.nhh.no>
+References: <49DE3592.4000109@amu.edu.pl>
+	<alpine.LRH.2.00.0904092158230.9599@reclus.nhh.no>
+Message-ID: <49DEDC3A.9060704@amu.edu.pl>
+
+
+
+Roger Bivand pisze:
+> On Thu, 9 Apr 2009, Jarek Jasiewicz wrote:
+>
+>> Hi
+>> it is difficult to reproduce on spearfish, because there are no data 
+>> like this
+>>
+>> I vextorised watershed file and at the end of some watershed I have 
+>> sutructure like on picture below (rather tipical for watershed):
+>>
+>>                               |
+>>                               |
+>>                          +  |                 __________|_
+>>                               |_|_
+>>                                  |_|_
+>>                                     |_|_
+>>                                        |_|
+>>
+>>
+>> Addationaly every square on right-down "stream" has his own centeroid 
+>> but with the same cateogry like main centeroid
+>>
+>> I import these data to R with readVECT6 and I have more object than 
+>> shoud be, because every square became a separtate vector with his own 
+>> attributes (some of atrributes are multipied).
+>>
+>> In grass I can treat such group as one object by its category number 
+>> but in R? How to force R to treat these group of polygons as one obiect
+>
+> Jarek:
+>
+> An attempt is made in the code with the remove.duplicates= argument. 
+> In addition for polygons, you can try unionSpatialPolygons() in 
+> maptools to force the objects belonging together into the same 
+> Polygons object.
+>
+> Hope this helps,
+>
+> Roger
+>
+>>
+>> Jarek
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>
+Yes it is it!
+
+Thank you very much
+Jarek
+From nikos.alexandris at felis.uni-freiburg.de  Sat Apr 11 19:46:31 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Sat Apr 11 19:46:28 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <1236099915.11396.12.camel@vertical>
+References: <1236098565.10442.45.camel@vertical>
+	<200903030853.44008.dylan.beaudette@gmail.com>
+	<1236099915.11396.12.camel@vertical>
+Message-ID: <1239493591.8897.8.camel@vertical>
+
+Hi all!
+
+
+Dylan: 
+> > Does this help:
+> > http://casoilresource.lawr.ucdavis.edu/drupal/node/664
+
+I need a confirmation that I am doing the NA-work-around the _right_
+way. I get several NULL's in the raster maps I write back in GRASS in
+locations (=pixels) were the input raster map(s) have a NON-NULL value.
+
+
+# launch grass; launch R from within grass
+# load libraries and projection information
+library(spgrass6); G <- gmeta6()
+
+# load data
+raw <- readRAST6 (c('a', 'b', 'c', 'd', 'e', 'f'))
+
+# create vector pointing to values
+values <- which(!is.na(raw@data$a) & !is.na(raw@data$b) & !
+is.na(raw@data$c) & !is.na(raw@data$d) & !is.na(raw@data$e) & !
+is.na(raw@data$f))
+
+# get data
+data <- raw@data[values, ]
+
+# check structure
+str(data)
+
+
+# perform pca with prcomp(): SVD - SCALED
+prcomp.data <- prcomp(data, scale=TRUE)
+prcomp.data$rotation
+summary(prcomp.data)
+
+
+# add new columns to the original sp object #
+raw@data$pc1 <- NA
+raw@data$pc2 <- NA
+raw@data$pc3 <- NA
+raw@data$pc4 <- NA
+raw@data$pc5 <- NA
+raw@data$pc6 <- NA
+str(raw)
+
+# fill-in the PCs
+raw@data$pc1[values] <- prcomp.data$x[,"PC1"]
+raw@data$pc1[values] <- prcomp.data$x[,"PC1"]
+raw@data$pc1[values] <- prcomp.data$x[,"PC1"]
+raw@data$pc1[values] <- prcomp.data$x[,"PC1"]
+raw@data$pc1[values] <- prcomp.data$x[,"PC1"]
+mod_prepost_b267.raw@data$pc2[mod_prepost_b267.values] <-
+prcomp.modis0607.nonas$x[,"PC2"]
+mod_prepost_b267.raw@data$pc3[mod_prepost_b267.values] <-
+prcomp.modis0607.nonas$x[,"PC3"]
+mod_prepost_b267.raw@data$pc4[mod_prepost_b267.values] <-
+prcomp.modis0607.nonas$x[,"PC4"]
+mod_prepost_b267.raw@data$pc5[mod_prepost_b267.values] <-
+prcomp.modis0607.nonas$x[,"PC5"]
+mod_prepost_b267.raw@data$pc6[mod_prepost_b267.values] <-
+prcomp.modis0607.nonas$x[,"PC6"]
+str(mod_prepost_b267.raw)
+
+# write grass raster maps
+writeRAST6(mod_prepost_b267.raw, zcol=7, vname="prcomp1_0607",
+overwrite=TRUE)
+writeRAST6(mod_prepost_b267.raw, zcol=7, vname="prcomp2_0607",
+overwrite=TRUE)
+writeRAST6(mod_prepost_b267.raw, zcol=7, vname="prcomp3_0607",
+overwrite=TRUE)
+writeRAST6(mod_prepost_b267.raw, zcol=7, vname="prcomp4_0607",
+overwrite=TRUE)
+writeRAST6(mod_prepost_b267.raw, zcol=7, vname="prcomp5_0607",
+overwrite=TRUE)
+writeRAST6(mod_prepost_b267.raw, zcol=7, vname="prcomp6_0607",
+overwrite=TRUE)
+
+From nikos.alexandris at felis.uni-freiburg.de  Sat Apr 11 19:53:26 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Sat Apr 11 19:53:22 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <1239493591.8897.8.camel@vertical>
+References: <1236098565.10442.45.camel@vertical>
+	<200903030853.44008.dylan.beaudette@gmail.com>
+	<1236099915.11396.12.camel@vertical> <1239493591.8897.8.camel@vertical>
+Message-ID: <1239494006.9242.5.camel@vertical>
+
+
+Nikos:
+> I need a confirmation that I am doing the NA-work-around the _right_
+> way.
+
+Sorry, I fat-fingered the Send button before. For simplicity I tried to
+use small names instead of the long "original" names. Anyhow, I think
+it's clear what I am doing and what the problem is.
+
+
+The problem is:
+> I get several NULL's in the raster maps I write back in GRASS in
+> locations (=pixels) were the input raster map(s) have a NON-NULL value.
+
+For simplicity I tried to use small names instead of the long "original"
+names. Anyhow, I think it's clear what I am doing and what the problem
+is.
+
+Cheers,  Nikos
+
+# launch grass; launch R from within grass
+# load libraries and projection information
+library(spgrass6); G <- gmeta6()
+
+# load data
+raw <- readRAST6 (c('a', 'b', 'c', 'd', 'e', 'f'))
+
+# create vector pointing to values
+values <- which(!is.na(raw@data$a) & !is.na(raw@data$b) & !
+is.na(raw@data$c) & !is.na(raw@data$d) & !is.na(raw@data$e) & !
+is.na(raw@data$f))
+
+# get data
+data <- raw@data[values, ]
+
+# check structure
+str(data)
+
+# perform pca with prcomp(): SVD - SCALED
+prcomp.data <- prcomp(data, scale=TRUE)
+prcomp.data$rotation
+summary(prcomp.data)
+
+# add new columns to the original sp object #
+raw@data$pc1 <- NA
+raw@data$pc2 <- NA
+raw@data$pc3 <- NA
+raw@data$pc4 <- NA
+raw@data$pc5 <- NA
+raw@data$pc6 <- NA
+str(raw)
+
+# fill-in the PCs
+raw@data$pc1[values] <- prcomp.data$x[,"PC1"]
+raw@data$pc2[values] <- prcomp.data$x[,"PC1"]
+raw@data$pc3[values] <- prcomp.data$x[,"PC1"]
+raw@data$pc4[values] <- prcomp.data$x[,"PC1"]
+raw@data$pc5[values] <- prcomp.data$x[,"PC1"]
+raw@data$pc6[values] <- prcomp.data$x[,"PC1"]
+
+# write grass raster maps
+writeRAST6(raw, zcol=7, vname="prcomp1_0607", overwrite=TRUE)
+writeRAST6(raw, zcol=8, vname="prcomp1_0607", overwrite=TRUE)
+writeRAST6(raw, zcol=9, vname="prcomp1_0607", overwrite=TRUE)
+writeRAST6(raw, zcol=10, vname="prcomp1_0607", overwrite=TRUE)
+writeRAST6(raw, zcol=11, vname="prcomp1_0607", overwrite=TRUE)
+writeRAST6(raw, zcol=12, vname="prcomp1_0607", overwrite=TRUE)
+
+From nikos.alexandris at felis.uni-freiburg.de  Mon Apr 13 09:21:07 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Mon Apr 13 09:20:57 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <1239494006.9242.5.camel@vertical>
+References: <1236098565.10442.45.camel@vertical>
+	<200903030853.44008.dylan.beaudette@gmail.com>
+	<1236099915.11396.12.camel@vertical> <1239493591.8897.8.camel@vertical>
+	<1239494006.9242.5.camel@vertical>
+Message-ID: <1239628867.27100.18.camel@vertical>
+
+
+GRASS_&_R-experts,
+I really need some hand-of-help here.
+
+What I actually do is nothing but a PCA on a combination of different
+bands. The fact is that bands a, b, c are of equal "length" in R and
+have _more_ non-NULLs than bands d, e, f.
+
+That is, bands d, e and f are of equal length compared to each other but
+of different length comparing to bands a, b and c.
+
+I suspect this is the root of the problem. Any suggestion?
+Thanks, Nikos
+
+> Nikos:
+> > I need a confirmation that I am doing the NA-work-around the _right_
+> > way.
+> 
+> Sorry, I fat-fingered the Send button before. For simplicity I tried to
+> use small names instead of the long "original" names. Anyhow, I think
+> it's clear what I am doing and what the problem is.
+> 
+> 
+> The problem is:
+> > I get several NULL's in the raster maps I write back in GRASS in
+> > locations (=pixels) were the input raster map(s) have a NON-NULL value.
+> 
+> For simplicity I tried to use small names instead of the long "original"
+> names. Anyhow, I think it's clear what I am doing and what the problem
+> is.
+> 
+> Cheers,  Nikos
+> 
+> # launch grass; launch R from within grass
+> # load libraries and projection information
+> library(spgrass6); G <- gmeta6()
+> 
+> # load data
+> raw <- readRAST6 (c('a', 'b', 'c', 'd', 'e', 'f'))
+> 
+> # create vector pointing to values
+> values <- which(!is.na(raw@data$a) & !is.na(raw@data$b) & !
+> is.na(raw@data$c) & !is.na(raw@data$d) & !is.na(raw@data$e) & !
+> is.na(raw@data$f))
+> 
+> # get data
+> data <- raw@data[values, ]
+> 
+> # check structure
+> str(data)
+> 
+> # perform pca with prcomp(): SVD - SCALED
+> prcomp.data <- prcomp(data, scale=TRUE)
+> prcomp.data$rotation
+> summary(prcomp.data)
+> 
+> # add new columns to the original sp object #
+> raw@data$pc1 <- NA
+> raw@data$pc2 <- NA
+> raw@data$pc3 <- NA
+> raw@data$pc4 <- NA
+> raw@data$pc5 <- NA
+> raw@data$pc6 <- NA
+> str(raw)
+> 
+> # fill-in the PCs
+> raw@data$pc1[values] <- prcomp.data$x[,"PC1"]
+> raw@data$pc2[values] <- prcomp.data$x[,"PC1"]
+> raw@data$pc3[values] <- prcomp.data$x[,"PC1"]
+> raw@data$pc4[values] <- prcomp.data$x[,"PC1"]
+> raw@data$pc5[values] <- prcomp.data$x[,"PC1"]
+> raw@data$pc6[values] <- prcomp.data$x[,"PC1"]
+> 
+> # write grass raster maps
+> writeRAST6(raw, zcol=7, vname="prcomp1_0607", overwrite=TRUE)
+> writeRAST6(raw, zcol=8, vname="prcomp1_0607", overwrite=TRUE)
+> writeRAST6(raw, zcol=9, vname="prcomp1_0607", overwrite=TRUE)
+> writeRAST6(raw, zcol=10, vname="prcomp1_0607", overwrite=TRUE)
+> writeRAST6(raw, zcol=11, vname="prcomp1_0607", overwrite=TRUE)
+> writeRAST6(raw, zcol=12, vname="prcomp1_0607", overwrite=TRUE)
+
+From debeaudette at ucdavis.edu  Mon Apr 13 11:18:19 2009
+From: debeaudette at ucdavis.edu (Dylan Beaudette)
+Date: Mon Apr 13 11:15:32 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <1239628867.27100.18.camel@vertical>
+References: <1236098565.10442.45.camel@vertical>
+	<1239494006.9242.5.camel@vertical>
+	<1239628867.27100.18.camel@vertical>
+Message-ID: <200904130818.19723.dylan.beaudette@gmail.com>
+
+On Monday 13 April 2009, Nikos Alexandris wrote:
+> GRASS_&_R-experts,
+> I really need some hand-of-help here.
+
+Hi Nilkos!
+
+> What I actually do is nothing but a PCA on a combination of different
+> bands. The fact is that bands a, b, c are of equal "length" in R and
+> have _more_ non-NULLs than bands d, e, f.
+
+I think that you are going to have to maintain a band-wise null mask in R, as 
+opposed to a single null mask for the entire set of bands.
+
+> That is, bands d, e and f are of equal length compared to each other but
+> of different length comparing to bands a, b and c.
+>
+> I suspect this is the root of the problem. Any suggestion?
+> Thanks, Nikos
+
+It could be. The way that sp objects and their 'bands' (columns in the 
+attached dataframe) function makes for some tricky NULL handling.
+
+One thing you might consider is generating a single NULL mask that represents  
+NULL values that occur in any, or all bands -- akin to an OR operation. I 
+think that na.omit(sp_object@data) may be able to return just the 'complete' 
+data, along with a list of indices where NA values have been removed.
+
+The approach listed on the link you posted:
+x.vals <- which( !is.na(x@data$r1) & !is.na(x@data$r2) & !is.na(x@data$r3) 
+& !is.na(x@data$r4))
+
+will only generate the non-NULL maks correctly when all bands have the same 
+pattern of NULL values. Maybe I should add that hint.
+
+Hope that helps,
+
+Dylan
+
+
+
+
+> > Nikos:
+> > > I need a confirmation that I am doing the NA-work-around the _right_
+> > > way.
+> >
+> > Sorry, I fat-fingered the Send button before. For simplicity I tried to
+> > use small names instead of the long "original" names. Anyhow, I think
+> > it's clear what I am doing and what the problem is.
+> >
+> > The problem is:
+> > > I get several NULL's in the raster maps I write back in GRASS in
+> > > locations (=pixels) were the input raster map(s) have a NON-NULL value.
+> >
+> > For simplicity I tried to use small names instead of the long "original"
+> > names. Anyhow, I think it's clear what I am doing and what the problem
+> > is.
+> >
+> > Cheers,  Nikos
+> >
+> > # launch grass; launch R from within grass
+> > # load libraries and projection information
+> > library(spgrass6); G <- gmeta6()
+> >
+> > # load data
+> > raw <- readRAST6 (c('a', 'b', 'c', 'd', 'e', 'f'))
+> >
+> > # create vector pointing to values
+> > values <- which(!is.na(raw@data$a) & !is.na(raw@data$b) & !
+> > is.na(raw@data$c) & !is.na(raw@data$d) & !is.na(raw@data$e) & !
+> > is.na(raw@data$f))
+> >
+> > # get data
+> > data <- raw@data[values, ]
+> >
+> > # check structure
+> > str(data)
+> >
+> > # perform pca with prcomp(): SVD - SCALED
+> > prcomp.data <- prcomp(data, scale=TRUE)
+> > prcomp.data$rotation
+> > summary(prcomp.data)
+> >
+> > # add new columns to the original sp object #
+> > raw@data$pc1 <- NA
+> > raw@data$pc2 <- NA
+> > raw@data$pc3 <- NA
+> > raw@data$pc4 <- NA
+> > raw@data$pc5 <- NA
+> > raw@data$pc6 <- NA
+> > str(raw)
+> >
+> > # fill-in the PCs
+> > raw@data$pc1[values] <- prcomp.data$x[,"PC1"]
+> > raw@data$pc2[values] <- prcomp.data$x[,"PC1"]
+> > raw@data$pc3[values] <- prcomp.data$x[,"PC1"]
+> > raw@data$pc4[values] <- prcomp.data$x[,"PC1"]
+> > raw@data$pc5[values] <- prcomp.data$x[,"PC1"]
+> > raw@data$pc6[values] <- prcomp.data$x[,"PC1"]
+> >
+> > # write grass raster maps
+> > writeRAST6(raw, zcol=7, vname="prcomp1_0607", overwrite=TRUE)
+> > writeRAST6(raw, zcol=8, vname="prcomp1_0607", overwrite=TRUE)
+> > writeRAST6(raw, zcol=9, vname="prcomp1_0607", overwrite=TRUE)
+> > writeRAST6(raw, zcol=10, vname="prcomp1_0607", overwrite=TRUE)
+> > writeRAST6(raw, zcol=11, vname="prcomp1_0607", overwrite=TRUE)
+> > writeRAST6(raw, zcol=12, vname="prcomp1_0607", overwrite=TRUE)
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+
+
+-- 
+Dylan Beaudette
+Soil Resource Laboratory
+http://casoilresource.lawr.ucdavis.edu/
+University of California at Davis
+530.754.7341
+From Roger.Bivand at nhh.no  Mon Apr 13 15:46:51 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon Apr 13 15:46:55 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <200904130818.19723.dylan.beaudette@gmail.com>
+References: <1236098565.10442.45.camel@vertical>
+	<1239494006.9242.5.camel@vertical>
+	<1239628867.27100.18.camel@vertical>
+	<200904130818.19723.dylan.beaudette@gmail.com>
+Message-ID: <alpine.LRH.2.00.0904132144330.29917@reclus.nhh.no>
+
+On Mon, 13 Apr 2009, Dylan Beaudette wrote:
+
+> On Monday 13 April 2009, Nikos Alexandris wrote:
+>> GRASS_&_R-experts,
+>> I really need some hand-of-help here.
+>
+> Hi Nilkos!
+>
+>> What I actually do is nothing but a PCA on a combination of different
+>> bands. The fact is that bands a, b, c are of equal "length" in R and
+>> have _more_ non-NULLs than bands d, e, f.
+>
+> I think that you are going to have to maintain a band-wise null mask in R, as
+> opposed to a single null mask for the entire set of bands.
+>
+>> That is, bands d, e and f are of equal length compared to each other but
+>> of different length comparing to bands a, b and c.
+>>
+>> I suspect this is the root of the problem. Any suggestion?
+>> Thanks, Nikos
+>
+> It could be. The way that sp objects and their 'bands' (columns in the
+> attached dataframe) function makes for some tricky NULL handling.
+>
+> One thing you might consider is generating a single NULL mask that represents
+> NULL values that occur in any, or all bands -- akin to an OR operation. I
+> think that na.omit(sp_object@data) may be able to return just the 'complete'
+> data, along with a list of indices where NA values have been removed.
+
+Would simply using complete.cases(x@data) be what you are looking for?
+
+Roger
+
+>
+> The approach listed on the link you posted:
+> x.vals <- which( !is.na(x@data$r1) & !is.na(x@data$r2) & !is.na(x@data$r3)
+> & !is.na(x@data$r4))
+>
+> will only generate the non-NULL maks correctly when all bands have the same
+> pattern of NULL values. Maybe I should add that hint.
+>
+> Hope that helps,
+>
+> Dylan
+>
+>
+>
+>
+>>> Nikos:
+>>>> I need a confirmation that I am doing the NA-work-around the _right_
+>>>> way.
+>>>
+>>> Sorry, I fat-fingered the Send button before. For simplicity I tried to
+>>> use small names instead of the long "original" names. Anyhow, I think
+>>> it's clear what I am doing and what the problem is.
+>>>
+>>> The problem is:
+>>>> I get several NULL's in the raster maps I write back in GRASS in
+>>>> locations (=pixels) were the input raster map(s) have a NON-NULL value.
+>>>
+>>> For simplicity I tried to use small names instead of the long "original"
+>>> names. Anyhow, I think it's clear what I am doing and what the problem
+>>> is.
+>>>
+>>> Cheers,  Nikos
+>>>
+>>> # launch grass; launch R from within grass
+>>> # load libraries and projection information
+>>> library(spgrass6); G <- gmeta6()
+>>>
+>>> # load data
+>>> raw <- readRAST6 (c('a', 'b', 'c', 'd', 'e', 'f'))
+>>>
+>>> # create vector pointing to values
+>>> values <- which(!is.na(raw@data$a) & !is.na(raw@data$b) & !
+>>> is.na(raw@data$c) & !is.na(raw@data$d) & !is.na(raw@data$e) & !
+>>> is.na(raw@data$f))
+>>>
+>>> # get data
+>>> data <- raw@data[values, ]
+>>>
+>>> # check structure
+>>> str(data)
+>>>
+>>> # perform pca with prcomp(): SVD - SCALED
+>>> prcomp.data <- prcomp(data, scale=TRUE)
+>>> prcomp.data$rotation
+>>> summary(prcomp.data)
+>>>
+>>> # add new columns to the original sp object #
+>>> raw@data$pc1 <- NA
+>>> raw@data$pc2 <- NA
+>>> raw@data$pc3 <- NA
+>>> raw@data$pc4 <- NA
+>>> raw@data$pc5 <- NA
+>>> raw@data$pc6 <- NA
+>>> str(raw)
+>>>
+>>> # fill-in the PCs
+>>> raw@data$pc1[values] <- prcomp.data$x[,"PC1"]
+>>> raw@data$pc2[values] <- prcomp.data$x[,"PC1"]
+>>> raw@data$pc3[values] <- prcomp.data$x[,"PC1"]
+>>> raw@data$pc4[values] <- prcomp.data$x[,"PC1"]
+>>> raw@data$pc5[values] <- prcomp.data$x[,"PC1"]
+>>> raw@data$pc6[values] <- prcomp.data$x[,"PC1"]
+>>>
+>>> # write grass raster maps
+>>> writeRAST6(raw, zcol=7, vname="prcomp1_0607", overwrite=TRUE)
+>>> writeRAST6(raw, zcol=8, vname="prcomp1_0607", overwrite=TRUE)
+>>> writeRAST6(raw, zcol=9, vname="prcomp1_0607", overwrite=TRUE)
+>>> writeRAST6(raw, zcol=10, vname="prcomp1_0607", overwrite=TRUE)
+>>> writeRAST6(raw, zcol=11, vname="prcomp1_0607", overwrite=TRUE)
+>>> writeRAST6(raw, zcol=12, vname="prcomp1_0607", overwrite=TRUE)
+>>
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From nikos.alexandris at felis.uni-freiburg.de  Mon Apr 13 19:09:27 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Mon Apr 13 19:09:16 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <200904130818.19723.dylan.beaudette@gmail.com>
+References: <1236098565.10442.45.camel@vertical>
+	<1239494006.9242.5.camel@vertical> <1239628867.27100.18.camel@vertical>
+	<200904130818.19723.dylan.beaudette@gmail.com>
+Message-ID: <1239664167.3887.28.camel@vertical>
+
+
+[
+HiYo Dylan ;-)
+]
+
+Nikos:
+> > What I actually do is nothing but a PCA on a combination of different
+> > bands. The fact is that bands a, b, c are of equal "length" in R and
+> > have _more_ non-NULLs than bands d, e, f.
+
+
+Dylan:
+> I think that you are going to have to maintain a band-wise null mask in R, as 
+> opposed to a single null mask for the entire set of bands.
+
+If I understand your suggestion, you mean to:
+
+# load the bands as usual (i.e. combine a, b, c, d, e, f in one
+SpatialGridDataFrame)
+
+# create NULL-"masks" (=vectors pointing to NULLs) band-wise
+
+# extract data of interest in a normal "data.frame" and do something
+with it
+
+# add new "columns" in the original SpatialGridDataFrame
+
+# fill-in the results by using the per-band NULL-masks
+
+The question that immediately pops-up is: How should I decide which
+NULL-mask to use for each PC since PCA redistributes the original data?
+
+Or is this irrelevant?
+
+:-O
+
+
+> > That is, bands d, e and f are of equal length compared to each other but
+> > of different length comparing to bands a, b and c.
+> > I suspect this is the root of the problem. Any suggestion?
+> > Thanks, Nikos
+
+> It could be. The way that sp objects and their 'bands' (columns in the 
+> attached dataframe) function makes for some tricky NULL handling.
+
+> One thing you might consider is generating a single NULL mask that represents  
+> NULL values that occur in any, or all bands -- akin to an OR operation.
+
+Hmmm... (thinking), ok, I am close... I think (!?)
+
+
+> I think that na.omit(sp_object@data) may be able to return just the 'complete' 
+> data, along with a list of indices where NA values have been removed.
+
+> The approach listed on the link you posted:
+> x.vals <- which( !is.na(x@data$r1) & !is.na(x@data$r2) & !is.na(x@data$r3) 
+> & !is.na(x@data$r4))
+> 
+> will only generate the non-NULL maks correctly when all bands have the same 
+> pattern of NULL values. Maybe I should add that hint.
+
+What happens if I just replace the & with an | (=OR) operator? Isn't it
+the same? (I'll try it out).
+
+
+> Hope that helps,
+> Dylan
+
+Of course it helps (me). Discussions like this one are (for me) the
+essence of the MLs :D
+
+Cheers, Nikos
+
+From nikos.alexandris at felis.uni-freiburg.de  Mon Apr 13 19:15:16 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Mon Apr 13 19:15:05 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <alpine.LRH.2.00.0904132144330.29917@reclus.nhh.no>
+References: <1236098565.10442.45.camel@vertical>
+	<1239494006.9242.5.camel@vertical> <1239628867.27100.18.camel@vertical>
+	<200904130818.19723.dylan.beaudette@gmail.com>
+	<alpine.LRH.2.00.0904132144330.29917@reclus.nhh.no>
+Message-ID: <1239664516.3887.32.camel@vertical>
+
+
+Nikos:
+> >> What I actually do is nothing but a PCA on a combination of different
+> >> bands. The fact is that bands a, b, c are of equal "length" in R and
+> >> have _more_ non-NULLs than bands d, e, f.
+[...]
+
+
+Dylan:
+> > One thing you might consider is generating a single NULL mask that represents
+> > NULL values that occur in any, or all bands -- akin to an OR operation. I
+> > think that na.omit(sp_object@data) may be able to return just the 'complete'
+> > data, along with a list of indices where NA values have been removed.
+
+
+Roger:
+> Would simply using complete.cases(x@data) be what you are looking for?
+
+
+So, this is the _correct and easy_ way instead of using a couple of |
+(=OR) operators in my case? Or am I misinterpreting it?
+
+Kindest regards, Nikos
+
+From debeaudette at ucdavis.edu  Mon Apr 13 19:24:13 2009
+From: debeaudette at ucdavis.edu (Dylan Beaudette)
+Date: Mon Apr 13 19:21:25 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <1239664516.3887.32.camel@vertical>
+References: <1236098565.10442.45.camel@vertical>
+	<alpine.LRH.2.00.0904132144330.29917@reclus.nhh.no>
+	<1239664516.3887.32.camel@vertical>
+Message-ID: <200904131624.13976.dylan.beaudette@gmail.com>
+
+On Monday 13 April 2009, Nikos Alexandris wrote:
+> Nikos:
+> > >> What I actually do is nothing but a PCA on a combination of different
+> > >> bands. The fact is that bands a, b, c are of equal "length" in R and
+> > >> have _more_ non-NULLs than bands d, e, f.
+>
+> [...]
+>
+> Dylan:
+> > > One thing you might consider is generating a single NULL mask that
+> > > represents NULL values that occur in any, or all bands -- akin to an OR
+> > > operation. I think that na.omit(sp_object@data) may be able to return
+> > > just the 'complete' data, along with a list of indices where NA values
+> > > have been removed.
+>
+> Roger:
+> > Would simply using complete.cases(x@data) be what you are looking for?
+>
+> So, this is the _correct and easy_ way instead of using a couple of |
+> (=OR) operators in my case? Or am I misinterpreting it?
+>
+> Kindest regards, Nikos
+
+Hi.
+
+As usualy Roger's suggestion seems to be the simplest, most direct approach. 
+It seems like a more general solution, as opposed to a sequence of 
+is.na() | ... one for each raster map.
+
+Dylan
+
+-- 
+Dylan Beaudette
+Soil Resource Laboratory
+http://casoilresource.lawr.ucdavis.edu/
+University of California at Davis
+530.754.7341
+From debeaudette at ucdavis.edu  Mon Apr 13 19:42:29 2009
+From: debeaudette at ucdavis.edu (Dylan Beaudette)
+Date: Mon Apr 13 19:39:41 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <1239664167.3887.28.camel@vertical>
+References: <1236098565.10442.45.camel@vertical>
+	<200904130818.19723.dylan.beaudette@gmail.com>
+	<1239664167.3887.28.camel@vertical>
+Message-ID: <200904131642.29099.dylan.beaudette@gmail.com>
+
+On Monday 13 April 2009, Nikos Alexandris wrote:
+> [
+> HiYo Dylan ;-)
+> ]
+>
+> Nikos:
+> > > What I actually do is nothing but a PCA on a combination of different
+> > > bands. The fact is that bands a, b, c are of equal "length" in R and
+> > > have _more_ non-NULLs than bands d, e, f.
+>
+> Dylan:
+> > I think that you are going to have to maintain a band-wise null mask in
+> > R, as opposed to a single null mask for the entire set of bands.
+>
+> If I understand your suggestion, you mean to:
+>
+> # load the bands as usual (i.e. combine a, b, c, d, e, f in one
+> SpatialGridDataFrame)
+>
+> # create NULL-"masks" (=vectors pointing to NULLs) band-wise
+>
+> # extract data of interest in a normal "data.frame" and do something
+> with it
+>
+> # add new "columns" in the original SpatialGridDataFrame
+>
+> # fill-in the results by using the per-band NULL-masks
+>
+> The question that immediately pops-up is: How should I decide which
+> NULL-mask to use for each PC since PCA redistributes the original data?
+>
+> Or is this irrelevant?
+>
+> :-O
+> :
+> > > That is, bands d, e and f are of equal length compared to each other
+> > > but of different length comparing to bands a, b and c.
+> > > I suspect this is the root of the problem. Any suggestion?
+> > > Thanks, Nikos
+> >
+> > It could be. The way that sp objects and their 'bands' (columns in the
+> > attached dataframe) function makes for some tricky NULL handling.
+> >
+> > One thing you might consider is generating a single NULL mask that
+> > represents NULL values that occur in any, or all bands -- akin to an OR
+> > operation.
+>
+> Hmmm... (thinking), ok, I am close... I think (!?)
+>
+> > I think that na.omit(sp_object@data) may be able to return just the
+> > 'complete' data, along with a list of indices where NA values have been
+> > removed.
+> >
+> > The approach listed on the link you posted:
+> > x.vals <- which( !is.na(x@data$r1) & !is.na(x@data$r2) &
+> > !is.na(x@data$r3) & !is.na(x@data$r4))
+> >
+> > will only generate the non-NULL maks correctly when all bands have the
+> > same pattern of NULL values. Maybe I should add that hint.
+>
+> What happens if I just replace the & with an | (=OR) operator? Isn't it
+> the same? (I'll try it out).
+>
+> > Hope that helps,
+> > Dylan
+>
+> Of course it helps (me). Discussions like this one are (for me) the
+> essence of the MLs :D
+>
+> Cheers, Nikos
+
+I guess I wasn't clear. I should have said something like: "for input maps 
+that have different NULL value (spatial distributions), you will need to 
+generate a new NULL mask that can be used to filter out all cells that 
+overlap with 1 or more NULL values in your stack of images". Using 
+complete.cases() as Roger suggested may accomplish this. 
+
+An idea on how to apply this function:
+
+# generate some data; sprinkle in some NA ; convert to DF
+x <- rnorm(100)
+x[sample(1:100, 5)] <- NA
+x.mat <- round(matrix(x, ncol=5), 2)
+x.df <- as.data.frame(x.mat)
+
+# extract an NA mask
+x.na_mask <- complete.cases(x.df)
+ 
+# just the 'rows' with complete data (across bands)
+ x.df[x.na_mask,]
+
+      V1    V2    V3    V4    V5
+1   1.32 -1.27  0.00 -0.87  1.52
+2  -0.44  1.33  0.78 -1.27  0.00
+5   2.70 -0.08 -0.77  0.38  0.32
+6  -0.52 -0.07  0.13 -0.43  1.12
+7  -0.63  2.02  0.45  0.48 -0.59
+8  -0.52 -0.78 -0.59 -0.07 -0.08
+11 -1.37 -1.15  0.23  0.73  0.07
+12 -0.11 -0.66  0.50 -1.14  0.71
+13 -0.38 -0.08  1.00 -0.88 -0.19
+14 -1.14 -0.45 -1.37 -0.43 -2.18
+15  1.92  0.46 -0.72  0.12  0.27
+16  0.51  0.22 -0.39 -1.54 -1.04
+17  1.14 -1.11  1.04  0.00 -1.11
+18  0.53  0.62 -0.10 -0.17  0.15
+19  0.84  0.27 -1.01  0.87  0.31
+20  0.82  0.87  0.46  1.35  0.13
+
+
+# all the data
+x.df
+      V1    V2    V3    V4    V5
+1   1.32 -1.27  0.00 -0.87  1.52
+2  -0.44  1.33  0.78 -1.27  0.00
+3  -0.31 -0.13 -1.14  2.08    NA
+4   0.76    NA -1.20 -0.54 -0.85
+5   2.70 -0.08 -0.77  0.38  0.32
+6  -0.52 -0.07  0.13 -0.43  1.12
+7  -0.63  2.02  0.45  0.48 -0.59
+8  -0.52 -0.78 -0.59 -0.07 -0.08
+9  -0.38 -0.51  0.44    NA -0.81
+10 -1.38    NA -0.65 -0.50    NA
+11 -1.37 -1.15  0.23  0.73  0.07
+12 -0.11 -0.66  0.50 -1.14  0.71
+13 -0.38 -0.08  1.00 -0.88 -0.19
+14 -1.14 -0.45 -1.37 -0.43 -2.18
+15  1.92  0.46 -0.72  0.12  0.27
+16  0.51  0.22 -0.39 -1.54 -1.04
+17  1.14 -1.11  1.04  0.00 -1.11
+18  0.53  0.62 -0.10 -0.17  0.15
+19  0.84  0.27 -1.01  0.87  0.31
+20  0.82  0.87  0.46  1.35  0.13
+
+# generate something cool from complete data
+library(MASS)
+p <- princomp(~ . , data=x.df[x.na_mask,])
+
+# assign back to original data
+x.df$pca_1[x.na_mask] <-  predict(p)[,1]
+
+This would of course be done the the @data slot on an sp object. Thanks to 
+Roger for this slick approach.
+
+How about that!?
+
+Cheers,
+Dylan
+
+
+
+-- 
+Dylan Beaudette
+Soil Resource Laboratory
+http://casoilresource.lawr.ucdavis.edu/
+University of California at Davis
+530.754.7341
+From Roger.Bivand at nhh.no  Tue Apr 14 02:14:40 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Apr 14 02:14:52 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <1239664516.3887.32.camel@vertical>
+References: <1236098565.10442.45.camel@vertical>
+	<1239494006.9242.5.camel@vertical>
+	<1239628867.27100.18.camel@vertical>
+	<200904130818.19723.dylan.beaudette@gmail.com>
+	<alpine.LRH.2.00.0904132144330.29917@reclus.nhh.no>
+	<1239664516.3887.32.camel@vertical>
+Message-ID: <alpine.LRH.2.00.0904140812360.6455@reclus.nhh.no>
+
+On Tue, 14 Apr 2009, Nikos Alexandris wrote:
+
+>
+> Nikos:
+>>>> What I actually do is nothing but a PCA on a combination of different
+>>>> bands. The fact is that bands a, b, c are of equal "length" in R and
+>>>> have _more_ non-NULLs than bands d, e, f.
+> [...]
+>
+>
+> Dylan:
+>>> One thing you might consider is generating a single NULL mask that represents
+>>> NULL values that occur in any, or all bands -- akin to an OR operation. I
+>>> think that na.omit(sp_object@data) may be able to return just the 'complete'
+>>> data, along with a list of indices where NA values have been removed.
+>
+>
+> Roger:
+>> Would simply using complete.cases(x@data) be what you are looking for?
+>
+>
+> So, this is the _correct and easy_ way instead of using a couple of |
+> (=OR) operators in my case? Or am I misinterpreting it?
+
+Yes, this is the most direct way to choose the subset of a data.frame with 
+complete cases - used in lots of places that data.frame objects are used 
+(since 1992, White Book). Think data.frame objects, not GIS objects 
+(bands). This is about ontology, really.
+
+Roger
+
+>
+> Kindest regards, Nikos
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From edzer.pebesma at uni-muenster.de  Tue Apr 14 02:33:59 2009
+From: edzer.pebesma at uni-muenster.de (Edzer Pebesma)
+Date: Tue Apr 14 02:33:40 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <alpine.LRH.2.00.0904140812360.6455@reclus.nhh.no>
+References: <1236098565.10442.45.camel@vertical>	<1239494006.9242.5.camel@vertical>	<1239628867.27100.18.camel@vertical>	<200904130818.19723.dylan.beaudette@gmail.com>	<alpine.LRH.2.00.0904132144330.29917@reclus.nhh.no>	<1239664516.3887.32.camel@vertical>
+	<alpine.LRH.2.00.0904140812360.6455@reclus.nhh.no>
+Message-ID: <49E42E57.1040702@uni-muenster.de>
+
+
+>>
+>> So, this is the _correct and easy_ way instead of using a couple of |
+>> (=OR) operators in my case? Or am I misinterpreting it?
+>
+> Yes, this is the most direct way to choose the subset of a data.frame
+> with complete cases - used in lots of places that data.frame objects
+> are used (since 1992, White Book). Think data.frame objects, not GIS
+> objects (bands). This is about ontology, really.
+Yes, or semantics at least.
+
+Currently, a single gridded object in sp (SpatialGridDataFrame or
+SpatialPixelsDataFrame) holds attributes in the @data slot, and this can
+be a stack of bands that are spatially alligned, e.g. a set of bands
+with different spectral characteristics. In addition bands (or variables
+in the data.frame analogy) can be of different type, e.g. of type
+logical or factor (think land use type).
+
+The bands could also have a different time stamp, representing time
+series of images, but the sp objects have no infrastructure to capture
+the time stamp of a band.
+
+-- 
+Edzer Pebesma
+Institute for Geoinformatics (ifgi), University of M?nster
+Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+8333081, Fax: +49 251 8339763 http://ifgi.uni-muenster.de/
+http://www.springer.com/978-0-387-78170-9 e.pebesma@wwu.de
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Apr 14 11:17:01 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Apr 14 11:16:47 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <200904131642.29099.dylan.beaudette@gmail.com>
+References: <1236098565.10442.45.camel@vertical>
+	<200904130818.19723.dylan.beaudette@gmail.com>
+	<1239664167.3887.28.camel@vertical>
+	<200904131642.29099.dylan.beaudette@gmail.com>
+Message-ID: <1239722221.19599.21.camel@vertical>
+
+
+Nikos:
+> > > > What I actually do is nothing but a PCA on a combination of different
+> > > > bands. The fact is that bands a, b, c are of equal "length" in R and
+> > > > have _more_ non-NULLs than bands d, e, f.
+
+
+Dylan:
+> > > I think that you are going to have to maintain a band-wise null mask in
+> > > R, as opposed to a single null mask for the entire set of bands.
+
+[...]
+
+> An idea on how to apply this function:
+> 
+> # load data
+> # extract an NA mask using complete.cases 
+> # do something like prcomp()
+
+> # assign back to original data
+> x.df$pca_1[x.na_mask] <-  predict(p)[,1]
+> 
+> This would of course be done the the @data slot on an sp object. Thanks to 
+> Roger for this slick approach.
+> 
+> How about that!?
+
+Very helpful Dylan. I am learning a lot, as usual. However, no-matter
+what I try to do with my NA's I still get random NA's when I write back
+to GRASS my data.
+
+I tried to load the data, extract an NA_mask using complete.cases,
+create "fake" columns and fill-in with the _untouched_ original data and
+then write back to GRASS6. The result (or my process) is _noise_.
+
+I'll try again tonight. If I am not going to make it I could try to
+repeat this with spearfish data and see if something isn't ok with my
+MODIS bands.
+
+Cheers, Nikos
+
+I don't understand what's the deal here :-(
+
+From debeaudette at ucdavis.edu  Tue Apr 14 13:33:27 2009
+From: debeaudette at ucdavis.edu (Dylan Beaudette)
+Date: Tue Apr 14 13:30:36 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <1239722221.19599.21.camel@vertical>
+References: <1236098565.10442.45.camel@vertical>
+	<200904131642.29099.dylan.beaudette@gmail.com>
+	<1239722221.19599.21.camel@vertical>
+Message-ID: <200904141033.27770.dylan.beaudette@gmail.com>
+
+On Tuesday 14 April 2009, Nikos Alexandris wrote:
+> Nikos:
+> > > > > What I actually do is nothing but a PCA on a combination of
+> > > > > different bands. The fact is that bands a, b, c are of equal
+> > > > > "length" in R and have _more_ non-NULLs than bands d, e, f.
+>
+> Dylan:
+> > > > I think that you are going to have to maintain a band-wise null mask
+> > > > in R, as opposed to a single null mask for the entire set of bands.
+>
+> [...]
+>
+> > An idea on how to apply this function:
+> >
+> > # load data
+> > # extract an NA mask using complete.cases
+> > # do something like prcomp()
+> >
+> > # assign back to original data
+> > x.df$pca_1[x.na_mask] <-  predict(p)[,1]
+> >
+> > This would of course be done the the @data slot on an sp object. Thanks
+> > to Roger for this slick approach.
+> >
+> > How about that!?
+>
+> Very helpful Dylan. I am learning a lot, as usual. However, no-matter
+> what I try to do with my NA's I still get random NA's when I write back
+> to GRASS my data.
+>
+> I tried to load the data, extract an NA_mask using complete.cases,
+> create "fake" columns and fill-in with the _untouched_ original data and
+> then write back to GRASS6. The result (or my process) is _noise_.
+>
+> I'll try again tonight. If I am not going to make it I could try to
+> repeat this with spearfish data and see if something isn't ok with my
+> MODIS bands.
+>
+> Cheers, Nikos
+>
+> I don't understand what's the deal here :-(
+
+I am pretty sure that readRAST6() respects the current region settings in 
+GRASS, however I am not sure how the 'plugin' option affects this. It could 
+be that your data are being read in at different resolutions, resulting in 
+different alignment of the 'bands' (columns) in the sp object. I would hope 
+that this is not possible, but I cannot think of anything else.
+
+Can you reproduce this problem with another dataset? How about a subset of the 
+data?
+
+Cheers,
+
+Dylan
+
+
+
+-- 
+Dylan Beaudette
+Soil Resource Laboratory
+http://casoilresource.lawr.ucdavis.edu/
+University of California at Davis
+530.754.7341
+From Roger.Bivand at nhh.no  Tue Apr 14 14:08:40 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Apr 14 14:08:44 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <200904141033.27770.dylan.beaudette@gmail.com>
+References: <1236098565.10442.45.camel@vertical>
+	<200904131642.29099.dylan.beaudette@gmail.com>
+	<1239722221.19599.21.camel@vertical>
+	<200904141033.27770.dylan.beaudette@gmail.com>
+Message-ID: <alpine.LRH.2.00.0904142005170.6455@reclus.nhh.no>
+
+On Tue, 14 Apr 2009, Dylan Beaudette wrote:
+
+> On Tuesday 14 April 2009, Nikos Alexandris wrote:
+>> Nikos:
+>>>>>> What I actually do is nothing but a PCA on a combination of
+>>>>>> different bands. The fact is that bands a, b, c are of equal
+>>>>>> "length" in R and have _more_ non-NULLs than bands d, e, f.
+>>
+>> Dylan:
+>>>>> I think that you are going to have to maintain a band-wise null mask
+>>>>> in R, as opposed to a single null mask for the entire set of bands.
+>>
+>> [...]
+>>
+>>> An idea on how to apply this function:
+>>>
+>>> # load data
+>>> # extract an NA mask using complete.cases
+>>> # do something like prcomp()
+>>>
+>>> # assign back to original data
+>>> x.df$pca_1[x.na_mask] <-  predict(p)[,1]
+>>>
+>>> This would of course be done the the @data slot on an sp object. Thanks
+>>> to Roger for this slick approach.
+>>>
+>>> How about that!?
+>>
+>> Very helpful Dylan. I am learning a lot, as usual. However, no-matter
+>> what I try to do with my NA's I still get random NA's when I write back
+>> to GRASS my data.
+>>
+>> I tried to load the data, extract an NA_mask using complete.cases,
+>> create "fake" columns and fill-in with the _untouched_ original data and
+>> then write back to GRASS6. The result (or my process) is _noise_.
+>>
+>> I'll try again tonight. If I am not going to make it I could try to
+>> repeat this with spearfish data and see if something isn't ok with my
+>> MODIS bands.
+>>
+>> Cheers, Nikos
+>>
+>> I don't understand what's the deal here :-(
+>
+> I am pretty sure that readRAST6() respects the current region settings in
+> GRASS, however I am not sure how the 'plugin' option affects this. It could
+> be that your data are being read in at different resolutions, resulting in
+> different alignment of the 'bands' (columns) in the sp object. I would hope
+> that this is not possible, but I cannot think of anything else.
+
+This looks possible, but if the data are all read in a single call to 
+readRAST6() is not, because plugin is set to FALSE even if present when 
+more than one raster is being transferred (and when the plugin raster 
+doesn't seem to be in the current region settings).
+
+Without a reproducible example, we are not going to get anywhere, I'm 
+afraid. We must have a tarball of the location, and the exact R code being 
+used.
+
+Roger
+
+>
+> Can you reproduce this problem with another dataset? How about a subset of the
+> data?
+>
+> Cheers,
+>
+> Dylan
+>
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Apr 14 17:36:33 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Apr 14 17:36:21 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <alpine.LRH.2.00.0904142005170.6455@reclus.nhh.no>
+References: <1236098565.10442.45.camel@vertical>
+	<200904131642.29099.dylan.beaudette@gmail.com>
+	<1239722221.19599.21.camel@vertical>
+	<200904141033.27770.dylan.beaudette@gmail.com>
+	<alpine.LRH.2.00.0904142005170.6455@reclus.nhh.no>
+Message-ID: <1239744993.4853.2.camel@vertical>
+
+
+Roger:
+> Without a reproducible example, we are not going to get anywhere, I'm 
+> afraid. We must have a tarball of the location, and the exact R code being 
+> used.
+
+Dylan:
+> > Can you reproduce this problem with another dataset? How about a subset of the
+> > data?
+
+Sure! After all it's MODIS data I am dealing with (...public domain) and
+"my" location is not that big. I'll do my best tomorrow or the day after
+(?). I'll let the list know :-)
+
+Cheers, Nikos 
+
+From alobolistas at gmail.com  Fri Apr 17 06:56:34 2009
+From: alobolistas at gmail.com (Agustin Lobo)
+Date: Fri Apr 17 06:56:40 2009
+Subject: [GRASS-stats] "all-directional" r.texture
+Message-ID: <49E86062.6060307@gmail.com>
+
+Hi!
+
+Is there any way to get r.texture to ignore directions? That is, 
+according to the
+help page, you get one result for each statistic and for each direction, 
+which implies
+that the co-occurence matrix is calculated for each direction. I'm not 
+interested on
+directions, so I require just one co-occurrence matrix calculated for 
+all directions.
+Note that, while the 4 co-occurrence matrices can be added up to create the
+"all directions" co-occurrence matrix, results from directional 
+co-occurrence  matrices
+cannot be added up or averaged  (i.e.,  the "all directional" entropy is 
+not the average
+entropy for 0,45,135,90).
+
+I'm suspecting that modifying the code will be required, but just want 
+to make
+sure that the "all directional" option is really lacking (may be this is 
+just a documentation
+problem).
+
+Thanks
+
+Agus
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: alobolistas.vcf
+Type: text/x-vcard
+Size: 251 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20090417/de8b21e7/alobolistas.vcf
+From alobolistas at gmail.com  Fri Apr 17 09:34:27 2009
+From: alobolistas at gmail.com (Agustin Lobo)
+Date: Fri Apr 17 09:34:32 2009
+Subject: [GRASS-stats] r.texture and MASK
+Message-ID: <49E88563.1030204@gmail.com>
+
+Could be the presence of a MASK causing r.texture to complain
+"Negative or no data pixel found..."?
+This is not described in the doc... and our raster map
+does not have any null value.
+
+Anyway, this is not the way it should be in grass, as
+the MASK is supposed to prevent any program to
+process the null part of the raster. Am I wrong?
+I think that there is no other solution (again) than modifying
+the code so that those elements in the null part of the MASK
+are not counted for the co-occurrence matrix.  Setting null
+cells in the MASK as 0 in the raster is not a good option, as
+windows close to the border of the non-0 values will be
+including 0 and thus producing spurious results.
+
+Has anyone done any work in this direction?
+
+Agus
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: alobolistas.vcf
+Type: text/x-vcard
+Size: 251 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20090417/f0baeba5/alobolistas.vcf
+From nikos.alexandris at felis.uni-freiburg.de  Fri Apr 17 09:52:00 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Fri Apr 17 09:51:38 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <1239744993.4853.2.camel@vertical>
+References: <1236098565.10442.45.camel@vertical>
+	<200904131642.29099.dylan.beaudette@gmail.com>
+	<1239722221.19599.21.camel@vertical>
+	<200904141033.27770.dylan.beaudette@gmail.com>
+	<alpine.LRH.2.00.0904142005170.6455@reclus.nhh.no>
+	<1239744993.4853.2.camel@vertical>
+Message-ID: <1239976320.7262.9.camel@vertical>
+
+On Tue, 2009-04-14 at 23:36 +0200, Nikos Alexandris wrote:
+> Roger:
+> > Without a reproducible example, we are not going to get anywhere, I'm 
+> > afraid. We must have a tarball of the location, and the exact R code being 
+> > used.
+> 
+> Dylan:
+> > > Can you reproduce this problem with another dataset? How about a subset of the
+> > > data?
+> 
+> Sure! After all it's MODIS data I am dealing with (...public domain) and
+> "my" location is not that big. I'll do my best tomorrow or the day after
+> (?). I'll let the list know :-)
+> 
+> Cheers, Nikos 
+
+Roger and Dylan,
+apologies for not being on-time. I was _forced_ to spend time on other
+things.
+
+I will try to make a clean-check of my attempt one last time and if I
+still can't make it I'll post info + grass-location with the data.
+
+Last time I tried to repeat my test I received the same "random NULL's"
+when using *only* one of the data-sets. I suspect that something might
+be wrong with the data(?!). Not sure though (=I can't find _any_ NULL's
+in the NULL's that are _produced_ when I write the data back from R to
+GRASS).
+
+Kindest regards, Nikos
+
+From dylan.beaudette at gmail.com  Fri Apr 17 10:56:18 2009
+From: dylan.beaudette at gmail.com (Dylan Beaudette)
+Date: Fri Apr 17 10:56:21 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <1239976320.7262.9.camel@vertical>
+References: <1236098565.10442.45.camel@vertical>
+	<200904131642.29099.dylan.beaudette@gmail.com>
+	<1239722221.19599.21.camel@vertical>
+	<200904141033.27770.dylan.beaudette@gmail.com>
+	<alpine.LRH.2.00.0904142005170.6455@reclus.nhh.no>
+	<1239744993.4853.2.camel@vertical> <1239976320.7262.9.camel@vertical>
+Message-ID: <3c5546140904170756r7c20d1d7g340e989b38c1f1d3@mail.gmail.com>
+
+On Fri, Apr 17, 2009 at 6:52 AM, Nikos Alexandris
+<nikos.alexandris@felis.uni-freiburg.de> wrote:
+> On Tue, 2009-04-14 at 23:36 +0200, Nikos Alexandris wrote:
+>> Roger:
+>> > Without a reproducible example, we are not going to get anywhere, I'm
+>> > afraid. We must have a tarball of the location, and the exact R code being
+>> > used.
+>>
+>> Dylan:
+>> > > Can you reproduce this problem with another dataset? How about a subset of the
+>> > > data?
+>>
+>> Sure! After all it's MODIS data I am dealing with (...public domain) and
+>> "my" location is not that big. I'll do my best tomorrow or the day after
+>> (?). I'll let the list know :-)
+>>
+>> Cheers, Nikos
+>
+> Roger and Dylan,
+> apologies for not being on-time. I was _forced_ to spend time on other
+> things.
+>
+> I will try to make a clean-check of my attempt one last time and if I
+> still can't make it I'll post info + grass-location with the data.
+>
+> Last time I tried to repeat my test I received the same "random NULL's"
+> when using *only* one of the data-sets. I suspect that something might
+> be wrong with the data(?!). Not sure though (=I can't find _any_ NULL's
+> in the NULL's that are _produced_ when I write the data back from R to
+> GRASS).
+>
+> Kindest regards, Nikos
+>
+
+Hi Nikos. I am not sure if this is still a possibility in GRASS, but I
+seem to recall that some operations can result in values of 'Nan'...
+which isn't properly encoded as NULL. Glynn would know for sure about
+this. It could be you have NULL or NULL-like cells that you don't know
+about...? r.report, and r.null may be useful in identification of NULL
+cells.
+
+Good luck!
+
+Dylan
+From nikos.alexandris at felis.uni-freiburg.de  Tue Apr 21 12:17:06 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Apr 21 12:16:27 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <3c5546140904170756r7c20d1d7g340e989b38c1f1d3@mail.gmail.com>
+References: <1236098565.10442.45.camel@vertical>
+	<200904131642.29099.dylan.beaudette@gmail.com>
+	<1239722221.19599.21.camel@vertical>
+	<200904141033.27770.dylan.beaudette@gmail.com>
+	<alpine.LRH.2.00.0904142005170.6455@reclus.nhh.no>
+	<1239744993.4853.2.camel@vertical> <1239976320.7262.9.camel@vertical>
+	<3c5546140904170756r7c20d1d7g340e989b38c1f1d3@mail.gmail.com>
+Message-ID: <1240330626.25416.45.camel@vertical>
+
+Roger, Dylan and grass-stats-listers,
+
+  I can't "solve" the random-NULL production of writeRAST6. I tried
+again with only 3 bands which are identical with respect to their
+extent/resolution/etc. I am not sending more data (e.g. as I promised to
+send 6 modis bands) since the "problem" occurs with simpler dataset(s).
+
+  The grass-location with the specific MODIS bands is the one I have
+already uploaded in gregis [1].
+
+(
+I also repeated the test with landsat7 images from the spearfish
+location but all works fine there!
+)
+
+  I am trying to present the problem as simple as possible (commands
+follow after step-by-step description):
+
+Step-by-step:
+1. launch R from within a GRASS-location
+2. load library spgrass6 and projection information (gmeta6)
+3. load _three_ modis bands in one object
+4. create an NA-mask using the function complete.cases()
+5. extract "values" only form the initial 3-modis-bands object
+6. perform pca on "values" based on svd [that is with function prcomp()]
+7. create new columns in the initial 3-modis-bands object
+8. fill-in with the PC's produced by prcomp()
+9. write back to grass with writeRAST6
+
+Result:
+Viewing the produced raster maps there are many "random" NULLs where all
+original raster maps are filled with some integer value.
+
+I guess those NULLs are not "random" at all - but I have no idea what
+the reason for this behavior is.
+
+(
+Check the "Value Tool", bottom left on the screen-shots [2][3][4]. Note
+that the mouse-pointer is a bit "shifted" -- don't know why, but it
+should be over the "black pixels"!
+)
+
+# # # # # # # # # # #
+# using: grass65, R2.8.1, latest spgrass6 installed today, GDAL 1.6
+# on: Ubuntu Intrepid 64-bit
+# launch grass in location/mapset "peloponnese_hgrs87/PERMAMENT"
+# code in R
+
+# load spgrass6 and projection information
+library(spgrass6) ; G <- gmeta6()
+
+# load modis bands
+mod_pre_b267.raw <- readRAST6 (c('mod_b2', 'mod_b6', 'mod_b7'))
+# str(mod_pre_b267.raw)
+# summary(mod_pre_b267.raw)
+
+# create NA mask using complete.cases()
+mod_pre_b267.na_mask <- complete.cases(mod_pre_b267.raw@data)
+# str(mod_pre_b267.na_mask)
+# summary(mod_pre_b267.na_mask)
+
+# get values based on na_mask
+mod_pre_b267 <- mod_pre_b267.raw@data[mod_pre_b267.na_mask, ]
+
+# perform pca (svd)
+prcomp.mod_pre_b267 <- prcomp(mod_pre_b267, scale=TRUE)
+summary(prcomp.mod_pre_b267)
+prcomp.mod_pre_b267$rotation
+
+# create new columns in initial object
+mod_pre_b267.raw@data$pc1 <- NA
+mod_pre_b267.raw@data$pc2 <- NA
+mod_pre_b267.raw@data$pc3 <- NA
+
+# fill-in with PCs
+mod_pre_b267.raw@data$pc1[mod_pre_b267.na_mask] <- prcomp.mod_pre_b267
+$x[,"PC1"]
+mod_pre_b267.raw@data$pc2[mod_pre_b267.na_mask] <- prcomp.mod_pre_b267
+$x[,"PC2"]
+mod_pre_b267.raw@data$pc3[mod_pre_b267.na_mask] <- prcomp.mod_pre_b267
+$x[,"PC3"]
+
+# write back to grass
+writeRAST6(mod_pre_b267.raw, zcol=4, vname="fake1", overwrite=TRUE)
+writeRAST6(mod_pre_b267.raw, zcol=5, vname="fake2", overwrite=TRUE)
+writeRAST6(mod_pre_b267.raw, zcol=6, vname="fake3", overwrite=TRUE)
+
+# check the "random" NULL's, e.g. with qgis
+# # # # # # # # # # #
+
+
+Hopefully you will have the time to have a look at it. Kindest regards,
+Nikos
+---
+
+References
+[1] grass location containint three MODIS surface reflectance bands:
+https://git.berlios.de/cgi-bin/gitweb.cgi?p=gregis;a=blob_plain;f=peloponnesos/modis_peloponnese_postfire07.zip;hb=peloponnese
+
+[2] http://imageshack.gr/view.php?file=owj2xu833u6678c3zvch.png
+[3] http://imageshack.gr/view.php?file=n65vfvoo07t3njywfjjo.png
+[4] http://imageshack.gr/view.php?file=sb9l315wazoeue0rgrj9.png
+
+From Roger.Bivand at nhh.no  Tue Apr 21 15:13:10 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Apr 21 15:13:14 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <1240330626.25416.45.camel@vertical>
+References: <1236098565.10442.45.camel@vertical>
+	<200904131642.29099.dylan.beaudette@gmail.com>
+	<1239722221.19599.21.camel@vertical>
+	<200904141033.27770.dylan.beaudette@gmail.com>
+	<alpine.LRH.2.00.0904142005170.6455@reclus.nhh.no>
+	<1239744993.4853.2.camel@vertical>
+	<1239976320.7262.9.camel@vertical>
+	<3c5546140904170756r7c20d1d7g340e989b38c1f1d3@mail.gmail.com>
+	<1240330626.25416.45.camel@vertical>
+Message-ID: <alpine.LRH.2.00.0904212048030.9820@reclus.nhh.no>
+
+On Tue, 21 Apr 2009, Nikos Alexandris wrote:
+
+> Roger, Dylan and grass-stats-listers,
+>
+>  I can't "solve" the random-NULL production of writeRAST6. I tried
+> again with only 3 bands which are identical with respect to their
+> extent/resolution/etc. I am not sending more data (e.g. as I promised to
+> send 6 modis bands) since the "problem" occurs with simpler dataset(s).
+
+The NAs you show in the fake2 image are in band 7 (b7) and propagate 
+correctly, b7 shown after import to R; the grass_nas image is from within 
+GRASS showing the vector returned by complete.cases().
+
+They are getting there because the NODATA= argument is not given, and is 
+being set to 999. I've committed a fix to sourceforge CVS, but setting 
+NODATA= manually is generally a good idea.
+
+Roger
+
+>
+>  The grass-location with the specific MODIS bands is the one I have
+> already uploaded in gregis [1].
+>
+> (
+> I also repeated the test with landsat7 images from the spearfish
+> location but all works fine there!
+> )
+>
+>  I am trying to present the problem as simple as possible (commands
+> follow after step-by-step description):
+>
+> Step-by-step:
+> 1. launch R from within a GRASS-location
+> 2. load library spgrass6 and projection information (gmeta6)
+> 3. load _three_ modis bands in one object
+> 4. create an NA-mask using the function complete.cases()
+> 5. extract "values" only form the initial 3-modis-bands object
+> 6. perform pca on "values" based on svd [that is with function prcomp()]
+> 7. create new columns in the initial 3-modis-bands object
+> 8. fill-in with the PC's produced by prcomp()
+> 9. write back to grass with writeRAST6
+>
+> Result:
+> Viewing the produced raster maps there are many "random" NULLs where all
+> original raster maps are filled with some integer value.
+>
+> I guess those NULLs are not "random" at all - but I have no idea what
+> the reason for this behavior is.
+>
+> (
+> Check the "Value Tool", bottom left on the screen-shots [2][3][4]. Note
+> that the mouse-pointer is a bit "shifted" -- don't know why, but it
+> should be over the "black pixels"!
+> )
+>
+> # # # # # # # # # # #
+> # using: grass65, R2.8.1, latest spgrass6 installed today, GDAL 1.6
+> # on: Ubuntu Intrepid 64-bit
+> # launch grass in location/mapset "peloponnese_hgrs87/PERMAMENT"
+> # code in R
+>
+> # load spgrass6 and projection information
+> library(spgrass6) ; G <- gmeta6()
+>
+> # load modis bands
+> mod_pre_b267.raw <- readRAST6 (c('mod_b2', 'mod_b6', 'mod_b7'))
+> # str(mod_pre_b267.raw)
+> # summary(mod_pre_b267.raw)
+>
+> # create NA mask using complete.cases()
+> mod_pre_b267.na_mask <- complete.cases(mod_pre_b267.raw@data)
+> # str(mod_pre_b267.na_mask)
+> # summary(mod_pre_b267.na_mask)
+>
+> # get values based on na_mask
+> mod_pre_b267 <- mod_pre_b267.raw@data[mod_pre_b267.na_mask, ]
+>
+> # perform pca (svd)
+> prcomp.mod_pre_b267 <- prcomp(mod_pre_b267, scale=TRUE)
+> summary(prcomp.mod_pre_b267)
+> prcomp.mod_pre_b267$rotation
+>
+> # create new columns in initial object
+> mod_pre_b267.raw@data$pc1 <- NA
+> mod_pre_b267.raw@data$pc2 <- NA
+> mod_pre_b267.raw@data$pc3 <- NA
+>
+> # fill-in with PCs
+> mod_pre_b267.raw@data$pc1[mod_pre_b267.na_mask] <- prcomp.mod_pre_b267
+> $x[,"PC1"]
+> mod_pre_b267.raw@data$pc2[mod_pre_b267.na_mask] <- prcomp.mod_pre_b267
+> $x[,"PC2"]
+> mod_pre_b267.raw@data$pc3[mod_pre_b267.na_mask] <- prcomp.mod_pre_b267
+> $x[,"PC3"]
+>
+> # write back to grass
+> writeRAST6(mod_pre_b267.raw, zcol=4, vname="fake1", overwrite=TRUE)
+> writeRAST6(mod_pre_b267.raw, zcol=5, vname="fake2", overwrite=TRUE)
+> writeRAST6(mod_pre_b267.raw, zcol=6, vname="fake3", overwrite=TRUE)
+>
+> # check the "random" NULL's, e.g. with qgis
+> # # # # # # # # # # #
+>
+>
+> Hopefully you will have the time to have a look at it. Kindest regards,
+> Nikos
+> ---
+>
+> References
+> [1] grass location containint three MODIS surface reflectance bands:
+> https://git.berlios.de/cgi-bin/gitweb.cgi?p=gregis;a=blob_plain;f=peloponnesos/modis_peloponnese_postfire07.zip;hb=peloponnese
+>
+> [2] http://imageshack.gr/view.php?file=owj2xu833u6678c3zvch.png
+> [3] http://imageshack.gr/view.php?file=n65vfvoo07t3njywfjjo.png
+> [4] http://imageshack.gr/view.php?file=sb9l315wazoeue0rgrj9.png
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: grass_nas.png
+Type: image/png
+Size: 2730 bytes
+Desc: 
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20090421/20222dd8/grass_nas.png
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: b7nas.png
+Type: image/png
+Size: 6432 bytes
+Desc: 
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20090421/20222dd8/b7nas.png
+From nikos.alexandris at felis.uni-freiburg.de  Tue Apr 21 18:58:23 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Apr 21 18:57:42 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <alpine.LRH.2.00.0904212048030.9820@reclus.nhh.no>
+References: <1236098565.10442.45.camel@vertical>
+	<200904131642.29099.dylan.beaudette@gmail.com>
+	<1239722221.19599.21.camel@vertical>
+	<200904141033.27770.dylan.beaudette@gmail.com>
+	<alpine.LRH.2.00.0904142005170.6455@reclus.nhh.no>
+	<1239744993.4853.2.camel@vertical> <1239976320.7262.9.camel@vertical>
+	<3c5546140904170756r7c20d1d7g340e989b38c1f1d3@mail.gmail.com>
+	<1240330626.25416.45.camel@vertical>
+	<alpine.LRH.2.00.0904212048030.9820@reclus.nhh.no>
+Message-ID: <1240354703.4751.34.camel@vertical>
+
+Thank you very much for your time Roger :-)
+
+Nikos:
+> >  I can't "solve" the random-NULL production of writeRAST6. I tried
+> > again with only 3 bands which are identical with respect to their
+> > extent/resolution/etc.
+
+
+Roger:
+> The NAs you show in the fake2 image are in band 7 (b7) and propagate 
+> correctly, b7 shown after import to R;
+
+Right: _after_ import to R. They are just _999_ values prior importing
+in R.
+
+
+> They are getting there because the NODATA= argument is not given, and is 
+> being set to 999. I've committed a fix to sourceforge CVS, but setting 
+> NODATA= manually is generally a good idea.
+
+But why is "NODATA=" set to 999? It's a bug, right?
+
+# reading the help page of readRAST6()
+?readRAST6
+
+---%<---
+NODATA: by default NULL, in which case it is set to one less than
+          'floor()'of the data values, otherwise an integer NODATA
+          value (required to be integer by GRASS r.out.bin)
+---%<---
+
+
+Kindest regards, Nikos
+---
+> > References
+> > [1] grass location containint three MODIS surface reflectance bands:
+> > https://git.berlios.de/cgi-bin/gitweb.cgi?p=gregis;a=blob_plain;f=peloponnesos/modis_peloponnese_postfire07.zip;hb=peloponnese
+
+> > [2] http://imageshack.gr/view.php?file=owj2xu833u6678c3zvch.png
+> > [3] http://imageshack.gr/view.php?file=n65vfvoo07t3njywfjjo.png
+> > [4] http://imageshack.gr/view.php?file=sb9l315wazoeue0rgrj9.png
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Apr 21 19:06:52 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Apr 21 19:06:09 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <1240354703.4751.34.camel@vertical>
+References: <1236098565.10442.45.camel@vertical>
+	<200904131642.29099.dylan.beaudette@gmail.com>
+	<1239722221.19599.21.camel@vertical>
+	<200904141033.27770.dylan.beaudette@gmail.com>
+	<alpine.LRH.2.00.0904142005170.6455@reclus.nhh.no>
+	<1239744993.4853.2.camel@vertical> <1239976320.7262.9.camel@vertical>
+	<3c5546140904170756r7c20d1d7g340e989b38c1f1d3@mail.gmail.com>
+	<1240330626.25416.45.camel@vertical>
+	<alpine.LRH.2.00.0904212048030.9820@reclus.nhh.no>
+	<1240354703.4751.34.camel@vertical>
+Message-ID: <1240355213.4751.37.camel@vertical>
+
+
+Roger:
+> I've committed a fix to sourceforge CVS, but setting 
+> > NODATA= manually is generally a good idea.
+
+
+Nikos:
+> But why is "NODATA=" set to 999? It's a bug, right?
+
+Hmmm... one last thing: I see that it works properly only if some
+out-of-range value is assigned to "NODATA=" (e.g. NODATA=-9999), right?
+Setting NODATA=NULL is nonsense I guess.
+
+From Roger.Bivand at nhh.no  Wed Apr 22 03:00:21 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Apr 22 03:00:26 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <1240355213.4751.37.camel@vertical>
+References: <1236098565.10442.45.camel@vertical>
+	<200904131642.29099.dylan.beaudette@gmail.com>
+	<1239722221.19599.21.camel@vertical>
+	<200904141033.27770.dylan.beaudette@gmail.com>
+	<alpine.LRH.2.00.0904142005170.6455@reclus.nhh.no>
+	<1239744993.4853.2.camel@vertical>
+	<1239976320.7262.9.camel@vertical>
+	<3c5546140904170756r7c20d1d7g340e989b38c1f1d3@mail.gmail.com>
+	<1240330626.25416.45.camel@vertical>
+	<alpine.LRH.2.00.0904212048030.9820@reclus.nhh.no>
+	<1240354703.4751.34.camel@vertical>
+	<1240355213.4751.37.camel@vertical>
+Message-ID: <alpine.LRH.2.00.0904220852100.14737@reclus.nhh.no>
+
+On Wed, 22 Apr 2009, Nikos Alexandris wrote:
+
+>
+> Roger:
+>> I've committed a fix to sourceforge CVS, but setting
+>>> NODATA= manually is generally a good idea.
+>
+>
+> Nikos:
+>> But why is "NODATA=" set to 999? It's a bug, right?
+>
+> Hmmm... one last thing: I see that it works properly only if some
+> out-of-range value is assigned to "NODATA=" (e.g. NODATA=-9999), right?
+> Setting NODATA=NULL is nonsense I guess.
+>
+
+No, not nonsense. It is a default like any other. Working out what is in 
+range is not easy - it is based on r.info -r, but has to take edge cases 
+into account. The current "buglet" - the bug is the user not specifying 
+NODATA manually - was that in using parseGRASS in very recent releases, 
+one further layer of string to numeric conversion was needed to avoid the 
+value being set to 999 when the min and max values from r.info -r were not 
+"seen" as numeric.
+
+There have been several similar 999 problems before, all can be avoided by 
+setting the NODATA= argument manually. For these bands, setting it 
+negative will always be OK, and setting manually also saves time, because 
+the heuristic doesn't have to be used. In general, NODATA= will simply 
+handle the NULL values correctly - the problem with any non-null value 
+given is that it may actually occur in the data in the current region.
+
+Check out the CVS source from sourceforge - project r-spatial, module 
+spgrass6, it will work with your data.
+
+Roger
+
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From nikos.alexandris at felis.uni-freiburg.de  Wed Apr 22 03:40:19 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed Apr 22 03:39:37 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <alpine.LRH.2.00.0904220852100.14737@reclus.nhh.no>
+References: <1236098565.10442.45.camel@vertical>
+	<200904131642.29099.dylan.beaudette@gmail.com>
+	<1239722221.19599.21.camel@vertical>
+	<200904141033.27770.dylan.beaudette@gmail.com>
+	<alpine.LRH.2.00.0904142005170.6455@reclus.nhh.no>
+	<1239744993.4853.2.camel@vertical> <1239976320.7262.9.camel@vertical>
+	<3c5546140904170756r7c20d1d7g340e989b38c1f1d3@mail.gmail.com>
+	<1240330626.25416.45.camel@vertical>
+	<alpine.LRH.2.00.0904212048030.9820@reclus.nhh.no>
+	<1240354703.4751.34.camel@vertical> <1240355213.4751.37.camel@vertical>
+	<alpine.LRH.2.00.0904220852100.14737@reclus.nhh.no>
+Message-ID: <1240386019.10457.14.camel@vertical>
+
+
+Nikos:
+> >> But why is "NODATA=" set to 999? It's a bug, right?
+> > Hmmm... one last thing: I see that it works properly only if some
+> > out-of-range value is assigned to "NODATA=" (e.g. NODATA=-9999), right?
+> > Setting NODATA=NULL is nonsense I guess.
+
+
+Roger:
+> No, not nonsense. It is a default like any other. Working out what is in 
+> range is not easy - it is based on r.info -r, but has to take edge cases 
+> into account. The current "buglet" - the bug is the user not specifying 
+> NODATA manually -
+
+:D
+
+> was that in using parseGRASS in very recent releases, 
+> one further layer of string to numeric conversion was needed to avoid the 
+> value being set to 999 when the min and max values from r.info -r were not 
+> "seen" as numeric.
+
+> There have been several similar 999 problems before, all can be avoided by 
+> setting the NODATA= argument manually. For these bands, setting it 
+> negative will always be OK, and setting manually also saves time, because 
+> the heuristic doesn't have to be used. In general, NODATA= will simply 
+> handle the NULL values correctly - the problem with any non-null value 
+> given is that it may actually occur in the data in the current region.
+
+> Check out the CVS source from sourceforge - project r-spatial, module 
+> spgrass6, it will work with your data.
+
+Thanks for your efforts Roger. I think I have to postpone for now
+trying-out the latest source code (or maybe I'll try it out tonight).
+
+I would like to note that I skimmed several times through "Applied
+Spatial Data Analysis with R" [1] but I did not find any concrete
+comment about the "NODATA=" option. Maybe I wasn't careful enough...
+
+Kindest regards, Nikos
+---
+[1] Applied Spatial Data Analysis with R, Series: Use R
+Bivand, Roger S., Pebesma, Edzer J., G?mez-Rubio, Virgilio
+
+2008, XIV, 378 p., Softcover
+ISBN: 978-0-387-78170-9
+
+
+From hamish_b at yahoo.com  Wed Apr 22 05:17:09 2009
+From: hamish_b at yahoo.com (Hamish)
+Date: Wed Apr 22 05:17:12 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+Message-ID: <43318.72111.qm@web110015.mail.gq1.yahoo.com>
+
+
+I posted to grass bug #73 what I should have posted here, (how to deal
+with nodata is a common pain apparently)
+
+http://trac.osgeo.org/grass/ticket/73#comment:47
+
+* 999 is dangerous, it can easily be an elevation value. -9999 is bad
+too, you just hit it less often (data doesn't have to be elevation in
+meters). But even though you hit it less often doesn't mean it's still
+not going to bite you one day, so it's a bug. but alas, probably for
+r.out.arc we are stuck with what Arc allows for input values.
+
+
+Hamish
+
+
+
+      
+
+From Roger.Bivand at nhh.no  Wed Apr 22 08:04:43 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Apr 22 08:04:47 2009
+Subject: [GRASS-stats] Raster maps from GRASS to R and back to GRASS?
+In-Reply-To: <1240386019.10457.14.camel@vertical>
+References: <1236098565.10442.45.camel@vertical>
+	<200904131642.29099.dylan.beaudette@gmail.com>
+	<1239722221.19599.21.camel@vertical>
+	<200904141033.27770.dylan.beaudette@gmail.com>
+	<alpine.LRH.2.00.0904142005170.6455@reclus.nhh.no>
+	<1239744993.4853.2.camel@vertical>
+	<1239976320.7262.9.camel@vertical>
+	<3c5546140904170756r7c20d1d7g340e989b38c1f1d3@mail.gmail.com>
+	<1240330626.25416.45.camel@vertical>
+	<alpine.LRH.2.00.0904212048030.9820@reclus.nhh.no>
+	<1240354703.4751.34.camel@vertical>
+	<1240355213.4751.37.camel@vertical>
+	<alpine.LRH.2.00.0904220852100.14737@reclus.nhh.no>
+	<1240386019.10457.14.camel@vertical>
+Message-ID: <alpine.LRH.2.00.0904220954570.14737@reclus.nhh.no>
+
+On Wed, 22 Apr 2009, Nikos Alexandris wrote:
+
+>
+> Nikos:
+>>>> But why is "NODATA=" set to 999? It's a bug, right?
+>>> Hmmm... one last thing: I see that it works properly only if some
+>>> out-of-range value is assigned to "NODATA=" (e.g. NODATA=-9999), right?
+>>> Setting NODATA=NULL is nonsense I guess.
+>
+>
+> Roger:
+>> No, not nonsense. It is a default like any other. Working out what is in
+>> range is not easy - it is based on r.info -r, but has to take edge cases
+>> into account. The current "buglet" - the bug is the user not specifying
+>> NODATA manually -
+>
+> :D
+>
+>> was that in using parseGRASS in very recent releases,
+>> one further layer of string to numeric conversion was needed to avoid the
+>> value being set to 999 when the min and max values from r.info -r were not
+>> "seen" as numeric.
+>
+>> There have been several similar 999 problems before, all can be avoided by
+>> setting the NODATA= argument manually. For these bands, setting it
+>> negative will always be OK, and setting manually also saves time, because
+>> the heuristic doesn't have to be used. In general, NODATA= will simply
+>> handle the NULL values correctly - the problem with any non-null value
+>> given is that it may actually occur in the data in the current region.
+>
+>> Check out the CVS source from sourceforge - project r-spatial, module
+>> spgrass6, it will work with your data.
+>
+> Thanks for your efforts Roger. I think I have to postpone for now
+> trying-out the latest source code (or maybe I'll try it out tonight).
+>
+> I would like to note that I skimmed several times through "Applied
+> Spatial Data Analysis with R" [1] but I did not find any concrete
+> comment about the "NODATA=" option. Maybe I wasn't careful enough...
+
+Right, there isn't anything in the GRASS book either, where the interface 
+is described in more detail. In fact, the use of rgdal is quite recent, so 
+most of this implementation post-dates both sources.
+
+Roger
+
+>
+> Kindest regards, Nikos
+> ---
+> [1] Applied Spatial Data Analysis with R, Series: Use R
+> Bivand, Roger S., Pebesma, Edzer J., G?mez-Rubio, Virgilio
+>
+> 2008, XIV, 378 p., Softcover
+> ISBN: 978-0-387-78170-9
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From jarekj at amu.edu.pl  Sat Apr 25 13:11:03 2009
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Sat Apr 25 13:11:10 2009
+Subject: [GRASS-stats] gstat error
+Message-ID: <49F34427.5040706@amu.edu.pl>
+
+Hi
+during trend calculation I recive following error:
+
+R
+library(spgrass6)
+library(gstat)
+
+raster=readRAST6("rzedna")
+p=readVECT6("punkty")
+p@proj4string=raster@proj4string
+
+pg_1=gstat(id="p_1", formula=rzedna~1,data=p, degree=1)
+ p_1=predict(pg_1,raster)
+[ordinary or weighted least squares prediction]
+
+"solve.c", line 87: singular matrix in function Usolve()
+Error in predict.gstat(pg_1, raster) : Usolve
+
+
+my system information:
+
+Ubuntu 8.04
+R 2.8.1
+gstat 0.9.59
+the error have appeared first time on gstat 0.9.49
+
+Errors apears on all my data, even these, where trend was calculated 
+some times ago. Commads coming from old data
+
+The error is also reproducible on spearfish dataset with elevation.dem 
+and random points generated by v.random
+
+Jarek
+From edzer.pebesma at uni-muenster.de  Sat Apr 25 14:13:17 2009
+From: edzer.pebesma at uni-muenster.de (Edzer Pebesma)
+Date: Sat Apr 25 14:13:15 2009
+Subject: [GRASS-stats] gstat error
+In-Reply-To: <49F34427.5040706@amu.edu.pl>
+References: <49F34427.5040706@amu.edu.pl>
+Message-ID: <49F352BD.3020401@uni-muenster.de>
+
+
+
+Jarek Jasiewicz wrote:
+> Hi
+> during trend calculation I recive following error:
+>
+> R
+> library(spgrass6)
+> library(gstat)
+>
+> raster=readRAST6("rzedna")
+> p=readVECT6("punkty")
+> p@proj4string=raster@proj4string
+>
+> pg_1=gstat(id="p_1", formula=rzedna~1,data=p, degree=1)
+> p_1=predict(pg_1,raster)
+> [ordinary or weighted least squares prediction]
+>
+> "solve.c", line 87: singular matrix in function Usolve()
+> Error in predict.gstat(pg_1, raster) : Usolve
+There are several situations why this can happen that are hard to
+distinguish from the point where the error happens. The most likely in
+your case (first order trend surface estimation) is that your data are,
+geographically, on a line, i.e. one-dimensionally. Or similary, that you
+have less than 3 observations. Is that the case?
+--
+Edzer
+>
+>
+> my system information:
+>
+> Ubuntu 8.04
+> R 2.8.1
+> gstat 0.9.59
+> the error have appeared first time on gstat 0.9.49
+>
+> Errors apears on all my data, even these, where trend was calculated
+> some times ago. Commads coming from old data
+>
+> The error is also reproducible on spearfish dataset with elevation.dem
+> and random points generated by v.random
+>
+> Jarek
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Edzer Pebesma
+Institute for Geoinformatics (ifgi), University of M?nster
+Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+8333081, Fax: +49 251 8339763 http://ifgi.uni-muenster.de/
+http://www.springer.com/978-0-387-78170-9 e.pebesma@wwu.de
+
+From jarekj at amu.edu.pl  Sun Apr 26 03:22:40 2009
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Sun Apr 26 03:22:48 2009
+Subject: [GRASS-stats] gstat error
+In-Reply-To: <49F352BD.3020401@uni-muenster.de>
+References: <49F34427.5040706@amu.edu.pl> <49F352BD.3020401@uni-muenster.de>
+Message-ID: <49F40BC0.3070202@amu.edu.pl>
+
+
+
+Edzer Pebesma pisze:
+> Jarek Jasiewicz wrote:
+>   
+>> Hi
+>> during trend calculation I recive following error:
+>>
+>> R
+>> library(spgrass6)
+>> library(gstat)
+>>
+>> raster=readRAST6("rzedna")
+>> p=readVECT6("punkty")
+>> p@proj4string=raster@proj4string
+>>
+>> pg_1=gstat(id="p_1", formula=rzedna~1,data=p, degree=1)
+>> p_1=predict(pg_1,raster)
+>> [ordinary or weighted least squares prediction]
+>>
+>> "solve.c", line 87: singular matrix in function Usolve()
+>> Error in predict.gstat(pg_1, raster) : Usolve
+>>     
+> There are several situations why this can happen that are hard to
+> distinguish from the point where the error happens. The most likely in
+> your case (first order trend surface estimation) is that your data are,
+> geographically, on a line, i.e. one-dimensionally. Or similary, that you
+> have less than 3 observations. Is that the case?
+> --
+> Edzer
+>   
+
+Thanks for answer,  but none of that case. Tt is regular data file with 
+200 random observations generated with v.random in GRASS and stored as 
+SpatialPointDataFrame.
+before I  posted to the list  I had tried to reproduce it on my archive 
+data with archive scripts (which worked  in older R compilation) and it 
+ALWAYS fail (on every data I tested).
+ 
+In general, the possible problem on my side coud be that I 
+(experientally) installed R from CRAN ubuntu repository instead to 
+compile from source. The ubuntu CRAN-R packages do not include lapack. 
+This is the only difference I noticed.
+
+If you need I can send you sample R file (is small, no more than 2MB)
+
+Jarek
+
+>> my system information:
+>>
+>> Ubuntu 8.04
+>> R 2.8.1
+>> gstat 0.9.59
+>> the error have appeared first time on gstat 0.9.49
+>>
+>> Errors apears on all my data, even these, where trend was calculated
+>> some times ago. Commads coming from old data
+>>
+>> The error is also reproducible on spearfish dataset with elevation.dem
+>> and random points generated by v.random
+>>
+>> Jarek
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>     
+>
+>   
+From edzer.pebesma at uni-muenster.de  Sun Apr 26 09:29:11 2009
+From: edzer.pebesma at uni-muenster.de (Edzer Pebesma)
+Date: Sun Apr 26 09:29:04 2009
+Subject: [GRASS-stats] gstat error
+In-Reply-To: <49F40BC0.3070202@amu.edu.pl>
+References: <49F34427.5040706@amu.edu.pl> <49F352BD.3020401@uni-muenster.de>
+	<49F40BC0.3070202@amu.edu.pl>
+Message-ID: <49F461A7.8080209@uni-muenster.de>
+
+Jarek has sent me the data off-line, and it turns out that the data are
+three-dimensional, but lack variability in the third dimension:
+
+> summary(p)
+Object of class SpatialPointsDataFrame
+Coordinates:
+              min     max
+coords.x1 3560158 3575935
+coords.x2 5636873 5653748
+coords.x3       0       0
+Is projected: TRUE
+proj4string :
+[+proj=stere +lat_0=51.67083333333333 +lon_0=16.67222222222222
++k=0.999800 +x_0=3703000 +y_0=5627000 +no_defs +a=6378245 +rf=298.3
++towgs84=33.4,-146.6,-76.3,-0.359,-0.053,0.844,-0.84 +to_meter=1]
+Number of points: 200
+Data attributes:
+...
+
+Using the "degree=1" way of trend analysis, a first order linear trend
+is computed in the coordinates, meaning in z as well, and this is the
+cause of failure. Ignoring z, one can e.g. do
+
+p$x=coordinates(p)[,1]
+p$y=coordinates(p)[,2]
+r$x=coordinates(r)[,1]
+r$y=coordinates(r)[,2]
+pg=gstat(id="p_1", formula=rzedna~x+y,data=p)
+p_1=predict(pg,r)
+spplot(p_1)
+
+of course, no standardization of coordinates takes place here, so this
+approach will fail for high order trends.
+--
+Edzer
+
+Jarek Jasiewicz wrote:
+>
+>
+> Edzer Pebesma pisze:
+>> Jarek Jasiewicz wrote:
+>>  
+>>> Hi
+>>> during trend calculation I recive following error:
+>>>
+>>> R
+>>> library(spgrass6)
+>>> library(gstat)
+>>>
+>>> raster=readRAST6("rzedna")
+>>> p=readVECT6("punkty")
+>>> p@proj4string=raster@proj4string
+>>>
+>>> pg_1=gstat(id="p_1", formula=rzedna~1,data=p, degree=1)
+>>> p_1=predict(pg_1,raster)
+>>> [ordinary or weighted least squares prediction]
+>>>
+>>> "solve.c", line 87: singular matrix in function Usolve()
+>>> Error in predict.gstat(pg_1, raster) : Usolve
+>>>     
+>> There are several situations why this can happen that are hard to
+>> distinguish from the point where the error happens. The most likely in
+>> your case (first order trend surface estimation) is that your data are,
+>> geographically, on a line, i.e. one-dimensionally. Or similary, that you
+>> have less than 3 observations. Is that the case?
+>> -- 
+>> Edzer
+>>   
+>
+> Thanks for answer,  but none of that case. Tt is regular data file
+> with 200 random observations generated with v.random in GRASS and
+> stored as SpatialPointDataFrame.
+> before I  posted to the list  I had tried to reproduce it on my
+> archive data with archive scripts (which worked  in older R
+> compilation) and it ALWAYS fail (on every data I tested).
+>
+> In general, the possible problem on my side coud be that I
+> (experientally) installed R from CRAN ubuntu repository instead to
+> compile from source. The ubuntu CRAN-R packages do not include lapack.
+> This is the only difference I noticed.
+>
+> If you need I can send you sample R file (is small, no more than 2MB)
+>
+> Jarek
+>
+>>> my system information:
+>>>
+>>> Ubuntu 8.04
+>>> R 2.8.1
+>>> gstat 0.9.59
+>>> the error have appeared first time on gstat 0.9.49
+>>>
+>>> Errors apears on all my data, even these, where trend was calculated
+>>> some times ago. Commads coming from old data
+>>>
+>>> The error is also reproducible on spearfish dataset with elevation.dem
+>>> and random points generated by v.random
+>>>
+>>> Jarek
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats@lists.osgeo.org
+>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>     
+>>
+>>   
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Edzer Pebesma
+Institute for Geoinformatics (ifgi), University of M?nster
+Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+8333081, Fax: +49 251 8339763 http://ifgi.uni-muenster.de/
+http://www.springer.com/978-0-387-78170-9 e.pebesma@wwu.de
+
+From Roger.Bivand at nhh.no  Sun Apr 26 09:35:23 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun Apr 26 09:35:27 2009
+Subject: [GRASS-stats] gstat error
+In-Reply-To: <49F461A7.8080209@uni-muenster.de>
+References: <49F34427.5040706@amu.edu.pl> <49F352BD.3020401@uni-muenster.de>
+	<49F40BC0.3070202@amu.edu.pl> <49F461A7.8080209@uni-muenster.de>
+Message-ID: <alpine.LRH.2.00.0904261530040.16871@reclus.nhh.no>
+
+On Sun, 26 Apr 2009, Edzer Pebesma wrote:
+
+> Jarek has sent me the data off-line, and it turns out that the data are
+> three-dimensional, but lack variability in the third dimension:
+
+This smells like an installed GRASS/OGR plugin, which if autodetected 
+generates a spurious third coordinate (probably to match ESRIs usual 
+idiocies?). I added an argument to turn this off in spgrass6 CVS last week 
+(and corresponding pass-through to rgdal on CVS). So if Jarek updates to 
+latest spgrass6 and rgdal from CVS (different sourceforge projects), it 
+should help, or do readVECT6(..., plugin=FALSE).
+
+Doing summary(p) would reveal the problem.
+
+Roger
+
+>
+>> summary(p)
+> Object of class SpatialPointsDataFrame
+> Coordinates:
+>              min     max
+> coords.x1 3560158 3575935
+> coords.x2 5636873 5653748
+> coords.x3       0       0
+> Is projected: TRUE
+> proj4string :
+> [+proj=stere +lat_0=51.67083333333333 +lon_0=16.67222222222222
+> +k=0.999800 +x_0=3703000 +y_0=5627000 +no_defs +a=6378245 +rf=298.3
+> +towgs84=33.4,-146.6,-76.3,-0.359,-0.053,0.844,-0.84 +to_meter=1]
+> Number of points: 200
+> Data attributes:
+> ...
+>
+> Using the "degree=1" way of trend analysis, a first order linear trend
+> is computed in the coordinates, meaning in z as well, and this is the
+> cause of failure. Ignoring z, one can e.g. do
+>
+> p$x=coordinates(p)[,1]
+> p$y=coordinates(p)[,2]
+> r$x=coordinates(r)[,1]
+> r$y=coordinates(r)[,2]
+> pg=gstat(id="p_1", formula=rzedna~x+y,data=p)
+> p_1=predict(pg,r)
+> spplot(p_1)
+>
+> of course, no standardization of coordinates takes place here, so this
+> approach will fail for high order trends.
+> --
+> Edzer
+>
+> Jarek Jasiewicz wrote:
+>>
+>>
+>> Edzer Pebesma pisze:
+>>> Jarek Jasiewicz wrote:
+>>>
+>>>> Hi
+>>>> during trend calculation I recive following error:
+>>>>
+>>>> R
+>>>> library(spgrass6)
+>>>> library(gstat)
+>>>>
+>>>> raster=readRAST6("rzedna")
+>>>> p=readVECT6("punkty")
+>>>> p@proj4string=raster@proj4string
+>>>>
+>>>> pg_1=gstat(id="p_1", formula=rzedna~1,data=p, degree=1)
+>>>> p_1=predict(pg_1,raster)
+>>>> [ordinary or weighted least squares prediction]
+>>>>
+>>>> "solve.c", line 87: singular matrix in function Usolve()
+>>>> Error in predict.gstat(pg_1, raster) : Usolve
+>>>>
+>>> There are several situations why this can happen that are hard to
+>>> distinguish from the point where the error happens. The most likely in
+>>> your case (first order trend surface estimation) is that your data are,
+>>> geographically, on a line, i.e. one-dimensionally. Or similary, that you
+>>> have less than 3 observations. Is that the case?
+>>> --
+>>> Edzer
+>>>
+>>
+>> Thanks for answer,  but none of that case. Tt is regular data file
+>> with 200 random observations generated with v.random in GRASS and
+>> stored as SpatialPointDataFrame.
+>> before I  posted to the list  I had tried to reproduce it on my
+>> archive data with archive scripts (which worked  in older R
+>> compilation) and it ALWAYS fail (on every data I tested).
+>>
+>> In general, the possible problem on my side coud be that I
+>> (experientally) installed R from CRAN ubuntu repository instead to
+>> compile from source. The ubuntu CRAN-R packages do not include lapack.
+>> This is the only difference I noticed.
+>>
+>> If you need I can send you sample R file (is small, no more than 2MB)
+>>
+>> Jarek
+>>
+>>>> my system information:
+>>>>
+>>>> Ubuntu 8.04
+>>>> R 2.8.1
+>>>> gstat 0.9.59
+>>>> the error have appeared first time on gstat 0.9.49
+>>>>
+>>>> Errors apears on all my data, even these, where trend was calculated
+>>>> some times ago. Commads coming from old data
+>>>>
+>>>> The error is also reproducible on spearfish dataset with elevation.dem
+>>>> and random points generated by v.random
+>>>>
+>>>> Jarek
+>>>> _______________________________________________
+>>>> grass-stats mailing list
+>>>> grass-stats@lists.osgeo.org
+>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>
+>>>
+>>>
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From jarekj at amu.edu.pl  Sun Apr 26 09:48:47 2009
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Sun Apr 26 09:48:51 2009
+Subject: [GRASS-stats] gstat error
+In-Reply-To: <49F461A7.8080209@uni-muenster.de>
+References: <49F34427.5040706@amu.edu.pl> <49F352BD.3020401@uni-muenster.de>
+	<49F40BC0.3070202@amu.edu.pl> <49F461A7.8080209@uni-muenster.de>
+Message-ID: <49F4663F.3060401@amu.edu.pl>
+
+Thanks you!
+ it means problem is with spgras6, and default option plugin=NULL
+
+as I know (but I can be absolutely wrong)  if plugin option is not set, 
+it ussualy is set to TRUE if grass region and file extend are the same. 
+But by default, using OGR directly on grass data import file as it is in 
+GRASS ie. as 3d vector
+
+it simply means that from grass, point file for kriging interpolation 
+shoud be imported with plugin=FALSE
+in that way all works fine.
+
+It explains why it work earier
+
+thanks for your help and suggestion
+
+Jarek
+
+Edzer Pebesma pisze:
+> Jarek has sent me the data off-line, and it turns out that the data are
+> three-dimensional, but lack variability in the third dimension:
+>
+>   
+>> summary(p)
+>>     
+> Object of class SpatialPointsDataFrame
+> Coordinates:
+>               min     max
+> coords.x1 3560158 3575935
+> coords.x2 5636873 5653748
+> coords.x3       0       0
+> Is projected: TRUE
+> proj4string :
+> [+proj=stere +lat_0=51.67083333333333 +lon_0=16.67222222222222
+> +k=0.999800 +x_0=3703000 +y_0=5627000 +no_defs +a=6378245 +rf=298.3
+> +towgs84=33.4,-146.6,-76.3,-0.359,-0.053,0.844,-0.84 +to_meter=1]
+> Number of points: 200
+> Data attributes:
+> ...
+>
+> Using the "degree=1" way of trend analysis, a first order linear trend
+> is computed in the coordinates, meaning in z as well, and this is the
+> cause of failure. Ignoring z, one can e.g. do
+>
+> p$x=coordinates(p)[,1]
+> p$y=coordinates(p)[,2]
+> r$x=coordinates(r)[,1]
+> r$y=coordinates(r)[,2]
+> pg=gstat(id="p_1", formula=rzedna~x+y,data=p)
+> p_1=predict(pg,r)
+> spplot(p_1)
+>
+> of course, no standardization of coordinates takes place here, so this
+> approach will fail for high order trends.
+> --
+> Edzer
+>
+> Jarek Jasiewicz wrote:
+>   
+>> Edzer Pebesma pisze:
+>>     
+>>> Jarek Jasiewicz wrote:
+>>>  
+>>>       
+>>>> Hi
+>>>> during trend calculation I recive following error:
+>>>>
+>>>> R
+>>>> library(spgrass6)
+>>>> library(gstat)
+>>>>
+>>>> raster=readRAST6("rzedna")
+>>>> p=readVECT6("punkty")
+>>>> p@proj4string=raster@proj4string
+>>>>
+>>>> pg_1=gstat(id="p_1", formula=rzedna~1,data=p, degree=1)
+>>>> p_1=predict(pg_1,raster)
+>>>> [ordinary or weighted least squares prediction]
+>>>>
+>>>> "solve.c", line 87: singular matrix in function Usolve()
+>>>> Error in predict.gstat(pg_1, raster) : Usolve
+>>>>     
+>>>>         
+>>> There are several situations why this can happen that are hard to
+>>> distinguish from the point where the error happens. The most likely in
+>>> your case (first order trend surface estimation) is that your data are,
+>>> geographically, on a line, i.e. one-dimensionally. Or similary, that you
+>>> have less than 3 observations. Is that the case?
+>>> -- 
+>>> Edzer
+>>>   
+>>>       
+>> Thanks for answer,  but none of that case. Tt is regular data file
+>> with 200 random observations generated with v.random in GRASS and
+>> stored as SpatialPointDataFrame.
+>> before I  posted to the list  I had tried to reproduce it on my
+>> archive data with archive scripts (which worked  in older R
+>> compilation) and it ALWAYS fail (on every data I tested).
+>>
+>> In general, the possible problem on my side coud be that I
+>> (experientally) installed R from CRAN ubuntu repository instead to
+>> compile from source. The ubuntu CRAN-R packages do not include lapack.
+>> This is the only difference I noticed.
+>>
+>> If you need I can send you sample R file (is small, no more than 2MB)
+>>
+>> Jarek
+>>
+>>     
+>>>> my system information:
+>>>>
+>>>> Ubuntu 8.04
+>>>> R 2.8.1
+>>>> gstat 0.9.59
+>>>> the error have appeared first time on gstat 0.9.49
+>>>>
+>>>> Errors apears on all my data, even these, where trend was calculated
+>>>> some times ago. Commads coming from old data
+>>>>
+>>>> The error is also reproducible on spearfish dataset with elevation.dem
+>>>> and random points generated by v.random
+>>>>
+>>>> Jarek
+>>>> _______________________________________________
+>>>> grass-stats mailing list
+>>>> grass-stats@lists.osgeo.org
+>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>     
+>>>>         
+>>>   
+>>>       
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>     
+>
+>   
+From Roger.Bivand at nhh.no  Tue Apr 28 03:02:53 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Apr 28 03:02:59 2009
+Subject: [GRASS-stats] R-sig-Geo nabble forum request
+In-Reply-To: <null>
+References: <null> <Pine.LNX.4.64.0810160932380.2735@reclus.nhh.no> <null>
+	<null>
+Message-ID: <1240902173507-2731888.post@n2.nabble.com>
+
+
+OK, the R-sig-geo list is now being archived on Nabble2. We'll see how it
+works ...
+
+Roger
+
+
+Bio7 wrote:
+> 
+> 
+> 
+> Markus Neteler OSGeo wrote:
+>> 
+>> 
+>> Roger Bivand wrote:
+>>> 
+>>> On Thu, 16 Oct 2008, Bio7 wrote:
+>>> ...
+>>> Naturally, no-one can stop forum creation, but it does constitute a 
+>>> forking of discussion, where the presumptively useful discussion takes 
+>>> place where developer(s) can see it.
+>>> ...
+>>> 
+>> 
+>> A fork is definitely bad. But AFAIK Nabble is bidirectional. Let's see if
+>> this comes through... (send through nabble).
+>> 
+>> Markus
+>> 
+> 
+> And this is the nabble interface to it:
+> 
+> http://www.nabble.com/GRASS-f1200.html
+> 
+> 
+
+-- 
+View this message in context: http://n2.nabble.com/R-sig-Geo-nabble-forum-request-tp1930678p2731888.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From alobolistas at gmail.com  Tue Apr 28 06:51:06 2009
+From: alobolistas at gmail.com (Agustin Lobo)
+Date: Tue Apr 28 06:51:13 2009
+Subject: [GRASS-stats] R-sig-Geo nabble forum request
+In-Reply-To: <1240902173507-2731888.post@n2.nabble.com>
+References: <null> <Pine.LNX.4.64.0810160932380.2735@reclus.nhh.no>
+	<null>	<null> <1240902173507-2731888.post@n2.nabble.com>
+Message-ID: <49F6DF9A.6040809@gmail.com>
+
+Great!
+The URL is
+http://n2.nabble.com/R-sig-geo-f2731867.html
+
+but it's readonly (I think), we cannot post from there, Posting would be 
+the real advantage
+of using Nabble. Note that anything posted from Nabble goes through the 
+list, Nabble
+is just a front end, users have to be subscribed to the list to post.
+
+Also, I think there might be a way to upload the archive (or part of 
+it). It's easier to search
+the archive through Nabble, and searching the archive is most useful.
+
+A close example would be the Nabble interface for r-sig-ecology:
+
+http://n2.nabble.com/r-sig-ecology-f471788.html
+
+Agus
+
+Roger Bivand wrote:
+> OK, the R-sig-geo list is now being archived on Nabble2. We'll see how it
+> works ...
+>
+> Roger
+>
+>
+> Bio7 wrote:
+>   
+>>
+>> Markus Neteler OSGeo wrote:
+>>     
+>>> Roger Bivand wrote:
+>>>       
+>>>> On Thu, 16 Oct 2008, Bio7 wrote:
+>>>> ...
+>>>> Naturally, no-one can stop forum creation, but it does constitute a 
+>>>> forking of discussion, where the presumptively useful discussion takes 
+>>>> place where developer(s) can see it.
+>>>> ...
+>>>>
+>>>>         
+>>> A fork is definitely bad. But AFAIK Nabble is bidirectional. Let's see if
+>>> this comes through... (send through nabble).
+>>>
+>>> Markus
+>>>
+>>>       
+>> And this is the nabble interface to it:
+>>
+>> http://www.nabble.com/GRASS-f1200.html
+>>
+>>
+>>     
+>
+>   
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: alobolistas.vcf
+Type: text/x-vcard
+Size: 251 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20090428/de790eeb/alobolistas.vcf
+From nikos.alexandris at felis.uni-freiburg.de  Wed Apr 29 13:32:11 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed Apr 29 13:31:02 2009
+Subject: [GRASS-stats] Testing i.pca (continued...)
+In-Reply-To: <1236061661.14059.256.camel@vertical>
+References: <1236061661.14059.256.camel@vertical>
+Message-ID: <1241026331.711.24.camel@vertical>
+
+Hi all! Another i.pca -vs- prcomp() round :-)
+
+# 1. There *must* be something in i.pca's code that prevents data
+centering when using MODIS data???
+
+  I tested... tested... & tested... (almost all tests below) and I just
+can't understand WHY i.pca does NOT perform data centering when using
+MODIS data (raw, rescaled at 0~255 or 0~254). All I get is:
+
+  i.pca == prcomp(x, center=FALSE, scale=FALSE)
+
+
+# 2. Note: there is _NO_ problem when using the spot or landsat5 data
+from the spearfish location!
+
+# 3. Can some programmer have a look at i.pca to check whether there is
+a switch to (de-)activate data centering?
+
+I don't want to update the wiki-page before I understand what is going
+on. Any help?
+
+Kindest regards, Nikos
+=======================================================================
+
+Quickly:
+
+* using MODIS data I get:
+-------------------------
+
+ ** i.pca == prcomp(x, center=FALSE, scale=FALSE)
+
+ ** if I center the data manually (as suggested by Agus), i.e.:
+
+r.mapcalc "mod_b2_centered = mod_b2 - mean(mod_b2)"
+
+  then I get:
+
+i.pca(on centered data) == prcomp(x, center=TRUE, scale=FALSE)
+
+
+ ** it also works if I further scale manually the data like:
+
+r.mapcalc "mod_b2_centered_scaled = mod_b2_centered/stdev"
+
+
+
+* using spot or landsat5 data I get:
+------------------------------------
+
+ ** i.pca == prcomp(x, center=TRUE, scale=FALSE)
+
+
+
+##########################################
+##########################################
+
+Principal Component Analysis:
+comparison between grass' i.pca and R's prcomp()
+
+##########################################
+##########################################
+
+Testing... (Wednesday, April 29, 11:58 AM)
+
+# 1
+i.pca on
+
+# raw postfire modis bands 2, 6 and 7
+i.pca input=mod07_b2,mod07_b6,mod07_b7 out=pca_mod_b267
+
+# eigenvalues + eigenvectors
+Eigen values, (vectors), and [percent importance]:
+PC1 6307563.04 (-0.6353,-0.6485,-0.4192) [98.71%]
+PC2   78023.63 (-0.7124, 0.2828, 0.6422) [ 1.22%]
+PC3    4504.60 (-0.2979, 0.7067,-0.6417) [ 0.07%]
+
+
+# 2
+prcomp() on
+
+# raw postfire modis bands 2, 6 and 7
+
+# center=FALSE, scale=FALSE
+prcomp(mod07_b267, center=FALSE, scale=FALSE) ## This is the same as
+with i.pca on raw(=untouched) data
+
+Standard deviations:
+[1] 4279.0259  475.9080  114.2998
+
+Rotation:
+                PC1        PC2        PC3
+mod07_b2 -0.6353496  0.7124426 -0.2979203
+mod07_b6 -0.6485310 -0.2828396  0.7066890
+mod07_b7 -0.4192117 -0.6422051 -0.6417431
+
+~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ 
+
+# 3
+i.pca on
+
+# centered postfire modis bands 2, 6 and 7
+i.pca input=mod07_b2_centered,mod07_b6_centered,mod07_b7_centered
+out=pca_mod07_b267_centered
+
+# output
+Eigen values, (vectors), and [percent importance]:
+PC1 270343.07 (-0.4403,-0.7222,-0.5335) [79.11%]
+PC2  67140.50 (-0.8275, 0.0957, 0.5533) [19.65%]
+PC3   4258.14 ( 0.3485,-0.6851, 0.6397) [ 1.25%]
+
+
+# 4
+prcomp() on
+
+# raw postfire modis bands 2, 6 and 7 with center=TRUE, scale=FALSE
+prcomp(mod07_b267, center=TRUE, scale=FALSE) ## This is the same as
+using prcomp() on centered data
+
+Standard deviations:
+[1] 882.1814 438.7420 108.9791
+
+Rotation:
+               PC1         PC2        PC3
+mod07_b2 0.4372107  0.83099407 -0.3439413
+mod07_b6 0.7210155 -0.09527873  0.6863371
+mod07_b7 0.5375718 -0.54806096 -0.6408165
+
+
+# 5
+princomp() on
+
+# raw postfire modis bands 2, 6 and 7
+print(loadings(princomp(mod07_b267)), digits=6, cutoff=0.001)
+
+Loadings:
+         Comp.1    Comp.2    Comp.3   
+mod07_b2 -0.437211  0.830994  0.343941
+mod07_b6 -0.721016 -0.095279 -0.686337
+mod07_b7 -0.537572 -0.548061  0.640817
+
+                 Comp.1   Comp.2   Comp.3
+SS loadings    1.000000 1.000000 1.000000
+Proportion Var 0.333333 0.333333 0.333333
+Cumulative Var 0.333333 0.666667 1.000000
+
+~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ 
+
+# 6
+prcomp() on
+
+# centered postfire modis bands 2, 6 and 7 with center=FALSE,
+scale=FALSE
+prcomp(mod07_b267_centered, center=FALSE, scale=FALSE) ## In this
+example the data are already centered. This is the same as using
+prcomp(x, center=TRUE, scale=FALSE) on raw data or i.pca on centered
+data
+
+Standard deviations:
+[1] 882.1844 438.7430 108.9810
+
+Rotation:
+                        PC1         PC2        PC3
+mod07_b2_centered 0.4372131  0.83099137 -0.3439448
+mod07_b6_centered 0.7210164 -0.09527912  0.6863360
+mod07_b7_centered 0.5375686 -0.54806499 -0.6408157
+
+
+# 7
+prcomp() on
+
+# centered postfire modis bands 2, 6 and 7 with center=TRUE,
+scale=FALSE 
+prcomp(mod07_b267_centered, center=TRUE, scale=FALSE) ## The parameter
+"center=TRUE" has no effect in this example since the data used are
+already centered 
+
+Standard deviations:
+[1] 882.1814 438.7420 108.9792
+
+Rotation:
+                        PC1         PC2        PC3
+mod07_b2_centered 0.4372107  0.83099407 -0.3439413
+mod07_b6_centered 0.7210155 -0.09527872  0.6863371
+mod07_b7_centered 0.5375718 -0.54806097 -0.6408165
+
+~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ 
+
+
+### ### ###
+
+Comments
+
+Using already centered data does not make sense to use the parameter
+"center=". Thus the only difference will be between _scaled_ and
+_unscaled_ data prior to PCA.
+
+### ### ###
+
+
+~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ 
+
+# 8
+i.pca on
+
+# scaled postfire modis bands 2, 6 and 7
+i.pca input=mod07_b2_scaled,mod07_b6_scaled,mod07_b7_scaled
+out=pca_mod07_b267_scaled
+
+# eigenvalues + eigenvectors
+Eigen values, (vectors), and [percent importance]:
+PC1 19.09 (-0.6824,-0.5773,-0.4484) [98.57%]
+PC2  0.26 ( 0.6786,-0.2724,-0.6821) [ 1.36%]
+PC3  0.01 ( 0.2716,-0.7698, 0.5777) [ 0.07%]
+
+
+# 9
+prcomp() on
+
+# scaled postfire modis bands 2, 6 and 7 with center=FALSE, scale=TRUE
+prcomp(mod07_b267, center=FALSE, scale=TRUE)
+
+Standard deviations:
+[1] 1.71888790 0.20789109 0.04696487
+
+Rotation:
+                PC1         PC2        PC3
+mod07_b2 -0.5747633  0.74019177 -0.3489459
+mod07_b6 -0.5812894 -0.06916484  0.8107520
+mod07_b7 -0.5759772 -0.66882910 -0.4700191
+
+# get eigenvalues
+summary(prcomp(mod07_b267, center=FALSE, scale=TRUE))
+Importance of components:
+                         PC1    PC2     PC3
+...
+Proportion of Variance 0.985 0.0144 0.00074
+...
+
+
+# 10
+prcomp() on
+# scaled postfire modis bands 2, 6 and 7
+prcomp(mod07_b267_scaled, center=FALSE) ## This is the same as with
+i.pca on manually scaled data
+
+Standard deviations:
+[1] 7.4449990 0.8749921 0.1925904
+
+Rotation:
+                       PC1        PC2        PC3
+mod07_b2_scaled -0.6824314  0.6786305 -0.2715660
+mod07_b6_scaled -0.5772537 -0.2724487  0.7697726
+mod07_b7_scaled -0.4484034 -0.6820795 -0.5776695
+
+~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ 
+
+# 11
+i.pca on
+
+# re-scaled to 0 ~ 255 postfire modis bands 2, 6 and 7
+
+###
+# first r.rescale to=0,255
+# then r.mapcalc to ensure that 0,255 values
+###
+
+i.pca
+input=mod07_b2_rescaled255,mod07_b6_rescaled255,mod07_b7_rescaled255
+out=pca_mod07_b267_rescaled255
+
+# eigenvalues + eigenvectors
+Eigen values, (vectors), and [percent importance]:
+PC1 15236.52 (-0.5972,-0.6037,-0.5282) [98.52%]
+PC2   216.16 ( 0.7340,-0.1457,-0.6634) [ 1.40%]
+PC3    13.01 ( 0.3235,-0.7838, 0.5301) [ 0.08%]
+
+
+# 12
+# re-scaled to 0 ~ 254 postfire modis bands 2, 6 and 7
+input=mod07_b2_rescaled254,mod07_b6_rescaled254,mod07_b7_rescaled254
+out=pca_mod07_b267_rescaled254
+
+# eigenvalues + eigenvectors
+Eigen values, (vectors), and [percent importance]:
+PC1 15117.39 (-0.5972,-0.6037,-0.5282) [98.52%]
+PC2 214.43 ( 0.7341,-0.1458,-0.6632) [ 1.40%]
+PC3 12.90 ( 0.3234,-0.7838, 0.5302) [ 0.08%]
+~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ 
+
+# 13
+i.pca on
+
+# centered and scaled postfire modis bands 2, 6 and 7
+i.pca
+input=mod07_b2_centered_scaled,mod07_b6_centered_scaled,mod07_b7_centered_scaled out=pca_mod07_b267_centered_scaled
+## This is the same as performing prcomp(x, center=TRUE, scaled=TRUE)
+
+# eigenvalues + eigenvectors
+Eigen values, (vectors), and [percent importance]:
+PC1 0.79 (-0.4907,-0.6521,-0.5779) [76.30%]
+PC2 0.23 (-0.8120, 0.1015, 0.5748) [22.52%]
+PC3 0.01 ( 0.3162,-0.7513, 0.5793) [ 1.18%]
+
+
+# 14
+prcomp() on
+
+# center=TRUE, scale=TRUE
+prcomp(mod07_b267, center=TRUE, scale=TRUE) ## This is the same as
+performing i.pca on centered and scaled data
+
+Standard deviations:
+[1] 1.5137992 0.8210167 0.1853207
+
+Rotation:
+               PC1        PC2        PC3
+mod07_b2 0.4896414  0.8145817 -0.3109792
+mod07_b6 0.6516766 -0.1049365  0.7512030
+mod07_b7 0.5792831 -0.5704779 -0.5822250
+
+# get eigenvalues
+summary(prcomp(mod07_b267, center=TRUE, scale=TRUE))
+Importance of components:
+                         PC1   PC2    PC3
+...
+Proportion of Variance 0.764 0.225 0.0115
+...
+
+# 15
+princomp() on
+
+# raw postfire modis bands 2, 6 and 7 based on the covariance matrix
+print(loadings(princomp(mod07_b267, cor=TRUE)), digits=6, cutoff=0.001)
+## This is the same as performing prcomp(x, center=TRUE, scale=TRUE) or
+i.pca on manually centered and scaled data
+
+Loadings:
+         Comp.1    Comp.2    Comp.3   
+mod07_b2 -0.489641  0.814582  0.310979
+mod07_b6 -0.651677 -0.104936 -0.751203
+mod07_b7 -0.579283 -0.570478  0.582225
+
+                 Comp.1   Comp.2   Comp.3
+SS loadings    1.000000 1.000000 1.000000
+Proportion Var 0.333333 0.333333 0.333333
+Cumulative Var 0.333333 0.666667 1.000000
+
+From nikos.alexandris at felis.uni-freiburg.de  Wed Apr 29 13:42:13 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed Apr 29 13:41:04 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca (continued...)
+In-Reply-To: <1241026331.711.24.camel@vertical>
+References: <1236061661.14059.256.camel@vertical>
+	<1241026331.711.24.camel@vertical>
+Message-ID: <1241026933.711.26.camel@vertical>
+
+
+Nikos:
+>   I tested... tested... & tested... (almost all tests below) and I just
+> can't understand WHY i.pca does NOT perform data centering when using
+> MODIS data (raw, rescaled at 0~255 or 0~254).
+
+The attached html file (exported from Tomboy note-taker) is (I suppose)
+easier to read :-)
+
+Cheers, Nikos
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20090429/34673a9d/i.pca-vs-prcompprincomponMODISdata-0001.html
+From Roger.Bivand at nhh.no  Wed Apr 29 14:40:01 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Apr 29 14:40:03 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca (continued...)
+In-Reply-To: <1241026933.711.26.camel@vertical>
+References: <1236061661.14059.256.camel@vertical>
+	<1241026331.711.24.camel@vertical>
+	<1241026933.711.26.camel@vertical>
+Message-ID: <alpine.LRH.2.00.0904292032411.30188@reclus.nhh.no>
+
+On Wed, 29 Apr 2009, Nikos Alexandris wrote:
+
+>
+> Nikos:
+>>   I tested... tested... & tested... (almost all tests below) and I just
+>> can't understand WHY i.pca does NOT perform data centering when using
+>> MODIS data (raw, rescaled at 0~255 or 0~254).
+>
+> The attached html file (exported from Tomboy note-taker) is (I suppose)
+> easier to read :-)
+
+Not easier to read, please simply post things on a website!
+
+
+In your previous mail which you deleted here, you asked whether the code 
+of i.pca shows if the input data is centred. Yes, it is centred, the 
+function calc_mu(), as its name suggests, does this. The mean values are 
+then passed to the function calculating the covariance matrix: 
+calc_covariance(), where the means are subtracted from the input values of 
+bands before accumulating the covariance matrix. Is is possible that where 
+you do not see any effect of center=TRUE in prcomp that the means are all 
+zero? You will find reading imagery/i.pca/main.c interesting and not hard.
+
+Roger
+
+>
+> Cheers, Nikos
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From nikos.alexandris at felis.uni-freiburg.de  Wed Apr 29 18:23:38 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed Apr 29 18:22:28 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca (continued...)
+In-Reply-To: <alpine.LRH.2.00.0904292032411.30188@reclus.nhh.no>
+References: <1236061661.14059.256.camel@vertical>
+	<1241026331.711.24.camel@vertical> <1241026933.711.26.camel@vertical>
+	<alpine.LRH.2.00.0904292032411.30188@reclus.nhh.no>
+Message-ID: <1241043818.4304.11.camel@vertical>
+
+
+Nikos:
+> >>   I tested... tested... & tested... (almost all tests below) and I just
+> >> can't understand WHY i.pca does NOT perform data centering when using
+> >> MODIS data (raw, rescaled at 0~255 or 0~254).
+> >
+> > The attached html file (exported from Tomboy note-taker) is (I suppose)
+> > easier to read :-)
+
+
+Roger:
+> Not easier to read, please simply post things on a website!
+Hmmm!!? I thought opening this html file in a web-browser will look just
+fine. Sorry.
+
+
+> In your previous mail which you deleted here, you asked whether the code 
+> of i.pca shows if the input data is centred. Yes, it is centred, the 
+> function calc_mu(), as its name suggests, does this. The mean values are 
+> then passed to the function calculating the covariance matrix: 
+> calc_covariance(), where the means are subtracted from the input values of 
+> bands before accumulating the covariance matrix.
+
+Good. That's data centering.
+
+
+> Is is possible that where 
+> you do not see any effect of center=TRUE in prcomp that the means are all 
+> zero? 
+
+Sure, when I _manually_ center the data using r.mapcalc.
+
+But what happens with the untouched modis bands [1] and i.pca delivers
+different numbers is what makes no sense to me. BTW, the data are
+available (the same as with the previous problem concerning the NULLs).
+
+
+> You will find reading imagery/i.pca/main.c interesting and not hard.
+
+:-). I tried once but there are many programming variables which do not
+make sense on first sight. And this takes time... :-p
+
+Is there any explanation why i.pca on mod_b2, mod_b6 and mod_b7 gives
+the same results as prcomp(mod_b267, center=FALSE, scale=FALSE) when
+their mean is _!=0_ ?
+
+Thanks, Nikos
+---
+
+[1] r.univar of
+
+# mod_b2
+n: 88185
+minimum: 0
+maximum: 5504
+range: 5504
+mean: 2686.22
+mean of absolute values: 2686.22
+standard deviation: 535.612
+variance: 286880
+variation coefficient: 19.9392 %
+sum: 236884367
+
+# mod_b6
+n: 88202
+minimum: 93
+maximum: 5488
+range: 5395
+mean: 2702.4
+mean of absolute values: 2702.4
+standard deviation: 645.377
+variance: 416511
+variation coefficient: 23.8816 %
+sum: 238356766
+
+# mod_b7
+n: 88148
+minimum: 0
+maximum: 4133
+range: 4133
+mean: 1740.07
+mean of absolute values: 1740.07
+standard deviation: 536.718
+variance: 288067
+variation coefficient: 30.8447 %
+sum: 153383351
+
+From nikos.alexandris at felis.uni-freiburg.de  Wed Apr 29 18:37:46 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed Apr 29 18:36:35 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca (continued...)
+In-Reply-To: <alpine.LRH.2.00.0904292032411.30188@reclus.nhh.no>
+References: <1236061661.14059.256.camel@vertical>
+	<1241026331.711.24.camel@vertical> <1241026933.711.26.camel@vertical>
+	<alpine.LRH.2.00.0904292032411.30188@reclus.nhh.no>
+Message-ID: <1241044666.4304.17.camel@vertical>
+
+
+> > The attached html file (exported from Tomboy note-taker) is (I suppose)
+> > easier to read :-)
+> 
+> Not easier to read, please simply post things on a website!
+
+I have to note that some notes shouldn't be there. My mistake... they
+were linked and Tomboy's html-export tool exports all possible linked
+notes.
+
+Anyhow, only the first big section is valid. The sections that follow
+are irrelevant and out-dated.
+
+(
+Some old password of mine sneaked in there also. It's useless :-p
+)
+
+Cheers, Nikos
+
+
+From nikos.alexandris at felis.uni-freiburg.de  Wed Apr 29 19:25:33 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed Apr 29 19:24:23 2009
+Subject: [GRASS-stats] Re: [GRASS-user] Testing i.pca (continued...)
+In-Reply-To: <1241043818.4304.11.camel@vertical>
+References: <1236061661.14059.256.camel@vertical>
+	<1241026331.711.24.camel@vertical> <1241026933.711.26.camel@vertical>
+	<alpine.LRH.2.00.0904292032411.30188@reclus.nhh.no>
+	<1241043818.4304.11.camel@vertical>
+Message-ID: <1241047533.6127.5.camel@vertical>
+
+
+Roger:
+> > You will find reading imagery/i.pca/main.c interesting and not hard.
+
+
+Nikos:
+> :-). I tried once but there are many programming variables which do not
+> make sense on first sight. And this takes time... :-p
+
+OK, it's sure not TOO hard. It takes time but if you stick on it you can
+figure more or less out what's going-on.
+
+Nikos
+

@@ -1,0 +1,2911 @@
+From a.ghisla at gmail.com  Fri Jul  3 08:51:56 2009
+From: a.ghisla at gmail.com (Anne Ghisla)
+Date: Fri Jul  3 08:51:32 2009
+Subject: [GRASS-stats] [Report #6] Kriging with GRASS and R: v.autokrige
+ port to wxPython and more
+Message-ID: <1246625516.7011.10.camel@galadriel.uagra.net>
+
+Hello all, and sorry for cross-posting,
+
+this week I worked on removing parameters hardwired in the code, binding
+them to the interface instead.
+Therefore, now it is possible use all widgets in gstat and automap
+pages, i.e. pick up the model from a list, set sill, nugget and range;
+set the output raster map name and eventually overwrite it.
+
+I'm going to implement CLI in these next days, it will very likely need
+to reorganise the code and clearly split interface from model.
+
+Blocking issues - none.
+
+best regards,
+
+Anne
+
+More info on the wiki page - updated daily:
+http://grass.osgeo.org/wiki/V.autokrige_GSoC_2009
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 197 bytes
+Desc: Questa =?ISO-8859-1?Q?=E8?= una parte del messaggio
+	firmata digitalmente
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20090703/96696fb4/attachment.bin
+From a.ghisla at gmail.com  Fri Jul 10 10:06:55 2009
+From: a.ghisla at gmail.com (Anne Ghisla)
+Date: Fri Jul 10 10:06:14 2009
+Subject: [GRASS-stats] [Report #7 - midterm] Kriging with GRASS and R:
+ v.autokrige port to wxPython and more
+Message-ID: <1247234815.4282.21.camel@galadriel.uagra.net>
+
+Hello all, and sorry for cross-posting,
+
+this week has been full of improvements:
+- CLI with optional arguments is up and running
+- interface creation is no more delayed by vector map filtering
+- dependencies are checked all at the beginning - no risk of mid-process
+crashes if something is missing
+- automap page merged with gstat: they share the same algorithms
+- geoR page hidden, no implementation yet
+- deep refactoring of the rpy code, moved into a separate controller
+class
+- interface fills up all options except input data map - minimum
+interaction required (2 clicks)
+
+next week I plan to implement the splashscreen and add further
+functionalities, hopefully different kriging techniques.
+
+Blocking issues - none.
+
+best regards,
+
+Anne
+
+More info on the wiki page - updated daily:
+http://grass.osgeo.org/wiki/V.krige_GSoC_2009
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 197 bytes
+Desc: Questa =?ISO-8859-1?Q?=E8?= una parte del messaggio
+	firmata digitalmente
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20090710/90222b94/attachment.bin
+From j.m.signer at gmail.com  Tue Jul 14 02:25:18 2009
+From: j.m.signer at gmail.com (Johannes Signer)
+Date: Tue Jul 14 02:25:25 2009
+Subject: [GRASS-stats] Extracting x,y-coordinates from a SGDF
+Message-ID: <aa7630000907132325j7a81d45ey374958d68ee45613@mail.gmail.com>
+
+Dear List-Members,
+
+ I encountered a problem with with importing data from GRASS to R. I found a
+work around to my problem, but maybe someone is aware of a more elegant
+solution.
+
+ I imported a raster from GRASS to R with the readRAST6() method. My
+ultimate goal is to get a a new data.frame which looks like this:
+
+ x-coordinate | y-coordinate | z-value
+
+
+
+ I managed to extract the z-value from the data slot of the SGDF, but I did
+not manage to extract the x and y values.
+
+ My current work around is to write a function recalculating the grid points
+from the information provided within the SGDF. However if anyone is aware of
+a easier method of how to extract x and y values from a SGDF I would be very
+interested.
+
+ Many thanks in advance
+
+ Johannes
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20090714/4ad1bf63/attachment.html
+From Roger.Bivand at nhh.no  Tue Jul 14 03:41:56 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Jul 14 03:41:59 2009
+Subject: [GRASS-stats] Extracting x,y-coordinates from a SGDF
+In-Reply-To: <aa7630000907132325j7a81d45ey374958d68ee45613@mail.gmail.com>
+References: <aa7630000907132325j7a81d45ey374958d68ee45613@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.0907140933540.27177@reclus.nhh.no>
+
+On Tue, 14 Jul 2009, Johannes Signer wrote:
+
+> Dear List-Members,
+>
+> I encountered a problem with with importing data from GRASS to R. I found a
+> work around to my problem, but maybe someone is aware of a more elegant
+> solution.
+>
+> I imported a raster from GRASS to R with the readRAST6() method. My
+> ultimate goal is to get a a new data.frame which looks like this:
+>
+> x-coordinate | y-coordinate | z-value
+>
+
+For example:
+
+library(sp)
+data(meuse.grid)
+coordinates(meuse.grid) <- c("x", "y")
+gridded(meuse.grid) <- TRUE
+fullgrid(meuse.grid) <- TRUE
+class(meuse.grid)
+df <- as(as(meuse.grid, "SpatialPointsDataFrame"), "data.frame")
+str(df)
+
+Because this example coerces to SpatialGridDataFrame, on the way back 
+raster cells with no attribute values are dropped.
+
+str(coordinates(meuse.grid))
+
+retrieves all the cells, whether missing attribute values or not. So 
+assuming you want "soil":
+
+df1 <- data.frame(coordinates(meuse.grid), soil=meuse.grid$soil)
+str(df1)
+
+will do that.
+
+Hope this helps,
+
+Roger
+
+>
+>
+> I managed to extract the z-value from the data slot of the SGDF, but I did
+> not manage to extract the x and y values.
+>
+> My current work around is to write a function recalculating the grid points
+> from the information provided within the SGDF. However if anyone is aware of
+> a easier method of how to extract x and y values from a SGDF I would be very
+> interested.
+>
+> Many thanks in advance
+>
+> Johannes
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From a.ghisla at gmail.com  Fri Jul 17 11:01:49 2009
+From: a.ghisla at gmail.com (Anne Ghisla)
+Date: Fri Jul 17 11:02:53 2009
+Subject: [GRASS-stats] [Report #8 - midterm] Kriging with GRASS and R:
+ v.autokrige port to wxPython and more
+Message-ID: <4A60925D.6020907@gmail.com>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Hello all, and sorry for cross-posting,
+
+this week I added Command output tab and the option for block kriging,
+and updated documentation with more precise information on dependencies.
+I'll add splashscreen only as dependency check and command output will
+be fixed: next week I plan to work on these latter issues.
+
+Nothing in particular is blocking progress, just some hardest stone
+sometimes.
+
+best regards,
+
+Anne
+- --
+http://grass.osgeo.org/wiki/V.krige_GSoC_2009
+
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkpgkl0ACgkQzZ3g4YwFFgagkwCfWZIfdxXjZPk6Eo/896Bl+c5+
+NJMAn1Ytsu/smc8WPxHchaGryyyHQOe7
+=rffE
+-----END PGP SIGNATURE-----
+From nikos.alexandris at felis.uni-freiburg.de  Mon Jul 27 21:31:29 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Mon Jul 27 21:31:26 2009
+Subject: [GRASS-stats] spgrass6 fails to build under R 2.9.1 and Ubuntu
+	Jaunty 64-bit
+Message-ID: <1248744689.5117.5.camel@vertical>
+
+Hi "spgrass6" experts!
+
+I am trying to get spgrass6 to work under R 2.9.1 but it fails (to
+compile? -- code is below).
+
+Did anybody had this issue recently? Is it a bug?
+Thanks, Nikos
+---
+
+
+install.packages("spgrass6", dependencies=TRUE)
+Warning in install.packages("spgrass6", dependencies = TRUE) :
+  argument 'lib' is missing: using '/usr/local/lib/R/site-library'
+trying URL 'http://cran.rakanu.com/src/contrib/spgrass6_0.6-6.tar.gz'
+Content type 'application/x-gzip' length 332298 bytes (324 Kb)
+opened URL
+==================================================
+downloaded 324 Kb
+
+* Installing *source* package ?spgrass6? ...
+** R
+** inst
+** preparing package for lazy loading
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Loaded GDAL runtime: GDAL 1.6.1, released 2009/05/11
+Path to GDAL shared files: /usr/local/share/gdal
+Loaded PROJ.4 runtime: Rel. 4.6.0, 21 Dec 2007
+Path to PROJ.4 shared files: (autodetected)
+** help
+*** installing help indices
+ >>> Building/Updating help pages for package 'spgrass6'
+     Formats: text html latex example 
+  execGRASS                         text    html    latex   example
+  gmeta6                            text    html    latex   example
+  initGRASS                         text    html    latex   example
+  readRAST6                         text    html    latex   example
+  readVECT6                         text    html    latex   example
+  spgrass6                          text    html    latex   example
+** building package indices ...
+* DONE (spgrass6)
+*** glibc detected *** /usr/lib64/R/bin/exec/R: double free or
+corruption (fasttop): 0x0000000003112780 ***
+======= Backtrace: =========
+/lib/libc.so.6[0x7f6a3cbe7cb8]
+/lib/libc.so.6(cfree+0x76)[0x7f6a3cbea276]
+/usr/lib/libstdc++.so.6(_ZNSsD1Ev+0x3d)[0x7f6a38afe50d]
+/lib/libc.so.6(exit+0x9d)[0x7f6a3cba66ed]
+/usr/lib64/R/lib/libR.so[0x7f6a3d0bfae8]
+/usr/lib64/R/lib/libR.so(run_Rmainloop+0x55)[0x7f6a3cfedfa5]
+/usr/lib64/R/bin/exec/R(main+0x1b)[0x40098b]
+/lib/libc.so.6(__libc_start_main+0xe6)[0x7f6a3cb8e5a6]
+/usr/lib64/R/bin/exec/R[0x400879]
+======= Memory map: ========
+00400000-00401000 r-xp 00000000 08:03
+145540                             /usr/lib/R/bin/exec/R
+00600000-00601000 r--p 00000000 08:03
+145540                             /usr/lib/R/bin/exec/R
+00601000-00602000 rw-p 00001000 08:03
+145540                             /usr/lib/R/bin/exec/R
+01bbd000-03de5000 rw-p 01bbd000 00:00 0
+[heap]
+7f6a2c000000-7f6a2c021000 rw-p 7f6a2c000000 00:00 0 
+7f6a2c021000-7f6a30000000 ---p 7f6a2c021000 00:00 0 
+7f6a31f15000-7f6a32068000 r-xp 00000000 08:03
+20890                      /usr/lib/libxml2.so.2.6.32
+7f6a32068000-7f6a32267000 ---p 00153000 08:03
+20890                      /usr/lib/libxml2.so.2.6.32
+7f6a32267000-7f6a3226f000 r--p 00152000 08:03
+20890                      /usr/lib/libxml2.so.2.6.32
+7f6a3226f000-7f6a32271000 rw-p 0015a000 08:03
+20890                      /usr/lib/libxml2.so.2.6.32
+7f6a32271000-7f6a32272000 rw-p 7f6a32271000 00:00 0 
+7f6a32272000-7f6a3228d000 r-xp 00000000 08:03
+160572                     /usr/local/lib/R/site-library/XML/libs/XML.so
+7f6a3228d000-7f6a3248d000 ---p 0001b000 08:03
+160572                     /usr/local/lib/R/site-library/XML/libs/XML.so
+7f6a3248d000-7f6a3248e000 r--p 0001b000 08:03
+160572                     /usr/local/lib/R/site-library/XML/libs/XML.so
+7f6a3248e000-7f6a3248f000 rw-p 0001c000 08:03
+160572                     /usr/local/lib/R/site-library/XML/libs/XML.so
+7f6a3248f000-7f6a3249a000 r-xp 00000000 08:03
+161788                     /usr/local/lib/gdalplugins/ogr_GRASS.so
+7f6a3249a000-7f6a3269a000 ---p 0000b000 08:03
+161788                     /usr/local/lib/gdalplugins/ogr_GRASS.so
+7f6a3269a000-7f6a3269b000 r--p 0000b000 08:03
+161788                     /usr/local/lib/gdalplugins/ogr_GRASS.so
+7f6a3269b000-7f6a3269c000 rw-p 0000c000 08:03
+161788                     /usr/local/lib/gdalplugins/ogr_GRASS.so
+7f6a3269c000-7f6a32752000 r-xp 00000000 08:03
+103912                     /usr/lib/libfftw3.so.3.1.2
+7f6a32752000-7f6a32951000 ---p 000b6000 08:03
+103912                     /usr/lib/libfftw3.so.3.1.2
+7f6a32951000-7f6a32957000 r--p 000b5000 08:03
+103912                     /usr/lib/libfftw3.so.3.1.2
+7f6a32957000-7f6a32958000 rw-p 000bb000 08:03
+103912                     /usr/lib/libfftw3.so.3.1.2
+7f6a32958000-7f6a32959000 r-xp 00000000 08:03
+269548                     /usr/local/grass-6.4.0svn/lib/libgrass_linkm.6.4.0svn.so
+7f6a32959000-7f6a32b59000 ---p 00001000 08:03
+269548                     /usr/local/grass-6.4.0svn/lib/libgrass_linkm.6.4.0svn.so
+7f6a32b59000-7f6a32b5a000 r--p 00001000 08:03
+269548                     /usr/local/grass-6.4.0svn/lib/libgrass_linkm.6.4.0svn.so
+7f6a32b5a000-7f6a32b5b000 rw-p 00002000 08:03
+269548                     /usr/local/grass-6.4.0svn/lib/libgrass_linkm.6.4.0svn.so
+7f6a32b5b000-7f6a32b61000 r-xp 00000000 08:03
+269592                     /usr/local/grass-6.4.0svn/lib/libgrass_rtree.6.4.0svn.so
+7f6a32b61000-7f6a32d60000 ---p 00006000 08:03
+269592                     /usr/local/grass-6.4.0svn/lib/libgrass_rtree.6.4.0svn.so
+7f6a32d60000-7f6a32d61000 r--p 00005000 08:03
+269592                     /usr/local/grass-6.4.0svn/lib/libgrass_rtree.6.4.0svn.so
+7f6a32d61000-7f6a32d62000 rw-p 00006000 08:03
+269592                     /usr/local/grass-6.4.0svn/lib/libgrass_rtree.6.4.0svn.so
+7f6a32d62000-7f6a32d79000 r-xp 00000000 08:03
+269596                     /usr/local/grass-6.4.0svn/lib/libgrass_dig2.6.4.0svn.so
+7f6a32d79000-7f6a32f78000 ---p 00017000 08:03
+269596                     /usr/local/grass-6.4.0svn/lib/libgrass_dig2.6.4.0svn.so
+7f6a32f78000-7f6a32f79000 r--p 00016000 08:03
+269596                     /usr/local/grass-6.4.0svn/lib/libgrass_dig2.6.4.0svn.so
+7f6a32f79000-7f6a32f7a000 rw-p 00017000 08:03
+269596                     /usr/local/grass-6.4.0svn/lib/libgrass_dig2.6.4.0svn.so
+7f6a32f7a000-7f6a32f9a000 r-xp 00000000 08:03
+269594                     /usr/local/grass-6.4.0svn/lib/libgrass_dgl.6.4.0svn.so
+7f6a32f9a000-7f6a33199000 ---p 00020000 08:03
+269594                     /usr/local/grass-6.4.0svn/lib/libgrass_dgl.6.4.0svn.so
+7f6a33199000-7f6a3319a000 r--p 0001f000 08:03
+269594                     /usr/local/grass-6.4.0svn/lib/libgrass_dgl.6.4.0svn.so
+7f6a3319a000-7f6a3319b000 rw-p 00020000 08:03
+269594                     /usr/local/grass-6.4.0svn/lib/libgrass_dgl.6.4.0svn.so
+7f6a3319b000-7f6a331a6000 r-xp 00000000 08:03
+269566                     /usr/local/grass-6.4.0svn/lib/libgrass_dbmiclient.6.4.0svn.so
+7f6a331a6000-7f6a333a5000 ---p 0000b000 08:03
+269566                     /usr/local/grass-6.4.0svn/lib/libgrass_dbmiclient.6.4.0svn.so
+7f6a333a5000-7f6a333a6000 r--p 0000a000 08:03
+269566                     /usr/local/grass-6.4.0svn/lib/libgrass_dbmiclient.6.4.0svn.so
+7f6a333a6000-7f6a333a7000 rw-p 0000b000 08:03
+269566                     /usr/local/grass-6.4.0svn/lib/libgrass_dbmiclient.6.4.0svn.so
+7f6a333a7000-7f6a333ba000 r-xp 00000000 08:03
+269564                     /usr/local/grass-6.4.0svn/lib/libgrass_dbmibase.6.4.0svn.so
+7f6a333ba000-7f6a335b9000 ---p 00013000 08:03
+269564                     /usr/local/grass-6.4.0svn/lib/libgrass_dbmibase.6.4.0svn.so
+7f6a335b9000-7f6a335ba000 r--p 00012000 08:03
+269564                     /usr/local/grass-6.4.0svn/lib/libgrass_dbmibase.6.4.0svn.so
+7f6a335ba000-7f6a335bb000 rw-p 00013000 08:03
+269564                     /usr/local/grass-6.4.0svn/lib/libgrass_dbmibase.6.4.0svn.so
+7f6a335bb000-7f6a33604000 r-xp 00000000 08:03
+269598                     /usr/local/grass-6.4.0svn/lib/libgrass_vect.6.4.0svn.so
+7f6a33604000-7f6a33803000 ---p 00049000 08:03
+269598                     /usr/local/grass-6.4.0svn/lib/libgrass_vect.6.4.0svn.so
+7f6a33803000-7f6a33804000 r--p 00048000 08:03
+269598                     /usr/local/grass-6.4.0svn/lib/libgrass_vect.6.4.0svn.so
+7f6a33804000-7f6a33806000 rw-p 00049000 08:03
+269598                     /usr/local/grass-6.4.0svn/lib/libgrass_vect.6.4.0svn.so
+7f6a33806000-7f6a33807000 rw-p 7f6a33806000 00:00 0 
+7f6a33807000-7f6a33810000 r-xp 00000000 08:03
+269586                     /usr/local/grass-6.4.0svn/lib/libgrass_gproj.6.4.0svn.so
+7f6a33810000-7f6a33a10000 ---p 00009000 08:03
+269586                     /usr/local/grass-6.4.0svn/lib/libgrass_gproj.6.4.0svn.so
+7f6a33a10000-7f6a33a11000 r--p 00009000 08:03
+269586                     /usr/local/grass-6.4.0svn/lib/libgrass_gproj.6.4.0svn.so
+7f6a33a11000-7f6a33a12000 rw-p 0000a000 08:03
+269586                     /usr/local/grass-6.4.0svn/lib/libgrass_gproj.6.4.0svn.so
+7f6a33a12000-7f6a33a1b000 r-xp 00000000 08:03
+269542                     /usr/local/grass-6.4.0svn/lib/libgrass_datetime.6.4.0svn.so
+7f6a33a1b000-7f6a33c1a000 ---p 00009000 08:03
+269542                     /usr/local/grass-6.4.0svn/lib/libgrass_datetime.6.4.0svn.so
+7f6a33c1a000-7f6a33c1b000 r--p 00008000 08:03
+269542                     /usr/local/grass-6.4.0svn/lib/libgrass_datetime.6.4.0svn.so
+7f6a33c1b000-7f6a33c1c000 rw-p 00009000 08:03
+269542                     /usr/local/grass-6.4.0svn/lib/libgrass_datetime.6.4.0svn.so
+7f6a33c1c000-7f6a33c82000 r-xp 00000000 08:03
+269544                     /usr/local/grass-6.4.0svn/lib/libgrass_gis.6.4.0svn.so
+7f6a33c82000-7f6a33e82000 ---p 00066000 08:03
+269544                     /usr/local/grass-6.4.0svn/lib/libgrass_gis.6.4.0svn.so
+7f6a33e82000-7f6a33e83000 r--p 00066000 08:03
+269544                     /usr/local/grass-6.4.0svn/lib/libgrass_gis.6.4.0svn.so
+7f6a33e83000-7f6a33e85000 rw-p 00067000 08:03
+269544                     /usr/local/grass-6.4.0svn/lib/libgrass_gis.6.4.0svn.so
+7f6a33e85000-7f6a33e8b000 rw-p 7f6a33e85000 00:00 0 
+7f6a33e8b000-7f6a33e93000 r-xp 00000000 08:03
+269546                     /usr/local/grass-6.4.0svn/lib/libgrass_gmath.6.4.0svn.so
+7f6a33e93000-7f6a34092000 ---p 00008000 08:03
+269546                     /usr/local/grass-6.4.0svn/lib/libgrass_gmath.6.4.0svn.so
+7f6a34092000-7f6a34093000 r--p 00007000 08:03
+269546                     /usr/local/grass-6.4.0svn/lib/libgrass_gmath.6.4.0svn.so
+7f6a34093000-7f6a34094000 rw-p 00008000 08:03
+269546                     /usr/local/grass-6.4.0svn/lib/libgrass_gmath.6.4.0svn.so
+7f6a34094000-7f6a34099000 r-xp 00000000 08:03 269574         Aborted
+
+The downloaded packages are in
+	?/tmp/RtmpMaCWFV/downloaded_packages?
+Warning message:
+In install.packages("spgrass6", dependencies = TRUE) :
+  installation of package 'spgrass6' had non-zero exit status
+
+From nikos.alexandris at felis.uni-freiburg.de  Mon Jul 27 21:58:15 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Mon Jul 27 21:58:12 2009
+Subject: [GRASS-stats] spgrass6 fails to build under R 2.9.1 and Ubuntu
+	Jaunty 64-bit
+In-Reply-To: <1248744689.5117.5.camel@vertical>
+References: <1248744689.5117.5.camel@vertical>
+Message-ID: <1248746295.11097.1.camel@vertical>
+
+
+Nikos Alexandris wrote:
+
+> I am trying to get spgrass6 to work under R 2.9.1 but it fails (to
+> compile? -- code is below).
+
+OK, here is some (hopefully useful) info:
+
+
+--%<---
+root@vertical:/geo/osgeo/src/spgrass6# R -d gdb
+GNU gdb 6.8-debian
+Copyright (C) 2008 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later
+<http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show
+copying"
+and "show warranty" for details.
+This GDB was configured as "x86_64-linux-gnu"...
+(gdb) run
+Starting program: /usr/lib/R/bin/exec/R 
+
+R version 2.9.1 (2009-06-26)
+Copyright (C) 2009 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> install.packages ( "spgrass6" , dependencies = TRUE )
+Warning in install.packages("spgrass6", dependencies = TRUE) :
+  argument 'lib' is missing: using '/usr/local/lib/R/site-library'
+--- Please select a CRAN mirror for use in this session ---
+[Thread debugging using libthread_db enabled]
+Error while reading shared library symbols:
+Cannot find new threads: generic error
+Cannot find new threads: generic error
+--%<---
+
+
+Nikos
+
+
+From nikos.alexandris at felis.uni-freiburg.de  Mon Jul 27 22:05:36 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Mon Jul 27 22:05:33 2009
+Subject: [GRASS-stats] spgrass6 fails to build under R 2.9.1 and Ubuntu
+	Jaunty 64-bit
+In-Reply-To: <1248746295.11097.1.camel@vertical>
+References: <1248744689.5117.5.camel@vertical>
+	<1248746295.11097.1.camel@vertical>
+Message-ID: <1248746736.11713.3.camel@vertical>
+
+Nikos Alexandris wrote:
+> > I am trying to get spgrass6 to work under R 2.9.1 but it fails (to
+> > compile? -- code is below).
+
+And for those who "know" here is the full backtrace :-P
+
+--%<-----%<-----%<-----%<-----%<-----%<-----%<---
+(gdb) bt full
+#0  dl_open_worker (a=<value optimized out>) at dl-open.c:369
+	args = (struct dl_open_args *) 0x7fff9bb05990
+	file = 0x2d <Address 0x2d out of bounds>
+	mode = -2147483646
+	new = (struct link_map *) 0x9fc660
+	lazy = 0
+	i = 45
+	any_tls = <value optimized out>
+	call_map = (struct link_map *) 0x7fbc93b0d740
+	r = <value optimized out>
+	l = <value optimized out>
+	__PRETTY_FUNCTION__ = "dl_open_worker"
+#1  0x00007fbc938fe8c6 in _dl_catch_error (objname=0x7fff9bb059e0,
+errstring=0x7fff9bb059d8, mallocedp=0x7fff9bb059ef, 
+    operate=0x7fbc93903370 <dl_open_worker>, args=0x7fff9bb05990) at
+dl-error.c:178
+	errcode = <value optimized out>
+	old = (struct catch * volatile) 0x7fff9bb05a90
+	c = {objname = 0x7fff9bb05958 "?,F\223?\177", errstring = 0x0, malloced
+= 192, env = {{__jmpbuf = {-2, 817847137620482921, 
+        2147483650, 140735805414464, 140447900891435, 1,
+817847137555471209, 855547435465202537}, __mask_was_saved =
+-1824921504, 
+      __saved_mask = {__val = {140735805413696, 9913992, 11612232,
+15010776, 11612232, 11637960, 140447906201008, 140447901431166, 
+          140735805414112, 11637960, 11612232, 140447901771968,
+15010776, 1, 1, 140447901428938}}}}}
+	catchp = (struct catch ** const) 0x7fbc93b10b38
+#2  0x00007fbc93902dbb in _dl_open (file=0x7fff9bb05c40
+"/usr/lib64/R/modules//R_X11.so", mode=-2147483646, 
+    caller_dlopen=0x7fbc933df92b, nsid=-2, argc=1, argv=0x7fff9bb100f8,
+env=0x96fd60) at dl-open.c:596
+	args = {file = 0x7fff9bb05c40 "/usr/lib64/R/modules//R_X11.so", mode =
+-2147483646, caller_dlopen = 0x7fbc933df92b, 
+  caller_dl_open = 0x7fbc91da9f5b, map = 0x9fc660, nsid = 0, argc = 1,
+argv = 0x7fff9bb100f8, env = 0x96fd60}
+	objname = 0x7fff9bb05c40 "/usr/lib64/R/modules//R_X11.so"
+	errstring = <value optimized out>
+	malloced = <value optimized out>
+	errcode = <value optimized out>
+	__PRETTY_FUNCTION__ = "_dl_open"
+#3  0x00007fbc91da9f5b in dlopen_doit (a=<value optimized out>) at
+dlopen.c:67
+	args = (struct dlopen_args *) 0x7fff9bb05bb0
+#4  0x00007fbc938fe8c6 in _dl_catch_error (objname=0x7fbc91fac0d0,
+errstring=0x7fbc91fac0d8, mallocedp=0x7fbc91fac0c8, 
+    operate=0x7fbc91da9ef0 <dlopen_doit>, args=0x7fff9bb05bb0) at
+dl-error.c:178
+	errcode = <value optimized out>
+	old = (struct catch * volatile) 0x0
+	c = {objname = 0x19bb05ac0 <Address 0x19bb05ac0 out of bounds>,
+errstring = 0x0, malloced = false, env = {{__jmpbuf = {
+        140447879708864, 817847137601608553, 140447877603056, 1,
+25027232, 140447906201008, 817847137628871529, 
+        855547435465202537}, __mask_was_saved = -1823128519,
+__saved_mask = {__val = {140733193388032, 140447903265992, 
+          140735805414464, 1, 1, 25027232, 140447906201008,
+140447898080891, 206158430256, 140735805414464, 140735805414224, 
+          11637960, 140447906200032, 140447901125965, 140735805414368,
+140447902416690}}}}}
+	catchp = (struct catch ** const) 0x7fbc93b10b38
+#5  0x00007fbc91daa2cc in _dlerror_run (operate=0x7fbc91da9ef0
+<dlopen_doit>, args=0x7fff9bb05bb0) at dlerror.c:164
+	result = (struct dl_action_result *) 0x7fbc91fac0c0
+#6  0x00007fbc91da9ec1 in __dlopen (file=<value optimized out>,
+mode=<value optimized out>) at dlopen.c:88
+	args = {file = 0x7fff9bb05c40 "/usr/lib64/R/modules//R_X11.so", mode =
+2, new = 0x1, caller = 0x7fbc933df92b}
+#7  0x00007fbc933df92b in AddDLL (path=0x7fff9bb05c40
+"/usr/lib64/R/modules//R_X11.so", asLocal=1, now=1, 
+    DLLsearchpath=0x7fbc935e92bd "") at Rdynload.c:532
+	handle = <value optimized out>
+	info = <value optimized out>
+#8  0x00007fbc933dfae7 in R_moduleCdynload (module=0x7fbc936234c8
+"R_X11", local=1, now=1) at Rdynload.c:925
+	dllpath = "/usr/lib64/R/modules//R_X11.so\000@\000\000\000\000\000\000
+\000\000@^?\233?\177\000\000?&_\223?\177\000\000?U\231\000\000\000\000
+\000\200\f?\000\000\000\000\000\000\000\000\000\001\000\000\000\202\000
+\000\000\000\000\000\000X/?\000\000\000\000\000X/?\000\000\000\000
+\000?/?\000\000\000\000\000\0300?\000\000\000\000\000|?S\223?\177\000
+\000\230\r?\000\000\000\000\000\002\000\000\000\000\000\000\000\230Q\231
+\000\000\000\000\000`\r?\000\000\000\000\000\210F\227\000\000\000\000
+\000\210F\227\000\000\000\000\000\210F\227\000\000\000\000\000\210F\227
+\000\000\000\000\000\210F\227\000\000\000\000\000"...
+	p = <value optimized out>
+	res = <value optimized out>
+#9  0x00007fbc9358636a in R_access_X11 () at X11.c:55
+No locals.
+#10 0x00007fbc934e41f5 in do_capabilitiesX11 (call=<value optimized
+out>, op=<value optimized out>, args=0x7fff9bb05990, 
+    rho=<value optimized out>) at platform.c:1709
+No locals.
+#11 0x00007fbc934c5e99 in do_internal (call=<value optimized out>,
+op=<value optimized out>, args=0x974688, env=0xfd7380)
+    at names.c:1149
+	s = (SEXP) 0x17de2a0
+	fun = (SEXP) 0x9aae58
+	ans = <value optimized out>
+	save = 116
+	flag = 0
+	vmax = (void *) 0x0
+#12 0x00007fbc93486f24 in Rf_eval (e=0x17dd3a8, rho=0xfd7380) at
+eval.c:461
+	save = 115
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 54
+	evalcount = 152
+#13 0x00007fbc934872bf in forcePromise (e=0xe4a4f8) at eval.c:332
+	prstack = {promise = 0xe4a4f8, next = 0x7fff9bb072c0}
+	val = <value optimized out>
+#14 0x00007fbc93486d1d in Rf_eval (e=0xe4a4f8, rho=0xe4a338) at
+eval.c:442
+	op = <value optimized out>
+	tmp = (SEXP) 0x974650
+	depthsave = 53
+	evalcount = 152
+#15 0x00007fbc93487103 in Rf_eval (e=0x9e2dc8, rho=0xe4a338) at
+eval.c:430
+	op = <value optimized out>
+	tmp = (SEXP) 0xe4a4f8
+	depthsave = 52
+	evalcount = 152
+#16 0x00007fbc934872bf in forcePromise (e=0xf97060) at eval.c:332
+	prstack = {promise = 0xf97060, next = 0x7fff9bb076b0}
+	val = <value optimized out>
+#17 0x00007fbc93486d1d in Rf_eval (e=0xf97060, rho=0xf96dc0) at
+eval.c:442
+	op = <value optimized out>
+	tmp = (SEXP) 0x974650
+	depthsave = 51
+	evalcount = 152
+#18 0x00007fbc93487103 in Rf_eval (e=0x9e2dc8, rho=0xf96dc0) at
+eval.c:430
+	op = <value optimized out>
+	tmp = (SEXP) 0xf97060
+	depthsave = 50
+	evalcount = 152
+#19 0x00007fbc934872bf in forcePromise (e=0xf96b58) at eval.c:332
+	prstack = {promise = 0xf96b58, next = 0x7fff9bb07d10}
+	val = <value optimized out>
+#20 0x00007fbc93486d1d in Rf_eval (e=0xf96b58, rho=0x10e54c0) at
+eval.c:442
+	op = <value optimized out>
+	tmp = (SEXP) 0x974650
+	depthsave = 49
+	evalcount = 152
+#21 0x00007fbc93487103 in Rf_eval (e=0x9e2dc8, rho=0x10e54c0) at
+eval.c:430
+	op = <value optimized out>
+	tmp = (SEXP) 0xf96b58
+	depthsave = 48
+	evalcount = 152
+#22 0x00007fbc93487e55 in Rf_evalListKeepMissing (el=0xa9d918,
+rho=0x10e54c0) at eval.c:1607
+	h = (SEXP) 0x10e54c0
+	tail = (SEXP) 0x11ba098
+#23 0x00007fbc93487ff3 in do_return (call=0xa9c9e8, op=<value optimized
+out>, args=0x7fff9bb05990, rho=0x7fbc93b10c80)
+    at eval.c:1208
+	a = <value optimized out>
+	v = <value optimized out>
+	vals = <value optimized out>
+	nv = <value optimized out>
+#24 0x00007fbc93486f24 in Rf_eval (e=0xa9c9e8, rho=0x10e54c0) at
+eval.c:461
+	save = 109
+	flag = 0
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 47
+	evalcount = 152
+#25 0x00007fbc934872bf in forcePromise (e=0x10e53e0) at eval.c:332
+	prstack = {promise = 0x10e53e0, next = 0x7fff9bb0cf00}
+	val = <value optimized out>
+#26 0x00007fbc93486d1d in Rf_eval (e=0x10e53e0, rho=0x10e5140) at
+eval.c:442
+	op = <value optimized out>
+	tmp = (SEXP) 0x974650
+	depthsave = 46
+	evalcount = 152
+#27 0x00007fbc93487103 in Rf_eval (e=0x9e2dc8, rho=0x10e5140) at
+eval.c:430
+	op = <value optimized out>
+	tmp = (SEXP) 0x10e53e0
+	depthsave = 45
+	evalcount = 152
+#28 0x00007fbc934893fc in do_begin (call=0xa9ce80, op=0x993420,
+args=0xa9cba8, rho=0x10e5140) at eval.c:1191
+	s = (SEXP) 0x7fbc93b10c80
+#29 0x00007fbc93486f24 in Rf_eval (e=0xa9ce80, rho=0x10e5140) at
+eval.c:461
+	save = 106
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 44
+	evalcount = 152
+#30 0x00007fbc9348aaab in Rf_applyClosure (call=0xa9ca58, op=0x10e5488,
+arglist=0x10e53a8, rho=0x10e54c0, suppliedenv=0x9b6858)
+    at eval.c:667
+	body = (SEXP) 0xa9ce80
+	formals = (SEXP) 0x10e5178
+	actuals = (SEXP) 0x10e5178
+	savedrho = <value optimized out>
+	newrho = (volatile SEXP) 0x10e5140
+	f = (SEXP) 0x10e5178
+	a = (SEXP) 0x10e5178
+	tmp = (SEXP) 0x7fff9bb08340
+	cntxt = {nextcontext = 0x7fff9bb08b10, callflag = 12, cjmpbuf =
+{{__jmpbuf = {140735805424448, -817782803990029463, 
+        17715576, 140447906200080, 17716136, 10184792,
+817847134627847017, 855545745441971049}, __mask_was_saved = 0, 
+      __saved_mask = {__val = {140447902528555, 131840, 184693507720,
+14992280, 11137112, 9913992, 9913992, 21452480, 
+          140447901582106, 0, 10048984, 11162312, 14992224, 11137056,
+11143960, 10373112}}}}, cstacktop = 105, evaldepth = 44, 
+  promargs = 0x10e53a8, callfun = 0x10e5488, sysparent = 0x10e54c0, call
+= 0xa9ca58, cloenv = 0x10e5140, conexit = 0x974688, 
+  cend = 0, cenddata = 0x17ab490, vmax = 0x0, intsusp = 0, handlerstack
+= 0x974688, restartstack = 0x974688, 
+  prstack = 0x7fff9bb0cf00, nodestack = 0x9746d0}
+#31 0x00007fbc93486e73 in Rf_eval (e=0xa9ca58, rho=0x10e54c0) at
+eval.c:505
+	op = <value optimized out>
+	tmp = (SEXP) 0x10e53a8
+	depthsave = 43
+	evalcount = 152
+#32 0x00007fbc93489370 in do_set (call=0xa9cb00, op=0x993618,
+args=0xa9cac8, rho=0x10e54c0) at eval.c:1446
+	s = <value optimized out>
+#33 0x00007fbc93486f24 in Rf_eval (e=0xa9cb00, rho=0x10e54c0) at
+eval.c:461
+	save = 100
+	flag = 1
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 42
+	evalcount = 152
+#34 0x00007fbc934893fc in do_begin (call=0xa9d120, op=0x993420,
+args=0xa9cb38, rho=0x10e54c0) at eval.c:1191
+	s = (SEXP) 0x7fbc93b10c80
+#35 0x00007fbc93486f24 in Rf_eval (e=0xa9d120, rho=0x10e54c0) at
+eval.c:461
+	save = 98
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 41
+	evalcount = 152
+#36 0x00007fbc9348aaab in Rf_applyClosure (call=0xa9c6c0, op=0xe4a290,
+arglist=0xf96b20, rho=0xf96dc0, suppliedenv=0x9b6858)
+    at eval.c:667
+	body = (SEXP) 0xa9d120
+	formals = (SEXP) 0x10e54f8
+	actuals = (SEXP) 0x10e54f8
+	savedrho = <value optimized out>
+	newrho = (volatile SEXP) 0x10e54c0
+	f = (SEXP) 0x10e54f8
+	a = (SEXP) 0x10e54f8
+	tmp = (SEXP) 0x7fff9bb08b10
+	cntxt = {nextcontext = 0x7fff9bb09490, callflag = 12, cjmpbuf =
+{{__jmpbuf = {140735805426448, -817782803805480087, 
+        17716472, 140447906200080, 16345888, 10184792,
+817847134961294185, 855545745441971049}, __mask_was_saved = 0, 
+      __saved_mask = {__val = {140735805426640, 11146392, 11146392,
+18755608, 18755608, 11146392, 11125152, 16346560, 0, 11125152, 
+          140447906200080, 140447906200032, 140447901504469, 11125152,
+9913992, 140447906200440}}}}, cstacktop = 97, 
+  evaldepth = 41, promargs = 0xf96b20, callfun = 0xe4a290, sysparent =
+0xf96dc0, call = 0xa9c6c0, cloenv = 0x10e54c0, 
+  conexit = 0x974688, cend = 0, cenddata = 0x9954e0, vmax = 0x0, intsusp
+= 0, handlerstack = 0x974688, restartstack = 0x974688, 
+  prstack = 0x7fff9bb0cf00, nodestack = 0x9746d0}
+#37 0x00007fbc93486e73 in Rf_eval (e=0xa9c6c0, rho=0xf96dc0) at
+eval.c:505
+	op = <value optimized out>
+	tmp = (SEXP) 0xf96b20
+	depthsave = 40
+	evalcount = 152
+#38 0x00007fbc93486f24 in Rf_eval (e=0xa9c810, rho=0xf96dc0) at
+eval.c:461
+	save = 92
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 39
+	evalcount = 152
+#39 0x00007fbc93486f24 in Rf_eval (e=0xa9c050, rho=0xf96dc0) at
+eval.c:461
+	save = 90
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 38
+	evalcount = 152
+#40 0x00007fbc934893fc in do_begin (call=0xa998b8, op=0x993420,
+args=0xa9c088, rho=0xf96dc0) at eval.c:1191
+	s = (SEXP) 0x7fbc93b10c80
+#41 0x00007fbc93486f24 in Rf_eval (e=0xa998b8, rho=0xf96dc0) at
+eval.c:461
+	save = 88
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 37
+	evalcount = 152
+#42 0x00007fbc9348aaab in Rf_applyClosure (call=0xa9e358, op=0xe4a300,
+arglist=0xf97028, rho=0xe4a338, suppliedenv=0x9b6858)
+    at eval.c:667
+	body = (SEXP) 0xa998b8
+	formals = (SEXP) 0xf96df8
+	actuals = (SEXP) 0xf96df8
+	savedrho = <value optimized out>
+	newrho = (volatile SEXP) 0xf96dc0
+	f = (SEXP) 0xf96df8
+	a = (SEXP) 0xf96df8
+	tmp = (SEXP) 0x7fff9bb09490
+	cntxt = {nextcontext = 0x7fff9bb09a50, callflag = 12, cjmpbuf =
+{{__jmpbuf = {140735805428880, -817784652017149079, 
+        16346616, 140447906200080, 16347176, 10184792,
+817847135280061289, 855545745441971049}, __mask_was_saved = 0, 
+      __saved_mask = {__val = {9913992, 140735805429008, 11146440,
+4304881288, 11146444, 34359738371, 140447902558688, 
+          140447902558816, 28636376, 0, 11151664, 4, 0, 18018280, 1,
+10059352}}}}, cstacktop = 87, evaldepth = 37, 
+  promargs = 0xf97028, callfun = 0xe4a300, sysparent = 0xe4a338, call =
+0xa9e358, cloenv = 0xf96dc0, conexit = 0x974688, cend = 0, 
+  cenddata = 0xaa29d8, vmax = 0x0, intsusp = 0, handlerstack = 0x974688,
+restartstack = 0x974688, prstack = 0x7fff9bb0cf00, 
+  nodestack = 0x9746d0}
+#43 0x00007fbc93486e73 in Rf_eval (e=0xa9e358, rho=0xe4a338) at
+eval.c:505
+	op = <value optimized out>
+	tmp = (SEXP) 0xf97028
+	depthsave = 36
+	evalcount = 152
+#44 0x00007fbc934893fc in do_begin (call=0xa99ca8, op=0x993420,
+args=0xa9e390, rho=0xe4a338) at eval.c:1191
+	s = (SEXP) 0x7fbc93b10c80
+#45 0x00007fbc93486f24 in Rf_eval (e=0xa99ca8, rho=0xe4a338) at
+eval.c:461
+	save = 82
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 35
+	evalcount = 152
+#46 0x00007fbc9348aaab in Rf_applyClosure (call=0x17dd418, op=0xa99df8,
+arglist=0xe4a4c0, rho=0xfd7380, suppliedenv=0x9b6858)
+    at eval.c:667
+	body = (SEXP) 0xa99ca8
+	formals = (SEXP) 0xe4a3a8
+	actuals = (SEXP) 0xe4a3a8
+	savedrho = <value optimized out>
+	newrho = (volatile SEXP) 0xe4a338
+	f = (SEXP) 0xe4a3a8
+	a = (SEXP) 0xe4a3a8
+	tmp = (SEXP) 0x7fff9bb09a50
+	cntxt = {nextcontext = 0x7fff9bb0a7f0, callflag = 12, cjmpbuf =
+{{__jmpbuf = {140735805430352, -817784817715225751, 
+        14984104, 140447906200080, 14984384, 10184792,
+817847135472999273, 855545745441971049}, __mask_was_saved = 0, 
+      __saved_mask = {__val = {140447906200528, 1024, 140447901109400,
+1, 1, 9913992, 9913992, 11145768, 10108392, 16610176, 
+          25024800, 11145912, 140447906200032, 27212608, 25024856,
+16610176}}}}, cstacktop = 81, evaldepth = 35, 
+  promargs = 0xe4a4c0, callfun = 0xa99df8, sysparent = 0xfd7380, call =
+0x17dd418, cloenv = 0xe4a338, conexit = 0x974688, 
+  cend = 0, cenddata = 0xabca98, vmax = 0x0, intsusp = 0, handlerstack =
+0x974688, restartstack = 0x974688, 
+  prstack = 0x7fff9bb0cf00, nodestack = 0x9746d0}
+#47 0x00007fbc93486e73 in Rf_eval (e=0x17dd418, rho=0xfd7380) at
+eval.c:505
+	op = <value optimized out>
+	tmp = (SEXP) 0xe4a4c0
+	depthsave = 34
+	evalcount = 152
+#48 0x00007fbc93488b38 in applydefine (call=0x17dd568, op=0x993618,
+args=0x7fff9bb05990, rho=0x7fbc93b10c80) at eval.c:1335
+	expr = (SEXP) 0x17dd4f8
+	lhs = <value optimized out>
+	rhs = <value optimized out>
+	tmp = <value optimized out>
+	tmp2 = <value optimized out>
+	tmploc = <value optimized out>
+	buf = "PF\227\000\000\000\000\000xg\233\000\000\000\000\000?5\231\000
+\000\000\000\000\000?\216\223?\177\000"
+	cntxt = {nextcontext = 0x0, callflag = 11146200, cjmpbuf = {{__jmpbuf =
+{11146152, 11146104, 11146200, 140447902523318, 
+        9913320, 10212064, 40, 10213952}, __mask_was_saved =
+-1819345968, __saved_mask = {__val = {140447906200752, 25025024, 
+          720716388281809392, 11145720, 4306112968, 7, 146028888143,
+27211936, 11258688, 16610176, 25024464, 27211656, 9913992, 0, 
+          25021920, 0}}}}, cstacktop = 0, evaldepth = 0, promargs =
+0x974688, callfun = 0x974688, sysparent = 0x7fff9bb0cf00, 
+  call = 0x9746d0, cloenv = 0x974688, conexit = 0x19f3788, cend =
+0x19f3910, cenddata = 0x19f38a0, vmax = 0x974688, 
+  intsusp = 25024464, handlerstack = 0xfd7380, restartstack = 0xabcb40,
+prstack = 0x19f38a0, nodestack = 0x7fbc93486da7}
+#49 0x00007fbc93486f24 in Rf_eval (e=0x17dd568, rho=0xfd7380) at
+eval.c:461
+	save = 76
+	flag = 1
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 33
+	evalcount = 152
+#50 0x00007fbc934893fc in do_begin (call=0x17dd5d8, op=0x993420,
+args=0x17dd5a0, rho=0xfd7380) at eval.c:1191
+	s = (SEXP) 0x7fbc93b10c80
+#51 0x00007fbc93486f24 in Rf_eval (e=0x17dd5d8, rho=0xfd7380) at
+eval.c:461
+	save = 74
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 32
+	evalcount = 152
+#52 0x00007fbc93486f24 in Rf_eval (e=0x17dd8b0, rho=0xfd7380) at
+eval.c:461
+	save = 72
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 31
+	evalcount = 152
+#53 0x00007fbc934893fc in do_begin (call=0x17da770, op=0x993420,
+args=0x17dd8e8, rho=0xfd7380) at eval.c:1191
+	s = (SEXP) 0x7fbc93b10c80
+#54 0x00007fbc93486f24 in Rf_eval (e=0x17da770, rho=0xfd7380) at
+eval.c:461
+	save = 70
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 30
+	evalcount = 152
+#55 0x00007fbc9348aaab in Rf_applyClosure (call=0x1456a30, op=0x17da7e0,
+arglist=0xfd73f0, rho=0xab5b78, suppliedenv=0x9b6858)
+    at eval.c:667
+	body = (SEXP) 0x17da770
+	formals = (SEXP) 0xfd73b8
+	actuals = (SEXP) 0xfd73b8
+	savedrho = <value optimized out>
+	newrho = (volatile SEXP) 0xfd7380
+	f = (SEXP) 0xfd73b8
+	a = (SEXP) 0xfd73b8
+	tmp = (SEXP) 0x7fff9bb0a7f0
+	cntxt = {nextcontext = 0x7fff9bb0ba00, callflag = 12, cjmpbuf =
+{{__jmpbuf = {140735805433840, -817784617464472727, 
+        16610232, 140447906200080, 16610288, 10184792,
+817847133715585897, 855545745441971049}, __mask_was_saved = 0, 
+      __saved_mask = {__val = {140447905541856, 140447906200440,
+124554051585, 60, 0, 140733193388033, 140447900624992, 1026, 
+          140735805434084, 140735805434080, 140445430579200, 10104536,
+9913992, 11673880, 11673992, 9913992}}}}, cstacktop = 69, 
+  evaldepth = 30, promargs = 0xfd73f0, callfun = 0x17da7e0, sysparent =
+0xab5b78, call = 0x1456a30, cloenv = 0xfd7380, 
+  conexit = 0x974688, cend = 0, cenddata = 0xe6af78, vmax = 0x0, intsusp
+= 0, handlerstack = 0x974688, restartstack = 0x974688, 
+  prstack = 0x7fff9bb0cf00, nodestack = 0x9746d0}
+#56 0x00007fbc93486e73 in Rf_eval (e=0x1456a30, rho=0xab5b78) at
+eval.c:505
+	op = <value optimized out>
+	tmp = (SEXP) 0xfd73f0
+	depthsave = 29
+	evalcount = 152
+#57 0x00007fbc934aeb55 in do_logic2 (call=0xe6b058, op=0x994ef8,
+args=<value optimized out>, env=0xab5b78) at logic.c:232
+	s1 = <value optimized out>
+	s2 = (SEXP) 0x1456a30
+	x1 = 1
+	x2 = <value optimized out>
+	ans = (SEXP) 0xaba6e8
+#58 0x00007fbc93486f24 in Rf_eval (e=0xe6b058, rho=0xab5b78) at
+eval.c:461
+	save = 63
+	flag = 0
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 28
+	evalcount = 152
+#59 0x00007fbc934ae8cd in do_logic2 (call=0xe6b0c8, op=0x994ef8,
+args=0xe6b090, env=0xab5b78) at logic.c:214
+	s1 = (SEXP) 0xe6b058
+	s2 = (SEXP) 0x1456988
+	x1 = <value optimized out>
+	x2 = <value optimized out>
+	ans = <value optimized out>
+#60 0x00007fbc93486f24 in Rf_eval (e=0xe6b0c8, rho=0xab5b78) at
+eval.c:461
+	save = 60
+	flag = 0
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 27
+	evalcount = 152
+#61 0x00007fbc93489f24 in do_if (call=0xe6b138, op=<value optimized
+out>, args=0x7fff9bb05990, rho=0x7fbc93b10c80) at eval.c:960
+	Cond = <value optimized out>
+#62 0x00007fbc93486f24 in Rf_eval (e=0xe6b138, rho=0xab5b78) at
+eval.c:461
+	save = 58
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 26
+	evalcount = 152
+#63 0x00007fbc93486f24 in Rf_eval (e=0xd65dd8, rho=0xab5b78) at
+eval.c:461
+	save = 56
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 25
+	evalcount = 152
+#64 0x00007fbc934893fc in do_begin (call=0xd65e48, op=0x993420,
+args=0xd65e10, rho=0xab5b78) at eval.c:1191
+	s = (SEXP) 0x7fbc93b10c80
+#65 0x00007fbc93486f24 in Rf_eval (e=0xd65e48, rho=0xab5b78) at
+eval.c:461
+	save = 54
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 24
+	evalcount = 152
+#66 0x00007fbc93486f24 in Rf_eval (e=0xd65ef0, rho=0xab5b78) at
+eval.c:461
+	save = 52
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 23
+	evalcount = 152
+#67 0x00007fbc934893fc in do_begin (call=0xd66158, op=0x993420,
+args=0xd65f28, rho=0xab5b78) at eval.c:1191
+	s = (SEXP) 0x7fbc93b10c80
+#68 0x00007fbc93486f24 in Rf_eval (e=0xd66158, rho=0xab5b78) at
+eval.c:461
+	save = 50
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 22
+	evalcount = 152
+#69 0x00007fbc9348aaab in Rf_applyClosure (call=0xa2f590, op=0xc70db0,
+arglist=0xab5d38, rho=0xa29060, suppliedenv=0x9b6858)
+    at eval.c:667
+	body = (SEXP) 0xd66158
+	formals = (SEXP) 0xab5bb0
+	actuals = (SEXP) 0xab5bb0
+	savedrho = <value optimized out>
+	newrho = (volatile SEXP) 0xab5b78
+	f = (SEXP) 0xab5bb0
+	a = (SEXP) 0xab5bb0
+	tmp = (SEXP) 0x7fff9bb0ba00
+	cntxt = {nextcontext = 0x7fff9bb0c1d0, callflag = 12, cjmpbuf =
+{{__jmpbuf = {140735805438464, -817784220984255639, 
+        11230128, 140447906200080, 11230520, 10184792,
+817847134317468521, 855545745441971049}, __mask_was_saved = 0, 
+      __saved_mask = {__val = {140447902417977, 140733193388032,
+140445430579200, 42969831616, 786432, 6907017904, 
+          3293522019091555860, 140735805439056, 140447906200032,
+140447906200032, 12828792, 12828840, 1, 140447906200032, 
+          140447901742436, 2}}}}, cstacktop = 49, evaldepth = 22,
+promargs = 0xab5d38, callfun = 0xc70db0, sysparent = 0xa29060, 
+  call = 0xa2f590, cloenv = 0xab5b78, conexit = 0x974688, cend = 0,
+cenddata = 0x974688, vmax = 0x0, intsusp = 0, 
+  handlerstack = 0x974688, restartstack = 0x974688, prstack =
+0x7fff9bb0cf00, nodestack = 0x9746d0}
+#70 0x00007fbc93486e73 in Rf_eval (e=0xa2f590, rho=0xa29060) at
+eval.c:505
+	op = <value optimized out>
+	tmp = (SEXP) 0xab5d38
+	depthsave = 21
+	evalcount = 152
+#71 0x00007fbc93489370 in do_set (call=0xa30060, op=0x993618,
+args=0xa2f280, rho=0xa29060) at eval.c:1446
+	s = <value optimized out>
+#72 0x00007fbc93486f24 in Rf_eval (e=0xa30060, rho=0xa29060) at
+eval.c:461
+	save = 44
+	flag = 1
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 20
+	evalcount = 152
+#73 0x00007fbc934893fc in do_begin (call=0xa318d0, op=0x993420,
+args=0xa2fe68, rho=0xa29060) at eval.c:1191
+	s = (SEXP) 0x7fbc93b10c80
+#74 0x00007fbc93486f24 in Rf_eval (e=0xa318d0, rho=0xa29060) at
+eval.c:461
+	save = 42
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 19
+	evalcount = 152
+#75 0x00007fbc9348aaab in Rf_applyClosure (call=0xa71878, op=0xa34750,
+arglist=0x974688, rho=0xa5e7b8, suppliedenv=0x9b6858)
+    at eval.c:667
+	body = (SEXP) 0xa318d0
+	formals = (SEXP) 0xa28e68
+	actuals = (SEXP) 0xa28e68
+	savedrho = <value optimized out>
+	newrho = (volatile SEXP) 0xa29060
+	f = (SEXP) 0xa28e68
+	a = (SEXP) 0xa28e68
+	tmp = (SEXP) 0x7fff9bb0c1d0
+	cntxt = {nextcontext = 0x7fff9bb0cb80, callflag = 12, cjmpbuf =
+{{__jmpbuf = {140735805440464, -817784283637720215, 
+        10653288, 140447906200080, 9913992, 10184792,
+817847132436323177, 855545745441971049}, __mask_was_saved = 0, 
+      __saved_mask = {__val = {11061767098, 140735805440608,
+140735805440608, 140735805441024, 81604378666, 10867280, 11258688, 
+          10872760, 10959328, 10866360, 9913992, 0, 140447902417977, 0,
+0, 42959586896}}}}, cstacktop = 41, evaldepth = 19, 
+  promargs = 0x974688, callfun = 0xa34750, sysparent = 0xa5e7b8, call =
+0xa71878, cloenv = 0xa29060, conexit = 0x974688, cend = 0, 
+  cenddata = 0x9a62d0, vmax = 0x0, intsusp = 0, handlerstack = 0x974688,
+restartstack = 0x974688, prstack = 0x7fff9bb0cf00, 
+  nodestack = 0x9746d0}
+#76 0x00007fbc93486e73 in Rf_eval (e=0xa71878, rho=0xa5e7b8) at
+eval.c:505
+	op = <value optimized out>
+	tmp = (SEXP) 0x974688
+	depthsave = 18
+	evalcount = 152
+#77 0x00007fbc934893fc in do_begin (call=0xa73568, op=0x993420,
+args=0xa72658, rho=0xa5e7b8) at eval.c:1191
+	s = (SEXP) 0x7fbc93b10c80
+#78 0x00007fbc93486f24 in Rf_eval (e=0xa73568, rho=0xa5e7b8) at
+eval.c:461
+	save = 36
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 17
+	evalcount = 152
+#79 0x00007fbc93486f24 in Rf_eval (e=0xa74328, rho=0xa5e7b8) at
+eval.c:461
+	save = 34
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 16
+	evalcount = 152
+#80 0x00007fbc934893fc in do_begin (call=0xa75078, op=0x993420,
+args=0xa74130, rho=0xa5e7b8) at eval.c:1191
+	s = (SEXP) 0x7fbc93b10c80
+#81 0x00007fbc93486f24 in Rf_eval (e=0xa75078, rho=0xa5e7b8) at
+eval.c:461
+	save = 32
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 15
+	evalcount = 152
+#82 0x00007fbc9348aaab in Rf_applyClosure (call=0xcbd278, op=0xa78aa8,
+arglist=0xa5ee98, rho=0xbded98, suppliedenv=0x9b6858)
+    at eval.c:667
+	body = (SEXP) 0xa75078
+	formals = (SEXP) 0xa5e5c0
+	actuals = (SEXP) 0xa5e5c0
+	savedrho = <value optimized out>
+	newrho = (volatile SEXP) 0xa5e7b8
+	f = (SEXP) 0xa5e5c0
+	a = (SEXP) 0xa5e5c0
+	tmp = (SEXP) 0x7fff9bb0cb80
+	cntxt = {nextcontext = 0x7fff9bb0dfc0, callflag = 12, cjmpbuf =
+{{__jmpbuf = {140735805442944, -817784278624478359, 
+        10872256, 140447906200080, 10874520, 10184792,
+817847132757187433, 855545745441971049}, __mask_was_saved = 0, 
+      __saved_mask = {__val = {17628959877169699689, 11301424,
+140447906200080, 11305088, 10184792, 817847132765576041, 
+          855545745441971049, 0, 14052248, 140447906200032,
+140447901431166, 11334304, 60129542179, 11232592, 11283976, 
+          12447128}}}}, cstacktop = 31, evaldepth = 15, promargs =
+0xa5ee98, callfun = 0xa78aa8, sysparent = 0xbded98, 
+  call = 0xcbd278, cloenv = 0xa5e7b8, conexit = 0x974688, cend = 0,
+cenddata = 0x974688, vmax = 0x0, intsusp = 0, 
+  handlerstack = 0x974688, restartstack = 0x974688, prstack =
+0x7fff9bb0cf00, nodestack = 0x9746d0}
+#83 0x00007fbc93486e73 in Rf_eval (e=0xcbd278, rho=0xbded98) at
+eval.c:505
+	op = <value optimized out>
+	tmp = (SEXP) 0xa5ee98
+	depthsave = 14
+	evalcount = 152
+#84 0x00007fbc934872bf in forcePromise (e=0xbdee08) at eval.c:332
+	prstack = {promise = 0xbdee08, next = 0x7fff9bb0d2f0}
+	val = <value optimized out>
+#85 0x00007fbc93486d1d in Rf_eval (e=0xbdee08, rho=0xbded98) at
+eval.c:442
+	op = <value optimized out>
+	tmp = (SEXP) 0x974650
+	depthsave = 13
+	evalcount = 152
+#86 0x00007fbc93487103 in Rf_eval (e=0xcbd208, rho=0xbded98) at
+eval.c:430
+	op = <value optimized out>
+	tmp = (SEXP) 0xbdee08
+	depthsave = 12
+	evalcount = 152
+#87 0x00007fbc934872bf in forcePromise (e=0xa7b500) at eval.c:332
+	prstack = {promise = 0xa7b500, next = 0x0}
+	val = <value optimized out>
+#88 0x00007fbc93486d1d in Rf_eval (e=0xa7b500, rho=0xa7aa88) at
+eval.c:442
+	op = <value optimized out>
+	tmp = (SEXP) 0x974650
+	depthsave = 11
+	evalcount = 152
+#89 0x00007fbc93487103 in Rf_eval (e=0x9dc068, rho=0xa7aa88) at
+eval.c:430
+	op = <value optimized out>
+	tmp = (SEXP) 0xa7b500
+	depthsave = 10
+	evalcount = 152
+#90 0x00007fbc9348820d in Rf_evalList (el=0xc3a828, rho=0xa7aa88,
+op=0x9a3a50) at eval.c:1539
+	h = (SEXP) 0x7fbc938efb78
+	tail = (SEXP) 0xa78d98
+	n = 1
+#91 0x00007fbc93487046 in Rf_eval (e=0xc3a860, rho=0xa7aa88) at
+eval.c:480
+	save = 24
+	flag = 0
+	vmax = (void *) 0x0
+	cntxt = {nextcontext = 0xa7d240, callflag = -1823963554, cjmpbuf =
+{{__jmpbuf = {11152224, 10047392, 11308328, 
+        140735805446536, 140447903081565, 10039736, 11981872,
+4294967296}, __mask_was_saved = -1819346464, __saved_mask = {
+        __val = {140447901575999, 11309112, 140447906200080, 11308552,
+10184792, 817847133174520681, 41174063977, 140733193388032, 
+          1, 11307320, 140447901011367, 10215960, 140447902551466,
+140735805446288, 1, 9913992}}}}, cstacktop = -1824513432,
+ evaldepth = 32700, promargs = 0x0, callfun = 0x0, sysparent = 0x2000,
+call = 0x973ff8, cloenv = 0xa7c528, conexit = 0xc87048, 
+  cend = 0xffffffff, cenddata = 0xb6d430, vmax = 0xc87048, intsusp =
+-1824562375, handlerstack = 0x58, restartstack = 0x1, 
+  prstack = 0xa7c528, nodestack = 0xb6d430}
+	op = (SEXP) 0x9a3a50
+	tmp = <value optimized out>
+	depthsave = 9
+	evalcount = 152
+#92 0x00007fbc9348820d in Rf_evalList (el=0xc3a898, rho=0xa7aa88,
+op=0x994fa0) at eval.c:1539
+	h = (SEXP) 0x7fbc938efb78
+	tail = (SEXP) 0xa79b08
+	n = 1
+#93 0x00007fbc93487046 in Rf_eval (e=0xc3a8d0, rho=0xa7aa88) at
+eval.c:480
+	save = 22
+	flag = 0
+	vmax = (void *) 0x0
+	cntxt = {nextcontext = 0x7fbc938efb78, callflag = 0, cjmpbuf =
+{{__jmpbuf = {19, 0, 9913936, 140447901576477, 0, 0, 22, 
+        11250536}, __mask_was_saved = 11250536, __saved_mask = {__val =
+{34381806840, 22068528, 140447902328700, 140447906189152, 
+          13317832, 10047896, 11258520, 9913992, 9913992, 9913992,
+9913992, 9913992, 34359738390, 11301064, 11629808, 
+          12447128}}}}, cstacktop = 13126976, evaldepth = 0, promargs =
+0xac6390, callfun = 0x974688, sysparent = 0x0, 
+  call = 0x974688, cloenv = 0xc86fe8, conexit = 0x14820b0, cend =
+0xc86fe8, cenddata = 0xca7a48, vmax = 0x974688, 
+  intsusp = -1819346416, handlerstack = 0xcbd160, restartstack =
+0xb6d468, prstack = 0x974688, nodestack = 0x7fbc934b40f8}
+	op = (SEXP) 0x994fa0
+	tmp = <value optimized out>
+	depthsave = 8
+	evalcount = 152
+#94 0x00007fbc93489f24 in do_if (call=0xc3a940, op=<value optimized
+out>, args=0x7fff9bb05990, rho=0x7fbc93b10c80) at eval.c:960
+	Cond = <value optimized out>
+#95 0x00007fbc93486f24 in Rf_eval (e=0xc3a940, rho=0xa7aa88) at
+eval.c:461
+	save = 20
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 7
+	evalcount = 152
+#96 0x00007fbc934893fc in do_begin (call=0xc3a9b0, op=0x993420,
+args=0xc3a978, rho=0xa7aa88) at eval.c:1191
+	s = (SEXP) 0x7fbc93b10c80
+#97 0x00007fbc93486f24 in Rf_eval (e=0xc3a9b0, rho=0xa7aa88) at
+eval.c:461
+	save = 18
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 6
+	evalcount = 152
+#98 0x00007fbc9348aaab in Rf_applyClosure (call=0xc52688, op=0xc3ac50,
+arglist=0xa7b308, rho=0xbded98, suppliedenv=0x9b6858)
+    at eval.c:667
+	body = (SEXP) 0xc3a9b0
+	formals = (SEXP) 0xa7a890
+	actuals = (SEXP) 0xa7a890
+	savedrho = <value optimized out>
+	newrho = (volatile SEXP) 0xa7aa88
+	f = (SEXP) 0xa7a890
+	a = (SEXP) 0xa7a890
+	tmp = (SEXP) 0x7fff9bb0dfc0
+	cntxt = {nextcontext = 0x7fff9bb0ec10, callflag = 12, cjmpbuf =
+{{__jmpbuf = {140735805448128, -817784259139839127, 
+        10987664, 140447906200080, 10990344, 10184792,
+817847133436664681, 855545745441971049}, __mask_was_saved = 0, 
+      __saved_mask = {__val = {140735805448320, 13135896, 13135896,
+11287144, 11287144, 13135896, 140447901592175, 11399192, 0, 
+          12447128, 11399192, 13119664, 11398968, 140735805451280,
+140445430579212, 140735805448320}}}}, cstacktop = 17, 
+  evaldepth = 6, promargs = 0xa7b308, callfun = 0xc3ac50, sysparent =
+0xbded98, call = 0xc52688, cloenv = 0xa7aa88, 
+conexit = 0x974688, cend = 0, cenddata = 0x7fbc934e0d98, vmax = 0x0,
+intsusp = 0, handlerstack = 0x974688, 
+  restartstack = 0x974688, prstack = 0x0, nodestack = 0x9746d0}
+#99 0x00007fbc93486e73 in Rf_eval (e=0xc52688, rho=0xbded98) at
+eval.c:505
+	op = <value optimized out>
+	tmp = (SEXP) 0xa7b308
+	depthsave = 5
+	evalcount = 152
+#100 0x00007fbc9348820d in Rf_evalList (el=0xc52650, rho=0xbded98,
+op=0x995878) at eval.c:1539
+	h = (SEXP) 0x7fbc938efb78
+	tail = (SEXP) 0xa7bcf8
+	n = 1
+#101 0x00007fbc93487046 in Rf_eval (e=0xc52618, rho=0xbded98) at
+eval.c:480
+	save = 12
+	flag = 0
+	vmax = (void *) 0x0
+	cntxt = {nextcontext = 0x974650, callflag = -1823970019, cjmpbuf =
+{{__jmpbuf = {0, 140447905541856, 13119496, 12447128, 
+        0, 19650866599, 12, 0}, __mask_was_saved = -1682904048,
+__saved_mask = {__val = {140447905541856, 140447906200440, 
+          17699986281, 4294967308, 0, 11300168, 10184792,
+817847131507284841, 855545745441971049, 0, 11681872, 4294967293, 
+          140447902523318, 42949672960, 786432, 4308339656}}}},
+cstacktop = -1746852332, evaldepth = 766832851, 
+  promargs = 0x7fbc938efbd0, callfun = 0x1, sysparent = 0x1, call = 0x1,
+cloenv = 0xc87168, conexit = 0x0, cend = 0x1, 
+  cenddata = 0x7fbc934af564, vmax = 0xc88910, intsusp = -1819346464,
+handlerstack = 0xd938ef9e0, restartstack = 0x9950f0, 
+  prstack = 0xc83430, nodestack = 0x974688}
+	op = (SEXP) 0x995878
+	tmp = <value optimized out>
+	depthsave = 4
+	evalcount = 152
+#102 0x00007fbc9348820d in Rf_evalList (el=0xc525e0, rho=0xbded98,
+op=0x995390) at eval.c:1539
+	h = (SEXP) 0x7fbc938efb78
+	tail = (SEXP) 0xa7bb70
+	n = 1
+#103 0x00007fbc93487046 in Rf_eval (e=0xc525a8, rho=0xbded98) at
+eval.c:480
+	save = 10
+	flag = 0
+	vmax = (void *) 0x0
+	cntxt = {nextcontext = 0x7fbc938efb78, callflag = 9, cjmpbuf =
+{{__jmpbuf = {8589934602, 0, 211228896818, 9913544, 
+        3293522019091555860, 2, 13353720, 2}, __mask_was_saved =
+-1682904928, __saved_mask = {__val = {2, 2, 140447902417977, 
+          8589934592, 0, 2548114964, 1, 2, 3293522019091555860, 2,
+13435792, 3293522019091555860, 6, 13353664, 6, 
+          140735805450400}}}}, cstacktop = 6, evaldepth = 0, promargs =
+0x6, callfun = 0x7fbc93554439, sysparent = 0x7fff00000000, 
+  call = 0x7fbc00000000, cloenv = 0x9bb0e7f0, conexit = 0x13b93486de3,
+cend = 0x2580, cenddata = 0x428, vmax = 0x7fbc933a2a00, 
+  intsusp = 128, handlerstack = 0x2db4f0d397e12614, restartstack =
+0x403, prstack = 0xac52f0, nodestack = 0xbded98}
+	op = (SEXP) 0x995390
+	tmp = <value optimized out>
+	depthsave = 3
+	evalcount = 152
+#104 0x00007fbc93489370 in do_set (call=0xc53388, op=0x993618,
+args=0xc533c0, rho=0xbded98) at eval.c:1446
+	s = <value optimized out>
+#105 0x00007fbc93486f24 in Rf_eval (e=0xc53388, rho=0xbded98) at
+eval.c:461
+	save = 8
+	flag = 1
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 2
+	evalcount = 152
+#106 0x00007fbc934893fc in do_begin (call=0xcbc2c0, op=0x993420,
+args=0xc53350, rho=0xbded98) at eval.c:1191
+	s = (SEXP) 0x7fbc93b10c80
+#107 0x00007fbc93486f24 in Rf_eval (e=0xcbc2c0, rho=0xbded98) at
+eval.c:461
+	save = 6
+	flag = 2
+	vmax = (void *) 0x0
+	op = <value optimized out>
+	tmp = <value optimized out>
+	depthsave = 1
+	evalcount = 152
+#108 0x00007fbc9348aaab in Rf_applyClosure (call=0xcbfc10, op=0xcbfdd0,
+arglist=0xbdfd78, rho=0x9b6820, suppliedenv=0x9b6858)
+    at eval.c:667
+	body = (SEXP) 0xcbc2c0
+	formals = (SEXP) 0xbded60
+	actuals = (SEXP) 0xbded60
+	savedrho = <value optimized out>
+	newrho = (volatile SEXP) 0xbded98
+	f = (SEXP) 0xbded60
+	a = (SEXP) 0xbded60
+	tmp = (SEXP) 0x7fff9bb0ec10
+	cntxt = {nextcontext = 0x7fbc938efa20, callflag = 12, cjmpbuf =
+{{__jmpbuf = {140735805451280, -817784072210195607, 
+        12447072, 140447906200080, 12451192, 10184792,
+817847131706514281, 855545745441971049}, __mask_was_saved = 0, 
+      __saved_mask = {__val = {0, 0, 0, 0, 0, 0, 0, 9913992, 9913992,
+13802832, 140447901484316, 1, 14, 875920184165, 9, 
+          20441808}}}}, cstacktop = 5, evaldepth = 1, promargs =
+0xbdfd78, callfun = 0xcbfdd0, sysparent = 0x9b6820, 
+  call = 0xcbfc10, cloenv = 0xbded98, conexit = 0x974688, cend = 0,
+cenddata = 0x7fbc933b6d24, vmax = 0x0, intsusp = 0, 
+  handlerstack = 0x974688, restartstack = 0x974688, prstack = 0x0,
+nodestack = 0x9746d0}
+#109 0x00007fbc93486e73 in Rf_eval (e=0xcbfc10, rho=0x9b6820) at
+eval.c:505
+	op = <value optimized out>
+	tmp = (SEXP) 0xbdfd78
+	depthsave = 0
+	evalcount = 152
+#110 0x00007fbc934b2c9b in Rf_ReplIteration (rho=0x9b6820,
+savestack=<value optimized out>, browselevel=0, state=0x7fff9bb0efc0)
+    at main.c:257
+	c = 10
+	browsevalue = <value optimized out>
+	value = <value optimized out>
+	wasDisplayed = <value optimized out>
+#111 0x00007fbc934b2f08 in R_ReplConsole (rho=0x9b6820, savestack=0,
+browselevel=0) at main.c:306
+	status = <value optimized out>
+	state = {status = PARSE_OK, prompt_type = 1, browselevel = 0, 
+  buf = "install.packages ( \"spgrass6\" , dependencies = TRUE )\n",
+'\0' <repeats 4042 times>, bufp = 0x7fff9bb0f002 ""}
+#112 0x00007fbc934b2fa0 in run_Rmainloop () at main.c:966
+No locals.
+#113 0x000000000040098b in main (ac=<value optimized out>, av=<value
+optimized out>) at Rmain.c:33
+No locals.
+#114 0x00007fbc930535a6 in __libc_start_main (main=0x400970 <main>,
+argc=1, ubp_av=0x7fff9bb100f8, 
+    init=0x4009b0 <__libc_csu_init>, fini=<value optimized out>,
+rtld_fini=<value optimized out>, stack_end=0x7fff9bb100e8)
+    at libc-start.c:220
+	result = <value optimized out>
+	unwind_buf = {cancel_jmp_buf = {{jmp_buf = {4196784,
+-817785121637639319, 4196432, 140735805456624, 0, 0, 
+        817847130303519593, 855546256858176361}, mask_was_saved = 0}},
+priv = {pad = {0x0, 0x0, 0x1, 0x400970}, data = {
+      prev = 0x0, cleanup = 0x0, canceltype = 1}}}
+	not_first_call = <value optimized out>
+#115 0x0000000000400879 in _start ()
+at ../sysdeps/x86_64/elf/start.S:113
+No locals.
+--%<-----%<-----%<-----%<-----%<-----%<-----%<---
+
+
+From nikos.alexandris at felis.uni-freiburg.de  Mon Jul 27 22:08:26 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Mon Jul 27 22:08:23 2009
+Subject: [GRASS-stats] spgrass6 fails to build under R 2.9.1 and Ubuntu
+	Jaunty 64-bit
+In-Reply-To: <1248746736.11713.3.camel@vertical>
+References: <1248744689.5117.5.camel@vertical>
+	<1248746295.11097.1.camel@vertical> <1248746736.11713.3.camel@vertical>
+Message-ID: <1248746906.11713.5.camel@vertical>
+
+
+Nikos Alexandris wrote:
+> > > I am trying to get spgrass6 to work under R 2.9.1 but it fails (to
+> > > compile? -- code is below).
+
+( I post this on purpose separately )
+
+
+--%<---
+(gdb) l
+31	Rmain.c: No such file or directory.
+	in Rmain.c
+(gdb) frame 2
+#2  0x00007fbc93902dbb in _dl_open (file=0x7fff9bb05c40
+"/usr/lib64/R/modules//R_X11.so", mode=-2147483646, 
+    caller_dlopen=0x7fbc933df92b, nsid=-2, argc=1, argv=0x7fff9bb100f8,
+env=0x96fd60) at dl-open.c:596
+596	dl-open.c: No such file or directory.
+	in dl-open.c
+(gdb) l
+591	in dl-open.c
+--%<---
+
+From nikos.alexandris at felis.uni-freiburg.de  Mon Jul 27 22:26:14 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Mon Jul 27 22:26:12 2009
+Subject: [SOLVED] Re: [GRASS-stats] spgrass6 fails to build under R 2.9.1
+	and Ubuntu Jaunty 64-bit
+In-Reply-To: <1248746906.11713.5.camel@vertical>
+References: <1248744689.5117.5.camel@vertical>
+	<1248746295.11097.1.camel@vertical> <1248746736.11713.3.camel@vertical>
+	<1248746906.11713.5.camel@vertical>
+Message-ID: <1248747974.31825.3.camel@vertical>
+
+On Tue, 2009-07-28 at 04:08 +0200, Nikos Alexandris wrote:
+> Nikos Alexandris wrote:
+> > > > I am trying to get spgrass6 to work under R 2.9.1 but it fails (to
+> > > > compile? -- code is below).
+
+My R 2.9.1 was an installation of all debs that are available at "R
+binaries" for Ubuntu [1].
+
+Finally I got a tarball [2] and compiled from source. It worked. Seems
+that the debs miss some files (perhaps Rmain.c ?).
+
+Regards, Nikos
+---
+
+[1] http://cran.r-project.org/bin/linux/ubuntu/jaunty/
+[2] http://cran.r-project.org/src/base/R-2/R-2.9.1.tar.gz
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Jul 28 09:31:09 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Jul 28 09:31:09 2009
+Subject: [GRASS-stats] Re: [Qgis-user] rpy2 isntallation fails under Ubuntu
+ Jaunty for R 2.9.1
+In-Reply-To: <1248786524.2589.0.camel@vertical>
+References: <1248776532.5208.8.camel@vertical>
+	<200907281423.06468.rnuske@gwdg.de> <1248786524.2589.0.camel@vertical>
+Message-ID: <1248787869.5917.9.camel@vertical>
+
+On Tue, 2009-07-28 at 15:08 +0200, Nikos Alexandris wrote:
+> On Tue, 2009-07-28 at 14:23 +0200, Robert Nuske wrote:
+> > Hi Nikos,
+> > 
+> > I didn't have any problems on jaunty.
+> > 
+> > Downloaded rpy2 to /usr/local/src, gunziped/untared it, changed to rpy2-2.0.6 
+> > and run 'sudo python setup.py install'
+> > 
+> > This was last week for an r-base-dev from 
+> > http://cran.at.r-project.org/bin/linux/ubuntu jaunty/
+> > 
+> > 
+> > cheers,
+> >   robert
+> 
+> Thanks Robert. I got rid of R 2.9.1 from source and got the deb's from
+> the link above. Then rpy2 was successfully installed.
+> 
+> All the best, Nikos
+
+
+Just wanted to add what I posted in grass-stats:
+
+--%<---%<---%<---%<---%<---%<---%<---%<---%<---%<---%<---
+On Tue, 2009-07-28 at 04:08 +0200, Nikos Alexandris wrote:
+> Nikos Alexandris wrote:
+> > > > I am trying to get spgrass6 to work under R 2.9.1 but it fails
+(to
+> > > > compile? -- code is below).
+
+My R 2.9.1 was an installation of all debs that are available at "R
+binaries" for Ubuntu [1].
+
+Finally I got a tarball [2] and compiled from source. It worked. Seems
+that the debs miss some files (perhaps Rmain.c ?).
+
+Regards, Nikos
+---
+
+[1] http://cran.r-project.org/bin/linux/ubuntu/jaunty/
+[2] http://cran.r-project.org/src/base/R-2/R-2.9.1.tar.gz
+--%<---%<---%<---%<---%<---%<---%<---%<---%<---%<---%<---
+
+I had installed the all deb's on my own (and NOT by providing the link
+[1] in /etc/apt/sources.list). I could not install "spgrass6".
+
+Then I compiled/installed R 2.9.1 from source and "spgrass6" was
+installable... but not rpy2.
+
+Now I removed the "custom" R 2.9.1, copy-pasted the link [1]
+in /etc/apt/sources.list and installed R via ubuntu's package manager
+(that is: sudo apt-get install r-base r-base-dev. This way I could
+install rpy2.
+
+Now, it seems that I have managed to install "spgrass6" (it loads fine)
+but whenever I try to load "G <- gmeta6()" in R _OR_ whenever I exit an
+R session ( with q() ) I get error messages (again!!).
+
+Don't know what they are, if and how they affect R operations. Some code
+below:
+
+
+
+# working in R from within a GRASS session
+> library(spgrass6)
+
+Loading required package: sp
+Loading required package: rgdal
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Loaded GDAL runtime: GDAL 1.6.1, released 2009/05/11
+Path to GDAL shared files: /usr/local/share/gdal
+Loaded PROJ.4 runtime: Rel. 4.6.0, 21 Dec 2007
+Path to PROJ.4 shared files: (autodetected)
+Loading required package: XML
+GRASS GIS interface loaded with GRASS version: 6.4.0svn
+and location: wgs84
+
+
+
+# loading proj info
+G <- gmeta6()
+
+*** glibc detected *** g.region: double free or corruption (fasttop):
+0x0000000001530970 ***
+======= Backtrace: =========
+/lib/libc.so.6[0x7f90d13e3cb8]
+/lib/libc.so.6(cfree+0x76)[0x7f90d13e6276]
+/usr/lib/libstdc++.so.6(_ZNSsD1Ev+0x3d)[0x7f90cf54950d]
+/lib/libc.so.6(__cxa_finalize+0xb0)[0x7f90d13a2ab0]
+/usr/lib/libgeos-3.0.0.so[0x7f90cefbd1e6]
+======= Memory map: ========
+00400000-0040a000 r-xp 00000000 08:03
+26667                              /usr/local/grass-6.4.0svn/bin/g.region
+00609000-0060a000 r--p 00009000 08:03
+26667                              /usr/local/grass-6.4.0svn/bin/g.region
+0060a000-0060b000 rw-p 0000a000 08:03
+26667                              /usr/local/grass-6.4.0svn/bin/g.region
+0152f000-01550000 rw-p 0152f000 00:00 0
+[heap]
+7f90c8000000-7f90c8021000 rw-p 7f90c8000000 00:00 0 
+7f90c8021000-7f90cc000000 ---p 7f90c8021000 00:00 0 
+7f90cc89c000-7f90cc89f000 r-xp 00000000 08:03
+2590                       /lib/libgpg-error.so.0.3.0
+7f90cc89f000-7f90cca9e000 ---p 00003000 08:03
+2590                       /lib/libgpg-error.so.0.3.0
+7f90cca9e000-7f90cca9f000 rw-p 00002000 08:03
+2590                       /lib/libgpg-error.so.0.3.0
+7f90cca9f000-7f90ccb04000 r-xp 00000000 08:03
+2588                       /lib/libgcrypt.so.11.4.4
+7f90ccb04000-7f90ccd03000 ---p 00065000 08:03
+2588                       /lib/libgcrypt.so.11.4.4
+7f90ccd03000-7f90ccd04000 r--p 00064000 08:03
+2588                       /lib/libgcrypt.so.11.4.4
+7f90ccd04000-7f90ccd06000 rw-p 00065000 08:03
+2588                       /lib/libgcrypt.so.11.4.4
+7f90ccd06000-7f90ccd16000 r-xp 00000000 08:03
+9983                       /usr/lib/libtasn1.so.3.0.16
+7f90ccd16000-7f90ccf15000 ---p 00010000 08:03
+9983                       /usr/lib/libtasn1.so.3.0.16
+7f90ccf15000-7f90ccf16000 r--p 0000f000 08:03
+9983                       /usr/lib/libtasn1.so.3.0.16
+7f90ccf16000-7f90ccf17000 rw-p 00010000 08:03
+9983                       /usr/lib/libtasn1.so.3.0.16
+7f90ccf17000-7f90ccfba000 r-xp 00000000 08:03
+9498                       /usr/lib/libgnutls.so.26.4.6
+7f90ccfba000-7f90cd1b9000 ---p 000a3000 08:03
+9498                       /usr/lib/libgnutls.so.26.4.6
+7f90cd1b9000-7f90cd1c3000 r--p 000a2000 08:03
+9498                       /usr/lib/libgnutls.so.26.4.6
+7f90cd1c3000-7f90cd1c4000 rw-p 000ac000 08:03
+9498                       /usr/lib/libgnutls.so.26.4.6
+7f90cd1c4000-7f90cd1dd000 r-xp 00000000 08:03
+130996                     /usr/lib/libsasl2.so.2.0.22
+7f90cd1dd000-7f90cd3dc000 ---p 00019000 08:03
+130996                     /usr/lib/libsasl2.so.2.0.22
+7f90cd3dc000-7f90cd3dd000 r--p 00018000 08:03
+130996                     /usr/lib/libsasl2.so.2.0.22
+7f90cd3dd000-7f90cd3de000 rw-p 00019000 08:03
+130996                     /usr/lib/libsasl2.so.2.0.22
+7f90cd3de000-7f90cd3ec000 r-xp 00000000 08:03
+9697                       /usr/lib/liblber-2.4.so.2.4.1
+7f90cd3ec000-7f90cd5eb000 ---p 0000e000 08:03
+9697                       /usr/lib/liblber-2.4.so.2.4.1
+7f90cd5eb000-7f90cd5ec000 r--p 0000d000 08:03
+9697                       /usr/lib/liblber-2.4.so.2.4.1
+7f90cd5ec000-7f90cd5ed000 rw-p 0000e000 08:03
+9697                       /usr/lib/liblber-2.4.so.2.4.1
+7f90cd5ed000-7f90cd601000 r-xp 00000000 08:03
+7742                       /lib/libresolv-2.9.so
+7f90cd601000-7f90cd801000 ---p 00014000 08:03
+7742                       /lib/libresolv-2.9.so
+7f90cd801000-7f90cd802000 r--p 00014000 08:03
+7742                       /lib/libresolv-2.9.so
+7f90cd802000-7f90cd803000 rw-p 00015000 08:03
+7742                       /lib/libresolv-2.9.so
+7f90cd803000-7f90cd805000 rw-p 7f90cd803000 00:00 0 
+7f90cd805000-7f90cd807000 r-xp 00000000 08:03
+2596                       /lib/libkeyutils-1.2.so
+7f90cd807000-7f90cda06000 ---p 00002000 08:03
+2596                       /lib/libkeyutils-1.2.so
+7f90cda06000-7f90cda07000 r--p 00001000 08:03
+2596                       /lib/libkeyutils-1.2.so
+7f90cda07000-7f90cda08000 rw-p 00002000 08:03
+2596                       /lib/libkeyutils-1.2.so
+7f90cda08000-7f90cda0f000 r-xp 00000000 08:03
+41761                      /usr/lib/libkrb5support.so.0.1
+7f90cda0f000-7f90cdc0e000 ---p 00007000 08:03
+41761                      /usr/lib/libkrb5support.so.0.1
+7f90cdc0e000-7f90cdc0f000 r--p 00006000 08:03
+41761                      /usr/lib/libkrb5support.so.0.1
+7f90cdc0f000-7f90cdc10000 rw-p 00007000 08:03
+41761                      /usr/lib/libkrb5support.so.0.1
+7f90cdc10000-7f90cdc33000 r-xp 00000000 08:03
+41758                      /usr/lib/libk5crypto.so.3.1
+7f90cdc33000-7f90cde32000 ---p 00023000 08:03
+41758                      /usr/lib/libk5crypto.so.3.1
+7f90cde32000-7f90cde34000 r--p 00022000 08:03
+41758                      /usr/lib/libk5crypto.so.3.1
+7f90cde34000-7f90cde35000 rw-p 00024000 08:03
+41758                      /usr/lib/libk5crypto.so.3.1
+7f90cde35000-7f90cde79000 r-xp 00000000 08:03
+9702                       /usr/lib/libldap_r-2.4.so.2.4.1
+7f90cde79000-7f90ce079000 ---p 00044000 08:03
+9702                       /usr/lib/libldap_r-2.4.so.2.4.1
+7f90ce079000-7f90ce07a000 r--p 00044000 08:03
+9702                       /usr/lib/libldap_r-2.4.so.2.4.1
+7f90ce07a000-7f90ce07c000 rw-p 00045000 08:03
+9702                       /usr/lib/libldap_r-2.4.so.2.4.1
+7f90ce07c000-7f90ce07e000 rw-p 7f90ce07c000 00:00 0 
+7f90ce07e000-7f90ce087000 r-xp 00000000 08:03
+7729                       /lib/libcrypt-2.9.so
+7f90ce087000-7f90ce286000 ---p 00009000 08:03
+7729                       /lib/libcrypt-2.9.so
+7f90ce286000-7f90ce287000 r--p 00008000 08:03
+7729                       /lib/libcrypt-2.9.so
+7f90ce287000-7f90ce288000 rw-p 00009000 08:03
+7729                       /lib/libcrypt-2.9.so
+7f90ce288000-7f90ce2b6000 rw-p 7f90ce288000 00:00 0 
+7f90ce2b6000-7f90ce2e2000 r-xp 00000000 08:03
+41757                      /usr/lib/libgssapi_krb5.so.2.2
+7f90ce2e2000-7f90ce4e1000 ---p 0002c000 08:03
+41757                      /usr/lib/libgssapi_krb5.so.2.2
+7f90ce4e1000-7f90ce4e2000 r--p 0002b000 08:03
+41757                      /usr/lib/libgssapi_krb5.so.2.2
+7f90ce4e2000-7f90ce4e3000 rw-p 0002c000 08:03
+41757                      /usr/lib/libgssapi_krb5.so.2.2
+7f90ce4e3000-7f90ce4e6000 r-xp 00000000 08:03
+2572                       /lib/libcom_err.so.2.1
+7f90ce4e6000-7f90ce6e5000 ---p 00003000 08:03
+2572                       /lib/libcom_err.so.2.1
+7f90ce6e5000-7f90ce6e6000 r--p 00002000 08:03
+2572                       /lib/libcom_err.so.2.1
+7f90ce6e6000-7f90ce6e7000 rw-p 00003000 08:03
+2572                       /lib/libcom_err.so.2.1
+7f90ce6e7000-7f90ce77f000 r-xp 00000000 08:03
+41760                      /usr/lib/libkrb5.so.3.3
+7f90ce77f000-7f90ce97e000 ---p 00098000 08:03
+41760                      /usr/lib/libkrb5.so.3.3
+7f90ce97e000-7f90ce981000 r--p 00097000 08:03
+41760                      /usr/lib/libkrb5.so.3.3
+7f90ce981000-7f90ce982000 rw-p 0009a000 08:03
+41760                      /usr/lib/libkrb5.so.3.3
+7f90ce982000-7f90ceae5000 r-xp 00000000 08:03
+129184                     /lib/libcrypto.so.0.9.8
+7f90ceae5000-7f90cece4000 ---p 00163000 08:03
+129184                     /lib/libcrypto.so.0.9.8
+7f90cece4000-7f90cecf1000 r--p 00162000 08:03
+129184                     /lib/libcrypto.so.0.9.8
+7f90cecf1000-7f90ced07000 rw-p 0016f000 08:03
+129184                     /lib/libcrypto.so.0.9.8
+7f90ced07000-7f90ced0b000 rw-p 7f90ced07000 00:00 0 
+7f90ced0b000-7f90ced54000 r-xp 00000000 08:03
+129185                     /lib/libssl.so.0.9.8
+7f90ced54000-7f90cef54000 ---p 00049000 08:03
+129185                     /lib/libssl.so.0.9.8
+7f90cef54000-7f90cef55000 r--p 00049000 08:03
+129185                     /lib/libssl.so.0.9.8
+7f90cef55000-7f90cef5a000 rw-p 0004a000 08:03
+129185                     /lib/libssl.so.0.9.8
+7f90cef5a000-7f90cf085000 r-xp 00000000 08:03
+369746                     /usr/lib/libgeos-3.0.0.so
+7f90cf085000-7f90cf284000 ---p 0012b000 08:03
+369746                     /usr/lib/libgeos-3.0.0.so
+7f90cf284000-7f90cf28b000 rw-p 0012a000 08:03
+369746                     /usr/lib/libgeos-3.0.0.so
+7f90cf28b000-7f90cf2a1000 r-xp 00000000 08:03
+2586                       /lib/libgcc_s.so.1
+7f90cf2a1000-7f90cf4a1000 ---p 00016000 08:03
+2586                       /lib/libgcc_s.so.1
+7f90cf4a1000-7f90cf4a2000 r--p 00016000 08:03
+2586                       /lib/libgcc_s.so.1
+7f90cf4a2000-7f90cf4a3000 rw-p 00017000 08:03
+2586                       /lib/libgcc_s.so.1
+7f90cf4a3000-7f90cf594000 r-xp 00000000 08:03
+9977                       /usr/lib/libstdc++.soAborted
+*** glibc detected *** g.region: double free or corruption (fasttop):
+0x000000000074f970 ***
+======= Backtrace: =========
+/lib/libc.so.6[0x7f5eb256ecb8]
+/lib/libc.so.6(cfree+0x76)[0x7f5eb2571276]
+/usr/lib/libstdc++.so.6(_ZNSsD1Ev+0x3d)[0x7f5eb06d450d]
+/lib/libc.so.6(__cxa_finalize+0xb0)[0x7f5eb252dab0]
+/usr/lib/libgeos-3.0.0.so[0x7f5eb01481e6]
+======= Memory map: ========
+00400000-0040a000 r-xp 00000000 08:03
+26667                              /usr/local/grass-6.4.0svn/bin/g.region
+00609000-0060a000 r--p 00009000 08:03
+26667                              /usr/local/grass-6.4.0svn/bin/g.region
+0060a000-0060b000 rw-p 0000a000 08:03
+26667                              /usr/local/grass-6.4.0svn/bin/g.region
+0074e000-0076f000 rw-p 0074e000 00:00 0
+[heap]
+7f5ea8000000-7f5ea8021000 rw-p 7f5ea8000000 00:00 0 
+7f5ea8021000-7f5eac000000 ---p 7f5ea8021000 00:00 0 
+7f5eada27000-7f5eada2a000 r-xp 00000000 08:03
+2590                       /lib/libgpg-error.so.0.3.0
+7f5eada2a000-7f5eadc29000 ---p 00003000 08:03
+2590                       /lib/libgpg-error.so.0.3.0
+7f5eadc29000-7f5eadc2a000 rw-p 00002000 08:03
+2590                       /lib/libgpg-error.so.0.3.0
+7f5eadc2a000-7f5eadc8f000 r-xp 00000000 08:03
+2588                       /lib/libgcrypt.so.11.4.4
+7f5eadc8f000-7f5eade8e000 ---p 00065000 08:03
+2588                       /lib/libgcrypt.so.11.4.4
+7f5eade8e000-7f5eade8f000 r--p 00064000 08:03
+2588                       /lib/libgcrypt.so.11.4.4
+7f5eade8f000-7f5eade91000 rw-p 00065000 08:03
+2588                       /lib/libgcrypt.so.11.4.4
+7f5eade91000-7f5eadea1000 r-xp 00000000 08:03
+9983                       /usr/lib/libtasn1.so.3.0.16
+7f5eadea1000-7f5eae0a0000 ---p 00010000 08:03
+9983                       /usr/lib/libtasn1.so.3.0.16
+7f5eae0a0000-7f5eae0a1000 r--p 0000f000 08:03
+9983                       /usr/lib/libtasn1.so.3.0.16
+7f5eae0a1000-7f5eae0a2000 rw-p 00010000 08:03
+9983                       /usr/lib/libtasn1.so.3.0.16
+7f5eae0a2000-7f5eae145000 r-xp 00000000 08:03
+9498                       /usr/lib/libgnutls.so.26.4.6
+7f5eae145000-7f5eae344000 ---p 000a3000 08:03
+9498                       /usr/lib/libgnutls.so.26.4.6
+7f5eae344000-7f5eae34e000 r--p 000a2000 08:03
+9498                       /usr/lib/libgnutls.so.26.4.6
+7f5eae34e000-7f5eae34f000 rw-p 000ac000 08:03
+9498                       /usr/lib/libgnutls.so.26.4.6
+7f5eae34f000-7f5eae368000 r-xp 00000000 08:03
+130996                     /usr/lib/libsasl2.so.2.0.22
+7f5eae368000-7f5eae567000 ---p 00019000 08:03
+130996                     /usr/lib/libsasl2.so.2.0.22
+7f5eae567000-7f5eae568000 r--p 00018000 08:03
+130996                     /usr/lib/libsasl2.so.2.0.22
+7f5eae568000-7f5eae569000 rw-p 00019000 08:03
+130996                     /usr/lib/libsasl2.so.2.0.22
+7f5eae569000-7f5eae577000 r-xp 00000000 08:03
+9697                       /usr/lib/liblber-2.4.so.2.4.1
+7f5eae577000-7f5eae776000 ---p 0000e000 08:03
+9697                       /usr/lib/liblber-2.4.so.2.4.1
+7f5eae776000-7f5eae777000 r--p 0000d000 08:03
+9697                       /usr/lib/liblber-2.4.so.2.4.1
+7f5eae777000-7f5eae778000 rw-p 0000e000 08:03
+9697                       /usr/lib/liblber-2.4.so.2.4.1
+7f5eae778000-7f5eae78c000 r-xp 00000000 08:03
+7742                       /lib/libresolv-2.9.so
+7f5eae78c000-7f5eae98c000 ---p 00014000 08:03
+7742                       /lib/libresolv-2.9.so
+7f5eae98c000-7f5eae98d000 r--p 00014000 08:03
+7742                       /lib/libresolv-2.9.so
+7f5eae98d000-7f5eae98e000 rw-p 00015000 08:03
+7742                       /lib/libresolv-2.9.so
+7f5eae98e000-7f5eae990000 rw-p 7f5eae98e000 00:00 0 
+7f5eae990000-7f5eae992000 r-xp 00000000 08:03
+2596                       /lib/libkeyutils-1.2.so
+7f5eae992000-7f5eaeb91000 ---p 00002000 08:03
+2596                       /lib/libkeyutils-1.2.so
+7f5eaeb91000-7f5eaeb92000 r--p 00001000 08:03
+2596                       /lib/libkeyutils-1.2.so
+7f5eaeb92000-7f5eaeb93000 rw-p 00002000 08:03
+2596                       /lib/libkeyutils-1.2.so
+7f5eaeb9300Aborted
+*** glibc detected *** g.proj: double free or corruption (fasttop):
+0x0000000001667970 ***
+======= Backtrace: =========
+/lib/libc.so.6[0x7f22d04accb8]
+/lib/libc.so.6(cfree+0x76)[0x7f22d04af276]
+/usr/lib/libstdc++.so.6(_ZNSsD1Ev+0x3d)[0x7f22ce61250d]
+/lib/libc.so.6(__cxa_finalize+0xb0)[0x7f22d046bab0]
+/usr/lib/libgeos-3.0.0.so[0x7f22ce0861e6]
+======= Memory map: ========
+00400000-00406000 r-xp 00000000 08:03
+26665                              /usr/local/grass-6.4.0svn/bin/g.proj
+00605000-00606000 r--p 00005000 08:03
+26665                              /usr/local/grass-6.4.0svn/bin/g.proj
+00606000-00607000 rw-p 00006000 08:03
+26665                              /usr/local/grass-6.4.0svn/bin/g.proj
+01666000-01687000 rw-p 01666000 00:00 0
+[heap]
+7f22c4000000-7f22c4021000 rw-p 7f22c4000000 00:00 0 
+7f22c4021000-7f22c8000000 ---p 7f22c4021000 00:00 0 
+7f22cb965000-7f22cb968000 r-xp 00000000 08:03
+2590                       /lib/libgpg-error.so.0.3.0
+7f22cb968000-7f22cbb67000 ---p 00003000 08:03
+2590                       /lib/libgpg-error.so.0.3.0
+7f22cbb67000-7f22cbb68000 rw-p 00002000 08:03
+2590                       /lib/libgpg-error.so.0.3.0
+7f22cbb68000-7f22cbbcd000 r-xp 00000000 08:03
+2588                       /lib/libgcrypt.so.11.4.4
+7f22cbbcd000-7f22cbdcc000 ---p 00065000 08:03
+2588                       /lib/libgcrypt.so.11.4.4
+7f22cbdcc000-7f22cbdcd000 r--p 00064000 08:03
+2588                       /lib/libgcrypt.so.11.4.4
+7f22cbdcd000-7f22cbdcf000 rw-p 00065000 08:03
+2588                       /lib/libgcrypt.so.11.4.4
+7f22cbdcf000-7f22cbddf000 r-xp 00000000 08:03
+9983                       /usr/lib/libtasn1.so.3.0.16
+7f22cbddf000-7f22cbfde000 ---p 00010000 08:03
+9983                       /usr/lib/libtasn1.so.3.0.16
+7f22cbfde000-7f22cbfdf000 r--p 0000f000 08:03
+9983                       /usr/lib/libtasn1.so.3.0.16
+7f22cbfdf000-7f22cbfe0000 rw-p 00010000 08:03
+9983                       /usr/lib/libtasn1.so.3.0.16
+7f22cbfe0000-7f22cc083000 r-xp 00000000 08:03
+9498                       /usr/lib/libgnutls.so.26.4.6
+7f22cc083000-7f22cc282000 ---p 000a3000 08:03
+9498                       /usr/lib/libgnutls.so.26.4.6
+7f22cc282000-7f22cc28c000 r--p 000a2000 08:03
+9498                       /usr/lib/libgnutls.so.26.4.6
+7f22cc28c000-7f22cc28d000 rw-p 000ac000 08:03
+9498                       /usr/lib/libgnutls.so.26.4.6
+7f22cc28d000-7f22cc2a6000 r-xp 00000000 08:03
+130996                     /usr/lib/libsasl2.so.2.0.22
+7f22cc2a6000-7f22cc4a5000 ---p 00019000 08:03
+130996                     /usr/lib/libsasl2.so.2.0.22
+7f22cc4a5000-7f22cc4a6000 r--p 00018000 08:03
+130996                     /usr/lib/libsasl2.so.2.0.22
+7f22cc4a6000-7f22cc4a7000 rw-p 00019000 08:03
+130996                     /usr/lib/libsasl2.so.2.0.22
+7f22cc4a7000-7f22cc4b5000 r-xp 00000000 08:03
+9697                       /usr/lib/liblber-2.4.so.2.4.1
+7f22cc4b5000-7f22cc6b4000 ---p 0000e000 08:03
+9697                       /usr/lib/liblber-2.4.so.2.4.1
+7f22cc6b4000-7f22cc6b5000 r--p 0000d000 08:03
+9697                       /usr/lib/liblber-2.4.so.2.4.1
+7f22cc6b5000-7f22cc6b6000 rw-p 0000e000 08:03
+9697                       /usr/lib/liblber-2.4.so.2.4.1
+7f22cc6b6000-7f22cc6ca000 r-xp 00000000 08:03
+7742                       /lib/libresolv-2.9.so
+7f22cc6ca000-7f22cc8ca000 ---p 00014000 08:03
+7742                       /lib/libresolv-2.9.so
+7f22cc8ca000-7f22cc8cb000 r--p 00014000 08:03
+7742                       /lib/libresolv-2.9.so
+7f22cc8cb000-7f22cc8cc000 rw-p 00015000 08:03
+7742                       /lib/libresolv-2.9.so
+7f22cc8cc000-7f22cc8ce000 rw-p 7f22cc8cc000 00:00 0 
+7f22cc8ce000-7f22cc8d0000 r-xp 00000000 08:03
+2596                       /lib/libkeyutils-1.2.so
+7f22cc8d0000-7f22ccacf000 ---p 00002000 08:03
+2596                       /lib/libkeyutils-1.2.so
+7f22ccacf000-7f22ccad0000 r--p 00001000 08:03
+2596                       /lib/libkeyutils-1.2.so
+7f22ccad0000-7f22ccad1000 rw-p 00002000 08:03
+2596                       /lib/libkeyutils-1.2.so
+7f22ccad1000-7f22ccad8000 r-xp 00000000 08:03
+41761                      /usr/lib/libkrb5support.so.0.1
+7f22ccad8000-7f22cccd7000 ---p 00007000 08:03
+41761                      /usr/lib/libkrb5support.so.0.1
+7f22cccd7000-7f22cccd8000 r--p 00006000 08:03
+41761                      /usr/lib/libkrb5support.so.0.1
+7f22cccd8000-7f22cccd9000 rw-p 00007000 08:03
+41761                      /usr/lib/libkrb5support.so.0.1
+7f22cccd9000-7f22cccfc000 r-xp 00000000 08:03
+41758                      /usr/lib/libk5crypto.so.3.1
+7f22cccfc000-7f22ccefb000 ---p 00023000 08:03
+41758                      /usr/lib/libk5crypto.so.3.1
+7f22ccefb000-7f22ccefd000 r--p 00022000 08:03
+41758                      /usr/lib/libk5crypto.so.3.1
+7f22ccefd000-7f22ccefe000 rw-p 00024000 08:03
+41758                      /usr/lib/libk5crypto.so.3.1
+7f22ccefe000-7f22ccf42000 r-xp 00000000 08:03
+9702                       /usr/lib/libldap_r-2.4.so.2.4.1
+7f22ccf42000-7f22cd142000 ---p 00044000 08:03
+9702                       /usr/lib/libldap_r-2.4.so.2.4.1
+7f22cd142000-7f22cd143000 r--p 00044000 08:03
+9702                       /usr/lib/libldap_r-2.4.so.2.4.1
+7f22cd143000-7f22cd145000 rw-p 00045000 08:03
+9702                       /usr/lib/libldap_r-2.4.so.2.4.1
+7f22cd145000-7f22cd147000 rw-p 7f22cd145000 00:00 0 
+7f22cd147000-7f22cd150000 r-xp 00000000 08:03
+7729                       /lib/libcrypt-2.9.so
+7f22cd150000-7f22cd34f000 ---p 00009000 08:03
+7729                       /lib/libcrypt-2.9.so
+7f22cd34f000-7f22cd350000 r--p 00008000 08:03
+7729                       /lib/libcrypt-2.9.so
+7f22cd350000-7f22cd351000 rw-p 00009000 08:03
+7729                       /lib/libcrypt-2.9.so
+7f22cd351000-7f22cd37f000 rw-p 7f22cd351000 00:00 0 
+7f22cd37f000-7f22cd3ab000 r-xp 00000000 08:03
+41757                      /usr/lib/libgssapi_krb5.so.2.2
+7f22cd3ab000-7f22cd5aa000 ---p 0002c000 08:03
+41757                      /usr/lib/libgssapi_krb5.so.2.2
+7f22cd5aa000-7f22cd5ab000 r--p 0002b000 08:03
+41757                      /usr/lib/libgssapi_krb5.so.2.2
+7f22cd5ab000-7f22cd5ac000 rw-p 0002c000 08:03
+41757                      /usr/lib/libgssapi_krb5.so.2.2
+7f22cd5ac000-7f22cd5af000 r-xp 00000000 08:03
+2572                       /lib/libcom_err.so.2.1
+7f22cd5af000-7f22cd7ae000 ---p 00003000 08:03
+2572                       /lib/libcom_err.so.2.1
+7f22cd7ae000-7f22cd7af000 r--p 00002000 08:03
+2572                       /lib/libcom_err.so.2.1
+7f22cd7af000-7f22cd7b0000 rw-p 00003000 08:03
+2572                       /lib/libcom_err.so.2.1
+7f22cd7b0000-7f22cd848000 r-xp 00000000 08:03
+41760                      /usr/lib/libkrb5.so.3.3
+7f22cd848000-7f22cda47000 ---p 00098000 08:03
+41760                      /usr/lib/libkrb5.so.3.3
+7f22cda47000-7f22cda4a000 r--p 00097000 08:03
+41760                      /usr/lib/libkrb5.so.3.3
+7f22cda4a000-7f22cda4b000 rw-p 0009a000 08:03
+41760                      /usr/lib/libkrb5.so.3.3
+7f22cda4b000-7f22cdbae000 r-xp 00000000 08:03
+129184                     /lib/libcrypto.so.0.9.8
+7f22cdbae000-7f22cddad000 ---p 00163000 08:03
+129184                     /lib/libcrypto.so.0.9.8
+7f22cddad000-7f22cddba000 r--p 00162000 08:03
+129184                     /lib/libcrypto.so.0.9.8
+7f22cddba000-7f22cddd0000 rw-p 0016f000 08:03
+129184                     /lib/libcrypto.so.0.9.8
+7f22cddd0000-7f22cddd4000 rw-p 7f22cddd0000 00:00 0 
+7f22cddd4000-7f22cde1d000 r-xp 00000000 08:03
+129185                     /lib/libssl.so.0.9.8
+7f22cde1d000-7f22ce01d000 ---p 00049000 08:03
+129185                     /lib/libssl.so.0.9.8
+7f22ce01d000-7f22ce01e000 r--p 00049000 08:03
+129185                     /lib/libssl.so.0.9.8
+7f22ce01e000-7f22ce023000 rw-p 0004a000 08:03
+129185                     /lib/libssl.so.0.9.8
+7f22ce023000-7f22ce14e000 r-xp 00000000 08:03
+369746                     /usr/lib/libgeos-3.0.0.so
+7f22ce14e000-7f22ce34d000 ---p 0012b000 08:03
+369746                     /usr/lib/libgeos-3.0.0.so
+7f22ce34d000-7f22ce354000 rw-p 0012a000 08:03
+369746                     /usr/lib/libgeos-3.0.0.so
+7f22ce354000-7f22ce36a000 r-xp 00000000 08:03
+2586                       /lib/libgcc_s.so.1
+7f22ce36a000-7f22ce56a000 ---p 00016000 08:03
+2586                       /lib/libgcc_s.so.1
+7f22ce56a000-7f22ce56b000 r--p 00016000 08:03
+2586                       /lib/libgcc_s.so.1
+7f22ce56b000-7f22ce56c000 rw-p 00017000 08:03
+2586                       /lib/libgcc_s.so.1
+7f22ce56c000-7f22ce65d000 r-xp 00000000 08:03
+9977                       /usr/lib/libstdc++.so.6.0.1Aborted
+*** glibc detected *** g.proj: double free or corruption (fasttop):
+0x0000000001836970 ***
+======= Backtrace: =========
+/lib/libc.so.6[0x7fadc86f7cb8]
+/lib/libc.so.6(cfree+0x76)[0x7fadc86fa276]
+/usr/lib/libstdc++.so.6(_ZNSsD1Ev+0x3d)[0x7fadc685d50d]
+/lib/libc.so.6(__cxa_finalize+0xb0)[0x7fadc86b6ab0]
+/usr/lib/libgeos-3.0.0.so[0x7fadc62d11e6]
+======= Memory map: ========
+00400000-00406000 r-xp 00000000 08:03
+26665                              /usr/local/grass-6.4.0svn/bin/g.proj
+00605000-00606000 r--p 00005000 08:03
+26665                              /usr/local/grass-6.4.0svn/bin/g.proj
+00606000-00607000 rw-p 00006000 08:03
+26665                              /usr/local/grass-6.4.0svn/bin/g.proj
+01835000-01856000 rw-p 01835000 00:00 0
+[heap]
+7fadbc000000-7fadbc021000 rw-p 7fadbc000000 00:00 0 
+7fadbc021000-7fadc0000000 ---p 7fadbc021000 00:00 0 
+7fadc3bb0000-7fadc3bb3000 r-xp 00000000 08:03
+2590                       /lib/libgpg-error.so.0.3.0
+7fadc3bb3000-7fadc3db2000 ---p 00003000 08:03
+2590                       /lib/libgpg-error.so.0.3.0
+7fadc3db2000-7fadc3db3000 rw-p 00002000 08:03
+2590                       /lib/libgpg-error.so.0.3.0
+7fadc3db3000-7fadc3e18000 r-xp 00000000 08:03
+2588                       /lib/libgcrypt.so.11.4.4
+7fadc3e18000-7fadc4017000 ---p 00065000 08:03
+2588                       /lib/libgcrypt.so.11.4.4
+7fadc4017000-7fadc4018000 r--p 00064000 08:03
+2588                       /lib/libgcrypt.so.11.4.4
+7fadc4018000-7fadc401a000 rw-p 00065000 08:03
+2588                       /lib/libgcrypt.so.11.4.4
+7fadc401a000-7fadc402a000 r-xp 00000000 08:03
+9983                       /usr/lib/libtasn1.so.3.0.16
+7fadc402a000-7fadc4229000 ---p 00010000 08:03
+9983                       /usr/lib/libtasn1.so.3.0.16
+7fadc4229000-7fadc422a000 r--p 0000f000 08:03
+9983                       /usr/lib/libtasn1.so.3.0.16
+7fadc422a000-7fadc422b000 rw-p 00010000 08:03
+9983                       /usr/lib/libtasn1.so.3.0.16
+7fadc422b000-7fadc42ce000 r-xp 00000000 08:03
+9498                       /usr/lib/libgnutls.so.26.4.6
+7fadc42ce000-7fadc44cd000 ---p 000a3000 08:03
+9498                       /usr/lib/libgnutls.so.26.4.6
+7fadc44cd000-7fadc44d7000 r--p 000a2000 08:03
+9498                       /usr/lib/libgnutls.so.26.4.6
+7fadc44d7000-7fadc44d8000 rw-p 000ac000 08:03
+9498                       /usr/lib/libgnutls.so.26.4.6
+7fadc44d8000-7fadc44f1000 r-xp 00000000 08:03
+130996                     /usr/lib/libsasl2.so.2.0.22
+7fadc44f1000-7fadc46f0000 ---p 00019000 08:03
+130996                     /usr/lib/libsasl2.so.2.0.22
+7fadc46f0000-7fadc46f1000 r--p 00018000 08:03
+130996                     /usr/lib/libsasl2.so.2.0.22
+7fadc46f1000-7fadc46f2000 rw-p 00019000 08:03
+130996                     /usr/lib/libsasl2.so.2.0.22
+7fadc46f2000-7fadc4700000 r-xp 00000000 08:03
+9697                       /usr/lib/liblber-2.4.so.2.4.1
+7fadc4700000-7fadc48ff000 ---p 0000e000 08:03
+9697                       /usr/lib/liblber-2.4.so.2.4.1
+7fadc48ff000-7fadc4900000 r--p 0000d000 08:03
+9697                       /usr/lib/liblber-2.4.so.2.4.1
+7fadc4900000-7fadc4901000 rw-p 0000e000 08:03
+9697                       /usr/lib/liblber-2.4.so.2.4.1
+7fadc4901000-7fadc4915000 r-xp 00000000 08:03
+7742                       /lib/libresolv-2.9.so
+7fadc4915000-7fadc4b15000 ---p 00014000 08:03
+7742                       /lib/libresolv-2.9.so
+7fadc4b15000-7fadc4b16000 r--p 00014000 08:03
+7742                       /lib/libresolv-2.9.so
+7fadc4b16000-7fadc4b17000 rw-p 00015000 08:03
+7742                       /lib/libresolv-2.9.so
+7fadc4b17000-7fadc4b19000 rw-p 7fadc4b17000 00:00 0 
+7fadc4b19000-7fadc4b1b000 r-xp 00000000 08:03
+2596                       /lib/libkeyutils-1.2.so
+7fadc4b1b000-7fadc4d1a000 ---p 00002000 08:03
+2596                       /lib/libkeyutils-1.2.so
+7fadc4d1a000-7fadc4d1b000 r--p 00001000 08:03
+2596                       /lib/libkeyutils-1.2.so
+7fadc4d1b000-7fadc4d1c000 rw-p 00002000 08:03
+2596                       /lib/libkeyutils-1.2.so
+7fadc4d1c000-7fadc4d23000 r-xp 00000000 08:03
+41761                      /usr/lib/libkrb5support.so.0.1
+7fadc4d23000-7fadc4f22000 ---p 00007000 08:03
+41761                      /usr/lib/libkrb5support.so.0.1
+7fadc4f22000-7fadc4f23000 r--p 00006000 08:03
+41761                      /usr/lib/libkrb5support.so.0.1
+7fadc4f23000-7fadc4f24000 rw-p 00007000 08:03
+41761                      /usr/lib/libkrb5support.so.0.1
+7fadc4f24000-7fadc4f47000 r-xp 00000000 08:03
+41758                      /usr/lib/libk5crypto.so.3.1
+7fadc4f47000-7fadc5146000 ---p 00023000 08:03
+41758                      /usr/lib/libk5crypto.so.3.1
+7fadc5146000-7fadc5148000 r--p 00022000 08:03
+41758                      /usr/lib/libk5crypto.so.3.1
+7fadc5148000-7fadc5149000 rw-p 00024000 08:03
+41758                      /usr/lib/libk5crypto.so.3.1
+7fadc5149000-7fadc518d000 r-xp 00000000 08:03
+9702                       /usr/lib/libldap_r-2.4.so.2.4.1
+7fadc518d000-7fadc538d000 ---p 00044000 08:03
+9702                       /usr/lib/libldap_r-2.4.so.2.4.1
+7fadc538d000-7fadc538e000 r--p 00044000 08:03
+9702                       /usr/lib/libldap_r-2.4.so.2.4.1
+7fadc538e000-7fadc5390000 rw-p 00045000 08:03
+9702                       /usr/lib/libldap_r-2.4.so.2.4.1
+7fadc5390000-7fadc5392000 rw-p 7fadc5390000 00:00 0 
+7fadc5392000-7fadc539b000 r-xp 00000000 08:03
+7729                       /lib/libcrypt-2.9.so
+7fadc539b000-7fadc559a000 ---p 00009000 08:03
+7729                       /lib/libcrypt-2.9.so
+7fadc559a000-7fadc559b000 r--p 00008000 08:03
+7729                       /lib/libcrypt-2.9.so
+7fadc559b000-7fadc559c000 rw-p 00009000 08:03
+7729                       /lib/libcrypt-2.9.so
+7fadc559c000-7fadc55ca000 rw-p 7fadc559c000 00:00 0 
+7fadc55ca000-7fadc55f6000 r-xp 00000000 08:03
+41757                      /usr/lib/libgssapi_krb5.so.2.2
+7fadc55f6000-7fadc57f5000 ---p 0002c000 08:03
+41757                      /usr/lib/libgssapi_krb5.so.2.2
+7fadc57f5000-7fadc57f6000 r--p 0002b000 08:03
+41757                      /usr/lib/libgssapi_krb5.so.2.2
+7fadc57f6000-7fadc57f7000 rw-p 0002c000 08:03
+41757                      /usr/lib/libgssapi_krb5.so.2.2
+7fadc57f7000-7fadc57fa000 r-xp 00000000 08:03
+2572                       /lib/libcom_err.so.2.1
+7fadc57fa000-7fadc59f9000 ---p 00003000 08:03
+2572                       /lib/libcom_err.so.2.1
+7fadc59f9000-7fadc59fa000 r--p 00002000 08:03
+2572                       /lib/libcom_err.so.2.1
+7fadc59fa000-7fadc59fb000 rw-p 00003000 08:03
+2572                       /lib/libcom_err.so.2.1
+7fadc59fb000-7fadc5a93000 r-xp 00000000 08:03
+41760                      /usr/lib/libkrb5.so.3.3
+7fadc5a93000-7fadc5c92000 ---p 00098000 08:03
+41760                      /usr/lib/libkrb5.so.3.3
+7fadc5c92000-7fadc5c95000 r--p 00097000 08:03
+41760                      /usr/lib/libkrb5.so.3.3
+7fadc5c95000-7fadc5c96000 rw-p 0009a000 08:03
+41760                      /usr/lib/libkrb5.so.3.3
+7fadc5c96000-7fadc5df9000 r-xp 00000000 08:03
+129184                     /lib/libcrypto.so.0.9.8
+7fadc5df9000-7fadc5ff8000 ---p 00163000 08:03
+129184                     /lib/libcrypto.so.0.9.8
+7fadc5ff8000-7fadc6005000 r--p 00162000 08:03
+129184                     /lib/libcrypto.so.0.9.8
+7fadc6005000-7fadc601b000 rw-p 0016f000 08:03
+129184                     /lib/libcrypto.so.0.9.8
+7fadc601b000-7fadc601f000 rw-p 7fadc601b000 00:00 0 
+7fadc601f000-7fadc6068000 r-xp 00000000 08:03
+129185                     /lib/libssl.so.0.9.8
+7fadc6068000-7fadc6268000 ---p 00049000 08:03
+129185                     /lib/libssl.so.0.9.8
+7fadc6268000-7fadc6269000 r--p 00049000 08:03
+129185                     /lib/libssl.so.0.9.8
+7fadc6269000-7fadc626e000 rw-p 0004a000 08:03
+129185                     /lib/libssl.so.0.9.8
+7fadc626e000-7fadc6399000 r-xp 00000000 08:03
+369746                     /usr/lib/libgeos-3.0.0.so
+7fadc6399000-7fadc6598000 ---p 0012b000 08:03
+369746                     /usr/lib/libgeos-3.0.0.so
+7fadc6598000-7fadc659f000 rw-p 0012a000 08:03
+369746                     /usr/lib/libgeos-3.0.0.so
+7fadc659f000-7fadc65b5000 r-xp 00000000 08:03
+2586                       /lib/libgcc_s.so.1
+7fadc65b5000-7fadc67b5000 ---p 00016000 08:03
+2586                       /lib/libgcc_s.so.1
+7fadc67b5000-7fadc67b6000 r--p 00016000 08:03
+2586                       /lib/libgcc_s.so.1
+7fadc67b6000-7fadc67b7000 rw-p 00017000 08:03
+2586                       /lib/libgcc_s.so.1
+7fadc67b7000-7fadc68a8000 r-xp 00000000 08:03
+9977                       /usr/lib/libstdc++.so.6.0.1Aborted
+
+
+
+# exiting R
+q()
+
+Save workspace image? [y/n/c]: n
+*** glibc detected *** /usr/lib64/R/bin/exec/R: double free or
+corruption (fasttop): 0x000000000175a8c0 ***
+======= Backtrace: =========
+/lib/libc.so.6[0x7f71bc5e3cb8]
+/lib/libc.so.6(cfree+0x76)[0x7f71bc5e6276]
+/usr/lib/libstdc++.so.6(_ZNSsD1Ev+0x3d)[0x7f71b844e50d]
+/lib/libc.so.6(exit+0x9d)[0x7f71bc5a26ed]
+/usr/lib64/R/lib/libR.so[0x7f71bcabbae8]
+/usr/lib64/R/lib/libR.so[0x7f71bc9e837e]
+/usr/lib64/R/lib/libR.so[0x7f71bc9fce99]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x444)[0x7f71bc9bdf24]
+/usr/lib64/R/lib/libR.so(Rf_applyClosure+0x2bb)[0x7f71bc9c1aab]
+/usr/lib64/R/lib/libR.so(Rf_eval+0x393)[0x7f71bc9bde73]
+/usr/lib64/R/lib/libR.so(Rf_ReplIteration+0x1eb)[0x7f71bc9e9c9b]
+/usr/lib64/R/lib/libR.so[0x7f71bc9e9f08]
+/usr/lib64/R/lib/libR.so(run_Rmainloop+0x50)[0x7f71bc9e9fa0]
+/usr/lib64/R/bin/exec/R(main+0x1b)[0x40098b]
+/lib/libc.so.6(__libc_start_main+0xe6)[0x7f71bc58a5a6]
+/usr/lib64/R/bin/exec/R[0x400879]
+======= Memory map: ========
+00400000-00401000 r-xp 00000000 08:03
+145343                             /usr/lib/R/bin/exec/R
+00600000-00601000 r--p 00000000 08:03
+145343                             /usr/lib/R/bin/exec/R
+00601000-00602000 rw-p 00001000 08:03
+145343                             /usr/lib/R/bin/exec/R
+0143d000-037c8000 rw-p 0143d000 00:00 0
+[heap]
+7f71ac000000-7f71ac021000 rw-p 7f71ac000000 00:00 0 
+7f71ac021000-7f71b0000000 ---p 7f71ac021000 00:00 0 
+7f71b1865000-7f71b19b8000 r-xp 00000000 08:03
+20890                      /usr/lib/libxml2.so.2.6.32
+7f71b19b8000-7f71b1bb7000 ---p 00153000 08:03
+20890                      /usr/lib/libxml2.so.2.6.32
+7f71b1bb7000-7f71b1bbf000 r--p 00152000 08:03
+20890                      /usr/lib/libxml2.so.2.6.32
+7f71b1bbf000-7f71b1bc1000 rw-p 0015a000 08:03
+20890                      /usr/lib/libxml2.so.2.6.32
+7f71b1bc1000-7f71b1bc2000 rw-p 7f71b1bc1000 00:00 0 
+7f71b1bc2000-7f71b1bdd000 r-xp 00000000 08:03
+160572                     /usr/local/lib/R/site-library/XML/libs/XML.so
+7f71b1bdd000-7f71b1ddd000 ---p 0001b000 08:03
+160572                     /usr/local/lib/R/site-library/XML/libs/XML.so
+7f71b1ddd000-7f71b1dde000 r--p 0001b000 08:03
+160572                     /usr/local/lib/R/site-library/XML/libs/XML.so
+7f71b1dde000-7f71b1ddf000 rw-p 0001c000 08:03
+160572                     /usr/local/lib/R/site-library/XML/libs/XML.so
+7f71b1ddf000-7f71b1dea000 r-xp 00000000 08:03
+161788                     /usr/local/lib/gdalplugins/ogr_GRASS.so
+7f71b1dea000-7f71b1fea000 ---p 0000b000 08:03
+161788                     /usr/local/lib/gdalplugins/ogr_GRASS.so
+7f71b1fea000-7f71b1feb000 r--p 0000b000 08:03
+161788                     /usr/local/lib/gdalplugins/ogr_GRASS.so
+7f71b1feb000-7f71b1fec000 rw-p 0000c000 08:03
+161788                     /usr/local/lib/gdalplugins/ogr_GRASS.so
+7f71b1fec000-7f71b20a2000 r-xp 00000000 08:03
+103912                     /usr/lib/libfftw3.so.3.1.2
+7f71b20a2000-7f71b22a1000 ---p 000b6000 08:03
+103912                     /usr/lib/libfftw3.so.3.1.2
+7f71b22a1000-7f71b22a7000 r--p 000b5000 08:03
+103912                     /usr/lib/libfftw3.so.3.1.2
+7f71b22a7000-7f71b22a8000 rw-p 000bb000 08:03
+103912                     /usr/lib/libfftw3.so.3.1.2
+7f71b22a8000-7f71b22a9000 r-xp 00000000 08:03
+269548                     /usr/local/grass-6.4.0svn/lib/libgrass_linkm.6.4.0svn.so
+7f71b22a9000-7f71b24a9000 ---p 00001000 08:03
+269548                     /usr/local/grass-6.4.0svn/lib/libgrass_linkm.6.4.0svn.so
+7f71b24a9000-7f71b24aa000 r--p 00001000 08:03
+269548                     /usr/local/grass-6.4.0svn/lib/libgrass_linkm.6.4.0svn.so
+7f71b24aa000-7f71b24ab000 rw-p 00002000 08:03
+269548                     /usr/local/grass-6.4.0svn/lib/libgrass_linkm.6.4.0svn.so
+7f71b24ab000-7f71b24b1000 r-xp 00000000 08:03
+269592                     /usr/local/grass-6.4.0svn/lib/libgrass_rtree.6.4.0svn.so
+7f71b24b1000-7f71b26b0000 ---p 00006000 08:03
+269592                     /usr/local/grass-6.4.0svn/lib/libgrass_rtree.6.4.0svn.so
+7f71b26b0000-7f71b26b1000 r--p 00005000 08:03
+269592                     /usrAborted
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Jul 28 09:38:30 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Jul 28 09:38:25 2009
+Subject: [GRASS-stats] Re: [Qgis-user] rpy2 isntallation fails under Ubuntu
+ Jaunty for R 2.9.1
+In-Reply-To: <1248787869.5917.9.camel@vertical>
+References: <1248776532.5208.8.camel@vertical>
+	<200907281423.06468.rnuske@gwdg.de> <1248786524.2589.0.camel@vertical>
+	<1248787869.5917.9.camel@vertical>
+Message-ID: <1248788310.5917.12.camel@vertical>
+
+To me it seems that _currently_ the source 2.9.1 R fails to support rpy2
+compilation (or I just compile/install it in the wrong way) and the
+binaries (deb's) fail to support comilation/installation of "spgrass6".
+
+Ubuntu-users, can you execute "G<-gmeta6()" in latest R-2.9.1 installed
+from ubuntu repositories for Ubuntu Jaunty (64-bit)?
+
+Thanks, Nikos
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Jul 28 11:24:55 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Jul 28 11:24:51 2009
+Subject: [GRASS-stats] Re: [Qgis-user] rpy2 isntallation fails under Ubuntu
+ Jaunty for R 2.9.1
+In-Reply-To: <94b3c8440907280749p18c29c16vcfbf63aa310b424d@mail.gmail.com>
+References: <1248776532.5208.8.camel@vertical>
+	<200907281423.06468.rnuske@gwdg.de> <1248786524.2589.0.camel@vertical>
+	<1248787869.5917.9.camel@vertical> <1248788310.5917.12.camel@vertical>
+	<94b3c8440907280749p18c29c16vcfbf63aa310b424d@mail.gmail.com>
+Message-ID: <1248794695.5773.4.camel@vertical>
+
+
+Nikos:
+
+> > To me it seems that _currently_ the source 2.9.1 R fails to support rpy2
+> > compilation (or I just compile/install it in the wrong way) and the
+> > binaries (deb's) fail to support comilation/installation of "spgrass6".
+
+Carson Farmer wrote:
+
+> If you're going to compile R from source, you need to make sure to
+> configure with shared libraries enabled for Rpy2 to work properly. I
+> didn't see whether you had done this earlier or not...
+> 
+>  $ ./configure --enable-R-shlib
+>  $ make
+>  $ make install
+
+Thanks Carson.
+
+I (just) successfully did that after a lot of searching in the
+documentation. Nevertheless, after removing *everything*, the deb's
+worked for both the rpy2 and spgrass6 package.
+
+Apologies for the mail-traffic.
+Cheers, Nikos
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Jul 28 21:39:39 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Jul 28 21:39:36 2009
+Subject: [GRASS-stats] error: Incompatible library version for module. You
+ need to rebuild GRASS or untangle multiple installations.
+Message-ID: <1248831579.13433.3.camel@vertical>
+
+Hi dev's and advanced useRs,
+
+I have seen this message for the X-th time now :-( while trying to load
+(anything) data using readRAST6 or readVECT6.
+
+I've rebuild grass-6.4.0svn 2-3 times now. I've re-installed R 2-3 times
+as well. Not to mention how many attempts to get "spgrass6".
+
+Which is the "incompatible library" and to which "module" does it refer
+to? Is this an R error or a grass error? Any help is *higly*
+appreciated.
+
+Kind regards, Nikos
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Jul 28 22:46:57 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Jul 28 22:46:54 2009
+Subject: [GRASS-stats] Re: [GRASS-user] error: Incompatible library version
+ for module.
+ You  need to rebuild GRASS or untangle multiple installations.
+In-Reply-To: <c502a9e10907281928l620ef5a5sbc758acad711fe3c@mail.gmail.com>
+References: <1248831579.13433.3.camel@vertical>
+	<c502a9e10907281928l620ef5a5sbc758acad711fe3c@mail.gmail.com>
+Message-ID: <1248835617.17239.6.camel@vertical>
+
+
+stephen sefick wrote:
+
+> What computer architecture, operating system, what R version etc.?
+
+Right, I assume that people know that I am using Ubuntu Jaunty 64-bit, R
+2.9.1, latest rpy2, grass-6.4.0svn from source.
+
+> What is the error message? 
+
+The message is the title of this thread.
+
+> I am usingce 6.4RC5 GRASS and R 2.9.1 on mac
+> OS X 10.5.7, and it is working fine. I remember there being a problem
+> with something, but I don't remember exactly what.  If you were to
+> provide the error message then maybe it would jog my memory.
+
+Sorry, that's all the prog prints.
+
+> Also, it may be a good idea to search the R-sig-geo list archive, as your
+> problem may have already been solved (assuming it is the same one that
+> I had).
+
+Before doing countless compilations/installations I filtered the web for
+an hour! I've found some similar messages in grass-dev's mailing-list
+but nothing specific.
+
+I thought that /etc/ld.so.conf is my problem... and I commented out all
+grass-versions but grass-6.4.0svn. I even removed all other
+grass-versions, (re-)installed X-times spgrass6 but no luck.
+
+It's the first time I see this message. I also tried to do some
+debugging but R requires, I guess, special treatment (meaning other than
+gdb, etc.) !?
+
+Nikos
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue Jul 28 23:35:06 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue Jul 28 23:35:02 2009
+Subject: [GRASS-stats] Re: [GRASS-user] error: Incompatible library version
+ for module.
+ You  need to rebuild GRASS or untangle multiple installations.
+In-Reply-To: <c502a9e10907282006p2bfc666bx46dd24e1a2b6623d@mail.gmail.com>
+References: <1248831579.13433.3.camel@vertical>
+	<c502a9e10907281928l620ef5a5sbc758acad711fe3c@mail.gmail.com>
+	<1248835617.17239.6.camel@vertical>
+	<c502a9e10907282006p2bfc666bx46dd24e1a2b6623d@mail.gmail.com>
+Message-ID: <1248838506.19929.1.camel@vertical>
+
+On Tue, 2009-07-28 at 22:06 -0500, stephen sefick wrote:
+> WOW!  I don't have a clue.  That is nowhere close to the problem that
+> I had.  Sorry if I am asking obvious, or redundant questions.  Are you
+> installing within R, or from the commandline (R CMD install)?
+
+>From within R with root access (e.g. sudo R, then the rest).
+
+>   I will 
+> help if I can, but I think this may be over my paygrade.
+> good luck!
+
+Thanks for your concern Stephen.
+Kind regards, Nikos
+
+From Roger.Bivand at nhh.no  Wed Jul 29 04:12:19 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Jul 29 04:12:23 2009
+Subject: [GRASS-stats] Re: [GRASS-user] error: Incompatible library
+	version for module. You  need to rebuild GRASS or untangle multiple
+	installations.
+In-Reply-To: <1248835617.17239.6.camel@vertical>
+References: <1248831579.13433.3.camel@vertical>
+	<c502a9e10907281928l620ef5a5sbc758acad711fe3c@mail.gmail.com>
+	<1248835617.17239.6.camel@vertical>
+Message-ID: <alpine.LRH.2.00.0907290921010.9941@reclus.nhh.no>
+
+On Wed, 29 Jul 2009, Nikos Alexandris wrote:
+
+>
+> stephen sefick wrote:
+>
+>> What computer architecture, operating system, what R version etc.?
+>
+> Right, I assume that people know that I am using Ubuntu Jaunty 64-bit, R
+> 2.9.1, latest rpy2, grass-6.4.0svn from source.
+
+Please always repeat everything every time; don't delete content from 
+threads.
+
+I'm travelling and cannot handhold.
+
+Build only from source, only one piece at a time, and check everything 
+every time. I'm sure that other people have seen dependency problems when 
+installing from binary on this platform. This is not seen on any other 
+platform (Linux, Windows, OSX). There are two underlying problems: 
+"dependency hell" and your inability to sort out your own system. I 
+suspect that the XML package in R does not have its dependencies 
+satisfied. It could also be GDAL/GRASS not having dependencies satisfied. 
+The reason to build from source is that then you control the dependencies, 
+rather than the reverse.
+
+Please stop creating the impressionn that software that works for 
+effectively everyone else is broken only because you can't get your own 
+system to work, and expect others to do your work for you!
+
+Roger
+
+>
+>> What is the error message?
+>
+> The message is the title of this thread.
+>
+>> I am usingce 6.4RC5 GRASS and R 2.9.1 on mac
+>> OS X 10.5.7, and it is working fine. I remember there being a problem
+>> with something, but I don't remember exactly what.  If you were to
+>> provide the error message then maybe it would jog my memory.
+>
+> Sorry, that's all the prog prints.
+>
+>> Also, it may be a good idea to search the R-sig-geo list archive, as your
+>> problem may have already been solved (assuming it is the same one that
+>> I had).
+>
+> Before doing countless compilations/installations I filtered the web for
+> an hour! I've found some similar messages in grass-dev's mailing-list
+> but nothing specific.
+>
+> I thought that /etc/ld.so.conf is my problem... and I commented out all
+> grass-versions but grass-6.4.0svn. I even removed all other
+> grass-versions, (re-)installed X-times spgrass6 but no luck.
+>
+> It's the first time I see this message. I also tried to do some
+> debugging but R requires, I guess, special treatment (meaning other than
+> gdb, etc.) !?
+>
+> Nikos
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From glynn at gclements.plus.com  Wed Jul 29 06:23:33 2009
+From: glynn at gclements.plus.com (Glynn Clements)
+Date: Wed Jul 29 06:23:38 2009
+Subject: [GRASS-stats] Re: [GRASS-user] error: Incompatible library version
+ for module. You
+ need to rebuild GRASS or untangle multiple installations.
+In-Reply-To: <1248831579.13433.3.camel@vertical>
+References: <1248831579.13433.3.camel@vertical>
+Message-ID: <19056.8997.337941.484196@cerise.gclements.plus.com>
+
+
+Nikos Alexandris wrote:
+
+> Hi dev's and advanced useRs,
+> 
+> I have seen this message for the X-th time now :-( while trying to load
+> (anything) data using readRAST6 or readVECT6.
+> 
+> I've rebuild grass-6.4.0svn 2-3 times now. I've re-installed R 2-3 times
+> as well. Not to mention how many attempts to get "spgrass6".
+> 
+> Which is the "incompatible library"
+
+libgrass_gis
+
+> and to which "module" does it refer to?
+
+Whatever is calling G_gisinit().
+
+> Is this an R error or a grass error? Any help is *higly*
+> appreciated.
+
+It means that something was compiled using <grass/gis.h> from one
+version of GRASS, but when run it uses libgrass_gis from a different
+version.
+
+It may be a problem with R. It can also be caused by a GDAL library
+(or GDAL-GRASS plugin) which was built with GRASS support. You might
+want to try using gdalinfo on a GRASS dataset to confirm or deny this
+possibility.
+
+-- 
+Glynn Clements <glynn@gclements.plus.com>
+From nikos.alexandris at felis.uni-freiburg.de  Wed Jul 29 08:13:45 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed Jul 29 08:13:53 2009
+Subject: [GRASS-stats] Re: [GRASS-user] error: Incompatible library version
+ for module.
+ You need to rebuild GRASS or untangle multiple installations.
+In-Reply-To: <19056.8997.337941.484196@cerise.gclements.plus.com>
+References: <1248831579.13433.3.camel@vertical>
+	<19056.8997.337941.484196@cerise.gclements.plus.com>
+Message-ID: <1248869625.5172.5.camel@vertical>
+
+On Wed, 2009-07-29 at 11:23 +0100, Glynn Clements wrote:
+> Nikos Alexandris wrote:
+> 
+> > Hi dev's and advanced useRs,
+> > 
+> > I have seen this message for the X-th time now :-( while trying to load
+> > (anything) data using readRAST6 or readVECT6.
+> > 
+> > I've rebuild grass-6.4.0svn 2-3 times now. I've re-installed R 2-3 times
+> > as well. Not to mention how many attempts to get "spgrass6".
+> > 
+> > Which is the "incompatible library"
+> 
+> libgrass_gis
+> 
+> > and to which "module" does it refer to?
+> 
+> Whatever is calling G_gisinit().
+> 
+> > Is this an R error or a grass error? Any help is *higly*
+> > appreciated.
+> 
+> It means that something was compiled using <grass/gis.h> from one
+> version of GRASS, but when run it uses libgrass_gis from a different
+> version.
+> 
+> It may be a problem with R. It can also be caused by a GDAL library
+> (or GDAL-GRASS plugin) which was built with GRASS support. You might
+> want to try using gdalinfo on a GRASS dataset to confirm or deny this
+> possibility.
+
+Thanks. It's, like most of the times, my ignorance on how to deal with
+compiling/installing issues.
+
+I guess you are Glynn. gdalinfo segfaults when trying to "query" a grass
+raster (under cellhd).
+
+Kind regards, Nikos
+
+From nikos.alexandris at felis.uni-freiburg.de  Wed Jul 29 08:15:42 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed Jul 29 08:15:48 2009
+Subject: [GRASS-stats] Re: [GRASS-user] error: Incompatible library version
+ for module.
+ You  need to rebuild GRASS or untangle multiple installations.
+In-Reply-To: <2b3d8c1c0907290143k26671e62v2a68c334f3dd3cb8@mail.gmail.com>
+References: <1248831579.13433.3.camel@vertical>
+	<2b3d8c1c0907290143k26671e62v2a68c334f3dd3cb8@mail.gmail.com>
+Message-ID: <1248869742.5172.7.camel@vertical>
+
+
+Nikos Alexandris:
+
+> > Hi dev's and advanced useRs,
+> >
+> > I have seen this message for the X-th time now :-( while trying to load
+> > (anything) data using readRAST6 or readVECT6.
+> >
+> > I've rebuild grass-6.4.0svn 2-3 times now. I've re-installed R 2-3 times
+> > as well. Not to mention how many attempts to get "spgrass6".
+> >
+> > Which is the "incompatible library" and to which "module" does it refer
+> > to? Is this an R error or a grass error? Any help is *higly*
+> > appreciated.
+
+Maris Nartiss wrote:
+
+> In two words - You are running module compiled for different GRASS
+> version than one You are running. Recompile affected module OR, if You
+> have multiple GRASS installations, fix Your  LD_LIBRARY_PATH paths.
+
+Thanks Maris, I am learning continuously ;-)
+
+From nikos.alexandris at felis.uni-freiburg.de  Wed Jul 29 08:18:42 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed Jul 29 08:18:46 2009
+Subject: [GRASS-stats] Re: [GRASS-user] error: Incompatible library version
+ for module.
+ You  need to rebuild GRASS or untangle multiple installations.
+In-Reply-To: <c502a9e10907282101x46bed111t6db72296b4f9170f@mail.gmail.com>
+References: <1248831579.13433.3.camel@vertical>
+	<c502a9e10907281928l620ef5a5sbc758acad711fe3c@mail.gmail.com>
+	<1248835617.17239.6.camel@vertical>
+	<c502a9e10907282006p2bfc666bx46dd24e1a2b6623d@mail.gmail.com>
+	<1248838506.19929.1.camel@vertical>
+	<c502a9e10907282101x46bed111t6db72296b4f9170f@mail.gmail.com>
+Message-ID: <1248869922.5172.10.camel@vertical>
+
+
+stephen sefick wrote:
+
+> Nikos,
+> I am sorry I couldn't be of more help.  When you resolve the issue
+> would you mind telling me what you found.  My interest is peaked.
+
+I am glad you took the time to read my post :-)
+Nikos
+
+From nikos.alexandris at felis.uni-freiburg.de  Wed Jul 29 08:37:27 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed Jul 29 08:37:32 2009
+Subject: [GRASS-stats] Re: [GRASS-user] error: Incompatible library
+	version for module. You  need to rebuild GRASS or untangle multiple
+	installations.
+In-Reply-To: <alpine.LRH.2.00.0907290921010.9941@reclus.nhh.no>
+References: <1248831579.13433.3.camel@vertical>
+	<c502a9e10907281928l620ef5a5sbc758acad711fe3c@mail.gmail.com>
+	<1248835617.17239.6.camel@vertical>
+	<alpine.LRH.2.00.0907290921010.9941@reclus.nhh.no>
+Message-ID: <1248871048.5172.29.camel@vertical>
+
+
+stephen sefick wrote:
+
+> >> What computer architecture, operating system, what R version etc.?
+
+Nikos Alexandris wrote:
+
+> > Right, I assume that people know that I am using Ubuntu Jaunty 64-bit, R
+> > 2.9.1, latest rpy2, grass-6.4.0svn from source.
+
+> Please always repeat everything every time; don't delete content from 
+> threads. I'm travelling and cannot handhold.
+
+Just try to do them more easy to read :-). Maybe I overdid it :-O
+
+> Build only from source, only one piece at a time, and check everything 
+> every time. I'm sure that other people have seen dependency problems when 
+> installing from binary on this platform. This is not seen on any other 
+> platform (Linux, Windows, OSX). There are two underlying problems: 
+> "dependency hell" and your inability to sort out your own system. I 
+> suspect that the XML package in R does not have its dependencies 
+> satisfied. It could also be GDAL/GRASS not having dependencies satisfied. 
+> The reason to build from source is that then you control the dependencies, 
+> rather than the reverse.
+> 
+> Please stop creating the impressionn that software that works for 
+> effectively everyone else is broken only because you can't get your own 
+> system to work, and expect others to do your work for you!
+
+True, it's my ignorance on how to deal with compilation/installation
+issues.
+
+Nevertheless, I strongly believe that there is always some gain by
+asking questions, even if they are not "smart". No offense, but
+unfortunately of fortunately I can only promise that, for as long as I
+am interested to understand/learn, I'll keep asking :-p
+
+Kindest regards, Nikos
+
+> >
+> >> What is the error message?
+> >
+> > The message is the title of this thread.
+> >
+> >> I am usingce 6.4RC5 GRASS and R 2.9.1 on mac
+> >> OS X 10.5.7, and it is working fine. I remember there being a problem
+> >> with something, but I don't remember exactly what.  If you were to
+> >> provide the error message then maybe it would jog my memory.
+> >
+> > Sorry, that's all the prog prints.
+> >
+> >> Also, it may be a good idea to search the R-sig-geo list archive, as your
+> >> problem may have already been solved (assuming it is the same one that
+> >> I had).
+> >
+> > Before doing countless compilations/installations I filtered the web for
+> > an hour! I've found some similar messages in grass-dev's mailing-list
+> > but nothing specific.
+> >
+> > I thought that /etc/ld.so.conf is my problem... and I commented out all
+> > grass-versions but grass-6.4.0svn. I even removed all other
+> > grass-versions, (re-)installed X-times spgrass6 but no luck.
+> >
+> > It's the first time I see this message. I also tried to do some
+> > debugging but R requires, I guess, special treatment (meaning other than
+> > gdb, etc.) !?
+> >
+> > Nikos
+
+From nikos.alexandris at felis.uni-freiburg.de  Wed Jul 29 16:33:43 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed Jul 29 16:33:46 2009
+Subject: [GRASS-stats] Re: error: Incompatible library version for module.
+ You need to rebuild GRASS or untangle multiple installations.
+In-Reply-To: <1248831579.13433.3.camel@vertical>
+References: <1248831579.13433.3.camel@vertical>
+Message-ID: <1248899623.5793.2.camel@vertical>
+
+On Wed, 2009-07-29 at 03:39 +0200, Nikos Alexandris wrote:
+> Hi dev's and advanced useRs,
+> 
+> I have seen this message for the X-th time now :-( while trying to load
+> (anything) data using readRAST6 or readVECT6.
+> 
+> I've rebuild grass-6.4.0svn 2-3 times now. I've re-installed R 2-3 times
+> as well. Not to mention how many attempts to get "spgrass6".
+> 
+> Which is the "incompatible library" and to which "module" does it refer
+> to? Is this an R error or a grass error? Any help is *higly*
+> appreciated.
+
+After so many posts of mine one more wont hurt :-p. Finally it was
+gdal-grass (however I want to mention that I got rid of all other
+grass-versions but 6.4.0sv).
+
+Thanks, Nikos
+
+From jarekj at amu.edu.pl  Thu Jul 30 01:56:47 2009
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Thu Jul 30 01:56:55 2009
+Subject: [GRASS-stats] Re: error: Incompatible library version for module.
+	You need to rebuild GRASS or untangle multiple installations.
+In-Reply-To: <1248899623.5793.2.camel@vertical>
+References: <1248831579.13433.3.camel@vertical>
+	<1248899623.5793.2.camel@vertical>
+Message-ID: <4A71361F.2030409@amu.edu.pl>
+
+
+
+Nikos Alexandris pisze:
+> On Wed, 2009-07-29 at 03:39 +0200, Nikos Alexandris wrote:
+>   
+>> Hi dev's and advanced useRs,
+>>
+>> I have seen this message for the X-th time now :-( while trying to load
+>> (anything) data using readRAST6 or readVECT6.
+>>
+>> I've rebuild grass-6.4.0svn 2-3 times now. I've re-installed R 2-3 times
+>> as well. Not to mention how many attempts to get "spgrass6".
+>>
+>> Which is the "incompatible library" and to which "module" does it refer
+>> to? Is this an R error or a grass error? Any help is *higly*
+>> appreciated.
+>>     
+>
+> After so many posts of mine one more wont hurt :-p. Finally it was
+> gdal-grass (however I want to mention that I got rid of all other
+> grass-versions but 6.4.0sv).
+>
+> Thanks, Nikos
+>   
+it was mentioned and solved eriler
+http://lists.osgeo.org/pipermail/grass-stats/2009-January/000897.html
+Jarek
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>   
+From a.ghisla at gmail.com  Fri Jul 31 11:42:24 2009
+From: a.ghisla at gmail.com (Anne Ghisla)
+Date: Fri Jul 31 11:40:54 2009
+Subject: [GRASS-stats] [Report #10] Kriging with GRASS and R: v.autokrige
+ port to wxPython and more
+Message-ID: <1249054944.4606.34.camel@galadriel.uagra.net>
+
+Hello all, and sorry for cross-posting,
+
+good news from v.krige:
+* fixed optional parameters also in interface - activated by a checkbox,
+otherwise R's NA value is correctly set
+* interactive variogram fit is on its way - stay tuned!
+
+Next week I plan to set up interactive variogram using matplotlib
+functions and get the stabler code possible for feature freeze.
+
+best regards,
+
+Anne
+- --
+http://grass.osgeo.org/wiki/V.krige_GSoC_2009
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 197 bytes
+Desc: Questa =?ISO-8859-1?Q?=E8?= una parte del messaggio
+	firmata digitalmente
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20090731/1382f03a/attachment.bin

@@ -1,0 +1,1635 @@
+From e.pebesma at geo.uu.nl  Thu Aug  3 07:50:53 2006
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] gstat limitation?
+In-Reply-To: <bd07447b0607271241g5ddd3898v7eeca041dd86d5e3@mail.gmail.com>
+References: <bd07447b0607271241g5ddd3898v7eeca041dd86d5e3@mail.gmail.com>
+Message-ID: <44D1E31D.60103@geo.uu.nl>
+
+Carlos "Gu?no" Grohmann wrote:
+
+> Hello
+> I was wondering if gstat has any limitation about file size it can
+> process. I want to resample a DEM of a large area (about 50x50 km, 30m
+> res.) with kriging, but it get killed.
+>
+> Carlos
+>
+Have you tried setting the neighbourhood size to a limited value (e.g. 
+to the 50 nearest observations)?
+Not setting this will default to global kriging, requiring an n x n 
+covariance matrix, with n the number of observations (!)
+--
+Edzer
+
+
+From gioo78 at libero.it  Wed Aug  2 06:14:47 2006
+From: gioo78 at libero.it (george)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] gioo78@libero.it
+Message-ID: <1154513688.5059.47.camel@localhost.localdomain>
+
+Hello all!
+I have this problem with local kriging in Grass6.0 interface R:
+
+Display my region in location XY
+projection: 0 (x,y)
+zone:       0
+north:      1032
+south:      687
+west:       248.22524977
+east:       395.35876476
+nsres:      1
+ewres:      1.00090827
+rows:       345
+cols:       147
+
+
+GRASS 6.0.0 (XY):~ > R
+> library(spgrass6)
+Loading required package: sp
+Loading required package: maptools
+Loading required package: foreign
+Loading required package: rgdal
+Loading required package: abind
+Loading required package: pixmap
+Geospatial Data Abstraction Library extensions to R successfully loaded
+> library(gstat)
+# import my set data x|y|z 
+> impvett<-read.table(file="/home/giorgio/Desktop/s50_p2_ba_bb.txt",
+sep="|")
+> str(impvett)
+`data.frame':   1605 obs. of  3 variables:
+ $ V1: num  249 251 253 255 257 ...
+ $ V2: num  1032 1032 1032 1032 1032 ...
+ $ V3: num  -0.117 -0.230  0.897  2.252  2.912 ...
+> coordinate<-data.frame(impvett$V1,impvett$V2)
+>  data<-data.frame(impvett$V3)
+>  rilievo<-SpatialPointsDataFrame(coordinate,data,proj4string =
+CRS(as.character(NA)),match.ID = TRUE)
+> str(rilievo)
+Formal class 'SpatialPointsDataFrame' [package "sp"] with 5 slots
+  ..@ data       :Formal class 'AttributeList' [package "sp"] with 1
+slots
+  .. .. ..@ att:List of 1
+  .. .. .. ..$ impvett.V3: num [1:1605] -0.117 -0.230  0.897  2.252
+2.912 ...
+  ..@ coords.nrs : num(0)
+  ..@ coords     : num [1:1605, 1:2] 249 251 253 255 257 ...
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : NULL
+  .. .. ..$ : chr [1:2] "impvett.V1" "impvett.V2"
+  ..@ bbox       : num [1:2, 1:2]  249  687  395 1032
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : chr [1:2] "impvett.V1" "impvett.V2"
+  .. .. ..$ : chr [1:2] "min" "max"
+  ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+  .. .. ..@ projargs: chr NA
+
+#import region setting and create grid
+> G<-gmeta6()
+> grd <- GridTopology(cellcentre.offset=c(G$west+(G$ewres/2)
++                         ,G$south+(G$nsres/2))
++                        ,cellsize=c(G$ewres, G$nsres)
++                      ,cells.dim=c(G$cols, G$rows))
+> mask_SG <- SpatialGridDataFrame(grd
++                                   ,data=list(k=rep(1,G$cols*G$rows)))
+> str(mask_SG)
+Formal class 'SpatialGridDataFrame' [package "sp"] with 6 slots
+  ..@ data       :Formal class 'AttributeList' [package "sp"] with 1
+slots
+  .. .. ..@ att:List of 1
+  .. .. .. ..$ k: num [1:50715] 1 1 1 1 1 1 1 1 1 1 ...
+  ..@ grid       :Formal class 'GridTopology' [package "sp"] with 3
+slots
+  .. .. ..@ cellcentre.offset: num [1:2] 249 688
+  .. .. ..@ cellsize         : num [1:2] 1 1
+  .. .. ..@ cells.dim        : int [1:2] 147 345
+  ..@ grid.index : int(0)
+  ..@ coords     : num [1:2, 1:2]  249  395  688 1032
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : NULL
+  .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+  ..@ bbox       : num [1:2, 1:2]  248  687  395 1032
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+  .. .. ..$ : chr [1:2] "min" "max"
+  ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+  .. .. ..@ projargs: chr NA
+
+# variogram
+> cvgm<- variogram(impvett.V3~1,location=rilievo,cutoff=300,width=1)
+> efitted <-
+fit.variogram(cvgm,vgm(29.5,model="Exp",range=12,nugget=0,add.to=vgm(0.7,"Per",118,0)))
+Warning: singular model in variogram fit
+
+#ordinary kriging all data 
+>  kr<-krige(impvett$V3~1,location=rilievo, newdata=mask_SG
+model=efitted)
+[using ordinary kriging]
+> # ok!!!!
+
+# !!!!!!!!!!!!!!!!ORDINARY LOCAL KRIGING!!!!!!!!!!!!!!!!!!!!
+
+#case A) 
+> kr<-krige(impvett$V3~1,location=rilievo, newdata=mask_SG,
+model=efitted,maxdist=50)
+[using ordinary kriging]
+
+"chfactor.c", line 130: singular matrix in function LDLfactor()
+
+gstat caught an error that occurred in the matrix library,
+the reason for it was: singular matrix
+
+HINT: Read the manual at http://www.gstat.org/ ;
+look for: Trouble shooting -> Error messages -> From meschach
+
+Error in predict.gstat(g, newdata = newdata, block = block, nsim =
+nsim,  :
+        matrix library error: gstat: matrix library error: singular
+matrix
+
+#case B)
+> kr<-krige(impvett$V3~1,location=rilievo, newdata=mask_SG,
+model=efitted,maxdist=300)
+[using ordinary kriging]
+
+"chfactor.c", line 130: singular matrix in function LDLfactor()
+
+gstat caught an error that occurred in the matrix library,
+the reason for it was: singular matrix
+
+HINT: Read the manual at http://www.gstat.org/ ;
+look for: Trouble shooting -> Error messages -> From meschach
+
+Error in predict.gstat(g, newdata = newdata, block = block, nsim =
+nsim,  :
+        matrix library error: gstat: matrix library error: singular
+matrix
+
+#case C)
+> kr<-krige(impvett$V3~1,location=rilievo, newdata=mask_SG,
+model=efitted,nmax=50) 
+[using ordinary kriging]
+
+"chfactor.c", line 130: singular matrix in function LDLfactor()
+
+gstat caught an error that occurred in the matrix library,
+the reason for it was: singular matrix
+
+HINT: Read the manual at http://www.gstat.org/ ;
+look for: Trouble shooting -> Error messages -> From meschach
+
+Error in predict.gstat(g, newdata = newdata, block = block, nsim =
+nsim,  :
+        matrix library error: gstat: matrix library error: singular
+matrix
+
+
+Where is the problem? 
+I have followed examples on package gstat: with data meuse function
+krige() work correctly!
+
+Thanks 
+George
+
+
+
+
+
+
+
+
+From e.pebesma at geo.uu.nl  Thu Aug  3 12:27:10 2006
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] gioo78@libero.it
+In-Reply-To: <1154513688.5059.47.camel@localhost.localdomain>
+References: <1154513688.5059.47.camel@localhost.localdomain>
+Message-ID: <44D223DE.2040405@geo.uu.nl>
+
+Well, you ignored a warning message after the fit.variogram() call; 
+verifying its result might help. Otherwise, I have no idea, except that 
+I would try leaving out the periodic component from the variogram model.
+--
+Edzer
+
+george wrote:
+> Hello all!
+> I have this problem with local kriging in Grass6.0 interface R:
+>
+> Display my region in location XY
+> projection: 0 (x,y)
+> zone:       0
+> north:      1032
+> south:      687
+> west:       248.22524977
+> east:       395.35876476
+> nsres:      1
+> ewres:      1.00090827
+> rows:       345
+> cols:       147
+>
+>
+> GRASS 6.0.0 (XY):~ > R
+>   
+>> library(spgrass6)
+>>     
+> Loading required package: sp
+> Loading required package: maptools
+> Loading required package: foreign
+> Loading required package: rgdal
+> Loading required package: abind
+> Loading required package: pixmap
+> Geospatial Data Abstraction Library extensions to R successfully loaded
+>   
+>> library(gstat)
+>>     
+> # import my set data x|y|z 
+>   
+>> impvett<-read.table(file="/home/giorgio/Desktop/s50_p2_ba_bb.txt",
+>>     
+> sep="|")
+>   
+>> str(impvett)
+>>     
+> `data.frame':   1605 obs. of  3 variables:
+>  $ V1: num  249 251 253 255 257 ...
+>  $ V2: num  1032 1032 1032 1032 1032 ...
+>  $ V3: num  -0.117 -0.230  0.897  2.252  2.912 ...
+>   
+>> coordinate<-data.frame(impvett$V1,impvett$V2)
+>>  data<-data.frame(impvett$V3)
+>>  rilievo<-SpatialPointsDataFrame(coordinate,data,proj4string =
+>>     
+> CRS(as.character(NA)),match.ID = TRUE)
+>   
+>> str(rilievo)
+>>     
+> Formal class 'SpatialPointsDataFrame' [package "sp"] with 5 slots
+>   ..@ data       :Formal class 'AttributeList' [package "sp"] with 1
+> slots
+>   .. .. ..@ att:List of 1
+>   .. .. .. ..$ impvett.V3: num [1:1605] -0.117 -0.230  0.897  2.252
+> 2.912 ...
+>   ..@ coords.nrs : num(0)
+>   ..@ coords     : num [1:1605, 1:2] 249 251 253 255 257 ...
+>   .. ..- attr(*, "dimnames")=List of 2
+>   .. .. ..$ : NULL
+>   .. .. ..$ : chr [1:2] "impvett.V1" "impvett.V2"
+>   ..@ bbox       : num [1:2, 1:2]  249  687  395 1032
+>   .. ..- attr(*, "dimnames")=List of 2
+>   .. .. ..$ : chr [1:2] "impvett.V1" "impvett.V2"
+>   .. .. ..$ : chr [1:2] "min" "max"
+>   ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+>   .. .. ..@ projargs: chr NA
+>
+> #import region setting and create grid
+>   
+>> G<-gmeta6()
+>> grd <- GridTopology(cellcentre.offset=c(G$west+(G$ewres/2)
+>>     
+> +                         ,G$south+(G$nsres/2))
+> +                        ,cellsize=c(G$ewres, G$nsres)
+> +                      ,cells.dim=c(G$cols, G$rows))
+>   
+>> mask_SG <- SpatialGridDataFrame(grd
+>>     
+> +                                   ,data=list(k=rep(1,G$cols*G$rows)))
+>   
+>> str(mask_SG)
+>>     
+> Formal class 'SpatialGridDataFrame' [package "sp"] with 6 slots
+>   ..@ data       :Formal class 'AttributeList' [package "sp"] with 1
+> slots
+>   .. .. ..@ att:List of 1
+>   .. .. .. ..$ k: num [1:50715] 1 1 1 1 1 1 1 1 1 1 ...
+>   ..@ grid       :Formal class 'GridTopology' [package "sp"] with 3
+> slots
+>   .. .. ..@ cellcentre.offset: num [1:2] 249 688
+>   .. .. ..@ cellsize         : num [1:2] 1 1
+>   .. .. ..@ cells.dim        : int [1:2] 147 345
+>   ..@ grid.index : int(0)
+>   ..@ coords     : num [1:2, 1:2]  249  395  688 1032
+>   .. ..- attr(*, "dimnames")=List of 2
+>   .. .. ..$ : NULL
+>   .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+>   ..@ bbox       : num [1:2, 1:2]  248  687  395 1032
+>   .. ..- attr(*, "dimnames")=List of 2
+>   .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+>   .. .. ..$ : chr [1:2] "min" "max"
+>   ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+>   .. .. ..@ projargs: chr NA
+>
+> # variogram
+>   
+>> cvgm<- variogram(impvett.V3~1,location=rilievo,cutoff=300,width=1)
+>> efitted <-
+>>     
+> fit.variogram(cvgm,vgm(29.5,model="Exp",range=12,nugget=0,add.to=vgm(0.7,"Per",118,0)))
+> Warning: singular model in variogram fit
+>
+> #ordinary kriging all data 
+>   
+>>  kr<-krige(impvett$V3~1,location=rilievo, newdata=mask_SG
+>>     
+> model=efitted)
+> [using ordinary kriging]
+>   
+>> # ok!!!!
+>>     
+>
+> # !!!!!!!!!!!!!!!!ORDINARY LOCAL KRIGING!!!!!!!!!!!!!!!!!!!!
+>
+> #case A) 
+>   
+>> kr<-krige(impvett$V3~1,location=rilievo, newdata=mask_SG,
+>>     
+> model=efitted,maxdist=50)
+> [using ordinary kriging]
+>
+> "chfactor.c", line 130: singular matrix in function LDLfactor()
+>
+> gstat caught an error that occurred in the matrix library,
+> the reason for it was: singular matrix
+>
+> HINT: Read the manual at http://www.gstat.org/ ;
+> look for: Trouble shooting -> Error messages -> From meschach
+>
+> Error in predict.gstat(g, newdata = newdata, block = block, nsim =
+> nsim,  :
+>         matrix library error: gstat: matrix library error: singular
+> matrix
+>
+> #case B)
+>   
+>> kr<-krige(impvett$V3~1,location=rilievo, newdata=mask_SG,
+>>     
+> model=efitted,maxdist=300)
+> [using ordinary kriging]
+>
+> "chfactor.c", line 130: singular matrix in function LDLfactor()
+>
+> gstat caught an error that occurred in the matrix library,
+> the reason for it was: singular matrix
+>
+> HINT: Read the manual at http://www.gstat.org/ ;
+> look for: Trouble shooting -> Error messages -> From meschach
+>
+> Error in predict.gstat(g, newdata = newdata, block = block, nsim =
+> nsim,  :
+>         matrix library error: gstat: matrix library error: singular
+> matrix
+>
+> #case C)
+>   
+>> kr<-krige(impvett$V3~1,location=rilievo, newdata=mask_SG,
+>>     
+> model=efitted,nmax=50) 
+> [using ordinary kriging]
+>
+> "chfactor.c", line 130: singular matrix in function LDLfactor()
+>
+> gstat caught an error that occurred in the matrix library,
+> the reason for it was: singular matrix
+>
+> HINT: Read the manual at http://www.gstat.org/ ;
+> look for: Trouble shooting -> Error messages -> From meschach
+>
+> Error in predict.gstat(g, newdata = newdata, block = block, nsim =
+> nsim,  :
+>         matrix library error: gstat: matrix library error: singular
+> matrix
+>
+>
+> Where is the problem? 
+> I have followed examples on package gstat: with data meuse function
+> krige() work correctly!
+>
+> Thanks 
+> George
+>
+>
+>
+>
+>
+>
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>   
+
+
+From carlos.grohmann at gmail.com  Thu Aug  3 17:49:01 2006
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] gstat limitation?
+In-Reply-To: <44D1E31D.60103@geo.uu.nl>
+References: <bd07447b0607271241g5ddd3898v7eeca041dd86d5e3@mail.gmail.com>
+	<44D1E31D.60103@geo.uu.nl>
+Message-ID: <bd07447b0608031449x1d2c7596nad5d222ff6df77d9@mail.gmail.com>
+
+I tried, same error (killed).
+I thought that just with maxdist it would use less memory.
+
+Carlos
+
+On 8/3/06, Edzer J. Pebesma <e.pebesma@geo.uu.nl> wrote:
+> Carlos "Gu?no" Grohmann wrote:
+>
+> > Hello
+> > I was wondering if gstat has any limitation about file size it can
+> > process. I want to resample a DEM of a large area (about 50x50 km, 30m
+> > res.) with kriging, but it get killed.
+> >
+> > Carlos
+> >
+> Have you tried setting the neighbourhood size to a limited value (e.g.
+> to the 50 nearest observations)?
+> Not setting this will default to global kriging, requiring an n x n
+> covariance matrix, with n the number of observations (!)
+> --
+> Edzer
+>
+
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+
+From rsadler at cyllene.uwa.edu.au  Thu Aug  3 22:07:04 2006
+From: rsadler at cyllene.uwa.edu.au (rsadler@cyllene.uwa.edu.au)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Re: R/GRASS Gaussian simulation issue
+Message-ID: <20060804100704.qi14lwjwwsyssoso@webmail-1.ucs.uwa.edu.au>
+
+Hi Thomas,
+
+Does z<-qnorm(ppoints(x))$y[rank(x)] work?
+
+Rohan Sadler
+Ecosystems Research Group
+The University of Western Australia
+
+
+In reply to:
+
+Date: Fri, 28 Jul 2006 12:29:22 -0400
+  From: Thomas Adams <Thomas.Adams@noaa.gov>
+  Subject: [STATSGRASS] R/GRASS Gaussian simulation issue
+  To: statsgrass-bounces@grass.itc.it, STATSGRASS
+          <statsgrass@grass.itc.it>
+  Message-ID: <44CA3B62.5060500@noaa.gov>
+  Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+
+  List:
+
+  I am attempting Gaussian simulation of modeled precipitation fields
+  which are, of course, like all precipitation data decidedly non-normal.
+  In order to do the simulations, the data must be transformed using a
+  normal score transform. I can do this in R using:
+
+  z<-qnorm(ppoints(x)), where x is the precipitation field data.
+
+  This works and I can transform the data back to precipitation values.
+  The problem I have is how do I do this maintaining the spatial patterns.
+  That is, I read the data into R from GRASS:
+
+  precip<-readFLOAT6sp("data")
+
+  After I perform the Gaussian simulation of modeled *transformed*
+  precipitation fields, I need to transform the data back to precipitation
+  values maintaining geographic/spatial patterns. How do I do this?
+
+  Help is appreciated.
+
+  Regards,
+  Tom
+
+  --
+  Thomas E Adams
+  National Weather Service
+  Ohio River Forecast Center
+  1901 South State Route 134
+  Wilmington, OH 45177
+
+  EMAIL:        thomas.adams@noaa.gov
+
+  VOICE:        937-383-0528
+  FAX:        937-383-0033
+
+
+
+
+
+
+
+From sisma66 at tiscali.it  Thu Aug 24 10:29:33 2006
+From: sisma66 at tiscali.it (Pierluigi De Rosa)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] The gstat R library's: memory problem
+Message-ID: <200608241629.34145.sisma66@tiscali.it>
+
+Dear all users of gstat
+
+I'm using the gstat library for univariate geostatistics analysis,
+I have to interpolate with kriging value of water level from wells to evaluate 
+the water table.
+I use the univarsal kriging and the indipendent variable is the digital 
+elevation model (DEM)
+If I use a DEM with resolution of 20 mt I have an error memory
+
+This is the string command I use for do that:
+
+OK_res20=krige(LEV_MAG91~DEM,loc=pozzi91_meno,newdata=DEM20,model=vgm_fit_mag91_DEM)
+
+This is the error I have
+Error: cannot allocate vector of size 3995610 Kb
+
+If I use a DEM with resolution of 30 mt (using r.resample.rst)
+
+(This is the string) 
+OK_res30=krige(LEV_MAG91~DEM,loc=pozzi91_meno,newdata=DEM30,model=vgm_fit_mag91_DEM)
+
+every thinks works ok, is this a bug?? Maybe  Dr. Pebesma can help me!! :-)
+
+Thanks, Pierluigi
+
+P.S.
+this is my region setting
+
+g.region -p
+projection: 99 (Transverse Mercator)
+zone:       0
+datum:      rome40
+ellipsoid:  international
+north:      4829500
+south:      4813540
+west:       2280740
+east:       2298420
+nsres:      20
+ewres:      20
+rows:       798
+cols:       884
+
+--
+Pierluigi De Rosa
+
+Department of Enviromental & Civil engineering 
+Faculty of Engineering 
+Perugia (Italy)
+
+
+From e.pebesma at geo.uu.nl  Thu Aug 24 10:47:24 2006
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] The gstat R library's: memory problem
+In-Reply-To: <200608241629.34145.sisma66@tiscali.it>
+References: <200608241629.34145.sisma66@tiscali.it>
+Message-ID: <44EDBBFC.9030707@geo.uu.nl>
+
+Pierluigi De Rosa wrote:
+> Dear all users of gstat
+>
+> I'm using the gstat library for univariate geostatistics analysis,
+> I have to interpolate with kriging value of water level from wells to evaluate 
+> the water table.
+> I use the univarsal kriging and the indipendent variable is the digital 
+> elevation model (DEM)
+> If I use a DEM with resolution of 20 mt I have an error memory
+>
+> This is the string command I use for do that:
+>
+> OK_res20=krige(LEV_MAG91~DEM,loc=pozzi91_meno,newdata=DEM20,model=vgm_fit_mag91_DEM)
+>
+> This is the error I have
+> Error: cannot allocate vector of size 3995610 Kb
+>
+> If I use a DEM with resolution of 30 mt (using r.resample.rst)
+>
+> (This is the string) 
+> OK_res30=krige(LEV_MAG91~DEM,loc=pozzi91_meno,newdata=DEM30,model=vgm_fit_mag91_DEM)
+>
+> every thinks works ok, is this a bug?? Maybe  Dr. Pebesma can help me!! :-)
+>   
+Perhaps he can, but remember he isn't a daily grass user. I doubt it is 
+a bug because you do get a clear error message: you (through how you use 
+gstat) ask the computer more memory than your computer has available, 
+and that's what you are told. The question is why.
+
+Without the commands how you retrieved your data and of what size 
+(number of rows and columns) they are there is little I can do, from 
+here, however.
+--
+Edzer
+> Thanks, Pierluigi
+>
+> P.S.
+> this is my region setting
+>
+> g.region -p
+> projection: 99 (Transverse Mercator)
+> zone:       0
+> datum:      rome40
+> ellipsoid:  international
+> north:      4829500
+> south:      4813540
+> west:       2280740
+> east:       2298420
+> nsres:      20
+> ewres:      20
+> rows:       798
+> cols:       884
+>
+> --
+> Pierluigi De Rosa
+>
+> Department of Enviromental & Civil engineering 
+> Faculty of Engineering 
+> Perugia (Italy)
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>   
+
+
+From Roger.Bivand at nhh.no  Thu Aug 24 12:36:35 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] The gstat R library's: memory problem
+In-Reply-To: <44EDBBFC.9030707@geo.uu.nl>
+Message-ID: <Pine.LNX.4.44.0608241829140.17874-100000@reclus.nhh.no>
+
+On Thu, 24 Aug 2006, Edzer J. Pebesma wrote:
+
+> Pierluigi De Rosa wrote:
+> > Dear all users of gstat
+
+I think it is maxdist= again, or some other way of reducing the size. The 
+GRASS region is roughly 800 by 900, but the sizes of both the data and 
+newdata are unknown. Pierluigi also cross-posted, which does indicate a 
+propensity to appeal for help rather than to look at the archives. Using 
+the search facility on the GRASS site with "gstat memory", there were lots 
+of promising hits from this list just in the last few months.
+
+> >
+> > I'm using the gstat library for univariate geostatistics analysis,
+> > I have to interpolate with kriging value of water level from wells to evaluate 
+> > the water table.
+> > I use the univarsal kriging and the indipendent variable is the digital 
+> > elevation model (DEM)
+> > If I use a DEM with resolution of 20 mt I have an error memory
+> >
+> > This is the string command I use for do that:
+> >
+> > OK_res20=krige(LEV_MAG91~DEM,loc=pozzi91_meno,newdata=DEM20,model=vgm_fit_mag91_DEM)
+> >
+> > This is the error I have
+> > Error: cannot allocate vector of size 3995610 Kb
+> >
+> > If I use a DEM with resolution of 30 mt (using r.resample.rst)
+> >
+> > (This is the string) 
+> > OK_res30=krige(LEV_MAG91~DEM,loc=pozzi91_meno,newdata=DEM30,model=vgm_fit_mag91_DEM)
+> >
+> > every thinks works ok, is this a bug?? Maybe  Dr. Pebesma can help me!! :-)
+> >   
+> Perhaps he can, but remember he isn't a daily grass user. I doubt it is 
+> a bug because you do get a clear error message: you (through how you use 
+> gstat) ask the computer more memory than your computer has available, 
+> and that's what you are told. The question is why.
+> 
+> Without the commands how you retrieved your data and of what size 
+> (number of rows and columns) they are there is little I can do, from 
+> here, however.
+> --
+> Edzer
+> > Thanks, Pierluigi
+> >
+> > P.S.
+> > this is my region setting
+> >
+> > g.region -p
+> > projection: 99 (Transverse Mercator)
+> > zone:       0
+> > datum:      rome40
+> > ellipsoid:  international
+> > north:      4829500
+> > south:      4813540
+> > west:       2280740
+> > east:       2298420
+> > nsres:      20
+> > ewres:      20
+> > rows:       798
+> > cols:       884
+> >
+> > --
+> > Pierluigi De Rosa
+> >
+> > Department of Enviromental & Civil engineering 
+> > Faculty of Engineering 
+> > Perugia (Italy)
+> >
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> >   
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From sisma66 at tiscali.it  Fri Aug 25 08:38:46 2006
+From: sisma66 at tiscali.it (sisma66@tiscali.it)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] The gstat R library's: memory problem
+Message-ID: <29508008.1156509526716.JavaMail.root@ps13>
+
+Thanks for all information you told me, so I undestood:
+
+1) this isn't a bug but is an R problem that he can't manage a vector 
+so big
+2)both the sizes of the data and newdata are the same of grass region 
+(I hope this can help more)
+3) reducing the resolution It works and also using maxdist
+4) sorry for my stupid question, next time I will try to solve alone 
+my issue
+
+Thanks to all
+
+Pierluigi
+
+Il giorno gio, 24/08/2006 alle 18.36 +0200, Roger Bivand ha scritto:
+On Thu, 24 Aug 2006, Edzer J. Pebesma wrote:
+> 
+> > Pierluigi De Rosa wrote:
+> > > Dear all users of gstat
+> 
+> I think it is maxdist= again, or some other way of reducing the 
+size. The 
+> GRASS region is roughly 800 by 900, but the sizes of both the data 
+and 
+> newdata are unknown. Pierluigi also cross-posted, which does 
+indicate a 
+> propensity to appeal for help rather than to look at the archives. 
+Using 
+> the search facility on the GRASS site with "gstat memory", there 
+were lots 
+> of promising hits from this list just in the last few months.
+> 
+> > >
+> > > I'm using the gstat library for univariate geostatistics 
+analysis,
+> > > I have to interpolate with kriging value of water level from 
+wells to evaluate 
+> > > the water table.
+> > > I use the univarsal kriging and the indipendent variable is the 
+digital 
+> > > elevation model (DEM)
+> > > If I use a DEM with resolution of 20 mt I have an error memory
+> > >
+> > > This is the string command I use for do that:
+> > >
+> > > OK_res20=krige(LEV_MAG91~DEM,loc=pozzi91_meno,newdata=DEM20,
+model=vgm_fit_mag91_DEM)
+> > >
+> > > This is the error I have
+> > > Error: cannot allocate vector of size 3995610 Kb
+> > >
+> > > If I use a DEM with resolution of 30 mt (using r.resample.rst)
+> > >
+> > > (This is the string) 
+> > > OK_res30=krige(LEV_MAG91~DEM,loc=pozzi91_meno,newdata=DEM30,
+model=vgm_fit_mag91_DEM)
+> > >
+> > > every thinks works ok, is this a bug?? Maybe  Dr. Pebesma can 
+help me!! :-)
+> > >   
+> > Perhaps he can, but remember he isn't a daily grass user. I doubt 
+it is 
+> > a bug because you do get a clear error message: you (through how 
+you use 
+> > gstat) ask the computer more memory than your computer has 
+available, 
+> > and that's what you are told. The question is why.
+> > 
+> > Without the commands how you retrieved your data and of what size 
+> > (number of rows and columns) they are there is little I can do, 
+from 
+> > here, however.
+> > --
+> > Edzer
+> > > Thanks, Pierluigi
+> > >
+> > > P.S.
+> > > this is my region setting
+> > >
+> > > g.region -p
+> > > projection: 99 (Transverse Mercator)
+> > > zone:       0
+> > > datum:      rome40
+> > > ellipsoid:  international
+> > > north:      4829500
+> > > south:      4813540
+> > > west:       2280740
+> > > east:       2298420
+> > > nsres:      20
+> > > ewres:      20
+> > > rows:       798
+> > > cols:       884
+> > >
+> > > --
+> > > Pierluigi De Rosa
+> > >
+> > > Department of Enviromental & Civil engineering 
+> > > Faculty of Engineering 
+> > > Perugia (Italy)
+> > >
+> > > _______________________________________________
+> > > statsgrass mailing list
+> > > statsgrass@grass.itc.it
+> > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > >   
+> > 
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> 
+
+
+Naviga e telefona senza limiti con Tiscali     
+Scopri le promozioni Tiscali adsl: navighi e telefoni senza canone Telecom
+
+http://abbonati.tiscali.it/adsl/
+
+
+From Roger.Bivand at nhh.no  Fri Aug 25 12:33:39 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] The gstat R library's: memory problem
+In-Reply-To: <29508008.1156509526716.JavaMail.root@ps13>
+Message-ID: <Pine.LNX.4.44.0608251829060.19440-100000@reclus.nhh.no>
+
+On Fri, 25 Aug 2006 sisma66@tiscali.it wrote:
+
+> Thanks for all information you told me, so I undestood:
+> 
+> 1) this isn't a bug but is an R problem that he can't manage a vector 
+> so big
+
+On a 64 bit machine not a problem, just rather unnecessary.
+
+> 2)both the sizes of the data and newdata are the same of grass region 
+> (I hope this can help more)
+
+Yes, the big data matrix is roughly (800*900)^2 8 byte elements, so it is 
+more than you need.
+
+> 3) reducing the resolution It works and also using maxdist
+
+maxdist will do fine, because you would expect the spatial dependence to 
+decay quite sharply.
+
+> 4) sorry for my stupid question, next time I will try to solve alone 
+> my issue
+
+My comment wasn't (just) to you, very often problems happen to more than 
+one researcher at a time, and searching the archives is a useful trick to 
+know. I hope you make good progress now.
+
+Roger
+
+> 
+> Thanks to all
+> 
+> Pierluigi
+> 
+> Il giorno gio, 24/08/2006 alle 18.36 +0200, Roger Bivand ha scritto:
+> On Thu, 24 Aug 2006, Edzer J. Pebesma wrote:
+> > 
+> > > Pierluigi De Rosa wrote:
+> > > > Dear all users of gstat
+> > 
+> > I think it is maxdist= again, or some other way of reducing the 
+> size. The 
+> > GRASS region is roughly 800 by 900, but the sizes of both the data 
+> and 
+> > newdata are unknown. Pierluigi also cross-posted, which does 
+> indicate a 
+> > propensity to appeal for help rather than to look at the archives. 
+> Using 
+> > the search facility on the GRASS site with "gstat memory", there 
+> were lots 
+> > of promising hits from this list just in the last few months.
+> > 
+> > > >
+> > > > I'm using the gstat library for univariate geostatistics 
+> analysis,
+> > > > I have to interpolate with kriging value of water level from 
+> wells to evaluate 
+> > > > the water table.
+> > > > I use the univarsal kriging and the indipendent variable is the 
+> digital 
+> > > > elevation model (DEM)
+> > > > If I use a DEM with resolution of 20 mt I have an error memory
+> > > >
+> > > > This is the string command I use for do that:
+> > > >
+> > > > OK_res20=krige(LEV_MAG91~DEM,loc=pozzi91_meno,newdata=DEM20,
+> model=vgm_fit_mag91_DEM)
+> > > >
+> > > > This is the error I have
+> > > > Error: cannot allocate vector of size 3995610 Kb
+> > > >
+> > > > If I use a DEM with resolution of 30 mt (using r.resample.rst)
+> > > >
+> > > > (This is the string) 
+> > > > OK_res30=krige(LEV_MAG91~DEM,loc=pozzi91_meno,newdata=DEM30,
+> model=vgm_fit_mag91_DEM)
+> > > >
+> > > > every thinks works ok, is this a bug?? Maybe  Dr. Pebesma can 
+> help me!! :-)
+> > > >   
+> > > Perhaps he can, but remember he isn't a daily grass user. I doubt 
+> it is 
+> > > a bug because you do get a clear error message: you (through how 
+> you use 
+> > > gstat) ask the computer more memory than your computer has 
+> available, 
+> > > and that's what you are told. The question is why.
+> > > 
+> > > Without the commands how you retrieved your data and of what size 
+> > > (number of rows and columns) they are there is little I can do, 
+> from 
+> > > here, however.
+> > > --
+> > > Edzer
+> > > > Thanks, Pierluigi
+> > > >
+> > > > P.S.
+> > > > this is my region setting
+> > > >
+> > > > g.region -p
+> > > > projection: 99 (Transverse Mercator)
+> > > > zone:       0
+> > > > datum:      rome40
+> > > > ellipsoid:  international
+> > > > north:      4829500
+> > > > south:      4813540
+> > > > west:       2280740
+> > > > east:       2298420
+> > > > nsres:      20
+> > > > ewres:      20
+> > > > rows:       798
+> > > > cols:       884
+> > > >
+> > > > --
+> > > > Pierluigi De Rosa
+> > > >
+> > > > Department of Enviromental & Civil engineering 
+> > > > Faculty of Engineering 
+> > > > Perugia (Italy)
+> > > >
+> > > > _______________________________________________
+> > > > statsgrass mailing list
+> > > > statsgrass@grass.itc.it
+> > > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > >   
+> > > 
+> > > _______________________________________________
+> > > statsgrass mailing list
+> > > statsgrass@grass.itc.it
+> > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > 
+> > 
+> 
+> 
+> Naviga e telefona senza limiti con Tiscali     
+> Scopri le promozioni Tiscali adsl: navighi e telefoni senza canone Telecom
+> 
+> http://abbonati.tiscali.it/adsl/
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From jarekj at amu.edu.pl  Sun Aug 27 07:28:55 2006
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] OT: sgeostat and Rdbi - conflict? (on R)
+Message-ID: <44F181F7.3070007@amu.edu.pl>
+
+on R, soon after I instaled sgeostat Rdbi cannot be loaded with message:
+
+> library(Rdbi) 
+ 
+Loading required package: Rdbi
+Loading required package: Rdbi
+Error in loadNamespace(package, c(which.lib.loc, lib.loc), keep.source = keep.source) :
+        cyclic name space dependencies are not supported
+Error: package 'Rdbi' could not be loaded
+Error: .onLoad failed in 'loadNamespace' for 'Rdbi'
+Error: package 'Rdbi' could not be loaded
+
+
+erlier Rdbi worked fine
+
+regards 
+jarek
+
+
+
+From Roger.Bivand at nhh.no  Sun Aug 27 12:12:50 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] OT: sgeostat and Rdbi - conflict? (on R)
+In-Reply-To: <44F181F7.3070007@amu.edu.pl>
+Message-ID: <Pine.LNX.4.44.0608271810310.15263-100000@reclus.nhh.no>
+
+On Sun, 27 Aug 2006, Jarek Jasiewicz wrote:
+
+> on R, soon after I instaled sgeostat Rdbi cannot be loaded with message:
+
+Not sgeostat, but probably version conflict in Rdbi. Please include the 
+output of sessionInfo() after loading sgeostat, and any information you 
+can see from the DESCRIPTION file in the directory with the installed Rdbi 
+about builds and versions.
+
+> 
+> > library(Rdbi) 
+>  
+> Loading required package: Rdbi
+> Loading required package: Rdbi
+> Error in loadNamespace(package, c(which.lib.loc, lib.loc), keep.source = keep.source) :
+>         cyclic name space dependencies are not supported
+> Error: package 'Rdbi' could not be loaded
+> Error: .onLoad failed in 'loadNamespace' for 'Rdbi'
+> Error: package 'Rdbi' could not be loaded
+> 
+> 
+> erlier Rdbi worked fine
+> 
+> regards 
+> jarek
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From jarekj at amu.edu.pl  Sun Aug 27 14:06:06 2006
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] OT: sgeostat and Rdbi - conflict? (on R) SOLVED
+In-Reply-To: <Pine.LNX.4.44.0608271810310.15263-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0608271810310.15263-100000@reclus.nhh.no>
+Message-ID: <44F1DF0E.8090805@amu.edu.pl>
+
+Roger Bivand napisa?(a):
+> On Sun, 27 Aug 2006, Jarek Jasiewicz wrote:
+>
+>   
+>> on R, soon after I instaled sgeostat Rdbi cannot be loaded with message:
+>>     
+>
+> Not sgeostat, but probably version conflict in Rdbi. Please include the 
+> output of sessionInfo() after loading sgeostat, and any information you 
+> can see from the DESCRIPTION file in the directory with the installed Rdbi 
+> about builds and versions.
+>
+>   
+>>> library(Rdbi) 
+>>>       
+>>  
+>> Loading required package: Rdbi
+>> Loading required package: Rdbi
+>> Error in loadNamespace(package, c(which.lib.loc, lib.loc), keep.source = keep.source) :
+>>         cyclic name space dependencies are not supported
+>> Error: package 'Rdbi' could not be loaded
+>> Error: .onLoad failed in 'loadNamespace' for 'Rdbi'
+>> Error: package 'Rdbi' could not be loaded
+>>
+>>
+>> erlier Rdbi worked fine
+>>
+>> regards 
+>> jarek
+>>
+>>
+>> _______________________________________________
+>> statsgrass mailing list
+>> statsgrass@grass.itc.it
+>> http://grass.itc.it/mailman/listinfo/statsgrass
+>>
+>>     
+>
+>   
+sorry, I sloved this problem deleting Rdata from my $HOME directory, 
+after that all works OK again. Probably something goes wrong during 
+instalation sgeostat and has been written in saved worspace. In addition 
+load packages from cran (tcltk gui) also has'n work even ater full 
+reinstaling of R.
+Enyway something was wrong in saved workspace (Rdata) but now we will 
+not know....
+
+regards
+
+Jarek Jasiewicz
+
+
+From jarekj at amu.edu.pl  Wed Aug 30 14:09:56 2006
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] problem with RdbiPgSQL c.d.
+In-Reply-To: <Pine.LNX.4.44.0608271810310.15263-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0608271810310.15263-100000@reclus.nhh.no>
+Message-ID: <44F5D474.8080605@amu.edu.pl>
+
+Roger Bivand napisa?(a):
+> On Sun, 27 Aug 2006, Jarek Jasiewicz wrote:
+>
+>   
+>> on R, soon after I instaled sgeostat Rdbi cannot be loaded with message:
+>>     
+>
+> Not sgeostat, but probably version conflict in Rdbi. Please include the 
+> output of sessionInfo() after loading sgeostat, and any information you 
+> can see from the DESCRIPTION file in the directory with the installed Rdbi 
+> about builds and versions.
+>
+>   
+>>> library(Rdbi) 
+>>>       
+>>  
+>> Loading required package: Rdbi
+>> Loading required package: Rdbi
+>> Error in loadNamespace(package, c(which.lib.loc, lib.loc), keep.source = keep.source) :
+>>         cyclic name space dependencies are not supported
+>> Error: package 'Rdbi' could not be loaded
+>> Error: .onLoad failed in 'loadNamespace' for 'Rdbi'
+>> Error: package 'Rdbi' could not be loaded
+>>
+>>
+>> erlier Rdbi worked fine
+>>
+>> regards 
+>> jarek
+>>
+>>
+>> _______________________________________________
+>> statsgrass mailing list
+>> statsgrass@grass.itc.it
+>> http://grass.itc.it/mailman/listinfo/statsgrass
+>>
+>>     
+>
+>   
+Unfortunatly the problem is NOT solved..
+
+The problem concering only RdbiPgSQL. sgeostat has no inlfluence... I 
+did the following:
+
+1) install R (2.3.1 from source)
+2) install spgrass6, from your instruciton
+3) install RdbiPgSQL according Marcus instruction
+
+all successed.
+
+4) I load RdbiPgSQL library(RdbiPgSQL)... All OK
+
+5) do something... (lada data, manipulate and so on...
+6 leave R without saving workspace
+7) start R again load RdbiPgSQL ...All OK
+8)do something (some objects are created) and leave R WITH SAVING workspace
+
+9) load R again - ls() ...previous objects exit
+10) try to load library(RdbiPgSQL): error
+
+
+Loading required package: Rdbi
+Loading required package: Rdbi
+Error in loadNamespace(package, c(which.lib.loc, lib.loc), keep.source = keep.source) :
+        cyclic name space dependencies are not supported
+Error: package 'Rdbi' could not be loaded
+Error: .onLoad failed in 'loadNamespace' for 'Rdbi'
+Error: package 'Rdbi' could not be loaded
+
+...and of course no function Rdbi works
+
+11)Again remove .Rdata from $home directory
+12)start R again and library(RdbiPgSQL) works nice
+
+so i thing some problem is with R workspace and information stored within.
+
+Here is th "working" session info
+
+Version 2.3.1 (2006-06-01)
+i686-pc-linux-gnu
+
+attached base packages:
+[1] "methods" "stats" "graphics" "grDevices" "utils" "datasets"
+[7] "tcltk" "base"
+
+other attached packages:
+spgrass6 rgdal maptools foreign gstat sp RdbiPgSQL Rdbi
+"0.3-1" "0.4-8" "0.5-12" "0.8-15" "0.9-31" "0.8-18" "1.7.2" "1.7.0"
+ >
+Regards
+Jarek Jasiewicz
+
+
+From Roger.Bivand at nhh.no  Wed Aug 30 15:00:16 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] problem with RdbiPgSQL c.d.
+In-Reply-To: <44F5D474.8080605@amu.edu.pl>
+Message-ID: <Pine.LNX.4.44.0608302049230.5063-100000@reclus.nhh.no>
+
+On Wed, 30 Aug 2006, Jarek Jasiewicz wrote:
+
+> Roger Bivand napisa?(a):
+> > On Sun, 27 Aug 2006, Jarek Jasiewicz wrote:
+> >
+> >   
+> >> on R, soon after I instaled sgeostat Rdbi cannot be loaded with message:
+> >>     
+> >
+> > Not sgeostat, but probably version conflict in Rdbi. Please include the 
+> > output of sessionInfo() after loading sgeostat, and any information you 
+> > can see from the DESCRIPTION file in the directory with the installed Rdbi 
+> > about builds and versions.
+> >
+> >   
+> >>> library(Rdbi) 
+> >>>       
+> >>  
+> >> Loading required package: Rdbi
+> >> Loading required package: Rdbi
+> >> Error in loadNamespace(package, c(which.lib.loc, lib.loc), keep.source = keep.source) :
+> >>         cyclic name space dependencies are not supported
+> >> Error: package 'Rdbi' could not be loaded
+> >> Error: .onLoad failed in 'loadNamespace' for 'Rdbi'
+> >> Error: package 'Rdbi' could not be loaded
+> >>
+> >>
+> >> erlier Rdbi worked fine
+> >>
+> >> regards 
+> >> jarek
+> >>
+> >>
+> >> _______________________________________________
+> >> statsgrass mailing list
+> >> statsgrass@grass.itc.it
+> >> http://grass.itc.it/mailman/listinfo/statsgrass
+> >>
+> >>     
+> >
+> >   
+> Unfortunatly the problem is NOT solved..
+> 
+> The problem concering only RdbiPgSQL. sgeostat has no inlfluence... I 
+> did the following:
+> 
+> 1) install R (2.3.1 from source)
+> 2) install spgrass6, from your instruciton
+> 3) install RdbiPgSQL according Marcus instruction
+> 
+> all successed.
+> 
+> 4) I load RdbiPgSQL library(RdbiPgSQL)... All OK
+> 
+> 5) do something... (lada data, manipulate and so on...
+> 6 leave R without saving workspace
+> 7) start R again load RdbiPgSQL ...All OK
+> 8)do something (some objects are created) and leave R WITH SAVING workspace
+
+Yes, this is the smoking gun. Please consider asking the Rdbi maintainer
+who seems to be jzhang@jimmy.harvard.edu about this. 
+
+I would first try to use the versions from
+http://www.bioconductor.org/packages/1.8/bioc/ - I don't know why Markus
+has 1.9, they are for R 2.4, not 2.3, because there is a major
+discontinuity in object defintions between 2.3 and 2.4, which may be being
+picked up when a package prepared for 2.4 tries to read an object saved
+under 2.3.
+
+Markus - was there a reason for writing 1.9? The change in object 
+structure is very recent, and another one happened today - 2.4 is changing 
+fast at the moment.
+
+Roger
+
+> 
+> 9) load R again - ls() ...previous objects exit
+> 10) try to load library(RdbiPgSQL): error
+> 
+> 
+> Loading required package: Rdbi
+> Loading required package: Rdbi
+> Error in loadNamespace(package, c(which.lib.loc, lib.loc), keep.source = keep.source) :
+>         cyclic name space dependencies are not supported
+> Error: package 'Rdbi' could not be loaded
+> Error: .onLoad failed in 'loadNamespace' for 'Rdbi'
+> Error: package 'Rdbi' could not be loaded
+> 
+> ...and of course no function Rdbi works
+> 
+> 11)Again remove .Rdata from $home directory
+> 12)start R again and library(RdbiPgSQL) works nice
+> 
+> so i thing some problem is with R workspace and information stored within.
+> 
+> Here is th "working" session info
+> 
+> Version 2.3.1 (2006-06-01)
+> i686-pc-linux-gnu
+> 
+> attached base packages:
+> [1] "methods" "stats" "graphics" "grDevices" "utils" "datasets"
+> [7] "tcltk" "base"
+> 
+> other attached packages:
+> spgrass6 rgdal maptools foreign gstat sp RdbiPgSQL Rdbi
+> "0.3-1" "0.4-8" "0.5-12" "0.8-15" "0.9-31" "0.8-18" "1.7.2" "1.7.0"
+>  >
+> Regards
+> Jarek Jasiewicz
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From neteler at itc.it  Wed Aug 30 15:32:03 2006
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] problem with RdbiPgSQL c.d.
+In-Reply-To: <Pine.LNX.4.44.0608302049230.5063-100000@reclus.nhh.no>
+References: <44F5D474.8080605@amu.edu.pl>
+	<Pine.LNX.4.44.0608302049230.5063-100000@reclus.nhh.no>
+Message-ID: <20060830193203.GB416@bartok.itc.it>
+
+On Wed, Aug 30, 2006 at 09:00:16PM +0200, Roger Bivand wrote:
+...
+> I would first try to use the versions from
+> http://www.bioconductor.org/packages/1.8/bioc/ - I don't know why Markus
+> has 1.9, they are for R 2.4, not 2.3, because there is a major
+> discontinuity in object defintions between 2.3 and 2.4, which may be being
+> picked up when a package prepared for 2.4 tries to read an object saved
+> under 2.3.
+> 
+> Markus - was there a reason for writing 1.9? The change in object 
+> structure is very recent, and another one happened today - 2.4 is changing 
+> fast at the moment.
+
+
+Dear Roger, all,
+
+no particular reason for 1.9. I have changed it to 1.8 now.
+In the past I always used the dev version, but according to your
+comments that's no longer appropriate.
+
+sorry for any confusion,
+
+Markus
+
+-- 
+Markus Neteler  <neteler itc it>  http://mpa.itc.it/markus/
+ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+
+From Roger.Bivand at nhh.no  Wed Aug 30 15:41:29 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] problem with RdbiPgSQL c.d.
+In-Reply-To: <20060830193203.GB416@bartok.itc.it>
+Message-ID: <Pine.LNX.4.44.0608302137520.5063-100000@reclus.nhh.no>
+
+On Wed, 30 Aug 2006, Markus Neteler wrote:
+
+> On Wed, Aug 30, 2006 at 09:00:16PM +0200, Roger Bivand wrote:
+> ...
+> > I would first try to use the versions from
+> > http://www.bioconductor.org/packages/1.8/bioc/ - I don't know why Markus
+> > has 1.9, they are for R 2.4, not 2.3, because there is a major
+> > discontinuity in object defintions between 2.3 and 2.4, which may be being
+> > picked up when a package prepared for 2.4 tries to read an object saved
+> > under 2.3.
+> > 
+> > Markus - was there a reason for writing 1.9? The change in object 
+> > structure is very recent, and another one happened today - 2.4 is changing 
+> > fast at the moment.
+> 
+> 
+> Dear Roger, all,
+> 
+> no particular reason for 1.9. I have changed it to 1.8 now.
+> In the past I always used the dev version, but according to your
+> comments that's no longer appropriate.
+> 
+> sorry for any confusion,
+
+Happily it isn't often that object structures change, but new-style class 
+objects do change non-compatibly between 2.3 and 2.4. It will mean (when 
+we know the extent of the impacts) telling users 1) to re-install all 
+packages depending on the methods package when 2.4 comes out, and 
+crucially 2) not to rely on being able to read data objects from 2.3 and 
+earlier in 2.4 and later.
+
+Roger 
+
+> 
+> Markus
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From jarekj at amu.edu.pl  Thu Aug 31 15:44:12 2006
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] problem with kriging in gstat( cooordinates) (long)
+Message-ID: <44F73C0C.1080100@amu.edu.pl>
+
+I try to krige some data, I do following grass wiki tutorial (that with 
+gaiciture)
+
+1) I read data points as spatial grid data frame and g region
+2) I make SpatialGridDataFrame according instruciton I I recived spatial 
+data frame
+3) I compared the created data frame which I read from grass (grid) soon 
+after importing points the geographic coordinates seems look same
+
+4) I made variogram and fit the model - all OK, model is fitted well
+
+5) finally I try kriging:
+
+krig=krige(lenght~1, locations=kr, newdata=sg, model=vgf)
+
+where: lenght~1 the modeled data kr-spatialpointdataframe, 
+sg-spatialgriddataframe generated in R, vgf - the fitted variogram
+
+I I recive the error:
+
+Error in predict.gstat(g, newdata = newdata, block = block, nsim = nsim,  :
+    data items in gstat object and newdata have different coordinate 
+reference systems
+
+In fact, ONLY bounding box of grid and points deffer a little - is a 
+litlle smaller (see at the end of the message) because points not cover 
+all region
+
+So, I try to change region definition to be exaclty the same with point 
+layer and point bounding box read to R
+
+I have recived the same error
+
+I thing something is missing, but I completly don't know what!
+
+I thing also (but only thing) If my problems are not connected with 
+region problems mentioned (also by me) in grass 6.1
+
+regards
+Jarek Jasiewicz
+
+PS1. I have no problem with tutorial data (meuse) according man pages, 
+but I can't repead this on my data with spatial reference
+
+PS2. I tried to krige the same data with sgeostat but I recive error 
+that matrix (534x667) is too big ....hmmm... it looks like that sgeostat 
+is for tutorial data only
+
+PS3. here are strucutures of data frames used by me
+
+kr - SpatialPointsDataFrame Readed from Grass (6.1)
+
+Formal class 'SpatialPointsDataFrame' [package "sp"] with 5 slots
+  ..@ data       :Formal class 'AttributeList' [package "sp"] with 1 slots
+  .. .. ..@ att:List of 14
+  .. .. .. ..$ cat   : num [1:492] 11 40 43 49 140 148 175 181 199 205 ...
+// (JJ........ lot of data I cut it )
+  .. .. .. ..$ lenght: num [1:492] 512 434 302 247 302 ...
+  ..@ coords.nrs : num(0)
+  ..@ coords     : num [1:492, 1:2] 3568825 3567206 3571253 3568405 
+3571613 ...
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : NULL
+  .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+  ..@ bbox       : num [1:2, 1:2] 3560820 5635012 3575900 5654902
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+  .. .. ..$ : chr [1:2] "min" "max"
+  ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+  .. .. ..@ projargs: chr " +proj=stere +lat_0=51.67083333333333 
++lon_0=16.67222222222222 +k=0.999800 +x_0=3703000 +y_0=5627000 
++ellps=krass +units=m +no_"| __truncated__
+
+sg - SpatialGridDataFrame created in R:
+
+Formal class 'SpatialGridDataFrame' [package "sp"] with 6 slots
+  ..@ data       :Formal class 'AttributeList' [package "sp"] with 1 slots
+  .. .. ..@ att:List of 1
+  .. .. .. ..$ k: num [1:356178] 2 2 2 2 2 2 2 2 2 2 ...
+  ..@ grid       :Formal class 'GridTopology' [package "sp"] with 3 slots
+  .. .. ..@ cellcentre.offset: num [1:2] 3560010 5635012
+  .. .. ..@ cellsize         : num [1:2] 30 30
+  .. .. ..@ cells.dim        : int [1:2] 534 667
+  ..@ grid.index : int(0)
+  ..@ coords     : num [1:2, 1:2] 3560010 3575990 5635012 5654992
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : NULL
+  .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+  ..@ bbox       : num [1:2, 1:2] 3559995 5634997 3576005 5655007
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+  .. .. ..$ : chr [1:2] "min" "max"
+  ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+  .. .. ..@ projargs: chr " +proj=stere +lat_0=51.67083333333333 
++lon_0=16.67222222222222 +k=0.999800 +x_0=3703000 +y_0=5627000 +no_defs 
++a=6378245 +rf=29"| __truncated__
+
+and for comparing: SpatialGridDataFrame readed from Grass
+
+Formal class 'SpatialGridDataFrame' [package "sp"] with 6 slots
+  ..@ data       :Formal class 'AttributeList' [package "sp"] with 1 slots
+  .. .. ..@ att:List of 1
+  .. .. .. ..$ dem.30: num [1:356178] 71.0 70.9 70.7 70.5 70.3 ...
+  ..@ grid       :Formal class 'GridTopology' [package "sp"] with 3 slots
+  .. .. ..@ cellcentre.offset: num [1:2] 3560010 5635012
+  .. .. ..@ cellsize         : num [1:2] 30 30
+  .. .. ..@ cells.dim        : int [1:2] 534 667
+  ..@ grid.index : int(0)
+  ..@ coords     : num [1:2, 1:2] 3560010 3575990 5635012 5654980
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : NULL
+  .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+  ..@ bbox       : num [1:2, 1:2] 3559995 5634997 3576005 5654995
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+  .. .. ..$ : chr [1:2] "min" "max"
+  ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+  .. .. ..@ projargs: chr " +proj=stere +lat_0=51.67083333333333 
++lon_0=16.67222222222222 +k=0.999800 +x_0=3703000 +y_0=5627000 +no_defs 
++a=6378245 +rf=29"| __truncated__
+
+So I thing spatial grid is genreated well
+
+ 
+
+

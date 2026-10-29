@@ -1,0 +1,2354 @@
+From dylan.beaudette at gmail.com  Tue Oct  7 11:04:39 2008
+From: dylan.beaudette at gmail.com (Dylan Beaudette)
+Date: Tue Oct  7 11:04:41 2008
+Subject: [GRASS-stats] Re: [R-sig-Geo] writing shapefiles / DBF files when
+	input data contains NA
+In-Reply-To: <Pine.LNX.4.64.0810070857510.11660@reclus.nhh.no>
+References: <3c5546140810062121s15257912xea52d522d34151e7@mail.gmail.com>
+	<Pine.LNX.4.64.0810070857510.11660@reclus.nhh.no>
+Message-ID: <3c5546140810070804h46986acdo8a1ee573b1af4f84@mail.gmail.com>
+
+On Tue, Oct 7, 2008 at 12:10 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Mon, 6 Oct 2008, Dylan Beaudette wrote:
+>
+>> Hi,
+>>
+>> I have noticed that saving data to files that include a DBF, result in
+>> bogus data where there were NA. Using the write.dbf() function from
+>> the foreign package seems to work a little better, but I still get odd
+>> results in numeric columns. Writing to GRASS with the methods in the
+>> spgrass6 package results in some thing that looks like this:
+>>
+>
+> Dylan,
+>
+> I'm afraid that there is no good solution for this at all. DBF does not seem
+> to have a clear and uniform NA treatment (or even !is.finite() treatment).
+> The only work-around is to preprocess the data.frame in the output object to
+> insert known NODATA values, and to replace those flags manually on the GRASS
+> side. This could possibly be written as a wrapper around writeVECT6(). The
+> help page does say:
+>
+>    "Please note that the OGR drivers used may not handle missing data
+>     gracefully, and be prepared to have to correct for this manually.
+>     For example use of the 'readOGR' PostGIS driver directly may
+>     perform better than moving the data through the DBF driver used in
+>     this function - or a PostgreSQL driver used directly or through
+>     ODBC may be a solution. Do not rely on missing values of vector
+>     data moving smoothly across the interface."
+
+
+Hi Roger, thanks for the ideas. I had a sneaking suspicion that there
+wasn't going to be a quick solution for this deep-seated problem with
+the DBF driver. In this situation I was stuck with using the DBF
+driver, however I am now considering alternative routes. I wonder if
+there are other vector formats that can be used as intermediate files.
+I will post on the gdal mailing list asking about this.
+
+
+> I did try to look at the SQLite driver on the GRASS side, which might be
+> more robust, but did not see how to proceed.
+
+Yes. I should really switch the back-end for all GRASS data that I am
+using to SQLite / PostgreSQL. However, does writeOGR() build an
+intermediate shapefile, and then import it into GRASS? if that is the
+case, we may be able to find a more sane intermediate format. The
+column name truncation is also a pain in the neck. I am almost
+positive that I have seen proper use of nodata *within* GRASS, but
+defaulting to something like 0 when NA was encoded in a numeric column
+upon export to shapefile.
+
+Spearfish example:
+
+# make a copy of one of the sample vector files
+g.copy vect=vegcover,veg_temp
+
+# add a new double precision column
+# should be filled with NULL
+v.db.addcol veg_temp column="x double"
+
+# check within GRASS:
+db.select veg_temp
+cat|label|x
+1|irrigated agriculture|
+2|rangeland|
+3|coniferous forest|
+4|deciduous forest|
+5|mixed forest|
+6|disturbed|
+
+# check outside of GRASS:
+dbfxtrct -iveg_temp.dbf
+1,irrigated agriculture,********************
+2,rangeland,********************
+3,coniferous forest,********************
+4,deciduous forest,********************
+5,mixed forest,********************
+6,disturbed,********************
+
+# OK- it looks like there *is* some way to encode nodata into a DBF
+file for numeric data
+# looking at the GRASS description of the columns:
+
+column:x
+description:
+type:DOUBLE PRECISION
+len:20
+scale:6
+precision:18
+default:
+nullok:yes
+select:yes
+update:yes
+
+# cleanup
+g.remove vect=v2,veg_temp
+
+
+## another example:
+g.copy vect=archsites,a_temp
+v.db.addcol a_temp column="xyz double, abc integer"
+
+# check:
+db.select a_temp
+cat|str1|xyz|abc
+1|Signature Rock||
+2|No Name||
+3|Canyon Station||
+[...]
+
+# check outside of GRASS:
+bfxtrct -ia_temp.dbf
+1,Signature Rock,********************,***********
+2,No Name,********************,***********
+3,Canyon Station,********************,***********
+4,Spearfish Creek,********************,***********
+[...]
+
+# looks like encoding nodata for 'double' is different than for 'integer'
+
+# try exporting through GDAL/OGR:
+# first as shapefile:
+v.out.ogr in=a_temp dsn=. type=point
+
+# check:
+dbfxtrct -ia_temp.dbf
+1,Signature Rock,0.000000000000000,0
+2,No Name,0.000000000000000,0
+3,Canyon Station,0.000000000000000,0
+4,Spearfish Creek,0.000000000000000,0
+
+## not as bad as junk data, but 0 is not NA...
+
+# try another vector driver: MapInfo:
+v.out.ogr in=a_temp dsn=. type=point format=MapInfo_File
+
+OGRFeature(a_temp):1
+  cat (Integer) = 1
+  str1 (String) = Signature Rock
+  xyz (Real) = 0
+  abc (Integer) = 0
+
+## still wrong, trying GML
+v.out.ogr in=a_temp dsn=output_dir layer=a_temp type=point format=GML
+
+## null columns aren't exported..., trying SQLite
+v.out.ogr in=a_temp dsn=a_temp.db layer=a_temp type=point format=SQLite
+
+ERROR 1: sqlite3_step() failed:
+  SQL logic error or missing database
+ERROR 1: sqlite3_step() failed:
+  SQL logic error or missing database
+[...]
+
+## results in a broken sqlite DB, with no data, and an incomplete schema
+
+# one more try, save a dbf file from R using the foreign package write.dbf()
+library(foreign)
+x <- data.frame(a=1:10, b=1:10 + runif(10))
+x[10,] <- c(NA,NA)
+write.dbf(x, file='x.dbf')
+
+# looks ok:
+dbfxtrct -ix.dbf
+1,1.967017974471673
+2,2.275017686421052
+3,3.295665678335354
+4,4.817330794176087
+5,5.371476975502446
+6,6.743488555075601
+7,7.345701594371349
+8,8.887322778813541
+9,9.570328279398382
+****,*******************
+
+# try reading into GRASS:
+db.in.ogr dsn=x.dbf out=x
+
+# check in GRASS:
+db.select x
+a|b
+1|1.967018
+2|2.275018
+3|3.295666
+4|4.817331
+5|5.371477
+6|6.743489
+7|7.345702
+8|8.887323
+9|9.570328
+|                   <------- correct use of NA
+
+
+## some success!
+It looks like writing the attribute data using the foreign packages
+write.dbf() may be a safer mechanism for exporting the dataframe
+attached to sp objects. Obviously it would best to avoid DBF at all
+costs, but for the time being, it may be possible to fix the
+writeVECT6() and writeOGR() methods by splitting the writing of the
+spatia / attribute data. Not sure how robust this is, but...
+
+# load 'a_temp' from prev example into R
+library(spgrass6)
+library(foreign)
+library(foreign)
+
+x <- readVECT6('a_temp')
+x@data
+   cat                 str1 xyz abc
+1    1       Signature Rock   0   0
+2    2              No Name   0   0
+3    3       Canyon Station   0   0
+[...]
+
+# note that NA is not preserved -- probably due to intermediate export
+to shapefile.
+# re-add some NA
+x@data[20:25, c('str1','xyz', 'abc')]  <- c(NA, NA, NA)
+
+# write shapefile, and then re-make dbf
+# note that DBF written by OGR driver has bogus data where there was NA
+writeOGR(x, driver='ESRI Shapefile', dsn='.', layer='a_temp2')
+
+# replace dbf with one written by write.dbf...
+write.dbf(x@data, file='a_temp2.dbf')
+
+# dbf file looks correct... import into GRASS and make sure spatial
+data can "see" the re-made DBF:
+v.in.ogr dsn=a_temp2.shp out=a_temp2
+
+db.select a_temp2
+cat|cat_|str1|xyz|abc
+1|1|Signature Rock|0|0
+2|2|No Name|0|0
+3|3|Canyon Station|0|0
+4|4|Spearfish Creek|0|0
+5|5|No Name|0|0
+6|6|Prairie Site|0|0
+7|7|Jensen Pass|0|0
+8|8|No Name|0|0
+9|9|No Name|0|0
+10|10|Slaughterhouse Gulch|0|0
+11|11|No Name|0|0
+12|12|Elkhorn Peak|0|0
+13|13|No Name|0|0
+14|14|No Name|0|0
+15|15|No Name|0|0
+16|16|Boulder Creek Cabin|0|0
+17|17|Ridge|0|0
+18|18|Cole Creek Mine|0|0
+19|19|No Name|0|0
+20|20|||
+21|21|||
+22|22|||
+23|23|||
+24|24|||
+25|25|||
+
+# done with examples.
+
+
+OK. It looks like the internal ordering of the DBF file remains true
+to the original ordering of the source dataframe, and thus matches the
+original ordering of records in GRASS. Do you think that it would be
+wise, after more testing, to make a second pass on shapefiles that
+contain NA to replace the DBF with a corrected one? i.e. in writeOGR()
+/ writeVECT6(), do a check for any columns that are not text/factors,
+and that contain NA-- if true, then re-write the DBF file with the
+write.dbf() function.
+
+I would be happy to test any updates. Of note, I am using these versions:
+
+GRASS: 6.4-svn r32904
+R: 2.7.1 (2008-06-23)
+GDAL: trunk r15235
+spgrass6: 0.5-13
+sp: 0.9-26
+rgdal: 0.5-26
+
+Hopefully this testing will help iron out a solution.
+
+Cheers,
+
+Dylan
+
+> One possibility is not to recode, but to build an NA mask on the R side, and
+> then loop over fields on the GRASS side for the chosen driver inserting NAs
+> in the correct rows (whatever the syntax for that might be). Would this be
+> db.execute with an insertion of SQL NULL?
+>
+> Can we redirect this discussion to the statgrass list, because GRASS
+> developers follow that list?
+>
+> Best wishes,
+>
+> Roger
+>
+>> ### code snippet:
+>> writeVECT6(SDF=spatial.data, vname='pedons_grouped')
+>>
+>>
+>> ### errors:
+>> Projection of input dataset and current location appear to match
+>> Layer: pedons_g
+>> WARNING: Column name changed: 'describer.' -> 'describer_'
+>> WARNING: Column name changed: 'cat' -> 'cat_'
+>> Importing map 103 features...
+>> DBMI-DBF driver error:
+>> SQL parser error: @@rror, unexpected NAME processing 'nan'
+>> in statement:
+>> insert into pedons_grouped values ( 1, 'd2g1', 'alex',
+>> 32.311427999999999,      252.434875000000005,     7227.804688000000169,
+>> -0.000162000000000,           3,                      nan, 'NA',
+>> -2147483648, 'NA', 'NA', -2147483648, -2147483648, 'NA',
+>> nan, '1', 'NA' )
+>> Error in db_execute_immediate()
+>>
+>> ERROR: Cannot insert new row: insert into pedons_grouped values ( 1,
+>>      'd2g1', 'alex', 32.311427999999999, 252.434875000000005,
+>>      7227.804688000000169, -0.000162000000000, 3, nan, 'NA',
+>> -2147483648,
+>>      'NA', 'NA', -2147483648, -2147483648, 'NA', nan, '1', 'NA' )
+>>
+>>
+>> ### another self-contained example:
+>>
+>>
+>> # load libs
+>> library(sp)
+>> library(rgdal)
+>> library(foreign)
+>>
+>> # read in xy data and promote to sp object
+>> e <-
+>> read.csv(url('http://casoilresource.lawr.ucdavis.edu/drupal/files/elev.csv_.txt'))
+>> coordinates(e) <- ~ x+y
+>>
+>> # add a factor column
+>> e@data$f <- factor(rep(letters[1:10], each=30))
+>>
+>> # add some NA
+>> e@data$elev[288:300] <- NA
+>> e@data$f[288:300] <- NA
+>>
+>> # save sp object to shapefile
+>> writeOGR(e, driver='ESRI Shapefile', dsn='.', layer='pts')
+>>
+>>
+>> # the results from dumping the DBF:
+>> [...]
+>> 285,1543,j
+>> 286,1518,j
+>> 287,1656,j
+>> 288,-2147483648,NA
+>> 289,-2147483648,NA
+>> [...]
+>>
+>>
+>> # one more try with the foreign package's write.dbf()
+>> write.dbf(e@data, file='second_try.dbf')
+>>
+>> # results: look better, although the '******' isn't a legal int!
+>> [...]
+>> 285,1543,j
+>> 286,1518,j
+>> 287,1656,j
+>> 288,*******,
+>> 289,*******,
+>> [...]
+>>
+>>
+>> Any ideas on how to work with missing data in numeric columns, when
+>> the dreaded DBF file is involved??? This is a real show-stopper when
+>> sending vector data back to GRASS, as it seems to rely on intermediate
+>> files. Maybe it would be a good idea to send  the geometry first, and
+>> then the attribute data. There would still be a problem if the DBF
+>> back-end is in use...
+>>
+>> Cheers,
+>>
+>> Dylan
+>>
+>> _______________________________________________
+>> R-sig-Geo mailing list
+>> R-sig-Geo@stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+>>
+>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+>
+From dylan.beaudette at gmail.com  Tue Oct  7 21:15:42 2008
+From: dylan.beaudette at gmail.com (Dylan Beaudette)
+Date: Tue Oct  7 21:17:20 2008
+Subject: [GRASS-stats] Re: [R-sig-Geo] writing shapefiles / DBF files when
+	input data contains NA
+In-Reply-To: <Pine.LNX.4.64.0810070857510.11660@reclus.nhh.no>
+References: <3c5546140810062121s15257912xea52d522d34151e7@mail.gmail.com>
+	<Pine.LNX.4.64.0810070857510.11660@reclus.nhh.no>
+Message-ID: <200810071815.42637.dylan.beaudette@gmail.com>
+
+On Tuesday 07 October 2008, Roger Bivand wrote:
+> On Mon, 6 Oct 2008, Dylan Beaudette wrote:
+> > Hi,
+> >
+> > I have noticed that saving data to files that include a DBF, result in
+> > bogus data where there were NA. Using the write.dbf() function from
+> > the foreign package seems to work a little better, but I still get odd
+> > results in numeric columns. Writing to GRASS with the methods in the
+> > spgrass6 package results in some thing that looks like this:
+>
+> Dylan,
+>
+> I'm afraid that there is no good solution for this at all. DBF does not
+> seem to have a clear and uniform NA treatment (or even !is.finite()
+> treatment). The only work-around is to preprocess the data.frame in the
+> output object to insert known NODATA values, and to replace those flags
+> manually on the GRASS side. This could possibly be written as a wrapper
+> around writeVECT6(). The help page does say:
+>
+>      "Please note that the OGR drivers used may not handle missing data
+>       gracefully, and be prepared to have to correct for this manually.
+>       For example use of the 'readOGR' PostGIS driver directly may
+>       perform better than moving the data through the DBF driver used in
+>       this function - or a PostgreSQL driver used directly or through
+>       ODBC may be a solution. Do not rely on missing values of vector
+>       data moving smoothly across the interface."
+>
+> I did try to look at the SQLite driver on the GRASS side, which might be
+> more robust, but did not see how to proceed.
+>
+> One possibility is not to recode, but to build an NA mask on the R side,
+> and then loop over fields on the GRASS side for the chosen driver
+> inserting NAs in the correct rows (whatever the syntax for that might be).
+> Would this be db.execute with an insertion of SQL NULL?
+>
+> Can we redirect this discussion to the statgrass list, because GRASS
+> developers follow that list?
+>
+> Best wishes,
+>
+> Roger
+
+Sorry for the cross-posting. Wanted to clarify where this thread is 
+going/went.
+
+Hi Roger--
+
+It looks like the limiting factor in this equation is the code used in 
+v.out.ogr. 
+
+From the GRASS-dev + Frank W's help:
+
+> > Sounds good :)
+> > Does anyone know how to fix
+> >  vector/v.out.ogr/main.c
+> > to support NULLs? I see db_set_value_null() in
+> >  lib/db/dbmi_base/value.c
+> > which might be relevant.
+>
+> Markus,
+>
+> Once you establish which GRASS attributes are NULL, you can ensure they
+> are pushed out to OGR as null by just skipping the step that sets them.
+> Perhaps that will help a bit.
+
+
+So, once v.out.ogr is fixed, this should clear up several issues:
+
+1. import of vector data into R via spgrass6 methods
+2. better compatibility of vector data exported from GRASS
+
+I still do not know why writeOGR() does not create correct DBF files... it may 
+be related to the code in v.out.ogr.... 
+
+Cheers,
+
+Dylan
+
+-- 
+Dylan Beaudette
+Soil Resource Laboratory
+http://casoilresource.lawr.ucdavis.edu/
+University of California at Davis
+530.754.7341
+From hamish_b at yahoo.com  Tue Oct  7 21:26:15 2008
+From: hamish_b at yahoo.com (Hamish)
+Date: Tue Oct  7 21:29:08 2008
+Subject: [GRASS-stats] Re: [R-sig-Geo] writing shapefiles / DBF files when
+	input data contains NA
+In-Reply-To: <200810071815.42637.dylan.beaudette@gmail.com>
+Message-ID: <343999.6066.qm@web110015.mail.gq1.yahoo.com>
+
+Dylan:
+> It looks like the limiting factor in this equation is the
+> code used in v.out.ogr. 
+
+maybe a silly question, but is a 3rd party format even needed here?
+
+$ ogrinfo --formats | grep -i grass
+  -> "GRASS" (readonly)
+
+at least in the one direction.
+
+
+?
+
+Hamish
+
+
+
+      
+
+From dylan.beaudette at gmail.com  Tue Oct  7 23:55:22 2008
+From: dylan.beaudette at gmail.com (Dylan Beaudette)
+Date: Tue Oct  7 23:55:25 2008
+Subject: [GRASS-stats] Re: [R-sig-Geo] writing shapefiles / DBF files when
+	input data contains NA
+In-Reply-To: <343999.6066.qm@web110015.mail.gq1.yahoo.com>
+References: <200810071815.42637.dylan.beaudette@gmail.com>
+	<343999.6066.qm@web110015.mail.gq1.yahoo.com>
+Message-ID: <3c5546140810072055u35d91aebq17f3938e83918f36@mail.gmail.com>
+
+On Tue, Oct 7, 2008 at 6:26 PM, Hamish <hamish_b@yahoo.com> wrote:
+> Dylan:
+>> It looks like the limiting factor in this equation is the
+>> code used in v.out.ogr.
+>
+> maybe a silly question, but is a 3rd party format even needed here?
+>
+> $ ogrinfo --formats | grep -i grass
+>  -> "GRASS" (readonly)
+>
+> at least in the one direction.
+>
+
+Excellent question. I had also wondered about this. It looks like
+there is a new argument in readVECT():
+
+# read in directly with GDAL/OGR -- no intermediate file:
+x <- readVECT6('xxx', plugin=TRUE)
+
+This is quite fast and depends on the GDAL-GRASS plugin... However,
+NULL data in a GRASS table is not imported correctly-- character
+fields are imported as '', and numeric fields as 0.
+
+So... Is the error in GDAL itself?
+
+I tried inspecting a vector from GRASS with NULL data in some of the
+columns from the table, using ogrinfo -al
+location/mapset/vector/xxx/head
+
+OGRFeature(1):23
+  cat (Integer) = 24
+  cat_ (Integer) = 24
+  str1 (String) = (null)
+  xyz (Real) = (null)
+  abc (Integer) = (null)
+  POINT (591583 4925280 0)
+
+... which seems to correctly report the NULL values.
+
+This leads me to suspect that something in readOGR() and writeOGR are
+at fault in handling of NULL values.
+
+Unfortunately looking at the rgdal source code wasn't very productive
+(my fault).
+
+Cheers,
+
+Dylan
+From Roger.Bivand at nhh.no  Thu Oct  9 06:07:33 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Oct  9 06:08:39 2008
+Subject: [GRASS-stats] Re: [R-sig-Geo] writing shapefiles / DBF files
+	when input data contains NA
+In-Reply-To: <3c5546140810072055u35d91aebq17f3938e83918f36@mail.gmail.com>
+References: <200810071815.42637.dylan.beaudette@gmail.com> 
+	<343999.6066.qm@web110015.mail.gq1.yahoo.com>
+	<3c5546140810072055u35d91aebq17f3938e83918f36@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0810091151540.25461@reclus.nhh.no>
+
+On Tue, 7 Oct 2008, Dylan Beaudette wrote:
+
+> On Tue, Oct 7, 2008 at 6:26 PM, Hamish <hamish_b@yahoo.com> wrote:
+>> Dylan:
+>>> It looks like the limiting factor in this equation is the
+>>> code used in v.out.ogr.
+
+Following Dylan's posting on the GDAL list, and Frank's response, I 
+suggest the following simple patch to vector/v.out.ogr/main.c (here 6.3):
+
+$ diff -u main.c_old main.c
+--- main.c_old  2008-10-09 10:54:19.000000000 +0200
++++ main.c      2008-10-09 11:30:34.000000000 +0200
+@@ -625,7 +625,9 @@
+                         colsqltype = db_get_column_sqltype(Column);
+                         colctype = db_sqltype_to_Ctype ( colsqltype );
+                         G_debug (2, "  colctype = %d", colctype );
+-                       switch ( colctype ) {
++/* RSB 081009 emit unset fields */
++                        if (!db_test_value_isnull(Value)) {
++                         switch ( colctype ) {
+                              case DB_C_TYPE_INT:
+                                 OGR_F_SetFieldInteger( Ogr_feature, j, db_get_va
+lue_int(Value) );
+                                 break;
+@@ -639,7 +641,8 @@
+                                 db_convert_column_value_to_string (Column, 
+&dbst
+ring);
+                                 OGR_F_SetFieldString( Ogr_feature, j, db_get_str
+ing (&dbstring) );
+                                 break;
+-                       }
++                         }
++                        } /* RSB */
+                     }
+                 }
+             }
+
+In 6.4 this is after line 717. Essentially it just uses 
+db_test_value_isnull() not to set values in OGR fields if the DB field 
+value is NULL, and follows Frank's suggestion.
+
+This matches code near line 939 in OGRGRASSLayer::SetAttributes()
+gdal/ogr/ogr_frmts/grass/ogrgrasslayer.cpp in the vector plugin, which 
+uses:
+
+if ( !db_test_value_isnull(value) )
+
+I'm sure the patch needs checking, but with changes in the R rgdal package 
+to support vector null data correctly, it ought to improve the interface.
+
+Best wishes,
+
+Roger
+
+>>
+>> maybe a silly question, but is a 3rd party format even needed here?
+>>
+>> $ ogrinfo --formats | grep -i grass
+>>  -> "GRASS" (readonly)
+>>
+>> at least in the one direction.
+>>
+>
+> Excellent question. I had also wondered about this. It looks like
+> there is a new argument in readVECT():
+>
+> # read in directly with GDAL/OGR -- no intermediate file:
+> x <- readVECT6('xxx', plugin=TRUE)
+>
+> This is quite fast and depends on the GDAL-GRASS plugin... However,
+> NULL data in a GRASS table is not imported correctly-- character
+> fields are imported as '', and numeric fields as 0.
+>
+> So... Is the error in GDAL itself?
+>
+> I tried inspecting a vector from GRASS with NULL data in some of the
+> columns from the table, using ogrinfo -al
+> location/mapset/vector/xxx/head
+>
+> OGRFeature(1):23
+>  cat (Integer) = 24
+>  cat_ (Integer) = 24
+>  str1 (String) = (null)
+>  xyz (Real) = (null)
+>  abc (Integer) = (null)
+>  POINT (591583 4925280 0)
+>
+> ... which seems to correctly report the NULL values.
+>
+> This leads me to suspect that something in readOGR() and writeOGR are
+> at fault in handling of NULL values.
+>
+> Unfortunately looking at the rgdal source code wasn't very productive
+> (my fault).
+>
+> Cheers,
+>
+> Dylan
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From Roger.Bivand at nhh.no  Thu Oct  9 06:26:48 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Oct  9 06:26:50 2008
+Subject: [GRASS-stats] Re: [R-sig-Geo] writing shapefiles / DBF files
+	when input data contains NA
+In-Reply-To: <343999.6066.qm@web110015.mail.gq1.yahoo.com>
+References: <343999.6066.qm@web110015.mail.gq1.yahoo.com>
+Message-ID: <Pine.LNX.4.64.0810091223040.25461@reclus.nhh.no>
+
+On Tue, 7 Oct 2008, Hamish wrote:
+
+> Dylan:
+>> It looks like the limiting factor in this equation is the
+>> code used in v.out.ogr.
+>
+> maybe a silly question, but is a 3rd party format even needed here?
+>
+> $ ogrinfo --formats | grep -i grass
+>  -> "GRASS" (readonly)
+>
+> at least in the one direction.
+>
+
+Right - if the user has the plugin installed, it handles null vector 
+values correctly. However, up to rgdal 0.5-26, null vector values were 
+broken both for reading and writing OGR, and v.out.ogr in 6.3 and 6.4 
+doesn't handle them properly either. The plugin is autodetected and used 
+if present in spgrass6, so from rgdal > 0.5-26, it will be the default for 
+reading from GRASS.
+
+Roger
+
+>
+> ?
+>
+> Hamish
+>
+>
+>
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From dylan.beaudette at gmail.com  Thu Oct  9 15:49:17 2008
+From: dylan.beaudette at gmail.com (Dylan Beaudette)
+Date: Thu Oct  9 15:46:46 2008
+Subject: [GRASS-stats] Re: [R-sig-Geo] writing shapefiles / DBF files when
+	input data contains NA
+In-Reply-To: <Pine.LNX.4.64.0810091151540.25461@reclus.nhh.no>
+References: <200810071815.42637.dylan.beaudette@gmail.com>
+	<3c5546140810072055u35d91aebq17f3938e83918f36@mail.gmail.com>
+	<Pine.LNX.4.64.0810091151540.25461@reclus.nhh.no>
+Message-ID: <200810091249.17263.dylan.beaudette@gmail.com>
+
+On Thursday 09 October 2008, Roger Bivand wrote:
+> On Tue, 7 Oct 2008, Dylan Beaudette wrote:
+> > On Tue, Oct 7, 2008 at 6:26 PM, Hamish <hamish_b@yahoo.com> wrote:
+> >> Dylan:
+> >>> It looks like the limiting factor in this equation is the
+> >>> code used in v.out.ogr.
+>
+> Following Dylan's posting on the GDAL list, and Frank's response, I
+> suggest the following simple patch to vector/v.out.ogr/main.c (here 6.3):
+>
+> $ diff -u main.c_old main.c
+> --- main.c_old  2008-10-09 10:54:19.000000000 +0200
+> +++ main.c      2008-10-09 11:30:34.000000000 +0200
+> @@ -625,7 +625,9 @@
+>                          colsqltype = db_get_column_sqltype(Column);
+>                          colctype = db_sqltype_to_Ctype ( colsqltype );
+>                          G_debug (2, "  colctype = %d", colctype );
+> -                       switch ( colctype ) {
+> +/* RSB 081009 emit unset fields */
+> +                        if (!db_test_value_isnull(Value)) {
+> +                         switch ( colctype ) {
+>                               case DB_C_TYPE_INT:
+>                                  OGR_F_SetFieldInteger( Ogr_feature, j,
+> db_get_va lue_int(Value) );
+>                                  break;
+> @@ -639,7 +641,8 @@
+>                                  db_convert_column_value_to_string (Column,
+> &dbst
+> ring);
+>                                  OGR_F_SetFieldString( Ogr_feature, j,
+> db_get_str ing (&dbstring) );
+>                                  break;
+> -                       }
+> +                         }
+> +                        } /* RSB */
+>                      }
+>                  }
+>              }
+>
+> In 6.4 this is after line 717. Essentially it just uses
+> db_test_value_isnull() not to set values in OGR fields if the DB field
+> value is NULL, and follows Frank's suggestion.
+
+
+OK-- I am using GRASS 6.4 SVN. Since this is the current (stable) developer 
+release it might be good to stick with it. I am using r33792 .
+
+Before making the suggested changes, I have tried exporting some point data 
+with v.out.ogr:
+
+# known working GRASS file with categories
+v.out.ogr -e -c in=a_temp dsn=v.out.ogr_example layer=a_temp type=point
+
+Exporting 25 points/lines...
+ 100%
+0 features written
+WARNING: 25 features found without category skip
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This looks like a new problem (?)... I know that these points have categories, 
+why is v.out.ogr ignoring them?
+
+
+Do these lines have anything to do with this:
+
+v.out.ogr:434 
+Vect_cat_get(Cats, field, &cat);
+	    if (cat < 0 && !donocat) {	/* Do not export not labeled */
+		nocatskip++;
+		continue;
+	    }
+
+.... NO!
+There is some kind of logic-related bug:
+
+# does not export any features, 
+# complaining that they don't have categories
+v.out.ogr -c in=xxx dsn=some_folder layer=new_shpfile
+
+# exported expected features
+v.out.ogr -c in=xxx dsn=new_shpfile
+
+
+OK- posted here:
+http://trac.osgeo.org/grass/ticket/327
+
+The suggested fix appears to result in the creation of a DBF file (in the case 
+of shapefile) with properly encoded NULL.
+
+
+Attached is a patch that applies this change to the develbranch-64 tree.
+
+Should I make a ticket for this patch?
+
+Cheers,
+
+Dylan
+
+> This matches code near line 939 in OGRGRASSLayer::SetAttributes()
+> gdal/ogr/ogr_frmts/grass/ogrgrasslayer.cpp in the vector plugin, which
+> uses:
+>
+> if ( !db_test_value_isnull(value) )
+>
+> I'm sure the patch needs checking, but with changes in the R rgdal package
+> to support vector null data correctly, it ought to improve the interface.
+>
+> Best wishes,
+>
+> Roger
+>
+> >> maybe a silly question, but is a 3rd party format even needed here?
+> >>
+> >> $ ogrinfo --formats | grep -i grass
+> >>  -> "GRASS" (readonly)
+> >>
+> >> at least in the one direction.
+> >
+> > Excellent question. I had also wondered about this. It looks like
+> > there is a new argument in readVECT():
+> >
+> > # read in directly with GDAL/OGR -- no intermediate file:
+> > x <- readVECT6('xxx', plugin=TRUE)
+> >
+> > This is quite fast and depends on the GDAL-GRASS plugin... However,
+> > NULL data in a GRASS table is not imported correctly-- character
+> > fields are imported as '', and numeric fields as 0.
+> >
+> > So... Is the error in GDAL itself?
+> >
+> > I tried inspecting a vector from GRASS with NULL data in some of the
+> > columns from the table, using ogrinfo -al
+> > location/mapset/vector/xxx/head
+> >
+> > OGRFeature(1):23
+> >  cat (Integer) = 24
+> >  cat_ (Integer) = 24
+> >  str1 (String) = (null)
+> >  xyz (Real) = (null)
+> >  abc (Integer) = (null)
+> >  POINT (591583 4925280 0)
+> >
+> > ... which seems to correctly report the NULL values.
+> >
+> > This leads me to suspect that something in readOGR() and writeOGR are
+> > at fault in handling of NULL values.
+> >
+> > Unfortunately looking at the rgdal source code wasn't very productive
+> > (my fault).
+> >
+> > Cheers,
+> >
+> > Dylan
+
+
+
+-- 
+Dylan Beaudette
+Soil Resource Laboratory
+http://casoilresource.lawr.ucdavis.edu/
+University of California at Davis
+530.754.7341
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: v.out.ogr-null_value_support.patch
+Type: text/x-diff
+Size: 1654 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20081009/8738291e/v.out.ogr-null_value_support.bin
+From dylan.beaudette at gmail.com  Thu Oct  9 15:49:17 2008
+From: dylan.beaudette at gmail.com (=?us-ascii?Q?Dylan_Beaudette?=)
+Date: Thu Oct  9 16:44:08 2008
+Subject: [GRASS-dev] Re: [GRASS-stats] Re: [R-sig-Geo] writing shapefiles /
+	DBF files when input data contains NA
+In-Reply-To: <Pine.LNX.4.64.0810091151540.25461@reclus.nhh.no>
+References: <200810071815.42637.dylan.beaudette@gmail.com> 
+	<3c5546140810072055u35d91aebq17f3938e83918f36@mail.gmail.com> 
+	<Pine.LNX.4.64.0810091151540.25461@reclus.nhh.no>
+Message-ID: <200810091249.17263.dylan.beaudette@gmail.com>
+
+On Thursday 09 October 2008, Roger Bivand wrote:
+> On Tue, 7 Oct 2008, Dylan Beaudette wrote:
+> > On Tue, Oct 7, 2008 at 6:26 PM, Hamish <hamish_b@yahoo.com> wrote:
+> >> Dylan:
+> >>> It looks like the limiting factor in this equation is the
+> >>> code used in v.out.ogr.
+>
+> Following Dylan's posting on the GDAL list, and Frank's response, I
+> suggest the following simple patch to vector/v.out.ogr/main.c (here 6.3):
+>
+> $ diff -u main.c_old main.c
+> --- main.c_old  2008-10-09 10:54:19.000000000 +0200
+> +++ main.c      2008-10-09 11:30:34.000000000 +0200
+> @@ -625,7 +625,9 @@
+>                          colsqltype = db_get_column_sqltype(Column);
+>                          colctype = db_sqltype_to_Ctype ( colsqltype );
+>                          G_debug (2, "  colctype = %d", colctype );
+> -                       switch ( colctype ) {
+> +/* RSB 081009 emit unset fields */
+> +                        if (!db_test_value_isnull(Value)) {
+> +                         switch ( colctype ) {
+>                               case DB_C_TYPE_INT:
+>                                  OGR_F_SetFieldInteger( Ogr_feature, j,
+> db_get_va lue_int(Value) );
+>                                  break;
+> @@ -639,7 +641,8 @@
+>                                  db_convert_column_value_to_string (Column,
+> &dbst
+> ring);
+>                                  OGR_F_SetFieldString( Ogr_feature, j,
+> db_get_str ing (&dbstring) );
+>                                  break;
+> -                       }
+> +                         }
+> +                        } /* RSB */
+>                      }
+>                  }
+>              }
+>
+> In 6.4 this is after line 717. Essentially it just uses
+> db_test_value_isnull() not to set values in OGR fields if the DB field
+> value is NULL, and follows Frank's suggestion.
+
+
+OK-- I am using GRASS 6.4 SVN. Since this is the current (stable) developer 
+release it might be good to stick with it. I am using r33792 .
+
+Before making the suggested changes, I have tried exporting some point data 
+with v.out.ogr:
+
+# known working GRASS file with categories
+v.out.ogr -e -c in=a_temp dsn=v.out.ogr_example layer=a_temp type=point
+
+Exporting 25 points/lines...
+ 100%
+0 features written
+WARNING: 25 features found without category skip
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This looks like a new problem (?)... I know that these points have categories, 
+why is v.out.ogr ignoring them?
+
+
+Do these lines have anything to do with this:
+
+v.out.ogr:434 
+Vect_cat_get(Cats, field, &cat);
+	    if (cat < 0 && !donocat) {	/* Do not export not labeled */
+		nocatskip++;
+		continue;
+	    }
+
+.. NO!
+There is some kind of logic-related bug:
+
+# does not export any features, 
+# complaining that they don't have categories
+v.out.ogr -c in=xxx dsn=some_folder layer=new_shpfile
+
+# exported expected features
+v.out.ogr -c in=xxx dsn=new_shpfile
+
+
+OK- posted here:
+http://trac.osgeo.org/grass/ticket/327
+
+The suggested fix appears to result in the creation of a DBF file (in the case 
+of shapefile) with properly encoded NULL.
+
+
+Attached is a patch that applies this change to the develbranch-64 tree.
+
+Should I make a ticket for this patch?
+
+Cheers,
+
+Dylan
+
+> This matches code near line 939 in OGRGRASSLayer::SetAttributes()
+> gdal/ogr/ogr_frmts/grass/ogrgrasslayer.cpp in the vector plugin, which
+> uses:
+>
+> if ( !db_test_value_isnull(value) )
+>
+> I'm sure the patch needs checking, but with changes in the R rgdal package
+> to support vector null data correctly, it ought to improve the interface.
+>
+> Best wishes,
+>
+> Roger
+>
+> >> maybe a silly question, but is a 3rd party format even needed here?
+> >>
+> >> $ ogrinfo --formats | grep -i grass
+> >>  -> "GRASS" (readonly)
+> >>
+> >> at least in the one direction.
+> >
+> > Excellent question. I had also wondered about this. It looks like
+> > there is a new argument in readVECT():
+> >
+> > # read in directly with GDAL/OGR -- no intermediate file:
+> > x <- readVECT6('xxx', plugin=TRUE)
+> >
+> > This is quite fast and depends on the GDAL-GRASS plugin... However,
+> > NULL data in a GRASS table is not imported correctly-- character
+> > fields are imported as '', and numeric fields as 0.
+> >
+> > So... Is the error in GDAL itself?
+> >
+> > I tried inspecting a vector from GRASS with NULL data in some of the
+> > columns from the table, using ogrinfo -al
+> > location/mapset/vector/xxx/head
+> >
+> > OGRFeature(1):23
+> >  cat (Integer) = 24
+> >  cat_ (Integer) = 24
+> >  str1 (String) = (null)
+> >  xyz (Real) = (null)
+> >  abc (Integer) = (null)
+> >  POINT (591583 4925280 0)
+> >
+> > ... which seems to correctly report the NULL values.
+> >
+> > This leads me to suspect that something in readOGR() and writeOGR are
+> > at fault in handling of NULL values.
+> >
+> > Unfortunately looking at the rgdal source code wasn't very productive
+> > (my fault).
+> >
+> > Cheers,
+> >
+> > Dylan
+
+
+
+-- 
+Dylan Beaudette
+Soil Resource Laboratory
+http://casoilresource.lawr.ucdavis.edu/
+University of California at Davis
+530.754.7341
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: v.out.ogr-null_value_support.patch
+Type: text/x-diff
+Size: 1654 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20081009/8738291e/v.out.ogr-null_value_support-0001.bin
+-------------- next part --------------
+_______________________________________________
+grass-dev mailing list
+grass-dev@lists.osgeo.org
+http://lists.osgeo.org/mailman/listinfo/grass-dev
+From marcel.austenfeld at uni-bielefeld.de  Thu Oct 16 03:16:12 2008
+From: marcel.austenfeld at uni-bielefeld.de (Bio7)
+Date: Thu Oct 16 03:17:02 2008
+Subject: [GRASS-stats] R-sig-Geo nabble forum request
+Message-ID: <20008396.post@talk.nabble.com>
+
+
+It would be nice if a nabble forum would be created for the R-sig-Geo mailing
+list
+which provides many useful information closely related to this forum and in
+addition
+gives a nicer interface for the communication. 
+
+Are there any plans to do this.
+
+With kind regards
+
+Marcel
+-- 
+View this message in context: http://www.nabble.com/R-sig-Geo-nabble-forum-request-tp20008396p20008396.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Thu Oct 16 03:39:24 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Oct 16 03:39:27 2008
+Subject: [GRASS-stats] R-sig-Geo nabble forum request
+In-Reply-To: <20008396.post@talk.nabble.com>
+References: <20008396.post@talk.nabble.com>
+Message-ID: <Pine.LNX.4.64.0810160932380.2735@reclus.nhh.no>
+
+On Thu, 16 Oct 2008, Bio7 wrote:
+
+>
+> It would be nice if a nabble forum would be created for the R-sig-Geo mailing
+> list
+> which provides many useful information closely related to this forum and in
+> addition
+> gives a nicer interface for the communication.
+>
+> Are there any plans to do this.
+
+You can access R lists through gmane and nabble. There are no plans to do 
+any more, since none of the people who might answer questions have time to 
+handle anything other than email. There are wiki entries on the R and the 
+GRASS side, but nobody checks them for accuracy or freshness. They might 
+have been OK when posted, but since the software evolves, and there are no 
+automatic mechanisms to run code snippets on current releases outside of 
+the tests and help-page examples in R packages, all bets are off.
+
+Naturally, no-one can stop forum creation, but it does constitute a 
+forking of discussion, where the presumptively useful discussion takes 
+place where developer(s) can see it.
+
+Roger
+
+>
+> With kind regards
+>
+> Marcel
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From neteler at osgeo.org  Thu Oct 16 04:25:28 2008
+From: neteler at osgeo.org (Markus Neteler OSGeo)
+Date: Thu Oct 16 04:26:21 2008
+Subject: [GRASS-stats] R-sig-Geo nabble forum request
+In-Reply-To: <Pine.LNX.4.64.0810160932380.2735@reclus.nhh.no>
+References: <20008396.post@talk.nabble.com>
+	<Pine.LNX.4.64.0810160932380.2735@reclus.nhh.no>
+Message-ID: <20009270.post@talk.nabble.com>
+
+
+
+Roger Bivand wrote:
+> 
+> On Thu, 16 Oct 2008, Bio7 wrote:
+> ...
+> Naturally, no-one can stop forum creation, but it does constitute a 
+> forking of discussion, where the presumptively useful discussion takes 
+> place where developer(s) can see it.
+> ...
+> 
+
+A fork is definitely bad. But AFAIK Nabble is bidirectional. Let's see if
+this comes through... (send through nabble).
+
+Markus
+-- 
+View this message in context: http://www.nabble.com/R-sig-Geo-nabble-forum-request-tp20008396p20009270.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From neteler at osgeo.org  Thu Oct 16 04:26:19 2008
+From: neteler at osgeo.org (Markus Neteler OSGeo)
+Date: Thu Oct 16 04:27:14 2008
+Subject: [GRASS-stats] R-sig-Geo nabble forum request
+In-Reply-To: <Pine.LNX.4.64.0810160932380.2735@reclus.nhh.no>
+References: <20008396.post@talk.nabble.com>
+	<Pine.LNX.4.64.0810160932380.2735@reclus.nhh.no>
+Message-ID: <20009281.post@talk.nabble.com>
+
+
+
+Roger Bivand wrote:
+> 
+> On Thu, 16 Oct 2008, Bio7 wrote:
+> ...
+> Naturally, no-one can stop forum creation, but it does constitute a 
+> forking of discussion, where the presumptively useful discussion takes 
+> place where developer(s) can see it.
+> ...
+> 
+
+A fork is definitely bad. But AFAIK Nabble is bidirectional. Let's see if
+this comes through... (send through nabble).
+
+Markus
+-- 
+View this message in context: http://www.nabble.com/R-sig-Geo-nabble-forum-request-tp20008396p20009281.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From marcel.austenfeld at uni-bielefeld.de  Thu Oct 16 05:39:49 2008
+From: marcel.austenfeld at uni-bielefeld.de (Bio7)
+Date: Thu Oct 16 05:40:38 2008
+Subject: [GRASS-stats] R-sig-Geo nabble forum request
+In-Reply-To: <Pine.LNX.4.64.0810160932380.2735@reclus.nhh.no>
+References: <20008396.post@talk.nabble.com>
+	<Pine.LNX.4.64.0810160932380.2735@reclus.nhh.no>
+Message-ID: <20010327.post@talk.nabble.com>
+
+
+A nabble forum is able to send messages to the mailing list directly 
+if you are registered in the list.
+It would be only another interface to it and no extra forum.
+The messages from nabble will be accepted only if
+you are a registered member of the mailing list.
+An example is the r-sig-ecology list.
+http://n2.nabble.com/r-sig-ecology-f471788.html 
+I use several mailing lists that way and
+it gives me a nice interface for posting messages to the list and an easy 
+access to the history.
+
+
+
+-- 
+View this message in context: http://www.nabble.com/R-sig-Geo-nabble-forum-request-tp20008396p20010327.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From marcel.austenfeld at uni-bielefeld.de  Thu Oct 16 05:43:49 2008
+From: marcel.austenfeld at uni-bielefeld.de (Bio7)
+Date: Thu Oct 16 05:44:41 2008
+Subject: [GRASS-stats] R-sig-Geo nabble forum request
+In-Reply-To: <20009281.post@talk.nabble.com>
+References: <20008396.post@talk.nabble.com>
+	<Pine.LNX.4.64.0810160932380.2735@reclus.nhh.no>
+	<20009281.post@talk.nabble.com>
+Message-ID: <20010385.post@talk.nabble.com>
+
+
+
+
+Markus Neteler OSGeo wrote:
+> 
+> 
+> Roger Bivand wrote:
+>> 
+>> On Thu, 16 Oct 2008, Bio7 wrote:
+>> ...
+>> Naturally, no-one can stop forum creation, but it does constitute a 
+>> forking of discussion, where the presumptively useful discussion takes 
+>> place where developer(s) can see it.
+>> ...
+>> 
+> 
+> A fork is definitely bad. But AFAIK Nabble is bidirectional. Let's see if
+> this comes through... (send through nabble).
+> 
+> Markus
+> 
+
+And this is the nabble interface to it:
+
+http://www.nabble.com/GRASS-f1200.html
+
+-- 
+View this message in context: http://www.nabble.com/R-sig-Geo-nabble-forum-request-tp20008396p20010385.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From jarekj at amu.edu.pl  Thu Oct 16 15:02:27 2008
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Thu Oct 16 15:09:19 2008
+Subject: [GRASS-stats] wrong values imported to R
+Message-ID: <48F78FC3.1060606@amu.edu.pl>
+
+Hi:
+
+data from Grass: (integer)
+
+ Range of data:    min = 30  max = 31589370  
+
+(there are more or less 14000 categories ranges as above)
+
+imported to R:
+
+summary(r@data$sca_mroga)
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max.
+-32770.0     60.0    150.0    532.1    330.0  32760.0
+
+I think the problems lies in 16bit proxy .bin file during export, and we 
+have overflow
+
+regards
+Jarek
+
+From neteler at osgeo.org  Thu Oct 16 15:14:05 2008
+From: neteler at osgeo.org (Markus Neteler)
+Date: Thu Oct 16 15:14:07 2008
+Subject: [GRASS-stats] wrong values imported to R
+In-Reply-To: <48F78FC3.1060606@amu.edu.pl>
+References: <48F78FC3.1060606@amu.edu.pl>
+Message-ID: <86782b610810161214w1580c9e9kd9960b834ffce697@mail.gmail.com>
+
+On Thu, Oct 16, 2008 at 9:02 PM, Jarek Jasiewicz <jarekj@amu.edu.pl> wrote:
+> Hi:
+>
+> data from Grass: (integer)
+>
+> Range of data:    min = 30  max = 31589370
+> (there are more or less 14000 categories ranges as above)
+>
+> imported to R:
+>
+> summary(r@data$sca_mroga)
+>   Min.  1st Qu.   Median     Mean  3rd Qu.     Max.
+> -32770.0     60.0    150.0    532.1    330.0  32760.0
+>
+> I think the problems lies in 16bit proxy .bin file during export, and we
+> have overflow
+
+Jarek,
+
+if your GRASS-R interface isn't too old, please try
+to add plugin=TRUE as parameter.
+It should enable the new method of reading in data.
+
+Please report if it (not) works.
+
+Best,
+Markus
+From jarekj at amu.edu.pl  Thu Oct 16 15:14:24 2008
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Thu Oct 16 15:14:45 2008
+Subject: [GRASS-stats] wrong values imported to R
+In-Reply-To: <48F78FC3.1060606@amu.edu.pl>
+References: <48F78FC3.1060606@amu.edu.pl>
+Message-ID: <48F79290.9030207@amu.edu.pl>
+
+oh, by the way
+there is simple solution: export data as float and convert them to 
+integer in R, I just only point out incosistency....
+
+Jarek Jasiewicz pisze:
+> Hi:
+>
+> data from Grass: (integer)
+>
+> Range of data:    min = 30  max = 31589370 
+> (there are more or less 14000 categories ranges as above)
+>
+> imported to R:
+>
+> summary(r@data$sca_mroga)
+>    Min.  1st Qu.   Median     Mean  3rd Qu.     Max.
+> -32770.0     60.0    150.0    532.1    330.0  32760.0
+>
+> I think the problems lies in 16bit proxy .bin file during export, and 
+> we have overflow
+>
+> regards
+> Jarek
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+From jarekj at amu.edu.pl  Thu Oct 16 15:36:55 2008
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Thu Oct 16 15:37:02 2008
+Subject: [GRASS-stats] wrong values imported to R
+In-Reply-To: <86782b610810161214w1580c9e9kd9960b834ffce697@mail.gmail.com>
+References: <48F78FC3.1060606@amu.edu.pl>
+	<86782b610810161214w1580c9e9kd9960b834ffce697@mail.gmail.com>
+Message-ID: <48F797D7.40501@amu.edu.pl>
+
+upps...
+I've just updated and....
+
+ > r=readRAST6("sca_mroga",plugin=TRUE)
+
+ *** caught segfault ***
+address (nil), cause 'unknown'
+
+Traceback:
+ 1: .Call("RGDAL_OpenDataset", as.character(filename), TRUE, PACKAGE = 
+"rgdal")
+ 2: .local(.Object, ...)
+ 3: initialize(value, ...)
+ 4: initialize(value, ...)
+ 5: new("GDALReadOnlyDataset", filename)
+ 6: GDAL.open(fname)
+ 7: readGDAL(fname, silent = ignore.stderr)
+ 8: readRAST6("sca_mroga", plugin = TRUE)
+
+Possible actions:
+1: abort (with core dump, if enabled)
+2: normal R exit
+3: exit R without saving workspace
+4: exit R saving workspace
+
+and I have very big problem....
+...
+Markus Neteler pisze:
+> On Thu, Oct 16, 2008 at 9:02 PM, Jarek Jasiewicz <jarekj@amu.edu.pl> wrote:
+>   
+>> Hi:
+>>
+>> data from Grass: (integer)
+>>
+>> Range of data:    min = 30  max = 31589370
+>> (there are more or less 14000 categories ranges as above)
+>>
+>> imported to R:
+>>
+>> summary(r@data$sca_mroga)
+>>   Min.  1st Qu.   Median     Mean  3rd Qu.     Max.
+>> -32770.0     60.0    150.0    532.1    330.0  32760.0
+>>
+>> I think the problems lies in 16bit proxy .bin file during export, and we
+>> have overflow
+>>     
+>
+> Jarek,
+>
+> if your GRASS-R interface isn't too old, please try
+> to add plugin=TRUE as parameter.
+> It should enable the new method of reading in data.
+>
+> Please report if it (not) works.
+>
+> Best,
+> Markus
+>   
+From Roger.Bivand at nhh.no  Thu Oct 16 15:48:40 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Oct 16 15:48:43 2008
+Subject: [GRASS-stats] wrong values imported to R
+In-Reply-To: <48F797D7.40501@amu.edu.pl>
+References: <48F78FC3.1060606@amu.edu.pl>
+	<86782b610810161214w1580c9e9kd9960b834ffce697@mail.gmail.com>
+	<48F797D7.40501@amu.edu.pl>
+Message-ID: <Pine.LNX.4.64.0810162140120.4768@reclus.nhh.no>
+
+On Thu, 16 Oct 2008, Jarek Jasiewicz wrote:
+
+> upps...
+> I've just updated and....
+
+to what? Please include sessionInfo() output and exact GRASS version, and 
+exact GDAL version (what you see when you load rgdal) and whether this is 
+the old (deprecated) or the new plugin. There are lots of things that 
+could go wrong, and this looks like a plugin built against a different 
+version of GRASS.
+
+This problem (r.out.bin always using 16-bit integers for CELL rasters) was 
+discussed in a thread on R-sig-geo recently:
+
+https://stat.ethz.ch/pipermail/r-sig-geo/2008-September/004184.html
+
+and resolved off-list by implementing the plugin. The CVS rgdal on 
+sourceforge and spgrass6 on sourceforge also have a useGDAL= argument to 
+use a GTiff for the intermediate file, so r.out.gdal from GRASS >= 6.3.
+
+See if gdalinfo on your GRASS raster also crashes - that would suggest a 
+plugin that is not synchronised with your GRASS and/or GDAL.
+
+Hope this helps,
+
+Roger
+
+>
+>>  r=readRAST6("sca_mroga",plugin=TRUE)
+>
+> *** caught segfault ***
+> address (nil), cause 'unknown'
+>
+> Traceback:
+> 1: .Call("RGDAL_OpenDataset", as.character(filename), TRUE, PACKAGE = 
+> "rgdal")
+> 2: .local(.Object, ...)
+> 3: initialize(value, ...)
+> 4: initialize(value, ...)
+> 5: new("GDALReadOnlyDataset", filename)
+> 6: GDAL.open(fname)
+> 7: readGDAL(fname, silent = ignore.stderr)
+> 8: readRAST6("sca_mroga", plugin = TRUE)
+>
+> Possible actions:
+> 1: abort (with core dump, if enabled)
+> 2: normal R exit
+> 3: exit R without saving workspace
+> 4: exit R saving workspace
+>
+> and I have very big problem....
+> ...
+> Markus Neteler pisze:
+>>  On Thu, Oct 16, 2008 at 9:02 PM, Jarek Jasiewicz <jarekj@amu.edu.pl>
+>>  wrote:
+>> 
+>> >  Hi:
+>> > 
+>> >  data from Grass: (integer)
+>> > 
+>> >  Range of data:    min = 30  max = 31589370
+>> >  (there are more or less 14000 categories ranges as above)
+>> > 
+>> >  imported to R:
+>> > 
+>> >  summary(r@data$sca_mroga)
+>> >    Min.  1st Qu.   Median     Mean  3rd Qu.     Max.
+>> >  -32770.0     60.0    150.0    532.1    330.0  32760.0
+>> > 
+>> >  I think the problems lies in 16bit proxy .bin file during export, and we
+>> >  have overflow
+>> > 
+>>
+>>  Jarek,
+>>
+>>  if your GRASS-R interface isn't too old, please try
+>>  to add plugin=TRUE as parameter.
+>>  It should enable the new method of reading in data.
+>>
+>>  Please report if it (not) works.
+>>
+>>  Best,
+>>  Markus
+>> 
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From jarekj at amu.edu.pl  Thu Oct 16 16:14:36 2008
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Thu Oct 16 16:14:45 2008
+Subject: [GRASS-stats] wrong values imported to R
+In-Reply-To: <Pine.LNX.4.64.0810162140120.4768@reclus.nhh.no>
+References: <48F78FC3.1060606@amu.edu.pl>
+	<86782b610810161214w1580c9e9kd9960b834ffce697@mail.gmail.com>
+	<48F797D7.40501@amu.edu.pl>
+	<Pine.LNX.4.64.0810162140120.4768@reclus.nhh.no>
+Message-ID: <48F7A0AC.9020107@amu.edu.pl>
+
+
+
+Roger Bivand pisze:
+> On Thu, 16 Oct 2008, Jarek Jasiewicz wrote:
+>
+>> upps...
+>> I've just updated and....
+>
+> to what? 
+
+here are needed information:
+
+
+sessionInfo()
+
+....
+
+other attached packages:
+[1] spgrass6_0.5-13 rgdal_0.5-26    sp_0.9-25     
+....
+
+R version 2.7.2
+
+
+> Please include sessionInfo() output and exact GRASS version, and exact 
+> GDAL version (what you see when you load rgdal) and whether this is 
+> the old (deprecated)
+I use gdal 1.4.4.0 well, I cannot used 1.5.2 due to some dependiences, 
+If gdal version is too old, the problem is clear
+> or the new plugin. There are lots of things that could go wrong, and 
+> this looks like a plugin built against a different version of GRASS.
+>
+> This problem (r.out.bin always using 16-bit integers for CELL rasters) 
+> was discussed in a thread on R-sig-geo recently:
+>
+> https://stat.ethz.ch/pipermail/r-sig-geo/2008-September/004184.html
+
+mabye I lost it... sorry
+>
+> and resolved off-list by implementing the plugin. The CVS rgdal on 
+> sourceforge and spgrass6 on sourceforge also have a useGDAL= argument 
+> to use a GTiff for the intermediate file, so r.out.gdal from GRASS >= 
+> 6.3.
+>
+> See if gdalinfo on your GRASS raster also crashes - that would suggest 
+> a plugin that is not synchronised with your GRASS and/or GDAL.
+well, crashes...
+gdalinfo: symbol lookup error: /usr/lib/gdalplugins/gdal_GRASS.so: 
+undefined symbol: G_no_gisinit
+
+....
+
+well, problem isn't so big I just lost discussion you pointed above
+
+
+tanks for info
+Jarek
+From neteler at osgeo.org  Thu Oct 16 17:06:45 2008
+From: neteler at osgeo.org (Markus Neteler)
+Date: Thu Oct 16 17:06:47 2008
+Subject: [GRASS-stats] wrong values imported to R
+In-Reply-To: <48F7A0AC.9020107@amu.edu.pl>
+References: <48F78FC3.1060606@amu.edu.pl>
+	<86782b610810161214w1580c9e9kd9960b834ffce697@mail.gmail.com>
+	<48F797D7.40501@amu.edu.pl>
+	<Pine.LNX.4.64.0810162140120.4768@reclus.nhh.no>
+	<48F7A0AC.9020107@amu.edu.pl>
+Message-ID: <86782b610810161406p41045585odf837972dc07a495@mail.gmail.com>
+
+On Thu, Oct 16, 2008 at 10:14 PM, Jarek Jasiewicz <jarekj@amu.edu.pl> wrote:
+...
+> gdalinfo: symbol lookup error: /usr/lib/gdalplugins/gdal_GRASS.so: undefined
+> symbol: G_no_gisinit
+
+I feel that GDAL and the GRASS-GDAL plugin are out of sync on your machine.
+
+best,
+Markus
+From giohappy at gmail.com  Thu Oct 16 17:10:32 2008
+From: giohappy at gmail.com (G. Allegri)
+Date: Thu Oct 16 17:10:35 2008
+Subject: [GRASS-stats] wrong values imported to R
+In-Reply-To: <86782b610810161406p41045585odf837972dc07a495@mail.gmail.com>
+References: <48F78FC3.1060606@amu.edu.pl>
+	<86782b610810161214w1580c9e9kd9960b834ffce697@mail.gmail.com>
+	<48F797D7.40501@amu.edu.pl>
+	<Pine.LNX.4.64.0810162140120.4768@reclus.nhh.no>
+	<48F7A0AC.9020107@amu.edu.pl>
+	<86782b610810161406p41045585odf837972dc07a495@mail.gmail.com>
+Message-ID: <e12429640810161410u713d4bd8qc2be9ed870c79a3f@mail.gmail.com>
+
+The same happened to me with the last devel branches. I had to compile
+gdal end gdal-grass plugin by myself (not so hard...).
+
+Giovanni
+
+2008/10/16 Markus Neteler <neteler@osgeo.org>:
+> On Thu, Oct 16, 2008 at 10:14 PM, Jarek Jasiewicz <jarekj@amu.edu.pl> wrote:
+> ...
+>> gdalinfo: symbol lookup error: /usr/lib/gdalplugins/gdal_GRASS.so: undefined
+>> symbol: G_no_gisinit
+>
+> I feel that GDAL and the GRASS-GDAL plugin are out of sync on your machine.
+>
+> best,
+> Markus
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+From neteler at osgeo.org  Fri Oct 17 07:38:54 2008
+From: neteler at osgeo.org (Markus Neteler)
+Date: Fri Oct 17 07:38:55 2008
+Subject: [GRASS-stats] wrong values imported to R
+In-Reply-To: <e12429640810161410u713d4bd8qc2be9ed870c79a3f@mail.gmail.com>
+References: <48F78FC3.1060606@amu.edu.pl>
+	<86782b610810161214w1580c9e9kd9960b834ffce697@mail.gmail.com>
+	<48F797D7.40501@amu.edu.pl>
+	<Pine.LNX.4.64.0810162140120.4768@reclus.nhh.no>
+	<48F7A0AC.9020107@amu.edu.pl>
+	<86782b610810161406p41045585odf837972dc07a495@mail.gmail.com>
+	<e12429640810161410u713d4bd8qc2be9ed870c79a3f@mail.gmail.com>
+Message-ID: <86782b610810170438s77fb4ce5n3c99e44f43fb06a3@mail.gmail.com>
+
+On Thu, Oct 16, 2008 at 11:10 PM, G. Allegri <giohappy@gmail.com> wrote:
+> The same happened to me with the last devel branches. I had to compile
+> gdal end gdal-grass plugin by myself (not so hard...).
+
+Documented here:
+http://grass.osgeo.org/wiki/Compile_and_install_GRASS_and_QGIS_with_GDAL/OGR_Plugin
+
+Markus
+From neteler at osgeo.org  Sun Oct 19 12:04:15 2008
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sun Oct 19 12:04:18 2008
+Subject: [GRASS-stats] wrong values imported to R
+In-Reply-To: <48F8D108.8080206@amu.edu.pl>
+References: <48F78FC3.1060606@amu.edu.pl>
+	<86782b610810161214w1580c9e9kd9960b834ffce697@mail.gmail.com>
+	<48F797D7.40501@amu.edu.pl>
+	<Pine.LNX.4.64.0810162140120.4768@reclus.nhh.no>
+	<48F7A0AC.9020107@amu.edu.pl>
+	<86782b610810161406p41045585odf837972dc07a495@mail.gmail.com>
+	<e12429640810161410u713d4bd8qc2be9ed870c79a3f@mail.gmail.com>
+	<86782b610810170438s77fb4ce5n3c99e44f43fb06a3@mail.gmail.com>
+	<48F8D108.8080206@amu.edu.pl>
+Message-ID: <86782b610810190904r2346aeadu217fc16127e45303@mail.gmail.com>
+
+On Fri, Oct 17, 2008 at 7:53 PM, Jarek Jasiewicz <jarekj@amu.edu.pl> wrote:
+> In spite of it, spgrass6 call plugin of grass6.2.2 instead of 6.4
+
+It won't work with GRASS 6.2 since we fixed a couple of problems
+in later versions only. Also, the required C version of r.out.gdal doesn't
+exist in 6.2.x AFAIR.
+
+Markus
+From alessandro.montaghi at unifi.it  Wed Oct 22 19:21:53 2008
+From: alessandro.montaghi at unifi.it (Alessandro)
+Date: Wed Oct 22 19:29:57 2008
+Subject: [GRASS-stats] extract pixel sum
+Message-ID: <007501c9349c$f97affe0$ec70ffa0$@montaghi@unifi.it>
+
+Hi All,
+
+ 
+
+I wish to know is It possible extract the pixels sum inside a polygon
+shape.file. I have a grid raster in SAGA format and ESRI Grid and a 14 plots
+in shape file format with 2 column in the data-base (ID, V). I wish extract
+the sum of pixel of the grid inside the plots
+
+I am searching a lot a solution today but nothing.
+
+ 
+
+Thanks
+
+ 
+
+Ale 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20081022/780b2d3b/attachment.html
+From giohappy at gmail.com  Wed Oct 22 20:06:20 2008
+From: giohappy at gmail.com (G. Allegri)
+Date: Wed Oct 22 20:06:22 2008
+Subject: [GRASS-stats] extract pixel sum
+In-Reply-To: <-2555159883520357607@unknownmsgid>
+References: <-2555159883520357607@unknownmsgid>
+Message-ID: <e12429640810221706q76d0281cw93e81fc7beac665@mail.gmail.com>
+
+In GRASS v.rast.stats [1] can do the work.
+
+Giovanni
+
+[1] http://grass.osgeo.org/grass64/manuals/html64_user/v.rast.stats.html
+
+2008/10/23 Alessandro <alessandro.montaghi@unifi.it>:
+> Hi All,
+>
+>
+>
+> I wish to know is It possible extract the pixels sum inside a polygon
+> shape.file. I have a grid raster in SAGA format and ESRI Grid and a 14 plots
+> in shape file format with 2 column in the data-base (ID, V). I wish extract
+> the sum of pixel of the grid inside the plots
+>
+> I am searching a lot a solution today but nothing.
+>
+>
+>
+> Thanks
+>
+>
+>
+> Ale
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+From hzambran.newsgroups at gmail.com  Tue Oct 28 08:07:30 2008
+From: hzambran.newsgroups at gmail.com (Mauricio Zambrano)
+Date: Tue Oct 28 08:07:31 2008
+Subject: [GRASS-stats] Problem with Grass repository in Ubuntu 8.04
+Message-ID: <63d616b0810280507t7dbc2306vb2df0e118446ab7f@mail.gmail.com>
+
+Dear all,
+
+I have correctly installed Grass 6.3 in a Ubuntu 8.04.1 machine
+(kernel 2.6.24-21-generic), but since some days ago when I try to
+update my packages,  I get an error message saying that:
+
+http://les-ejk.cz/ubuntu/dists/hardy/multiverse/binary-i386/Packages.gz
+ 404 Not Found
+http://les-ejk.cz/ubuntu/dists/hardy/multiverse/source/Sources.gz  404 Not Found
+
+I tried to find out a solution going to
+http://grass.itc.it/download/index.php , but the Ubuntu links to Grass
+ 6.2.3 and 6.3 are broken.
+
+Is this a temporal problem or do I have to change something ?
+
+Thanks in advance,
+
+Mauricio
+
+-- 
+Linux user  #454569 -- Ubuntu user #17469
+From Roger.Bivand at nhh.no  Tue Oct 28 08:33:40 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Oct 28 08:33:44 2008
+Subject: [GRASS-stats] Problem with Grass repository in Ubuntu 8.04
+In-Reply-To: <63d616b0810280507t7dbc2306vb2df0e118446ab7f@mail.gmail.com>
+References: <63d616b0810280507t7dbc2306vb2df0e118446ab7f@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0810281333000.28078@reclus.nhh.no>
+
+On Tue, 28 Oct 2008, Mauricio Zambrano wrote:
+
+> Dear all,
+>
+> I have correctly installed Grass 6.3 in a Ubuntu 8.04.1 machine
+> (kernel 2.6.24-21-generic), but since some days ago when I try to
+> update my packages,  I get an error message saying that:
+
+Could I suggest that you post to the Grass-users list, which has more 
+traffic and helpers?
+
+Roger
+
+>
+> http://les-ejk.cz/ubuntu/dists/hardy/multiverse/binary-i386/Packages.gz
+> 404 Not Found
+> http://les-ejk.cz/ubuntu/dists/hardy/multiverse/source/Sources.gz  404 Not Found
+>
+> I tried to find out a solution going to
+> http://grass.itc.it/download/index.php , but the Ubuntu links to Grass
+> 6.2.3 and 6.3 are broken.
+>
+> Is this a temporal problem or do I have to change something ?
+>
+> Thanks in advance,
+>
+> Mauricio
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From wbhk at unm.edu  Wed Oct 29 13:43:20 2008
+From: wbhk at unm.edu (William Hudspeth)
+Date: Wed Oct 29 14:13:02 2008
+Subject: [GRASS-stats] Problems installing spgrass6
+Message-ID: <1225302200.5130.4.camel@localhost>
+
+Hello, I am having problems installing the latest version of spgrass6 on
+a machine running SUSE linux 10.1. From the R prompt, I updated all
+packages, including sp, rgdal, spatial, etc.
+
+I also upgraded my version of gdal using the SUSE Yast utility. When the
+update got to spgrass6, I received the following error:
+
+
+* Installing *source* package 'spgrass6' ...
+** R
+** inst
+** preparing package for lazy loading
+Loading required package: sp
+Loading required package: rgdal
+Error in fun(...) : could not find function "packageStartupMessage"
+Error: .onLoad failed in 'loadNamespace' for 'rgdal'
+Error: package 'rgdal' could not be loaded
+Execution halted
+ERROR: lazy loading failed for package 'spgrass6'
+** Removing '/usr/local/lib/R/library/spgrass6'
+** Restoring previous '/usr/local/lib/R/library/spgrass6'
+
+The downloaded packages are in
+        /tmp/Rtmp4zsWbv/downloaded_packages
+Warning message:
+installation of package 'spgrass6' had non-zero exit status in:
+install.packages(update[, "Package"], instlib, contriburl = contriburl,
+
+Any assistance would be greatly appreciated,
+
+Thanks, William
+
+
+From dylan.beaudette at gmail.com  Wed Oct 29 14:21:48 2008
+From: dylan.beaudette at gmail.com (Dylan Beaudette)
+Date: Wed Oct 29 14:21:20 2008
+Subject: [GRASS-stats] Problems installing spgrass6
+In-Reply-To: <1225302200.5130.4.camel@localhost>
+References: <1225302200.5130.4.camel@localhost>
+Message-ID: <200810291121.48097.dylan.beaudette@gmail.com>
+
+On Wednesday 29 October 2008, William Hudspeth wrote:
+> Hello, I am having problems installing the latest version of spgrass6 on
+> a machine running SUSE linux 10.1. From the R prompt, I updated all
+> packages, including sp, rgdal, spatial, etc.
+>
+> I also upgraded my version of gdal using the SUSE Yast utility. When the
+> update got to spgrass6, I received the following error:
+>
+>
+> * Installing *source* package 'spgrass6' ...
+> ** R
+> ** inst
+> ** preparing package for lazy loading
+> Loading required package: sp
+> Loading required package: rgdal
+> Error in fun(...) : could not find function "packageStartupMessage"
+> Error: .onLoad failed in 'loadNamespace' for 'rgdal'
+> Error: package 'rgdal' could not be loaded
+> Execution halted
+> ERROR: lazy loading failed for package 'spgrass6'
+> ** Removing '/usr/local/lib/R/library/spgrass6'
+> ** Restoring previous '/usr/local/lib/R/library/spgrass6'
+>
+> The downloaded packages are in
+>         /tmp/Rtmp4zsWbv/downloaded_packages
+> Warning message:
+> installation of package 'spgrass6' had non-zero exit status in:
+> install.packages(update[, "Package"], instlib, contriburl = contriburl,
+>
+> Any assistance would be greatly appreciated,
+>
+> Thanks, William
+>
+>
+
+This error probably means that you will need to first install the rgdal 
+package-- which depends on a working install of GDAL library and development 
+files (headers / include files / etc.).
+
+Cheers,
+
+Dylan
+
+-- 
+Dylan Beaudette
+Soil Resource Laboratory
+http://casoilresource.lawr.ucdavis.edu/
+University of California at Davis
+530.754.7341
+From neteler at osgeo.org  Wed Oct 29 15:25:41 2008
+From: neteler at osgeo.org (Markus Neteler)
+Date: Wed Oct 29 15:25:44 2008
+Subject: [GRASS-stats] Problems installing spgrass6
+In-Reply-To: <200810291121.48097.dylan.beaudette@gmail.com>
+References: <1225302200.5130.4.camel@localhost>
+	<200810291121.48097.dylan.beaudette@gmail.com>
+Message-ID: <86782b610810291225w2738a07bmed86b8ce7986044b@mail.gmail.com>
+
+On Wed, Oct 29, 2008 at 7:21 PM, Dylan Beaudette
+<dylan.beaudette@gmail.com> wrote:
+> On Wednesday 29 October 2008, William Hudspeth wrote:
+>> Hello, I am having problems installing the latest version of spgrass6 on
+>> a machine running SUSE linux 10.1. From the R prompt, I updated all
+>> packages, including sp, rgdal, spatial, etc.
+...
+>> installation of package 'spgrass6' had non-zero exit status in:
+>> install.packages(update[, "Package"], instlib, contriburl = contriburl,
+>>
+>> Any assistance would be greatly appreciated,
+>>
+>> Thanks, William
+>>
+>>
+>
+> This error probably means that you will need to first install the rgdal
+> package-- which depends on a working install of GDAL library and development
+> files (headers / include files / etc.).
+
+To simplify this, try:
+
+##### Non-Mac users:
+install.packages("spgrass6", dependencies = TRUE)
+
+##### Mac users:
+install.packages("spgrass6", type="source", dependencies=TRUE)
+
+This should fetch all dependencies.
+See also
+ http://grass.osgeo.org/statsgrass/grass6_r_install.html
+
+Markus
+From wbhk at unm.edu  Wed Oct 29 17:34:32 2008
+From: wbhk at unm.edu (William Hudspeth)
+Date: Wed Oct 29 17:34:11 2008
+Subject: [GRASS-stats] Problems installing spgrass6
+Message-ID: <1225316072.5130.8.camel@localhost>
+
+Hello, I am having problems installing the latest version of spgrass6 on
+a machine running SUSE linux 10.1. From the R prompt, I updated all
+packages, including sp, rgdal, spatial, etc.
+
+I also upgraded my version of gdal using the SUSE Yast utility. When the
+update got to spgrass6, I received the following error:
+
+
+* Installing *source* package 'spgrass6' ...
+** R
+** inst
+** preparing package for lazy loading
+Loading required package: sp
+Loading required package: rgdal
+Error in fun(...) : could not find function "packageStartupMessage"
+Error: .onLoad failed in 'loadNamespace' for 'rgdal'
+Error: package 'rgdal' could not be loaded
+Execution halted
+ERROR: lazy loading failed for package 'spgrass6'
+** Removing '/usr/local/lib/R/library/spgrass6'
+** Restoring previous '/usr/local/lib/R/library/spgrass6'
+
+The downloaded packages are in
+        /tmp/Rtmp4zsWbv/downloaded_packages
+Warning message:
+installation of package 'spgrass6' had non-zero exit status in:
+install.packages(update[, "Package"], instlib, contriburl = contriburl,
+
+Any assistance would be greatly appreciated,
+
+Thanks, William
+
+
+
+
+From e.j.tommo at gmail.com  Thu Oct 30 08:28:34 2008
+From: e.j.tommo at gmail.com (Edward Tomlinson)
+Date: Thu Oct 30 08:28:37 2008
+Subject: [GRASS-stats] Problems installing spgrass6
+In-Reply-To: <86782b610810291225w2738a07bmed86b8ce7986044b@mail.gmail.com>
+References: <1225302200.5130.4.camel@localhost>
+	<200810291121.48097.dylan.beaudette@gmail.com>
+	<86782b610810291225w2738a07bmed86b8ce7986044b@mail.gmail.com>
+Message-ID: <285eec980810300528h269b837cu282c620e88447c61@mail.gmail.com>
+
+Dear list,
+
+I seem to be having a similar problem, cannot install spgrass6 package.
+
+i have tried R CMD INSTALL and package.install methods. Also tried with
+dependencies = true.
+
+Still end up with the same error.
+
+I have gdal 1.5.3 installed seperatly.
+
+Can anyone give me suggestions?
+
+Thanks,
+Ed
+
+2008/10/30 Markus Neteler <neteler@osgeo.org>
+
+> On Wed, Oct 29, 2008 at 7:21 PM, Dylan Beaudette
+> <dylan.beaudette@gmail.com> wrote:
+> > On Wednesday 29 October 2008, William Hudspeth wrote:
+> >> Hello, I am having problems installing the latest version of spgrass6 on
+> >> a machine running SUSE linux 10.1. From the R prompt, I updated all
+> >> packages, including sp, rgdal, spatial, etc.
+> ...
+> >> installation of package 'spgrass6' had non-zero exit status in:
+> >> install.packages(update[, "Package"], instlib, contriburl = contriburl,
+> >>
+> >> Any assistance would be greatly appreciated,
+> >>
+> >> Thanks, William
+> >>
+> >>
+> >
+> > This error probably means that you will need to first install the rgdal
+> > package-- which depends on a working install of GDAL library and
+> development
+> > files (headers / include files / etc.).
+>
+> To simplify this, try:
+>
+> ##### Non-Mac users:
+> install.packages("spgrass6", dependencies = TRUE)
+>
+> ##### Mac users:
+> install.packages("spgrass6", type="source", dependencies=TRUE)
+>
+> This should fetch all dependencies.
+> See also
+>  http://grass.osgeo.org/statsgrass/grass6_r_install.html
+>
+> Markus
+>  _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20081030/d1c5a494/attachment.html
+From neteler at osgeo.org  Thu Oct 30 08:35:32 2008
+From: neteler at osgeo.org (Markus Neteler)
+Date: Thu Oct 30 08:35:33 2008
+Subject: [GRASS-stats] Problems installing spgrass6
+In-Reply-To: <285eec980810300528h269b837cu282c620e88447c61@mail.gmail.com>
+References: <1225302200.5130.4.camel@localhost>
+	<200810291121.48097.dylan.beaudette@gmail.com>
+	<86782b610810291225w2738a07bmed86b8ce7986044b@mail.gmail.com>
+	<285eec980810300528h269b837cu282c620e88447c61@mail.gmail.com>
+Message-ID: <86782b610810300535x70e041efw94f166dc2c9591b0@mail.gmail.com>
+
+On Thu, Oct 30, 2008 at 1:28 PM, Edward Tomlinson <e.j.tommo@gmail.com> wrote:
+> Dear list,
+>
+> I seem to be having a similar problem, cannot install spgrass6 package.
+>
+> i have tried R CMD INSTALL and package.install methods. Also tried with
+> dependencies = true.
+>
+> Still end up with the same error.
+>
+> I have gdal 1.5.3 installed seperatly.
+>
+> Can anyone give me suggestions?
+
+I searched around and found
+
+http://groups.google.com/group/ggobi/browse_thread/thread/a07061c281fac739?pli=1
+ "I just experienced (and solved) the same problem (presumably). The
+  loadNameSpace routine/package/whatever was added as of R 2.5.0, my
+  guess is that you use a version prior to that. The solution is of
+  course to install 2.5.0 or later.
+
+  (To find out your version, in the R console, type 'version' and look
+  at minor (contains the last two digits of the version))
+"
+
+https://stat.ethz.ch/pipermail/r-announce/2007/000463.html
+R 2.5.0 is released
+"    o	message() has a new argument 'appendLF' to handle messages
+	with and without newlines.  There is a new message class
+	packageStartupMessage() that can be suppressed separately.
+"
+Do you have an older R version installed?
+
+Markus
+From e.j.tommo at gmail.com  Thu Oct 30 16:41:35 2008
+From: e.j.tommo at gmail.com (Edward Tomlinson)
+Date: Thu Oct 30 16:41:38 2008
+Subject: [GRASS-stats] Problems installing spgrass6
+In-Reply-To: <86782b610810300535x70e041efw94f166dc2c9591b0@mail.gmail.com>
+References: <1225302200.5130.4.camel@localhost>
+	<200810291121.48097.dylan.beaudette@gmail.com>
+	<86782b610810291225w2738a07bmed86b8ce7986044b@mail.gmail.com>
+	<285eec980810300528h269b837cu282c620e88447c61@mail.gmail.com>
+	<86782b610810300535x70e041efw94f166dc2c9591b0@mail.gmail.com>
+Message-ID: <285eec980810301341s8c777felce8d4f896c2856e@mail.gmail.com>
+
+Hi Markus,
+
+Thank you for your reply.
+
+I am using R version 2.7.2svn.
+
+Error in fun(...):
+    GDAL Error 1: libgrass_I.so cannot open shared object file: No such file
+or directory
+
+Error : .onload failed in 'loadnamespace' for 'rgdal'
+
+Could it be an issue with my gdal-grass plugin (i am not sure where the
+libgrass_I comes from). I will try updating the plugin.
+
+Thanks,
+Ed
+
+2008/10/30 Markus Neteler <neteler@osgeo.org>
+
+> On Thu, Oct 30, 2008 at 1:28 PM, Edward Tomlinson <e.j.tommo@gmail.com>
+> wrote:
+> > Dear list,
+> >
+> > I seem to be having a similar problem, cannot install spgrass6 package.
+> >
+> > i have tried R CMD INSTALL and package.install methods. Also tried with
+> > dependencies = true.
+> >
+> > Still end up with the same error.
+> >
+> > I have gdal 1.5.3 installed seperatly.
+> >
+> > Can anyone give me suggestions?
+>
+> I searched around and found
+>
+>
+> http://groups.google.com/group/ggobi/browse_thread/thread/a07061c281fac739?pli=1
+>  "I just experienced (and solved) the same problem (presumably). The
+>  loadNameSpace routine/package/whatever was added as of R 2.5.0, my
+>  guess is that you use a version prior to that. The solution is of
+>  course to install 2.5.0 or later.
+>
+>  (To find out your version, in the R console, type 'version' and look
+>  at minor (contains the last two digits of the version))
+> "
+>
+> https://stat.ethz.ch/pipermail/r-announce/2007/000463.html
+> R 2.5.0 is released
+> "    o  message() has a new argument 'appendLF' to handle messages
+>        with and without newlines.  There is a new message class
+>        packageStartupMessage() that can be suppressed separately.
+> "
+> Do you have an older R version installed?
+>
+> Markus
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20081031/9497dddf/attachment.html
+From neteler at osgeo.org  Thu Oct 30 16:45:42 2008
+From: neteler at osgeo.org (Markus Neteler)
+Date: Thu Oct 30 16:45:44 2008
+Subject: [GRASS-stats] Problems installing spgrass6
+In-Reply-To: <285eec980810301341s8c777felce8d4f896c2856e@mail.gmail.com>
+References: <1225302200.5130.4.camel@localhost>
+	<200810291121.48097.dylan.beaudette@gmail.com>
+	<86782b610810291225w2738a07bmed86b8ce7986044b@mail.gmail.com>
+	<285eec980810300528h269b837cu282c620e88447c61@mail.gmail.com>
+	<86782b610810300535x70e041efw94f166dc2c9591b0@mail.gmail.com>
+	<285eec980810301341s8c777felce8d4f896c2856e@mail.gmail.com>
+Message-ID: <86782b610810301345k17175183vcd20f19d6e559bda@mail.gmail.com>
+
+Hi Edward,
+
+On Thu, Oct 30, 2008 at 9:41 PM, Edward Tomlinson <e.j.tommo@gmail.com> wrote:
+> Hi Markus,
+>
+> Thank you for your reply.
+>
+> I am using R version 2.7.2svn.
+>
+> Error in fun(...):
+>     GDAL Error 1: libgrass_I.so cannot open shared object file: No such file
+> or directory
+
+Easy to fix:
+
+- become "root" user
+- create /etc/ld.so.conf.d/grass.conf
+- content: path to GRASS libraries
+- save and run
+   ldconfig
+- exit from "root"
+
+then it should work.
+
+Markus
+From e.j.tommo at gmail.com  Thu Oct 30 23:00:38 2008
+From: e.j.tommo at gmail.com (Edward Tomlinson)
+Date: Thu Oct 30 23:00:41 2008
+Subject: [GRASS-stats] Problems installing spgrass6
+In-Reply-To: <86782b610810301345k17175183vcd20f19d6e559bda@mail.gmail.com>
+References: <1225302200.5130.4.camel@localhost>
+	<200810291121.48097.dylan.beaudette@gmail.com>
+	<86782b610810291225w2738a07bmed86b8ce7986044b@mail.gmail.com>
+	<285eec980810300528h269b837cu282c620e88447c61@mail.gmail.com>
+	<86782b610810300535x70e041efw94f166dc2c9591b0@mail.gmail.com>
+	<285eec980810301341s8c777felce8d4f896c2856e@mail.gmail.com>
+	<86782b610810301345k17175183vcd20f19d6e559bda@mail.gmail.com>
+Message-ID: <285eec980810302000o140bb426r7339b9fc055531d2@mail.gmail.com>
+
+Hi Markus,
+
+Thank you very much. That worked fine!
+
+Cheers,
+Ed
+
+2008/10/31 Markus Neteler <neteler@osgeo.org>
+
+> Hi Edward,
+>
+> On Thu, Oct 30, 2008 at 9:41 PM, Edward Tomlinson <e.j.tommo@gmail.com>
+> wrote:
+> > Hi Markus,
+> >
+> > Thank you for your reply.
+> >
+> > I am using R version 2.7.2svn.
+> >
+> > Error in fun(...):
+> >     GDAL Error 1: libgrass_I.so cannot open shared object file: No such
+> file
+> > or directory
+>
+> Easy to fix:
+>
+> - become "root" user
+> - create /etc/ld.so.conf.d/grass.conf
+> - content: path to GRASS libraries
+> - save and run
+>   ldconfig
+> - exit from "root"
+>
+> then it should work.
+>
+> Markus
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20081031/0d488299/attachment.html

@@ -1,0 +1,1780 @@
+From rsadler at cyllene.uwa.edu.au  Wed Jun  7 03:23:47 2006
+From: rsadler at cyllene.uwa.edu.au (rsadler@cyllene.uwa.edu.au)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] propagating temporary files
+Message-ID: <20060607152347.c8c77akqq9348s4g@webmail-3.ucs.uwa.edu.au>
+
+Dear statsgrassians,
+
+I seem to be getting propagating temporary files that belong to GRASS  
+in both the GRASS database mapset .tmp directory and R's /tmp  
+directory. For example,
+
+# 1930 categories
+clump of test51 in test
+
+0.00 0.00 0.00 0.00
+
+is reported in the GRASS's .tmp directory
+
+whereas whole rasters as ASCII files are reported in R's /tmp.
+
+Neither are deleted once command line code is executed, as should be  
+the case from my understanding.
+
+Since I am running lots of simulations this quickly junks up available  
+disk space, and I believe is contributing to a slow down in performance.
+
+I can disappear these files at run-time, but the strange thing is that  
+this didn't appear to be a problem a couple of a weeks ago.
+
+Any suggestions before I reinstall both softwares and packages?
+
+Regards
+Rohan
+
+  PhD Student
+  School of Plant Biology
+  School of Mathematics and Statistics
+  Bushfire Cooperative Research Centre
+  The University of Western Australia
+
+BTW: Joel and Roger, cheers for the below. Moving the GRASS location  
+to the local hard drives made all the difference (duh!). A working  
+speed on the cluster of 20000 simulations an hour was very useful,  
+until this latest morsel arrived.
+
+######################################################################
+> Without knowing much about the R interface I would guess that it may  
+> be slow due to all machines trying to access data off of the same  
+> disk. Have you got any way to measure disk reads and the network  
+> bandwidth to the machine hosting the disk?
+
+I agree - I think the original process was also disk-bound, that is 500
+per hour looks very much like 30 times 20 per hour? This would imply that
+10 machines would do 50-60 an hour each. So spreading the compute load
+doesn't help, if this is the case.
+
+Roger
+
+>
+> -Joel
+>
+> On Friday 17 March 2006 2:39 pm, rsadler@cyllene.uwa.edu.au wrote:
+> > Dear List,
+> >
+> > I have implemented Monte Carlo inference for a random closed set model
+> > that mimics the different "phases" of vegetation patterning to be
+> > found in images of a semi-arid grassland in north west Australia. The
+> > procedure is implemented using the multiple sessions capability of
+> > grass60 on a computing cluster with shared disk space. The problem is
+> > that when running a single machine alone I can generate 500
+> > simulations an hour. However when I run all 30 machines concurrently
+> > simulation rate drops dramatically to 20 sessions an hour for a single
+> > machine (all machines are the same).
+> >
+> > I am first contacting the statsgrass list because the procedure uses
+> > the grass/R interface for a number of separate tasks. What I don't
+> > know is whether the slow down is a result of the grass/R interface or
+> > whether the slow done occurs on the grass side of things where there
+> > is some shared file that all sessions use (like .grass.bashrc but not
+> > that). The program is run as an R batch file using vanilla and slave,
+> > with all output is being written to separate text files. All sessions
+> > use different locations and therefore different mapsets.
+> >
+> > Please advise
+> >
+> > Regards
+> > Rohan Sadler
+> >
+
+
+
+
+From hamish_nospam at yahoo.com  Wed Jun  7 03:59:29 2006
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] propagating temporary files
+In-Reply-To: <20060607152347.c8c77akqq9348s4g@webmail-3.ucs.uwa.edu.au>
+References: <20060607152347.c8c77akqq9348s4g@webmail-3.ucs.uwa.edu.au>
+Message-ID: <20060607195929.0d2ab2bb.hamish_nospam@yahoo.com>
+
+> I seem to be getting propagating temporary files that belong to GRASS 
+> in both the GRASS database mapset .tmp directory and R's /tmp  
+> directory. For example,
+
+modules should clean up their messes, yes. Can you isolate what's
+leaving stuff behind?
+
+--> check that some part of the tool chain isn't failing. The easiest
+way to get lots of .tmp files is for a module to exit with an error
+before it gets to the cleanup code at the end of the program.
+
+e.g. in a script:
+
+g.module
+if [ $? -ne 0 ] ; then
+  echo "an error occured"
+  exit 1
+fi
+
+
+> Neither are deleted once command line code is executed, as should be  
+> the case from my understanding.
+
+Yes. Modules should be self-contained.
+
+> Since I am running lots of simulations this quickly junks up available
+> disk space, and I believe is contributing to a slow down in
+> performance.
+
+It's not good, but I don't think it will slow down performance much
+unless the disk is near full.
+
+> I can disappear these files at run-time, but the strange thing is that
+> this didn't appear to be a problem a couple of a weeks ago.
+
+usually $GISBASE/etc/clean_temp is run at GRASS startup and exit to
+flush the $MAPSET/.tmp/ dir. At your own risk you can call it within
+your GRASS session to clean out the muck.
+
+> Any suggestions before I reinstall both softwares and packages?
+
+I doubt that will help much unless you would do a version upgrade.
+
+
+Hamish
+
+
+From Roger.Bivand at nhh.no  Wed Jun  7 04:37:46 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] propagating temporary files
+In-Reply-To: <20060607152347.c8c77akqq9348s4g@webmail-3.ucs.uwa.edu.au>
+Message-ID: <Pine.LNX.4.44.0606070943450.31057-100000@reclus.nhh.no>
+
+Dear Rohan,
+
+On Wed, 7 Jun 2006, rsadler@cyllene.uwa.edu.au wrote:
+
+> Dear statsgrassians,
+> 
+> I seem to be getting propagating temporary files that belong to GRASS  
+> in both the GRASS database mapset .tmp directory and R's /tmp  
+> directory. For example,
+> 
+> # 1930 categories
+> clump of test51 in test
+> 
+> 0.00 0.00 0.00 0.00
+> 
+> is reported in the GRASS's .tmp directory
+> 
+> whereas whole rasters as ASCII files are reported in R's /tmp.
+> 
+> Neither are deleted once command line code is executed, as should be  
+> the case from my understanding.
+> 
+
+More details, please! In R, sessionInfo(), system("g.version") should do 
+it. If I recall correctly, this is spgrass6, GRASS 6, but the version 
+number of spgrass6 may make a difference.
+
+In current spgrass6, both readFLOAT6sp() and writeRast6sp() (don't mind 
+the names) call the R unlink() command on the temporary file they create - 
+created using g.tempfile in the .tmp under the current mapset. For 
+reading, unlink() seems to work for me, and for writing, with files being 
+created and unlinked under mapset .tmp for each raster moved.
+
+Current spgrass6 does not use R's tmp, it only uses the one used by 
+g.tempfile. 
+
+Hope this helps,
+
+Roger
+
+
+> Since I am running lots of simulations this quickly junks up available  
+> disk space, and I believe is contributing to a slow down in performance.
+> 
+> I can disappear these files at run-time, but the strange thing is that  
+> this didn't appear to be a problem a couple of a weeks ago.
+> 
+> Any suggestions before I reinstall both softwares and packages?
+> 
+> Regards
+> Rohan
+> 
+>   PhD Student
+>   School of Plant Biology
+>   School of Mathematics and Statistics
+>   Bushfire Cooperative Research Centre
+>   The University of Western Australia
+> 
+> BTW: Joel and Roger, cheers for the below. Moving the GRASS location  
+> to the local hard drives made all the difference (duh!). A working  
+> speed on the cluster of 20000 simulations an hour was very useful,  
+> until this latest morsel arrived.
+> 
+> ######################################################################
+> > Without knowing much about the R interface I would guess that it may  
+> > be slow due to all machines trying to access data off of the same  
+> > disk. Have you got any way to measure disk reads and the network  
+> > bandwidth to the machine hosting the disk?
+> 
+> I agree - I think the original process was also disk-bound, that is 500
+> per hour looks very much like 30 times 20 per hour? This would imply that
+> 10 machines would do 50-60 an hour each. So spreading the compute load
+> doesn't help, if this is the case.
+> 
+> Roger
+> 
+> >
+> > -Joel
+> >
+> > On Friday 17 March 2006 2:39 pm, rsadler@cyllene.uwa.edu.au wrote:
+> > > Dear List,
+> > >
+> > > I have implemented Monte Carlo inference for a random closed set model
+> > > that mimics the different "phases" of vegetation patterning to be
+> > > found in images of a semi-arid grassland in north west Australia. The
+> > > procedure is implemented using the multiple sessions capability of
+> > > grass60 on a computing cluster with shared disk space. The problem is
+> > > that when running a single machine alone I can generate 500
+> > > simulations an hour. However when I run all 30 machines concurrently
+> > > simulation rate drops dramatically to 20 sessions an hour for a single
+> > > machine (all machines are the same).
+> > >
+> > > I am first contacting the statsgrass list because the procedure uses
+> > > the grass/R interface for a number of separate tasks. What I don't
+> > > know is whether the slow down is a result of the grass/R interface or
+> > > whether the slow done occurs on the grass side of things where there
+> > > is some shared file that all sessions use (like .grass.bashrc but not
+> > > that). The program is run as an R batch file using vanilla and slave,
+> > > with all output is being written to separate text files. All sessions
+> > > use different locations and therefore different mapsets.
+> > >
+> > > Please advise
+> > >
+> > > Regards
+> > > Rohan Sadler
+> > >
+> 
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From neteler at itc.it  Wed Jun  7 06:01:15 2006
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] propagating temporary files
+In-Reply-To: <20060607195929.0d2ab2bb.hamish_nospam@yahoo.com>
+References: <20060607152347.c8c77akqq9348s4g@webmail-3.ucs.uwa.edu.au>
+	<20060607195929.0d2ab2bb.hamish_nospam@yahoo.com>
+Message-ID: <20060607100115.GB8647@bartok.itc.it>
+
+On Wed, Jun 07, 2006 at 07:59:29PM +1200, Hamish wrote:
+> On Wed, Jun 07, 2006 at 03:23:47PM +0800, rsadler@cyllene.uwa.edu.au wrote:
+...
+> > I can disappear these files at run-time, but the strange thing is that
+> > this didn't appear to be a problem a couple of a weeks ago.
+
+Some months ago we introduced scripts (also commands?) which created
+subdirectories within $MAPSET/.tmp/ but the $GISBASE/etc/clean_temp
+wasn't yet changed accordingly.
+ 
+> usually $GISBASE/etc/clean_temp is run at GRASS startup and exit to
+> flush the $MAPSET/.tmp/ dir. At your own risk you can call it within
+> your GRASS session to clean out the muck.
+
+The current clean_temp program fails to remove subdirectories in
+/.tmp/ which are sometimes created.
+
+I have received a new version of clean_temp (written by Roberto Flor)
+which needs to be tested:
+http://mpa.itc.it/markus/tmp/clean_temp2.c
+
+This new version removes also subdirectories generated in the
+$MAPSET/.tmp/ dir.
+
+Markus
+
+
+From hamish_nospam at yahoo.com  Mon Jun 12 11:33:35 2006
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] 
+ r.in.xyz: New module for loading and binning massive x, y, z datasets
+ (LIDAR, Swath bathymetry)
+Message-ID: <20060613033335.69af59e6.hamish_nospam@yahoo.com>
+
+Hi,
+
+In blatant violation of any sort of feature freeze for the next release
+of GRASS GIS I have added a new (long missing) module to GRASS 6.1:
+  r.in.xyz
+
+This is a replacement for s.in.ascii+ s.cellstats+ s.to.rast in GRASS 5.
+
+
+The r.in.xyz module will load and bin ungridded x,y,z ASCII data into a
+new raster map. The user may choose from a variety of statistical
+methods in creating the new raster.
+
+r.in.xyz is designed for processing massive point cloud datasets, for
+example raw LIDAR or sidescan sonar swath data. 
+
+And it's fast. Very fast.
+
+
+idea:
+  http://grass.itc.it/pipermail/grass-dev/2006-May/023376.html
+
+help page:
+  http://grass.ibiblio.org/grass61/manuals/html61_user/r.in.xyz.html
+
+screenshots:
+  http://hamish.bowman.googlepages.com/grassfiles#xyz
+
+
+
+The r.to.vect module has been given a "-b" flag to skip building vector
+topology (same as v.in.ascii) and the v.surf.rst interpolation module
+has been modified to not require topology from input points. This gets
+around the approx 3 million point memory limit of the vector engine due
+to topology overhead. [i.e. you can fill holes with regularized splines]
+
+
+question for stats experts: Should it be using population or sample
+variance? n is generally low so it makes a difference here. In r.univar
+it is usually so large not to matter (there we use population variance
+for vague reasons).
+
+
+Thanks to Helena Mitasova for testing and helping me work out the last
+few bugs. I would be interested to hear how things go with Large input
+files (LFS, bigger than 2gb).
+
+
+enjoy,
+Hamish
+
+
+From Thomas.Adams at noaa.gov  Mon Jun 12 11:48:04 2006
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] r.in.xyz: New module for loading and binning massive
+	x, y, z datasets (LIDAR, Swath bathymetry)
+In-Reply-To: <20060613033335.69af59e6.hamish_nospam@yahoo.com>
+References: <20060613033335.69af59e6.hamish_nospam@yahoo.com>
+Message-ID: <448D8CB4.7040403@noaa.gov>
+
+Hamish,
+
+I think this is a wonderful and much needed addition. Thank you very much!
+
+Regards,
+Tom
+
+
+Hamish wrote:
+> Hi,
+>
+> In blatant violation of any sort of feature freeze for the next release
+> of GRASS GIS I have added a new (long missing) module to GRASS 6.1:
+>   r.in.xyz
+>
+> This is a replacement for s.in.ascii+ s.cellstats+ s.to.rast in GRASS 5.
+>
+>
+> The r.in.xyz module will load and bin ungridded x,y,z ASCII data into a
+> new raster map. The user may choose from a variety of statistical
+> methods in creating the new raster.
+>
+> r.in.xyz is designed for processing massive point cloud datasets, for
+> example raw LIDAR or sidescan sonar swath data. 
+>
+> And it's fast. Very fast.
+>
+>
+> idea:
+>   http://grass.itc.it/pipermail/grass-dev/2006-May/023376.html
+>
+> help page:
+>   http://grass.ibiblio.org/grass61/manuals/html61_user/r.in.xyz.html
+>
+> screenshots:
+>   http://hamish.bowman.googlepages.com/grassfiles#xyz
+>
+>
+>
+> The r.to.vect module has been given a "-b" flag to skip building vector
+> topology (same as v.in.ascii) and the v.surf.rst interpolation module
+> has been modified to not require topology from input points. This gets
+> around the approx 3 million point memory limit of the vector engine due
+> to topology overhead. [i.e. you can fill holes with regularized splines]
+>
+>
+> question for stats experts: Should it be using population or sample
+> variance? n is generally low so it makes a difference here. In r.univar
+> it is usually so large not to matter (there we use population variance
+> for vague reasons).
+>
+>
+> Thanks to Helena Mitasova for testing and helping me work out the last
+> few bugs. I would be interested to hear how things go with Large input
+> files (LFS, bigger than 2gb).
+>
+>
+> enjoy,
+> Hamish
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>   
+
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+
+From neteler at itc.it  Mon Jun 19 14:31:34 2006
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Raster time series and R - timezones?
+Message-ID: <20060619183134.GA19983@bartok.itc.it>
+
+Hi,
+
+I am processing daily time series of MODIS but cannot
+figure out how to use time stamps properly. With r.what
+I am looping over the maps and add a timestamp like
+this "7 Apr 2006 10:30:00 UTC" to each extracted value.
+
+Then, in R I want to analyze the time series but I
+wonder how to tell R about the time zone:
+
+
+> mytime <- "7 May 2006 10:30:00 UTC"
+> strptime(mytime,"%d %b %Y %H:%M:%S")
+[1] "2006-04-07 10:30:00"
+
+-> UTC lost
+
+> ISOdate(2006, 4, 7, hour = 12, min = 0, sec = 0, tz = "GMT")
+[1] "2006-04-07 12:00:00 GMT"
+> ISOdate(2006, 4, 7, hour = 12, min = 0, sec = 0, tz = "CEST")
+[1] "2006-04-07 12:00:00 CEST"
+> ISOdate(2006, 4, 7, hour = 12, min = 0, sec = 0, tz = "CESddT")
+[1] "2006-04-07 12:00:00 CESddT"
+
+-> tz accepts apparently nonsense as well?
+
+> mytime <- "7 Feb 2006 10:30:00 UTC"
+> strptime(mytime,"%d %b %Y %H:%M:%S")
+[1] "2006-02-07 10:30:00"
+
+-> do we keep daylight saving?
+
+> mytime <- "7 May 2006 10:30:00 UTC"
+> strptime(mytime,"%d %b %Y %H:%M:%S")
+[1] NA
+
+> mytime <- "7 Mai 2006 10:30:00 UTC"
+> strptime(mytime,"%d %b %Y %H:%M:%S")
+[1] "2006-05-07 10:30:00"
+
+-> seems to be LOCALE depend which is pretty risky
+   if I share my scripts worldwide
+
+I would appreciate hints...
+thanks
+
+ Markus
+
+PS: If you confirm that this question is appropriate for
+    the R-user ML, I'll ask there :-)
+
+
+From Roger.Bivand at nhh.no  Mon Jun 19 15:03:33 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Raster time series and R - timezones?
+In-Reply-To: <20060619183134.GA19983@bartok.itc.it>
+Message-ID: <Pine.LNX.4.44.0606192059190.11110-100000@reclus.nhh.no>
+
+On Mon, 19 Jun 2006, Markus Neteler wrote:
+
+> Hi,
+> 
+> I am processing daily time series of MODIS but cannot
+> figure out how to use time stamps properly. With r.what
+> I am looping over the maps and add a timestamp like
+> this "7 Apr 2006 10:30:00 UTC" to each extracted value.
+> 
+> Then, in R I want to analyze the time series but I
+> wonder how to tell R about the time zone:
+> 
+> 
+> > mytime <- "7 May 2006 10:30:00 UTC"
+> > strptime(mytime,"%d %b %Y %H:%M:%S")
+> [1] "2006-04-07 10:30:00"
+> 
+> -> UTC lost
+> 
+> > ISOdate(2006, 4, 7, hour = 12, min = 0, sec = 0, tz = "GMT")
+> [1] "2006-04-07 12:00:00 GMT"
+> > ISOdate(2006, 4, 7, hour = 12, min = 0, sec = 0, tz = "CEST")
+> [1] "2006-04-07 12:00:00 CEST"
+> > ISOdate(2006, 4, 7, hour = 12, min = 0, sec = 0, tz = "CESddT")
+> [1] "2006-04-07 12:00:00 CESddT"
+> 
+> -> tz accepts apparently nonsense as well?
+> 
+> > mytime <- "7 Feb 2006 10:30:00 UTC"
+> > strptime(mytime,"%d %b %Y %H:%M:%S")
+> [1] "2006-02-07 10:30:00"
+> 
+> -> do we keep daylight saving?
+> 
+> > mytime <- "7 May 2006 10:30:00 UTC"
+> > strptime(mytime,"%d %b %Y %H:%M:%S")
+> [1] NA
+> 
+> > mytime <- "7 Mai 2006 10:30:00 UTC"
+> > strptime(mytime,"%d %b %Y %H:%M:%S")
+> [1] "2006-05-07 10:30:00"
+> 
+> -> seems to be LOCALE depend which is pretty risky
+>    if I share my scripts worldwide
+> 
+> I would appreciate hints...
+
+If nobody replies this evening here, I would re-read the R News note:
+
+Gabor Grothendieck and Thomas Petzoldt. R help desk: Date and time classes 
+in R. R News, 4(1):29-32, June 2004.
+
+and if that doesn't help, ask on R-help (with the output of your
+Sys.getlocale() and sessionInfo() - the help pages do say that different
+platforms implement date/time functions differently, so cross-platform
+consistency may be asking too much).
+
+I don't use date/time classes regularly, so cannot offer better advice.
+
+Roger
+
+> thanks
+> 
+>  Markus
+> 
+> PS: If you confirm that this question is appropriate for
+>     the R-user ML, I'll ask there :-)
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From hamish_nospam at yahoo.com  Mon Jun 19 20:04:27 2006
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Raster time series and R - timezones?
+In-Reply-To: <20060619183134.GA19983@bartok.itc.it>
+References: <20060619183134.GA19983@bartok.itc.it>
+Message-ID: <20060620120427.107863cf.hamish_nospam@yahoo.com>
+
+> I am processing daily time series of MODIS but cannot
+> figure out how to use time stamps properly. With r.what
+> I am looping over the maps and add a timestamp like
+> this "7 Apr 2006 10:30:00 UTC" to each extracted value.
+
+
+> > strptime(mytime,"%d %b %Y %H:%M:%S")
+> [1] "2006-04-07 10:30:00"
+> -> UTC lost
+
+add %Z to include timezone?
+
+
+
+> > ISOdate(2006, 4, 7, hour = 12, min = 0, sec = 0, tz = "GMT")
+> [1] "2006-04-07 12:00:00 GMT"
+
+yes, it is nice to use a standard whenever possible, e.g.
+
+$ date --iso-8601=seconds
+2006-06-20T11:58:48+1200
+
+C code to produce iso-8601:
+  http://article.gmane.org/gmane.comp.hardware.gps.gpsd.user/997
+
+
+
+Hamish
+
+
+From Seppo.Kaitala at fimr.fi  Tue Jun 20 03:25:16 2006
+From: Seppo.Kaitala at fimr.fi (Seppo.Kaitala@fimr.fi)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Problem with gmeta6() in spgrass6.
+Message-ID: <OFB8615B8B.8810118D-ONC2257193.00288D26-C2257193.0028ACA0@fimr.fi>
+
+
+
+Hello,
+
+We are having problem with importing region data from GRASS (6.1) to R
+(2.3.1) with gmeta6(), which in turn makes it impossible to export the
+processed data back to GRASS. Here's our region:
+
+projection: 3 (Latitude-Longitude)
+zone:       0
+datum:      wgs84
+ellipsoid:  wgs84
+north:      66N
+south:      53N
+west:       9E
+east:       31E
+nsres:      0:00:30
+ewres:      0:01
+rows:       1560
+cols:       1320
+
+And gmeta6() gives 6 "NAs introduced by coercion" warnings, replacing
+north, south, west, east, nsres and ewres with NAs. I suspect it is
+because it tries to import them as numeric (but why?). However,
+replacing them with numeric values by hand doesn't help much, exporting
+with rast.put6() still doesn't work properly. Any hints?
+
+
+Przemyslaw Bojczuk
+
+and
+
+Seppo Kaitala, Ph.D., Scientist
+Dept. of  Biological Oceanography
+Finnish Institute of Marine Research
+Erik Palm?nin aukio 1 (P.O. Box 2)
+FIN-00561 Helsinki, Finland
+tel. +358-9-61394417    fax +358-9-323 2970
+mobile +358-400-609-269
+E-mail:Seppo.Kaitala@fimr.fi
+
+
+
+From Roger.Bivand at nhh.no  Tue Jun 20 05:08:45 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Problem with gmeta6() in spgrass6.
+In-Reply-To: <OFB8615B8B.8810118D-ONC2257193.00288D26-C2257193.0028ACA0@fimr.fi>
+Message-ID: <Pine.LNX.4.44.0606201057240.14818-100000@reclus.nhh.no>
+
+On Tue, 20 Jun 2006 Seppo.Kaitala@fimr.fi wrote:
+
+> 
+> 
+> Hello,
+> 
+> We are having problem with importing region data from GRASS (6.1) to R
+> (2.3.1) with gmeta6(), which in turn makes it impossible to export the
+> processed data back to GRASS. Here's our region:
+> 
+> projection: 3 (Latitude-Longitude)
+> zone:       0
+> datum:      wgs84
+> ellipsoid:  wgs84
+> north:      66N
+> south:      53N
+> west:       9E
+> east:       31E
+> nsres:      0:00:30
+> ewres:      0:01
+> rows:       1560
+> cols:       1320
+> 
+> And gmeta6() gives 6 "NAs introduced by coercion" warnings, replacing
+> north, south, west, east, nsres and ewres with NAs. I suspect it is
+> because it tries to import them as numeric (but why?). 
+
+Because it is not written to parse non-numerical values. This may be 
+changed, but in fact just throwing an error will be enough. Why - because 
+the values are simply not used anywhere in code, that is the values 
+returned by gmeta6() are not required in any of the other functions. 
+
+I can look at this sometime (late August earliest), but spgrass6 is
+available for anonymous CVS from the r-spatial sourceforge site, so anyone
+can contribute a fix if need be - see ?"DMS-class" in sp for some ideas,
+although it will not accept the data as formatted in g.region -p output.
+
+> However, replacing them with numeric values by hand doesn't help much,
+> exporting with rast.put6() still doesn't work properly. Any hints?
+> 
+
+There is no reason why rast.put6() should not work, unless the first 
+argument passed to it is malformed because the (wrong) values returned by 
+gmeta6() are being used (for constructing a GridTopology object, for 
+example).  
+
+Could you explain in more detail why you have problems? traceback() after 
+an error message from rast.put6()? sessionInfo() so that the package 
+versions are known?
+
+Roger
+
+> 
+> Przemyslaw Bojczuk
+> 
+> and
+> 
+> Seppo Kaitala, Ph.D., Scientist
+> Dept. of  Biological Oceanography
+> Finnish Institute of Marine Research
+> Erik Palm?nin aukio 1 (P.O. Box 2)
+> FIN-00561 Helsinki, Finland
+> tel. +358-9-61394417    fax +358-9-323 2970
+> mobile +358-400-609-269
+> E-mail:Seppo.Kaitala@fimr.fi
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From neteler at itc.it  Tue Jun 20 18:31:57 2006
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Raster time series and R - timezones?
+In-Reply-To: <20060620120427.107863cf.hamish_nospam@yahoo.com>
+References: <20060619183134.GA19983@bartok.itc.it>
+	<20060620120427.107863cf.hamish_nospam@yahoo.com>
+Message-ID: <20060620223157.GA2346@bartok.itc.it>
+
+On Tue, Jun 20, 2006 at 12:04:27PM +1200, Hamish wrote:
+> > I am processing daily time series of MODIS but cannot
+> > figure out how to use time stamps properly. With r.what
+> > I am looping over the maps and add a timestamp like
+> > this "7 Apr 2006 10:30:00 UTC" to each extracted value.
+> 
+> 
+> > > strptime(mytime,"%d %b %Y %H:%M:%S")
+> > [1] "2006-04-07 10:30:00"
+> > -> UTC lost
+> 
+> add %Z to include timezone?
+
+This is the lacking feature... strptime doesn't care of %Z.
+ 
+But I am getting closer (R news article is unfortunately
+already dated):
+
+# Running R in German location
+
+# this fails since May isn't German:
+> mytime <- "7 May 2006 10:30:00 UTC"
+> strptime(mytime,"%d %b %Y %H:%M:%S")
+[1] NA
+
+# set to C locale at least for LC_TIME:
+> Sys.setlocale("LC_TIME", "C")
+[1] "C"
+> Sys.getlocale(category = "LC_ALL")
+[1] "LC_CTYPE=de_DE.UTF-8;LC_NUMERIC=C;LC_TIME=C;LC_COLLATE=de_DE.UTF-8;LC_MONETARY=de_DE.UTF-8;LC_MESSAGES=de_DE.UTF-8;LC_PAPER=C;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=C;LC_IDENTIFICATION=C"
+
+> Sys.getlocale(category = "LC_TIME")
+[1] "C"
+
+# test if May now works in previously German locale:
+> mytime <- "7 May 2006 10:30:00 UTC"
+> strptime(mytime,"%d %b %Y %H:%M:%S")
+[1] "2006-05-07 10:30:00"
+
+# now that works.
+
+# Next a funky conversion:
+> mytime
+[1] "7 May 2006 10:30:00 UTC"
+> as.POSIXlt(as.POSIXct(strptime(mytime,"%d %b %Y %H:%M:%S")),tz="GMT")
+[1] "2006-05-07 08:30:00 GMT"
+
+# -> time differs by 2 hours, apparently the input is treated as CEST
+#    (current time today in Itay)
+
+# checking change of time zone (as parameter to as.POSIXct()):
+> as.POSIXlt(as.POSIXct(strptime(mytime,"%d %b %Y %H:%M:%S"),tz="CEST"))
+[1] "2006-05-07 10:30:00 CEST"
+
+# also works. Remaining problem: The input 'mytime' was already GMT, no
+# need to shift for 2 hours.
+
+# So we do extra funky tricks:
+> mytime
+[1] "7 May 2006 10:30:00 UTC"
+> as.POSIXlt(as.POSIXct(strptime(mytime,"%d %b %Y %H:%M:%S")),tz="GMT-2")
+[1] "2006-05-07 10:30:00 GMT"
+# -> works. Now the input is as we wanted.
+
+> dt.mytime <- as.POSIXlt(as.POSIXct(strptime(mytime,"%d %b %Y %H:%M:%S")),tz="GMT-2")
+> dt.mytime
+[1] "2006-05-07 10:30:00 GMT"
+str(dt.mytime)
+'POSIXlt', format: chr "2006-05-07 10:30:00"
+
+# final test on new object:
+> as.POSIXct(dt.mytime, tz="CET")
+[1] "2006-05-07 11:30:00 CEST"
+# -> partially works: I asked CET, not CEST. The result is CET, not CEST (wrongly
+#                     indicated...)
+
+# day light saving time?
+dt.mytime[["isdst"]]
+[1] 0
+# -> also wrong. Gotcha. In May we have DST.
+
+Sys.timezone()
+[1] ""
+# -> Why empty? Due to my LC_TIME="C" change?
+
+
+Really intuitive and well documented... sigh.
+Further pointers are welcome.
+
+I just want to avoid that the daylight saving time built-in
+in R shifts my satellite observations which are given in UTC.
+
+Markus
+
+
+From hamish_nospam at yahoo.com  Tue Jun 20 22:45:57 2006
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Raster time series and R - timezones?
+In-Reply-To: <20060620223157.GA2346@bartok.itc.it>
+References: <20060619183134.GA19983@bartok.itc.it>
+	<20060620120427.107863cf.hamish_nospam@yahoo.com>
+	<20060620223157.GA2346@bartok.itc.it>
+Message-ID: <20060621144557.40624967.hamish_nospam@yahoo.com>
+
+Markus wrote:
+
+> > > > strptime(mytime,"%d %b %Y %H:%M:%S")
+> > > [1] "2006-04-07 10:30:00"
+> > > -> UTC lost
+> > 
+> > add %Z to include timezone?
+> 
+> This is the lacking feature... strptime doesn't care of %Z.
+
+
+Then it's R's strptime() which has a problem. 
+
+I found %Z on the glibc <time.h> strptime() help page.
+
+Maybe it is best to write a little bash script using `date --iso` or
+tiny C program using time.h's strptime() to pre-process the data?
+I take it R lets you do system() calls somehow.
+versus fighting R for a feature which doesn't exist.
+
+does R have a gmtime() or localtime() equivalent?
+
+
+Hamish
+
+
+From Roger.Bivand at nhh.no  Wed Jun 21 04:04:28 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Raster time series and R - timezones?
+In-Reply-To: <20060621144557.40624967.hamish_nospam@yahoo.com>
+Message-ID: <Pine.LNX.4.44.0606210945520.15627-100000@reclus.nhh.no>
+
+On Wed, 21 Jun 2006, Hamish wrote:
+
+> Markus wrote:
+> 
+> > > > > strptime(mytime,"%d %b %Y %H:%M:%S")
+> > > > [1] "2006-04-07 10:30:00"
+> > > > -> UTC lost
+> > > 
+> > > add %Z to include timezone?
+> > 
+> > This is the lacking feature... strptime doesn't care of %Z.
+> 
+> 
+> Then it's R's strptime() which has a problem. 
+> 
+> I found %Z on the glibc <time.h> strptime() help page.
+> 
+> Maybe it is best to write a little bash script using `date --iso` or
+> tiny C program using time.h's strptime() to pre-process the data?
+> I take it R lets you do system() calls somehow.
+> versus fighting R for a feature which doesn't exist.
+> 
+> does R have a gmtime() or localtime() equivalent?
+> 
+
+The problems seem to stem from R trying to work cross-platform and 
+cross-locale. The help page for strptime() does say that %Z and %z are 
+output only. It is an interaction of platform (and platform libraries) and 
+the way locales are represented on that platform and the locale affecting 
+the R process. There have been threads a number of times on this, also 
+because locales affect i18n etc. Maybe it is time to draft a short message 
+to R-help:
+
+Sys.getlocale()
+sessionInfo()
+mytime <- "7 May 2006 10:30:00 UTC"
+t0 <- strptime(mytime,"%d %b %Y %H:%M:%S")
+# how to get mytime into ISOdatetime() ?
+t1 <- ISOdatetime(t0$year+1900, t0$mon+1, t0$mday, t0$hour, t0$min, 
+  t0$sec, tz="UTC")
+t1
+attributes(t1)
+
+Are we getting anywhere??
+
+Roger
+
+> 
+> Hamish
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From neteler at itc.it  Wed Jun 21 12:05:35 2006
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Raster time series and R - timezones?
+In-Reply-To: <Pine.LNX.4.44.0606210945520.15627-100000@reclus.nhh.no>
+References: <20060621144557.40624967.hamish_nospam@yahoo.com>
+	<Pine.LNX.4.44.0606210945520.15627-100000@reclus.nhh.no>
+Message-ID: <20060621160535.GD1179@bartok.itc.it>
+
+On Wed, Jun 21, 2006 at 10:04:28AM +0200, Roger Bivand wrote:
+> On Wed, 21 Jun 2006, Hamish wrote:
+> > Markus wrote:
+> > 
+> > > > > > strptime(mytime,"%d %b %Y %H:%M:%S")
+> > > > > [1] "2006-04-07 10:30:00"
+> > > > > -> UTC lost
+> > > > 
+> > > > add %Z to include timezone?
+> > > 
+> > > This is the lacking feature... strptime doesn't care of %Z.
+> > 
+> > 
+> > Then it's R's strptime() which has a problem. 
+> > 
+> > I found %Z on the glibc <time.h> strptime() help page.
+> > 
+> > Maybe it is best to write a little bash script using `date --iso` or
+> > tiny C program using time.h's strptime() to pre-process the data?
+> > I take it R lets you do system() calls somehow.
+> > versus fighting R for a feature which doesn't exist.
+> > 
+> > does R have a gmtime() or localtime() equivalent?
+> > 
+> 
+> The problems seem to stem from R trying to work cross-platform and 
+> cross-locale.
+
+For me it would be sufficient to have R operating in UTC,
+then I would not have the current problems.
+
+> The help page for strptime() does say that %Z and %z are 
+> output only.
+
+Right (which is a non-feature IMHO).
+
+> It is an interaction of platform (and platform libraries) and 
+> the way locales are represented on that platform and the locale affecting 
+> the R process. There have been threads a number of times on this, also 
+> because locales affect i18n etc. Maybe it is time to draft a short message 
+> to R-help:
+> 
+> Sys.getlocale()
+> sessionInfo()
+> mytime <- "7 May 2006 10:30:00 UTC"
+> t0 <- strptime(mytime,"%d %b %Y %H:%M:%S")
+
+[1] "2006-05-07 10:30:00"
+
+-> UTC info lost
+
+> attributes(t0)
+$names
+[1] "sec"   "min"   "hour"  "mday"  "mon"   "year"  "wday"  "yday"  "isdst"
+
+-> maybe this could be parsed for ISOdatetime?
+
+> # how to get mytime into ISOdatetime() ?
+> t1 <- ISOdatetime(t0$year+1900, t0$mon+1, t0$mday, t0$hour, t0$min, 
+>   t0$sec, tz="UTC")
+> t1
+> attributes(t1)
+> 
+> Are we getting anywhere??
+> 
+> Roger
+
+I have now tried another way: Import of CSV into PostgreSQL
+to later use Rdbi to fetch the data:
+
+DROP TABLE modis_lst_meteo;
+CREATE TABLE modis_lst_meteo (
+ station varchar(5),
+ east double precision,
+ north double precision,
+ LST double precision,
+ obs_data timestamp with time zone,
+ modis_map varchar(40)
+);
+SET DATESTYLE To European;
+COPY modis_lst_meteo FROM stdin USING DELIMITERS ';';
+[input data ordered by station,date]
+...
+
+
+A query result (where station='53') is this:
+...
+53;2000-03-08 11:30:00+01;modis_lst1km2000038.LST_Day_1km.filt
+53;2000-03-08 14:30:00+01;aqua_lst1km2000038.LST_Day_1km.filt
+53;2000-03-08 23:30:00+01;modis_lst1km2000038.LST_Night_1km.filt
+53;2000-03-08 02:30:00+01;aqua_lst1km2000038.LST_Night_1km.filt
+53;2000-03-09 11:30:00+01;modis_lst1km2000039.LST_Day_1km.filt
+53;2000-03-09 14:30:00+01;aqua_lst1km2000039.LST_Day_1km.filt
+53;2000-03-09 23:30:00+01;modis_lst1km2000039.LST_Night_1km.filt
+53;2000-03-09 02:30:00+01;aqua_lst1km2000039.LST_Night_1km.filt
+53;2000-03-10 10:30:00+01;modis_lst1km20000310.LST_Day_1km.filt <-switch
+53;2000-03-10 14:30:00+01;aqua_lst1km20000310.LST_Day_1km.filt <-no-switch?
+53;2000-03-10 22:30:00+01;modis_lst1km20000310.LST_Night_1km.filt <-switch
+53;2000-03-10 02:30:00+01;aqua_lst1km20000310.LST_Night_1km.filt <-no-switch?
+53;2000-03-11 10:30:00+01;modis_lst1km20000311.LST_Day_1km.filt
+53;2000-03-11 14:30:00+01;aqua_lst1km20000311.LST_Day_1km.filt
+53;2000-03-11 22:30:00+01;modis_lst1km20000311.LST_Night_1km.filt
+53;2000-03-11 02:30:00+01;aqua_lst1km20000311.LST_Night_1km.filt
+53;2000-03-12 10:30:00+01;modis_lst1km20000312.LST_Day_1km.filt
+...
+
+So:
+- 11:30:00+01 is changed to 10:30:00+01
+- 14:30:00+01 and 02:30:00+01 remain ?!
+- 23:30:00+01 is changed to 02:30:00+01
+
+and it happens 2000-03-10 (a bit early in the year? Can't find the date
+of daylight saving switch for 2000 in Europe right now).
+
+Aah, a few days later in the DB:
+
+53;2000-03-25 10:30:00+01;modis_lst1km20000325.LST_Day_1km.filt
+53;2000-03-25 14:30:00+01;aqua_lst1km20000325.LST_Day_1km.filt
+53;2000-03-25 22:30:00+01;modis_lst1km20000325.LST_Night_1km.filt
+53;2000-03-25 02:30:00+01;aqua_lst1km20000325.LST_Night_1km.filt
+53;2000-03-26 10:30:00+02;modis_lst1km20000326.LST_Day_1km.filt <- +2h
+53;2000-03-26 15:30:00+02;aqua_lst1km20000326.LST_Day_1km.filt <-switch
+53;2000-03-26 22:30:00+02;modis_lst1km20000326.LST_Night_1km.filt 
+53;2000-03-26 03:30:00+02;aqua_lst1km20000326.LST_Night_1km.filt <-switch
+
+Not really convincing. Moreover frightening that the DST switch 
+isn't happening at the same day in PostgreSQL for different times
+of the day. 2000-03-26 sounds reasonable to me, but the morning time
+was already (partially) changes earlier the month. Uffa.
+Maybe I am missing something essential here (PostgreSQL 8)?
+
+Best would be to set R somehow to UTC and to not do anything with
+daylight saving time since I don't need it.
+
+Markus
+
+
+From Roger.Bivand at nhh.no  Wed Jun 21 14:17:24 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Raster time series and R - timezones?
+In-Reply-To: <20060621160535.GD1179@bartok.itc.it>
+Message-ID: <Pine.LNX.4.44.0606212014570.16885-100000@reclus.nhh.no>
+
+Markus,
+
+I think a replicable example to R-help is the only option now, possibly 
+with a longer input file on your web server. If you'd like me to look at a 
+draft before you post, I can.
+
+Best wishes,
+
+Roger
+
+
+On Wed, 21 Jun 2006, Markus Neteler wrote:
+
+> On Wed, Jun 21, 2006 at 10:04:28AM +0200, Roger Bivand wrote:
+> > On Wed, 21 Jun 2006, Hamish wrote:
+> > > Markus wrote:
+> > > 
+> > > > > > > strptime(mytime,"%d %b %Y %H:%M:%S")
+> > > > > > [1] "2006-04-07 10:30:00"
+> > > > > > -> UTC lost
+> > > > > 
+> > > > > add %Z to include timezone?
+> > > > 
+> > > > This is the lacking feature... strptime doesn't care of %Z.
+> > > 
+> > > 
+> > > Then it's R's strptime() which has a problem. 
+> > > 
+> > > I found %Z on the glibc <time.h> strptime() help page.
+> > > 
+> > > Maybe it is best to write a little bash script using `date --iso` or
+> > > tiny C program using time.h's strptime() to pre-process the data?
+> > > I take it R lets you do system() calls somehow.
+> > > versus fighting R for a feature which doesn't exist.
+> > > 
+> > > does R have a gmtime() or localtime() equivalent?
+> > > 
+> > 
+> > The problems seem to stem from R trying to work cross-platform and 
+> > cross-locale.
+> 
+> For me it would be sufficient to have R operating in UTC,
+> then I would not have the current problems.
+> 
+> > The help page for strptime() does say that %Z and %z are 
+> > output only.
+> 
+> Right (which is a non-feature IMHO).
+> 
+> > It is an interaction of platform (and platform libraries) and 
+> > the way locales are represented on that platform and the locale affecting 
+> > the R process. There have been threads a number of times on this, also 
+> > because locales affect i18n etc. Maybe it is time to draft a short message 
+> > to R-help:
+> > 
+> > Sys.getlocale()
+> > sessionInfo()
+> > mytime <- "7 May 2006 10:30:00 UTC"
+> > t0 <- strptime(mytime,"%d %b %Y %H:%M:%S")
+> 
+> [1] "2006-05-07 10:30:00"
+> 
+> -> UTC info lost
+> 
+> > attributes(t0)
+> $names
+> [1] "sec"   "min"   "hour"  "mday"  "mon"   "year"  "wday"  "yday"  "isdst"
+> 
+> -> maybe this could be parsed for ISOdatetime?
+> 
+> > # how to get mytime into ISOdatetime() ?
+> > t1 <- ISOdatetime(t0$year+1900, t0$mon+1, t0$mday, t0$hour, t0$min, 
+> >   t0$sec, tz="UTC")
+> > t1
+> > attributes(t1)
+> > 
+> > Are we getting anywhere??
+> > 
+> > Roger
+> 
+> I have now tried another way: Import of CSV into PostgreSQL
+> to later use Rdbi to fetch the data:
+> 
+> DROP TABLE modis_lst_meteo;
+> CREATE TABLE modis_lst_meteo (
+>  station varchar(5),
+>  east double precision,
+>  north double precision,
+>  LST double precision,
+>  obs_data timestamp with time zone,
+>  modis_map varchar(40)
+> );
+> SET DATESTYLE To European;
+> COPY modis_lst_meteo FROM stdin USING DELIMITERS ';';
+> [input data ordered by station,date]
+> ...
+> 
+> 
+> A query result (where station='53') is this:
+> ...
+> 53;2000-03-08 11:30:00+01;modis_lst1km2000038.LST_Day_1km.filt
+> 53;2000-03-08 14:30:00+01;aqua_lst1km2000038.LST_Day_1km.filt
+> 53;2000-03-08 23:30:00+01;modis_lst1km2000038.LST_Night_1km.filt
+> 53;2000-03-08 02:30:00+01;aqua_lst1km2000038.LST_Night_1km.filt
+> 53;2000-03-09 11:30:00+01;modis_lst1km2000039.LST_Day_1km.filt
+> 53;2000-03-09 14:30:00+01;aqua_lst1km2000039.LST_Day_1km.filt
+> 53;2000-03-09 23:30:00+01;modis_lst1km2000039.LST_Night_1km.filt
+> 53;2000-03-09 02:30:00+01;aqua_lst1km2000039.LST_Night_1km.filt
+> 53;2000-03-10 10:30:00+01;modis_lst1km20000310.LST_Day_1km.filt <-switch
+> 53;2000-03-10 14:30:00+01;aqua_lst1km20000310.LST_Day_1km.filt <-no-switch?
+> 53;2000-03-10 22:30:00+01;modis_lst1km20000310.LST_Night_1km.filt <-switch
+> 53;2000-03-10 02:30:00+01;aqua_lst1km20000310.LST_Night_1km.filt <-no-switch?
+> 53;2000-03-11 10:30:00+01;modis_lst1km20000311.LST_Day_1km.filt
+> 53;2000-03-11 14:30:00+01;aqua_lst1km20000311.LST_Day_1km.filt
+> 53;2000-03-11 22:30:00+01;modis_lst1km20000311.LST_Night_1km.filt
+> 53;2000-03-11 02:30:00+01;aqua_lst1km20000311.LST_Night_1km.filt
+> 53;2000-03-12 10:30:00+01;modis_lst1km20000312.LST_Day_1km.filt
+> ...
+> 
+> So:
+> - 11:30:00+01 is changed to 10:30:00+01
+> - 14:30:00+01 and 02:30:00+01 remain ?!
+> - 23:30:00+01 is changed to 02:30:00+01
+> 
+> and it happens 2000-03-10 (a bit early in the year? Can't find the date
+> of daylight saving switch for 2000 in Europe right now).
+> 
+> Aah, a few days later in the DB:
+> 
+> 53;2000-03-25 10:30:00+01;modis_lst1km20000325.LST_Day_1km.filt
+> 53;2000-03-25 14:30:00+01;aqua_lst1km20000325.LST_Day_1km.filt
+> 53;2000-03-25 22:30:00+01;modis_lst1km20000325.LST_Night_1km.filt
+> 53;2000-03-25 02:30:00+01;aqua_lst1km20000325.LST_Night_1km.filt
+> 53;2000-03-26 10:30:00+02;modis_lst1km20000326.LST_Day_1km.filt <- +2h
+> 53;2000-03-26 15:30:00+02;aqua_lst1km20000326.LST_Day_1km.filt <-switch
+> 53;2000-03-26 22:30:00+02;modis_lst1km20000326.LST_Night_1km.filt 
+> 53;2000-03-26 03:30:00+02;aqua_lst1km20000326.LST_Night_1km.filt <-switch
+> 
+> Not really convincing. Moreover frightening that the DST switch 
+> isn't happening at the same day in PostgreSQL for different times
+> of the day. 2000-03-26 sounds reasonable to me, but the morning time
+> was already (partially) changes earlier the month. Uffa.
+> Maybe I am missing something essential here (PostgreSQL 8)?
+> 
+> Best would be to set R somehow to UTC and to not do anything with
+> daylight saving time since I don't need it.
+> 
+> Markus
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From neteler at itc.it  Wed Jun 21 14:54:22 2006
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Raster time series and R - timezones?
+In-Reply-To: <Pine.LNX.4.44.0606212014570.16885-100000@reclus.nhh.no>
+References: <20060621160535.GD1179@bartok.itc.it>
+	<Pine.LNX.4.44.0606212014570.16885-100000@reclus.nhh.no>
+Message-ID: <20060621185422.GA2126@bartok.itc.it>
+
+Thanks, Roger. I'll sketch up a letter and will show it to
+you first for critical inspection.
+
+A small excerpt of the data I have posted here
+ http://mpa.itc.it/markus/modis/
+as CSV + SQL table description for both R and PostgreSQL.
+
+
+Best wishes,
+
+ Markus
+
+On Wed, Jun 21, 2006 at 08:17:24PM +0200, Roger Bivand wrote:
+> Markus,
+> 
+> I think a replicable example to R-help is the only option now, possibly 
+> with a longer input file on your web server. If you'd like me to look at a 
+> draft before you post, I can.
+> 
+> Best wishes,
+> 
+> Roger
+> 
+> 
+> On Wed, 21 Jun 2006, Markus Neteler wrote:
+> 
+> > On Wed, Jun 21, 2006 at 10:04:28AM +0200, Roger Bivand wrote:
+> > > On Wed, 21 Jun 2006, Hamish wrote:
+> > > > Markus wrote:
+> > > > 
+> > > > > > > > strptime(mytime,"%d %b %Y %H:%M:%S")
+> > > > > > > [1] "2006-04-07 10:30:00"
+> > > > > > > -> UTC lost
+> > > > > > 
+> > > > > > add %Z to include timezone?
+> > > > > 
+> > > > > This is the lacking feature... strptime doesn't care of %Z.
+> > > > 
+> > > > 
+> > > > Then it's R's strptime() which has a problem. 
+> > > > 
+> > > > I found %Z on the glibc <time.h> strptime() help page.
+> > > > 
+> > > > Maybe it is best to write a little bash script using `date --iso` or
+> > > > tiny C program using time.h's strptime() to pre-process the data?
+> > > > I take it R lets you do system() calls somehow.
+> > > > versus fighting R for a feature which doesn't exist.
+> > > > 
+> > > > does R have a gmtime() or localtime() equivalent?
+> > > > 
+> > > 
+> > > The problems seem to stem from R trying to work cross-platform and 
+> > > cross-locale.
+> > 
+> > For me it would be sufficient to have R operating in UTC,
+> > then I would not have the current problems.
+> > 
+> > > The help page for strptime() does say that %Z and %z are 
+> > > output only.
+> > 
+> > Right (which is a non-feature IMHO).
+> > 
+> > > It is an interaction of platform (and platform libraries) and 
+> > > the way locales are represented on that platform and the locale affecting 
+> > > the R process. There have been threads a number of times on this, also 
+> > > because locales affect i18n etc. Maybe it is time to draft a short message 
+> > > to R-help:
+> > > 
+> > > Sys.getlocale()
+> > > sessionInfo()
+> > > mytime <- "7 May 2006 10:30:00 UTC"
+> > > t0 <- strptime(mytime,"%d %b %Y %H:%M:%S")
+> > 
+> > [1] "2006-05-07 10:30:00"
+> > 
+> > -> UTC info lost
+> > 
+> > > attributes(t0)
+> > $names
+> > [1] "sec"   "min"   "hour"  "mday"  "mon"   "year"  "wday"  "yday"  "isdst"
+> > 
+> > -> maybe this could be parsed for ISOdatetime?
+> > 
+> > > # how to get mytime into ISOdatetime() ?
+> > > t1 <- ISOdatetime(t0$year+1900, t0$mon+1, t0$mday, t0$hour, t0$min, 
+> > >   t0$sec, tz="UTC")
+> > > t1
+> > > attributes(t1)
+> > > 
+> > > Are we getting anywhere??
+> > > 
+> > > Roger
+> > 
+> > I have now tried another way: Import of CSV into PostgreSQL
+> > to later use Rdbi to fetch the data:
+> > 
+> > DROP TABLE modis_lst_meteo;
+> > CREATE TABLE modis_lst_meteo (
+> >  station varchar(5),
+> >  east double precision,
+> >  north double precision,
+> >  LST double precision,
+> >  obs_data timestamp with time zone,
+> >  modis_map varchar(40)
+> > );
+> > SET DATESTYLE To European;
+> > COPY modis_lst_meteo FROM stdin USING DELIMITERS ';';
+> > [input data ordered by station,date]
+> > ...
+> > 
+> > 
+> > A query result (where station='53') is this:
+> > ...
+> > 53;2000-03-08 11:30:00+01;modis_lst1km2000038.LST_Day_1km.filt
+> > 53;2000-03-08 14:30:00+01;aqua_lst1km2000038.LST_Day_1km.filt
+> > 53;2000-03-08 23:30:00+01;modis_lst1km2000038.LST_Night_1km.filt
+> > 53;2000-03-08 02:30:00+01;aqua_lst1km2000038.LST_Night_1km.filt
+> > 53;2000-03-09 11:30:00+01;modis_lst1km2000039.LST_Day_1km.filt
+> > 53;2000-03-09 14:30:00+01;aqua_lst1km2000039.LST_Day_1km.filt
+> > 53;2000-03-09 23:30:00+01;modis_lst1km2000039.LST_Night_1km.filt
+> > 53;2000-03-09 02:30:00+01;aqua_lst1km2000039.LST_Night_1km.filt
+> > 53;2000-03-10 10:30:00+01;modis_lst1km20000310.LST_Day_1km.filt <-switch
+> > 53;2000-03-10 14:30:00+01;aqua_lst1km20000310.LST_Day_1km.filt <-no-switch?
+> > 53;2000-03-10 22:30:00+01;modis_lst1km20000310.LST_Night_1km.filt <-switch
+> > 53;2000-03-10 02:30:00+01;aqua_lst1km20000310.LST_Night_1km.filt <-no-switch?
+> > 53;2000-03-11 10:30:00+01;modis_lst1km20000311.LST_Day_1km.filt
+> > 53;2000-03-11 14:30:00+01;aqua_lst1km20000311.LST_Day_1km.filt
+> > 53;2000-03-11 22:30:00+01;modis_lst1km20000311.LST_Night_1km.filt
+> > 53;2000-03-11 02:30:00+01;aqua_lst1km20000311.LST_Night_1km.filt
+> > 53;2000-03-12 10:30:00+01;modis_lst1km20000312.LST_Day_1km.filt
+> > ...
+> > 
+> > So:
+> > - 11:30:00+01 is changed to 10:30:00+01
+> > - 14:30:00+01 and 02:30:00+01 remain ?!
+> > - 23:30:00+01 is changed to 02:30:00+01
+> > 
+> > and it happens 2000-03-10 (a bit early in the year? Can't find the date
+> > of daylight saving switch for 2000 in Europe right now).
+> > 
+> > Aah, a few days later in the DB:
+> > 
+> > 53;2000-03-25 10:30:00+01;modis_lst1km20000325.LST_Day_1km.filt
+> > 53;2000-03-25 14:30:00+01;aqua_lst1km20000325.LST_Day_1km.filt
+> > 53;2000-03-25 22:30:00+01;modis_lst1km20000325.LST_Night_1km.filt
+> > 53;2000-03-25 02:30:00+01;aqua_lst1km20000325.LST_Night_1km.filt
+> > 53;2000-03-26 10:30:00+02;modis_lst1km20000326.LST_Day_1km.filt <- +2h
+> > 53;2000-03-26 15:30:00+02;aqua_lst1km20000326.LST_Day_1km.filt <-switch
+> > 53;2000-03-26 22:30:00+02;modis_lst1km20000326.LST_Night_1km.filt 
+> > 53;2000-03-26 03:30:00+02;aqua_lst1km20000326.LST_Night_1km.filt <-switch
+> > 
+> > Not really convincing. Moreover frightening that the DST switch 
+> > isn't happening at the same day in PostgreSQL for different times
+> > of the day. 2000-03-26 sounds reasonable to me, but the morning time
+> > was already (partially) changes earlier the month. Uffa.
+> > Maybe I am missing something essential here (PostgreSQL 8)?
+> > 
+> > Best would be to set R somehow to UTC and to not do anything with
+> > daylight saving time since I don't need it.
+> > 
+> > Markus
+> > 
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> 
+> -- 
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+> 
+
+-- 
+Markus Neteler  <neteler itc it>  http://mpa.itc.it/markus/
+ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+
+From neteler at itc.it  Wed Jun 21 15:04:29 2006
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Raster time series and R - timezones?
+In-Reply-To: <20060621204513.76c03d09@localhost>
+References: <20060621144557.40624967.hamish_nospam@yahoo.com>
+	<Pine.LNX.4.44.0606210945520.15627-100000@reclus.nhh.no>
+	<20060621160535.GD1179@bartok.itc.it>
+	<20060621204513.76c03d09@localhost>
+Message-ID: <20060621190429.GD2126@bartok.itc.it>
+
+On Wed, Jun 21, 2006 at 08:45:13PM +0200, Stephan Holl wrote:
+> Hello Markus, 
+> 
+> On Wed, 21 Jun 2006 18:05:35 +0200 Markus Neteler <neteler@itc.it>
+> wrote:
+> 
+> > Best would be to set R somehow to UTC and to not do anything with
+> > daylight saving time since I don't need it.
+> 
+> export TZ=UTC0
+> R
+> 
+> does this help?
+
+It partially helps: it corrects the behaviour of as.POSIXct()!
+
+
+> mytime <- "7 May 2006 10:30:00 UTC"
+> strptime(mytime,"%d %b %Y %H:%M:%S")
+[1] NA					# right, in German locale here
+> Sys.setlocale("LC_TIME", "C")
+[1] "C"
+> strptime(mytime,"%d %b %Y %H:%M:%S")
+[1] "2006-05-07 10:30:00"		# OK
+
+> as.POSIXlt(as.POSIXct(strptime(mytime,"%d %b %Y %H:%M:%S")),tz="GMT")
+[1] "2006-05-07 10:30:00 GMT"		# OK
+
+> as.POSIXlt(as.POSIXct(strptime(mytime,"%d %b %Y %H:%M:%S"),tz="CEST"))
+[1] "2006-05-07 10:30:00 CEST"		# wrong
+
+> as.POSIXlt(as.POSIXct(strptime(mytime,"%d %b %Y %H:%M:%S"),tz="wrong"))
+[1] "2006-05-07 10:30:00 wrong"		# write what you want
+
+
+> as.POSIXlt(as.POSIXct(strptime(mytime,"%d %b %Y %H:%M:%S")),tz="GMT-2")
+[1] "2006-05-07 12:30:00 GMT"		# seems to do something
+
+
+> dt.mytime <- as.POSIXlt(as.POSIXct(strptime(mytime,"%d %b %Y %H:%M:%S")),tz="GMT")
+> dt.mytime
+[1] "2006-05-07 10:30:00 GMT"		# OK
+> dt.mytime[["isdst"]]
+[1] 0					# wrong (or not due to LC_TIME=C?)
+
+
+thanks for the hint,
+
+ markus
+
+
+From neteler at itc.it  Wed Jun 21 16:01:43 2006
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Raster time series and R - timezones?
+In-Reply-To: <20060621185422.GA2126@bartok.itc.it>
+References: <20060621160535.GD1179@bartok.itc.it>
+	<Pine.LNX.4.44.0606212014570.16885-100000@reclus.nhh.no>
+	<20060621185422.GA2126@bartok.itc.it>
+Message-ID: <20060621200143.GA2366@bartok.itc.it>
+
+Hi again,
+
+(sorry if this appears a bit offtopic here, but the time series
+business is quite GIS related).
+
+The strptime() functions is in the source code at:
+./src/main/datetime.c
+
+Some if tests are lacking else statements, so I am not surprised
+that R also accepts a tz="GRASS" time zone :-) On the other hand
+it may be impossible to implement all existing names. Tests seem
+to be done only for "GMT" and "UTC", other names are taken literally.
+
+Enough for today on this,
+ Markus
+
+
+From neteler at itc.it  Wed Jun 21 16:06:14 2006
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Re: Problem with gmeta6() in spgrass6.
+Message-ID: <20060621200614.GB2366@bartok.itc.it>
+
+Dear Roger,
+
+[to also contribute something here]
+
+to fix this problem, simply change the call/parsing in
+gmeta6():
+
+The original code does:
+
+> system("g.region -p3")
+projection: 3 (L??ngen- und Breitengrad)
+zone:       0
+datum:      wgs84
+ellipsoid:  wgs84
+north:      46:06:39N
+south:      45:57:18N
+west:       11:02:42E
+east:       11:19:06E
+top:        1.00000000
+bottom:     0.00000000
+nsres:      0:00:03
+nsres3:     0:00:03
+ewres:      0:00:03
+ewres3:     0:00:03
+tbres:      1
+rows:       187
+rows3:      187
+cols:       328
+cols3:      328
+depths:     1
+
+You could change to -g:
+
+> system("g.region -g3")
+n=46.11083333
+s=45.955
+w=11.045
+e=11.31833333
+t=1
+b=0
+nsres=0.00083333
+nsres3=0.00083333
+ewres=0.00083333
+ewres3=0.00083333
+tbres=1
+rows=187
+cols=328
+rows3=187
+cols3=328
+depths=1
+
+which is easily parsable and also works in LatLong.
+
+Best
+ Markus
+
+
+From neteler at itc.it  Thu Jun 22 12:48:50 2006
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Raster time series and R - timezones?
+In-Reply-To: <20060621160535.GD1179@bartok.itc.it>
+References: <20060621144557.40624967.hamish_nospam@yahoo.com>
+	<Pine.LNX.4.44.0606210945520.15627-100000@reclus.nhh.no>
+	<20060621160535.GD1179@bartok.itc.it>
+Message-ID: <20060622164850.GQ15681@bartok.itc.it>
+
+Hi again:
+
+[for the record]
+
+news - PostgreSQL import works correctly. Due to a shame-on-me
+error the script which was generating the CSV file didn't
+always apply the "UTC" string.
+
+I have posted a new sample data set here:
+ modis_lst_time_series_demo2.tar.gz
+
+TODO (for me):
+- try Rdbi import (maybe the timestamps survive)
+- try harder
+
+if it still fails in R, I'll sketch the mail.
+
+Markus
+
+
+On Wed, Jun 21, 2006 at 06:05:35PM +0200, Markus Neteler wrote:
+...
+> I have now tried another way: Import of CSV into PostgreSQL
+> to later use Rdbi to fetch the data:
+...
+
+
+From Roger.Bivand at nhh.no  Thu Jun 22 15:31:16 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Re: Problem with gmeta6() in spgrass6.
+In-Reply-To: <20060621200614.GB2366@bartok.itc.it>
+Message-ID: <Pine.LNX.4.44.0606222130270.17495-100000@reclus.nhh.no>
+
+On Wed, 21 Jun 2006, Markus Neteler wrote:
+
+> Dear Roger,
+> 
+> [to also contribute something here]
+
+Very nice, thanks very much, will be in the next release.
+
+Roger
+
+> 
+> to fix this problem, simply change the call/parsing in
+> gmeta6():
+> 
+> The original code does:
+> 
+> > system("g.region -p3")
+> projection: 3 (L??ngen- und Breitengrad)
+> zone:       0
+> datum:      wgs84
+> ellipsoid:  wgs84
+> north:      46:06:39N
+> south:      45:57:18N
+> west:       11:02:42E
+> east:       11:19:06E
+> top:        1.00000000
+> bottom:     0.00000000
+> nsres:      0:00:03
+> nsres3:     0:00:03
+> ewres:      0:00:03
+> ewres3:     0:00:03
+> tbres:      1
+> rows:       187
+> rows3:      187
+> cols:       328
+> cols3:      328
+> depths:     1
+> 
+> You could change to -g:
+> 
+> > system("g.region -g3")
+> n=46.11083333
+> s=45.955
+> w=11.045
+> e=11.31833333
+> t=1
+> b=0
+> nsres=0.00083333
+> nsres3=0.00083333
+> ewres=0.00083333
+> ewres3=0.00083333
+> tbres=1
+> rows=187
+> cols=328
+> rows3=187
+> cols3=328
+> depths=1
+> 
+> which is easily parsable and also works in LatLong.
+> 
+> Best
+>  Markus
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+

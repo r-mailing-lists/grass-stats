@@ -1,0 +1,1896 @@
+From jarekj at amu.edu.pl  Fri Jan  2 08:24:48 2009
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Fri Jan  2 08:31:31 2009
+Subject: [GRASS-stats] Incompatible library version for module
+Message-ID: <495E15A0.3040708@amu.edu.pl>
+
+In fact I didn't use R for two month so maybe I lost something but  
+after  compilation of grass 6.4 svn I tiried to read raster I recive the 
+following:
+
+ > library(spgrass6)
+Loading required package: sp
+Loading required package: rgdal
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Loaded GDAL runtime: GDAL 1.5.3, released 2008/09/09
+GDAL_DATA: /usr/local/lib/R/site-library/rgdal/gdal
+Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+PROJ_LIB: /usr/local/lib/R/site-library/rgdal/proj
+GRASS GIS interface loaded with GRASS version: 6.4.svn
+and location: Polska
+ > r=readRAST6("Polska")
+B??D:Incompatible library version for module
+[Raster MASK present]
+GRASS 6.4.svn (Polska):~ >
+
+Finally R crashed.
+
+importing with plugin=FALSE goes OK
+
+I heave similar problem (and the same message) with qgis (problem is 
+confirmed on qgis list).
+
+I recompiled gdal and spgrass in my R environment but it looks the 
+problem is from within GRASS-GDAL (sam message on R and QGIS)
+
+Jarek
+
+BTW:
+Ubuntu Hardy
+GDAL, PROJ as above,
+GRASS svn from 30.12.2008
+spgrass and rgdal just downloaded and recompiled
+From neteler at osgeo.org  Fri Jan  2 11:03:32 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Fri Jan  2 11:03:34 2009
+Subject: [GRASS-stats] Incompatible library version for module
+In-Reply-To: <495E15A0.3040708@amu.edu.pl>
+References: <495E15A0.3040708@amu.edu.pl>
+Message-ID: <86782b610901020803h79d1deafof6370b2650679eb6@mail.gmail.com>
+
+2009/1/2 Jarek Jasiewicz <jarekj@amu.edu.pl>:
+> In fact I didn't use R for two month so maybe I lost something but  after
+>  compilation of grass 6.4 svn I tiried to read raster I recive the
+> following:
+
+I assume that you did not run
+ make distclean
+to compile GRASS (see below).
+
+>> library(spgrass6)
+> Loading required package: sp
+> Loading required package: rgdal
+> Geospatial Data Abstraction Library extensions to R successfully loaded
+> Loaded GDAL runtime: GDAL 1.5.3, released 2008/09/09
+> GDAL_DATA: /usr/local/lib/R/site-library/rgdal/gdal
+> Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+> PROJ_LIB: /usr/local/lib/R/site-library/rgdal/proj
+> GRASS GIS interface loaded with GRASS version: 6.4.svn
+> and location: Polska
+>> r=readRAST6("Polska")
+> B??D:Incompatible library version for module
+
+If this occurs, a full GRASS recompile is needed. Official answer
+from Glynn:
+
+
+On Mon, Sep 8, 2008 at 11:10 PM, Glynn Clements
+<glynn@gclements.plus.com> wrote:
+> The error could also be caused by a mismatch between PATH and
+> LD_LIBRARY_PATH (or ld.so.cache, etc) if you have more than one
+> version of GRASS installed.
+>
+> Or it could be caused by a module linking against GDAL, where GDAL was
+> built against an old version of GRASS. In that case, it's true that
+> recompilation is needed, but it would be GDAL that needs
+> recompilation.
+
+But typically a GRASS recompilation suffices when this message appears.
+
+Markus
+From jarekj at amu.edu.pl  Fri Jan  2 13:38:54 2009
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Fri Jan  2 13:39:01 2009
+Subject: [GRASS-stats] Incompatible library version for module SOLVED
+	but new problem with plugin=TRUE has emerged
+In-Reply-To: <86782b610901020803h79d1deafof6370b2650679eb6@mail.gmail.com>
+References: <495E15A0.3040708@amu.edu.pl>
+	<86782b610901020803h79d1deafof6370b2650679eb6@mail.gmail.com>
+Message-ID: <495E5F3E.6010902@amu.edu.pl>
+
+
+
+Markus Neteler pisze:
+> 2009/1/2 Jarek Jasiewicz <jarekj@amu.edu.pl>:
+>   
+>> In fact I didn't use R for two month so maybe I lost something but  after
+>>  compilation of grass 6.4 svn I tiried to read raster I recive the
+>> following:
+>>     
+>
+> I assume that you did not run
+>  make distclean
+> to compile GRASS (see below).
+>   
+Thanks for ansver but unfortunately I always do makedistclean in grass 
+before compilation
+
+addationaly I simply did:
+
+ gdalinfo /home/jarekj/grassdata/Polska/PERMANENT/cellhd/Polska
+ERROR:Incompatible library version for module
+
+Here is the problem
+
+so not the GRASS but grass-gdal plugin must to be recompiled. I think it 
+is not intended because plugin was created for to not compile gdal 
+everytime grass has ben recompiled
+
+I ecompiled plugin, it and everthing is OK
+
+
+
+
+But the issue with plugin which emerged is as follows:
+
+r=readRAST6("Polska", plugin=FALSE)
+
+Exporting raster as integer values (bytes=2)
+Using the current region settings...
+north=804414.520000
+south=137864.430000
+east=865559.620000
+west=180375.670000
+r=1333
+c=1370
+ 100%
+
+
+It is OK, my region settings are included
+
+ra=readRAST6("Polska", plugin=TRUE)
+/home/data/grassdata/Polska/PERMANENT/cellhd/Polska has GDAL driver GRASS
+and has 21601 rows and 18001 columns
+
+it is also OK because original map is rather big
+
+next were eror due to file size
+
+but this means that plugin ignores current region setings!
+Jarek
+
+
+
+
+
+_
+
+_
+From neteler at osgeo.org  Sat Jan  3 01:54:06 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sat Jan  3 01:54:09 2009
+Subject: [GRASS-stats] Incompatible library version for module SOLVED but
+	new problem with plugin=TRUE has emerged
+In-Reply-To: <495E5F3E.6010902@amu.edu.pl>
+References: <495E15A0.3040708@amu.edu.pl>
+	<86782b610901020803h79d1deafof6370b2650679eb6@mail.gmail.com>
+	<495E5F3E.6010902@amu.edu.pl>
+Message-ID: <86782b610901022254ref8f617r9e6b6f5ebd46ebcc@mail.gmail.com>
+
+On Fri, Jan 2, 2009 at 7:38 PM, Jarek Jasiewicz <jarekj@amu.edu.pl> wrote:
+> Markus Neteler pisze:
+>> 2009/1/2 Jarek Jasiewicz <jarekj@amu.edu.pl>:
+>>> In fact I didn't use R for two month so maybe I lost something but  after
+>>>  compilation of grass 6.4 svn I tiried to read raster I recive the
+>>> following:
+>>
+>> I assume that you did not run
+>>  make distclean
+>> to compile GRASS (see below).
+>>
+> Thanks for ansver but unfortunately I always do makedistclean in grass
+> before compilation
+>
+> addationaly I simply did:
+>
+> gdalinfo /home/jarekj/grassdata/Polska/PERMANENT/cellhd/Polska
+> ERROR:Incompatible library version for module
+>
+> Here is the problem
+>
+> so not the GRASS but grass-gdal plugin must to be recompiled. I think it is
+> not intended because plugin was created for to not compile gdal everytime
+> grass has ben recompiled
+>
+> I ecompiled plugin, it and everthing is OK
+
+Good to know that. Perhaps report this to the plugin author (GDAL team)
+if it is really a problem. I never had it.
+
+> But the issue with plugin which emerged is as follows:
+>
+> r=readRAST6("Polska", plugin=FALSE)
+>
+> Exporting raster as integer values (bytes=2)
+
+[This msg indicates that the old mechanism of the R extension
+is used.]
+
+> Using the current region settings...
+> north=804414.520000
+> south=137864.430000
+> east=865559.620000
+> west=180375.670000
+> r=1333
+> c=1370
+> 100%
+>
+>
+> It is OK, my region settings are included
+>
+> ra=readRAST6("Polska", plugin=TRUE)
+> /home/data/grassdata/Polska/PERMANENT/cellhd/Polska has GDAL driver GRASS
+> and has 21601 rows and 18001 columns
+>
+> it is also OK because original map is rather big
+>
+> next were eror due to file size
+>
+> but this means that plugin ignores current region setings!
+
+Yes. That's why I suggested to implement r.out.gdal usage
+in the GRASS-R extension time ago (see this list archive,
+date	Sun, Jun 1, 2008 at 9:40 PM
+subject	Re: [GRASS-stats] Speedup of readVECT6() with plugin
+).
+
+There is a "plugin" switch which you set to plugin=TRUE, perhaps
+it needs to be FALSE to make use of the better + faster r.out.gdal
+which would solve your problem as it is resolution/region sensitive.
+
+I didn't try the GRASS-R extension for a while. Definitely you need
+a fresh version of the GRASS-R extension.
+
+Markus
+From neteler at osgeo.org  Sat Jan  3 04:01:00 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sat Jan  3 04:01:03 2009
+Subject: [GRASS-stats] Incompatible library version for module SOLVED but
+	new problem with plugin=TRUE has emerged
+In-Reply-To: <86782b610901022254ref8f617r9e6b6f5ebd46ebcc@mail.gmail.com>
+References: <495E15A0.3040708@amu.edu.pl>
+	<86782b610901020803h79d1deafof6370b2650679eb6@mail.gmail.com>
+	<495E5F3E.6010902@amu.edu.pl>
+	<86782b610901022254ref8f617r9e6b6f5ebd46ebcc@mail.gmail.com>
+Message-ID: <86782b610901030101v738eef1cxe083a1b68ba2e16f@mail.gmail.com>
+
+On Sat, Jan 3, 2009 at 7:54 AM, Markus Neteler <neteler@osgeo.org> wrote:
+> On Fri, Jan 2, 2009 at 7:38 PM, Jarek Jasiewicz <jarekj@amu.edu.pl> wrote:
+>> but this means that plugin ignores current region setings!
+>
+> Yes. That's why I suggested to implement r.out.gdal usage
+> in the GRASS-R extension time ago (see this list archive,
+> date    Sun, Jun 1, 2008 at 9:40 PM
+> subject Re: [GRASS-stats] Speedup of readVECT6() with plugin
+> ).
+>
+> There is a "plugin" switch which you set to plugin=TRUE, perhaps
+> it needs to be FALSE to make use of the better + faster r.out.gdal
+> which would solve your problem as it is resolution/region sensitive.
+
+OK, I checked the source code of spgrass6_0.5-16.tar.gz
+and the manual at
+ http://cran.r-project.org/web/packages/spgrass6/index.html
+
+which says:
+"useGDAL:
+   default FALSE using r.out.bin or r.in.bin, if TRUE use r.out.gdal
+or r.in.gdal,
+   GTiff, and readGDAL or writeGDAL
+"
+
+So this switch should solve your problem.
+
+Markus
+
+PS: Upon a test if GRASS is >= 6.4 I suggest to set useGDAL=TRUE
+ in spgrass6.
+From Roger.Bivand at nhh.no  Sat Jan  3 05:09:30 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sat Jan  3 05:10:35 2009
+Subject: [GRASS-stats] Incompatible library version for module SOLVED
+	but new problem with plugin=TRUE has emerged
+In-Reply-To: <86782b610901022254ref8f617r9e6b6f5ebd46ebcc@mail.gmail.com>
+References: <495E15A0.3040708@amu.edu.pl>
+	<86782b610901020803h79d1deafof6370b2650679eb6@mail.gmail.com>
+	<495E5F3E.6010902@amu.edu.pl>
+	<86782b610901022254ref8f617r9e6b6f5ebd46ebcc@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.0901031105450.15691@reclus.nhh.no>
+
+On Sat, 3 Jan 2009, Markus Neteler wrote:
+
+> On Fri, Jan 2, 2009 at 7:38 PM, Jarek Jasiewicz <jarekj@amu.edu.pl> wrote:
+>> Markus Neteler pisze:
+>>> 2009/1/2 Jarek Jasiewicz <jarekj@amu.edu.pl>:
+>>>> In fact I didn't use R for two month so maybe I lost something but  after
+>>>>  compilation of grass 6.4 svn I tiried to read raster I recive the
+>>>> following:
+>>>
+>>> I assume that you did not run
+>>>  make distclean
+>>> to compile GRASS (see below).
+>>>
+>> Thanks for ansver but unfortunately I always do makedistclean in grass
+>> before compilation
+>>
+>> addationaly I simply did:
+>>
+>> gdalinfo /home/jarekj/grassdata/Polska/PERMANENT/cellhd/Polska
+>> ERROR:Incompatible library version for module
+>>
+>> Here is the problem
+>>
+>> so not the GRASS but grass-gdal plugin must to be recompiled. I think it is
+>> not intended because plugin was created for to not compile gdal everytime
+>> grass has ben recompiled
+>>
+>> I ecompiled plugin, it and everthing is OK
+>
+> Good to know that. Perhaps report this to the plugin author (GDAL team)
+> if it is really a problem. I never had it.
+>
+>> But the issue with plugin which emerged is as follows:
+>>
+>> r=readRAST6("Polska", plugin=FALSE)
+>>
+>> Exporting raster as integer values (bytes=2)
+>
+> [This msg indicates that the old mechanism of the R extension
+> is used.]
+>
+>> Using the current region settings...
+>> north=804414.520000
+>> south=137864.430000
+>> east=865559.620000
+>> west=180375.670000
+>> r=1333
+>> c=1370
+>> 100%
+>>
+>>
+>> It is OK, my region settings are included
+>>
+>> ra=readRAST6("Polska", plugin=TRUE)
+>> /home/data/grassdata/Polska/PERMANENT/cellhd/Polska has GDAL driver GRASS
+>> and has 21601 rows and 18001 columns
+>>
+>> it is also OK because original map is rather big
+>>
+>> next were eror due to file size
+>>
+>> but this means that plugin ignores current region setings!
+>
+> Yes. That's why I suggested to implement r.out.gdal usage
+> in the GRASS-R extension time ago (see this list archive,
+> date	Sun, Jun 1, 2008 at 9:40 PM
+> subject	Re: [GRASS-stats] Speedup of readVECT6() with plugin
+> ).
+>
+> There is a "plugin" switch which you set to plugin=TRUE, perhaps
+> it needs to be FALSE to make use of the better + faster r.out.gdal
+> which would solve your problem as it is resolution/region sensitive.
+>
+> I didn't try the GRASS-R extension for a while. Definitely you need
+> a fresh version of the GRASS-R extension.
+
+The current settings of readRAST6() will use the plugin if available (but 
+try to check that the regions match) when plugin=NULL. If you want to 
+force the use of r.out.gdal, set plugin=FALSE and useGDAL=TRUE (version 
+0.5-16). Please let me know if this helps.
+
+Roger
+
+>
+> Markus
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From neteler at osgeo.org  Sat Jan 10 08:20:12 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sat Jan 10 08:20:16 2009
+Subject: [GRASS-stats] Incompatible library version for module SOLVED but
+	new problem with plugin=TRUE has emerged
+In-Reply-To: <alpine.LRH.2.00.0901031105450.15691@reclus.nhh.no>
+References: <495E15A0.3040708@amu.edu.pl>
+	<86782b610901020803h79d1deafof6370b2650679eb6@mail.gmail.com>
+	<495E5F3E.6010902@amu.edu.pl>
+	<86782b610901022254ref8f617r9e6b6f5ebd46ebcc@mail.gmail.com>
+	<alpine.LRH.2.00.0901031105450.15691@reclus.nhh.no>
+Message-ID: <86782b610901100520r67c53a79qf0bf444a0ec55a73@mail.gmail.com>
+
+On Sat, Jan 3, 2009 at 11:09 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> The current settings of readRAST6() will use the plugin if available (but
+> try to check that the regions match) when plugin=NULL. If you want to force
+> the use of r.out.gdal, set plugin=FALSE and useGDAL=TRUE (version 0.5-16).
+> Please let me know if this helps.
+
+I have installed R (R version 2.8.1 (2008-12-22)) + extensions from scratch.
+I get now this message (GRASS book p. 358):
+
+> elev <- readRAST6("elev_state_500m", mapset="PERMANENT", ignore.stderr=TRUE)
+           cols            rows origin.northing  origin.easting
+          FALSE           FALSE           FALSE            TRUE
+Warning message:
+In readRAST6("elev_state_500m", mapset = "PERMANENT",  :
+  set plugin=FALSE - raster/current window mismatch
+  or plugin=TRUE to override; continuing with plugin=FALSE
+
+To me it is not clear from the message that I should (better) set
+useGDAL=TRUE
+
+Ideally, the interface would work as simple as this
+ elev <- readRAST6("elev_state_500m")
+
+which would
+* find the map in the current mapset search path (internally, use g.findfile),
+  in my tests I was in a mapset different from PERMANENT which leads to
+     elev <- readRAST6("elev_state_500m", ignore.stderr=TRUE)
+     Error in .local(.Object, ...) :
+        GDAL Error 4:
+`/home/neteler/grassdata/nc_spm_07/user1/cellhd/elev_state_500m' does
+not exist in the file system,
+and is not recognised as a supported dataset name.
+
+* use the current region (internally, use r.in.gdal and not the plugin
+if GRASS >= 6.4)
+
+Successfully, I have used today:
+elev <- readRAST6("elev_state_500m", mapset="PERMANENT",
+ignore.stderr=TRUE, plugin=FALSE, useGDAL=TRUE)
+
+which is rather long/complex.
+
+Hope I am not asking too much - try to compensate with GRASS 6.4.x work :)
+
+Markus
+From Roger.Bivand at nhh.no  Sat Jan 10 15:20:53 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sat Jan 10 15:20:56 2009
+Subject: [GRASS-stats] Incompatible library version for module SOLVED
+	but new problem with plugin=TRUE has emerged
+In-Reply-To: <86782b610901100520r67c53a79qf0bf444a0ec55a73@mail.gmail.com>
+References: <495E15A0.3040708@amu.edu.pl>
+	<86782b610901020803h79d1deafof6370b2650679eb6@mail.gmail.com>
+	<495E5F3E.6010902@amu.edu.pl>
+	<86782b610901022254ref8f617r9e6b6f5ebd46ebcc@mail.gmail.com>
+	<alpine.LRH.2.00.0901031105450.15691@reclus.nhh.no>
+	<86782b610901100520r67c53a79qf0bf444a0ec55a73@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.0901102109100.8351@reclus.nhh.no>
+
+On Sat, 10 Jan 2009, Markus Neteler wrote:
+
+> On Sat, Jan 3, 2009 at 11:09 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> The current settings of readRAST6() will use the plugin if available (but
+>> try to check that the regions match) when plugin=NULL. If you want to force
+>> the use of r.out.gdal, set plugin=FALSE and useGDAL=TRUE (version 0.5-16).
+>> Please let me know if this helps.
+>
+> I have installed R (R version 2.8.1 (2008-12-22)) + extensions from scratch.
+> I get now this message (GRASS book p. 358):
+>
+>> elev <- readRAST6("elev_state_500m", mapset="PERMANENT", ignore.stderr=TRUE)
+>           cols            rows origin.northing  origin.easting
+>          FALSE           FALSE           FALSE            TRUE
+> Warning message:
+> In readRAST6("elev_state_500m", mapset = "PERMANENT",  :
+>  set plugin=FALSE - raster/current window mismatch
+>  or plugin=TRUE to override; continuing with plugin=FALSE
+>
+> To me it is not clear from the message that I should (better) set
+> useGDAL=TRUE
+>
+> Ideally, the interface would work as simple as this
+> elev <- readRAST6("elev_state_500m")
+>
+> which would
+> * find the map in the current mapset search path (internally, use g.findfile),
+>  in my tests I was in a mapset different from PERMANENT which leads to
+>     elev <- readRAST6("elev_state_500m", ignore.stderr=TRUE)
+>     Error in .local(.Object, ...) :
+>        GDAL Error 4:
+> `/home/neteler/grassdata/nc_spm_07/user1/cellhd/elev_state_500m' does
+> not exist in the file system,
+> and is not recognised as a supported dataset name.
+>
+> * use the current region (internally, use r.in.gdal and not the plugin
+> if GRASS >= 6.4)
+
+Markus,
+
+This is effectively what I've tried to now. However, the user output is:
+
+> library(spgrass6)
+Loading required package: sp
+Loading required package: rgdal
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Loaded GDAL runtime: GDAL 1.6.0, released 2008/12/04
+GDAL_DATA: /home/rsb/lib/r_libs/rgdal/gdal
+Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+PROJ_LIB: /home/rsb/lib/r_libs/rgdal/proj
+GRASS GIS interface loaded with GRASS version: 6.4.0RC1
+and location: nc_spm_08
+> elev <- readRAST6("elev_state_500m")
+            cols            rows origin.northing  origin.easting
+           FALSE           FALSE           FALSE           FALSE
+ERROR 6: SetColorTable() only supported for Byte or UInt16 bands in TIFF 
+format.
+WARNING: Input raster map contains cells with NULL-value (no-data). The
+          value 999 was used to represent no-data values in the input map.
+          You can specify nodata value by nodata parameter.
+/home/rsb/topics/grassdata/nc_spm_08/rsb/.tmp/reclus2/elev_state_500m has 
+GDAL driver GTiff
+and has 620 rows and 1630 columns
+Warning message:
+In readRAST6("elev_state_500m") :
+   set plugin=FALSE - raster/current window mismatch
+   or plugin=TRUE to override; continuing with plugin=FALSE
+
+which I agree is unhelpful (and most of it cannot be avoided on Windows, 
+where stderr cannot be ignored). I can work on some of this, but the two 
+r.out.gdal messages are not on my side. Even if I set GRASS_VERBOSE to 0, 
+won't they still be displayed?
+
+Roger
+
+>
+> Successfully, I have used today:
+> elev <- readRAST6("elev_state_500m", mapset="PERMANENT",
+> ignore.stderr=TRUE, plugin=FALSE, useGDAL=TRUE)
+>
+> which is rather long/complex.
+>
+> Hope I am not asking too much - try to compensate with GRASS 6.4.x work :)
+>
+> Markus
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From neteler at osgeo.org  Sat Jan 10 16:47:33 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sat Jan 10 16:47:37 2009
+Subject: [GRASS-stats] Incompatible library version for module SOLVED but
+	new problem with plugin=TRUE has emerged
+In-Reply-To: <alpine.LRH.2.00.0901102109100.8351@reclus.nhh.no>
+References: <495E15A0.3040708@amu.edu.pl>
+	<86782b610901020803h79d1deafof6370b2650679eb6@mail.gmail.com>
+	<495E5F3E.6010902@amu.edu.pl>
+	<86782b610901022254ref8f617r9e6b6f5ebd46ebcc@mail.gmail.com>
+	<alpine.LRH.2.00.0901031105450.15691@reclus.nhh.no>
+	<86782b610901100520r67c53a79qf0bf444a0ec55a73@mail.gmail.com>
+	<alpine.LRH.2.00.0901102109100.8351@reclus.nhh.no>
+Message-ID: <86782b610901101347y2a10384cr86661f3e1adada98@mail.gmail.com>
+
+Roger,
+
+On Sat, Jan 10, 2009 at 9:20 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Sat, 10 Jan 2009, Markus Neteler wrote:
+>
+>> On Sat, Jan 3, 2009 at 11:09 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>>>
+>>> The current settings of readRAST6() will use the plugin if available (but
+>>> try to check that the regions match) when plugin=NULL. If you want to
+>>> force
+>>> the use of r.out.gdal, set plugin=FALSE and useGDAL=TRUE (version
+>>> 0.5-16).
+>>> Please let me know if this helps.
+>>
+>> I have installed R (R version 2.8.1 (2008-12-22)) + extensions from
+>> scratch.
+>> I get now this message (GRASS book p. 358):
+>>
+>>> elev <- readRAST6("elev_state_500m", mapset="PERMANENT",
+>>> ignore.stderr=TRUE)
+>>
+>>          cols            rows origin.northing  origin.easting
+>>         FALSE           FALSE           FALSE            TRUE
+>> Warning message:
+>> In readRAST6("elev_state_500m", mapset = "PERMANENT",  :
+>>  set plugin=FALSE - raster/current window mismatch
+>>  or plugin=TRUE to override; continuing with plugin=FALSE
+>>
+>> To me it is not clear from the message that I should (better) set
+>> useGDAL=TRUE
+>>
+>> Ideally, the interface would work as simple as this
+>> elev <- readRAST6("elev_state_500m")
+>>
+>> which would
+>> * find the map in the current mapset search path (internally, use
+>> g.findfile),
+>>  in my tests I was in a mapset different from PERMANENT which leads to
+>>    elev <- readRAST6("elev_state_500m", ignore.stderr=TRUE)
+>>    Error in .local(.Object, ...) :
+>>       GDAL Error 4:
+>> `/home/neteler/grassdata/nc_spm_07/user1/cellhd/elev_state_500m' does
+>> not exist in the file system,
+>> and is not recognised as a supported dataset name.
+>>
+>> * use the current region (internally, use r.in.gdal and not the plugin
+>> if GRASS >= 6.4)
+>
+> Markus,
+>
+> This is effectively what I've tried to now. However, the user output is:
+>
+>> library(spgrass6)
+>
+> Loading required package: sp
+> Loading required package: rgdal
+> Geospatial Data Abstraction Library extensions to R successfully loaded
+> Loaded GDAL runtime: GDAL 1.6.0, released 2008/12/04
+> GDAL_DATA: /home/rsb/lib/r_libs/rgdal/gdal
+> Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+> PROJ_LIB: /home/rsb/lib/r_libs/rgdal/proj
+> GRASS GIS interface loaded with GRASS version: 6.4.0RC1
+> and location: nc_spm_08
+>>
+>> elev <- readRAST6("elev_state_500m")
+>
+>           cols            rows origin.northing  origin.easting
+>          FALSE           FALSE           FALSE           FALSE
+> ERROR 6: SetColorTable() only supported for Byte or UInt16 bands in TIFF
+> format.
+
+This message *is* confusing as it is a warning only. It comes from GDAL:
+gdal/frmts/gtiff/geotiff.cpp:                  "SetColorTable() only
+supportedfor Byte or UInt16 bands in TIFF format." );
+
+    if( eDataType != GDT_Byte && eDataType != GDT_UInt16 )
+    {
+        CPLError( CE_Failure, CPLE_NotSupported,
+                  "SetColorTable() only supported for Byte or UInt16
+bands in TIFF format." );
+        return CE_Failure;
+    }
+
+I suppose there is some trick to suppress it (since it uses the
+CPLError function).
+I don't know too much about it but found
+http://www.gdal.org/ogr/cpl__error_8h.html#ad2b98dd58e4de706a245faddac90403
+
+Just throw stderr stuff to /dev/null (of course problematic with Windows)?
+
+> WARNING: Input raster map contains cells with NULL-value (no-data). The
+>         value 999 was used to represent no-data values in the input map.
+>         You can specify nodata value by nodata parameter.
+
+That one comes from r.out.gdal. Indeed a non-feature, see below:
+
+> /home/rsb/topics/grassdata/nc_spm_08/rsb/.tmp/reclus2/elev_state_500m has
+> GDAL driver GTiff
+> and has 620 rows and 1630 columns
+> Warning message:
+> In readRAST6("elev_state_500m") :
+>  set plugin=FALSE - raster/current window mismatch
+>  or plugin=TRUE to override; continuing with plugin=FALSE
+>
+> which I agree is unhelpful (and most of it cannot be avoided on Windows,
+> where stderr cannot be ignored). I can work on some of this, but the two
+> r.out.gdal messages are not on my side. Even if I set GRASS_VERBOSE to 0,
+> won't they still be displayed?
+
+It was implemented as G_warning(). In contact with the person who
+added this, we have now changed to G_important_message() which
+respects GRASS_VERBOSE=0:
+
+http://trac.osgeo.org/grass/changeset/35321
+
+It is in 6.4SVN and 7 SVN and will appear on Monday in 6.4.0RC2.
+GRASS 6.3 and older are not affected as r.out.gdal wasn't there.
+
+Thanks,
+Markus
+
+> Roger
+>
+>>
+>> Successfully, I have used today:
+>> elev <- readRAST6("elev_state_500m", mapset="PERMANENT",
+>> ignore.stderr=TRUE, plugin=FALSE, useGDAL=TRUE)
+>>
+>> which is rather long/complex.
+>>
+>> Hope I am not asking too much - try to compensate with GRASS 6.4.x work :)
+>>
+>> Markus
+>>
+>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+>
+
+
+
+-- 
+Open Source Geospatial Foundation
+http://www.osgeo.org/
+http://www.grassbook.org/
+From Roger.Bivand at nhh.no  Sun Jan 11 10:48:19 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun Jan 11 10:48:32 2009
+Subject: [GRASS-stats] Incompatible library version for module SOLVED
+	but new problem with plugin=TRUE has emerged
+In-Reply-To: <86782b610901101347y2a10384cr86661f3e1adada98@mail.gmail.com>
+References: <495E15A0.3040708@amu.edu.pl>
+	<86782b610901020803h79d1deafof6370b2650679eb6@mail.gmail.com>
+	<495E5F3E.6010902@amu.edu.pl>
+	<86782b610901022254ref8f617r9e6b6f5ebd46ebcc@mail.gmail.com>
+	<alpine.LRH.2.00.0901031105450.15691@reclus.nhh.no> 
+	<86782b610901100520r67c53a79qf0bf444a0ec55a73@mail.gmail.com>
+	<alpine.LRH.2.00.0901102109100.8351@reclus.nhh.no>
+	<86782b610901101347y2a10384cr86661f3e1adada98@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.0901111640540.6377@reclus.nhh.no>
+
+On Sat, 10 Jan 2009, Markus Neteler wrote:
+
+> Roger,
+>
+> On Sat, Jan 10, 2009 at 9:20 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> On Sat, 10 Jan 2009, Markus Neteler wrote:
+>>
+>>> On Sat, Jan 3, 2009 at 11:09 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>>>>
+>>>> The current settings of readRAST6() will use the plugin if available (but
+>>>> try to check that the regions match) when plugin=NULL. If you want to
+>>>> force
+>>>> the use of r.out.gdal, set plugin=FALSE and useGDAL=TRUE (version
+>>>> 0.5-16).
+>>>> Please let me know if this helps.
+>>>
+>>> I have installed R (R version 2.8.1 (2008-12-22)) + extensions from
+>>> scratch.
+>>> I get now this message (GRASS book p. 358):
+>>>
+>>>> elev <- readRAST6("elev_state_500m", mapset="PERMANENT",
+>>>> ignore.stderr=TRUE)
+>>>
+>>>          cols            rows origin.northing  origin.easting
+>>>         FALSE           FALSE           FALSE            TRUE
+>>> Warning message:
+>>> In readRAST6("elev_state_500m", mapset = "PERMANENT",  :
+>>>  set plugin=FALSE - raster/current window mismatch
+>>>  or plugin=TRUE to override; continuing with plugin=FALSE
+>>>
+>>> To me it is not clear from the message that I should (better) set
+>>> useGDAL=TRUE
+>>>
+>>> Ideally, the interface would work as simple as this
+>>> elev <- readRAST6("elev_state_500m")
+>>>
+>>> which would
+>>> * find the map in the current mapset search path (internally, use
+>>> g.findfile),
+>>>  in my tests I was in a mapset different from PERMANENT which leads to
+>>>    elev <- readRAST6("elev_state_500m", ignore.stderr=TRUE)
+>>>    Error in .local(.Object, ...) :
+>>>       GDAL Error 4:
+>>> `/home/neteler/grassdata/nc_spm_07/user1/cellhd/elev_state_500m' does
+>>> not exist in the file system,
+>>> and is not recognised as a supported dataset name.
+>>>
+>>> * use the current region (internally, use r.in.gdal and not the plugin
+>>> if GRASS >= 6.4)
+>>
+>> Markus,
+>>
+>> This is effectively what I've tried to now. However, the user output is:
+>>
+>>> library(spgrass6)
+>>
+>> Loading required package: sp
+>> Loading required package: rgdal
+>> Geospatial Data Abstraction Library extensions to R successfully loaded
+>> Loaded GDAL runtime: GDAL 1.6.0, released 2008/12/04
+>> GDAL_DATA: /home/rsb/lib/r_libs/rgdal/gdal
+>> Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+>> PROJ_LIB: /home/rsb/lib/r_libs/rgdal/proj
+>> GRASS GIS interface loaded with GRASS version: 6.4.0RC1
+>> and location: nc_spm_08
+>>>
+>>> elev <- readRAST6("elev_state_500m")
+>>
+>>           cols            rows origin.northing  origin.easting
+>>          FALSE           FALSE           FALSE           FALSE
+>> ERROR 6: SetColorTable() only supported for Byte or UInt16 bands in TIFF
+>> format.
+>
+> This message *is* confusing as it is a warning only. It comes from GDAL:
+> gdal/frmts/gtiff/geotiff.cpp:                  "SetColorTable() only
+> supportedfor Byte or UInt16 bands in TIFF format." );
+>
+>    if( eDataType != GDT_Byte && eDataType != GDT_UInt16 )
+>    {
+>        CPLError( CE_Failure, CPLE_NotSupported,
+>                  "SetColorTable() only supported for Byte or UInt16
+> bands in TIFF format." );
+>        return CE_Failure;
+>    }
+>
+> I suppose there is some trick to suppress it (since it uses the
+> CPLError function).
+> I don't know too much about it but found
+> http://www.gdal.org/ogr/cpl__error_8h.html#ad2b98dd58e4de706a245faddac90403
+>
+> Just throw stderr stuff to /dev/null (of course problematic with Windows)?
+
+I've "handled" this for some definition of handle by setting -c in the 
+r.out.gdal call - this was controlling whether colour table writing was 
+attempted.
+
+>
+>> WARNING: Input raster map contains cells with NULL-value (no-data). The
+>>         value 999 was used to represent no-data values in the input map.
+>>         You can specify nodata value by nodata parameter.
+>
+> That one comes from r.out.gdal. Indeed a non-feature, see below:
+>
+>> /home/rsb/topics/grassdata/nc_spm_08/rsb/.tmp/reclus2/elev_state_500m has
+>> GDAL driver GTiff
+>> and has 620 rows and 1630 columns
+>> Warning message:
+>> In readRAST6("elev_state_500m") :
+>>  set plugin=FALSE - raster/current window mismatch
+>>  or plugin=TRUE to override; continuing with plugin=FALSE
+>>
+>> which I agree is unhelpful (and most of it cannot be avoided on Windows,
+>> where stderr cannot be ignored). I can work on some of this, but the two
+>> r.out.gdal messages are not on my side. Even if I set GRASS_VERBOSE to 0,
+>> won't they still be displayed?
+>
+> It was implemented as G_warning(). In contact with the person who
+> added this, we have now changed to G_important_message() which
+> respects GRASS_VERBOSE=0:
+>
+> http://trac.osgeo.org/grass/changeset/35321
+>
+> It is in 6.4SVN and 7 SVN and will appear on Monday in 6.4.0RC2.
+> GRASS 6.3 and older are not affected as r.out.gdal wasn't there.
+>
+
+With 6.4SVN I now get:
+
+> library(spgrass6)
+Loading required package: sp
+Loading required package: rgdal
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Loaded GDAL runtime: GDAL 1.6.0, released 2008/12/04
+GDAL_DATA: /home/rsb/lib/r_libs/rgdal/gdal
+Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+PROJ_LIB: /home/rsb/lib/r_libs/rgdal/proj
+GRASS GIS interface loaded with GRASS version: 6.4.0svn
+and location: nc_spm_08
+> elev <- readRAST6("elev_state_500m")
+raster/current region mismatch detected in components:
+            cols            rows origin.northing  origin.easting
+           FALSE           FALSE           FALSE           FALSE
+set plugin=TRUE to override; continuing with plugin=FALSE
+/home/rsb/topics/grassdata/nc_spm_08/rsb/.tmp/reclus2/elev_state_500m has 
+GDAL driver GTiff
+and has 620 rows and 1630 columns
+> elev <- readRAST6("elev_state_500m", ignore.stderr=TRUE)
+>
+
+I've committed to sourceforge CVS, could you confirm that this is OK?
+
+How does one manage the plugin links in a mixed 6.4/7.0 setting? I tried 
+7.0 first, but I think there was a problem:
+
+ERROR: Incompatible library version for module
+
+which crashed R/rgdal. The plugin was built against 6.4RC1, so probably 
+two different library versions had a disagreement.
+
+Best wishes,
+
+Roger
+
+> Thanks,
+> Markus
+>
+>> Roger
+>>
+>>>
+>>> Successfully, I have used today:
+>>> elev <- readRAST6("elev_state_500m", mapset="PERMANENT",
+>>> ignore.stderr=TRUE, plugin=FALSE, useGDAL=TRUE)
+>>>
+>>> which is rather long/complex.
+>>>
+>>> Hope I am not asking too much - try to compensate with GRASS 6.4.x work :)
+>>>
+>>> Markus
+>>>
+>>
+>> --
+>> Roger Bivand
+>> Economic Geography Section, Department of Economics, Norwegian School of
+>> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+>> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+>> e-mail: Roger.Bivand@nhh.no
+>>
+>>
+>
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From neteler at osgeo.org  Sun Jan 11 13:09:54 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sun Jan 11 13:09:57 2009
+Subject: [GRASS-stats] Incompatible library version for module SOLVED but
+	new problem with plugin=TRUE has emerged
+In-Reply-To: <alpine.LRH.2.00.0901111640540.6377@reclus.nhh.no>
+References: <495E15A0.3040708@amu.edu.pl>
+	<86782b610901020803h79d1deafof6370b2650679eb6@mail.gmail.com>
+	<495E5F3E.6010902@amu.edu.pl>
+	<86782b610901022254ref8f617r9e6b6f5ebd46ebcc@mail.gmail.com>
+	<alpine.LRH.2.00.0901031105450.15691@reclus.nhh.no>
+	<86782b610901100520r67c53a79qf0bf444a0ec55a73@mail.gmail.com>
+	<alpine.LRH.2.00.0901102109100.8351@reclus.nhh.no>
+	<86782b610901101347y2a10384cr86661f3e1adada98@mail.gmail.com>
+	<alpine.LRH.2.00.0901111640540.6377@reclus.nhh.no>
+Message-ID: <86782b610901111009g240a759p17f8b55f88ba584e@mail.gmail.com>
+
+On Sun, Jan 11, 2009 at 4:48 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Sat, 10 Jan 2009, Markus Neteler wrote:
+>> On Sat, Jan 10, 2009 at 9:20 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>>> On Sat, 10 Jan 2009, Markus Neteler wrote:
+>>>> On Sat, Jan 3, 2009 at 11:09 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+...
+>> This message *is* confusing as it is a warning only. It comes from GDAL:
+>> gdal/frmts/gtiff/geotiff.cpp:                  "SetColorTable() only
+>> supportedfor Byte or UInt16 bands in TIFF format." );
+>>
+>>   if( eDataType != GDT_Byte && eDataType != GDT_UInt16 )
+>>   {
+>>       CPLError( CE_Failure, CPLE_NotSupported,
+>>                 "SetColorTable() only supported for Byte or UInt16
+>> bands in TIFF format." );
+>>       return CE_Failure;
+>>   }
+>>
+>> I suppose there is some trick to suppress it (since it uses the
+>> CPLError function).
+>> I don't know too much about it but found
+>>
+>> http://www.gdal.org/ogr/cpl__error_8h.html#ad2b98dd58e4de706a245faddac90403
+>>
+>> Just throw stderr stuff to /dev/null (of course problematic with Windows)?
+>
+> I've "handled" this for some definition of handle by setting -c in the
+> r.out.gdal call - this was controlling whether colour table writing was
+> attempted.
+
+ah fine, I didn't think of this possibility.
+
+>>> WARNING: Input raster map contains cells with NULL-value (no-data). The
+>>>        value 999 was used to represent no-data values in the input map.
+>>>        You can specify nodata value by nodata parameter.
+...
+>> http://trac.osgeo.org/grass/changeset/35321
+>>
+>> It is in 6.4SVN and 7 SVN and will appear on Monday in 6.4.0RC2.
+>> GRASS 6.3 and older are not affected as r.out.gdal wasn't there.
+>>
+>
+> With 6.4SVN I now get:
+>
+>> library(spgrass6)
+>
+> Loading required package: sp
+> Loading required package: rgdal
+> Geospatial Data Abstraction Library extensions to R successfully loaded
+> Loaded GDAL runtime: GDAL 1.6.0, released 2008/12/04
+> GDAL_DATA: /home/rsb/lib/r_libs/rgdal/gdal
+> Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+> PROJ_LIB: /home/rsb/lib/r_libs/rgdal/proj
+> GRASS GIS interface loaded with GRASS version: 6.4.0svn
+> and location: nc_spm_08
+>>
+>> elev <- readRAST6("elev_state_500m")
+>
+> raster/current region mismatch detected in components:
+
+may I suggest cosmetics:
+raster map/current region mismatch detected in components:
+?
+
+>           cols            rows origin.northing  origin.easting
+>          FALSE           FALSE           FALSE           FALSE
+> set plugin=TRUE to override; continuing with plugin=FALSE
+> /home/rsb/topics/grassdata/nc_spm_08/rsb/.tmp/reclus2/elev_state_500m has
+> GDAL driver GTiff
+> and has 620 rows and 1630 columns
+>>
+>> elev <- readRAST6("elev_state_500m", ignore.stderr=TRUE)
+>>
+>
+> I've committed to sourceforge CVS, could you confirm that this is OK?
+
+I'll do (tonight I won't manage and I got the mail only now due to
+osgeo mail reflector stuck for some hours).
+Hope tomorrow morning as first thing.
+
+> How does one manage the plugin links in a mixed 6.4/7.0 setting? I tried 7.0
+> first, but I think there was a problem:
+>
+> ERROR: Incompatible library version for module
+>
+> which crashed R/rgdal. The plugin was built against 6.4RC1, so probably two
+> different library versions had a disagreement.
+
+Oh, this is really a problem and needs to be discussed on grass-dev
+or via trac ticket. Glynn had added this test which will cause troubles
+here. Maybe there is a workaround possible.
+
+Thanks for your efforts.
+
+Best wishes,
+Markus
+From neteler at osgeo.org  Sun Jan 11 14:01:27 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sun Jan 11 14:01:30 2009
+Subject: [GRASS-stats] Incompatible library version for module SOLVED but
+	new problem with plugin=TRUE has emerged
+In-Reply-To: <86782b610901111009g240a759p17f8b55f88ba584e@mail.gmail.com>
+References: <495E15A0.3040708@amu.edu.pl>
+	<86782b610901020803h79d1deafof6370b2650679eb6@mail.gmail.com>
+	<495E5F3E.6010902@amu.edu.pl>
+	<86782b610901022254ref8f617r9e6b6f5ebd46ebcc@mail.gmail.com>
+	<alpine.LRH.2.00.0901031105450.15691@reclus.nhh.no>
+	<86782b610901100520r67c53a79qf0bf444a0ec55a73@mail.gmail.com>
+	<alpine.LRH.2.00.0901102109100.8351@reclus.nhh.no>
+	<86782b610901101347y2a10384cr86661f3e1adada98@mail.gmail.com>
+	<alpine.LRH.2.00.0901111640540.6377@reclus.nhh.no>
+	<86782b610901111009g240a759p17f8b55f88ba584e@mail.gmail.com>
+Message-ID: <86782b610901111101x32010804uf85512cbc5f42f78@mail.gmail.com>
+
+On Sun, Jan 11, 2009 at 7:09 PM, Markus Neteler <neteler@osgeo.org> wrote:
+> On Sun, Jan 11, 2009 at 4:48 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> On Sat, 10 Jan 2009, Markus Neteler wrote:
+>>> On Sat, Jan 10, 2009 at 9:20 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>>>> On Sat, 10 Jan 2009, Markus Neteler wrote:
+>>>>> On Sat, Jan 3, 2009 at 11:09 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+...
+> I'll do (tonight I won't manage and I got the mail only now due to
+> osgeo mail reflector stuck for some hours).
+> Hope tomorrow morning as first thing.
+
+I managed to test and it went through well.
+
+>> How does one manage the plugin links in a mixed 6.4/7.0 setting? I tried 7.0
+>> first, but I think there was a problem:
+>>
+>> ERROR: Incompatible library version for module
+>>
+>> which crashed R/rgdal. The plugin was built against 6.4RC1, so probably two
+>> different library versions had a disagreement.
+>
+> Oh, this is really a problem and needs to be discussed on grass-dev
+> or via trac ticket. Glynn had added this test which will cause troubles
+> here. Maybe there is a workaround possible.
+
+This remains open yet.
+
+Thanks again,
+Markus
+From Roger.Bivand at nhh.no  Sun Jan 11 14:43:00 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun Jan 11 14:43:02 2009
+Subject: [GRASS-stats] Incompatible library version for module SOLVED
+	but new problem with plugin=TRUE has emerged
+In-Reply-To: <86782b610901111009g240a759p17f8b55f88ba584e@mail.gmail.com>
+References: <495E15A0.3040708@amu.edu.pl>
+	<86782b610901020803h79d1deafof6370b2650679eb6@mail.gmail.com>
+	<495E5F3E.6010902@amu.edu.pl>
+	<86782b610901022254ref8f617r9e6b6f5ebd46ebcc@mail.gmail.com>
+	<alpine.LRH.2.00.0901031105450.15691@reclus.nhh.no> 
+	<86782b610901100520r67c53a79qf0bf444a0ec55a73@mail.gmail.com>
+	<alpine.LRH.2.00.0901102109100.8351@reclus.nhh.no>
+	<86782b610901101347y2a10384cr86661f3e1adada98@mail.gmail.com>
+	<alpine.LRH.2.00.0901111640540.6377@reclus.nhh.no>
+	<86782b610901111009g240a759p17f8b55f88ba584e@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.0901112041370.7399@reclus.nhh.no>
+
+On Sun, 11 Jan 2009, Markus Neteler wrote:
+
+> On Sun, Jan 11, 2009 at 4:48 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> On Sat, 10 Jan 2009, Markus Neteler wrote:
+>>> On Sat, Jan 10, 2009 at 9:20 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>>>> On Sat, 10 Jan 2009, Markus Neteler wrote:
+>>>>> On Sat, Jan 3, 2009 at 11:09 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> ...
+>>> This message *is* confusing as it is a warning only. It comes from GDAL:
+>>> gdal/frmts/gtiff/geotiff.cpp:                  "SetColorTable() only
+>>> supportedfor Byte or UInt16 bands in TIFF format." );
+>>>
+>>>   if( eDataType != GDT_Byte && eDataType != GDT_UInt16 )
+>>>   {
+>>>       CPLError( CE_Failure, CPLE_NotSupported,
+>>>                 "SetColorTable() only supported for Byte or UInt16
+>>> bands in TIFF format." );
+>>>       return CE_Failure;
+>>>   }
+>>>
+>>> I suppose there is some trick to suppress it (since it uses the
+>>> CPLError function).
+>>> I don't know too much about it but found
+>>>
+>>> http://www.gdal.org/ogr/cpl__error_8h.html#ad2b98dd58e4de706a245faddac90403
+>>>
+>>> Just throw stderr stuff to /dev/null (of course problematic with Windows)?
+>>
+>> I've "handled" this for some definition of handle by setting -c in the
+>> r.out.gdal call - this was controlling whether colour table writing was
+>> attempted.
+>
+> ah fine, I didn't think of this possibility.
+>
+>>>> WARNING: Input raster map contains cells with NULL-value (no-data). The
+>>>>        value 999 was used to represent no-data values in the input map.
+>>>>        You can specify nodata value by nodata parameter.
+> ...
+>>> http://trac.osgeo.org/grass/changeset/35321
+>>>
+>>> It is in 6.4SVN and 7 SVN and will appear on Monday in 6.4.0RC2.
+>>> GRASS 6.3 and older are not affected as r.out.gdal wasn't there.
+>>>
+>>
+>> With 6.4SVN I now get:
+>>
+>>> library(spgrass6)
+>>
+>> Loading required package: sp
+>> Loading required package: rgdal
+>> Geospatial Data Abstraction Library extensions to R successfully loaded
+>> Loaded GDAL runtime: GDAL 1.6.0, released 2008/12/04
+>> GDAL_DATA: /home/rsb/lib/r_libs/rgdal/gdal
+>> Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+>> PROJ_LIB: /home/rsb/lib/r_libs/rgdal/proj
+>> GRASS GIS interface loaded with GRASS version: 6.4.0svn
+>> and location: nc_spm_08
+>>>
+>>> elev <- readRAST6("elev_state_500m")
+>>
+>> raster/current region mismatch detected in components:
+>
+> may I suggest cosmetics:
+> raster map/current region mismatch detected in components:
+> ?
+
+Committed - so you'll see this when you get to it, thanks.
+
+I'll worry about the 6.4 - 7.0 plugin issue when it becomes more pressing 
+for me - for now I'll avoid 7.0.
+
+Best wishes,
+
+Roger
+
+>
+>>           cols            rows origin.northing  origin.easting
+>>          FALSE           FALSE           FALSE           FALSE
+>> set plugin=TRUE to override; continuing with plugin=FALSE
+>> /home/rsb/topics/grassdata/nc_spm_08/rsb/.tmp/reclus2/elev_state_500m has
+>> GDAL driver GTiff
+>> and has 620 rows and 1630 columns
+>>>
+>>> elev <- readRAST6("elev_state_500m", ignore.stderr=TRUE)
+>>>
+>>
+>> I've committed to sourceforge CVS, could you confirm that this is OK?
+>
+> I'll do (tonight I won't manage and I got the mail only now due to
+> osgeo mail reflector stuck for some hours).
+> Hope tomorrow morning as first thing.
+>
+>> How does one manage the plugin links in a mixed 6.4/7.0 setting? I tried 7.0
+>> first, but I think there was a problem:
+>>
+>> ERROR: Incompatible library version for module
+>>
+>> which crashed R/rgdal. The plugin was built against 6.4RC1, so probably two
+>> different library versions had a disagreement.
+>
+> Oh, this is really a problem and needs to be discussed on grass-dev
+> or via trac ticket. Glynn had added this test which will cause troubles
+> here. Maybe there is a workaround possible.
+>
+> Thanks for your efforts.
+>
+> Best wishes,
+> Markus
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From Roger.Bivand at nhh.no  Tue Jan 13 03:23:07 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Jan 13 03:23:14 2009
+Subject: [GRASS-stats] Incompatible library version for module SOLVED
+	but new problem with plugin=TRUE has emerged
+In-Reply-To: <alpine.LRH.2.00.0901112041370.7399@reclus.nhh.no>
+References: <495E15A0.3040708@amu.edu.pl>
+	<86782b610901020803h79d1deafof6370b2650679eb6@mail.gmail.com>
+	<495E5F3E.6010902@amu.edu.pl>
+	<86782b610901022254ref8f617r9e6b6f5ebd46ebcc@mail.gmail.com>
+	<alpine.LRH.2.00.0901031105450.15691@reclus.nhh.no> 
+	<86782b610901100520r67c53a79qf0bf444a0ec55a73@mail.gmail.com>
+	<alpine.LRH.2.00.0901102109100.8351@reclus.nhh.no>
+	<86782b610901101347y2a10384cr86661f3e1adada98@mail.gmail.com>
+	<alpine.LRH.2.00.0901111640540.6377@reclus.nhh.no>
+	<86782b610901111009g240a759p17f8b55f88ba584e@mail.gmail.com>
+	<alpine.LRH.2.00.0901112041370.7399@reclus.nhh.no>
+Message-ID: <alpine.LRH.2.00.0901130909550.19278@reclus.nhh.no>
+
+The changes to handle finding files in other mapsets and to remove 
+confusing messages have been included in spgrass6_0.5-17, now released on 
+CRAN. It checks cleanly against 6.4.0svn, Revision: 35395, so RC2 is good 
+too (this is the svn up number, but the number in Help -> "About GRASS 
+GIS"  in the wxpython GUI is lower - any way to harmonise?).
+
+Roger
+
+
+On Sun, 11 Jan 2009, Roger Bivand wrote:
+
+> On Sun, 11 Jan 2009, Markus Neteler wrote:
+>
+>> On Sun, Jan 11, 2009 at 4:48 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>>> On Sat, 10 Jan 2009, Markus Neteler wrote:
+>>>> On Sat, Jan 10, 2009 at 9:20 PM, Roger Bivand <Roger.Bivand@nhh.no> 
+>>>> wrote:
+>>>>> On Sat, 10 Jan 2009, Markus Neteler wrote:
+>>>>>> On Sat, Jan 3, 2009 at 11:09 AM, Roger Bivand <Roger.Bivand@nhh.no> 
+>>>>>> wrote:
+>> ...
+>>>> This message *is* confusing as it is a warning only. It comes from GDAL:
+>>>> gdal/frmts/gtiff/geotiff.cpp:                  "SetColorTable() only
+>>>> supportedfor Byte or UInt16 bands in TIFF format." );
+>>>>
+>>>>   if( eDataType != GDT_Byte && eDataType != GDT_UInt16 )
+>>>>   {
+>>>>       CPLError( CE_Failure, CPLE_NotSupported,
+>>>>                 "SetColorTable() only supported for Byte or UInt16
+>>>> bands in TIFF format." );
+>>>>       return CE_Failure;
+>>>>   }
+>>>> 
+>>>> I suppose there is some trick to suppress it (since it uses the
+>>>> CPLError function).
+>>>> I don't know too much about it but found
+>>>> 
+>>>> http://www.gdal.org/ogr/cpl__error_8h.html#ad2b98dd58e4de706a245faddac90403
+>>>> 
+>>>> Just throw stderr stuff to /dev/null (of course problematic with 
+>>>> Windows)?
+>>> 
+>>> I've "handled" this for some definition of handle by setting -c in the
+>>> r.out.gdal call - this was controlling whether colour table writing was
+>>> attempted.
+>> 
+>> ah fine, I didn't think of this possibility.
+>> 
+>>>>> WARNING: Input raster map contains cells with NULL-value (no-data). The
+>>>>>        value 999 was used to represent no-data values in the input map.
+>>>>>        You can specify nodata value by nodata parameter.
+>> ...
+>>>> http://trac.osgeo.org/grass/changeset/35321
+>>>> 
+>>>> It is in 6.4SVN and 7 SVN and will appear on Monday in 6.4.0RC2.
+>>>> GRASS 6.3 and older are not affected as r.out.gdal wasn't there.
+>>>> 
+>>> 
+>>> With 6.4SVN I now get:
+>>> 
+>>>> library(spgrass6)
+>>> 
+>>> Loading required package: sp
+>>> Loading required package: rgdal
+>>> Geospatial Data Abstraction Library extensions to R successfully loaded
+>>> Loaded GDAL runtime: GDAL 1.6.0, released 2008/12/04
+>>> GDAL_DATA: /home/rsb/lib/r_libs/rgdal/gdal
+>>> Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+>>> PROJ_LIB: /home/rsb/lib/r_libs/rgdal/proj
+>>> GRASS GIS interface loaded with GRASS version: 6.4.0svn
+>>> and location: nc_spm_08
+>>>> 
+>>>> elev <- readRAST6("elev_state_500m")
+>>> 
+>>> raster/current region mismatch detected in components:
+>> 
+>> may I suggest cosmetics:
+>> raster map/current region mismatch detected in components:
+>> ?
+>
+> Committed - so you'll see this when you get to it, thanks.
+>
+> I'll worry about the 6.4 - 7.0 plugin issue when it becomes more pressing for 
+> me - for now I'll avoid 7.0.
+>
+> Best wishes,
+>
+> Roger
+>
+>>
+>>>           cols            rows origin.northing  origin.easting
+>>>          FALSE           FALSE           FALSE           FALSE
+>>> set plugin=TRUE to override; continuing with plugin=FALSE
+>>> /home/rsb/topics/grassdata/nc_spm_08/rsb/.tmp/reclus2/elev_state_500m has
+>>> GDAL driver GTiff
+>>> and has 620 rows and 1630 columns
+>>>> 
+>>>> elev <- readRAST6("elev_state_500m", ignore.stderr=TRUE)
+>>>> 
+>>> 
+>>> I've committed to sourceforge CVS, could you confirm that this is OK?
+>> 
+>> I'll do (tonight I won't manage and I got the mail only now due to
+>> osgeo mail reflector stuck for some hours).
+>> Hope tomorrow morning as first thing.
+>> 
+>>> How does one manage the plugin links in a mixed 6.4/7.0 setting? I tried 
+>>> 7.0
+>>> first, but I think there was a problem:
+>>> 
+>>> ERROR: Incompatible library version for module
+>>> 
+>>> which crashed R/rgdal. The plugin was built against 6.4RC1, so probably 
+>>> two
+>>> different library versions had a disagreement.
+>> 
+>> Oh, this is really a problem and needs to be discussed on grass-dev
+>> or via trac ticket. Glynn had added this test which will cause troubles
+>> here. Maybe there is a workaround possible.
+>> 
+>> Thanks for your efforts.
+>> 
+>> Best wishes,
+>> Markus
+>> 
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From aloboaleu at gmail.com  Tue Jan 20 13:07:21 2009
+From: aloboaleu at gmail.com (Agustin Lobo)
+Date: Tue Jan 20 13:07:26 2009
+Subject: [GRASS-stats] Passing a parameter from R to r.mapcalc ?
+Message-ID: <497612D9.5000900@gmail.com>
+
+Hi!
+
+I have an script in R that mostly controls the
+flow of grass commands through system()
+I've got stuck at:
+
+for (k in mistat[,1]){
+		system("r.mapcalc 'mancha = if(manchas.clmp==k,1,0)'")
+
+
+is there any way I could pass the value of k to r.mapcalc?
+I was thinking on using the shell through system, something like
+for (k in mistat[,1]){
+		system("set k = @1")
+		system("r.mapcalc 'mancha = if(manchas.clmp==$k,1,0)'")
+
+but do not get thru,
+(perhaps I'm mixing my memories of the csh and the Bourne shell...)
+
+any help?
+
+Agus
+
+-- 
+Dr. Agustin Lobo
+Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+LLuis Sole Sabaris s/n
+08028 Barcelona
+Spain
+Tel. 34 934095410
+Fax. 34 934110012
+email: Agustin.Lobo@ija.csic.es
+http://www.ija.csic.es/gt/obster
+From Roger.Bivand at nhh.no  Tue Jan 20 13:45:39 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Jan 20 13:45:42 2009
+Subject: [GRASS-stats] Passing a parameter from R to r.mapcalc ?
+In-Reply-To: <497612D9.5000900@gmail.com>
+References: <497612D9.5000900@gmail.com>
+Message-ID: <alpine.LRH.2.00.0901201939250.18826@reclus.nhh.no>
+
+On Tue, 20 Jan 2009, Agustin Lobo wrote:
+
+> Hi!
+>
+> I have an script in R that mostly controls the
+> flow of grass commands through system()
+> I've got stuck at:
+>
+> for (k in mistat[,1]){
+> 		system("r.mapcalc 'mancha = if(manchas.clmp==k,1,0)'")
+>
+>
+> is there any way I could pass the value of k to r.mapcalc?
+> I was thinking on using the shell through system, something like
+> for (k in mistat[,1]){
+> 		system("set k = @1")
+> 		system("r.mapcalc 'mancha = if(manchas.clmp==$k,1,0)'")
+>
+> but do not get thru,
+> (perhaps I'm mixing my memories of the csh and the Bourne shell...)
+
+Please don't cross-post - people may not be subscribed to both lists and 
+this may break threads.
+
+The answer is paste(), or possibly a formatting function:
+
+cmd <- paste("r.mapcalc \'mancha = if(manchas.clmp==", formatC(k, ...),
+   ",1,0)\'", sep="")
+cmd
+cat(cmd, "\n")
+system(cmd)
+
+if you need more control of the string going to system(); in my 
+experience, eyeballing cmd is very helpful.
+
+Roger
+
+>
+> any help?
+>
+> Agus
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From neteler at osgeo.org  Wed Jan 21 06:11:55 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Wed Jan 21 06:11:59 2009
+Subject: [GRASS-stats] StatGIS 09 "GeoInformatics for Environmental
+	Surveillance"
+Message-ID: <86782b610901210311h638f0d8cs20c40c113a9cf2d0@mail.gmail.com>
+
+Conference announcement (last call):
+
+StatGIS 09 "GeoInformatics for Environmental Surveillance"
+
+Location: Milos Island, Greece. George Eliopoulos Milos Conference Centre
+Conference Dates: June 17-19, 2009.
+Conference Web Site: http://milos.conferences.gr/statgis2009/
+Contact: statgis2009@heliotopos.net
+
+
+
+Keynote Speakers:
+------------------
+
+We are pleased to announce the following keynote speakers for this event:
+
++ Noel Cressie, Ohio State University: Spatio-Temporal Random Effects Filtering
+
++ Hans Wackernagel, Ecole des Mines de Paris: Data assimilation for
+epidemiological surveillance
+
++ Stefano Nativi, CNR-IMAA, University of Florence: Multidisciplinary
+interoperability architectures, some GEOSS and GMES experiences
+
+
+Conference Overview:
+---------------------
+
+StatGIS is addressed to researchers in academia and research
+institutes, as well as practitioners and industry professionals who
+want to learn about recent developments in spatial statistics and
+their applications, and to share their experiences in these areas.
+Application fields of interest for this conference will include, but
+not be limited, to: spatial environmental modelling, early warning
+monitoring systems for the environment, geostatistics in natural
+hazards prediction, optimum spatial design, space-time analysis and
+renewable energy resources, remote sensing applications in land
+reclamation after mining exploitation, spatial metrics for
+biodiversity assessment and monitoring, etc.
+
+The conference will provide an opportunity for researchers and
+industry to meet and exchange the latest in spatial statistics and
+geoinformatics with an emphasis on the main steps involved in
+environmental monitoring and surveillance. We will start with the
+collection of data from environmental sensors and monitoring networks
+and further discuss their use by the web services and systems involved
+in the processing of the information. The automated analysis of the
+data and the detection of anomalies and changes will also be covered
+before finally addressing the visualization and communication of the
+generated information for efficient decision making.
+
+The international character of the conference will be an opportunity
+to focus on GMES (Global Monitoring for Environment and Security) and
+GEOSS (Global Earth Observation System of Systems) related issues, in
+particular on the need for cost-effective sustainable services.
+StatGIS 2009 will therefore focus on generic solutions, re-usable
+software solutions, in particular Open Source technology, and
+interoperability of systems. Cross-border issues that affect the
+homogeneity of geographic information (INSPIRE) and of global
+environmental monitoring networks as well as the interoperability of
+the systems will also be covered.
+
+Those used to the tradition of StatGIS being an important meeting to
+learn about the latest developments in geostatistics and spatial
+statistics will not be disappointed by the challenges that will be
+discussed in Milos. Statistical issues that will be covered range from
+the analysis of data provided by heterogeneous networks, the automatic
+detection of anomalies for early warning, to the real-time
+interpolation of data collected by mobile devices or the fast
+processing of environmental data for reducing computing times. The
+monitoring of environmental risks using spatial statistics and
+geoinformatics covers a large number of applications. These cover
+issues as different as environmental radioactivity, global change,
+biodiversity, pests, floods, droughts, fires or earthquakes but also
+health risks associated with the spreading of viruses or any health
+threats.
+
+Key papers will be published in a special issue of Computers & Geosciences.
+
+
+Conference Topics
+-------------------
+
+Topic A. Monitoring networks and Sensor Webs
+Topic B. Service Oriented Architectures for Environmental Monitoring
+Topic C. Statistics and spatial metrics for Environmental Monitoring
+Topic D. Open Source tools for Environmental Web Services
+Topic E. Applications and Case Studies
+Topic F. Visualisation and Decision-Making
+Topic G. Socio-economical benefits of Service Oriented Architectures
+for Environmental Monitoring
+
+
+Workshop: "Lessons learned from INTAMAP, an interoperable framework
+for real-time automatic mapping of critical environmental variables"
+
+
+Important dates and deadlines
+-------------------------------
+
+- Friday 13 February 2009 - Abstract submission.
+- Friday 27 February 2009 ? Notification of abstract acceptance
+- Friday 2 April 2009 ? Submission of full papers
+- Friday 24 April 2009 ? End of reviewing
+- Friday 8 May 2009 ? Submission of camera ready copies of corrected papers
+- 17-19 June 2009: Conference in Milos, Greece
+
+
+Conference Fees:
+------------------
+
+Early registration until April 25th
+Students: 150 Euros
+Regular: 300 Euros
+
+Late registration
+Students: 200 Euros
+Regular: 350 Euros
+
+
+Organizing Committee
+---------------------
+
+Cornford, Dan (Aston University, UK)
+Dubois, Gregoire (JRC, European Commission)
+Hristopulos, Dionisis (Technical University of Crete, Greece)
+Pebesma, Edzer (University of M?nster, Germany)
+Pilz, Juergen (University of Klagenfurt, Austria)
+
+
+Scientific Committee
+---------------------
+
+Allard, Denis (INRA, France)
+Atkinson, Peter (University of Southampton, UK)
+Bogaert, Patrick (Universit? Catholique de Louvain, Belgium)
+Brenning, Alexander (University of Waterloo, Canada)
+Brus, Dick (Wageningen University and Research Centre, The Netherlands)
+Christakos, George (San Diego State University, USA)
+Cornford, Dan (Aston University, UK)
+Diggle, Peter (Lancaster University and Johns Hopkins University
+School of Public Health, UK and US)
+Dubois, Gregoire (JRC, European Commission)
+Fortin, Marie-Jos?e (University of Toronto, Canada)
+Ghosh, Sujit K.  (North Carolina State University, USA)
+Goodchild, Michael F. (University of California Santa Barbara, USA)
+Goovaerts Pierre (BioMedware, USA)
+Griffith, Daniel A. (University of Texas at Dallas, USA)
+Havlik, Denis (Austrian Research Centres GmbH - ARC, Austria)
+Heuvelink, Gerard (Wageningen University, The Netherlands)
+Hristopulos, Dionisis (Technical University of Crete, Greece)
+Kyriakidis, Phaedon (University of California Santa Barbara, USA)
+Lark, Murray (Rothamsted Research, UK)
+Myers, Wayne (The Pennsylvania State University, USA)
+Nativi, Stefano (CNR-IMAA, University of Firenze, Italy)
+Neteler, Markus (Fondazione Mach - Centre for Alpine Ecology, Italy)
+Papritz, Andreas (ETH Zurich, Switzerland)
+Patil, Ganapati P. (The Pennsylvania State University, USA)
+Pebesma, Edzer (University of M?nster, Germany)
+Pilz, J?rgen (University of Klagenfurt, Austria)
+Saura, Santiago (Polytechnic University of Madrid, Spain)
+Schaepman, Michael (Wageningen University, The Netherlands)
+Schouppe, Michel (DG INFSO, European Commission)
+Stein, Alfred (ITC, The Netherlands)
+St?hlker, Ulrich (BFS, Germany)
+Switzer, Paul (Stanford University, USA)
+van den Boogaart, Gerald (TU Bergakademie Freiberg, Germany)
+Wackernagel, Hans (Ecole des Mines de Paris, France)
+From sisma66 at tiscali.it  Wed Jan 28 05:02:07 2009
+From: sisma66 at tiscali.it (pierluigi de rosa)
+Date: Wed Jan 28 05:03:13 2009
+Subject: [GRASS-stats] hypsometric integral from ecdf curve
+Message-ID: <1233136927.8868.28.camel@pierluigi-laptop>
+
+Dear All,
+
+I need to evaluate an Hypsometric integral but i should "rotate" the
+graphical output of
+
+plot(ecdf(elev$elev))
+
+I want in x the fraction of observations (pixel value of elevation) that
+are above the elevation in y
+
+the  command: plot(ecdf(elev$elev)) show in x the elevation and in y the
+fraction of observation that are below the value of elevation in x
+
+The value of 1 in plot(ecdf(elev$elev)) correspond to the maximum value
+of elevation. I want the it correspond to the value of minimum.
+
+thanks
+
+Pierluigi
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20090128/199a5315/attachment.html
+From nikos.alexandris at felis.uni-freiburg.de  Wed Jan 28 05:49:32 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed Jan 28 05:47:13 2009
+Subject: [GRASS-stats] Superimpose density plots in R
+Message-ID: <1233139772.7058.6.camel@vertical>
+
+Hi all!
+
+I started playing around with R and GRASS-maps.
+
+I've a couple or raster maps (MODIS bands) in R and what I am trying to
+achieve is to get density plots superimposed in one graph (for the sake
+of easy visual comparison).
+
+The only function that I have found and is able to perform this is
+"sm.density.compare" ( belongs to the "sm" package). Although this
+function works with *other* small (in terms of number of rows) examples,
+for my MODIS bands (~87.000 rows each) I get an empty graph.
+
+Any pointers for this "comparison" task?
+
+Thank you, Nikos
+
+
+
+From jarekj at amu.edu.pl  Wed Jan 28 06:03:06 2009
+From: jarekj at amu.edu.pl (=?ISO-8859-2?Q?Jasiewicz_Jaros=B3aw?=)
+Date: Wed Jan 28 06:03:14 2009
+Subject: [GRASS-stats] Superimpose density plots in R
+In-Reply-To: <1233139772.7058.6.camel@vertical>
+References: <1233139772.7058.6.camel@vertical>
+Message-ID: <49803B6A.1080007@amu.edu.pl>
+
+Nikos Alexandris pisze:
+> Hi all!
+>
+> I started playing around with R and GRASS-maps.
+>
+> I've a couple or raster maps (MODIS bands) in R and what I am trying to
+> achieve is to get density plots superimposed in one graph (for the sake
+> of easy visual comparison).
+>
+> The only function that I have found and is able to perform this is
+> "sm.density.compare" ( belongs to the "sm" package). Although this
+> function works with *other* small (in terms of number of rows) examples,
+> for my MODIS bands (~87.000 rows each) I get an empty graph.
+>
+> Any pointers for this "comparison" task?
+>
+> Thank you, Nikos
+>
+>
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>   
+Hi
+simply use density function with the same bandwith=, from=, to= for each 
+raster and next use lines to add curves for vuisual comparing
+
+for example:
+plot(density(bronze$a_slope,bw=0.1,from=0, to=12), col=2)
+lines(density(neolitic$a_slope,bw=0.1,from=0, to=12), col=1)
+
+Jarek
+From nikos.alexandris at felis.uni-freiburg.de  Wed Jan 28 06:50:18 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed Jan 28 06:47:58 2009
+Subject: [GRASS-stats] Superimpose density plots in R
+In-Reply-To: <49803B6A.1080007@amu.edu.pl>
+References: <1233139772.7058.6.camel@vertical> <49803B6A.1080007@amu.edu.pl>
+Message-ID: <1233143418.7058.39.camel@vertical>
+
+On Wed, 2009-01-28 at 12:03 +0100, Jasiewicz Jaros?aw wrote:
+> Nikos Alexandris pisze:
+> > I've a couple or raster maps (MODIS bands) in R and what I am trying to
+> > achieve is to get density plots superimposed in one graph (for the sake
+> > of easy visual comparison).
+> > Any pointers for this "comparison" task?
+   
+> Hi
+> simply use density function with the same bandwith=, from=, to= for each 
+> raster and next use lines to add curves for vuisual comparing
+
+> for example:
+> plot(density(bronze$a_slope,bw=0.1,from=0, to=12), col=2)
+> lines(density(neolitic$a_slope,bw=0.1,from=0, to=12), col=1)
+> 
+> Jarek
+
+Thanks, of course it works :-). It is soooo easy :D
+Cheers, Nikos
+
+From Roger.Bivand at nhh.no  Wed Jan 28 07:27:02 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Jan 28 07:27:05 2009
+Subject: [GRASS-stats] hypsometric integral from ecdf curve
+In-Reply-To: <1233136927.8868.28.camel@pierluigi-laptop>
+References: <1233136927.8868.28.camel@pierluigi-laptop>
+Message-ID: <alpine.LRH.2.00.0901281319010.27806@reclus.nhh.no>
+
+On Wed, 28 Jan 2009, pierluigi de rosa wrote:
+
+> Dear All,
+>
+> I need to evaluate an Hypsometric integral but i should "rotate" the
+> graphical output of
+>
+> plot(ecdf(elev$elev))
+>
+> I want in x the fraction of observations (pixel value of elevation) that
+> are above the elevation in y
+>
+> the  command: plot(ecdf(elev$elev)) show in x the elevation and in y the
+> fraction of observation that are below the value of elevation in x
+>
+> The value of 1 in plot(ecdf(elev$elev)) correspond to the maximum value
+> of elevation. I want the it correspond to the value of minimum.
+
+It looks as though:
+
+res <- plot.stepfun(ecdf(elev$elev))
+plot(res$y[-1], res$t[-c(1, length(res$t))], xlim=c(1, 0), type="l", 
+ylab="elev", xlab="F(x)")
+
+gets you there. I can't see an argument in the first step to turn plotting 
+off.
+
+Best wishes,
+
+Roger
+
+>
+> thanks
+>
+> Pierluigi
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From debeaudette at ucdavis.edu  Wed Jan 28 15:19:40 2009
+From: debeaudette at ucdavis.edu (Dylan Beaudette)
+Date: Wed Jan 28 15:19:00 2009
+Subject: [GRASS-stats] Superimpose density plots in R
+In-Reply-To: <1233143418.7058.39.camel@vertical>
+References: <1233139772.7058.6.camel@vertical> <49803B6A.1080007@amu.edu.pl>
+	<1233143418.7058.39.camel@vertical>
+Message-ID: <200901281219.40189.dylan.beaudette@gmail.com>
+
+On Wednesday 28 January 2009, Nikos Alexandris wrote:
+> On Wed, 2009-01-28 at 12:03 +0100, Jasiewicz Jaros?aw wrote:
+> > Nikos Alexandris pisze:
+> > > I've a couple or raster maps (MODIS bands) in R and what I am trying to
+> > > achieve is to get density plots superimposed in one graph (for the sake
+> > > of easy visual comparison).
+> > > Any pointers for this "comparison" task?
+> >
+> > Hi
+> > simply use density function with the same bandwith=, from=, to= for each
+> > raster and next use lines to add curves for vuisual comparing
+> >
+> > for example:
+> > plot(density(bronze$a_slope,bw=0.1,from=0, to=12), col=2)
+> > lines(density(neolitic$a_slope,bw=0.1,from=0, to=12), col=1)
+> >
+> > Jarek
+>
+> Thanks, of course it works :-). It is soooo easy :D
+> Cheers, Nikos
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+
+library(lattice)
+densityplot(~ value | group)
+
+-- 
+Dylan Beaudette
+Soil Resource Laboratory
+http://casoilresource.lawr.ucdavis.edu/
+University of California at Davis
+530.754.7341

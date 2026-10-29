@@ -1,0 +1,616 @@
+From carlos.grohmann at gmail.com  Wed Jul  9 21:32:46 2008
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Jul  9 21:32:49 2008
+Subject: [GRASS-stats] counting/sorting lineament lenght according to their
+	azimuth in R
+Message-ID: <bd07447b0807091832i3788445ar51d540400f548d1d@mail.gmail.com>
+
+Hello all
+
+I was laying around with R packages to do some rose plots. I've found
+some, but none gives me what I really want (maybe because they were
+made by climatologists and I am a geologist?)
+
+What I want? 2 kinds of rose plots. One where the size of the petals
+is proporcional to the frequency (number) of lineaments in a given
+direction. Some packages do this, including heR.Misc
+(http://www.exposurescience.org). So far, we're good.
+
+Now the second kind of rose plot. In this one, the size of the petal
+is proporcional to the accumulated length of the lineaments in that
+direction.
+
+The length attribute I get from GRASS, the azimuths, in R (from the
+start_x, start_y, end_x, end_y GRASS gives me)
+
+Now, how can I sort/sum the lengths based on the azimuth?
+
+TIA
+
+carlos
+
+
+
+
+-- 
++-----------------------------------------------------------+
+ Carlos Henrique Grohmann - Guano
+ Geologist M.Sc - Doctorate Student at IGc-USP - Brazil
+Linux User #89721 - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+From jarekj at amu.edu.pl  Thu Jul 10 13:52:50 2008
+From: jarekj at amu.edu.pl (jarekj@amu.edu.pl)
+Date: Thu Jul 10 13:49:02 2008
+Subject: [GRASS-stats] counting/sorting lineament lenght according to
+	their azimuth in R
+In-Reply-To: <bd07447b0807091832i3788445ar51d540400f548d1d@mail.gmail.com>
+Message-ID: <6h0fTHDu.1215712370.5881930.jarekj@amu.edu.pl>
+
+
+try circStats,
+
+http://addictedtor.free.fr/graphiques/RGraphGallery.php?graph=97
+
+Jarek
+
+
+10/7/2008, ""Carlos \"Gu?no\" Grohmann"
+carlos.grohmann@gmail.com"
+<"=?ISO-8859-1?Q?Carlos_\"Gu=E2no\"_Grohmann?="
+carlos.grohmann@gmail.com> napisa?/a:
+
+>Hello all
+>
+>I was laying around with R packages to do some rose plots. I've found
+>some, but none gives me what I really want (maybe because they were
+>made by climatologists and I am a geologist?)
+>
+>What I want? 2 kinds of rose plots. One where the size of the petals
+>is proporcional to the frequency (number) of lineaments in a given
+>direction. Some packages do this, including heR.Misc
+>(http://www.exposurescience.org). So far, we're good.
+>
+>Now the second kind of rose plot. In this one, the size of the petal
+>is proporcional to the accumulated length of the lineaments in that
+>direction.
+>
+>The length attribute I get from GRASS, the azimuths, in R (from the
+>start_x, start_y, end_x, end_y GRASS gives me)
+>
+>Now, how can I sort/sum the lengths based on the azimuth?
+>
+>TIA
+>
+>carlos
+>
+>
+>
+>
+>--
+>+-----------------------------------------------------------+
+> Carlos Henrique Grohmann - Guano
+> Geologist M.Sc - Doctorate Student at IGc-USP - Brazil
+>Linux User #89721 - carlos dot grohmann at gmail dot com
+>+-----------------------------------------------------------+
+>_________________
+>"Good morning, doctors. I have taken the liberty of removing Windows
+>95 from my hard drive."
+>--The winning entry in a "What were HAL's first words" contest judged
+>by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+>
+>Can't stop the signal.
+>_______________________________________________
+>grass-stats mailing list
+>grass-stats@lists.osgeo.org
+>http://lists.osgeo.org/mailman/listinfo/grass-stats
+From carlos.grohmann at gmail.com  Thu Jul 10 15:21:19 2008
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Thu Jul 10 15:21:24 2008
+Subject: [GRASS-stats] counting/sorting lineament lenght according to
+	their azimuth in R
+In-Reply-To: <6h0fTHDu.1215712370.5881930.jarekj@amu.edu.pl>
+References: <bd07447b0807091832i3788445ar51d540400f548d1d@mail.gmail.com>
+	<6h0fTHDu.1215712370.5881930.jarekj@amu.edu.pl>
+Message-ID: <bd07447b0807101221i44648e6am96d1eb6d3aa9a132@mail.gmail.com>
+
+Thanks Jarek, but CircStats only gives me my first need (petals =
+frequency of lineaments). the length of the petals can be adjusted by
+a _constant_ value, not ny the accumulated length.
+
+tks
+
+Carlos
+
+
+
+
+2008/7/10  <jarekj@amu.edu.pl>:
+>
+> try circStats,
+>
+> http://addictedtor.free.fr/graphiques/RGraphGallery.php?graph=97
+>
+> Jarek
+>
+>
+> 10/7/2008, ""Carlos \"Gu?no\" Grohmann"
+> carlos.grohmann@gmail.com"
+> <"=?ISO-8859-1?Q?Carlos_\"Gu=E2no\"_Grohmann?="
+> carlos.grohmann@gmail.com> napisa?/a:
+>
+>>Hello all
+>>
+>>I was laying around with R packages to do some rose plots. I've found
+>>some, but none gives me what I really want (maybe because they were
+>>made by climatologists and I am a geologist?)
+>>
+>>What I want? 2 kinds of rose plots. One where the size of the petals
+>>is proporcional to the frequency (number) of lineaments in a given
+>>direction. Some packages do this, including heR.Misc
+>>(http://www.exposurescience.org). So far, we're good.
+>>
+>>Now the second kind of rose plot. In this one, the size of the petal
+>>is proporcional to the accumulated length of the lineaments in that
+>>direction.
+>>
+>>The length attribute I get from GRASS, the azimuths, in R (from the
+>>start_x, start_y, end_x, end_y GRASS gives me)
+>>
+>>Now, how can I sort/sum the lengths based on the azimuth?
+>>
+>>TIA
+>>
+>>carlos
+>>
+>>
+>>
+>>
+>>--
+>>+-----------------------------------------------------------+
+>> Carlos Henrique Grohmann - Guano
+>> Geologist M.Sc - Doctorate Student at IGc-USP - Brazil
+>>Linux User #89721 - carlos dot grohmann at gmail dot com
+>>+-----------------------------------------------------------+
+>>_________________
+>>"Good morning, doctors. I have taken the liberty of removing Windows
+>>95 from my hard drive."
+>>--The winning entry in a "What were HAL's first words" contest judged
+>>by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+>>
+>>Can't stop the signal.
+>>_______________________________________________
+>>grass-stats mailing list
+>>grass-stats@lists.osgeo.org
+>>http://lists.osgeo.org/mailman/listinfo/grass-stats
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+
+
+-- 
++-----------------------------------------------------------+
+ Carlos Henrique Grohmann - Guano
+ Geologist M.Sc - Doctorate Student at IGc-USP - Brazil
+Linux User #89721 - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+From carlos.grohmann at gmail.com  Fri Jul 11 14:33:59 2008
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Fri Jul 11 14:34:03 2008
+Subject: [GRASS-stats] Trend-surface analysis with GRASS+R: did something
+	changed in sp package?
+Message-ID: <bd07447b0807111133j77affa62hf9094c4e1a1a1bc0@mail.gmail.com>
+
+Hi all (sorry for cross-posting)
+
+I trying to do some trend-surface analysis in R using the spatial
+package (so I can go up to order 6). It's been a while since the last
+I did it, and my previously used steps are not working this time:
+
+
+>R
+>library(spgrass6)
+>library(spatial)
+>G<-gmeta6()
+
+
+>G
+gisdbase    /home/guano/grassdata
+location    amsul_wgs84
+mapset      brasil
+rows        3120
+columns     2640
+north       0
+south       -26
+west        -56
+east        -34
+nsres       0.00833333
+ewres       0.00833333
+projection  +proj=longlat +a=6378137 +rf=298.257223563 +no_defs
++towgs84=0.000,0.000,0.000
+
+# GridTopology with 0.1 degree resolution
+
+>grd <- GridTopology(cellcentre.offset=c(-55, -25), cellsize=c(0.1,0.1), cells.dim=c(560, 230));
+
+#here is my data:
+>aftaSE <- readVECT6("afta_SE")
+
+# first-order TSA
+>idade1<-surf.ls(1,x=coords[,1], y=coords[,2], z=aftaSE$idade)
+
+~so far, so good. now I want to get things as SpatialGridDataFrame, so
+I can get them back into GRASS:
+
+>resid1<-residuals(idade1);
+>resid2<-as.data.frame(resid1);
+>resid.trend<-SpatialPointsDataFrame(coords,resid2);
+
+>resid.img <- SpatialGridDataFrame(grd, resid.trend);
+Error in validObject(.Object) :
+  invalid class "SpatialGridDataFrame" object: invalid object for slot
+"data" in class "SpatialGridDataFrame": got class
+"SpatialPointsDataFrame", should be or extend class "data.frame"
+
+
+This is where I stopped. I had these steps from emails in this list,
+and I remember they used to work. Has anything changed I am not aware
+of?
+
+TIA
+
+Carlos
+
+
+-- 
++-----------------------------------------------------------+
+ Carlos Henrique Grohmann - Guano
+ Geologist M.Sc - Doctorate Student at IGc-USP - Brazil
+Linux User #89721 - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+From jarekj at amu.edu.pl  Fri Jul 11 15:32:57 2008
+From: jarekj at amu.edu.pl (jarekj@amu.edu.pl)
+Date: Fri Jul 11 15:29:06 2008
+Subject: [GRASS-stats] counting/sorting lineament lenght according to
+	their azimuth in R
+In-Reply-To: <bd07447b0807101221i44648e6am96d1eb6d3aa9a132@mail.gmail.com>
+Message-ID: <GUY71yDW.1215804777.5160300.jarekj@amu.edu.pl>
+
+
+Yes, to your second problem try to use combination on table() and cut()
+function, unfortunatly I cannot send you sample of my code where I use 
+to the same problem because I'm far from my computer.. (
+btw: it is far from your question but for that problem I rather used
+readVECT6() and than lm() on imported vector structure instead start and
+end x y from grass. It gives better results on irregular or curved
+lineament.. the sample code is somewhere on the list...
+Jarek
+
+10/7/2008, ""Carlos \"Gu?no\" Grohmann"
+carlos.grohmann@gmail.com"
+<"=?ISO-8859-1?Q?Carlos_\"Gu=E2no\"_Grohmann?="
+carlos.grohmann@gmail.com> napisa?/a:
+
+>Thanks Jarek, but CircStats only gives me my first need (petals =
+>frequency of lineaments). the length of the petals can be adjusted by
+>a _constant_ value, not ny the accumulated length.
+>
+>tks
+>
+>Carlos
+>
+>
+>
+>
+>2008/7/10  <jarekj@amu.edu.pl>:
+>>
+>> try circStats,
+>>
+>> http://addictedtor.free.fr/graphiques/RGraphGallery.php?graph=97
+>>
+>> Jarek
+>>
+>>
+>> 10/7/2008, ""Carlos \"Gu?no\" Grohmann"
+>> carlos.grohmann@gmail.com"
+>> <"=?ISO-8859-1?Q?Carlos_\"Gu=E2no\"_Grohmann?="
+>> carlos.grohmann@gmail.com> napisa?/a:
+>>
+>>>Hello all
+>>>
+>>>I was laying around with R packages to do some rose plots. I've found
+>>>some, but none gives me what I really want (maybe because they were
+>>>made by climatologists and I am a geologist?)
+>>>
+>>>What I want? 2 kinds of rose plots. One where the size of the petals
+>>>is proporcional to the frequency (number) of lineaments in a given
+>>>direction. Some packages do this, including heR.Misc
+>>>(http://www.exposurescience.org). So far, we're good.
+>>>
+>>>Now the second kind of rose plot. In this one, the size of the petal
+>>>is proporcional to the accumulated length of the lineaments in that
+>>>direction.
+>>>
+>>>The length attribute I get from GRASS, the azimuths, in R (from the
+>>>start_x, start_y, end_x, end_y GRASS gives me)
+>>>
+>>>Now, how can I sort/sum the lengths based on the azimuth?
+>>>
+>>>TIA
+>>>
+>>>carlos
+>>>
+>>>
+>>>
+>>>
+>>>--
+>>>+-----------------------------------------------------------+
+>>> Carlos Henrique Grohmann - Guano
+>>> Geologist M.Sc - Doctorate Student at IGc-USP - Brazil
+>>>Linux User #89721 - carlos dot grohmann at gmail dot com
+>>>+-----------------------------------------------------------+
+>>>_________________
+>>>"Good morning, doctors. I have taken the liberty of removing Windows
+>>>95 from my hard drive."
+>>>--The winning entry in a "What were HAL's first words" contest judged
+>>>by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+>>>
+>>>Can't stop the signal.
+>>>_______________________________________________
+>>>grass-stats mailing list
+>>>grass-stats@lists.osgeo.org
+>>>http://lists.osgeo.org/mailman/listinfo/grass-stats
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>
+>
+>
+>-- 
+>+-----------------------------------------------------------+
+> Carlos Henrique Grohmann - Guano
+> Geologist M.Sc - Doctorate Student at IGc-USP - Brazil
+>Linux User #89721 - carlos dot grohmann at gmail dot com
+>+-----------------------------------------------------------+
+>_________________
+>"Good morning, doctors. I have taken the liberty of removing Windows
+>95 from my hard drive."
+>--The winning entry in a "What were HAL's first words" contest judged
+>by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+>
+>Can't stop the signal.
+>
+From doon75 at hotmail.com  Tue Jul 22 14:29:56 2008
+From: doon75 at hotmail.com (darren norris)
+Date: Tue Jul 22 14:31:07 2008
+Subject: [GRASS-stats] using R with windows native installer GRASS 6.3
+Message-ID: <BLU108-DAV5D562FF4D986A74744BFBC7850@phx.gbl>
+
+Dear all,
+
+Looking for "getting started" type help.
+
+I am using GRASS 6.3.0 (windows native installer) on vista. I want to run R
+in GRASS and can't understand how to do it.
+
+ 
+
+Can anyone explain how to use R (I have the appropriate packages) within
+this GRASS set up. I have tried typing R into a GRASS command line
+(-accessed from the ADD COMMAND LINE button), nothing. No idea if it's
+connected or not or how to add the code I need, whether the command line is
+working or not.
+
+ 
+
+Answers for an idiot would be a great help (e.g. push x button then type y).
+
+
+ 
+
+I have looked through the online docs by Roger Bivand and Markus Neetler but
+can't see any guide for the windows native implementation showing how to run
+R from within GRASS - I have seen code examples but not where / how to
+actually type the code which is my main problem! Also can't find any
+tutorials etc either in GRASS or R online docs (I can only access freely
+available online pdf's - I'm part of a conservation NGO and have no
+institutional access to journals / books etc).
+
+ 
+
+Many thanks,
+
+Darren
+
+ 
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20080722/426fe796/attachment.html
+From Roger.Bivand at nhh.no  Tue Jul 22 15:25:17 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Jul 22 15:25:21 2008
+Subject: [GRASS-stats] using R with windows native installer GRASS 6.3
+In-Reply-To: <BLU108-DAV5D562FF4D986A74744BFBC7850@phx.gbl>
+	<E4A4DE83B0D14209B82D047F41478447@DarrenPC>
+References: <BLU108-DAV5D562FF4D986A74744BFBC7850@phx.gbl> 
+	<E4A4DE83B0D14209B82D047F41478447@DarrenPC>
+Message-ID: <Pine.LNX.4.64.0807222111590.13187@reclus.nhh.no>
+
+On Tue, 22 Jul 2008, darren norris wrote:
+
+> Dear all,
+>
+> Looking for "getting started" type help.
+>
+> I am using GRASS 6.3.0 (windows native installer) on vista. I want to 
+> run R in GRASS and can't understand how to do it.
+>
+>
+>
+> Can anyone explain how to use R (I have the appropriate packages) within
+> this GRASS set up. I have tried typing R into a GRASS command line
+> (-accessed from the ADD COMMAND LINE button), nothing. No idea if it's
+> connected or not or how to add the code I need, whether the command line is
+> working or not.
+>
+>
+>
+> Answers for an idiot would be a great help (e.g. push x button then type y).
+>
+
+On my native Windows GRASS, 6.3.0 release, TclTk (wish) interface, I enter 
+the full path to R - either "C:/Program Files/R/R-2.7.1/bin/R" (command 
+line) or "C:/Program Files/R/R-2.7.1/bin/Rgui", and click either "Run" or 
+"Run (background)", in the window named "Output - GIS.m", bottom pane.
+
+You can find the correct path for your R in the properties of the R 
+desktop icon. Use quotes if the path contains blanks, and forward slashes 
+to avoid back slashes in the path being misinterpreted.
+
+I have R_LIBS set as a user specific environment variable, so don't need 
+to add this. I'm not sure what ADD COMMAND LINE is, but if it is ADD 
+COMMAND LAYER, this is not the right place.
+
+Hope this helps,
+
+Roger
+
+>
+>
+>
+> I have looked through the online docs by Roger Bivand and Markus Neetler but
+> can't see any guide for the windows native implementation showing how to run
+> R from within GRASS - I have seen code examples but not where / how to
+> actually type the code which is my main problem! Also can't find any
+> tutorials etc either in GRASS or R online docs (I can only access freely
+> available online pdf's - I'm part of a conservation NGO and have no
+> institutional access to journals / books etc).
+>
+>
+>
+> Many thanks,
+>
+> Darren
+>
+>
+>
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From glynn at gclements.plus.com  Wed Jul 23 09:34:09 2008
+From: glynn at gclements.plus.com (Glynn Clements)
+Date: Wed Jul 23 09:34:29 2008
+Subject: [GRASS-stats] Re: [GRASS-windows] Re: Build GRASS with MySQL
+	support enabled
+In-Reply-To: <A4FB2886636841548388BC146DD7CF84@HPMarco>
+References: <BLU108-DAV5D562FF4D986A74744BFBC7850@phx.gbl>
+	<5C4D4B53C8524D4F9B369B8088E4DB63@HPMarco>
+	<563A0F86B8E048D0AD1EE23E3F30998A@HPMarco>
+	<8D01D86DCB2D4956B9427AEA80343435@HPMarco>
+	<B7D00FECC36E48E2AC6DA134783E64C5@HPMarco>
+	<A4FB2886636841548388BC146DD7CF84@HPMarco>
+Message-ID: <18567.13137.603858.218475@cerise.gclements.plus.com>
+
+
+Marco Pasetti wrote:
+
+> > ok, after some tricks and trials, configure worked; now I'm compiling... I 
+> > hope it will work :)
+> 
+> unfortunately it didn't work :(
+> I attacched the error messages as a txt file; I hope that someone else could 
+> help us.
+
+> gcc -I/usr/local/src/grass-6.3.0-test/dist.i686-pc-mingw32/include -I/usr/local/include -g -O2  -I/usr/local/include  -I/usr/local/mysql/include -I/usr/local/tcl-tk/include -I/usr/local/tcl-tk/include   -DPACKAGE=\"\" -I../../../lib/db/dbmi_driver -I/usr/local/src/grass-6.3.0-test/dist.i686-pc-mingw32/include -o OBJ.i686-pc-mingw32/create_table.o -c create_table.c
+> In file included from C:/MSYS/local/mysql/include/mysql.h:72,
+>                  from globals.h:1,
+>                  from create_table.c:15:
+> C:/MSYS/local/mysql/include/mysql_com.h:183: error: syntax error before "SOCKET"
+
+I suspect that mysql.h expects you to have included some windows
+headers (e.g. <windows.h> or <winsock.h>) beforehand.
+
+Also:
+
+http://dev.mysql.com/doc/refman/5.1/en/windows-client-compiling.html
+
+-- 
+Glynn Clements <glynn@gclements.plus.com>
+From glynn at gclements.plus.com  Wed Jul 23 09:56:52 2008
+From: glynn at gclements.plus.com (Glynn Clements)
+Date: Wed Jul 23 09:57:01 2008
+Subject: [GRASS-stats] Re: [GRASS-windows] Re: Build GRASS with MySQL
+	support enabled
+In-Reply-To: <AC49A3C27F2C401896E2457FCB33FA29@HPMarco>
+References: <BLU108-DAV5D562FF4D986A74744BFBC7850@phx.gbl>
+	<5C4D4B53C8524D4F9B369B8088E4DB63@HPMarco>
+	<563A0F86B8E048D0AD1EE23E3F30998A@HPMarco>
+	<8D01D86DCB2D4956B9427AEA80343435@HPMarco>
+	<B7D00FECC36E48E2AC6DA134783E64C5@HPMarco>
+	<A4FB2886636841548388BC146DD7CF84@HPMarco>
+	<18567.13137.603858.218475@cerise.gclements.plus.com>
+	<AC49A3C27F2C401896E2457FCB33FA29@HPMarco>
+Message-ID: <18567.14500.983624.978079@cerise.gclements.plus.com>
+
+
+Marco Pasetti wrote:
+
+> > I suspect that mysql.h expects you to have included some windows
+> > headers (e.g. <windows.h> or <winsock.h>) beforehand.
+> >
+> > Also:
+> >
+> > http://dev.mysql.com/doc/refman/5.1/en/windows-client-compiling.html
+> 
+> perfect! thanks
+> 
+> windows-client-compiling.html says: "You can either link your code with the 
+> dynamic libmysql.lib library, which is just a wrapper to load in 
+> libmysql.dll on demand"
+> 
+> I will try this before to add #include <my_global.h> to grass sources
+
+Obviously, that isn't going to help.
+
+What you subsequently choose to link will have no effect upon any
+compilation issues. Libraries only matter if you actually get as far
+as linking, and right now you aren't getting as far as linking.
+
+-- 
+Glynn Clements <glynn@gclements.plus.com>

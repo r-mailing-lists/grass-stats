@@ -1,0 +1,427 @@
+From Thomas.Adams at noaa.gov  Tue Feb  3 14:07:33 2004
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] questions regarding GRASS/gstat
+Message-ID: <401FF175.9000707@noaa.gov>
+
+I have been attempting to use gstat within GRASS and have had success up 
+to a point. I am attempting to estimate precipitation over a large river 
+basin (~450000 sq km) from monthly (not mean monthly) point values. I'm 
+working with a Lambert Conic Conformal grid region with a ~5 km grid 
+spacing (the x & y spacings are slightly different). My orginal dataset 
+has nearly 500 data points, but some were too close together (actually 
+coincident points with different IDs), so I wrote a program to eliminate 
+points that were too close, <7.5 km. I have increased this threshold 
+several times, to 50 km and still get a gstat error when I attempt the 
+ordinary kriging, which says that I have a "matrix library error: 
+singular matrix".
+
+I must be doing something wrong since my once nearly 500 station 
+locations is now ~100! One other note, is that gstat reports that some 
+of my stations lie outside my mask region (the river basin boundary), 
+but I don't see that this should be a problem, is it?
+
+Also, I can run the Maas data example from the "Open Source GIS" book by 
+Neteler & Mitasova without problems.
+
+I am running GRASS 5.0.3 and gstat 2.4.3 on Linux.
+
+Regards,
+Tom
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+
+
+From e.pebesma at geog.uu.nl  Wed Feb  4 03:16:57 2004
+From: e.pebesma at geog.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] questions regarding GRASS/gstat
+In-Reply-To: <401FF175.9000707@noaa.gov>
+References: <401FF175.9000707@noaa.gov>
+Message-ID: <4020AA79.7020605@geog.uu.nl>
+
+
+Thomas Adams wrote:
+
+> I have been attempting to use gstat within GRASS and have had success 
+> up to a point. I am attempting to estimate precipitation over a large 
+> river basin (~450000 sq km) from monthly (not mean monthly) point 
+> values. I'm working with a Lambert Conic Conformal grid region with a 
+> ~5 km grid spacing (the x & y spacings are slightly different). My 
+> orginal dataset has nearly 500 data points, but some were too close 
+> together (actually coincident points with different IDs), so I wrote a 
+> program to eliminate points that were too close, <7.5 km. I have 
+> increased this threshold several times, to 50 km and still get a gstat 
+> error when I attempt the ordinary kriging, which says that I have a 
+> "matrix library error: singular matrix".
+>
+> I must be doing something wrong since my once nearly 500 station 
+> locations is now ~100! One other note, is that gstat reports that some 
+> of my stations lie outside my mask region (the river basin boundary), 
+> but I don't see that this should be a problem, is it? 
+
+Once you end up with a singular covariance matrix, it is pretty hard
+(and gstat does not attempt) to find out the reason why it occurs.
+Possible reasons are (as you said): duplicate observations -- gstat
+can catch them by taking their average, using something like:
+
+data(rainfall): 'rainfall', ... , average=1;
+
+other reasons may be the variogram model you use: the Gaussian
+model often leads to singular models, and some authors (M. Stein)
+argue not to use it at all; other models, such as linear-with-sill
+should be avoided in 2D or 3D situations, but gstat does not check
+this.
+
+Let me know if this didn't help.
+--
+Edzer
+
+
+From Thomas.Adams at noaa.gov  Fri Feb  6 07:54:45 2004
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] questions regarding GRASS/gstat
+In-Reply-To: <4020AA79.7020605@geog.uu.nl>
+References: <401FF175.9000707@noaa.gov> <4020AA79.7020605@geog.uu.nl>
+Message-ID: <40238E95.4020205@noaa.gov>
+
+Edzer,
+
+Thank you for your response. The models I have tried are: Spherical, 
+Exponential, and Power, nothing else. Poizot Emmanuel, in his response, 
+said that in his experience, one must not have points outside the mask 
+area. I have not tried this as yet. When I do I let both you and Pouzot 
+know what happened.
+
+Regards,
+Tom
+
+
+Edzer J. Pebesma wrote:
+
+>
+>
+> Thomas Adams wrote:
+>
+>> I have been attempting to use gstat within GRASS and have had success 
+>> up to a point. I am attempting to estimate precipitation over a large 
+>> river basin (~450000 sq km) from monthly (not mean monthly) point 
+>> values. I'm working with a Lambert Conic Conformal grid region with a 
+>> ~5 km grid spacing (the x & y spacings are slightly different). My 
+>> orginal dataset has nearly 500 data points, but some were too close 
+>> together (actually coincident points with different IDs), so I wrote 
+>> a program to eliminate points that were too close, <7.5 km. I have 
+>> increased this threshold several times, to 50 km and still get a 
+>> gstat error when I attempt the ordinary kriging, which says that I 
+>> have a "matrix library error: singular matrix".
+>>
+>> I must be doing something wrong since my once nearly 500 station 
+>> locations is now ~100! One other note, is that gstat reports that 
+>> some of my stations lie outside my mask region (the river basin 
+>> boundary), but I don't see that this should be a problem, is it? 
+>
+>
+> Once you end up with a singular covariance matrix, it is pretty hard
+> (and gstat does not attempt) to find out the reason why it occurs.
+> Possible reasons are (as you said): duplicate observations -- gstat
+> can catch them by taking their average, using something like:
+>
+> data(rainfall): 'rainfall', ... , average=1;
+>
+> other reasons may be the variogram model you use: the Gaussian
+> model often leads to singular models, and some authors (M. Stein)
+> argue not to use it at all; other models, such as linear-with-sill
+> should be avoided in 2D or 3D situations, but gstat does not check
+> this.
+>
+> Let me know if this didn't help.
+> -- 
+> Edzer
+>
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+
+
+From e.pebesma at geog.uu.nl  Fri Feb  6 08:36:19 2004
+From: e.pebesma at geog.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] questions regarding GRASS/gstat
+In-Reply-To: <40238E95.4020205@noaa.gov>
+References: <401FF175.9000707@noaa.gov> <4020AA79.7020605@geog.uu.nl> <40238E95.4020205@noaa.gov>
+Message-ID: <40239853.4000708@geog.uu.nl>
+
+Points outside the mask area can't hurt.
+
+I can't help you without looking at your data,
+mask, and command file.
+--
+Edzer
+
+Thomas Adams wrote:
+
+> Edzer,
+>
+> Thank you for your response. The models I have tried are: Spherical, 
+> Exponential, and Power, nothing else. Poizot Emmanuel, in his 
+> response, said that in his experience, one must not have points 
+> outside the mask area. I have not tried this as yet. When I do I let 
+> both you and Pouzot know what happened.
+>
+> Regards,
+> Tom
+>
+>
+> Edzer J. Pebesma wrote:
+>
+>>
+>>
+>> Thomas Adams wrote:
+>>
+>>> I have been attempting to use gstat within GRASS and have had 
+>>> success up to a point. I am attempting to estimate precipitation 
+>>> over a large river basin (~450000 sq km) from monthly (not mean 
+>>> monthly) point values. I'm working with a Lambert Conic Conformal 
+>>> grid region with a ~5 km grid spacing (the x & y spacings are 
+>>> slightly different). My orginal dataset has nearly 500 data points, 
+>>> but some were too close together (actually coincident points with 
+>>> different IDs), so I wrote a program to eliminate points that were 
+>>> too close, <7.5 km. I have increased this threshold several times, 
+>>> to 50 km and still get a gstat error when I attempt the ordinary 
+>>> kriging, which says that I have a "matrix library error: singular 
+>>> matrix".
+>>>
+>>> I must be doing something wrong since my once nearly 500 station 
+>>> locations is now ~100! One other note, is that gstat reports that 
+>>> some of my stations lie outside my mask region (the river basin 
+>>> boundary), but I don't see that this should be a problem, is it? 
+>>
+>>
+>>
+>> Once you end up with a singular covariance matrix, it is pretty hard
+>> (and gstat does not attempt) to find out the reason why it occurs.
+>> Possible reasons are (as you said): duplicate observations -- gstat
+>> can catch them by taking their average, using something like:
+>>
+>> data(rainfall): 'rainfall', ... , average=1;
+>>
+>> other reasons may be the variogram model you use: the Gaussian
+>> model often leads to singular models, and some authors (M. Stein)
+>> argue not to use it at all; other models, such as linear-with-sill
+>> should be avoided in 2D or 3D situations, but gstat does not check
+>> this.
+>>
+>> Let me know if this didn't help.
+>> -- 
+>> Edzer
+>>
+>
+
+
+From Roger.Bivand at nhh.no  Fri Feb  6 15:02:03 2004
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Fresh release (0.2-15) of R/GRASS interface on CRAN
+Message-ID: <Pine.LNX.4.44.0402062049340.15321-100000@reclus.nhh.no>
+
+I do not usually advertise revisions of the R/GRASS interface - this time
+is an exception, because it corrects a possibly serious and misleading
+bug in displaying data within R. 
+
+The plot method for grassmeta objects accepts a breaks= argument, but
+until the present release, this argument was not being used in all
+situations correctly by the underlying image() function painting the
+raster values. This meant that when a legend was made using the assigned
+breaks, the legend was correct, but the spatial distribution of painted
+values was not necessarily so. How far they differed depended on the data.  
+
+I believe that this bug is now fixed, but would welcome reports and
+comments.
+
+I apologise for any inconvenience,
+
+Roger
+
+-- 
+Roger Bivand
+Econonic Geography Section, Department of Economics, Norwegian School of 
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen, 
+Norway, voice: +47-55959355, fax: +47-55959393; Roger.Bivand@nhh.no
+
+
+
+From rn001 at cebas.csic.es  Fri Feb  6 15:18:09 2004
+From: rn001 at cebas.csic.es (javier garcia - CEBAS)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] statistics about areas.
+Message-ID: <200402062017.i16KHrT19086@natura.cebas.csic.es>
+
+Hi all.
+I can't focus a problem in a right way. Perhaps someone could give me some 
+hints.
+
+I've got three maps:
+* vector map of areas representing subwatersheds 
+* raster map of soil types
+* raster map of land uses
+(well, I could transform the vector files into raster if it is needed)
+
+In order to run an hydrologic model I need to know for every subwatershed, 
+the area of every different combination of soil-landuse.
+
+I've also got Postgres tables that says what kind (label) of land use 
+corresponds to each code, and the same for the different soil types.
+
+So I would like to create some kind of report that could find all 
+combinations for every subwatershed and say something like:
+
+COMBINATION   SUBWATERSHED   AREA(ha) 
+soil1-landuse1       1                         45
+soil1-landuse2       1                         185
+soil2-landuse1        1                        54
+soil1-landuse5        2                        32
+...
+for all watersheds
+
+I've thought that perhaps with the help of R (or R-Postgres in someway) this 
+could be possible but I can't find my way.
+
+Thanks a lot for your ideas,
+
+Best wishes,
+
+Javier
+
+  
+
+
+From swlab at cornell.edu  Fri Feb  6 16:04:15 2004
+From: swlab at cornell.edu (SWlab)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Re: [GRASSLIST:2500] statistics about areas.
+In-Reply-To: <200402062017.i16KHrT19086@natura.cebas.csic.es>
+References: <200402062017.i16KHrT19086@natura.cebas.csic.es>
+Message-ID: <200402061604.15061.swlab@cornell.edu>
+
+[Friday 06 February 2004 15:18] From javier garcia - CEBAS
+
+> In order to run an hydrologic model I need to know for every subwatershed,
+> the area of every different combination of soil-landuse.
+
+First shot:
+v.to.rast i=subwatersheds o=rasterofsubwatersheds
+
+r.volume d=rastersoil c=rasterofsubwatersheds
+
+or
+
+r.stats rastersubwatersheds,rastersoil,rasterLU
+
+
+From massimiliano.cannata at supsi.ch  Thu Feb 26 05:16:21 2004
+From: massimiliano.cannata at supsi.ch (Massimiliano Cannata)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] ROracle problem....
+In-Reply-To: <20031204190655.6015a0a9.hamish_nospam@yahoo.com>
+References: <20031204190655.6015a0a9.hamish_nospam@yahoo.com>
+Message-ID: <403DC775.2070602@supsi.ch>
+
+Hi, i have a problem running ROracle library.
+I have set all the $ORACLE_HOME and $PATH variable, my Oracle installation goes fine but when i try to lunch:
+library("ROracle")
+it gives me an error message:
+unable to load shared library  /usr/lib/R/library/ROracle/libs/ROracle.so":
+/usr/lib/R/library/ROracle/libs/ROracle.so: undefined symbol: sqlca
+Error in library("ROracle") : .First.lib failed
+Any idea about what to do?
+I sow a couple of messages with this error but the solution suggested doesn't seems to work for me!
+
+here my packages:
+- ROracle_0.5-3
+- DBI_0.1-7
+- RedHat9
+- Oracle9iR2
+
+Thanks you all.
+Maxi
+-------------
+Ing.  Massimiliano Cannata
+Istituto di Scienze della Terra - SUPSI
+C.P. 72 - CH-6952 Canobbio (Ticino, Switzerland)
+Tel +41 91 /935 12 25 - Fax +41 91 /935 12 09
+eMail: massimiliano.cannata@supsi.ch
+Internet: http://www.ist.supsi.ch
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20040226/281ac5f2/attachment.html
+From massimiliano.cannata at supsi.ch  Thu Feb 26 05:24:19 2004
+From: massimiliano.cannata at supsi.ch (Massimiliano Cannata)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] ROracle problm
+Message-ID: <403DC953.8080306@supsi.ch>
+
+Hi, i have a problem running ROracle library.
+I have set all the $ORACLE_HOME and $PATH variable, my Oracle installation goes fine but when i try to lunch:
+library("ROracle")
+it gives me an error message:
+unable to load shared library  /usr/lib/R/library/ROracle/libs/ROracle.so":
+/usr/lib/R/library/ROracle/libs/ROracle.so: undefined symbol: sqlca
+Error in library("ROracle") : .First.lib failed
+Any idea about what to do?
+I sow a couple of messages with this error but the solution suggested doesn't seems to work for me!
+
+here my packages:
+- ROracle_0.5-3
+- DBI_0.1-7
+- RedHat9
+- Oracle9iR2
+
+Thanks you all.
+Maxi
+
+-------------
+Ing.  Massimiliano Cannata
+Istituto di Scienze della Terra - SUPSI
+C.P. 72 - CH-6952 Canobbio (Ticino, Switzerland)
+Tel +41 91 /935 12 25 - Fax +41 91 /935 12 09
+eMail: massimiliano.cannata@supsi.ch
+Internet: http://www.ist.supsi.ch
+
+-- 
+-------------
+note: change my e-mail reference to massimiliano.cannata@supsi.ch
+      because the old one will be deleted soon.
+-------------
+Ing.  Massimiliano Cannata
+Istituto di Scienze della Terra - SUPSI
+C.P. 72 - CH-6952 Canobbio (Ticino, Switzerland)
+Tel +41 91 /935 12 25 - Fax +41 91 /935 12 09
+eMail: massimiliano.cannata@supsi.ch
+Internet: http://www.ist.supsi.ch
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20040226/95cef4eb/attachment.html

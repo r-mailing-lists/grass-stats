@@ -1,0 +1,288 @@
+From Thomas.Adams at noaa.gov  Thu Jan 22 13:43:34 2004
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] R-GRASS scripting question
+Message-ID: <401019D6.7040200@noaa.gov>
+
+Skipped content of type multipart/alternative-------------- next part --------------
+#---------------------------------------------------------
+# R.precip_bias.batch
+#---------------------------------------------------------
+#usage:
+# export R_BASIN_NAME=basinName
+# export R_YEAR=year
+# export R_INMAP_ANN=rastermap-1
+# export R_INMAP_JJA=rastermap-2
+# export R_INMAP_DJF=rastermap-3
+# R BATCH R.precip_bias.batch
+#---------------------------------------------------------
+
+library(GRASS)
+G<-gmeta()
+library(MASS)
+
+#read input map from environment variable $R_BASIN_NAME
+basinname<-Sys.getenv("R_BASIN_NAME")
+year<-Sys.getenv("R_YEAR")
+year
+
+#---------------------------------------------------------
+#(1) read input map from environment variable $R_INMAP_ANN
+#---------------------------------------------------------
+mapname<-Sys.getenv("R_INMAP_ANN")
+bias<-rast.get(G,rlist=c(Sys.getenv("R_INMAP_ANN")))
+summary(bias$mapname)
+
+tstr<-paste(c(basinname," Radar-Precipitation Bias - ",year),collapse="")
+
+#Write Histogram to pdf
+filename<-paste(c(basinname,".",year,".annual.hist.pdf"))
+pdf(filename)
+truehist(bias$mapname,xlab="XMRG Bias",ylab="Frequency",main=tstr,prob=F)
+dev.off()
+
+#Write Boxplot to pdf
+filename<-paste(c(basinname,".",year,".annual.boxplot.pdf"),collapse="")
+pdf(filename)
+boxplot(bias$mapname,xlab=tstr,ylab="XMRG bias")
+dev.off()
+
+.
+.
+.
+.
+
+#cleanup workspace
+rm(list = ls(all=TRUE))
+From e.pebesma at geog.uu.nl  Fri Jan 23 03:02:14 2004
+From: e.pebesma at geog.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] R-GRASS scripting question
+In-Reply-To: <401019D6.7040200@noaa.gov>
+References: <401019D6.7040200@noaa.gov>
+Message-ID: <4010D506.2020704@geog.uu.nl>
+
+
+Thomas Adams wrote:
+
+> Roger (or anyone else),
+>
+> I am at an impasse attempting to write an R script to call from within 
+> GRASS. Attached is a code fragment. Basically, I can not get beyond:
+>
+> summary(bias$mapname)
+
+You want the value of mapname to be evaluated: the content is not in
+bias$mapname but bias$something, with something the value of the
+variable mapname.
+
+Try:
+
+summary(bias[[eval(mapname)]]
+--
+Edzer
+
+
+From Roger.Bivand at nhh.no  Fri Jan 23 03:20:38 2004
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] R-GRASS scripting question
+In-Reply-To: <4010D506.2020704@geog.uu.nl>
+Message-ID: <Pine.LNX.4.44.0401230914130.15718-100000@reclus.nhh.no>
+
+On Fri, 23 Jan 2004, Edzer J. Pebesma wrote:
+
+> 
+> 
+> Thomas Adams wrote:
+> 
+> > Roger (or anyone else),
+> >
+> > I am at an impasse attempting to write an R script to call from within 
+> > GRASS. Attached is a code fragment. Basically, I can not get beyond:
+> >
+> > summary(bias$mapname)
+> 
+> You want the value of mapname to be evaluated: the content is not in
+> bias$mapname but bias$something, with something the value of the
+> variable mapname.
+> 
+> Try:
+> 
+> summary(bias[[eval(mapname)]]
+
+Yes, this is right. There may be a short cut, if you know definitely for 
+example that there is just one raster in the bias list. Then you access it 
+by number, for example:
+
+summary(bias[[1]])
+
+The same would apply if there were more, but then it would be easier to 
+get mixed up.
+
+> a <- list(a=NA, b=Inf)
+> a
+$a
+[1] NA
+
+$b
+[1] Inf
+
+> a$a
+[1] NA
+> a[[1]]
+[1] NA
+> a[["a"]]
+[1] NA
+> an <- "a"
+> a$an
+NULL
+
+(no such element in list)
+
+> a[[eval(an)]]
+[1] NA
+
+Roger
+
+> --
+> Edzer
+> 
+> 
+
+-- 
+Roger Bivand
+Econonic Geography Section, Department of Economics, Norwegian School of 
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen, 
+Norway, voice: +47-55959355, fax: +47-55959393; Roger.Bivand@nhh.no
+
+
+
+From Thomas.Adams at noaa.gov  Fri Jan 23 10:17:24 2004
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] R-GRASS scripting question
+In-Reply-To: <Pine.LNX.4.44.0401230914130.15718-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0401230914130.15718-100000@reclus.nhh.no>
+Message-ID: <40113B04.4020000@noaa.gov>
+
+Roger & Edzer,
+
+Thanks for your help! That did the trick.
+
+Regards,
+Tom
+
+Roger Bivand wrote:
+
+>On Fri, 23 Jan 2004, Edzer J. Pebesma wrote:
+>
+>  
+>
+>>Thomas Adams wrote:
+>>
+>>    
+>>
+>>>Roger (or anyone else),
+>>>
+>>>I am at an impasse attempting to write an R script to call from within 
+>>>GRASS. Attached is a code fragment. Basically, I can not get beyond:
+>>>
+>>>summary(bias$mapname)
+>>>      
+>>>
+>>You want the value of mapname to be evaluated: the content is not in
+>>bias$mapname but bias$something, with something the value of the
+>>variable mapname.
+>>
+>>Try:
+>>
+>>summary(bias[[eval(mapname)]]
+>>    
+>>
+>
+>Yes, this is right. There may be a short cut, if you know definitely for 
+>example that there is just one raster in the bias list. Then you access it 
+>by number, for example:
+>
+>summary(bias[[1]])
+>
+>The same would apply if there were more, but then it would be easier to 
+>get mixed up.
+>
+>  
+>
+>>a <- list(a=NA, b=Inf)
+>>a
+>>    
+>>
+>$a
+>[1] NA
+>
+>$b
+>[1] Inf
+>
+>  
+>
+>>a$a
+>>    
+>>
+>[1] NA
+>  
+>
+>>a[[1]]
+>>    
+>>
+>[1] NA
+>  
+>
+>>a[["a"]]
+>>    
+>>
+>[1] NA
+>  
+>
+>>an <- "a"
+>>a$an
+>>    
+>>
+>NULL
+>
+>(no such element in list)
+>
+>  
+>
+>>a[[eval(an)]]
+>>    
+>>
+>[1] NA
+>
+>Roger
+>
+>  
+>
+>>--
+>>Edzer
+>>
+>>
+>>    
+>>
+>
+>  
+>
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20040123/af19068a/attachment.html

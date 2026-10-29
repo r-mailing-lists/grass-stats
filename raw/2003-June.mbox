@@ -1,0 +1,321 @@
+From temiz at deprem.gov.tr  Tue Jun  3 08:07:19 2003
+From: temiz at deprem.gov.tr (orkun)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] logistic regression coefficient
+Message-ID: <3EDC8F77.5060305@deprem.gov.tr>
+
+Hello
+
+in logistic regression,
+I want to know that it is possible to get probability values of each 
+predictors by
+using following formula for each predictor one by one (keeping constant 
+the others)
+<<< exp(coef)/(1+exp(coef)) >>>
+
+thanks in advance
+
+
+______________________________________
+Scanned and protected by Inflex
+http://pldaniels.com/inflex
+
+______________________________________
+The views and opinions expressed in this e-mail message are the sender's own
+and do not necessarily represent the views and the opinions of Earthquake Research Dept.
+of General Directorate of Disaster Affairs.
+
+Bu e-postadaki fikir ve gorusler gonderenin sahsina ait olup, yasal olarak T.C.
+B.I.B. Afet Isleri Gn.Mud. Deprem Arastirma Dairesi'ni baglayici nitelikte degildir.
+
+
+
+From christian.blumer at epfl.ch  Tue Jun 10 07:19:04 2003
+From: christian.blumer at epfl.ch (Christian Blumer)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] writing grass format from R
+Message-ID: <002801c32f42$19a9a0c0$9852b280@photigr3>
+
+Dear list,
+ I would like to know if there is a way to write a R graph results into Grass image format?
+Or should I use Gstat?
+The idea behind is to produce geostatistical modeled images that are then made accessible through internet through Mapserver.
+Christian
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20030610/027d73b9/attachment.html
+From e.pebesma at geog.uu.nl  Tue Jun 10 07:26:39 2003
+From: e.pebesma at geog.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] writing grass format from R
+References: <002801c32f42$19a9a0c0$9852b280@photigr3>
+Message-ID: <3EE5C06F.2050109@geog.uu.nl>
+
+Christian,
+
+gstat nowadays has two reincarnations: (i) as stand-alone program,
+in which case it can read and write grass data and maps; (ii) as an R
+package (or S-PLUS library), in which case it operates directly in
+the R environment. It cannot do both at the same time. However,
+there is a R-GRASS interface. AFAIK it does not write graph results to
+GRASS, but it can write R data back to grass. GRASS can make
+the graphs, I'd say.
+
+I'm not familiar to Mapserver.
+--
+Edzer
+
+Christian Blumer wrote:
+
+> Dear list,
+>  I would like to know if there is a way to write a R graph results 
+> into Grass image format?
+> Or should I use Gstat?
+> The idea behind is to produce geostatistical modeled images that are 
+> then made accessible through internet through Mapserver.
+> Christian
+
+
+
+
+From Roger.Bivand at nhh.no  Tue Jun 10 13:51:32 2003
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] writing grass format from R
+In-Reply-To: <3EE5C06F.2050109@geog.uu.nl>
+References: <002801c32f42$19a9a0c0$9852b280@photigr3>
+        <3EE5C06F.2050109@geog.uu.nl>
+Message-ID: <61283.62.70.85.194.1055267492.squirrel@webmail.nhh.no>
+
+I would think that the output of gstat in R could be moved back to the
+GRASS database using the R/GRASS interface, and then accessed from
+Mapserver. I don't have access to a computer with the necessary software
+now, but will post a suggestion on Thursday morning - the R/GRASS
+interface expects a vector ordered in the way that GRASS rasters are
+stored.
+
+Roger
+
+
+> Christian,
+>
+> gstat nowadays has two reincarnations: (i) as stand-alone program, in
+> which case it can read and write grass data and maps; (ii) as an R
+> package (or S-PLUS library), in which case it operates directly in the R
+> environment. It cannot do both at the same time. However,
+> there is a R-GRASS interface. AFAIK it does not write graph results to
+> GRASS, but it can write R data back to grass. GRASS can make
+> the graphs, I'd say.
+>
+> I'm not familiar to Mapserver.
+> --
+> Edzer
+>
+> Christian Blumer wrote:
+>
+>> Dear list,
+>>  I would like to know if there is a way to write a R graph results
+>> into Grass image format?
+>> Or should I use Gstat?
+>> The idea behind is to produce geostatistical modeled images that are
+>> then made accessible through internet through Mapserver.
+>> Christian
+>
+>
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+-- 
+Roger Bivand
+NHH, Breiviksveien 40, N-5045 Bergen, Norway
+
+
+
+
+From Roger.Bivand at nhh.no  Thu Jun 12 03:34:44 2003
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] writing grass format from R
+In-Reply-To: <3EE716F4.10705@geog.uu.nl>
+Message-ID: <Pine.LNX.4.44.0306120924130.19222-100000@reclus.nhh.no>
+
+On Wed, 11 Jun 2003, Edzer J. Pebesma wrote:
+
+> Roger Bivand wrote:
+> 
+> >I would think that the output of gstat in R could be moved back to the
+> >GRASS database using the R/GRASS interface, and then accessed from
+> >Mapserver. I don't have access to a computer with the necessary software
+> >now, but will post a suggestion on Thursday morning - the R/GRASS
+> >interface expects a vector ordered in the way that GRASS rasters are
+> >stored.
+> >
+> >  
+> >
+> Gstat outputs a vector in the order of the prediction locations input 
+> (newdata).  So, if
+> this comes from a GRASS import, everything should work fine; however I'd 
+> have to
+> check what happens if part of this vector consists of NA's (missing values).
+> 
+
+It turns out to be fairly simple:
+
+> library(GRASS)
+> library(gstat)
+> data(utm.maas)
+> example(gmeta)
+> names(utm.maas)
+ [1] "east"    "north"   "x"       "y"       "elev"    "d.river" "Cd"     
+ [8] "Cu"      "Pb"      "Zn"      "LOI"     "Fldf"    "Soil"   
+> bmd142 <- vgm(158232, "Exp", 361.6, 24803.4)
+> print(bmd142)
+  model    psill range
+1   Nug  24803.4   0.0
+2   Exp 158232.0 361.6
+> res <- krige(Zn~1, ~east+north, utm.maas, 
+newdata=data.frame(east=east(G), north=north(G)), model=bmd142)
+[using ordinary kriging]
+> str(res)
+> plot(G, res$var1.pred*maasmask)
+> rast.put(G, "gstatOK", res$var1.pred*maasmask)
+> retrieve <- rast.get(G, "gstatOK")
+> str(retrieve)
+List of 1
+ $ gstatOK: num [1:60088] NA NA NA NA NA NA NA NA NA NA ...
+> plot(G, retrieve$gstatOK)
+
+the key being using newdata=data.frame() with the same coordinate location 
+names as in the coordinate data frame. vgm() is here initialised with the 
+values from Burrough & McDonnell p. 142. You can even try this outside 
+GRASS, because the examples (if run outside GRASS) create a temporary 
+LOCATION and MAPSET to try things out on. This will most likely replace 
+the sgeostat dependency in the interface package, especially when I get 
+round to writing vignettes.
+
+Roger
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From alobo at ija.csic.es  Mon Jun 16 12:43:30 2003
+From: alobo at ija.csic.es (Agustin Lobo)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] masks
+Message-ID: <Pine.OSF.3.91.1030616184226.21726P-100000@paleo.ija.csic.es>
+
+Hi,
+
+Currentely, do masks in grass have to be
+1 and 0, or 1 and null?
+
+Thanks
+
+Agus
+
+Dr. Agustin Lobo
+Instituto de Ciencias de la Tierra (CSIC)
+Lluis Sole Sabaris s/n
+08028 Barcelona SPAIN
+tel 34 93409 5410
+fax 34 93411 0012
+alobo@ija.csic.es
+
+
+
+From juergen.pilz at uni-klu.ac.at  Sun Jun  8 14:26:06 2003
+From: juergen.pilz at uni-klu.ac.at (juergen.pilz@uni-klu.ac.at)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Int. Workshop StatGIS03
+Message-ID: <twig.1055096766.29817@uni-klu.ac.at>
+
+Dear colleagues and friends, 
+ 
+We are organizing the INTERNATIONAL WORKSHOP  
+ 
+StatGIS 2003 - Interfacing (Geo)Statistics, GIS and Spatial Data Bases 
+Sept. 29 - Oct. 1, 2003 
+Poertschach, Austria. 
+  
+Main Sections: 
+- Geostatistics: Theory and New Methods 
+  (Conveners: W.G. Müller, J. Pilz) 
+- Combining Statistics and GIS 
+  (Conveners: R. Bivand, G. Dubois) 
+- Geostatistical Applications 
+  (Conveners: H. Glass, M. Kanevsky) 
+- Spatial Data Bases and Mapping 
+  (Conveners: V. Gomez, B. Rowlingson)) 
+- Geostatistical Software Developments 
+  (Conveners: E. Pebesma, P. Ribeiro) 
+ 
+Detailed information can be found at 
+ 
+http://www-stat.uni-klu.ac.at/Tagungen/StatGIS-03/ 
+
+We invite you to contribute papers to the above mentioned sections. 
+ 
+ 
+Deadline for submission of abstracts: August 1, 2003 
+Notification of acceptance: August 15, 2003 
+ 
+For further questions and correspondence please reply to 
+statgis03@uni-klu.ac.at 
+
+On behalf of the Programme Committee and Local
+Organizing Committee, 
+Juergen Pilz 
+ 
+Prof. Dr. Juergen Pilz 
+University of Klagenfurt 
+Dept. of Mathematics 
+Applied Statistics Group 
+Univ. Street 65 
+A- 9020 Klagenfurt 
+Tel.: +43- 463- 2700 3113 
+Fax:  +43- 463- 2700 3198 
+email: jpilz@uni-klu.ac.at 
+
+
+
+
+
+
+
+
+
+From hamish_nospam at yahoo.com  Thu Jun 19 04:02:01 2003
+From: hamish_nospam at yahoo.com (H Bowman)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] masks
+In-Reply-To: <Pine.OSF.3.91.1030616184226.21726P-100000@paleo.ija.csic.es>
+References: <Pine.OSF.3.91.1030616184226.21726P-100000@paleo.ija.csic.es>
+Message-ID: <20030619200201.23d0045e.hamish_nospam@yahoo.com>
+
+> Currentely, do masks in grass have to be
+> 1 and 0, or 1 and null?
+
+as far as I can tell, they are true for any positive value, false for
+null or 0, and I'm not sure about negative values but probably true as
+well.
+
+A couple of modules still might not have been updated with support for
+nulls, so may require 0/1 null maps, but I think that would be pretty
+rare.
+
+If you use r.mapcalc to make your MASK, results are pretty straight
+forward.
+
+
+Hamish
+
+

@@ -1,0 +1,3335 @@
+From Roger.Bivand at nhh.no  Thu Jun  4 09:43:30 2015
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu, 4 Jun 2015 18:43:30 +0200
+Subject: [GRASS-stats] R interface to grass 7.1
+In-Reply-To: <m2y4jzbn3q.fsf@krugs.de>
+References: <m2y4jzbn3q.fsf@krugs.de>
+Message-ID: <alpine.LFD.2.11.1506041837430.11529@reclus.nhh.no>
+
+Hi,
+
+This is:
+
+http://trac.osgeo.org/grass/wiki/GSoC/2015#Neweasy-to-usecommandlineinterfaceforGRASSGIS
+
+is it? Did it get accepted - I don't see this on:
+
+http://www.google-melange.com/gsoc/org2/show/google/gsoc2015/osgeo
+
+and think that only improved metadata got funded. Do we know what the 
+actual status is on this? I'd feel that this could be a variant in rgrass7 
+if it becomes available, but I'm not sure how it would expose the 
+interface description.
+
+Best wishes,
+
+Roger
+
+On Thu, 4 Jun 2015, Rainer M Krug wrote:
+
+> Hi
+>
+> I guess you have seen the announcement from Vaclac Petras about the new
+> command line interface to R. This sounds very exciting and I would like
+> to start playing with the R-GRASS 7.1 interface. What would be the best
+> approach concerning git / svn? should I setup my own github for this or
+> should I slot in one of the spgrass repositories?
+>
+> Thanks,
+>
+> Rainer
+>
+>
+>
+> http://permalink.gmane.org/gmane.comp.gis.grass.user/51680
+>
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+
+
+From wenzeslaus at gmail.com  Thu Jun  4 11:44:12 2015
+From: wenzeslaus at gmail.com (Vaclav Petras)
+Date: Thu, 4 Jun 2015 14:44:12 -0400
+Subject: [GRASS-stats] R interface to grass 7.1
+In-Reply-To: <alpine.LFD.2.11.1506041837430.11529@reclus.nhh.no>
+References: <m2y4jzbn3q.fsf@krugs.de>
+	<alpine.LFD.2.11.1506041837430.11529@reclus.nhh.no>
+Message-ID: <CABo5uVsDZhYqgGNpS2fk5_+XCvDma1_wKg+Ur0qB75_kVs857w@mail.gmail.com>
+
+On Thu, Jun 4, 2015 at 12:43 PM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+
+> Hi,
+>
+> This is:
+>
+>
+> http://trac.osgeo.org/grass/wiki/GSoC/2015#Neweasy-to-usecommandlineinterfaceforGRASSGIS
+>
+> is it? Did it get accepted - I don't see this on:
+>
+> http://www.google-melange.com/gsoc/org2/show/google/gsoc2015/osgeo
+>
+> and think that only improved metadata got funded. Do we know what the
+> actual status is on this?
+>
+
+Hi Roger,
+
+I can answer it :) I'm doing it simply because I need it (and I'm also
+tired of solving the setup of environment variables over on over). However,
+the GSoC idea went behind what I implemented. I implemented:
+
+grass /path/to/mapset --exec r.external input=elevation.tiff
+output=elevation
+grass /path/to/mapset --exec r.univar map=elevation
+
+Once conceptual questions are answered, it should be relatively simple to
+add the following:
+
+grass setmapset /path/to/mapset
+grass run r.external input=elevation.tiff output=elevation
+grass run r.univar map=elevation
+
+The GSoC idea went much further:
+
+grass execute r.univar map=file://elevation.tiff
+
+* I used `execute` in the example, I'm not comfortable with the name but
+the idea is to keep the names different for each interface to distinguish
+the interfaces (but perhaps it is a wrong idea?). From discussion with
+Rainer, I see that parameters won't cut it for shebang and there needs to
+be a separate executable something like `grassscript`.
+
+It would love to accommodate needs of the R interface. We just need to
+figure out what they are.
+
+Vaclav
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150604/610217da/attachment.html>
+
+From Rainer at krugs.de  Thu Jun  4 11:47:55 2015
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Thu, 04 Jun 2015 20:47:55 +0200
+Subject: [GRASS-stats] R interface to grass 7.1
+In-Reply-To: <alpine.LFD.2.11.1506041837430.11529@reclus.nhh.no> (Roger
+	Bivand's message of "Thu, 4 Jun 2015 18:43:30 +0200")
+References: <m2y4jzbn3q.fsf@krugs.de>
+	<alpine.LFD.2.11.1506041837430.11529@reclus.nhh.no>
+Message-ID: <m2r3prb99g.fsf@krugs.de>
+
+Roger Bivand <Roger.Bivand at nhh.no> writes:
+
+> Hi,
+>
+> This is:
+>
+> http://trac.osgeo.org/grass/wiki/GSoC/2015#Neweasy-to-usecommandlineinterfaceforGRASSGIS
+>
+> is it? Did it get accepted - I don't see this on:
+>
+> http://www.google-melange.com/gsoc/org2/show/google/gsoc2015/osgeo
+>
+> and think that only improved metadata got funded.
+
+This is true as far as I know, but it seems that Vaclac took it in
+his own hands to code the initial stages and he checked it into the
+GRASS 7.1 source.
+
+I installed GRASS 7.1 from source using homebrew (the formula is in a
+pending pull request) and I could execute the examples fine.
+
+> Do we know what the actual status is on this?
+
+The
+
+,----
+| grass71 MAPSET --exec THE GRASS COMAND WITH WHATEVER COMES NOW
+`----
+
+is working, but I don't know if it has been tested a lot. For testing,
+the sp collection could help as there are already examples which one
+could run.
+
+Otherwise - no idea - but it seems to be going forward.
+
+> I'd feel that this could be a variant in rgrass7 if it becomes
+> available,
+
+Yes - some changes and getting rid of the initialisation of the GRASS
+session, and only provide the path to the grass71 executable.
+
+> but I'm not sure how it would expose the interface description.
+
+--8<---------------cut here---------------start------------->8---
+grass71 --exec g.list --interface-description
+--8<---------------cut here---------------end--------------->8---
+
+I just tried it out.
+
+or, maybe safer,
+
+--8<---------------cut here---------------start------------->8---
+grass71 PATH/TO/MAPSET --exec g.list --interface-description
+--8<---------------cut here---------------end--------------->8---
+
+This is only the first stage, and Vaclac seems to be very much open to
+suggestions and discussion on which direction this should go.
+
+The discussion is on grass-user.
+
+It seems that you are planning to move the sp packages to github - is
+this true?
+
+Cheers,
+
+Rainer
+
+>
+> Best wishes,
+>
+> Roger
+>
+> On Thu, 4 Jun 2015, Rainer M Krug wrote:
+>
+>> Hi
+>>
+>> I guess you have seen the announcement from Vaclac Petras about the new
+>> command line interface to R. This sounds very exciting and I would like
+>> to start playing with the R-GRASS 7.1 interface. What would be the best
+>> approach concerning git / svn? should I setup my own github for this or
+>> should I slot in one of the spgrass repositories?
+>>
+>> Thanks,
+>>
+>> Rainer
+>>
+>>
+>>
+>> http://permalink.gmane.org/gmane.comp.gis.grass.user/51680
+>>
+>>
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+PGP: 0x0F52F982
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 494 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150604/a9312224/attachment.pgp>
+
+From Roger.Bivand at nhh.no  Thu Jun  4 12:44:20 2015
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu, 4 Jun 2015 21:44:20 +0200
+Subject: [GRASS-stats] R interface to grass 7.1
+In-Reply-To: <m2r3prb99g.fsf@krugs.de>
+References: <m2y4jzbn3q.fsf@krugs.de>
+	<alpine.LFD.2.11.1506041837430.11529@reclus.nhh.no>
+	<m2r3prb99g.fsf@krugs.de>
+Message-ID: <alpine.LFD.2.11.1506042136180.14199@reclus.nhh.no>
+
+On Thu, 4 Jun 2015, Rainer M Krug wrote:
+
+> Roger Bivand <Roger.Bivand at nhh.no> writes:
+>
+>> Hi,
+>>
+>> This is:
+>>
+>> http://trac.osgeo.org/grass/wiki/GSoC/2015#Neweasy-to-usecommandlineinterfaceforGRASSGIS
+>>
+>> is it? Did it get accepted - I don't see this on:
+>>
+>> http://www.google-melange.com/gsoc/org2/show/google/gsoc2015/osgeo
+>>
+>> and think that only improved metadata got funded.
+>
+> This is true as far as I know, but it seems that Vaclac took it in
+> his own hands to code the initial stages and he checked it into the
+> GRASS 7.1 source.
+>
+> I installed GRASS 7.1 from source using homebrew (the formula is in a
+> pending pull request) and I could execute the examples fine.
+>
+>> Do we know what the actual status is on this?
+>
+> The
+>
+> ,----
+> | grass71 MAPSET --exec THE GRASS COMAND WITH WHATEVER COMES NOW
+> `----
+>
+> is working, but I don't know if it has been tested a lot. For testing,
+> the sp collection could help as there are already examples which one
+> could run.
+>
+> Otherwise - no idea - but it seems to be going forward.
+>
+>> I'd feel that this could be a variant in rgrass7 if it becomes
+>> available,
+>
+> Yes - some changes and getting rid of the initialisation of the GRASS
+> session, and only provide the path to the grass71 executable.
+>
+>> but I'm not sure how it would expose the interface description.
+>
+> --8<---------------cut here---------------start------------->8---
+> grass71 --exec g.list --interface-description
+> --8<---------------cut here---------------end--------------->8---
+>
+> I just tried it out.
+>
+> or, maybe safer,
+>
+> --8<---------------cut here---------------start------------->8---
+> grass71 PATH/TO/MAPSET --exec g.list --interface-description
+> --8<---------------cut here---------------end--------------->8---
+>
+> This is only the first stage, and Vaclac seems to be very much open to
+> suggestions and discussion on which direction this should go.
+>
+> The discussion is on grass-user.
+>
+> It seems that you are planning to move the sp packages to github - is
+> this true?
+
+Just on this, no, I will give up maintaining if anyone moves the main sp 
+repository to git, and especially github, which is a proprietory 
+corporation. Git is a bad choice going forward, as the important 
+"responsibility" element is pulverised (good for projects with very strong 
+brands, so someone will be responsible, probably bad for projects without 
+strong brands with few active developers and lots of users sitting on 
+their hands). Git is usable, and can be used like svn or similar 
+centralised repositories, but is several steps backward IMO. It's got 
+popular through github because projects avoid having to host their own 
+repos. We'll see whether PROJ.4 falls apart after migration to github 
+(it's very weak already). Github mostly attracts on coolness, which is 
+often orthogonal to productive work.
+
+Roger
+
+>
+> Cheers,
+>
+> Rainer
+>
+>>
+>> Best wishes,
+>>
+>> Roger
+>>
+>> On Thu, 4 Jun 2015, Rainer M Krug wrote:
+>>
+>>> Hi
+>>>
+>>> I guess you have seen the announcement from Vaclac Petras about the new
+>>> command line interface to R. This sounds very exciting and I would like
+>>> to start playing with the R-GRASS 7.1 interface. What would be the best
+>>> approach concerning git / svn? should I setup my own github for this or
+>>> should I slot in one of the spgrass repositories?
+>>>
+>>> Thanks,
+>>>
+>>> Rainer
+>>>
+>>>
+>>>
+>>> http://permalink.gmane.org/gmane.comp.gis.grass.user/51680
+>>>
+>>>
+>
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+
+
+From edzer.pebesma at uni-muenster.de  Thu Jun  4 13:57:53 2015
+From: edzer.pebesma at uni-muenster.de (Edzer Pebesma)
+Date: Thu, 04 Jun 2015 22:57:53 +0200
+Subject: [GRASS-stats] R interface to grass 7.1
+In-Reply-To: <alpine.LFD.2.11.1506042136180.14199@reclus.nhh.no>
+References: <m2y4jzbn3q.fsf@krugs.de>	<alpine.LFD.2.11.1506041837430.11529@reclus.nhh.no>	<m2r3prb99g.fsf@krugs.de>
+	<alpine.LFD.2.11.1506042136180.14199@reclus.nhh.no>
+Message-ID: <5570BBD1.8080709@uni-muenster.de>
+
+
+
+On 06/04/2015 09:44 PM, Roger Bivand wrote:
+> On Thu, 4 Jun 2015, Rainer M Krug wrote:
+> 
+>> Roger Bivand <Roger.Bivand at nhh.no> writes:
+>>
+>>> Hi,
+>>>
+>>> This is:
+>>>
+>>> http://trac.osgeo.org/grass/wiki/GSoC/2015#Neweasy-to-usecommandlineinterfaceforGRASSGIS
+>>>
+>>>
+>>> is it? Did it get accepted - I don't see this on:
+>>>
+>>> http://www.google-melange.com/gsoc/org2/show/google/gsoc2015/osgeo
+>>>
+>>> and think that only improved metadata got funded.
+>>
+>> This is true as far as I know, but it seems that Vaclac took it in
+>> his own hands to code the initial stages and he checked it into the
+>> GRASS 7.1 source.
+>>
+>> I installed GRASS 7.1 from source using homebrew (the formula is in a
+>> pending pull request) and I could execute the examples fine.
+>>
+>>> Do we know what the actual status is on this?
+>>
+>> The
+>>
+>> ,----
+>> | grass71 MAPSET --exec THE GRASS COMAND WITH WHATEVER COMES NOW
+>> `----
+>>
+>> is working, but I don't know if it has been tested a lot. For testing,
+>> the sp collection could help as there are already examples which one
+>> could run.
+>>
+>> Otherwise - no idea - but it seems to be going forward.
+>>
+>>> I'd feel that this could be a variant in rgrass7 if it becomes
+>>> available,
+>>
+>> Yes - some changes and getting rid of the initialisation of the GRASS
+>> session, and only provide the path to the grass71 executable.
+>>
+>>> but I'm not sure how it would expose the interface description.
+>>
+>> --8<---------------cut here---------------start------------->8---
+>> grass71 --exec g.list --interface-description
+>> --8<---------------cut here---------------end--------------->8---
+>>
+>> I just tried it out.
+>>
+>> or, maybe safer,
+>>
+>> --8<---------------cut here---------------start------------->8---
+>> grass71 PATH/TO/MAPSET --exec g.list --interface-description
+>> --8<---------------cut here---------------end--------------->8---
+>>
+>> This is only the first stage, and Vaclac seems to be very much open to
+>> suggestions and discussion on which direction this should go.
+>>
+>> The discussion is on grass-user.
+>>
+>> It seems that you are planning to move the sp packages to github - is
+>> this true?
+> 
+> Just on this, no, I will give up maintaining if anyone moves the main sp
+> repository to git, and especially github, which is a proprietory
+> corporation. Git is a bad choice going forward, as the important
+> "responsibility" element is pulverised (good for projects with very
+> strong brands, so someone will be responsible, probably bad for projects
+> without strong brands with few active developers and lots of users
+> sitting on their hands). Git is usable, and can be used like svn or
+> similar centralised repositories, but is several steps backward IMO.
+> It's got popular through github because projects avoid having to host
+> their own repos. We'll see whether PROJ.4 falls apart after migration to
+> github (it's very weak already). Github mostly attracts on coolness,
+> which is often orthogonal to productive work.
+> 
+> Roger
+
+I have less problems with github, and so sp might migrate one day. Right
+now, Roger and I do the majority of the work on sp, so svn on r-forge
+makes most sense. Contributors send patches, or code snippets in email.
+
+Once I see an easy way to use travis-ci for the full check on all of
+sp's reverse dependencies I will adopt that, at the cost of having to
+keep git and svn synced. Right now this check [*] takes me an absurd
+amount of time.
+
+[*] I now use:
+
+library(sp)
+demo(depend)
+
+> 
+>>
+>> Cheers,
+>>
+>> Rainer
+>>
+>>>
+>>> Best wishes,
+>>>
+>>> Roger
+>>>
+>>> On Thu, 4 Jun 2015, Rainer M Krug wrote:
+>>>
+>>>> Hi
+>>>>
+>>>> I guess you have seen the announcement from Vaclac Petras about the new
+>>>> command line interface to R. This sounds very exciting and I would like
+>>>> to start playing with the R-GRASS 7.1 interface. What would be the best
+>>>> approach concerning git / svn? should I setup my own github for this or
+>>>> should I slot in one of the spgrass repositories?
+>>>>
+>>>> Thanks,
+>>>>
+>>>> Rainer
+>>>>
+>>>>
+>>>>
+>>>> http://permalink.gmane.org/gmane.comp.gis.grass.user/51680
+>>>>
+>>>>
+>>
+>>
+> 
+
+-- 
+Edzer Pebesma
+Institute for Geoinformatics (ifgi),  University of M?nster,
+Heisenbergstra?e 2, 48149 M?nster, Germany; +49 251 83 33081
+Journal of Statistical Software:   http://www.jstatsoft.org/
+Computers & Geosciences:   http://elsevier.com/locate/cageo/
+Spatial Statistics Society http://www.spatialstatistics.info
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 490 bytes
+Desc: OpenPGP digital signature
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150604/d9dafcd9/attachment.pgp>
+
+From Rainer at krugs.de  Fri Jun  5 00:51:31 2015
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Fri, 05 Jun 2015 09:51:31 +0200
+Subject: [GRASS-stats] R interface to grass 7.1
+In-Reply-To: <alpine.LFD.2.11.1506042136180.14199@reclus.nhh.no> (Roger
+	Bivand's message of "Thu, 4 Jun 2015 21:44:20 +0200")
+References: <m2y4jzbn3q.fsf@krugs.de>
+	<alpine.LFD.2.11.1506041837430.11529@reclus.nhh.no>
+	<m2r3prb99g.fsf@krugs.de>
+	<alpine.LFD.2.11.1506042136180.14199@reclus.nhh.no>
+Message-ID: <m24mmmbnjw.fsf@krugs.de>
+
+Roger Bivand <Roger.Bivand at nhh.no> writes:
+
+> On Thu, 4 Jun 2015, Rainer M Krug wrote:
+>
+>> Roger Bivand <Roger.Bivand at nhh.no> writes:
+>>
+>>> Hi,
+>>>
+>>> This is:
+>>>
+>>> http://trac.osgeo.org/grass/wiki/GSoC/2015#Neweasy-to-usecommandlineinterfaceforGRASSGIS
+>>>
+>>> is it? Did it get accepted - I don't see this on:
+>>>
+>>> http://www.google-melange.com/gsoc/org2/show/google/gsoc2015/osgeo
+>>>
+>>> and think that only improved metadata got funded.
+>>
+>> This is true as far as I know, but it seems that Vaclac took it in
+>> his own hands to code the initial stages and he checked it into the
+>> GRASS 7.1 source.
+>>
+>> I installed GRASS 7.1 from source using homebrew (the formula is in a
+>> pending pull request) and I could execute the examples fine.
+>>
+>>> Do we know what the actual status is on this?
+>>
+>> The
+>>
+>> ,----
+>> | grass71 MAPSET --exec THE GRASS COMAND WITH WHATEVER COMES NOW
+>> `----
+>>
+>> is working, but I don't know if it has been tested a lot. For testing,
+>> the sp collection could help as there are already examples which one
+>> could run.
+>>
+>> Otherwise - no idea - but it seems to be going forward.
+>>
+>>> I'd feel that this could be a variant in rgrass7 if it becomes
+>>> available,
+>>
+>> Yes - some changes and getting rid of the initialisation of the GRASS
+>> session, and only provide the path to the grass71 executable.
+>>
+>>> but I'm not sure how it would expose the interface description.
+>>
+>> --8<---------------cut here---------------start------------->8---
+>> grass71 --exec g.list --interface-description
+>> --8<---------------cut here---------------end--------------->8---
+>>
+>> I just tried it out.
+>>
+>> or, maybe safer,
+>>
+>> --8<---------------cut here---------------start------------->8---
+>> grass71 PATH/TO/MAPSET --exec g.list --interface-description
+>> --8<---------------cut here---------------end--------------->8---
+>>
+>> This is only the first stage, and Vaclac seems to be very much open to
+>> suggestions and discussion on which direction this should go.
+>>
+>> The discussion is on grass-user.
+>>
+>> It seems that you are planning to move the sp packages to github - is
+>> this true?
+>
+> Just on this, no, I will give up maintaining if anyone moves the main
+> sp repository to git, and especially github, which is a proprietory
+> corporation. Git is a bad choice going forward, as the important
+> "responsibility" element is pulverised (good for projects with very
+> strong brands, so someone will be responsible, probably bad for
+> projects without strong brands with few active developers and lots of
+> users sitting on their hands). Git is usable, and can be used like svn
+> or similar centralised repositories, but is several steps backward
+> IMO. It's got popular through github because projects avoid having to
+> host their own repos. We'll see whether PROJ.4 falls apart after
+> migration to github (it's very weak already). Github mostly attracts
+> on coolness, which is often orthogonal to productive work.
+
+I just thought that there was a discussion about this on the mailing
+list, but I must have mixed them up (probably with PROJ.4 ?).
+
+No need to change anything at the moment.
+
+Cheers,
+
+Rainer
+
+>
+> Roger
+>
+>>
+>> Cheers,
+>>
+>> Rainer
+>>
+>>>
+>>> Best wishes,
+>>>
+>>> Roger
+>>>
+>>> On Thu, 4 Jun 2015, Rainer M Krug wrote:
+>>>
+>>>> Hi
+>>>>
+>>>> I guess you have seen the announcement from Vaclac Petras about the new
+>>>> command line interface to R. This sounds very exciting and I would like
+>>>> to start playing with the R-GRASS 7.1 interface. What would be the best
+>>>> approach concerning git / svn? should I setup my own github for this or
+>>>> should I slot in one of the spgrass repositories?
+>>>>
+>>>> Thanks,
+>>>>
+>>>> Rainer
+>>>>
+>>>>
+>>>>
+>>>> http://permalink.gmane.org/gmane.comp.gis.grass.user/51680
+>>>>
+>>>>
+>>
+>>
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+PGP: 0x0F52F982
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 494 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150605/6e0b1d5f/attachment.pgp>
+
+From Roger.Bivand at nhh.no  Fri Jun  5 01:12:44 2015
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri, 5 Jun 2015 10:12:44 +0200
+Subject: [GRASS-stats] R interface to grass 7.1
+In-Reply-To: <5570BBD1.8080709@uni-muenster.de>
+References: <m2y4jzbn3q.fsf@krugs.de>
+	<alpine.LFD.2.11.1506041837430.11529@reclus.nhh.no>
+	<m2r3prb99g.fsf@krugs.de>
+	<alpine.LFD.2.11.1506042136180.14199@reclus.nhh.no>
+	<5570BBD1.8080709@uni-muenster.de>
+Message-ID: <alpine.LFD.2.11.1506051003200.32457@reclus.nhh.no>
+
+On Thu, 4 Jun 2015, Edzer Pebesma wrote:
+
+>
+>
+> On 06/04/2015 09:44 PM, Roger Bivand wrote:
+>> On Thu, 4 Jun 2015, Rainer M Krug wrote:
+>>
+>>> Roger Bivand <Roger.Bivand at nhh.no> writes:
+>>>
+>>>> Hi,
+>>>>
+>>>> This is:
+>>>>
+>>>> http://trac.osgeo.org/grass/wiki/GSoC/2015#Neweasy-to-usecommandlineinterfaceforGRASSGIS
+>>>>
+>>>>
+>>>> is it? Did it get accepted - I don't see this on:
+>>>>
+>>>> http://www.google-melange.com/gsoc/org2/show/google/gsoc2015/osgeo
+>>>>
+>>>> and think that only improved metadata got funded.
+>>>
+>>> This is true as far as I know, but it seems that Vaclac took it in
+>>> his own hands to code the initial stages and he checked it into the
+>>> GRASS 7.1 source.
+>>>
+>>> I installed GRASS 7.1 from source using homebrew (the formula is in a
+>>> pending pull request) and I could execute the examples fine.
+>>>
+>>>> Do we know what the actual status is on this?
+>>>
+>>> The
+>>>
+>>> ,----
+>>> | grass71 MAPSET --exec THE GRASS COMAND WITH WHATEVER COMES NOW
+>>> `----
+>>>
+>>> is working, but I don't know if it has been tested a lot. For testing,
+>>> the sp collection could help as there are already examples which one
+>>> could run.
+>>>
+>>> Otherwise - no idea - but it seems to be going forward.
+>>>
+>>>> I'd feel that this could be a variant in rgrass7 if it becomes
+>>>> available,
+>>>
+>>> Yes - some changes and getting rid of the initialisation of the GRASS
+>>> session, and only provide the path to the grass71 executable.
+>>>
+>>>> but I'm not sure how it would expose the interface description.
+>>>
+>>> --8<---------------cut here---------------start------------->8---
+>>> grass71 --exec g.list --interface-description
+>>> --8<---------------cut here---------------end--------------->8---
+>>>
+>>> I just tried it out.
+>>>
+>>> or, maybe safer,
+>>>
+>>> --8<---------------cut here---------------start------------->8---
+>>> grass71 PATH/TO/MAPSET --exec g.list --interface-description
+>>> --8<---------------cut here---------------end--------------->8---
+>>>
+>>> This is only the first stage, and Vaclac seems to be very much open to
+>>> suggestions and discussion on which direction this should go.
+>>>
+>>> The discussion is on grass-user.
+>>>
+>>> It seems that you are planning to move the sp packages to github - is
+>>> this true?
+>>
+>> Just on this, no, I will give up maintaining if anyone moves the main sp
+>> repository to git, and especially github, which is a proprietory
+>> corporation. Git is a bad choice going forward, as the important
+>> "responsibility" element is pulverised (good for projects with very
+>> strong brands, so someone will be responsible, probably bad for projects
+>> without strong brands with few active developers and lots of users
+>> sitting on their hands). Git is usable, and can be used like svn or
+>> similar centralised repositories, but is several steps backward IMO.
+>> It's got popular through github because projects avoid having to host
+>> their own repos. We'll see whether PROJ.4 falls apart after migration to
+>> github (it's very weak already). Github mostly attracts on coolness,
+>> which is often orthogonal to productive work.
+>>
+>> Roger
+>
+> I have less problems with github, and so sp might migrate one day. Right
+> now, Roger and I do the majority of the work on sp, so svn on r-forge
+> makes most sense. Contributors send patches, or code snippets in email.
+>
+> Once I see an easy way to use travis-ci for the full check on all of
+> sp's reverse dependencies I will adopt that, at the cost of having to
+> keep git and svn synced. Right now this check [*] takes me an absurd
+> amount of time.
+>
+> [*] I now use:
+>
+> library(sp)
+> demo(depend)
+
+Using _R_CHECK_FORCE_SUGGESTS_=FALSE helps. I update/install the packages 
+to check first (which draws in their c("Depends", "Imports", 
+"LinkingTo")), and in checking rgeos and rgdal have reduced run times 
+greatly. I also fell into the trap of setting recursive=TRUE, but that is 
+not needed, as only packages referring to the target arguably need to be 
+tested (if a package suggesting a package that suggests sp itself doesn't 
+declare its relying on sp say for plotting something, it is in error). 
+Almost all the errors turn out to be errors in the packages that are not 
+caused by changes in the target, but rather careless coding or examples 
+(typically unprotected library/require).
+
+Should we set up a docker instance (or just a shell script) to run sp (and 
+other) dependency checks nightly? I think the hard part is summarizing the 
+findings. Project for Avignon?
+
+Roger
+
+>
+>>
+>>>
+>>> Cheers,
+>>>
+>>> Rainer
+>>>
+>>>>
+>>>> Best wishes,
+>>>>
+>>>> Roger
+>>>>
+>>>> On Thu, 4 Jun 2015, Rainer M Krug wrote:
+>>>>
+>>>>> Hi
+>>>>>
+>>>>> I guess you have seen the announcement from Vaclac Petras about the new
+>>>>> command line interface to R. This sounds very exciting and I would like
+>>>>> to start playing with the R-GRASS 7.1 interface. What would be the best
+>>>>> approach concerning git / svn? should I setup my own github for this or
+>>>>> should I slot in one of the spgrass repositories?
+>>>>>
+>>>>> Thanks,
+>>>>>
+>>>>> Rainer
+>>>>>
+>>>>>
+>>>>>
+>>>>> http://permalink.gmane.org/gmane.comp.gis.grass.user/51680
+>>>>>
+>>>>>
+>>>
+>>>
+>>
+>
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+
+
+From Rainer at krugs.de  Fri Jun  5 01:20:07 2015
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Fri, 05 Jun 2015 10:20:07 +0200
+Subject: [GRASS-stats] R interface to grass 7.1
+In-Reply-To: <5570BBD1.8080709@uni-muenster.de> (Edzer Pebesma's message of
+	"Thu, 04 Jun 2015 22:57:53 +0200")
+References: <m2y4jzbn3q.fsf@krugs.de>
+	<alpine.LFD.2.11.1506041837430.11529@reclus.nhh.no>
+	<m2r3prb99g.fsf@krugs.de>
+	<alpine.LFD.2.11.1506042136180.14199@reclus.nhh.no>
+	<5570BBD1.8080709@uni-muenster.de>
+Message-ID: <m2zj4ea7ns.fsf@krugs.de>
+
+Edzer Pebesma <edzer.pebesma at uni-muenster.de> writes:
+
+> On 06/04/2015 09:44 PM, Roger Bivand wrote:
+>> On Thu, 4 Jun 2015, Rainer M Krug wrote:
+>> 
+>>> Roger Bivand <Roger.Bivand at nhh.no> writes:
+>>>
+>>>> Hi,
+>>>>
+>>>> This is:
+>>>>
+>>>> http://trac.osgeo.org/grass/wiki/GSoC/2015#Neweasy-to-usecommandlineinterfaceforGRASSGIS
+>>>>
+>>>>
+>>>> is it? Did it get accepted - I don't see this on:
+>>>>
+>>>> http://www.google-melange.com/gsoc/org2/show/google/gsoc2015/osgeo
+>>>>
+>>>> and think that only improved metadata got funded.
+>>>
+>>> This is true as far as I know, but it seems that Vaclac took it in
+>>> his own hands to code the initial stages and he checked it into the
+>>> GRASS 7.1 source.
+>>>
+>>> I installed GRASS 7.1 from source using homebrew (the formula is in a
+>>> pending pull request) and I could execute the examples fine.
+>>>
+>>>> Do we know what the actual status is on this?
+>>>
+>>> The
+>>>
+>>> ,----
+>>> | grass71 MAPSET --exec THE GRASS COMAND WITH WHATEVER COMES NOW
+>>> `----
+>>>
+>>> is working, but I don't know if it has been tested a lot. For testing,
+>>> the sp collection could help as there are already examples which one
+>>> could run.
+>>>
+>>> Otherwise - no idea - but it seems to be going forward.
+>>>
+>>>> I'd feel that this could be a variant in rgrass7 if it becomes
+>>>> available,
+>>>
+>>> Yes - some changes and getting rid of the initialisation of the GRASS
+>>> session, and only provide the path to the grass71 executable.
+>>>
+>>>> but I'm not sure how it would expose the interface description.
+>>>
+>>> --8<---------------cut here---------------start------------->8---
+>>> grass71 --exec g.list --interface-description
+>>> --8<---------------cut here---------------end--------------->8---
+>>>
+>>> I just tried it out.
+>>>
+>>> or, maybe safer,
+>>>
+>>> --8<---------------cut here---------------start------------->8---
+>>> grass71 PATH/TO/MAPSET --exec g.list --interface-description
+>>> --8<---------------cut here---------------end--------------->8---
+>>>
+>>> This is only the first stage, and Vaclac seems to be very much open to
+>>> suggestions and discussion on which direction this should go.
+>>>
+>>> The discussion is on grass-user.
+>>>
+>>> It seems that you are planning to move the sp packages to github - is
+>>> this true?
+>> 
+>> Just on this, no, I will give up maintaining if anyone moves the main sp
+>> repository to git, and especially github, which is a proprietory
+>> corporation. Git is a bad choice going forward, as the important
+>> "responsibility" element is pulverised (good for projects with very
+>> strong brands, so someone will be responsible, probably bad for projects
+>> without strong brands with few active developers and lots of users
+>> sitting on their hands). Git is usable, and can be used like svn or
+>> similar centralised repositories, but is several steps backward IMO.
+>> It's got popular through github because projects avoid having to host
+>> their own repos. We'll see whether PROJ.4 falls apart after migration to
+>> github (it's very weak already). Github mostly attracts on coolness,
+>> which is often orthogonal to productive work.
+>> 
+>> Roger
+>
+> I have less problems with github, and so sp might migrate one day. Right
+> now, Roger and I do the majority of the work on sp, so svn on r-forge
+> makes most sense. Contributors send patches, or code snippets in email.
+
+I am fine with this.
+
+>
+> Once I see an easy way to use travis-ci for the full check on all of
+> sp's reverse dependencies I will adopt that, at the cost of having to
+> keep git and svn synced. Right now this check [*] takes me an absurd
+> amount of time.
+
+I just looked at travis-ci for the first time, and it looks really
+interesting.
+
+A mirror might be quite interesting in light of travis-ci - I just found
+this on a quick google:
+
+http://danielpocock.com/automatically-mirroring-svn-repositories-to-git-and-github
+
+which *sounds* easy enough.
+
+Cheers,
+
+Rainer
+
+>
+> [*] I now use:
+>
+> library(sp)
+> demo(depend)
+>
+>> 
+>>>
+>>> Cheers,
+>>>
+>>> Rainer
+>>>
+>>>>
+>>>> Best wishes,
+>>>>
+>>>> Roger
+>>>>
+>>>> On Thu, 4 Jun 2015, Rainer M Krug wrote:
+>>>>
+>>>>> Hi
+>>>>>
+>>>>> I guess you have seen the announcement from Vaclac Petras about the new
+>>>>> command line interface to R. This sounds very exciting and I would like
+>>>>> to start playing with the R-GRASS 7.1 interface. What would be the best
+>>>>> approach concerning git / svn? should I setup my own github for this or
+>>>>> should I slot in one of the spgrass repositories?
+>>>>>
+>>>>> Thanks,
+>>>>>
+>>>>> Rainer
+>>>>>
+>>>>>
+>>>>>
+>>>>> http://permalink.gmane.org/gmane.comp.gis.grass.user/51680
+>>>>>
+>>>>>
+>>>
+>>>
+>> 
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+PGP: 0x0F52F982
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 494 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150605/b94fcf0e/attachment-0001.pgp>
+
+From kratochanna at gmail.com  Thu Jun 11 11:03:07 2015
+From: kratochanna at gmail.com (=?UTF-8?B?QW5uYSBQZXRyw6HFoW92w6E=?=)
+Date: Thu, 11 Jun 2015 14:03:07 -0400
+Subject: [GRASS-stats] writeRAST fails to write empty raster
+Message-ID: <CAE0EDErGfGu483knQJomReSaD8Nf7=A83EiuisC7Lo_SjrQeNA@mail.gmail.com>
+
+Hi,
+
+I am using R rgrass7 package and it seems that when writing a raster which
+has only NA, it fails with "only numeric values may be exported":
+
+https://github.com/cran/rgrass7/blob/386b11e5a2f3879ec63d299c0594f55cbd39c8e5/R/bin_link.R#L446
+
+Is this intended behavior or a bug?
+
+Thank you,
+
+Anna
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150611/434afdf9/attachment.html>
+
+From Roger.Bivand at nhh.no  Thu Jun 11 14:38:56 2015
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu, 11 Jun 2015 23:38:56 +0200
+Subject: [GRASS-stats] writeRAST fails to write empty raster
+In-Reply-To: <CAE0EDErGfGu483knQJomReSaD8Nf7=A83EiuisC7Lo_SjrQeNA@mail.gmail.com>
+References: <CAE0EDErGfGu483knQJomReSaD8Nf7=A83EiuisC7Lo_SjrQeNA@mail.gmail.com>
+Message-ID: <alpine.LFD.2.11.1506112330590.9034@reclus.nhh.no>
+
+On Thu, 11 Jun 2015, Anna Petr??ov? wrote:
+
+> Hi,
+>
+> I am using R rgrass7 package and it seems that when writing a raster which
+> has only NA, it fails with "only numeric values may be exported":
+>
+> https://github.com/cran/rgrass7/blob/386b11e5a2f3879ec63d299c0594f55cbd39c8e5/R/bin_link.R#L446
+
+This site has nothing whatsoever to do with anything, and is certainly 
+unauthorised. Please only refer to R-Forge:
+
+https://r-forge.r-project.org/scm/viewvc.php/pkg/rgrass7/R/bin_link.R?view=markup&revision=25&root=spgrass
+
+shows the full context, file name, but not line number.
+
+Are your NAs numeric?
+
+> is.numeric(NA)
+[1] FALSE
+> is.numeric(as.numeric(NA))
+[1] TRUE
+
+
+>
+> Is this intended behavior or a bug?
+
+User misunderstanding. NAs are logical unless created in the context of an 
+object with a different storage mode.
+
+>
+> Thank you,
+>
+> Anna
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+
+From kratochanna at gmail.com  Thu Jun 11 15:04:17 2015
+From: kratochanna at gmail.com (=?UTF-8?B?QW5uYSBQZXRyw6HFoW92w6E=?=)
+Date: Thu, 11 Jun 2015 18:04:17 -0400
+Subject: [GRASS-stats] writeRAST fails to write empty raster
+In-Reply-To: <alpine.LFD.2.11.1506112330590.9034@reclus.nhh.no>
+References: <CAE0EDErGfGu483knQJomReSaD8Nf7=A83EiuisC7Lo_SjrQeNA@mail.gmail.com>
+	<alpine.LFD.2.11.1506112330590.9034@reclus.nhh.no>
+Message-ID: <CAE0EDEoPU_iBKbZyspFtoUn=rtRqaE4C6kHDppomEnvq8nH4mg@mail.gmail.com>
+
+On Thu, Jun 11, 2015 at 5:38 PM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+
+> On Thu, 11 Jun 2015, Anna Petr??ov? wrote:
+>
+>  Hi,
+>>
+>> I am using R rgrass7 package and it seems that when writing a raster which
+>> has only NA, it fails with "only numeric values may be exported":
+>>
+>>
+>> https://github.com/cran/rgrass7/blob/386b11e5a2f3879ec63d299c0594f55cbd39c8e5/R/bin_link.R#L446
+>>
+>
+> This site has nothing whatsoever to do with anything, and is certainly
+> unauthorised. Please only refer to R-Forge:
+>
+>
+> https://r-forge.r-project.org/scm/viewvc.php/pkg/rgrass7/R/bin_link.R?view=markup&revision=25&root=spgrass
+>
+> shows the full context, file name, but not line number.
+>
+> Are your NAs numeric?
+>
+>  is.numeric(NA)
+>>
+> [1] FALSE
+>
+>> is.numeric(as.numeric(NA))
+>>
+> [1] TRUE
+>
+
+The problem seems to be in line of my code:
+
+I_oaks_rast_sp <- as(I_oaks_rast, 'SpatialGridDataFrame')
+
+where I_oaks_rast is numeric but not the resulting I_oaks_rast_sp which is
+then written with writeRAST and fails.
+
+
+>> Is this intended behavior or a bug?
+>>
+>
+> User misunderstanding. NAs are logical unless created in the context of an
+> object with a different storage mode.
+>
+
+ Indeed, I'm not an experienced R user...
+
+Thank you
+
+
+>
+>
+>> Thank you,
+>>
+>> Anna
+>>
+>>
+> --
+> Roger Bivand
+> Department of Economics, Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 91 00
+> e-mail: Roger.Bivand at nhh.no
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150611/95f49f18/attachment.html>
+
+From neteler at osgeo.org  Wed Jun 17 03:31:59 2015
+From: neteler at osgeo.org (Markus Neteler)
+Date: Wed, 17 Jun 2015 12:31:59 +0200
+Subject: [GRASS-stats] rgrass7: readVECT() issue with drivers other than
+	ESRI Shapefile
+Message-ID: <CALFmHhvdMNdoANtc+RqXcsKqcPt38SjeZ=e4tLspD2nFD-ny9w@mail.gmail.com>
+
+Hi,
+
+I am trying to get vector data from GRASS GIS 7 into R using rgrass7.
+The default driver is SHAPE which is not able to maintain the longer
+than 10 chars column names etc. So I tried GeoJSON which would do the
+job, yet I get:
+
+> mydata <- readVECT("table_2010_2014", driver="GeoJSON")
+Error in .read_vect_non_plugin(vname = vname, layer = layer, type = type,  :
+  Requested driver GeoJSON not supported
+
+Where does the error message come from? I guess R?
+
+So, reading ?readVECT I see:
+...
+  driver: default ?"ESRI Shapefile"?; a valid OGR writable driver name
+          to define the file format for intermediate files, one of
+          ?c("GML", "SQLite"), c("ESRI_Shapefile", "MapInfo_File")?
+
+Is there any reason that GeoJSON is excluded?
+
+Trying with GML (since I really need to preserve the column names) it fails:
+
+> mydata <- readVECT("table_2010_2014", driver="GML")
+Error in paste(gtmpfl1, shname, sep = .Platform$file.sep) :
+  object 'shname' not found
+
+Likewise also the SQLite driver fails...
+
+Guess I'm missing something...
+
+best,
+Markus
+
+From Roger.Bivand at nhh.no  Wed Jun 17 03:41:21 2015
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed, 17 Jun 2015 12:41:21 +0200
+Subject: [GRASS-stats] rgrass7: readVECT() issue with drivers other than
+ ESRI Shapefile
+In-Reply-To: <CALFmHhvdMNdoANtc+RqXcsKqcPt38SjeZ=e4tLspD2nFD-ny9w@mail.gmail.com>
+References: <CALFmHhvdMNdoANtc+RqXcsKqcPt38SjeZ=e4tLspD2nFD-ny9w@mail.gmail.com>
+Message-ID: <alpine.LFD.2.11.1506171238470.20257@reclus.nhh.no>
+
+Hi,
+
+This has been lagging and needs attention - please provide a reproducible 
+example. A work-around may also be to copy across the column names, but 
+driver= is never regularly tested, and probably should be. rgrass7 uses:
+
+nc_basic_spm_grass7
+
+Roger
+
+On Wed, 17 Jun 2015, Markus Neteler wrote:
+
+> Hi,
+>
+> I am trying to get vector data from GRASS GIS 7 into R using rgrass7.
+> The default driver is SHAPE which is not able to maintain the longer
+> than 10 chars column names etc. So I tried GeoJSON which would do the
+> job, yet I get:
+>
+>> mydata <- readVECT("table_2010_2014", driver="GeoJSON")
+> Error in .read_vect_non_plugin(vname = vname, layer = layer, type = type,  :
+>  Requested driver GeoJSON not supported
+>
+> Where does the error message come from? I guess R?
+>
+> So, reading ?readVECT I see:
+> ...
+>  driver: default ?"ESRI Shapefile"?; a valid OGR writable driver name
+>          to define the file format for intermediate files, one of
+>          ?c("GML", "SQLite"), c("ESRI_Shapefile", "MapInfo_File")?
+>
+> Is there any reason that GeoJSON is excluded?
+>
+> Trying with GML (since I really need to preserve the column names) it fails:
+>
+>> mydata <- readVECT("table_2010_2014", driver="GML")
+> Error in paste(gtmpfl1, shname, sep = .Platform$file.sep) :
+>  object 'shname' not found
+>
+> Likewise also the SQLite driver fails...
+>
+> Guess I'm missing something...
+>
+> best,
+> Markus
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+
+From neteler at osgeo.org  Wed Jun 17 05:36:45 2015
+From: neteler at osgeo.org (Markus Neteler)
+Date: Wed, 17 Jun 2015 14:36:45 +0200
+Subject: [GRASS-stats] rgrass7: readVECT() issue with drivers other than
+ ESRI Shapefile
+In-Reply-To: <alpine.LFD.2.11.1506171238470.20257@reclus.nhh.no>
+References: <CALFmHhvdMNdoANtc+RqXcsKqcPt38SjeZ=e4tLspD2nFD-ny9w@mail.gmail.com>
+	<alpine.LFD.2.11.1506171238470.20257@reclus.nhh.no>
+Message-ID: <CALFmHhvcchUWX=iYGd+GpfXUt4nt8_ruS3mpDLa6DAWQh7b-ow@mail.gmail.com>
+
+Dear Roger,
+
+On Wed, Jun 17, 2015 at 12:41 PM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+> Hi,
+>
+> This has been lagging and needs attention - please provide a reproducible
+> example. A work-around may also be to copy across the column names, but
+> driver= is never regularly tested, and probably should be. rgrass7 uses:
+>
+> nc_basic_spm_grass7
+
+Here an example for that location
+
+g.copy vector=geonames,mygeonames
+v.db.renamecolumn mygeonames column=ALTERNATEN,ALTERNATE_NAME
+
+GRASS 7.0.1RC1 (nc_basic_spm_grass7):~ > R
+# R version 3.2.0 (2015-04-16) -- "Full of Ingredients"
+
+> library(rgrass7)
+> geonames <- readVECT("mygeonames")
+Warning 1: Field NAME of width 1000 truncated to 254.
+Warning 1: Field ASCIINAME of width 1000 truncated to 254.
+Warning 1: Field FEATURECLA of width 1000 truncated to 254.
+Warning 1: Field FEATURECOD of width 1000 truncated to 254.
+Warning 1: Field COUNTRYCOD of width 1000 truncated to 254.
+Warning 1: Field CC2 of width 1000 truncated to 254.
+Warning 1: Field ADMIN1 of width 1000 truncated to 254.
+Warning 1: Field TIMEZONE of width 1000 truncated to 254.
+Warning 1: Field MODIFICATI of width 1000 truncated to 254.
+ERROR 6: Failed to add field named 'ALTERNATE_NAME'
+Exporting 1088 features...
+ 100%
+v.out.ogr complete. 1088 features (Point type) written to <mygeonam>
+(ESRI_Shapefile format).
+OGR data source with driver: ESRI Shapefile
+Source: "/home/neteler/grassdata/nc_basic_spm_grass7/user1/.tmp/pgis_north",
+layer: "mygeonam"
+with 1088 features
+It has 17 fields
+
+--> to avoid unneeded trunkation, I would switch to GeoJSON as driver:
+
+> geonames <- readVECT("mygeonames", driver="GeoJSON")
+Error in .read_vect_non_plugin(vname = vname, layer = layer, type = type,  :
+  Requested driver GeoJSON not supported
+
+--> given that it is not yet added to the available driver list, I try GML:
+
+> geonames <- readVECT("mygeonames", driver="GML")
+Error in paste(gtmpfl1, shname, sep = .Platform$file.sep) :
+  object 'shname' not found
+
+If it matters:
+> .Platform$file.sep
+[1] "/"
+
+I am on Fedora 21:
+uname -a
+Linux pgis_north 4.0.4-202.fc21.x86_64 #1 SMP Wed May 27 22:28:42 UTC
+2015 x86_64 x86_64 x86_64 GNU/Linux
+
+thanks,
+Markus
+
+From neteler at osgeo.org  Thu Jun 18 00:53:02 2015
+From: neteler at osgeo.org (Markus Neteler)
+Date: Thu, 18 Jun 2015 09:53:02 +0200
+Subject: [GRASS-stats] rgrass7: readVECT() issue with drivers other than
+ ESRI Shapefile
+In-Reply-To: <CALFmHhvcchUWX=iYGd+GpfXUt4nt8_ruS3mpDLa6DAWQh7b-ow@mail.gmail.com>
+References: <CALFmHhvdMNdoANtc+RqXcsKqcPt38SjeZ=e4tLspD2nFD-ny9w@mail.gmail.com>
+	<alpine.LFD.2.11.1506171238470.20257@reclus.nhh.no>
+	<CALFmHhvcchUWX=iYGd+GpfXUt4nt8_ruS3mpDLa6DAWQh7b-ow@mail.gmail.com>
+Message-ID: <CALFmHhuBJCzcj-9w5zC-jguB6vjvPoe=YDeBtcw8EOgaNvzD-w@mail.gmail.com>
+
+Dear Roger,
+
+On Wed, Jun 17, 2015 at 2:36 PM, Markus Neteler <neteler at osgeo.org> wrote:
+>> geonames <- readVECT("mygeonames", driver="GML")
+> Error in paste(gtmpfl1, shname, sep = .Platform$file.sep) :
+>   object 'shname' not found
+
+I fixed it locally. Do you want a diff or me committing it?
+
+Best
+Markus
+
+From Roger.Bivand at nhh.no  Thu Jun 18 01:28:56 2015
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu, 18 Jun 2015 10:28:56 +0200
+Subject: [GRASS-stats] rgrass7: readVECT() issue with drivers other than
+ ESRI Shapefile
+In-Reply-To: <CALFmHhuBJCzcj-9w5zC-jguB6vjvPoe=YDeBtcw8EOgaNvzD-w@mail.gmail.com>
+References: <CALFmHhvdMNdoANtc+RqXcsKqcPt38SjeZ=e4tLspD2nFD-ny9w@mail.gmail.com>
+	<alpine.LFD.2.11.1506171238470.20257@reclus.nhh.no>
+	<CALFmHhvcchUWX=iYGd+GpfXUt4nt8_ruS3mpDLa6DAWQh7b-ow@mail.gmail.com>
+	<CALFmHhuBJCzcj-9w5zC-jguB6vjvPoe=YDeBtcw8EOgaNvzD-w@mail.gmail.com>
+Message-ID: <alpine.LFD.2.11.1506181019420.5199@reclus.nhh.no>
+
+Dear Markus,
+
+You have commit rights, so please consider that route. Before committing, 
+I increment Version: in rgrass7/DESCRIPTION, and run:
+
+R CMD build rgrass7
+
+in spgrass/pkg, creating rgrass7_0.1-*.tar.gz, then start GRASS 7 in the 
+example location (NC basic), and run:
+
+R CMD check --run-dontrun --run-donttest rgrass7_0.1-*.tar.gz
+
+If it passes without obvious problems caused by the changes made, I 
+commit.
+
+It may be worth adding a suitable example to the help page in man/, 
+guarded in case some platform doesn't have the required driver on the 
+rgdal side. I think that GML and GeoJSON are problematic because of the 
+binary-string-binary conversions for coordinates, but we need working 
+cases to start with.
+
+Of course, if it is more convenient for you, a diff for me to patch in 
+would also be fine.
+
+Thanks for pushing (not a git pun) this!
+
+Best wishes,
+
+Roger
+
+On Thu, 18 Jun 2015, Markus Neteler wrote:
+
+> Dear Roger,
+>
+> On Wed, Jun 17, 2015 at 2:36 PM, Markus Neteler <neteler at osgeo.org> wrote:
+>>> geonames <- readVECT("mygeonames", driver="GML")
+>> Error in paste(gtmpfl1, shname, sep = .Platform$file.sep) :
+>>   object 'shname' not found
+>
+> I fixed it locally. Do you want a diff or me committing it?
+>
+> Best
+> Markus
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+
+
+From neteler at osgeo.org  Thu Jun 18 02:46:51 2015
+From: neteler at osgeo.org (Markus Neteler)
+Date: Thu, 18 Jun 2015 11:46:51 +0200
+Subject: [GRASS-stats] rgrass7: readVECT() issue with drivers other than
+ ESRI Shapefile
+In-Reply-To: <alpine.LFD.2.11.1506181019420.5199@reclus.nhh.no>
+References: <CALFmHhvdMNdoANtc+RqXcsKqcPt38SjeZ=e4tLspD2nFD-ny9w@mail.gmail.com>
+	<alpine.LFD.2.11.1506171238470.20257@reclus.nhh.no>
+	<CALFmHhvcchUWX=iYGd+GpfXUt4nt8_ruS3mpDLa6DAWQh7b-ow@mail.gmail.com>
+	<CALFmHhuBJCzcj-9w5zC-jguB6vjvPoe=YDeBtcw8EOgaNvzD-w@mail.gmail.com>
+	<alpine.LFD.2.11.1506181019420.5199@reclus.nhh.no>
+Message-ID: <CALFmHhstGs-pSOJeN=XY-TBOj0YL0Zvm5kDyOn+XtQaaD82VUA@mail.gmail.com>
+
+Dear Roger,
+
+On Thu, Jun 18, 2015 at 10:28 AM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+> Dear Markus,
+>
+> You have commit rights, so please consider that route.
+
+ok will do!
+
+> Before committing, I increment Version: in rgrass7/DESCRIPTION, and run:
+
+Should I put 0.2-0 or 0.1-1 ?
+
+> R CMD build rgrass7
+>
+> in spgrass/pkg, creating rgrass7_0.1-*.tar.gz, then start GRASS 7 in the
+> example location (NC basic), and run:
+>
+> R CMD check --run-dontrun --run-donttest rgrass7_0.1-*.tar.gz
+>
+> If it passes without obvious problems caused by the changes made, I commit.
+
+My (small) changes do not cause any troubles but there is this unrelated issue:
+
+GRASS 7.0.1RC1 (nc_basic_spm_grass7):~/software/rgrass7_svn/pkg > R
+CMD check --run-dontrun --run-donttest rgrass7_0.2-*.tar.gz
+* using log directory ?/home/neteler/software/rgrass7_svn/pkg/rgrass7.Rcheck?
+* using R version 3.2.0 (2015-04-16)
+* using platform: x86_64-redhat-linux-gnu (64-bit)
+...
+* checking for unstated dependencies in examples ... OK
+* checking examples ... ERROR
+Running examples in ?rgrass7-Ex.R? failed
+The error most likely occurred in:
+
+> ### Name: initGRASS
+> ### Title: Initiate GRASS session
+> ### Aliases: initGRASS get.GIS_LOCK set.GIS_LOCK unset.GIS_LOCK
+> ###   unlink_.gislock
+> ### Keywords: spatial
+>
+> ### ** Examples
+>
+>
+> initGRASS("/usr/bin/grass-7.0.0", home=tempdir())
+Error in initGRASS("/usr/bin/grass-7.0.0", home = tempdir()) :
+  A GRASS location is already in use; to override, set override=TRUE
+Execution halted
+* checking PDF version of manual ... OK
+* DONE
+
+Status: 1 ERROR
+See
+  ?/home/neteler/software/rgrass7_svn/pkg/rgrass7.Rcheck/00check.log?
+for details.
+
+I don't know where the "override=TRUE" needs to be used.
+
+> It may be worth adding a suitable example to the help page in man/, guarded
+> in case some platform doesn't have the required driver on the rgdal side. I
+> think that GML and GeoJSON are problematic because of the
+> binary-string-binary conversions for coordinates, but we need working cases
+> to start with.
+
+Ok, my first commit will just be the small bugfix.
+
+Regarding the idea to avoid SHAPE as internal data transfer:
+The GeoJSON implementation failed because it does not accept a layer name.
+But I have a (for me) working GML solution implemented which I would
+prefer to send for inspection: a few lines but they look like a hack
+to me. Not knowing well what's behind a rgdal call conditionalized
+upon the rgdal package version, I likely implemented a workaround. At
+least I can start with my analysis now :-)
+
+> Of course, if it is more convenient for you, a diff for me to patch in would
+> also be fine.
+>
+> Thanks for pushing (not a git pun) this!
+
+I'm happy to "commit".
+
+Best wishes,
+Markus
+
+From Roger.Bivand at nhh.no  Thu Jun 18 02:51:27 2015
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu, 18 Jun 2015 11:51:27 +0200
+Subject: [GRASS-stats] rgrass7: readVECT() issue with drivers other than
+ ESRI Shapefile
+In-Reply-To: <CALFmHhstGs-pSOJeN=XY-TBOj0YL0Zvm5kDyOn+XtQaaD82VUA@mail.gmail.com>
+References: <CALFmHhvdMNdoANtc+RqXcsKqcPt38SjeZ=e4tLspD2nFD-ny9w@mail.gmail.com>
+	<alpine.LFD.2.11.1506171238470.20257@reclus.nhh.no>
+	<CALFmHhvcchUWX=iYGd+GpfXUt4nt8_ruS3mpDLa6DAWQh7b-ow@mail.gmail.com>
+	<CALFmHhuBJCzcj-9w5zC-jguB6vjvPoe=YDeBtcw8EOgaNvzD-w@mail.gmail.com>
+	<alpine.LFD.2.11.1506181019420.5199@reclus.nhh.no>
+	<CALFmHhstGs-pSOJeN=XY-TBOj0YL0Zvm5kDyOn+XtQaaD82VUA@mail.gmail.com>
+Message-ID: <alpine.LFD.2.11.1506181147200.5199@reclus.nhh.no>
+
+On Thu, 18 Jun 2015, Markus Neteler wrote:
+
+> Dear Roger,
+>
+> On Thu, Jun 18, 2015 at 10:28 AM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+>> Dear Markus,
+>>
+>> You have commit rights, so please consider that route.
+>
+> ok will do!
+>
+>> Before committing, I increment Version: in rgrass7/DESCRIPTION, and run:
+>
+> Should I put 0.2-0 or 0.1-1 ?
+
+0.1-1, as this would be a small correction of an existing functionality.
+
+>
+>> R CMD build rgrass7
+>>
+>> in spgrass/pkg, creating rgrass7_0.1-*.tar.gz, then start GRASS 7 in the
+>> example location (NC basic), and run:
+>>
+>> R CMD check --run-dontrun --run-donttest rgrass7_0.1-*.tar.gz
+>>
+>> If it passes without obvious problems caused by the changes made, I commit.
+>
+> My (small) changes do not cause any troubles but there is this unrelated 
+> issue:
+
+I'll fix this once you commit; it is protected by \dontrun{} in the help 
+file examples, but --run-dontrun overrides that. CRAN often uses 
+--run-dontrun --run-donttest to be sure that the code included in these 
+exceptions is valid. I need to find a way to bracket this properly.
+
+Sorry, I should have tried myself first!
+
+Roger
+
+>
+> GRASS 7.0.1RC1 (nc_basic_spm_grass7):~/software/rgrass7_svn/pkg > R
+> CMD check --run-dontrun --run-donttest rgrass7_0.2-*.tar.gz
+> * using log directory ?/home/neteler/software/rgrass7_svn/pkg/rgrass7.Rcheck?
+> * using R version 3.2.0 (2015-04-16)
+> * using platform: x86_64-redhat-linux-gnu (64-bit)
+> ...
+> * checking for unstated dependencies in examples ... OK
+> * checking examples ... ERROR
+> Running examples in ?rgrass7-Ex.R? failed
+> The error most likely occurred in:
+>
+>> ### Name: initGRASS
+>> ### Title: Initiate GRASS session
+>> ### Aliases: initGRASS get.GIS_LOCK set.GIS_LOCK unset.GIS_LOCK
+>> ###   unlink_.gislock
+>> ### Keywords: spatial
+>>
+>> ### ** Examples
+>>
+>>
+>> initGRASS("/usr/bin/grass-7.0.0", home=tempdir())
+> Error in initGRASS("/usr/bin/grass-7.0.0", home = tempdir()) :
+>  A GRASS location is already in use; to override, set override=TRUE
+> Execution halted
+> * checking PDF version of manual ... OK
+> * DONE
+>
+> Status: 1 ERROR
+> See
+>  ?/home/neteler/software/rgrass7_svn/pkg/rgrass7.Rcheck/00check.log?
+> for details.
+>
+> I don't know where the "override=TRUE" needs to be used.
+>
+>> It may be worth adding a suitable example to the help page in man/, guarded
+>> in case some platform doesn't have the required driver on the rgdal side. I
+>> think that GML and GeoJSON are problematic because of the
+>> binary-string-binary conversions for coordinates, but we need working cases
+>> to start with.
+>
+> Ok, my first commit will just be the small bugfix.
+>
+> Regarding the idea to avoid SHAPE as internal data transfer:
+> The GeoJSON implementation failed because it does not accept a layer name.
+> But I have a (for me) working GML solution implemented which I would
+> prefer to send for inspection: a few lines but they look like a hack
+> to me. Not knowing well what's behind a rgdal call conditionalized
+> upon the rgdal package version, I likely implemented a workaround. At
+> least I can start with my analysis now :-)
+>
+>> Of course, if it is more convenient for you, a diff for me to patch in would
+>> also be fine.
+>>
+>> Thanks for pushing (not a git pun) this!
+>
+> I'm happy to "commit".
+>
+> Best wishes,
+> Markus
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+
+From neteler at osgeo.org  Thu Jun 18 03:31:12 2015
+From: neteler at osgeo.org (Markus Neteler)
+Date: Thu, 18 Jun 2015 12:31:12 +0200
+Subject: [GRASS-stats] rgrass7: readVECT() issue with drivers other than
+ ESRI Shapefile
+In-Reply-To: <alpine.LFD.2.11.1506181147200.5199@reclus.nhh.no>
+References: <CALFmHhvdMNdoANtc+RqXcsKqcPt38SjeZ=e4tLspD2nFD-ny9w@mail.gmail.com>
+	<alpine.LFD.2.11.1506171238470.20257@reclus.nhh.no>
+	<CALFmHhvcchUWX=iYGd+GpfXUt4nt8_ruS3mpDLa6DAWQh7b-ow@mail.gmail.com>
+	<CALFmHhuBJCzcj-9w5zC-jguB6vjvPoe=YDeBtcw8EOgaNvzD-w@mail.gmail.com>
+	<alpine.LFD.2.11.1506181019420.5199@reclus.nhh.no>
+	<CALFmHhstGs-pSOJeN=XY-TBOj0YL0Zvm5kDyOn+XtQaaD82VUA@mail.gmail.com>
+	<alpine.LFD.2.11.1506181147200.5199@reclus.nhh.no>
+Message-ID: <CALFmHhv6rN3KgYf-_M_UgjjnJVf3mLKKhsGiBYBrUtkkkj+c_w@mail.gmail.com>
+
+Dear Roger,
+
+On Thu, Jun 18, 2015 at 11:51 AM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+> On Thu, 18 Jun 2015, Markus Neteler wrote:
+...
+>> Should I put 0.2-0 or 0.1-1 ?
+>
+> 0.1-1, as this would be a small correction of an existing functionality.
+
+Fine, commited as revision 32.
+
+Concerning the GRASS GIS -R data exchange:
+GML also not perfect - the yet uncommited local change is to use
+"SQLite" rather than SHAPE since it also preserves the projection
+metadata (which GML doesn't). Works smoothly here so far.
+
+...
+> I'll fix this once you commit; it is protected by \dontrun{} in the help
+> file examples, but --run-dontrun overrides that. CRAN often uses
+> --run-dontrun --run-donttest to be sure that the code included in these
+> exceptions is valid. I need to find a way to bracket this properly.
+>
+> Sorry, I should have tried myself first!
+
+No problem at all!
+
+best,
+Markus
+
+From dicko.ahmadou at gmail.com  Thu Jun 18 03:36:31 2015
+From: dicko.ahmadou at gmail.com (Ahmadou Dicko)
+Date: Thu, 18 Jun 2015 10:36:31 +0000
+Subject: [GRASS-stats] readRAST and mapset consistency with gdal plugin
+Message-ID: <CAP8THHVbvXrv-O9mQGUAyDtUyokvKuciFp++LicfyFxGGkw=kg@mail.gmail.com>
+
+Dear all,
+
+I'm testing the GRASS GDAL pluging using the rgrass7 package and I
+have some issues with the readRAST function with the mapset argument.
+Inside readRAST we have  a .read_rast_plugin core function to read the
+raster using the plugin that supposed to share the same argument as
+readRAST.
+
+However, inside .read_rast_plugin, the mapset argument is always NULL,
+since we have a mapset argument in readRAST should not the these two
+arguments be the same.
+
+To illustrate what I mean
+
+This what we have:
+readRAST <- function(..., mapset = NULL, ...) {
+  ....
+  .read_rast_plugin(..., mapset = NULL, ...)
+}
+
+
+This is what I think we should have:
+readRAST <- function(..., mapset = NULL, ...) {
+  ....
+  .read_rast_plugin(..., mapset = mapset, ...)
+}
+
+
+Here are the steps to reproduce the bug:
+I used the nc_basic_spm_grass7 location and user1 mapset.
+
+In GRASS
+g.copy raster=elevation at PERMANENT,elevation
+g.region raster=elevation
+
+Then we launch R within the GRASS session
+
+library(rgrass7)
+r <- readRAST("elevation", plugin = TRUE, mapset = "user1")
+/home/ahmadou/GIS/GRASS/grassdata/nc_basic_spm_grass7/user1/cellhd/elevation
+has GDAL driver GRASS
+and has 1350 rows and 1500 columns
+Warning message:
+statistics not supported by this driver
+
+### Still have 'user1' in metadata
+r <- readRAST("elevation", plugin = TRUE, mapset = "PERMANENT")
+/home/ahmadou/GIS/GRASS/grassdata/nc_basic_spm_grass7/user1/cellhd/elevation
+has GDAL driver GRASS
+and has 1350 rows and 1500 columns
+Warning message:
+statistics not supported by this driver
+
+With the corrected version we have:
+
+### Now we have 'PERMANENT' in the path (metadata)
+r <- readRAST2("elevation", plugin = TRUE, mapset = "PERMANENT")
+/home/ahmadou/GIS/GRASS/grassdata/nc_basic_spm_grass7/PERMANENT/cellhd/elevation
+has GDAL driver GRASS
+and has 1350 rows and 1500 columns
+Warning message:
+statistics not supported by this driver
+
+I don't have commit right, should I provide a diff file ?
+
+Best,
+
+-- 
+Ahmadou H. DICKO
+statistician economist (Ing?nieur Statisticien ?conomiste)
+PhD candidate in Climate change economics
+Faculty of economics and managment - Cheikh Anta Diop University
+West African Science Service Center on Climate Change and Adaptated
+Land Use (WASCAL)
+Center for Development Research (ZEF) - University of Bonn
+email : ahmadou.dicko at ucad.edu.sn
+twitter : @dickoah
+github : github/dickoa
+tel : +221 33 827 55 16
+portable: +221 77 123 81 69
+
+From dicko.ahmadou at gmail.com  Thu Jun 18 04:18:47 2015
+From: dicko.ahmadou at gmail.com (Ahmadou Dicko)
+Date: Thu, 18 Jun 2015 11:18:47 +0000
+Subject: [GRASS-stats] Mapset and layer names in readVECT using GRASS GDAL
+	plugin
+Message-ID: <CAP8THHXSzHazv7qxm8vYvgoC9poXejfSxyi3fVPXD0J3OeM+uA@mail.gmail.com>
+
+Hi,
+
+I'm trying to use the direct OGR access to GRASS vector using plugin
+through the rgrass7 package in R but I have some issues with the
+mapset argument.
+
+Here are the steps to reproduce the bug using the nc_basic_spm_grass7
+GRASS location and user1 mapset.
+
+Within the GRASS session, we launch R
+library(rgrass7)
+v <- readVECT("geonames", plugin = TRUE)
+Error in .read_vect_plugin(vname = vname, layer = layer, type = type,  :
+  object 'mapset' not found
+
+One way to fix this, is to add a mapset argument to .read_vect_plugin
+and set it by default to the same argument in the readVECT function.
+
+### Example of fix
+readVECT <- function(..., mapset = NULL, ...) {
+ ....
+         if (plugin) {
+            res <- .read_vect_plugin(..., mapset = mapset, ...)
+ ....
+}
+
+But once this problem solved, another one appears. This one, need
+confirmation though. Using the GRASS GDAL plugin, I can't open a GRASS
+vector without using the layer name. I am aware that we can use the
+layer number using other driver (Shapefiles, GML, etc) but I looks
+like (at least in my setup) that I can't open it without giving the
+layer name.
+
+I modified rgrass7:::.read_vect_plugin and named it .read_vect_plugin2
+and added a mapset argument (to correct the first bug).
+
+### Reproducing the error
+sss <- strsplit(packageDescription("rgdal")$Version, "-")[[1]]
+
+class(
+.read_vect_plugin2("geonames",
+                    mapset = NULL,
+                    layer = 1L,
+                    sss = sss,
+                    ignore.stderr = TRUE,
+                    pointDropZ = TRUE)
+)
+Error in ogrInfo(dsn = dsn, layer = layer, encoding = encoding,
+use_iconv = use_iconv,  :
+  Cannot open layer
+
+
+class(
+ .read_vect_plugin2("geonames",
+                     mapset = NULL,
+                     layer = "geonames",
+                     sss = sss,
+                     ignore.stderr = TRUE,
+                     pointDropZ = TRUE)
+)
+[1] "SpatialPointsDataFrame"
+attr(,"package")
+[1] "sp"
+
+Please can you confirm that it is a feature of the plugin to have the
+real name instead of the layer number ?
+
+Nonetheless, one way to fix this is to add a call to
+rgdal::ogrListLayers in the rgrass7:::.read_vect_plugin
+
+    dsn <- paste(gg$GISDBASE, gg$LOCATION_NAME, mapset, "vector",
+                 vname[1], "head", sep = "/")
+    layers <- rgdal::ogrListLayers(dsn = dsn)
+
+Using this approach we can have the layer names and use it in readOGR.
+I hope that I described it clearly.
+
+Best regards,
+
+Info and spec
+Linux:
+Linux dickoa 4.0.5-1-ARCH #1 SMP PREEMPT Sat Jun 6 18:37:49 CEST 2015
+x86_64 GNU/Linux
+
+GRASS:
+version=7.1.svn
+date=2015
+revision=65487
+build_date=2015-06-16
+build_platform=x86_64-unknown-linux-gnu
+
+GDAL:
+GDAL 1.11.2, released 2015/02/10
+
+
+R:
+sessionInfo()
+R version 3.2.1 RC (2015-06-14 r68519)
+Platform: x86_64-unknown-linux-gnu (64-bit)
+Running under: Arch Linux
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods
+[7] base
+
+other attached packages:
+[1] rgdal_0.9-3   rgrass7_0.1-0 XML_3.98-1.2  sp_1.1-1
+
+loaded via a namespace (and not attached):
+[1] tools_3.2.1     grid_3.2.1      lattice_0.20-31
+
+
+
+-- 
+Ahmadou H. DICKO
+statistician economist (Ing?nieur Statisticien ?conomiste)
+PhD candidate in Climate change economics
+Faculty of economics and managment - Cheikh Anta Diop University
+West African Science Service Center on Climate Change and Adaptated
+Land Use (WASCAL)
+Center for Development Research (ZEF) - University of Bonn
+email : ahmadou.dicko at ucad.edu.sn
+twitter : @dickoah
+github : github/dickoa
+tel : +221 33 827 55 16
+portable: +221 77 123 81 69
+
+From Roger.Bivand at nhh.no  Thu Jun 18 06:27:30 2015
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu, 18 Jun 2015 15:27:30 +0200
+Subject: [GRASS-stats] Mapset and layer names in readVECT using GRASS
+ GDAL	plugin
+In-Reply-To: <CAP8THHXSzHazv7qxm8vYvgoC9poXejfSxyi3fVPXD0J3OeM+uA@mail.gmail.com>
+References: <CAP8THHXSzHazv7qxm8vYvgoC9poXejfSxyi3fVPXD0J3OeM+uA@mail.gmail.com>
+Message-ID: <alpine.LFD.2.11.1506181524140.5199@reclus.nhh.no>
+
+Hi,
+
+Thanks for your interest. I do not use the plugins at all, as they have 
+historically led to great difficulty in managing and maintaining rgdal (I 
+sometimes rebuild GDAL more than once a day). If you would like commit 
+rights on R-Forge, please file a request there, and we can try to find 
+ways of automating checking (or testing) the functionality, but without my 
+contribution.
+
+Best wishes,
+
+Roger
+
+On Thu, 18 Jun 2015, Ahmadou Dicko wrote:
+
+> Hi,
+>
+> I'm trying to use the direct OGR access to GRASS vector using plugin
+> through the rgrass7 package in R but I have some issues with the
+> mapset argument.
+>
+> Here are the steps to reproduce the bug using the nc_basic_spm_grass7
+> GRASS location and user1 mapset.
+>
+> Within the GRASS session, we launch R
+> library(rgrass7)
+> v <- readVECT("geonames", plugin = TRUE)
+> Error in .read_vect_plugin(vname = vname, layer = layer, type = type,  :
+>  object 'mapset' not found
+>
+> One way to fix this, is to add a mapset argument to .read_vect_plugin
+> and set it by default to the same argument in the readVECT function.
+>
+> ### Example of fix
+> readVECT <- function(..., mapset = NULL, ...) {
+> ....
+>         if (plugin) {
+>            res <- .read_vect_plugin(..., mapset = mapset, ...)
+> ....
+> }
+>
+> But once this problem solved, another one appears. This one, need
+> confirmation though. Using the GRASS GDAL plugin, I can't open a GRASS
+> vector without using the layer name. I am aware that we can use the
+> layer number using other driver (Shapefiles, GML, etc) but I looks
+> like (at least in my setup) that I can't open it without giving the
+> layer name.
+>
+> I modified rgrass7:::.read_vect_plugin and named it .read_vect_plugin2
+> and added a mapset argument (to correct the first bug).
+>
+> ### Reproducing the error
+> sss <- strsplit(packageDescription("rgdal")$Version, "-")[[1]]
+>
+> class(
+> .read_vect_plugin2("geonames",
+>                    mapset = NULL,
+>                    layer = 1L,
+>                    sss = sss,
+>                    ignore.stderr = TRUE,
+>                    pointDropZ = TRUE)
+> )
+> Error in ogrInfo(dsn = dsn, layer = layer, encoding = encoding,
+> use_iconv = use_iconv,  :
+>  Cannot open layer
+>
+>
+> class(
+> .read_vect_plugin2("geonames",
+>                     mapset = NULL,
+>                     layer = "geonames",
+>                     sss = sss,
+>                     ignore.stderr = TRUE,
+>                     pointDropZ = TRUE)
+> )
+> [1] "SpatialPointsDataFrame"
+> attr(,"package")
+> [1] "sp"
+>
+> Please can you confirm that it is a feature of the plugin to have the
+> real name instead of the layer number ?
+>
+> Nonetheless, one way to fix this is to add a call to
+> rgdal::ogrListLayers in the rgrass7:::.read_vect_plugin
+>
+>    dsn <- paste(gg$GISDBASE, gg$LOCATION_NAME, mapset, "vector",
+>                 vname[1], "head", sep = "/")
+>    layers <- rgdal::ogrListLayers(dsn = dsn)
+>
+> Using this approach we can have the layer names and use it in readOGR.
+> I hope that I described it clearly.
+>
+> Best regards,
+>
+> Info and spec
+> Linux:
+> Linux dickoa 4.0.5-1-ARCH #1 SMP PREEMPT Sat Jun 6 18:37:49 CEST 2015
+> x86_64 GNU/Linux
+>
+> GRASS:
+> version=7.1.svn
+> date=2015
+> revision=65487
+> build_date=2015-06-16
+> build_platform=x86_64-unknown-linux-gnu
+>
+> GDAL:
+> GDAL 1.11.2, released 2015/02/10
+>
+>
+> R:
+> sessionInfo()
+> R version 3.2.1 RC (2015-06-14 r68519)
+> Platform: x86_64-unknown-linux-gnu (64-bit)
+> Running under: Arch Linux
+>
+> locale:
+> [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+> [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+> [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8
+> [7] LC_PAPER=en_US.UTF-8       LC_NAME=C
+> [9] LC_ADDRESS=C               LC_TELEPHONE=C
+> [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods
+> [7] base
+>
+> other attached packages:
+> [1] rgdal_0.9-3   rgrass7_0.1-0 XML_3.98-1.2  sp_1.1-1
+>
+> loaded via a namespace (and not attached):
+> [1] tools_3.2.1     grid_3.2.1      lattice_0.20-31
+>
+>
+>
+> -- 
+> Ahmadou H. DICKO
+> statistician economist (Ing?nieur Statisticien ?conomiste)
+> PhD candidate in Climate change economics
+> Faculty of economics and managment - Cheikh Anta Diop University
+> West African Science Service Center on Climate Change and Adaptated
+> Land Use (WASCAL)
+> Center for Development Research (ZEF) - University of Bonn
+> email : ahmadou.dicko at ucad.edu.sn
+> twitter : @dickoah
+> github : github/dickoa
+> tel : +221 33 827 55 16
+> portable: +221 77 123 81 69
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+
+From Rainer at krugs.de  Thu Jun 18 09:33:25 2015
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Thu, 18 Jun 2015 18:33:25 +0200
+Subject: [GRASS-stats] Mapset and layer names in readVECT using GRASS
+	GDAL	plugin
+In-Reply-To: <alpine.LFD.2.11.1506181524140.5199@reclus.nhh.no> (Roger
+	Bivand's message of "Thu, 18 Jun 2015 15:27:30 +0200")
+References: <CAP8THHXSzHazv7qxm8vYvgoC9poXejfSxyi3fVPXD0J3OeM+uA@mail.gmail.com>
+	<alpine.LFD.2.11.1506181524140.5199@reclus.nhh.no>
+Message-ID: <m2a8vxyo16.fsf@krugs.de>
+
+Roger Bivand <Roger.Bivand at nhh.no> writes:
+
+> Hi,
+>
+> Thanks for your interest. I do not use the plugins at all, as they
+> have historically led to great difficulty in managing and maintaining
+> rgdal (I sometimes rebuild GDAL more than once a day). If you would
+> like commit rights on R-Forge, please file a request there, and we can
+> try to find ways of automating checking (or testing) the
+> functionality, but without my contribution.
+
+My fault - I forgot the mapset.
+
+I just uploaded a fix - Thanks Ahmadou - exactly as you suggested.
+
+Cheers,
+
+Rainer
+>
+> Best wishes,
+>
+> Roger
+>
+> On Thu, 18 Jun 2015, Ahmadou Dicko wrote:
+>
+>> Hi,
+>>
+>> I'm trying to use the direct OGR access to GRASS vector using plugin
+>> through the rgrass7 package in R but I have some issues with the
+>> mapset argument.
+>>
+>> Here are the steps to reproduce the bug using the nc_basic_spm_grass7
+>> GRASS location and user1 mapset.
+>>
+>> Within the GRASS session, we launch R
+>> library(rgrass7)
+>> v <- readVECT("geonames", plugin = TRUE)
+>> Error in .read_vect_plugin(vname = vname, layer = layer, type = type,  :
+>>  object 'mapset' not found
+>>
+>> One way to fix this, is to add a mapset argument to .read_vect_plugin
+>> and set it by default to the same argument in the readVECT function.
+>>
+>> ### Example of fix
+>> readVECT <- function(..., mapset = NULL, ...) {
+>> ....
+>>         if (plugin) {
+>>            res <- .read_vect_plugin(..., mapset = mapset, ...)
+>> ....
+>> }
+>>
+>> But once this problem solved, another one appears. This one, need
+>> confirmation though. Using the GRASS GDAL plugin, I can't open a GRASS
+>> vector without using the layer name. I am aware that we can use the
+>> layer number using other driver (Shapefiles, GML, etc) but I looks
+>> like (at least in my setup) that I can't open it without giving the
+>> layer name.
+>>
+>> I modified rgrass7:::.read_vect_plugin and named it .read_vect_plugin2
+>> and added a mapset argument (to correct the first bug).
+>>
+>> ### Reproducing the error
+>> sss <- strsplit(packageDescription("rgdal")$Version, "-")[[1]]
+>>
+>> class(
+>> .read_vect_plugin2("geonames",
+>>                    mapset = NULL,
+>>                    layer = 1L,
+>>                    sss = sss,
+>>                    ignore.stderr = TRUE,
+>>                    pointDropZ = TRUE)
+>> )
+>> Error in ogrInfo(dsn = dsn, layer = layer, encoding = encoding,
+>> use_iconv = use_iconv,  :
+>>  Cannot open layer
+>>
+>>
+>> class(
+>> .read_vect_plugin2("geonames",
+>>                     mapset = NULL,
+>>                     layer = "geonames",
+>>                     sss = sss,
+>>                     ignore.stderr = TRUE,
+>>                     pointDropZ = TRUE)
+>> )
+>> [1] "SpatialPointsDataFrame"
+>> attr(,"package")
+>> [1] "sp"
+>>
+>> Please can you confirm that it is a feature of the plugin to have the
+>> real name instead of the layer number ?
+>>
+>> Nonetheless, one way to fix this is to add a call to
+>> rgdal::ogrListLayers in the rgrass7:::.read_vect_plugin
+>>
+>>    dsn <- paste(gg$GISDBASE, gg$LOCATION_NAME, mapset, "vector",
+>>                 vname[1], "head", sep = "/")
+>>    layers <- rgdal::ogrListLayers(dsn = dsn)
+>>
+>> Using this approach we can have the layer names and use it in readOGR.
+>> I hope that I described it clearly.
+>>
+>> Best regards,
+>>
+>> Info and spec
+>> Linux:
+>> Linux dickoa 4.0.5-1-ARCH #1 SMP PREEMPT Sat Jun 6 18:37:49 CEST 2015
+>> x86_64 GNU/Linux
+>>
+>> GRASS:
+>> version=7.1.svn
+>> date=2015
+>> revision=65487
+>> build_date=2015-06-16
+>> build_platform=x86_64-unknown-linux-gnu
+>>
+>> GDAL:
+>> GDAL 1.11.2, released 2015/02/10
+>>
+>>
+>> R:
+>> sessionInfo()
+>> R version 3.2.1 RC (2015-06-14 r68519)
+>> Platform: x86_64-unknown-linux-gnu (64-bit)
+>> Running under: Arch Linux
+>>
+>> locale:
+>> [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+>> [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+>> [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8
+>> [7] LC_PAPER=en_US.UTF-8       LC_NAME=C
+>> [9] LC_ADDRESS=C               LC_TELEPHONE=C
+>> [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+>>
+>> attached base packages:
+>> [1] stats     graphics  grDevices utils     datasets  methods
+>> [7] base
+>>
+>> other attached packages:
+>> [1] rgdal_0.9-3   rgrass7_0.1-0 XML_3.98-1.2  sp_1.1-1
+>>
+>> loaded via a namespace (and not attached):
+>> [1] tools_3.2.1     grid_3.2.1      lattice_0.20-31
+>>
+>>
+>>
+>> -- 
+>> Ahmadou H. DICKO
+>> statistician economist (Ing?nieur Statisticien ?conomiste)
+>> PhD candidate in Climate change economics
+>> Faculty of economics and managment - Cheikh Anta Diop University
+>> West African Science Service Center on Climate Change and Adaptated
+>> Land Use (WASCAL)
+>> Center for Development Research (ZEF) - University of Bonn
+>> email : ahmadou.dicko at ucad.edu.sn
+>> twitter : @dickoah
+>> github : github/dickoa
+>> tel : +221 33 827 55 16
+>> portable: +221 77 123 81 69
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats at lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+PGP: 0x0F52F982
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 480 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150618/0f2fa709/attachment.pgp>
+
+From Rainer at krugs.de  Thu Jun 18 09:33:48 2015
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Thu, 18 Jun 2015 18:33:48 +0200
+Subject: [GRASS-stats] readRAST and mapset consistency with gdal plugin
+In-Reply-To: <CAP8THHVbvXrv-O9mQGUAyDtUyokvKuciFp++LicfyFxGGkw=kg@mail.gmail.com>
+	(Ahmadou Dicko's message of "Thu, 18 Jun 2015 10:36:31 +0000")
+References: <CAP8THHVbvXrv-O9mQGUAyDtUyokvKuciFp++LicfyFxGGkw=kg@mail.gmail.com>
+Message-ID: <m2616lyo0j.fsf@krugs.de>
+
+Ahmadou Dicko <dicko.ahmadou at gmail.com> writes:
+
+> Dear all,
+>
+> I'm testing the GRASS GDAL pluging using the rgrass7 package and I
+> have some issues with the readRAST function with the mapset argument.
+> Inside readRAST we have  a .read_rast_plugin core function to read the
+> raster using the plugin that supposed to share the same argument as
+> readRAST.
+>
+> However, inside .read_rast_plugin, the mapset argument is always NULL,
+> since we have a mapset argument in readRAST should not the these two
+> arguments be the same.
+
+
+My fault - I forgot the mapset.
+
+I just uploaded a fix - Thanks Ahmadou - exactly as you suggested.
+
+Cheers,
+
+Rainer
+
+
+>
+> To illustrate what I mean
+>
+> This what we have:
+> readRAST <- function(..., mapset = NULL, ...) {
+>   ....
+>   .read_rast_plugin(..., mapset = NULL, ...)
+> }
+>
+>
+> This is what I think we should have:
+> readRAST <- function(..., mapset = NULL, ...) {
+>   ....
+>   .read_rast_plugin(..., mapset = mapset, ...)
+> }
+>
+>
+> Here are the steps to reproduce the bug:
+> I used the nc_basic_spm_grass7 location and user1 mapset.
+>
+> In GRASS
+> g.copy raster=elevation at PERMANENT,elevation
+> g.region raster=elevation
+>
+> Then we launch R within the GRASS session
+>
+> library(rgrass7)
+> r <- readRAST("elevation", plugin = TRUE, mapset = "user1")
+> /home/ahmadou/GIS/GRASS/grassdata/nc_basic_spm_grass7/user1/cellhd/elevation
+> has GDAL driver GRASS
+> and has 1350 rows and 1500 columns
+> Warning message:
+> statistics not supported by this driver
+>
+> ### Still have 'user1' in metadata
+> r <- readRAST("elevation", plugin = TRUE, mapset = "PERMANENT")
+> /home/ahmadou/GIS/GRASS/grassdata/nc_basic_spm_grass7/user1/cellhd/elevation
+> has GDAL driver GRASS
+> and has 1350 rows and 1500 columns
+> Warning message:
+> statistics not supported by this driver
+>
+> With the corrected version we have:
+>
+> ### Now we have 'PERMANENT' in the path (metadata)
+> r <- readRAST2("elevation", plugin = TRUE, mapset = "PERMANENT")
+> /home/ahmadou/GIS/GRASS/grassdata/nc_basic_spm_grass7/PERMANENT/cellhd/elevation
+> has GDAL driver GRASS
+> and has 1350 rows and 1500 columns
+> Warning message:
+> statistics not supported by this driver
+>
+> I don't have commit right, should I provide a diff file ?
+>
+> Best,
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+PGP: 0x0F52F982
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 480 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150618/373fab65/attachment.pgp>
+
+From Rainer at krugs.de  Thu Jun 18 09:35:51 2015
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Thu, 18 Jun 2015 18:35:51 +0200
+Subject: [GRASS-stats] Mapset and layer names in readVECT using GRASS
+	GDAL	plugin
+In-Reply-To: <alpine.LFD.2.11.1506181524140.5199@reclus.nhh.no> (Roger
+	Bivand's message of "Thu, 18 Jun 2015 15:27:30 +0200")
+References: <CAP8THHXSzHazv7qxm8vYvgoC9poXejfSxyi3fVPXD0J3OeM+uA@mail.gmail.com>
+	<alpine.LFD.2.11.1506181524140.5199@reclus.nhh.no>
+Message-ID: <m2y4jhx9co.fsf@krugs.de>
+
+Roger Bivand <Roger.Bivand at nhh.no> writes:
+
+> Hi,
+>
+> Thanks for your interest. I do not use the plugins at all, as they
+> have historically led to great difficulty in managing and maintaining
+> rgdal (I sometimes rebuild GDAL more than once a day). If you would
+> like commit rights on R-Forge, please file a request there, and we can
+> try to find ways of automating checking (or testing) the
+> functionality, but without my contribution.
+
+Roger - I think you can release the bug fix I just commited after
+Ahmadou tried it out as it was an oversight.
+
+Cheers,
+
+Rainer
+
+>
+> Best wishes,
+>
+> Roger
+>
+> On Thu, 18 Jun 2015, Ahmadou Dicko wrote:
+>
+>> Hi,
+>>
+>> I'm trying to use the direct OGR access to GRASS vector using plugin
+>> through the rgrass7 package in R but I have some issues with the
+>> mapset argument.
+>>
+>> Here are the steps to reproduce the bug using the nc_basic_spm_grass7
+>> GRASS location and user1 mapset.
+>>
+>> Within the GRASS session, we launch R
+>> library(rgrass7)
+>> v <- readVECT("geonames", plugin = TRUE)
+>> Error in .read_vect_plugin(vname = vname, layer = layer, type = type,  :
+>>  object 'mapset' not found
+>>
+>> One way to fix this, is to add a mapset argument to .read_vect_plugin
+>> and set it by default to the same argument in the readVECT function.
+>>
+>> ### Example of fix
+>> readVECT <- function(..., mapset = NULL, ...) {
+>> ....
+>>         if (plugin) {
+>>            res <- .read_vect_plugin(..., mapset = mapset, ...)
+>> ....
+>> }
+>>
+>> But once this problem solved, another one appears. This one, need
+>> confirmation though. Using the GRASS GDAL plugin, I can't open a GRASS
+>> vector without using the layer name. I am aware that we can use the
+>> layer number using other driver (Shapefiles, GML, etc) but I looks
+>> like (at least in my setup) that I can't open it without giving the
+>> layer name.
+>>
+>> I modified rgrass7:::.read_vect_plugin and named it .read_vect_plugin2
+>> and added a mapset argument (to correct the first bug).
+>>
+>> ### Reproducing the error
+>> sss <- strsplit(packageDescription("rgdal")$Version, "-")[[1]]
+>>
+>> class(
+>> .read_vect_plugin2("geonames",
+>>                    mapset = NULL,
+>>                    layer = 1L,
+>>                    sss = sss,
+>>                    ignore.stderr = TRUE,
+>>                    pointDropZ = TRUE)
+>> )
+>> Error in ogrInfo(dsn = dsn, layer = layer, encoding = encoding,
+>> use_iconv = use_iconv,  :
+>>  Cannot open layer
+>>
+>>
+>> class(
+>> .read_vect_plugin2("geonames",
+>>                     mapset = NULL,
+>>                     layer = "geonames",
+>>                     sss = sss,
+>>                     ignore.stderr = TRUE,
+>>                     pointDropZ = TRUE)
+>> )
+>> [1] "SpatialPointsDataFrame"
+>> attr(,"package")
+>> [1] "sp"
+>>
+>> Please can you confirm that it is a feature of the plugin to have the
+>> real name instead of the layer number ?
+>>
+>> Nonetheless, one way to fix this is to add a call to
+>> rgdal::ogrListLayers in the rgrass7:::.read_vect_plugin
+>>
+>>    dsn <- paste(gg$GISDBASE, gg$LOCATION_NAME, mapset, "vector",
+>>                 vname[1], "head", sep = "/")
+>>    layers <- rgdal::ogrListLayers(dsn = dsn)
+>>
+>> Using this approach we can have the layer names and use it in readOGR.
+>> I hope that I described it clearly.
+>>
+>> Best regards,
+>>
+>> Info and spec
+>> Linux:
+>> Linux dickoa 4.0.5-1-ARCH #1 SMP PREEMPT Sat Jun 6 18:37:49 CEST 2015
+>> x86_64 GNU/Linux
+>>
+>> GRASS:
+>> version=7.1.svn
+>> date=2015
+>> revision=65487
+>> build_date=2015-06-16
+>> build_platform=x86_64-unknown-linux-gnu
+>>
+>> GDAL:
+>> GDAL 1.11.2, released 2015/02/10
+>>
+>>
+>> R:
+>> sessionInfo()
+>> R version 3.2.1 RC (2015-06-14 r68519)
+>> Platform: x86_64-unknown-linux-gnu (64-bit)
+>> Running under: Arch Linux
+>>
+>> locale:
+>> [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+>> [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+>> [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8
+>> [7] LC_PAPER=en_US.UTF-8       LC_NAME=C
+>> [9] LC_ADDRESS=C               LC_TELEPHONE=C
+>> [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+>>
+>> attached base packages:
+>> [1] stats     graphics  grDevices utils     datasets  methods
+>> [7] base
+>>
+>> other attached packages:
+>> [1] rgdal_0.9-3   rgrass7_0.1-0 XML_3.98-1.2  sp_1.1-1
+>>
+>> loaded via a namespace (and not attached):
+>> [1] tools_3.2.1     grid_3.2.1      lattice_0.20-31
+>>
+>>
+>>
+>> -- 
+>> Ahmadou H. DICKO
+>> statistician economist (Ing?nieur Statisticien ?conomiste)
+>> PhD candidate in Climate change economics
+>> Faculty of economics and managment - Cheikh Anta Diop University
+>> West African Science Service Center on Climate Change and Adaptated
+>> Land Use (WASCAL)
+>> Center for Development Research (ZEF) - University of Bonn
+>> email : ahmadou.dicko at ucad.edu.sn
+>> twitter : @dickoah
+>> github : github/dickoa
+>> tel : +221 33 827 55 16
+>> portable: +221 77 123 81 69
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats at lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+PGP: 0x0F52F982
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 480 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150618/478acc1d/attachment-0001.pgp>
+
+From dicko.ahmadou at gmail.com  Thu Jun 18 11:07:38 2015
+From: dicko.ahmadou at gmail.com (Ahmadou Dicko)
+Date: Thu, 18 Jun 2015 18:07:38 +0000
+Subject: [GRASS-stats] Mapset and layer names in readVECT using GRASS
+	GDAL plugin
+In-Reply-To: <m2y4jhx9co.fsf@krugs.de>
+References: <CAP8THHXSzHazv7qxm8vYvgoC9poXejfSxyi3fVPXD0J3OeM+uA@mail.gmail.com>
+	<alpine.LFD.2.11.1506181524140.5199@reclus.nhh.no>
+	<m2y4jhx9co.fsf@krugs.de>
+Message-ID: <CAP8THHV_o2VzhXsA5hrtk4D8B8n2qGtLNZfKfsX=r3xskW-oQA@mail.gmail.com>
+
+I just tested the last version commited and it works now, thank you.
+Although we still need to give the layer name in order to read a
+vector using the plugin.
+But this is another issue and I think we can solve this using
+rgdal::ogrListLayers but it will require more change in the code base.
+
+I will think about an alternative design of the readVECT using
+ogrListLayers that will pass all the tests and I will let you know.
+
+Thanks again
+
+
+
+On Thu, Jun 18, 2015 at 4:35 PM, Rainer M Krug <Rainer at krugs.de> wrote:
+> Roger Bivand <Roger.Bivand at nhh.no> writes:
+>
+>> Hi,
+>>
+>> Thanks for your interest. I do not use the plugins at all, as they
+>> have historically led to great difficulty in managing and maintaining
+>> rgdal (I sometimes rebuild GDAL more than once a day). If you would
+>> like commit rights on R-Forge, please file a request there, and we can
+>> try to find ways of automating checking (or testing) the
+>> functionality, but without my contribution.
+>
+> Roger - I think you can release the bug fix I just commited after
+> Ahmadou tried it out as it was an oversight.
+>
+> Cheers,
+>
+> Rainer
+>
+>>
+>> Best wishes,
+>>
+>> Roger
+>>
+>> On Thu, 18 Jun 2015, Ahmadou Dicko wrote:
+>>
+>>> Hi,
+>>>
+>>> I'm trying to use the direct OGR access to GRASS vector using plugin
+>>> through the rgrass7 package in R but I have some issues with the
+>>> mapset argument.
+>>>
+>>> Here are the steps to reproduce the bug using the nc_basic_spm_grass7
+>>> GRASS location and user1 mapset.
+>>>
+>>> Within the GRASS session, we launch R
+>>> library(rgrass7)
+>>> v <- readVECT("geonames", plugin = TRUE)
+>>> Error in .read_vect_plugin(vname = vname, layer = layer, type = type,  :
+>>>  object 'mapset' not found
+>>>
+>>> One way to fix this, is to add a mapset argument to .read_vect_plugin
+>>> and set it by default to the same argument in the readVECT function.
+>>>
+>>> ### Example of fix
+>>> readVECT <- function(..., mapset = NULL, ...) {
+>>> ....
+>>>         if (plugin) {
+>>>            res <- .read_vect_plugin(..., mapset = mapset, ...)
+>>> ....
+>>> }
+>>>
+>>> But once this problem solved, another one appears. This one, need
+>>> confirmation though. Using the GRASS GDAL plugin, I can't open a GRASS
+>>> vector without using the layer name. I am aware that we can use the
+>>> layer number using other driver (Shapefiles, GML, etc) but I looks
+>>> like (at least in my setup) that I can't open it without giving the
+>>> layer name.
+>>>
+>>> I modified rgrass7:::.read_vect_plugin and named it .read_vect_plugin2
+>>> and added a mapset argument (to correct the first bug).
+>>>
+>>> ### Reproducing the error
+>>> sss <- strsplit(packageDescription("rgdal")$Version, "-")[[1]]
+>>>
+>>> class(
+>>> .read_vect_plugin2("geonames",
+>>>                    mapset = NULL,
+>>>                    layer = 1L,
+>>>                    sss = sss,
+>>>                    ignore.stderr = TRUE,
+>>>                    pointDropZ = TRUE)
+>>> )
+>>> Error in ogrInfo(dsn = dsn, layer = layer, encoding = encoding,
+>>> use_iconv = use_iconv,  :
+>>>  Cannot open layer
+>>>
+>>>
+>>> class(
+>>> .read_vect_plugin2("geonames",
+>>>                     mapset = NULL,
+>>>                     layer = "geonames",
+>>>                     sss = sss,
+>>>                     ignore.stderr = TRUE,
+>>>                     pointDropZ = TRUE)
+>>> )
+>>> [1] "SpatialPointsDataFrame"
+>>> attr(,"package")
+>>> [1] "sp"
+>>>
+>>> Please can you confirm that it is a feature of the plugin to have the
+>>> real name instead of the layer number ?
+>>>
+>>> Nonetheless, one way to fix this is to add a call to
+>>> rgdal::ogrListLayers in the rgrass7:::.read_vect_plugin
+>>>
+>>>    dsn <- paste(gg$GISDBASE, gg$LOCATION_NAME, mapset, "vector",
+>>>                 vname[1], "head", sep = "/")
+>>>    layers <- rgdal::ogrListLayers(dsn = dsn)
+>>>
+>>> Using this approach we can have the layer names and use it in readOGR.
+>>> I hope that I described it clearly.
+>>>
+>>> Best regards,
+>>>
+>>> Info and spec
+>>> Linux:
+>>> Linux dickoa 4.0.5-1-ARCH #1 SMP PREEMPT Sat Jun 6 18:37:49 CEST 2015
+>>> x86_64 GNU/Linux
+>>>
+>>> GRASS:
+>>> version=7.1.svn
+>>> date=2015
+>>> revision=65487
+>>> build_date=2015-06-16
+>>> build_platform=x86_64-unknown-linux-gnu
+>>>
+>>> GDAL:
+>>> GDAL 1.11.2, released 2015/02/10
+>>>
+>>>
+>>> R:
+>>> sessionInfo()
+>>> R version 3.2.1 RC (2015-06-14 r68519)
+>>> Platform: x86_64-unknown-linux-gnu (64-bit)
+>>> Running under: Arch Linux
+>>>
+>>> locale:
+>>> [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+>>> [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+>>> [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8
+>>> [7] LC_PAPER=en_US.UTF-8       LC_NAME=C
+>>> [9] LC_ADDRESS=C               LC_TELEPHONE=C
+>>> [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+>>>
+>>> attached base packages:
+>>> [1] stats     graphics  grDevices utils     datasets  methods
+>>> [7] base
+>>>
+>>> other attached packages:
+>>> [1] rgdal_0.9-3   rgrass7_0.1-0 XML_3.98-1.2  sp_1.1-1
+>>>
+>>> loaded via a namespace (and not attached):
+>>> [1] tools_3.2.1     grid_3.2.1      lattice_0.20-31
+>>>
+>>>
+>>>
+>>> --
+>>> Ahmadou H. DICKO
+>>> statistician economist (Ing?nieur Statisticien ?conomiste)
+>>> PhD candidate in Climate change economics
+>>> Faculty of economics and managment - Cheikh Anta Diop University
+>>> West African Science Service Center on Climate Change and Adaptated
+>>> Land Use (WASCAL)
+>>> Center for Development Research (ZEF) - University of Bonn
+>>> email : ahmadou.dicko at ucad.edu.sn
+>>> twitter : @dickoah
+>>> github : github/dickoa
+>>> tel : +221 33 827 55 16
+>>> portable: +221 77 123 81 69
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats at lists.osgeo.org
+>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+> --
+> Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+>
+> Centre of Excellence for Invasion Biology
+> Stellenbosch University
+> South Africa
+>
+> Tel :       +33 - (0)9 53 10 27 44
+> Cell:       +33 - (0)6 85 62 59 98
+> Fax :       +33 - (0)9 58 10 27 44
+>
+> Fax (D):    +49 - (0)3 21 21 25 22 44
+>
+> email:      Rainer at krugs.de
+>
+> Skype:      RMkrug
+>
+> PGP: 0x0F52F982
+
+
+
+-- 
+Ahmadou H. DICKO
+statistician economist (Ing?nieur Statisticien ?conomiste)
+PhD candidate in Climate change economics
+Faculty of economics and managment - Cheikh Anta Diop University
+West African Science Service Center on Climate Change and Adaptated
+Land Use (WASCAL)
+Center for Development Research (ZEF) - University of Bonn
+email : ahmadou.dicko at ucad.edu.sn
+twitter : @dickoah
+github : github/dickoa
+tel : +221 33 827 55 16
+portable: +221 77 123 81 69
+
+From dicko.ahmadou at gmail.com  Thu Jun 18 11:08:38 2015
+From: dicko.ahmadou at gmail.com (Ahmadou Dicko)
+Date: Thu, 18 Jun 2015 18:08:38 +0000
+Subject: [GRASS-stats] readRAST and mapset consistency with gdal plugin
+In-Reply-To: <m2616lyo0j.fsf@krugs.de>
+References: <CAP8THHVbvXrv-O9mQGUAyDtUyokvKuciFp++LicfyFxGGkw=kg@mail.gmail.com>
+	<m2616lyo0j.fsf@krugs.de>
+Message-ID: <CAP8THHXuJgOUB=3btWPC4Wog5-iBFkQgC90qiWW9HoFOz4x6Cw@mail.gmail.com>
+
+Thanks Rainer, everything works as expected.
+
+Cheers,
+
+On Thu, Jun 18, 2015 at 4:33 PM, Rainer M Krug <Rainer at krugs.de> wrote:
+> Ahmadou Dicko <dicko.ahmadou at gmail.com> writes:
+>
+>> Dear all,
+>>
+>> I'm testing the GRASS GDAL pluging using the rgrass7 package and I
+>> have some issues with the readRAST function with the mapset argument.
+>> Inside readRAST we have  a .read_rast_plugin core function to read the
+>> raster using the plugin that supposed to share the same argument as
+>> readRAST.
+>>
+>> However, inside .read_rast_plugin, the mapset argument is always NULL,
+>> since we have a mapset argument in readRAST should not the these two
+>> arguments be the same.
+>
+>
+> My fault - I forgot the mapset.
+>
+> I just uploaded a fix - Thanks Ahmadou - exactly as you suggested.
+>
+> Cheers,
+>
+> Rainer
+>
+>
+>>
+>> To illustrate what I mean
+>>
+>> This what we have:
+>> readRAST <- function(..., mapset = NULL, ...) {
+>>   ....
+>>   .read_rast_plugin(..., mapset = NULL, ...)
+>> }
+>>
+>>
+>> This is what I think we should have:
+>> readRAST <- function(..., mapset = NULL, ...) {
+>>   ....
+>>   .read_rast_plugin(..., mapset = mapset, ...)
+>> }
+>>
+>>
+>> Here are the steps to reproduce the bug:
+>> I used the nc_basic_spm_grass7 location and user1 mapset.
+>>
+>> In GRASS
+>> g.copy raster=elevation at PERMANENT,elevation
+>> g.region raster=elevation
+>>
+>> Then we launch R within the GRASS session
+>>
+>> library(rgrass7)
+>> r <- readRAST("elevation", plugin = TRUE, mapset = "user1")
+>> /home/ahmadou/GIS/GRASS/grassdata/nc_basic_spm_grass7/user1/cellhd/elevation
+>> has GDAL driver GRASS
+>> and has 1350 rows and 1500 columns
+>> Warning message:
+>> statistics not supported by this driver
+>>
+>> ### Still have 'user1' in metadata
+>> r <- readRAST("elevation", plugin = TRUE, mapset = "PERMANENT")
+>> /home/ahmadou/GIS/GRASS/grassdata/nc_basic_spm_grass7/user1/cellhd/elevation
+>> has GDAL driver GRASS
+>> and has 1350 rows and 1500 columns
+>> Warning message:
+>> statistics not supported by this driver
+>>
+>> With the corrected version we have:
+>>
+>> ### Now we have 'PERMANENT' in the path (metadata)
+>> r <- readRAST2("elevation", plugin = TRUE, mapset = "PERMANENT")
+>> /home/ahmadou/GIS/GRASS/grassdata/nc_basic_spm_grass7/PERMANENT/cellhd/elevation
+>> has GDAL driver GRASS
+>> and has 1350 rows and 1500 columns
+>> Warning message:
+>> statistics not supported by this driver
+>>
+>> I don't have commit right, should I provide a diff file ?
+>>
+>> Best,
+>
+> --
+> Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+>
+> Centre of Excellence for Invasion Biology
+> Stellenbosch University
+> South Africa
+>
+> Tel :       +33 - (0)9 53 10 27 44
+> Cell:       +33 - (0)6 85 62 59 98
+> Fax :       +33 - (0)9 58 10 27 44
+>
+> Fax (D):    +49 - (0)3 21 21 25 22 44
+>
+> email:      Rainer at krugs.de
+>
+> Skype:      RMkrug
+>
+> PGP: 0x0F52F982
+
+
+
+-- 
+Ahmadou H. DICKO
+statistician economist (Ing?nieur Statisticien ?conomiste)
+PhD candidate in Climate change economics
+Faculty of economics and managment - Cheikh Anta Diop University
+West African Science Service Center on Climate Change and Adaptated
+Land Use (WASCAL)
+Center for Development Research (ZEF) - University of Bonn
+email : ahmadou.dicko at ucad.edu.sn
+twitter : @dickoah
+github : github/dickoa
+tel : +221 33 827 55 16
+portable: +221 77 123 81 69
+
+From neteler at osgeo.org  Fri Jun 19 00:15:31 2015
+From: neteler at osgeo.org (Markus Neteler)
+Date: Fri, 19 Jun 2015 09:15:31 +0200
+Subject: [GRASS-stats] rgrass7: readVECT() issue with drivers other than
+ ESRI Shapefile
+In-Reply-To: <CALFmHhv6rN3KgYf-_M_UgjjnJVf3mLKKhsGiBYBrUtkkkj+c_w@mail.gmail.com>
+References: <CALFmHhvdMNdoANtc+RqXcsKqcPt38SjeZ=e4tLspD2nFD-ny9w@mail.gmail.com>
+	<alpine.LFD.2.11.1506171238470.20257@reclus.nhh.no>
+	<CALFmHhvcchUWX=iYGd+GpfXUt4nt8_ruS3mpDLa6DAWQh7b-ow@mail.gmail.com>
+	<CALFmHhuBJCzcj-9w5zC-jguB6vjvPoe=YDeBtcw8EOgaNvzD-w@mail.gmail.com>
+	<alpine.LFD.2.11.1506181019420.5199@reclus.nhh.no>
+	<CALFmHhstGs-pSOJeN=XY-TBOj0YL0Zvm5kDyOn+XtQaaD82VUA@mail.gmail.com>
+	<alpine.LFD.2.11.1506181147200.5199@reclus.nhh.no>
+	<CALFmHhv6rN3KgYf-_M_UgjjnJVf3mLKKhsGiBYBrUtkkkj+c_w@mail.gmail.com>
+Message-ID: <CALFmHht_-DvdL2H1Vu3iY9NOPWyDJT1KBYfSOf_rmZOCuX2Kfw@mail.gmail.com>
+
+All,
+
+attached a simple (potentially ugly?) change to enable "SQLite" as a
+new driver for reading GRASS GIS 7 vector data into R
+(readVECT("vectmap, driver="SQLite")).
+I would really appreciate to see "SQLite" support added since it seems
+to be the only lossless OGR driver (e.g. unlike the default "SHAPE"
+file driver).
+
+I'll not commit this myself to r-forge since I am not sure if it
+should be implemented differently.
+Please verify.
+
+thanks,
+Markus
+-------------- next part --------------
+Index: pkg/rgrass7/R/vect_link.R
+===================================================================
+--- pkg/rgrass7/R/vect_link.R	(revision 32)
++++ pkg/rgrass7/R/vect_link.R	(working copy)
+@@ -86,7 +86,7 @@
+     if (!(driver %in% sapply(ogrDGRASSs, "[", 2)))
+         stop(paste("Requested driver", driver, "not available in GRASS"))
+     fDrivers <- c("GML", "SQLite")
+-    dDrivers <- c("ESRI_Shapefile", "MapInfo_File")
++    dDrivers <- c("ESRI_Shapefile", "MapInfo_File", "SQLite")
+     if (!(gsub(" ", "_", driver) %in% c(fDrivers, dDrivers)))
+         stop(paste("Requested driver", driver, "not supported"))
+     is_dDriver <- TRUE
+@@ -138,7 +138,10 @@
+                 res <- rgdal::readOGR(dsn=RDSN, layer=LAYER, verbose=!ignore.stderr, 
+                                       pointDropZ=pointDropZ)
+             } else {
+-                res <- rgdal::readOGR(dsn=rtmpfl1, layer=shname, verbose=!ignore.stderr)
++                if (driver == "SQLite")
++                   res <- rgdal::readOGR(dsn=RDSN, layer=tolower(shname), verbose=!ignore.stderr)
++                else
++                   res <- rgdal::readOGR(dsn=rtmpfl1, layer=shname, verbose=!ignore.stderr)
+             }
+         },
+         finally = {
+
+From Rainer at krugs.de  Fri Jun 19 01:23:31 2015
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Fri, 19 Jun 2015 10:23:31 +0200
+Subject: [GRASS-stats] Mapset and layer names in readVECT using GRASS
+	GDAL plugin
+In-Reply-To: <CAP8THHV_o2VzhXsA5hrtk4D8B8n2qGtLNZfKfsX=r3xskW-oQA@mail.gmail.com>
+	(Ahmadou Dicko's message of "Thu, 18 Jun 2015 18:07:38 +0000")
+References: <CAP8THHXSzHazv7qxm8vYvgoC9poXejfSxyi3fVPXD0J3OeM+uA@mail.gmail.com>
+	<alpine.LFD.2.11.1506181524140.5199@reclus.nhh.no>
+	<m2y4jhx9co.fsf@krugs.de>
+	<CAP8THHV_o2VzhXsA5hrtk4D8B8n2qGtLNZfKfsX=r3xskW-oQA@mail.gmail.com>
+Message-ID: <m2twu4xg1o.fsf@krugs.de>
+
+Ahmadou Dicko <dicko.ahmadou at gmail.com> writes:
+
+> I just tested the last version commited and it works now, thank you.
+
+Great - thanks for reporting.
+
+> Although we still need to give the layer name in order to read a
+> vector using the plugin.
+
+I don't understand you here:
+
+readVect has an argument named "layer", which is passed on to the
+function.read_vect_plugin():
+
+,----
+| res <- .read_vect_plugin(
+|      vname=vname,
+|      layer=layer,
+|      type=type,
+|      sss=sss,
+|      ignore.stderr=ignore.stderr,
+|      pointDropZ=pointDropZ,
+|      mapset = mapset
+| )
+`----
+
+Where is the layer name missing?
+
+As Roger, I also can't test it, so we have to rely on you for this and
+reporting.
+
+Thanks,
+
+Rainer
+
+> But this is another issue and I think we can solve this using
+> rgdal::ogrListLayers but it will require more change in the code base.
+>
+> I will think about an alternative design of the readVECT using
+> ogrListLayers that will pass all the tests and I will let you know.
+>
+> Thanks again
+>
+>
+>
+> On Thu, Jun 18, 2015 at 4:35 PM, Rainer M Krug <Rainer at krugs.de> wrote:
+>> Roger Bivand <Roger.Bivand at nhh.no> writes:
+>>
+>>> Hi,
+>>>
+>>> Thanks for your interest. I do not use the plugins at all, as they
+>>> have historically led to great difficulty in managing and maintaining
+>>> rgdal (I sometimes rebuild GDAL more than once a day). If you would
+>>> like commit rights on R-Forge, please file a request there, and we can
+>>> try to find ways of automating checking (or testing) the
+>>> functionality, but without my contribution.
+>>
+>> Roger - I think you can release the bug fix I just commited after
+>> Ahmadou tried it out as it was an oversight.
+>>
+>> Cheers,
+>>
+>> Rainer
+>>
+>>>
+>>> Best wishes,
+>>>
+>>> Roger
+>>>
+>>> On Thu, 18 Jun 2015, Ahmadou Dicko wrote:
+>>>
+>>>> Hi,
+>>>>
+>>>> I'm trying to use the direct OGR access to GRASS vector using plugin
+>>>> through the rgrass7 package in R but I have some issues with the
+>>>> mapset argument.
+>>>>
+>>>> Here are the steps to reproduce the bug using the nc_basic_spm_grass7
+>>>> GRASS location and user1 mapset.
+>>>>
+>>>> Within the GRASS session, we launch R
+>>>> library(rgrass7)
+>>>> v <- readVECT("geonames", plugin = TRUE)
+>>>> Error in .read_vect_plugin(vname = vname, layer = layer, type = type,  :
+>>>>  object 'mapset' not found
+>>>>
+>>>> One way to fix this, is to add a mapset argument to .read_vect_plugin
+>>>> and set it by default to the same argument in the readVECT function.
+>>>>
+>>>> ### Example of fix
+>>>> readVECT <- function(..., mapset = NULL, ...) {
+>>>> ....
+>>>>         if (plugin) {
+>>>>            res <- .read_vect_plugin(..., mapset = mapset, ...)
+>>>> ....
+>>>> }
+>>>>
+>>>> But once this problem solved, another one appears. This one, need
+>>>> confirmation though. Using the GRASS GDAL plugin, I can't open a GRASS
+>>>> vector without using the layer name. I am aware that we can use the
+>>>> layer number using other driver (Shapefiles, GML, etc) but I looks
+>>>> like (at least in my setup) that I can't open it without giving the
+>>>> layer name.
+>>>>
+>>>> I modified rgrass7:::.read_vect_plugin and named it .read_vect_plugin2
+>>>> and added a mapset argument (to correct the first bug).
+>>>>
+>>>> ### Reproducing the error
+>>>> sss <- strsplit(packageDescription("rgdal")$Version, "-")[[1]]
+>>>>
+>>>> class(
+>>>> .read_vect_plugin2("geonames",
+>>>>                    mapset = NULL,
+>>>>                    layer = 1L,
+>>>>                    sss = sss,
+>>>>                    ignore.stderr = TRUE,
+>>>>                    pointDropZ = TRUE)
+>>>> )
+>>>> Error in ogrInfo(dsn = dsn, layer = layer, encoding = encoding,
+>>>> use_iconv = use_iconv,  :
+>>>>  Cannot open layer
+>>>>
+>>>>
+>>>> class(
+>>>> .read_vect_plugin2("geonames",
+>>>>                     mapset = NULL,
+>>>>                     layer = "geonames",
+>>>>                     sss = sss,
+>>>>                     ignore.stderr = TRUE,
+>>>>                     pointDropZ = TRUE)
+>>>> )
+>>>> [1] "SpatialPointsDataFrame"
+>>>> attr(,"package")
+>>>> [1] "sp"
+>>>>
+>>>> Please can you confirm that it is a feature of the plugin to have the
+>>>> real name instead of the layer number ?
+>>>>
+>>>> Nonetheless, one way to fix this is to add a call to
+>>>> rgdal::ogrListLayers in the rgrass7:::.read_vect_plugin
+>>>>
+>>>>    dsn <- paste(gg$GISDBASE, gg$LOCATION_NAME, mapset, "vector",
+>>>>                 vname[1], "head", sep = "/")
+>>>>    layers <- rgdal::ogrListLayers(dsn = dsn)
+>>>>
+>>>> Using this approach we can have the layer names and use it in readOGR.
+>>>> I hope that I described it clearly.
+>>>>
+>>>> Best regards,
+>>>>
+>>>> Info and spec
+>>>> Linux:
+>>>> Linux dickoa 4.0.5-1-ARCH #1 SMP PREEMPT Sat Jun 6 18:37:49 CEST 2015
+>>>> x86_64 GNU/Linux
+>>>>
+>>>> GRASS:
+>>>> version=7.1.svn
+>>>> date=2015
+>>>> revision=65487
+>>>> build_date=2015-06-16
+>>>> build_platform=x86_64-unknown-linux-gnu
+>>>>
+>>>> GDAL:
+>>>> GDAL 1.11.2, released 2015/02/10
+>>>>
+>>>>
+>>>> R:
+>>>> sessionInfo()
+>>>> R version 3.2.1 RC (2015-06-14 r68519)
+>>>> Platform: x86_64-unknown-linux-gnu (64-bit)
+>>>> Running under: Arch Linux
+>>>>
+>>>> locale:
+>>>> [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+>>>> [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+>>>> [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8
+>>>> [7] LC_PAPER=en_US.UTF-8       LC_NAME=C
+>>>> [9] LC_ADDRESS=C               LC_TELEPHONE=C
+>>>> [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+>>>>
+>>>> attached base packages:
+>>>> [1] stats     graphics  grDevices utils     datasets  methods
+>>>> [7] base
+>>>>
+>>>> other attached packages:
+>>>> [1] rgdal_0.9-3   rgrass7_0.1-0 XML_3.98-1.2  sp_1.1-1
+>>>>
+>>>> loaded via a namespace (and not attached):
+>>>> [1] tools_3.2.1     grid_3.2.1      lattice_0.20-31
+>>>>
+>>>>
+>>>>
+>>>> --
+>>>> Ahmadou H. DICKO
+>>>> statistician economist (Ing?nieur Statisticien ?conomiste)
+>>>> PhD candidate in Climate change economics
+>>>> Faculty of economics and managment - Cheikh Anta Diop University
+>>>> West African Science Service Center on Climate Change and Adaptated
+>>>> Land Use (WASCAL)
+>>>> Center for Development Research (ZEF) - University of Bonn
+>>>> email : ahmadou.dicko at ucad.edu.sn
+>>>> twitter : @dickoah
+>>>> github : github/dickoa
+>>>> tel : +221 33 827 55 16
+>>>> portable: +221 77 123 81 69
+>>>> _______________________________________________
+>>>> grass-stats mailing list
+>>>> grass-stats at lists.osgeo.org
+>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>> --
+>> Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+>>
+>> Centre of Excellence for Invasion Biology
+>> Stellenbosch University
+>> South Africa
+>>
+>> Tel :       +33 - (0)9 53 10 27 44
+>> Cell:       +33 - (0)6 85 62 59 98
+>> Fax :       +33 - (0)9 58 10 27 44
+>>
+>> Fax (D):    +49 - (0)3 21 21 25 22 44
+>>
+>> email:      Rainer at krugs.de
+>>
+>> Skype:      RMkrug
+>>
+>> PGP: 0x0F52F982
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+PGP: 0x0F52F982
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 480 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150619/170ffaf6/attachment.pgp>
+

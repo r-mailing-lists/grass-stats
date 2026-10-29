@@ -1,0 +1,351 @@
+From p.vanbreugel at gmail.com  Sun Aug 12 05:15:03 2018
+From: p.vanbreugel at gmail.com (Paulo van Breugel)
+Date: Sun, 12 Aug 2018 14:15:03 +0200
+Subject: [GRASS-stats] getLocationProj - writeVECT projection check mismatch
+Message-ID: <ef923a3d-e566-4ad1-2dfe-eb072f3b5ea4@gmail.com>
+
+Dear devs,
+
+The function getLocationProj returns an spproj-compliant PROJ.4 string 
+of projection information (using internally /g.proj -jf/). However, when 
+writing a vector layer to the grass database using the writeVECT 
+function, it (expects the projection information in the format returned 
+by /g.proj -g/ (checking the code, this is because it uses v.in.ogr I 
+guess).
+
+For example, if running R from within a grass session with the NC 
+location: I have a vector layer "klatifolia" in latlong which I project 
+it to match the projection of the NC location. Next, I write it to the 
+grass database using writeVECT:
+
+proj <- getLocationProj()
+KLnew <- spTransform(KL, proj)
+writeVECT(SDF=KLnew[,c(1,2,5)], vname="KLatifolia", driver="SQLite")
+
+This results in an error telling that the projection of dataset does not 
+appear to match current location.
+
+        Location PROJ_INFO is:
+        name: Lambert Conformal Conic
+        proj: lcc
+        datum: nad83
+        a: 6378137.0
+        es: 0.006694380022900787
+        lat_1: 36.16666666666666
+        lat_2: 34.33333333333334
+        lat_0: 33.75
+        lon_0: -79
+        x_0: 609601.22
+        y_0: 0
+        no_defs: defined
+
+        Dataset PROJ_INFO is:
+        name: unnamed
+        ellps: grs80
+        proj: lcc
+        lat_1: 36.16666666666666
+        lat_2: 34.33333333333334
+        lat_0: 33.75
+        lon_0: -79
+        x_0: 609601.22
+        y_0: 0
+        towgs84: 0,0,0,0,0,0,0
+        no_defs: defined
+
+        ERROR: datum
+
+I can obviously run writeVECT with v.in.ogr_flags="o", but is there a 
+way that writeVECT can check against the spproj-compliant proj.4 string? 
+Or is this something that should be dealt with at the v.in.ogr side?
+
+Best wishes,
+
+Paulo
+
+
+sessionInfo()
+R version 3.4.4 (2018-03-15)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 18.04.1 LTS
+
+Matrix products: default
+BLAS: /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
+
+locale:
+  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C LC_TIME=en_US.UTF-8
+  [4] LC_COLLATE=en_US.UTF-8     LC_MONETARY=en_US.UTF-8 
+LC_MESSAGES=en_US.UTF-8
+  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C LC_ADDRESS=C
+[10] LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 
+LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods base
+
+other attached packages:
+[1] ggplot2_3.0.0  mapr_0.4.0     raster_2.6-7   rgrass7_0.1-11 
+XML_3.98-1.12  maptools_0.9-3
+[7] sp_1.3-1       rgbif_1.0.2
+
+
+
+
+
+
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20180812/e5860251/attachment.html>
+
+From Roger.Bivand at nhh.no  Sun Aug 12 06:12:32 2018
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun, 12 Aug 2018 15:12:32 +0200
+Subject: [GRASS-stats] getLocationProj - writeVECT projection check
+ mismatch
+In-Reply-To: <ef923a3d-e566-4ad1-2dfe-eb072f3b5ea4@gmail.com>
+References: <ef923a3d-e566-4ad1-2dfe-eb072f3b5ea4@gmail.com>
+Message-ID: <alpine.LFD.2.21.1808121508350.13728@reclus.nhh.no>
+
+On Sun, 12 Aug 2018, Paulo van Breugel wrote:
+
+> Dear devs,
+>
+> The function getLocationProj returns an spproj-compliant PROJ.4 string of 
+> projection information (using internally /g.proj -jf/). However, when writing 
+> a vector layer to the grass database using the writeVECT function, it 
+> (expects the projection information in the format returned by /g.proj -g/ 
+> (checking the code, this is because it uses v.in.ogr I guess).
+>
+> For example, if running R from within a grass session with the NC location: I 
+> have a vector layer "klatifolia" in latlong which I project it to match the 
+> projection of the NC location. Next, I write it to the grass database using 
+> writeVECT:
+>
+> proj <- getLocationProj()
+> KLnew <- spTransform(KL, proj)
+> writeVECT(SDF=KLnew[,c(1,2,5)], vname="KLatifolia", driver="SQLite")
+>
+> This results in an error telling that the projection of dataset does not 
+> appear to match current location.
+>
+>        Location PROJ_INFO is:
+>        name: Lambert Conformal Conic
+>        proj: lcc
+>        datum: nad83
+>        a: 6378137.0
+>        es: 0.006694380022900787
+>        lat_1: 36.16666666666666
+>        lat_2: 34.33333333333334
+>        lat_0: 33.75
+>        lon_0: -79
+>        x_0: 609601.22
+>        y_0: 0
+>        no_defs: defined
+>
+>        Dataset PROJ_INFO is:
+>        name: unnamed
+>        ellps: grs80
+>        proj: lcc
+>        lat_1: 36.16666666666666
+>        lat_2: 34.33333333333334
+>        lat_0: 33.75
+>        lon_0: -79
+>        x_0: 609601.22
+>        y_0: 0
+>        towgs84: 0,0,0,0,0,0,0
+>        no_defs: defined
+>
+>        ERROR: datum
+>
+> I can obviously run writeVECT with v.in.ogr_flags="o", but is there a way 
+> that writeVECT can check against the spproj-compliant proj.4 string? Or is 
+> this something that should be dealt with at the v.in.ogr side?
+
+Short answer - after inspecting the two, and checking that they are the 
+same, use v.in.ogr_flags="o".
+
+Long answer: the PROJ migration from 4.* to 5.* and further is shifting 
+things everywhere, so handling in GRASS and sf/rgdal will also change. On 
+the R side, we are waiting for the GDAL barn-raising project (writing C++ 
+classes for PROJ) to complete before considering moving to the pipeline 
+model and possible new representations.
+
+Roger
+
+>
+> Best wishes,
+>
+> Paulo
+>
+>
+> sessionInfo()
+> R version 3.4.4 (2018-03-15)
+> Platform: x86_64-pc-linux-gnu (64-bit)
+> Running under: Ubuntu 18.04.1 LTS
+>
+> Matrix products: default
+> BLAS: /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
+> LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
+>
+> locale:
+>  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C LC_TIME=en_US.UTF-8
+>  [4] LC_COLLATE=en_US.UTF-8     LC_MONETARY=en_US.UTF-8 
+> LC_MESSAGES=en_US.UTF-8
+>  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C LC_ADDRESS=C
+> [10] LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 
+> LC_IDENTIFICATION=C
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods base
+>
+> other attached packages:
+> [1] ggplot2_3.0.0  mapr_0.4.0     raster_2.6-7   rgrass7_0.1-11 
+> XML_3.98-1.12  maptools_0.9-3
+> [7] sp_1.3-1       rgbif_1.0.2
+>
+>
+>
+>
+>
+>
+>
+>
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+
+From p.vanbreugel at gmail.com  Sun Aug 12 06:43:12 2018
+From: p.vanbreugel at gmail.com (Paulo van Breugel)
+Date: Sun, 12 Aug 2018 15:43:12 +0200
+Subject: [GRASS-stats] getLocationProj - writeVECT projection check
+ mismatch
+In-Reply-To: <alpine.LFD.2.21.1808121508350.13728@reclus.nhh.no>
+References: <ef923a3d-e566-4ad1-2dfe-eb072f3b5ea4@gmail.com>
+ <alpine.LFD.2.21.1808121508350.13728@reclus.nhh.no>
+Message-ID: <766001c2-cb7b-ef14-b447-64f90b4e05d0@gmail.com>
+
+
+
+On 12-08-18 15:12, Roger Bivand wrote:
+> On Sun, 12 Aug 2018, Paulo van Breugel wrote:
+>
+>> Dear devs,
+>>
+>> The function getLocationProj returns an spproj-compliant PROJ.4 
+>> string of projection information (using internally /g.proj -jf/). 
+>> However, when writing a vector layer to the grass database using the 
+>> writeVECT function, it (expects the projection information in the 
+>> format returned by /g.proj -g/ (checking the code, this is because it 
+>> uses v.in.ogr I guess).
+>>
+>> For example, if running R from within a grass session with the NC 
+>> location: I have a vector layer "klatifolia" in latlong which I 
+>> project it to match the projection of the NC location. Next, I write 
+>> it to the grass database using writeVECT:
+>>
+>> proj <- getLocationProj()
+>> KLnew <- spTransform(KL, proj)
+>> writeVECT(SDF=KLnew[,c(1,2,5)], vname="KLatifolia", driver="SQLite")
+>>
+>> This results in an error telling that the projection of dataset does 
+>> not appear to match current location.
+>>
+>>        Location PROJ_INFO is:
+>>        name: Lambert Conformal Conic
+>>        proj: lcc
+>>        datum: nad83
+>>        a: 6378137.0
+>>        es: 0.006694380022900787
+>>        lat_1: 36.16666666666666
+>>        lat_2: 34.33333333333334
+>>        lat_0: 33.75
+>>        lon_0: -79
+>>        x_0: 609601.22
+>>        y_0: 0
+>>        no_defs: defined
+>>
+>>        Dataset PROJ_INFO is:
+>>        name: unnamed
+>>        ellps: grs80
+>>        proj: lcc
+>>        lat_1: 36.16666666666666
+>>        lat_2: 34.33333333333334
+>>        lat_0: 33.75
+>>        lon_0: -79
+>>        x_0: 609601.22
+>>        y_0: 0
+>>        towgs84: 0,0,0,0,0,0,0
+>>        no_defs: defined
+>>
+>>        ERROR: datum
+>>
+>> I can obviously run writeVECT with v.in.ogr_flags="o", but is there a 
+>> way that writeVECT can check against the spproj-compliant proj.4 
+>> string? Or is this something that should be dealt with at the 
+>> v.in.ogr side?
+>
+> Short answer - after inspecting the two, and checking that they are 
+> the same, use v.in.ogr_flags="o".
+>
+> Long answer: the PROJ migration from 4.* to 5.* and further is 
+> shifting things everywhere, so handling in GRASS and sf/rgdal will 
+> also change. On the R side, we are waiting for the GDAL barn-raising 
+> project (writing C++ classes for PROJ) to complete before considering 
+> moving to the pipeline model and possible new representations.
+>
+> Roger
+
+Hi Roger, thanks for the reply, all clear, I'll keep on using 
+v.in.ogr_flags="o".
+
+>
+>>
+>> Best wishes,
+>>
+>> Paulo
+>>
+>>
+>> sessionInfo()
+>> R version 3.4.4 (2018-03-15)
+>> Platform: x86_64-pc-linux-gnu (64-bit)
+>> Running under: Ubuntu 18.04.1 LTS
+>>
+>> Matrix products: default
+>> BLAS: /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
+>> LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
+>>
+>> locale:
+>>  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C LC_TIME=en_US.UTF-8
+>>  [4] LC_COLLATE=en_US.UTF-8     LC_MONETARY=en_US.UTF-8 
+>> LC_MESSAGES=en_US.UTF-8
+>>  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C LC_ADDRESS=C
+>> [10] LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 
+>> LC_IDENTIFICATION=C
+>>
+>> attached base packages:
+>> [1] stats     graphics  grDevices utils     datasets  methods base
+>>
+>> other attached packages:
+>> [1] ggplot2_3.0.0  mapr_0.4.0     raster_2.6-7   rgrass7_0.1-11 
+>> XML_3.98-1.12  maptools_0.9-3
+>> [7] sp_1.3-1       rgbif_1.0.2
+>>
+>>
+>>
+>>
+>>
+>>
+>>
+>>
+>>
+>
+
+

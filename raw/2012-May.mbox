@@ -1,0 +1,2095 @@
+From Roger.Bivand at nhh.no  Wed May  2 14:44:57 2012
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed May  2 14:46:23 2012
+Subject: [GRASS-stats] GRASS within R interface issues 
+In-Reply-To: <1335567578.8280.YahooMailNeo@web140304.mail.bf1.yahoo.com>
+References: <1335216880.32667.YahooMailNeo@web140302.mail.bf1.yahoo.com>
+	<1335567578.8280.YahooMailNeo@web140304.mail.bf1.yahoo.com>
+Message-ID: <alpine.LRH.2.02.1205022032130.3610@reclus.nhh.no>
+
+On Sat, 28 Apr 2012, Laura S wrote:
+
+> Dear all:
+>
+>
+> I emailed around and others have the same issue of the freezing GRASS 
+> console and not being able to run R within GRASS, and many resort to 
+> doing GRASS commands within R using execGRASS().?
+
+You do need to understand what you are doing, I'm afraid.
+
+If you just enter "C:\Program Files\ ... \Rgui.exe" at the MSYS prompt, it 
+starts R and does not return until you exit R. If, however, you trat MSYS 
+as Unix, and add & after the "C:\Program Files\ ... \Rgui.exe" (only 
+tried on XP as this is the Windows version involved here):
+
+"C:\Program Files\ ... \Rgui.exe" &
+
+MSYS will start R within GRASS, and return to its prompt - which I think 
+is what you want. In addition, you can run GRASS commands from the GRASS 
+GUI, either using the point and click GUI, or typing into the command 
+console tab at the bottom of the layer manager, in addition to the 
+equivalent execGRASS() in R.
+
+Hope this clarifies,
+
+Roger
+
+>
+> I am going to keep searching around for a fix, as I still cannot run R 
+> within GRASS on XP. I am trying to figure this out for myself and other 
+> collaborators.
+>
+>
+> Cheers,
+> Laura
+>
+>
+>
+> ________________________________
+> From: Laura S <les_ecol@yahoo.com>
+> To: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org> 
+> Sent: Monday, April 23, 2012 2:34:40 PM
+> Subject: [GRASS-stats] GRASS with R interface issues - running R within GRASS 6.4.2
+> 
+>
+> Dear all:
+>
+> Do you have any suggestions on this? Thank you.
+>
+>
+> I cannot type in the GRASS GUI with MSYS window and execute commands. It is 
+> frozen, and when I open up another GRASS console and type R the console 
+> says: "R is not recognizable as an internal or external command, 
+> operable program or batch file." 
+>
+>
+> I provide examples below. Roger has been helpful, but I am still unsure if I am missing something, or there is a bug. 
+>
+>
+> I have found bugs in other programs, e.g., WinRhizo, but I am assuming GRASS is working fine. I have been looking for screenshot instructions to better understand my issue, so anyone knows of these posted somewhere, this would be helpful. 
+>
+>
+> Laura
+>
+>
+> On Mon, 23 Apr 2012, Laura S wrote:
+>
+>> Dear Roger and others:
+>> 
+>> My apologies if I am not piecing everything together. I think I am almost there; I appreciate your patience.
+>> 
+>> 
+>> This is my current point of confusion, and what I am able to do so far:
+>> 
+>>
+> I. My main point of confusion is that when I type the path into GRASS 
+> MSYS, the R console window pops up, and I am unable to type more into 
+> the GRASS console. I cannot type GRASS commands in R, so I am unsure 
+> where I type the GRASS commands if GRASS console does not let me type 
+> more, and the R console does not recognize R commands.
+>
+> Why should
+> it? Simply minimise the R GUI to work in GRASS directly, using the 
+> GRASS GUI or from the prompt in MSYS. I doubt very much whether saying 
+> d.ask makes sense anyway, as the GRASS display GUI covers that.
+>
+> It
+> is possible to write GRASS commands using execGRASS() from the R 
+> console, but since you have had to ask, you will find it easier simply 
+> to minimise R and use GRASS directly. Because R is within GRASS, it 
+> "sees" the current status of the location.
+>
+> Hope this clarifies - please change to one of the GRASS lists for further help.
+>
+> Roger
+>
+>> 
+>> 
+>> II. What I can do so far in more detail:
+>>
+> 1. Within the GRASS 6.4.2RC2 with MSYS, I typed using tab 
+> autocompletion: "C:/Program Files/R/R-2.14/bin/i386/Rgui.exe" which 
+> causes the RGui to pop up as a second R window. Thus, I am not in GRASS 
+> directly anymore I assume, but rather in the RGui. In this GUI, it says 
+> the following when I type library(spgrass6): "GRASS GIS Interface loaded
+> with GRASS version GRASS 6.4.2RC2exported (2011) and location: 
+> demolocation" gmeta6() gisdbase C:/Documents etc.?
+>> 
+>> If I try a GRASS command such as "d.ask" in the RGUI after loading spgrass:
+>> 
+>> d.ask
+>> Error: object 'd.ask' not found
+>> 
+>> 
+>>
+> 2. I can also get this to work in R directly: loc <- 
+> initGRASS("C:/Program Files/Grass 6.4",home=tempdir()) gmeta6() **prints
+> gisdbase, etc.**?
+>> 
+>> d.ask
+>> Error: object 'd.ask' not found
+>> 
+>> 
+>> Thank you for your help,
+>> Laura 
+>> 
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From les_ecol at yahoo.com  Thu May  3 23:49:01 2012
+From: les_ecol at yahoo.com (Laura S)
+Date: Thu May  3 23:49:31 2012
+Subject: [GRASS-stats] GRASS within R interface issues 
+In-Reply-To: <alpine.LRH.2.02.1205022032130.3610@reclus.nhh.no>
+References: <1335216880.32667.YahooMailNeo@web140302.mail.bf1.yahoo.com>
+	<1335567578.8280.YahooMailNeo@web140304.mail.bf1.yahoo.com>
+	<alpine.LRH.2.02.1205022032130.3610@reclus.nhh.no>
+Message-ID: <1336103341.71795.YahooMailNeo@web140310.mail.bf1.yahoo.com>
+
+Dear Roger:
+
+
+Thank you. I am still puzzling a bit. Now the following happens: (i) R pops up, (ii) GRASS is not frozen, (ii) but there is no recognition of R in GRASS GUI with MSYS. How do I get R to be recognized directly within GRASS? I keep getting "sh: R: command not found" in the GRASS GUI with MSYS. 
+
+
+Here are my newest steps thus far:
+
+
+1. In GRASS GUI with MSYS:
+GRASS 6.4 > "C:/Programs.../Rgui.exe" &
+[1] 3532
+
+2. Pops up R window without freezing console, but still does not recognize R, as shown in # 3. 
+
+
+3. GRASS 6.4 > R
+sh: R : command not found
+
+Thank you,
+
+Laura
+
+
+
+
+________________________________
+ From: Roger Bivand <Roger.Bivand@nhh.no>
+To: Laura S <les_ecol@yahoo.com> 
+Cc: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org> 
+Sent: Wednesday, May 2, 2012 11:44:57 AM
+Subject: Re: [GRASS-stats] GRASS within R interface issues 
+ 
+On Sat, 28 Apr 2012, Laura S wrote:
+
+> Dear all:
+> 
+> 
+> I emailed around and others have the same issue of the freezing GRASS console and not being able to run R within GRASS, and many resort to doing GRASS commands within R using execGRASS().?
+
+You do need to understand what you are doing, I'm afraid.
+
+If you just enter "C:\Program Files\ ... \Rgui.exe" at the MSYS prompt, it starts R and does not return until you exit R. If, however, you trat MSYS as Unix, and add & after the "C:\Program Files\ ... \Rgui.exe" (only tried on XP as this is the Windows version involved here):
+
+"C:\Program Files\ ... \Rgui.exe" &
+
+MSYS will start R within GRASS, and return to its prompt - which I think is what you want. In addition, you can run GRASS commands from the GRASS GUI, either using the point and click GUI, or typing into the command console tab at the bottom of the layer manager, in addition to the equivalent execGRASS() in R.
+
+Hope this clarifies,
+
+Roger
+
+> 
+> I am going to keep searching around for a fix, as I still cannot run R within GRASS on XP. I am trying to figure this out for myself and other collaborators.
+> 
+> 
+> Cheers,
+> Laura
+> 
+> 
+> 
+> ________________________________
+> From: Laura S <les_ecol@yahoo.com>
+> To: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org> Sent: Monday, April 23, 2012 2:34:40 PM
+> Subject: [GRASS-stats] GRASS with R interface issues - running R within GRASS 6.4.2
+> 
+> 
+> Dear all:
+> 
+> Do you have any suggestions on this? Thank you.
+> 
+> 
+> I cannot type in the GRASS GUI with MSYS window and execute commands. It is frozen, and when I open up another GRASS console and type R the console says: "R is not recognizable as an internal or external command, operable program or batch file." 
+> 
+> I provide examples below. Roger has been helpful, but I am still unsure if I am missing something, or there is a bug. 
+> 
+> I have found bugs in other programs, e.g., WinRhizo, but I am assuming GRASS is working fine. I have been looking for screenshot instructions to better understand my issue, so anyone knows of these posted somewhere, this would be helpful. 
+> 
+> Laura
+> 
+> 
+> On Mon, 23 Apr 2012, Laura S wrote:
+> 
+>> Dear Roger and others:
+>> 
+>> My apologies if I am not piecing everything together. I think I am almost there; I appreciate your patience.
+>> 
+>> 
+>> This is my current point of confusion, and what I am able to do so far:
+>> 
+>> 
+> I. My main point of confusion is that when I type the path into GRASS MSYS, the R console window pops up, and I am unable to type more into the GRASS console. I cannot type GRASS commands in R, so I am unsure where I type the GRASS commands if GRASS console does not let me type more, and the R console does not recognize R commands.
+> 
+> Why should
+> it? Simply minimise the R GUI to work in GRASS directly, using the GRASS GUI or from the prompt in MSYS. I doubt very much whether saying d.ask makes sense anyway, as the GRASS display GUI covers that.
+> 
+> It
+> is possible to write GRASS commands using execGRASS() from the R console, but since you have had to ask, you will find it easier simply to minimise R and use GRASS directly. Because R is within GRASS, it "sees" the current status of the location.
+> 
+> Hope this clarifies - please change to one of the GRASS lists for further help.
+> 
+> Roger
+> 
+>> 
+>> 
+>> II. What I can do so far in more detail:
+>> 
+> 1. Within the GRASS 6.4.2RC2 with MSYS, I typed using tab autocompletion: "C:/Program Files/R/R-2.14/bin/i386/Rgui.exe" which causes the RGui to pop up as a second R window. Thus, I am not in GRASS directly anymore I assume, but rather in the RGui. In this GUI, it says the following when I type library(spgrass6): "GRASS GIS Interface loaded
+> with GRASS version GRASS 6.4.2RC2exported (2011) and location: demolocation" gmeta6() gisdbase C:/Documents etc.?
+>> 
+>> If I try a GRASS command such as "d.ask" in the RGUI after loading spgrass:
+>> 
+>> d.ask
+>> Error: object 'd.ask' not found
+>> 
+>> 
+>> 
+> 2. I can also get this to work in R directly: loc <- initGRASS("C:/Program Files/Grass 6.4",home=tempdir()) gmeta6() **prints
+> gisdbase, etc.**?
+>> 
+>> d.ask
+>> Error: object 'd.ask' not found
+>> 
+>> 
+>> Thank you for your help,
+>> Laura 
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+> 
+
+-- Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20120503/e69d66b7/attachment.html
+From Roger.Bivand at nhh.no  Fri May  4 03:12:29 2012
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri May  4 03:12:57 2012
+Subject: [GRASS-stats] GRASS within R interface issues 
+In-Reply-To: <1336103341.71795.YahooMailNeo@web140310.mail.bf1.yahoo.com>
+References: <1335216880.32667.YahooMailNeo@web140302.mail.bf1.yahoo.com>
+	<1335567578.8280.YahooMailNeo@web140304.mail.bf1.yahoo.com>
+	<alpine.LRH.2.02.1205022032130.3610@reclus.nhh.no>
+	<1336103341.71795.YahooMailNeo@web140310.mail.bf1.yahoo.com>
+Message-ID: <alpine.LRH.2.02.1205040908500.19192@reclus.nhh.no>
+
+On Fri, 4 May 2012, Laura S wrote:
+
+> Dear Roger:
+>
+> Thank you. I am still puzzling a bit. Now the following happens: (i) R pops up, (ii) GRASS is not frozen, (ii) but there is no recognition of R in GRASS GUI with MSYS. How do I get R to be recognized directly within GRASS? I keep getting "sh: R: command not found" in the GRASS GUI with MSYS. 
+>
+> Here are my newest steps thus far:
+>
+> 1. In GRASS GUI with MSYS:
+> GRASS 6.4 > "C:/Programs.../Rgui.exe" &
+> [1] 3532
+>
+> 2. Pops up R window without freezing console, but still does not 
+> recognize R, as shown in # 3.
+>
+> 3. GRASS 6.4 > R
+> sh: R : command not found
+
+Well, you have a running R session, do you want a second one? If you 
+prefer not to use the R GUI, you may use R.exe in step 2 but without the 
+&, as then the R CLI will run in the MSYS console. I do not understand why 
+you do step 3 - you asked before about issuing GRASS commands at the MSYS 
+prompt? Can you get local help from someone who can look over your 
+shoulder?
+
+Roger
+
+
+>
+> Thank you,
+>
+> Laura
+>
+>
+>
+>
+> ________________________________
+> From: Roger Bivand <Roger.Bivand@nhh.no>
+> To: Laura S <les_ecol@yahoo.com> 
+> Cc: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org> 
+> Sent: Wednesday, May 2, 2012 11:44:57 AM
+> Subject: Re: [GRASS-stats] GRASS within R interface issues 
+> 
+> On Sat, 28 Apr 2012, Laura S wrote:
+>
+>> Dear all:
+>> 
+>> 
+>> I emailed around and others have the same issue of the freezing GRASS console and not being able to run R within GRASS, and many resort to doing GRASS commands within R using execGRASS().?
+>
+> You do need to understand what you are doing, I'm afraid.
+>
+> If you just enter "C:\Program Files\ ... \Rgui.exe" at the MSYS prompt, it starts R and does not return until you exit R. If, however, you trat MSYS as Unix, and add & after the "C:\Program Files\ ... \Rgui.exe" (only tried on XP as this is the Windows version involved here):
+>
+> "C:\Program Files\ ... \Rgui.exe" &
+>
+> MSYS will start R within GRASS, and return to its prompt - which I think is what you want. In addition, you can run GRASS commands from the GRASS GUI, either using the point and click GUI, or typing into the command console tab at the bottom of the layer manager, in addition to the equivalent execGRASS() in R.
+>
+> Hope this clarifies,
+>
+> Roger
+>
+>> 
+>> I am going to keep searching around for a fix, as I still cannot run R within GRASS on XP. I am trying to figure this out for myself and other collaborators.
+>> 
+>> 
+>> Cheers,
+>> Laura
+>> 
+>> 
+>> 
+>> ________________________________
+>> From: Laura S <les_ecol@yahoo.com>
+>> To: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org> Sent: Monday, April 23, 2012 2:34:40 PM
+>> Subject: [GRASS-stats] GRASS with R interface issues - running R within GRASS 6.4.2
+>> 
+>> 
+>> Dear all:
+>> 
+>> Do you have any suggestions on this? Thank you.
+>> 
+>> 
+>> I cannot type in the GRASS GUI with MSYS window and execute commands. It is frozen, and when I open up another GRASS console and type R the console says: "R is not recognizable as an internal or external command, operable program or batch file." 
+>> 
+>> I provide examples below. Roger has been helpful, but I am still unsure if I am missing something, or there is a bug. 
+>> 
+>> I have found bugs in other programs, e.g., WinRhizo, but I am assuming GRASS is working fine. I have been looking for screenshot instructions to better understand my issue, so anyone knows of these posted somewhere, this would be helpful. 
+>> 
+>> Laura
+>> 
+>> 
+>> On Mon, 23 Apr 2012, Laura S wrote:
+>> 
+>>> Dear Roger and others:
+>>> 
+>>> My apologies if I am not piecing everything together. I think I am almost there; I appreciate your patience.
+>>> 
+>>> 
+>>> This is my current point of confusion, and what I am able to do so far:
+>>> 
+>>> 
+>> I. My main point of confusion is that when I type the path into GRASS MSYS, the R console window pops up, and I am unable to type more into the GRASS console. I cannot type GRASS commands in R, so I am unsure where I type the GRASS commands if GRASS console does not let me type more, and the R console does not recognize R commands.
+>> 
+>> Why should
+>> it? Simply minimise the R GUI to work in GRASS directly, using the GRASS GUI or from the prompt in MSYS. I doubt very much whether saying d.ask makes sense anyway, as the GRASS display GUI covers that.
+>> 
+>> It
+>> is possible to write GRASS commands using execGRASS() from the R console, but since you have had to ask, you will find it easier simply to minimise R and use GRASS directly. Because R is within GRASS, it "sees" the current status of the location.
+>> 
+>> Hope this clarifies - please change to one of the GRASS lists for further help.
+>> 
+>> Roger
+>> 
+>>> 
+>>> 
+>>> II. What I can do so far in more detail:
+>>> 
+>> 1. Within the GRASS 6.4.2RC2 with MSYS, I typed using tab autocompletion: "C:/Program Files/R/R-2.14/bin/i386/Rgui.exe" which causes the RGui to pop up as a second R window. Thus, I am not in GRASS directly anymore I assume, but rather in the RGui. In this GUI, it says the following when I type library(spgrass6): "GRASS GIS Interface loaded
+>> with GRASS version GRASS 6.4.2RC2exported (2011) and location: demolocation" gmeta6() gisdbase C:/Documents etc.?
+>>> 
+>>> If I try a GRASS command such as "d.ask" in the RGUI after loading spgrass:
+>>> 
+>>> d.ask
+>>> Error: object 'd.ask' not found
+>>> 
+>>> 
+>>> 
+>> 2. I can also get this to work in R directly: loc <- initGRASS("C:/Program Files/Grass 6.4",home=tempdir()) gmeta6() **prints
+>> gisdbase, etc.**?
+>>> 
+>>> d.ask
+>>> Error: object 'd.ask' not found
+>>> 
+>>> 
+>>> Thank you for your help,
+>>> Laura 
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>> 
+>
+> -- Roger Bivand
+> Department of Economics, NHH Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From les_ecol at yahoo.com  Fri May  4 13:03:29 2012
+From: les_ecol at yahoo.com (Laura S)
+Date: Fri May  4 13:03:58 2012
+Subject: [GRASS-stats] GRASS within R interface issues 
+In-Reply-To: <alpine.LRH.2.02.1205040908500.19192@reclus.nhh.no>
+References: <1335216880.32667.YahooMailNeo@web140302.mail.bf1.yahoo.com>
+	<1335567578.8280.YahooMailNeo@web140304.mail.bf1.yahoo.com>
+	<alpine.LRH.2.02.1205022032130.3610@reclus.nhh.no>
+	<1336103341.71795.YahooMailNeo@web140310.mail.bf1.yahoo.com>
+	<alpine.LRH.2.02.1205040908500.19192@reclus.nhh.no>
+Message-ID: <1336151009.33696.YahooMailNeo@web140320.mail.bf1.yahoo.com>
+
+Dear Roger:
+
+What I have been seeking to do from the very beginning is to run R within GRASS directly on XP. In other words, type "R" in the GRASS console and have R run. This does not workfor me yet. I have looked in books/websites. From what I have read, they indicate that you run R within GRASS, but not the actual set up to make R recognizable to GRASS when it spits out " 'R' is not recognized as an internal or external command, operable program or batch file"; the output that has started this whole process of me trying to figure out the disconnect. Here is an example of what I want to do, and how when I try to do the same operation it fails:
+######### Startup 
+	* Start GRASS. At the GRASS command line start R. 
+In this example we will use the sample Spearfish dataset. 
+Reset the region settings to the defaults 
+GRASS> g.region -d 
+Launch R from the GRASS prompt 
+GRASS> R 
+Load the spgrass6 library: 
+> library(spgrass6) 
+Get the GRASS environment (mapset, region, map projection, etc.); you can display the metadata for your location by printing G: 
+> G <- gmeta6() 
+########### This is what I get from the GRASS command line, which mirrors the MSYS, etc. problem I am having:
+GRASS 6.4.2RC2> g.region -d 
+Launch R from the GRASS prompt 
+GRASS 6.4.2RC2> R
+'R' is not recognized as an internal or external command, operable program or batch file?
+########## Others are having the same problem, and I have had people email me privately to let them know what I uncover. 
+
+
+Cheers,
+Laura
+
+
+
+________________________________
+ From: Roger Bivand <Roger.Bivand@nhh.no>
+To: Laura S <les_ecol@yahoo.com> 
+Cc: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org> 
+Sent: Friday, May 4, 2012 12:12:29 AM
+Subject: Re: [GRASS-stats] GRASS within R interface issues 
+ 
+On Fri, 4 May 2012, Laura S wrote:
+
+> Dear Roger:
+> 
+> Thank you. I am still puzzling a bit. Now the following happens: (i) R pops up, (ii) GRASS is not frozen, (ii) but there is no recognition of R in GRASS GUI with MSYS. How do I get R to be recognized directly within GRASS? I keep getting "sh: R: command not found" in the GRASS GUI with MSYS. 
+> Here are my newest steps thus far:
+> 
+> 1. In GRASS GUI with MSYS:
+> GRASS 6.4 > "C:/Programs.../Rgui.exe" &
+> [1] 3532
+> 
+> 2. Pops up R window without freezing console, but still does not recognize R, as shown in # 3.
+> 
+> 3. GRASS 6.4 > R
+> sh: R : command not found
+
+Well, you have a running R session, do you want a second one? If you prefer not to use the R GUI, you may use R.exe in step 2 but without the &, as then the R CLI will run in the MSYS console. I do not understand why you do step 3 - you asked before about issuing GRASS commands at the MSYS prompt? Can you get local help from someone who can look over your shoulder?
+
+Roger
+
+
+> 
+> Thank you,
+> 
+> Laura
+> 
+> 
+> 
+> 
+> ________________________________
+> From: Roger Bivand <Roger.Bivand@nhh.no>
+> To: Laura S <les_ecol@yahoo.com> Cc: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org> Sent: Wednesday, May 2, 2012 11:44:57 AM
+> Subject: Re: [GRASS-stats] GRASS within R interface issues 
+> On Sat, 28 Apr 2012, Laura S wrote:
+> 
+>> Dear all:
+>> 
+>> 
+>> I emailed around and others have the same issue of the freezing GRASS console and not being able to run R within GRASS, and many resort to doing GRASS commands within R using execGRASS().?
+> 
+> You do need to understand what you are doing, I'm afraid.
+> 
+> If you just enter "C:\Program Files\ ... \Rgui.exe" at the MSYS prompt, it starts R and does not return until you exit R. If, however, you trat MSYS as Unix, and add & after the "C:\Program Files\ ... \Rgui.exe" (only tried on XP as this is the Windows version involved here):
+> 
+> "C:\Program Files\ ... \Rgui.exe" &
+> 
+> MSYS will start R within GRASS, and return to its prompt - which I think is what you want. In addition, you can run GRASS commands from the GRASS GUI, either using the point and click GUI, or typing into the command console tab at the bottom of the layer manager, in addition to the equivalent execGRASS() in R.
+> 
+> Hope this clarifies,
+> 
+> Roger
+> 
+>> 
+>> I am going to keep searching around for a fix, as I still cannot run R within GRASS on XP. I am trying to figure this out for myself and other collaborators.
+>> 
+>> 
+>> Cheers,
+>> Laura
+>> 
+>> 
+>> 
+>> ________________________________
+>> From: Laura S <les_ecol@yahoo.com>
+>> To: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org> Sent: Monday, April 23, 2012 2:34:40 PM
+>> Subject: [GRASS-stats] GRASS with R interface issues - running R within GRASS 6.4.2
+>> 
+>> 
+>> Dear all:
+>> 
+>> Do you have any suggestions on this? Thank you.
+>> 
+>> 
+>> I cannot type in the GRASS GUI with MSYS window and execute commands. It is frozen, and when I open up another GRASS console and type R the console says: "R is not recognizable as an internal or external command, operable program or batch file." 
+>> I provide examples below. Roger has been helpful, but I am still unsure if I am missing something, or there is a bug. 
+>> I have found bugs in other programs, e.g., WinRhizo, but I am assuming GRASS is working fine. I have been looking for screenshot instructions to better understand my issue, so anyone knows of these posted somewhere, this would be helpful. 
+>> Laura
+>> 
+>> 
+>> On Mon, 23 Apr 2012, Laura S wrote:
+>> 
+>>> Dear Roger and others:
+>>> 
+>>> My apologies if I am not piecing everything together. I think I am almost there; I appreciate your patience.
+>>> 
+>>> 
+>>> This is my current point of confusion, and what I am able to do so far:
+>>> 
+>>> 
+>> I. My main point of confusion is that when I type the path into GRASS MSYS, the R console window pops up, and I am unable to type more into the GRASS console. I cannot type GRASS commands in R, so I am unsure where I type the GRASS commands if GRASS console does not let me type more, and the R console does not recognize R commands.
+>> 
+>> Why should
+>> it? Simply minimise the R GUI to work in GRASS directly, using the GRASS GUI or from the prompt in MSYS. I doubt very much whether saying d.ask makes sense anyway, as the GRASS display GUI covers that.
+>> 
+>> It
+>> is possible to write GRASS commands using execGRASS() from the R console, but since you have had to ask, you will find it easier simply to minimise R and use GRASS directly. Because R is within GRASS, it "sees" the current status of the location.
+>> 
+>> Hope this clarifies - please change to one of the GRASS lists for further help.
+>> 
+>> Roger
+>> 
+>>> 
+>>> 
+>>> II. What I can do so far in more detail:
+>>> 
+>> 1. Within the GRASS 6.4.2RC2 with MSYS, I typed using tab autocompletion: "C:/Program Files/R/R-2.14/bin/i386/Rgui.exe" which causes the RGui to pop up as a second R window. Thus, I am not in GRASS directly anymore I assume, but rather in the RGui. In this GUI, it says the following when I type library(spgrass6): "GRASS GIS Interface loaded
+>> with GRASS version GRASS 6.4.2RC2exported (2011) and location: demolocation" gmeta6() gisdbase C:/Documents etc.?
+>>> 
+>>> If I try a GRASS command such as "d.ask" in the RGUI after loading spgrass:
+>>> 
+>>> d.ask
+>>> Error: object 'd.ask' not found
+>>> 
+>>> 
+>>> 
+>> 2. I can also get this to work in R directly: loc <- initGRASS("C:/Program Files/Grass 6.4",home=tempdir()) gmeta6() **prints
+>> gisdbase, etc.**?
+>>> 
+>>> d.ask
+>>> Error: object 'd.ask' not found
+>>> 
+>>> 
+>>> Thank you for your help,
+>>> Laura 
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>> 
+> 
+> -- Roger Bivand
+> Department of Economics, NHH Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+> 
+
+-- Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20120504/92c0bec9/attachment.html
+From Roger.Bivand at nhh.no  Fri May  4 16:13:24 2012
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri May  4 16:13:58 2012
+Subject: [GRASS-stats] GRASS within R interface issues 
+In-Reply-To: <1336151009.33696.YahooMailNeo@web140320.mail.bf1.yahoo.com>
+References: <1335216880.32667.YahooMailNeo@web140302.mail.bf1.yahoo.com>
+	<1335567578.8280.YahooMailNeo@web140304.mail.bf1.yahoo.com>
+	<alpine.LRH.2.02.1205022032130.3610@reclus.nhh.no>
+	<1336103341.71795.YahooMailNeo@web140310.mail.bf1.yahoo.com>
+	<alpine.LRH.2.02.1205040908500.19192@reclus.nhh.no>
+	<1336151009.33696.YahooMailNeo@web140320.mail.bf1.yahoo.com>
+Message-ID: <alpine.LRH.2.02.1205042145190.24462@reclus.nhh.no>
+
+On Fri, 4 May 2012, Laura S wrote:
+
+> Dear Roger:
+>
+> What I have been seeking to do from the very beginning is to run R 
+> within GRASS directly on XP. In other words, type "R" in the GRASS 
+> console and have R run. This does not workfor me yet. I have looked in 
+> books/websites. From what I have read, they indicate that you run R 
+> within GRASS, but not the actual set up to make R recognizable to GRASS 
+> when it spits out " 'R' is not recognized as an internal or external 
+> command, operable program or batch file"; the output that has started 
+> this whole process of me trying to figure out the disconnect. Here is an 
+> example of what I want to do, and how when I try to do the same 
+> operation it fails:
+
+If you mean the GRASS "Command console" tab in the GUI Layer Manager, it 
+cannot be used to run interactive R. It can perhaps be used to run a 
+single R script and exit. This is definitely not supported, and is 
+illogical, as that tab is only for running modules that run and exit, 
+writing to the standard output window above. I can start R in the Command 
+console tab under Linux, but not under Windows XP.
+
+By the way, using the full path to Rgui.exe from the MSYS prompt with & 
+also works in Windows 7.
+
+If you want to run R in GRASS on Windows, use Rgui.exe as I have 
+explained, or possibly R.exe at the MSYS prompt. You have not shown why 
+your proposed action has any sense or merit, and I think that asking 
+people for their experienced doing something for which nothing was 
+designed, and which cannot work, does show that you need to understand how 
+computers and programs work. You could read the code of the Layer Manager 
+Command console tab to see whether it could be improved to permit 
+interactive programs to be run, but continuing this thread seems 
+pointless. Asking unidentified users for their experiences when the person 
+who wrote the R/GRASS interface has explained how to use it, is 
+irritating, I'm afraid.
+
+When the console reports that the command cannot be found, it is because 
+it is not on the current search path, often the PATH environment variable, 
+which is why one often uses an absolute address. On Windows XP, I cannot 
+get any R executable to start from the Layer Manager Command console tab.
+
+The "Command console" tab is not for running R interactively, period.
+
+Roger
+
+
+> ######### Startup
+> 	* Start GRASS. At the GRASS command line start R. 
+> In this example we will use the sample Spearfish dataset. 
+> Reset the region settings to the defaults 
+> GRASS> g.region -d 
+> Launch R from the GRASS prompt 
+> GRASS> R 
+> Load the spgrass6 library: 
+>> library(spgrass6) 
+> Get the GRASS environment (mapset, region, map projection, etc.); you can display the metadata for your location by printing G: 
+>> G <- gmeta6() 
+> ########### This is what I get from the GRASS command line, which mirrors the MSYS, etc. problem I am having:
+> GRASS 6.4.2RC2> g.region -d 
+> Launch R from the GRASS prompt 
+> GRASS 6.4.2RC2> R
+> 'R' is not recognized as an internal or external command, operable program or batch file?
+> ########## Others are having the same problem, and I have had people email me privately to let them know what I uncover. 
+>
+>
+> Cheers,
+> Laura
+>
+>
+>
+> ________________________________
+> From: Roger Bivand <Roger.Bivand@nhh.no>
+> To: Laura S <les_ecol@yahoo.com> 
+> Cc: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org> 
+> Sent: Friday, May 4, 2012 12:12:29 AM
+> Subject: Re: [GRASS-stats] GRASS within R interface issues 
+> 
+> On Fri, 4 May 2012, Laura S wrote:
+>
+>> Dear Roger:
+>> 
+>> Thank you. I am still puzzling a bit. Now the following happens: (i) R pops up, (ii) GRASS is not frozen, (ii) but there is no recognition of R in GRASS GUI with MSYS. How do I get R to be recognized directly within GRASS? I keep getting "sh: R: command not found" in the GRASS GUI with MSYS. 
+>> Here are my newest steps thus far:
+>> 
+>> 1. In GRASS GUI with MSYS:
+>> GRASS 6.4 > "C:/Programs.../Rgui.exe" &
+>> [1] 3532
+>> 
+>> 2. Pops up R window without freezing console, but still does not recognize R, as shown in # 3.
+>> 
+>> 3. GRASS 6.4 > R
+>> sh: R : command not found
+>
+> Well, you have a running R session, do you want a second one? If you prefer not to use the R GUI, you may use R.exe in step 2 but without the &, as then the R CLI will run in the MSYS console. I do not understand why you do step 3 - you asked before about issuing GRASS commands at the MSYS prompt? Can you get local help from someone who can look over your shoulder?
+>
+> Roger
+>
+>
+>> 
+>> Thank you,
+>> 
+>> Laura
+>> 
+>> 
+>> 
+>> 
+>> ________________________________
+>> From: Roger Bivand <Roger.Bivand@nhh.no>
+>> To: Laura S <les_ecol@yahoo.com> Cc: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org> Sent: Wednesday, May 2, 2012 11:44:57 AM
+>> Subject: Re: [GRASS-stats] GRASS within R interface issues 
+>> On Sat, 28 Apr 2012, Laura S wrote:
+>> 
+>>> Dear all:
+>>> 
+>>> 
+>>> I emailed around and others have the same issue of the freezing GRASS console and not being able to run R within GRASS, and many resort to doing GRASS commands within R using execGRASS().?
+>> 
+>> You do need to understand what you are doing, I'm afraid.
+>> 
+>> If you just enter "C:\Program Files\ ... \Rgui.exe" at the MSYS prompt, it starts R and does not return until you exit R. If, however, you trat MSYS as Unix, and add & after the "C:\Program Files\ ... \Rgui.exe" (only tried on XP as this is the Windows version involved here):
+>> 
+>> "C:\Program Files\ ... \Rgui.exe" &
+>> 
+>> MSYS will start R within GRASS, and return to its prompt - which I think is what you want. In addition, you can run GRASS commands from the GRASS GUI, either using the point and click GUI, or typing into the command console tab at the bottom of the layer manager, in addition to the equivalent execGRASS() in R.
+>> 
+>> Hope this clarifies,
+>> 
+>> Roger
+>> 
+>>> 
+>>> I am going to keep searching around for a fix, as I still cannot run R within GRASS on XP. I am trying to figure this out for myself and other collaborators.
+>>> 
+>>> 
+>>> Cheers,
+>>> Laura
+>>> 
+>>> 
+>>> 
+>>> ________________________________
+>>> From: Laura S <les_ecol@yahoo.com>
+>>> To: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org> Sent: Monday, April 23, 2012 2:34:40 PM
+>>> Subject: [GRASS-stats] GRASS with R interface issues - running R within GRASS 6.4.2
+>>> 
+>>> 
+>>> Dear all:
+>>> 
+>>> Do you have any suggestions on this? Thank you.
+>>> 
+>>> 
+>>> I cannot type in the GRASS GUI with MSYS window and execute commands. It is frozen, and when I open up another GRASS console and type R the console says: "R is not recognizable as an internal or external command, operable program or batch file." 
+>>> I provide examples below. Roger has been helpful, but I am still unsure if I am missing something, or there is a bug. 
+>>> I have found bugs in other programs, e.g., WinRhizo, but I am assuming GRASS is working fine. I have been looking for screenshot instructions to better understand my issue, so anyone knows of these posted somewhere, this would be helpful. 
+>>> Laura
+>>> 
+>>> 
+>>> On Mon, 23 Apr 2012, Laura S wrote:
+>>> 
+>>>> Dear Roger and others:
+>>>> 
+>>>> My apologies if I am not piecing everything together. I think I am almost there; I appreciate your patience.
+>>>> 
+>>>> 
+>>>> This is my current point of confusion, and what I am able to do so far:
+>>>> 
+>>>> 
+>>> I. My main point of confusion is that when I type the path into GRASS MSYS, the R console window pops up, and I am unable to type more into the GRASS console. I cannot type GRASS commands in R, so I am unsure where I type the GRASS commands if GRASS console does not let me type more, and the R console does not recognize R commands.
+>>> 
+>>> Why should
+>>> it? Simply minimise the R GUI to work in GRASS directly, using the GRASS GUI or from the prompt in MSYS. I doubt very much whether saying d.ask makes sense anyway, as the GRASS display GUI covers that.
+>>> 
+>>> It
+>>> is possible to write GRASS commands using execGRASS() from the R console, but since you have had to ask, you will find it easier simply to minimise R and use GRASS directly. Because R is within GRASS, it "sees" the current status of the location.
+>>> 
+>>> Hope this clarifies - please change to one of the GRASS lists for further help.
+>>> 
+>>> Roger
+>>> 
+>>>> 
+>>>> 
+>>>> II. What I can do so far in more detail:
+>>>> 
+>>> 1. Within the GRASS 6.4.2RC2 with MSYS, I typed using tab autocompletion: "C:/Program Files/R/R-2.14/bin/i386/Rgui.exe" which causes the RGui to pop up as a second R window. Thus, I am not in GRASS directly anymore I assume, but rather in the RGui. In this GUI, it says the following when I type library(spgrass6): "GRASS GIS Interface loaded
+>>> with GRASS version GRASS 6.4.2RC2exported (2011) and location: demolocation" gmeta6() gisdbase C:/Documents etc.?
+>>>> 
+>>>> If I try a GRASS command such as "d.ask" in the RGUI after loading spgrass:
+>>>> 
+>>>> d.ask
+>>>> Error: object 'd.ask' not found
+>>>> 
+>>>> 
+>>>> 
+>>> 2. I can also get this to work in R directly: loc <- initGRASS("C:/Program Files/Grass 6.4",home=tempdir()) gmeta6() **prints
+>>> gisdbase, etc.**?
+>>>> 
+>>>> d.ask
+>>>> Error: object 'd.ask' not found
+>>>> 
+>>>> 
+>>>> Thank you for your help,
+>>>> Laura 
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats@lists.osgeo.org
+>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>> 
+>> 
+>> -- Roger Bivand
+>> Department of Economics, NHH Norwegian School of Economics,
+>> Helleveien 30, N-5045 Bergen, Norway.
+>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>> e-mail: Roger.Bivand@nhh.no
+>> 
+>
+> -- Roger Bivand
+> Department of Economics, NHH Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From les_ecol at yahoo.com  Fri May  4 17:02:46 2012
+From: les_ecol at yahoo.com (Laura S)
+Date: Fri May  4 17:02:57 2012
+Subject: [GRASS-stats] GRASS within R interface issues 
+In-Reply-To: <alpine.LRH.2.02.1205042145190.24462@reclus.nhh.no>
+References: <1335216880.32667.YahooMailNeo@web140302.mail.bf1.yahoo.com>
+	<1335567578.8280.YahooMailNeo@web140304.mail.bf1.yahoo.com>
+	<alpine.LRH.2.02.1205022032130.3610@reclus.nhh.no>
+	<1336103341.71795.YahooMailNeo@web140310.mail.bf1.yahoo.com>
+	<alpine.LRH.2.02.1205040908500.19192@reclus.nhh.no>
+	<1336151009.33696.YahooMailNeo@web140320.mail.bf1.yahoo.com>
+	<alpine.LRH.2.02.1205042145190.24462@reclus.nhh.no>
+Message-ID: <1336165366.9585.YahooMailNeo@web140311.mail.bf1.yahoo.com>
+
+Dear Roger:
+
+
+Thank you for your response. I will see if I can code in something to make it work. The executable does not work the way you described on my computer, so maybe I installed something wrong. If all can be run in R gui then I am fine with that, but I keep reading that it is better to run R in GRASS directly. The files I will be importing are large, so it would be more useful to use GRASS than the limited memory of R. 
+
+
+I am sorry for any frustration. I can use computers, and I can program, but there may be some gaps as I have taught myself from scratch.
+
+
+For now, I will see if I can use QGIS with R instead as it is more user friendly. Then, I can progress to GRASS/R. I was able to run QGIS with GRASS. I know there is a R/QGIS plugin. 
+
+
+Cheers,
+Laura
+
+
+
+________________________________
+ From: Roger Bivand <Roger.Bivand@nhh.no>
+To: Laura S <les_ecol@yahoo.com> 
+Cc: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org> 
+Sent: Friday, May 4, 2012 1:13:24 PM
+Subject: Re: [GRASS-stats] GRASS within R interface issues 
+ 
+On Fri, 4 May 2012, Laura S wrote:
+
+> Dear Roger:
+> 
+> What I have been seeking to do from the very beginning is to run R within GRASS directly on XP. In other words, type "R" in the GRASS console and have R run. This does not workfor me yet. I have looked in books/websites. From what I have read, they indicate that you run R within GRASS, but not the actual set up to make R recognizable to GRASS when it spits out " 'R' is not recognized as an internal or external command, operable program or batch file"; the output that has started this whole process of me trying to figure out the disconnect. Here is an example of what I want to do, and how when I try to do the same operation it fails:
+
+If you mean the GRASS "Command console" tab in the GUI Layer Manager, it cannot be used to run interactive R. It can perhaps be used to run a single R script and exit. This is definitely not supported, and is illogical, as that tab is only for running modules that run and exit, writing to the standard output window above. I can start R in the Command console tab under Linux, but not under Windows XP.
+
+By the way, using the full path to Rgui.exe from the MSYS prompt with & also works in Windows 7.
+
+If you want to run R in GRASS on Windows, use Rgui.exe as I have explained, or possibly R.exe at the MSYS prompt. You have not shown why your proposed action has any sense or merit, and I think that asking people for their experienced doing something for which nothing was designed, and which cannot work, does show that you need to understand how computers and programs work. You could read the code of the Layer Manager Command console tab to see whether it could be improved to permit interactive programs to be run, but continuing this thread seems pointless. Asking unidentified users for their experiences when the person who wrote the R/GRASS interface has explained how to use it, is irritating, I'm afraid.
+
+When the console reports that the command cannot be found, it is because it is not on the current search path, often the PATH environment variable, which is why one often uses an absolute address. On Windows XP, I cannot get any R executable to start from the Layer Manager Command console tab.
+
+The "Command console" tab is not for running R interactively, period.
+
+Roger
+
+
+> ######### Startup
+> ??? * Start GRASS. At the GRASS command line start R. In this example we will use the sample Spearfish dataset. Reset the region settings to the defaults GRASS> g.region -d Launch R from the GRASS prompt GRASS> R Load the spgrass6 library: 
+>> library(spgrass6) 
+> Get the GRASS environment (mapset, region, map projection, etc.); you can display the metadata for your location by printing G: 
+>> G <- gmeta6() 
+> ########### This is what I get from the GRASS command line, which mirrors the MSYS, etc. problem I am having:
+> GRASS 6.4.2RC2> g.region -d Launch R from the GRASS prompt GRASS 6.4.2RC2> R
+> 'R' is not recognized as an internal or external command, operable program or batch file?
+> ########## Others are having the same problem, and I have had people email me privately to let them know what I uncover. 
+> 
+> Cheers,
+> Laura
+> 
+> 
+> 
+> ________________________________
+> From: Roger Bivand <Roger.Bivand@nhh.no>
+> To: Laura S <les_ecol@yahoo.com> Cc: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org> Sent: Friday, May 4, 2012 12:12:29 AM
+> Subject: Re: [GRASS-stats] GRASS within R interface issues 
+> On Fri, 4 May 2012, Laura S wrote:
+> 
+>> Dear Roger:
+>> 
+>> Thank you. I am still puzzling a bit. Now the following happens: (i) R pops up, (ii) GRASS is not frozen, (ii) but there is no recognition of R in GRASS GUI with MSYS. How do I get R to be recognized directly within GRASS? I keep getting "sh: R: command not found" in the GRASS GUI with MSYS. Here are my newest steps thus far:
+>> 
+>> 1. In GRASS GUI with MSYS:
+>> GRASS 6.4 > "C:/Programs.../Rgui.exe" &
+>> [1] 3532
+>> 
+>> 2. Pops up R window without freezing console, but still does not recognize R, as shown in # 3.
+>> 
+>> 3. GRASS 6.4 > R
+>> sh: R : command not found
+> 
+> Well, you have a running R session, do you want a second one? If you prefer not to use the R GUI, you may use R.exe in step 2 but without the &, as then the R CLI will run in the MSYS console. I do not understand why you do step 3 - you asked before about issuing GRASS commands at the MSYS prompt? Can you get local help from someone who can look over your shoulder?
+> 
+> Roger
+> 
+> 
+>> 
+>> Thank you,
+>> 
+>> Laura
+>> 
+>> 
+>> 
+>> 
+>> ________________________________
+>> From: Roger Bivand <Roger.Bivand@nhh.no>
+>> To: Laura S <les_ecol@yahoo.com> Cc: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org> Sent: Wednesday, May 2, 2012 11:44:57 AM
+>> Subject: Re: [GRASS-stats] GRASS within R interface issues On Sat, 28 Apr 2012, Laura S wrote:
+>> 
+>>> Dear all:
+>>> 
+>>> 
+>>> I emailed around and others have the same issue of the freezing GRASS console and not being able to run R within GRASS, and many resort to doing GRASS commands within R using execGRASS().?
+>> 
+>> You do need to understand what you are doing, I'm afraid.
+>> 
+>> If you just enter "C:\Program Files\ ... \Rgui.exe" at the MSYS prompt, it starts R and does not return until you exit R. If, however, you trat MSYS as Unix, and add & after the "C:\Program Files\ ... \Rgui.exe" (only tried on XP as this is the Windows version involved here):
+>> 
+>> "C:\Program Files\ ... \Rgui.exe" &
+>> 
+>> MSYS will start R within GRASS, and return to its prompt - which I think is what you want. In addition, you can run GRASS commands from the GRASS GUI, either using the point and click GUI, or typing into the command console tab at the bottom of the layer manager, in addition to the equivalent execGRASS() in R.
+>> 
+>> Hope this clarifies,
+>> 
+>> Roger
+>> 
+>>> 
+>>> I am going to keep searching around for a fix, as I still cannot run R within GRASS on XP. I am trying to figure this out for myself and other collaborators.
+>>> 
+>>> 
+>>> Cheers,
+>>> Laura
+>>> 
+>>> 
+>>> 
+>>> ________________________________
+>>> From: Laura S <les_ecol@yahoo.com>
+>>> To: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org> Sent: Monday, April 23, 2012 2:34:40 PM
+>>> Subject: [GRASS-stats] GRASS with R interface issues - running R within GRASS 6.4.2
+>>> 
+>>> 
+>>> Dear all:
+>>> 
+>>> Do you have any suggestions on this? Thank you.
+>>> 
+>>> 
+>>> I cannot type in the GRASS GUI with MSYS window and execute commands. It is frozen, and when I open up another GRASS console and type R the console says: "R is not recognizable as an internal or external command, operable program or batch file." I provide examples below. Roger has been helpful, but I am still unsure if I am missing something, or there is a bug. I have found bugs in other programs, e.g., WinRhizo, but I am assuming GRASS is working fine. I have been looking for screenshot instructions to better understand my issue, so anyone knows of these posted somewhere, this would be helpful. Laura
+>>> 
+>>> 
+>>> On Mon, 23 Apr 2012, Laura S wrote:
+>>> 
+>>>> Dear Roger and others:
+>>>> 
+>>>> My apologies if I am not piecing everything together. I think I am almost there; I appreciate your patience.
+>>>> 
+>>>> 
+>>>> This is my current point of confusion, and what I am able to do so far:
+>>>> 
+>>>> 
+>>> I. My main point of confusion is that when I type the path into GRASS MSYS, the R console window pops up, and I am unable to type more into the GRASS console. I cannot type GRASS commands in R, so I am unsure where I type the GRASS commands if GRASS console does not let me type more, and the R console does not recognize R commands.
+>>> 
+>>> Why should
+>>> it? Simply minimise the R GUI to work in GRASS directly, using the GRASS GUI or from the prompt in MSYS. I doubt very much whether saying d.ask makes sense anyway, as the GRASS display GUI covers that.
+>>> 
+>>> It
+>>> is possible to write GRASS commands using execGRASS() from the R console, but since you have had to ask, you will find it easier simply to minimise R and use GRASS directly. Because R is within GRASS, it "sees" the current status of the location.
+>>> 
+>>> Hope this clarifies - please change to one of the GRASS lists for further help.
+>>> 
+>>> Roger
+>>> 
+>>>> 
+>>>> 
+>>>> II. What I can do so far in more detail:
+>>>> 
+>>> 1. Within the GRASS 6.4.2RC2 with MSYS, I typed using tab autocompletion: "C:/Program Files/R/R-2.14/bin/i386/Rgui.exe" which causes the RGui to pop up as a second R window. Thus, I am not in GRASS directly anymore I assume, but rather in the RGui. In this GUI, it says the following when I type library(spgrass6): "GRASS GIS Interface loaded
+>>> with GRASS version GRASS 6.4.2RC2exported (2011) and location: demolocation" gmeta6() gisdbase C:/Documents etc.?
+>>>> 
+>>>> If I try a GRASS command such as "d.ask" in the RGUI after loading spgrass:
+>>>> 
+>>>> d.ask
+>>>> Error: object 'd.ask' not found
+>>>> 
+>>>> 
+>>>> 
+>>> 2. I can also get this to work in R directly: loc <- initGRASS("C:/Program Files/Grass 6.4",home=tempdir()) gmeta6() **prints
+>>> gisdbase, etc.**?
+>>>> 
+>>>> d.ask
+>>>> Error: object 'd.ask' not found
+>>>> 
+>>>> 
+>>>> Thank you for your help,
+>>>> Laura 
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats@lists.osgeo.org
+>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>> 
+>> 
+>> -- Roger Bivand
+>> Department of Economics, NHH Norwegian School of Economics,
+>> Helleveien 30, N-5045 Bergen, Norway.
+>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>> e-mail: Roger.Bivand@nhh.no
+>> 
+> 
+> -- Roger Bivand
+> Department of Economics, NHH Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+
+-- Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20120504/2d2eb515/attachment-0001.html
+From neteler at osgeo.org  Sat May  5 05:09:55 2012
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sat May  5 05:10:53 2012
+Subject: [GRASS-stats] GRASS within R interface issues
+In-Reply-To: <1336165366.9585.YahooMailNeo@web140311.mail.bf1.yahoo.com>
+References: <1335216880.32667.YahooMailNeo@web140302.mail.bf1.yahoo.com>
+	<1335567578.8280.YahooMailNeo@web140304.mail.bf1.yahoo.com>
+	<alpine.LRH.2.02.1205022032130.3610@reclus.nhh.no>
+	<1336103341.71795.YahooMailNeo@web140310.mail.bf1.yahoo.com>
+	<alpine.LRH.2.02.1205040908500.19192@reclus.nhh.no>
+	<1336151009.33696.YahooMailNeo@web140320.mail.bf1.yahoo.com>
+	<alpine.LRH.2.02.1205042145190.24462@reclus.nhh.no>
+	<1336165366.9585.YahooMailNeo@web140311.mail.bf1.yahoo.com>
+Message-ID: <CALFmHhsixrsS9YGAe_jcu_ZhEtU3p4pUD6wfcxkhp05vy-+TTA@mail.gmail.com>
+
+Hi Laura,
+
+On Fri, May 4, 2012 at 11:02 PM, Laura S <les_ecol@yahoo.com> wrote:
+> The files I will be importing are large, so it would be more
+> useful to use GRASS than the limited memory of R.
+
+What methods are you looking for? I would note that there are some
+new statistical methods in GRASS-Addons.
+
+Markus
+From Roger.Bivand at nhh.no  Sat May  5 06:41:42 2012
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sat May  5 06:42:17 2012
+Subject: [GRASS-stats] GRASS within R interface issues 
+In-Reply-To: <1336165366.9585.YahooMailNeo@web140311.mail.bf1.yahoo.com>
+References: <1335216880.32667.YahooMailNeo@web140302.mail.bf1.yahoo.com>
+	<1335567578.8280.YahooMailNeo@web140304.mail.bf1.yahoo.com>
+	<alpine.LRH.2.02.1205022032130.3610@reclus.nhh.no>
+	<1336103341.71795.YahooMailNeo@web140310.mail.bf1.yahoo.com>
+	<alpine.LRH.2.02.1205040908500.19192@reclus.nhh.no>
+	<1336151009.33696.YahooMailNeo@web140320.mail.bf1.yahoo.com>
+	<alpine.LRH.2.02.1205042145190.24462@reclus.nhh.no>
+	<1336165366.9585.YahooMailNeo@web140311.mail.bf1.yahoo.com>
+Message-ID: <alpine.LRH.2.02.1205051222220.26610@reclus.nhh.no>
+
+On Fri, 4 May 2012, Laura S wrote:
+
+> Dear Roger:
+>
+> Thank you for your response. I will see if I can code in something to 
+> make it work. The executable does not work the way you described on my 
+> computer, so maybe I installed something wrong. If all can be run in R 
+> gui then I am fine with that, but I keep reading that it is better to 
+> run R in GRASS directly. The files I will be importing are large, so it 
+> would be more useful to use GRASS than the limited memory of R.
+
+Using R in GRASS directly has two meanings, but not the third you imply. 
+The first is that R is run "on top of" GRASS, transferring GRASS data to R 
+to run statistical functions on the imported data as R objects in memory, 
+and possibly tranfer the results back to GRASS.
+
+The second is to leave the data mostly in GRASS, and to use R as a 
+scripting language "on top of" GRASS with execGRASS() - in this case, 
+little data is moved to R, so memory constraints are not important, but R 
+functionality is not available.
+
+The third meaning that you imply is to be able to use R functions on GRASS 
+data without moving the data to the R workspace. This is not possible as 
+such. Two possibilities exist, one to tile the GRASS region with g.region 
+in a loop, and only transfer single tiles to R for processing. This would 
+be similar to using the R raster package on GRASS raster data exported 
+using r.out.gdal, which also permits looping over tiles of data. It is 
+possible to do the same using r.out.gdal exported GRASS data with the 
+offset= and region.dim= arguments to readGDAL(). None of these is 
+available without scripting yourself.
+
+>
+> I am sorry for any frustration. I can use computers, and I can program, 
+> but there may be some gaps as I have taught myself from scratch.
+
+Learning oneself is fine, but one also needs to look carefully at example 
+code to see whether the meanings one is giving to concepts are the only 
+ones possible (ontology?) - here your understanding of "direct" has not 
+the appropriate one. Explaining what you really wanted to do to start with 
+would have saved a lot of time.
+
+>
+> For now, I will see if I can use QGIS with R instead as it is more user 
+> friendly. Then, I can progress to GRASS/R. I was able to run QGIS with 
+> GRASS. I know there is a R/QGIS plugin.
+>
+
+This wins you nothing at all on memory, I'm afraid. QGIS will just be a 
+side-track, because for R functions you still need all the data in memory.
+
+The apparent memory limitations of R are also less significant than many 
+feel, especially if you script to avoid copying, use a 64-bit system, and 
+design your workflow carefully. If by big data you mean hundreds of bands 
+of scenes each with billions of pixels, I would ask what kinds of 
+inferences you want to do, that would justify doing statistics on "too 
+much" data. Is sampling an option to get to the results you need? Using 
+"too big" data prevents you using advanced statistical methods, which may 
+actually give more insight into the underlying scientific problems.
+
+Roger
+
+>
+> Cheers,
+> Laura
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From r.m.krug at gmail.com  Mon May  7 08:07:58 2012
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Mon May  7 08:08:53 2012
+Subject: [GRASS-stats] Nearest neighbour distance distribution but between
+	polygons
+Message-ID: <4FA7BB1E.4040001@gmail.com>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Hi
+
+I have the following (presumibly simple?) question:
+
+I have a certain number of patches (islands) in a landscape of which I need to know the nearest
+neighbour distance. As the problem is related to dispersal, I would need to know the actual
+shortest distance between the actual polygons and not only the centroids. Is there an easy way to
+obtain these in R or in GRASS? I am only aware of nearest neighbour distance between points.
+
+Thanks,
+
+Rainer
+
+
+- -- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys.
+(Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer@krugs.de
+
+Skype:      RMkrug
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk+nux4ACgkQoYgNqgF2egqaDgCeKx1BkrDsn+NldthK1GzFVYWp
+stwAnRz+uj47cBMNid/QPdIRXwAnVs/8
+=yBff
+-----END PGP SIGNATURE-----
+From Roger.Bivand at nhh.no  Mon May  7 08:25:46 2012
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon May  7 08:25:40 2012
+Subject: [GRASS-stats] Nearest neighbour distance distribution but between
+	polygons
+In-Reply-To: <4FA7BB1E.4040001@gmail.com>
+References: <4FA7BB1E.4040001@gmail.com>
+Message-ID: <alpine.LRH.2.02.1205071419360.3968@reclus.nhh.no>
+
+On Mon, 7 May 2012, Rainer M Krug wrote:
+
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>
+> Hi
+>
+> I have the following (presumibly simple?) question:
+>
+> I have a certain number of patches (islands) in a landscape of which I 
+> need to know the nearest neighbour distance. As the problem is related 
+> to dispersal, I would need to know the actual shortest distance between 
+> the actual polygons and not only the centroids. Is there an easy way to 
+> obtain these in R or in GRASS? I am only aware of nearest neighbour 
+> distance between points.
+
+In R, if the coordinates are projected, use gDistance(..., byid=TRUE) in 
+the rgeos package to get a matrix in the metric of the projection. If not 
+projected, project if possible.
+
+I don't think that the geosphere package provides for the unprojected 
+case.
+
+Roger
+
+>
+> Thanks,
+>
+> Rainer
+>
+>
+> - --
+> Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys.
+> (Germany)
+>
+> Centre of Excellence for Invasion Biology
+> Stellenbosch University
+> South Africa
+>
+> Tel :       +33 - (0)9 53 10 27 44
+> Cell:       +33 - (0)6 85 62 59 98
+> Fax :       +33 - (0)9 58 10 27 44
+>
+> Fax (D):    +49 - (0)3 21 21 25 22 44
+>
+> email:      Rainer@krugs.de
+>
+> Skype:      RMkrug
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.11 (GNU/Linux)
+> Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+>
+> iEYEARECAAYFAk+nux4ACgkQoYgNqgF2egqaDgCeKx1BkrDsn+NldthK1GzFVYWp
+> stwAnRz+uj47cBMNid/QPdIRXwAnVs/8
+> =yBff
+> -----END PGP SIGNATURE-----
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From giohappy at gmail.com  Mon May  7 08:35:06 2012
+From: giohappy at gmail.com (G. Allegri)
+Date: Mon May  7 08:35:46 2012
+Subject: [GRASS-stats] Nearest neighbour distance distribution but between
+	polygons
+In-Reply-To: <alpine.LRH.2.02.1205071419360.3968@reclus.nhh.no>
+References: <4FA7BB1E.4040001@gmail.com>
+	<alpine.LRH.2.02.1205071419360.3968@reclus.nhh.no>
+Message-ID: <CAB4g1=zWMpxjmKe6pAuOF7V1SvFVk5VOMd2XunEVvk+cvNywgg@mail.gmail.com>
+
+In Grass maybe you could use the boundaries instead of the areas. The
+distances would be between the boundaries' linestrings instead of centroids.
+
+giovanni
+
+2012/5/7 Roger Bivand <Roger.Bivand@nhh.no>
+
+> On Mon, 7 May 2012, Rainer M Krug wrote:
+>
+>  -----BEGIN PGP SIGNED MESSAGE-----
+>> Hash: SHA1
+>>
+>> Hi
+>>
+>> I have the following (presumibly simple?) question:
+>>
+>> I have a certain number of patches (islands) in a landscape of which I
+>> need to know the nearest neighbour distance. As the problem is related to
+>> dispersal, I would need to know the actual shortest distance between the
+>> actual polygons and not only the centroids. Is there an easy way to obtain
+>> these in R or in GRASS? I am only aware of nearest neighbour distance
+>> between points.
+>>
+>
+> In R, if the coordinates are projected, use gDistance(..., byid=TRUE) in
+> the rgeos package to get a matrix in the metric of the projection. If not
+> projected, project if possible.
+>
+> I don't think that the geosphere package provides for the unprojected case.
+>
+> Roger
+>
+>
+>
+>> Thanks,
+>>
+>> Rainer
+>>
+>>
+>> - --
+>> Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation
+>> Biology, UCT), Dipl. Phys.
+>> (Germany)
+>>
+>> Centre of Excellence for Invasion Biology
+>> Stellenbosch University
+>> South Africa
+>>
+>> Tel :       +33 - (0)9 53 10 27 44
+>> Cell:       +33 - (0)6 85 62 59 98
+>> Fax :       +33 - (0)9 58 10 27 44
+>>
+>> Fax (D):    +49 - (0)3 21 21 25 22 44
+>>
+>> email:      Rainer@krugs.de
+>>
+>> Skype:      RMkrug
+>> -----BEGIN PGP SIGNATURE-----
+>> Version: GnuPG v1.4.11 (GNU/Linux)
+>> Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+>>
+>> iEYEARECAAYFAk+**nux4ACgkQoYgNqgF2egqaDgCeKx1Bk**rDsn+NldthK1GzFVYWp
+>> stwAnRz+uj47cBMNid/**QPdIRXwAnVs/8
+>> =yBff
+>> -----END PGP SIGNATURE-----
+>> ______________________________**_________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/**mailman/listinfo/grass-stats<http://lists.osgeo.org/mailman/listinfo/grass-stats>
+>>
+>>
+> --
+> Roger Bivand
+> Department of Economics, NHH Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+>
+> ______________________________**_________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/**mailman/listinfo/grass-stats<http://lists.osgeo.org/mailman/listinfo/grass-stats>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20120507/1c60f4ef/attachment.html
+From r.m.krug at gmail.com  Mon May  7 08:42:48 2012
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Mon May  7 08:43:05 2012
+Subject: [GRASS-stats] Nearest neighbour distance distribution but between
+	polygons
+In-Reply-To: <alpine.LRH.2.02.1205071419360.3968@reclus.nhh.no>
+References: <4FA7BB1E.4040001@gmail.com>
+	<alpine.LRH.2.02.1205071419360.3968@reclus.nhh.no>
+Message-ID: <4FA7C348.1060208@gmail.com>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 07/05/12 14:25, Roger Bivand wrote:
+> On Mon, 7 May 2012, Rainer M Krug wrote:
+> 
+> Hi
+> 
+> I have the following (presumibly simple?) question:
+> 
+> I have a certain number of patches (islands) in a landscape of which I need to know the
+> nearest neighbour distance. As the problem is related to dispersal, I would need to know the
+> actual shortest distance between the actual polygons and not only the centroids. Is there an
+> easy way to obtain these in R or in GRASS? I am only aware of nearest neighbour distance
+> between points.
+> 
+
+Hi Roger
+
+
+>> In R, if the coordinates are projected, use gDistance(..., byid=TRUE) in the rgeos package to
+>> get a matrix in the metric of the projection. If not projected, project if possible.
+
+Exactly what I was looking for - the geometries are projected, so absolutely no problem.
+
+Thanks a lot,
+
+Rainer
+
+> 
+>> I don't think that the geosphere package provides for the unprojected case.
+> 
+>> Roger
+> 
+> 
+> Thanks,
+> 
+> Rainer
+> 
+> 
+>> _______________________________________________ grass-stats mailing list 
+>> grass-stats@lists.osgeo.org http://lists.osgeo.org/mailman/listinfo/grass-stats
+>> 
+> 
+
+- -- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys.
+(Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer@krugs.de
+
+Skype:      RMkrug
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk+nw0gACgkQoYgNqgF2egrVLQCfXxjpJvxuPpMMoWVHtM/IrC/9
+e8AAmQHoKaGZq2gJ4WI3HIELBPxLblpo
+=DOUj
+-----END PGP SIGNATURE-----
+From r.m.krug at gmail.com  Mon May  7 08:44:12 2012
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Mon May  7 08:44:33 2012
+Subject: [GRASS-stats] Nearest neighbour distance distribution but between
+	polygons
+In-Reply-To: <CAB4g1=zWMpxjmKe6pAuOF7V1SvFVk5VOMd2XunEVvk+cvNywgg@mail.gmail.com>
+References: <4FA7BB1E.4040001@gmail.com>
+	<alpine.LRH.2.02.1205071419360.3968@reclus.nhh.no>
+	<CAB4g1=zWMpxjmKe6pAuOF7V1SvFVk5VOMd2XunEVvk+cvNywgg@mail.gmail.com>
+Message-ID: <4FA7C39C.6040903@gmail.com>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 07/05/12 14:35, G. Allegri wrote:
+> In Grass maybe you could use the boundaries instead of the areas. The distances would be
+> between the boundaries' linestrings instead of centroids.
+
+Sounds definitely like an option to keep in mind - but what Roger suggested is easier to implement
+right now.
+
+Thanks,
+
+Rainer
+
+> 
+> giovanni
+> 
+> 2012/5/7 Roger Bivand <Roger.Bivand@nhh.no <mailto:Roger.Bivand@nhh.no>>
+> 
+> On Mon, 7 May 2012, Rainer M Krug wrote:
+> 
+> Hi
+> 
+> I have the following (presumibly simple?) question:
+> 
+> I have a certain number of patches (islands) in a landscape of which I need to know the nearest
+> neighbour distance. As the problem is related to dispersal, I would need to know the actual
+> shortest distance between the actual polygons and not only the centroids. Is there an easy way
+> to obtain these in R or in GRASS? I am only aware of nearest neighbour distance between
+> points.
+> 
+> 
+>> In R, if the coordinates are projected, use gDistance(..., byid=TRUE) in the rgeos package
+>> to get a matrix in the metric of the projection. If not projected, project if possible.
+> 
+>> I don't think that the geosphere package provides for the unprojected case.
+> 
+>> Roger
+> 
+> 
+> 
+> Thanks,
+> 
+> Rainer
+> 
+> 
+> _________________________________________________ grass-stats mailing list 
+> grass-stats@lists.osgeo.org <mailto:grass-stats@lists.osgeo.org> 
+> http://lists.osgeo.org/__mailman/listinfo/grass-stats 
+> <http://lists.osgeo.org/mailman/listinfo/grass-stats>
+> 
+> 
+> -- Roger Bivand Department of Economics, NHH Norwegian School of Economics, Helleveien 30,
+> N-5045 Bergen, Norway. voice: +47 55 95 93 55 <tel:%2B47%2055%2095%2093%2055>; fax +47 55 95 95
+> 43 <tel:%2B47%2055%2095%2095%2043> e-mail: Roger.Bivand@nhh.no <mailto:Roger.Bivand@nhh.no>
+> 
+> 
+> _________________________________________________ grass-stats mailing list 
+> grass-stats@lists.osgeo.org <mailto:grass-stats@lists.osgeo.org> 
+> http://lists.osgeo.org/__mailman/listinfo/grass-stats 
+> <http://lists.osgeo.org/mailman/listinfo/grass-stats>
+> 
+> 
+
+- -- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys.
+(Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer@krugs.de
+
+Skype:      RMkrug
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk+nw5wACgkQoYgNqgF2egoxAgCfejlz4SMXuPYv/A2IwR/3VsRp
+Q8QAn1xHWdibO+Re4wCeJSBptOpdzOM4
+=kBdo
+-----END PGP SIGNATURE-----
+From edzer.pebesma at uni-muenster.de  Mon May  7 08:17:24 2012
+From: edzer.pebesma at uni-muenster.de (Edzer Pebesma)
+Date: Mon May  7 08:50:53 2012
+Subject: [GRASS-stats] Nearest neighbour distance distribution but between
+	polygons
+In-Reply-To: <4FA7BB1E.4040001@gmail.com>
+References: <4FA7BB1E.4040001@gmail.com>
+Message-ID: <4FA7BD54.3050307@uni-muenster.de>
+
+In R: gDistance in package rgeos.
+
+On 05/07/2012 02:07 PM, Rainer M Krug wrote:
+> Hi
+> 
+> I have the following (presumibly simple?) question:
+> 
+> I have a certain number of patches (islands) in a landscape of
+> which I need to know the nearest neighbour distance. As the problem
+> is related to dispersal, I would need to know the actual shortest
+> distance between the actual polygons and not only the centroids. Is
+> there an easy way to obtain these in R or in GRASS? I am only aware
+> of nearest neighbour distance between points.
+> 
+> Thanks,
+> 
+> Rainer
+> 
+> 
+> _______________________________________________ grass-stats mailing
+> list grass-stats@lists.osgeo.org 
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Edzer Pebesma
+Institute for Geoinformatics (ifgi), University of M?nster
+Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+8333081, Fax: +49 251 8339763  http://ifgi.uni-muenster.de
+http://www.52north.org/geostatistics      e.pebesma@wwu.de
+From r.m.krug at gmail.com  Mon May  7 11:33:37 2012
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Mon May  7 11:34:10 2012
+Subject: [GRASS-stats] Nearest neighbour distance distribution but between
+	polygons
+In-Reply-To: <4FA7C348.1060208@gmail.com>
+References: <4FA7BB1E.4040001@gmail.com>
+	<alpine.LRH.2.02.1205071419360.3968@reclus.nhh.no>
+	<4FA7C348.1060208@gmail.com>
+Message-ID: <4FA7EB51.2050806@gmail.com>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 07/05/12 14:42, Rainer M Krug wrote:
+> On 07/05/12 14:25, Roger Bivand wrote:
+>> On Mon, 7 May 2012, Rainer M Krug wrote:
+> 
+>> Hi
+> 
+>> I have the following (presumibly simple?) question:
+> 
+>> I have a certain number of patches (islands) in a landscape of which I need to know the 
+>> nearest neighbour distance. As the problem is related to dispersal, I would need to know the
+>>  actual shortest distance between the actual polygons and not only the centroids. Is there an
+>>  easy way to obtain these in R or in GRASS? I am only aware of nearest neighbour distance 
+>> between points.
+> 
+> 
+> Hi Roger
+> 
+> 
+>>> In R, if the coordinates are projected, use gDistance(..., byid=TRUE) in the rgeos package 
+>>> to get a matrix in the metric of the projection. If not projected, project if possible.
+> 
+> Exactly what I was looking for - the geometries are projected, so absolutely no problem.
+
+I thought that it would be no problem, but it is.
+
+I am loading the layer from a shape file and it consists of 40 different polygons. Now I want to
+calculate the distance between all of the individual polygons in the layer, and I am stuck.
+
+I understand the principle, but I a struggling at accessing each polygon in the
+SpatialPolygonsDataFrame to calculate the differences. My code:
+
+I am reading from the shapefile:
+
+x <- readShapePoly( "shapefile" )
+
+Now I want to do:
+
+d <- matrix(ncol=length(x), nrow=length(x))
+for (i in length(x):1) {
+  cat (i, ": ")
+  for (j in 1:i) {
+    cat( j )
+    p_i <- ### Polygon i - How?
+    p_j <- ### Polygon j - How?
+    d[i, j] <- gDistance(p_i, p_j)
+  }
+  cat("\n")
+}
+
+I tried x[i], x[[i]] and x@polygons..... but nothing worked so far - I am stuck here.
+
+Any help welcome,
+
+Thanks,
+
+Rainer
+
+
+> 
+> Thanks a lot,
+> 
+> Rainer
+> 
+> 
+>>> I don't think that the geosphere package provides for the unprojected case.
+> 
+>>> Roger
+> 
+> 
+>> Thanks,
+> 
+>> Rainer
+> 
+> 
+>>> _______________________________________________ grass-stats mailing list 
+>>> grass-stats@lists.osgeo.org http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>> 
+> 
+> 
+
+- -- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys.
+(Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer@krugs.de
+
+Skype:      RMkrug
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk+n61AACgkQoYgNqgF2egoG/ACfayPJO6EM5kffc5fhFLZLTYKi
+QOIAn265F2+eyb0FE5x2tQ9GKdhoesHr
+=0fHz
+-----END PGP SIGNATURE-----
+From Roger.Bivand at nhh.no  Mon May  7 12:30:08 2012
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon May  7 12:30:15 2012
+Subject: [GRASS-stats] Nearest neighbour distance distribution but between
+	polygons
+In-Reply-To: <4FA7EB51.2050806@gmail.com>
+References: <4FA7BB1E.4040001@gmail.com>
+	<alpine.LRH.2.02.1205071419360.3968@reclus.nhh.no>
+	<4FA7C348.1060208@gmail.com> <4FA7EB51.2050806@gmail.com>
+Message-ID: <alpine.LRH.2.02.1205071801400.3968@reclus.nhh.no>
+
+On Mon, 7 May 2012, Rainer M Krug wrote:
+
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>
+> On 07/05/12 14:42, Rainer M Krug wrote:
+>> On 07/05/12 14:25, Roger Bivand wrote:
+>>> On Mon, 7 May 2012, Rainer M Krug wrote:
+>>
+>>> Hi
+>>
+>>> I have the following (presumibly simple?) question:
+>>
+>>> I have a certain number of patches (islands) in a landscape of which I need to know the
+>>> nearest neighbour distance. As the problem is related to dispersal, I would need to know the
+>>>  actual shortest distance between the actual polygons and not only the centroids. Is there an
+>>>  easy way to obtain these in R or in GRASS? I am only aware of nearest neighbour distance
+>>> between points.
+>>
+>>
+>> Hi Roger
+>>
+>>
+>>>> In R, if the coordinates are projected, use gDistance(..., byid=TRUE) in the rgeos package
+>>>> to get a matrix in the metric of the projection. If not projected, project if possible.
+>>
+>> Exactly what I was looking for - the geometries are projected, so absolutely no problem.
+>
+> I thought that it would be no problem, but it is.
+>
+> I am loading the layer from a shape file and it consists of 40 different polygons. Now I want to
+> calculate the distance between all of the individual polygons in the layer, and I am stuck.
+>
+> I understand the principle, but I a struggling at accessing each polygon in the
+> SpatialPolygonsDataFrame to calculate the differences. My code:
+>
+> I am reading from the shapefile:
+>
+> x <- readShapePoly( "shapefile" )
+>
+> Now I want to do:
+>
+> d <- matrix(ncol=length(x), nrow=length(x))
+> for (i in length(x):1) {
+>  cat (i, ": ")
+>  for (j in 1:i) {
+>    cat( j )
+>    p_i <- ### Polygon i - How?
+>    p_j <- ### Polygon j - How?
+>    d[i, j] <- gDistance(p_i, p_j)
+>  }
+>  cat("\n")
+> }
+>
+> I tried x[i], x[[i]] and x@polygons..... but nothing worked so far - I 
+> am stuck here.
+
+p_i <- x[i,]
+
+etc., x is a SpatialPolygonsDataFrame. I don't think that calculating the 
+other triangle is a problem.
+
+But isn't it easier to do:
+
+library(rgdal)
+dsn <- system.file("vectors", package = "rgdal")[1]
+scot_BNG <- readOGR(dsn=dsn, layer="scot_BNG")
+is.projected(scot_BNG)
+library(rgeos)
+dmat <- gDistance(scot_BNG, scot_BNG, byid=TRUE)
+
+# As of now, you need to include the geometries twice, will be fixed
+
+scot_BNG$d0 <- dmat[1,]
+scot_BNG$NAME[1]
+spplot(scot_BNG, "d0", col.regions=bpy.colors(20), col="grey",
+   sp.layout=list("sp.text", coordinates(scot_BNG),
+   as.character(scot_BNG$NAME), col="grey", cex=0.8))
+
+Roger
+
+>
+> Any help welcome,
+>
+> Thanks,
+>
+> Rainer
+>
+>
+>>
+>> Thanks a lot,
+>>
+>> Rainer
+>>
+>>
+>>>> I don't think that the geosphere package provides for the unprojected case.
+>>
+>>>> Roger
+>>
+>>
+>>> Thanks,
+>>
+>>> Rainer
+>>
+>>
+>>>> _______________________________________________ grass-stats mailing list
+>>>> grass-stats@lists.osgeo.org http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>
+>>
+>>
+>
+> - --
+> Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys.
+> (Germany)
+>
+> Centre of Excellence for Invasion Biology
+> Stellenbosch University
+> South Africa
+>
+> Tel :       +33 - (0)9 53 10 27 44
+> Cell:       +33 - (0)6 85 62 59 98
+> Fax :       +33 - (0)9 58 10 27 44
+>
+> Fax (D):    +49 - (0)3 21 21 25 22 44
+>
+> email:      Rainer@krugs.de
+>
+> Skype:      RMkrug
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.11 (GNU/Linux)
+> Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+>
+> iEYEARECAAYFAk+n61AACgkQoYgNqgF2egoG/ACfayPJO6EM5kffc5fhFLZLTYKi
+> QOIAn265F2+eyb0FE5x2tQ9GKdhoesHr
+> =0fHz
+> -----END PGP SIGNATURE-----
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From r.m.krug at gmail.com  Tue May  8 06:31:49 2012
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Tue May  8 06:32:00 2012
+Subject: [GRASS-stats] Nearest neighbour distance distribution but between
+	polygons
+In-Reply-To: <alpine.LRH.2.02.1205071801400.3968@reclus.nhh.no>
+References: <4FA7BB1E.4040001@gmail.com>
+	<alpine.LRH.2.02.1205071419360.3968@reclus.nhh.no>
+	<4FA7C348.1060208@gmail.com> <4FA7EB51.2050806@gmail.com>
+	<alpine.LRH.2.02.1205071801400.3968@reclus.nhh.no>
+Message-ID: <4FA8F615.6040405@gmail.com>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 07/05/12 18:30, Roger Bivand wrote:
+> On Mon, 7 May 2012, Rainer M Krug wrote:
+> 
+> On 07/05/12 14:42, Rainer M Krug wrote:
+>>>> On 07/05/12 14:25, Roger Bivand wrote:
+>>>>> On Mon, 7 May 2012, Rainer M Krug wrote:
+>>>> 
+>>>>> Hi
+>>>> 
+>>>>> I have the following (presumibly simple?) question:
+>>>> 
+>>>>> I have a certain number of patches (islands) in a landscape of which I need to know
+>>>>> the nearest neighbour distance. As the problem is related to dispersal, I would need to
+>>>>> know the actual shortest distance between the actual polygons and not only the
+>>>>> centroids. Is there an easy way to obtain these in R or in GRASS? I am only aware of
+>>>>> nearest neighbour distance between points.
+>>>> 
+>>>> 
+>>>> Hi Roger
+>>>> 
+>>>> 
+>>>>>> In R, if the coordinates are projected, use gDistance(..., byid=TRUE) in the rgeos
+>>>>>> package to get a matrix in the metric of the projection. If not projected, project if
+>>>>>> possible.
+>>>> 
+>>>> Exactly what I was looking for - the geometries are projected, so absolutely no problem.
+> 
+> I thought that it would be no problem, but it is.
+> 
+> I am loading the layer from a shape file and it consists of 40 different polygons. Now I want
+> to calculate the distance between all of the individual polygons in the layer, and I am stuck.
+> 
+> I understand the principle, but I a struggling at accessing each polygon in the 
+> SpatialPolygonsDataFrame to calculate the differences. My code:
+> 
+> I am reading from the shapefile:
+> 
+> x <- readShapePoly( "shapefile" )
+> 
+> Now I want to do:
+> 
+> d <- matrix(ncol=length(x), nrow=length(x)) for (i in length(x):1) { cat (i, ": ") for (j in
+> 1:i) { cat( j ) p_i <- ### Polygon i - How? p_j <- ### Polygon j - How? d[i, j] <-
+> gDistance(p_i, p_j) } cat("\n") }
+> 
+> I tried x[i], x[[i]] and x@polygons..... but nothing worked so far - I am stuck here.
+> 
+>> p_i <- x[i,]
+
+I think I understand it now - thanks.
+
+> 
+>> etc., x is a SpatialPolygonsDataFrame. I don't think that calculating the other triangle is a
+>> problem.
+> 
+>> But isn't it easier to do:
+
+Easier is always better...
+
+> 
+>> library(rgdal) dsn <- system.file("vectors", package = "rgdal")[1] scot_BNG <-
+>> readOGR(dsn=dsn, layer="scot_BNG") is.projected(scot_BNG) library(rgeos) dmat <-
+>> gDistance(scot_BNG, scot_BNG, byid=TRUE)
+> 
+>> # As of now, you need to include the geometries twice, will be fixed
+> 
+>> scot_BNG$d0 <- dmat[1,] scot_BNG$NAME[1] spplot(scot_BNG, "d0", col.regions=bpy.colors(20),
+>> col="grey", sp.layout=list("sp.text", coordinates(scot_BNG), as.character(scot_BNG$NAME),
+>> col="grey", cex=0.8))
+> 
+
+Great - thanks a lot.
+
+Rainer
+
+
+>> Roger
+> 
+> 
+> Any help welcome,
+> 
+> Thanks,
+> 
+> Rainer
+> 
+> 
+>>>> 
+>>>> Thanks a lot,
+>>>> 
+>>>> Rainer
+>>>> 
+>>>> 
+>>>>>> I don't think that the geosphere package provides for the unprojected case.
+>>>> 
+>>>>>> Roger
+>>>> 
+>>>> 
+>>>>> Thanks,
+>>>> 
+>>>>> Rainer
+>>>> 
+>>>> 
+>>>>>> _______________________________________________ grass-stats mailing list 
+>>>>>> grass-stats@lists.osgeo.org http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>>> 
+>>>> 
+>>>> 
+> 
+>> 
+> 
+
+- -- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys.
+(Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer@krugs.de
+
+Skype:      RMkrug
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk+o9hQACgkQoYgNqgF2egqWMQCeJF6+qpXN3/L6n5aoxb0G+Wnd
+AVAAniTflhEjjpoLfAU2qaZN+ZmFGNGW
+=hqCa
+-----END PGP SIGNATURE-----

@@ -1,0 +1,493 @@
+From antonio.rocha at deimos.com.pt  Tue Sep 21 10:42:59 2010
+From: antonio.rocha at deimos.com.pt (=?ISO-8859-1?Q?Ant=F3nio_Rocha?=)
+Date: Tue Sep 21 10:43:08 2010
+Subject: [GRASS-stats] GRASS-R connection in Windows
+Message-ID: <4C98C473.70703@deimos.com.pt>
+
+Greetings
+
+I've been using WinGRASS for a while but now I would like to run a few 
+functions from R using spgrass (interface between GRASS and R).
+I know that this is possible and stable in Linux but I'm not sure for 
+Windows. Has anyone tried?
+Thanks
+Antonio
+
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature database 5467 (20100921) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+
+
+From omarbautistag at gmail.com  Tue Sep 21 11:40:09 2010
+From: omarbautistag at gmail.com (=?UTF-8?Q?Omar_Bautista_Gonz=C3=A1lez?=)
+Date: Tue Sep 21 11:40:11 2010
+Subject: [GRASS-stats] GRASS-R connection in Windows
+In-Reply-To: <4C98C473.70703@deimos.com.pt>
+References: <4C98C473.70703@deimos.com.pt>
+Message-ID: <AANLkTinirYnyeTmMz3-ewDBzkaZUCR=3Z9qirJRVZxRm@mail.gmail.com>
+
+I have tried on previous versions of spgrass6 and it weren't very
+user-friendly under Windows. Now there are more interfaces for an easy
+work. Make a few steps detailed on:
+
+http://grass.osgeo.org/wiki/R_statistics#MS_Windows
+
+Att.
+
+
+
+
+2010/9/21 Ant?nio Rocha <antonio.rocha@deimos.com.pt>:
+> Greetings
+>
+> I've been using WinGRASS for a while but now I would like to run a few
+> functions from R using spgrass (interface between GRASS and R).
+> I know that this is possible and stable in Linux but I'm not sure for
+> Windows. Has anyone tried?
+> Thanks
+> Antonio
+>
+>
+> __________ Information from ESET NOD32 Antivirus, version of virus signature
+> database 5467 (20100921) __________
+>
+> The message was checked by ESET NOD32 Antivirus.
+>
+> http://www.eset.com
+>
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+
+
+-- 
+Omar Bautista Gonz?lez
+- Coordinador de Investigaci?n para el Desarrollo,
+Dise?o, Monitoreo y Evaluaci?n
+Visi?n Mundial Rep?blica Dominicana
+- Colaborador en investigaci?n social del movimiento del software
+libre en Rep?blica Dominicana
+From hellik at web.de  Fri Sep 24 17:03:22 2010
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Fri Sep 24 17:36:21 2010
+Subject: [GRASS-stats] GRASS-R connection in Windows
+Message-ID: <552117629.202476.1285362202361.JavaMail.fmail@mwmweb002>
+
+Hi Antonio,
+
+>I've been using WinGRASS for a while but now I would like to run a few 
+>functions from R using spgrass (interface between GRASS and R).
+>I know that this is possible and stable in Linux but I'm not sure for 
+>Windows. Has anyone tried?
+>Thanks
+>Antonio
+
+at the moment there is following for a Grass-R-connection in implemented in WinGrass64
+
+(1) the WinGrass64-installer searches during installation for a installed R and writes - if found - the
+R-installation-path to %PATH% in the grass64.bat-starting script
+(see http://trac.osgeo.org/grass/browser/grass/branches/develbranch_6/mswindows/GRASS-Installer.nsi#L660)
+
+(2) you can start "Grass-command-line" - it's a windows-command-line, not a msys-rxvt-terminal (you can find this
+starting option under Programs -> Grass64 -> Grass command line; but not as a desktop icon)
+
+with this starting option you start a Grass-session in the good old text mode. if you type R in the
+command line, then you start R inside a Grass-session like in Linux. see down:
+
+Welcome to GRASS 6.4.0 (2010)
+
+GRASS homepage:                          http://grass.osgeo.org/
+This version running thru:               Windows Command Shell (cmd.exe)
+When ready to quit enter:                exit
+Help is available with the command:      g.manual -i
+See the licence terms with:              g.version -c
+
+Microsoft Windows [Version 6.0.6002]
+Copyright (c) 2006 Microsoft Corporation. Alle Rechte vorbehalten.
+
+GRASS 6.4.0 (wgs84gc)> R
+
+R version 2.11.1 (2010-05-31)
+Copyright (C) 2010 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R ist freie Software und kommt OHNE JEGLICHE GARANTIE.
+Sie sind eingeladen, es unter bestimmten Bedingungen weiter zu verbreiten.
+Tippen Sie 'license()' or 'licence()' f?r Details dazu.
+
+R ist ein Gemeinschaftsprojekt mit vielen Beitragenden.
+Tippen Sie 'contributors()' f?r mehr Information und 'citation()',
+um zu erfahren, wie R oder R packages in Publikationen zitiert werden k?nnen.
+
+Tippen Sie 'demo()' f?r einige Demos, 'help()' f?r on-line Hilfe, oder
+'help.start()' f?r eine HTML Browserschnittstelle zur Hilfe.
+Tippen Sie 'q()', um R zu verlassen.
+
+> q()
+Workspace sichern? [y/n/c]: n
+
+GRASS 6.4.0 (wgs84gc)>
+
+what I have in mind (but no time at the moment to improve), see:
+
+Ticket #1103 (new enhancement) WinGrass64 - windows-commandline not released
+Ticket #1149 (new enhancement) WinGrass - load R-installation-path dynamically into PATH
+
+with #1103 a Grass-session with wxGui, command-line and R inside a Grass-session would
+be possible (as already does in WinGrass7)
+
+with #1149 Wingrass would recognize also an upgraded R-installation (which does not at the moment)
+
+best regards
+Helmut
+___________________________________________________________
+Neu: WEB.DE De-Mail - Einfach wie E-Mail, sicher wie ein Brief!  
+Jetzt De-Mail-Adresse reservieren: https://produkte.web.de/go/demail02
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: smime.p7s
+Type: application/pkcs7-signature
+Size: 1747 bytes
+Desc: S/MIME Cryptographic Signature
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20100924/e5a522b3/smime.bin
+From antonio.rocha at deimos.com.pt  Mon Sep 27 05:27:43 2010
+From: antonio.rocha at deimos.com.pt (=?UTF-8?B?QW50w7NuaW8gUm9jaGE=?=)
+Date: Mon Sep 27 05:27:34 2010
+Subject: [GRASS-stats] Re: GRASS-R connection in Windows
+In-Reply-To: <552117629.202476.1285362202361.JavaMail.fmail@mwmweb002>
+References: <552117629.202476.1285362202361.JavaMail.fmail@mwmweb002>
+Message-ID: <4CA0638F.3030302@deimos.com.pt>
+
+Hello Helmut
+First of all, let me thank you for your reply.
+
+
+
+Helmut Kudrnovsky wrote:
+
+> (2) you can start "Grass-command-line" - it's a windows-command-line, not a msys-rxvt-terminal (you can find this
+> starting option under Programs -> Grass64 -> Grass command line; but not as a desktop icon)
+>   
+Here I have a question: Is it possible to run a GRASS-Python Script with 
+R-commands just like a normal GRASS-Python Script? (without having to 
+run R in command-line)- I believe it has to do with Ticket #1103 right?
+
+Best regards,
+Antonio Rocha
+
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature database 5482 (20100927) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+
+
+From dia.abdoul at gmail.com  Mon Sep 27 13:00:00 2010
+From: dia.abdoul at gmail.com (Abdoul Dia)
+Date: Mon Sep 27 13:00:03 2010
+Subject: [GRASS-stats] Re: GRASS-R connection in Windows
+In-Reply-To: <4CA0638F.3030302@deimos.com.pt>
+References: <552117629.202476.1285362202361.JavaMail.fmail@mwmweb002>
+	<4CA0638F.3030302@deimos.com.pt>
+Message-ID: <AANLkTikERwobZT=k7uvfy_Lm18M=SFj0VokJmNZk5KoF@mail.gmail.com>
+
+Hi everyone,
+
+I'm wondering if I can ask my question here as I'm not sure to be on the
+right place?! I'm trying to connect Grass 6.4 with R.2.11 so I can use
+spgrass6 and GRASS packages under R but I can't get the gmeta() or gmeta6()
+output. I can't even install spgrass6 on linux. I tried on windows as well
+as on linux (ubuntu karmic). Is there someone who faced such a problem and
+how can I solve?
+
+Thanks in advance.
+
+Abdoul O. Dia
+
+2010/9/27 Ant?nio Rocha <antonio.rocha@deimos.com.pt>
+
+> Hello Helmut
+> First of all, let me thank you for your reply.
+>
+>
+>
+>
+> Helmut Kudrnovsky wrote:
+>
+> (2) you can start "Grass-command-line" - it's a windows-command-line, not a
+>> msys-rxvt-terminal (you can find this
+>> starting option under Programs -> Grass64 -> Grass command line; but not
+>> as a desktop icon)
+>>
+>>
+> Here I have a question: Is it possible to run a GRASS-Python Script with
+> R-commands just like a normal GRASS-Python Script? (without having to run R
+> in command-line)- I believe it has to do with Ticket #1103 right?
+>
+> Best regards,
+> Antonio Rocha
+>
+>
+> __________ Information from ESET NOD32 Antivirus, version of virus
+> signature database 5482 (20100927) __________
+>
+> The message was checked by ESET NOD32 Antivirus.
+>
+> http://www.eset.com
+>
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+
+
+-- 
+Abdoul Ousmane DIA
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20100927/8bc5d949/attachment.html
+From martmai at gmx.de  Mon Sep 27 14:36:58 2010
+From: martmai at gmx.de (Martin Mainzer)
+Date: Mon Sep 27 14:42:05 2010
+Subject: [GRASS-stats] Re: GRASS-R connection in Windows
+In-Reply-To: <AANLkTikERwobZT=k7uvfy_Lm18M=SFj0VokJmNZk5KoF@mail.gmail.com>
+References: <552117629.202476.1285362202361.JavaMail.fmail@mwmweb002>	<4CA0638F.3030302@deimos.com.pt>
+	<AANLkTikERwobZT=k7uvfy_Lm18M=SFj0VokJmNZk5KoF@mail.gmail.com>
+Message-ID: <4CA0E44A.5020705@gmx.de>
+
+Hi Abdoul
+
+schrieb Abdoul Dia am 27.09.2010 19:00:
+> Hi everyone,
+>  
+> I'm wondering if I can ask my question here as I'm not sure to be on
+> the right place?! I'm trying to connect Grass 6.4 with R.2.11 so I can
+> use spgrass6 and GRASS packages under R but I can't get the gmeta() or
+> gmeta6() output. I can't even install spgrass6 on linux. I tried on
+> windows as well as on linux (ubuntu karmic). Is there someone who
+> faced such a problem and how can I solve?
+Please give us more information, what is the problem with the spgrass6
+package? Without the spgrass6 library loaded, the gmeta6() output will
+not work. If you got a problem with installing the spgrass6 package in
+R, it may be a good idea to contact the R mailinglist.
+
+Martin
+>  
+> Thanks in advance.
+>  
+> Abdoul O. Dia
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20100927/4da925df/attachment.html
+From hellik at web.de  Mon Sep 27 17:58:45 2010
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Mon Sep 27 17:58:47 2010
+Subject: [GRASS-stats] Re: GRASS-R connection in Windows
+In-Reply-To: <4CA0638F.3030302@deimos.com.pt>
+References: <552117629.202476.1285362202361.JavaMail.fmail@mwmweb002>,
+	<4CA0638F.3030302@deimos.com.pt>
+Message-ID: <532957319.2196951.1285624725029.JavaMail.fmail@mwmweb004>
+
+Hi Antonio
+
+>-----Urspr?ngliche Nachricht-----
+>Von: "Ant?nio Rocha" 
+>Gesendet: 27.09.2010 11:27:43
+>An: "Helmut Kudrnovsky"
+>Betreff: Re: GRASS-R connection in Windows
+>
+>Hello Helmut
+>First of all, let me thank you for your reply.
+
+de nada
+
+>Helmut Kudrnovsky wrote:
+>
+>> (2) you can start "Grass-command-line" - it's a windows-command-line, not a msys-rxvt-terminal (you can find this
+>> starting option under Programs -> Grass64 -> Grass command line; but not as a desktop icon)
+>>   
+>Here I have a question: Is it possible to run a GRASS-Python Script with 
+>R-commands just like a normal GRASS-Python Script? (without having to 
+>run R in command-line)- I believe it has to do with Ticket #1103 right?
+>
+>Best regards,
+>Antonio Rocha
+
+sorry, but I've never used Grass, R and python together. so it's outside of my knowledge. maybe drop this question
+also at the user- and/or dev-mailing-list.
+
+at the moment for WinGrass, the R-installation-path is recognized only once at the WinGrass-installation-procedure and set into the %PATH-variable, 
+so no future upgrade of a R-version will be recognized by the wingrass-installation.
+
+the intention of ticket #1103 would be to set the R-installation-path dynamically at every start of a grass-session.
+
+best regards
+Helmut
+___________________________________________________________
+GRATIS: Spider-Man 1-3 sowie 300 weitere Videos!
+Jetzt kostenlose Movie-FLAT freischalten! http://movieflat.web.de
+From hellik at web.de  Mon Sep 27 18:20:15 2010
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Mon Sep 27 18:20:17 2010
+Subject: [GRASS-stats] Re: GRASS-R connection in Windows
+In-Reply-To: <AANLkTikERwobZT=k7uvfy_Lm18M=SFj0VokJmNZk5KoF@mail.gmail.com>
+References: <552117629.202476.1285362202361.JavaMail.fmail@mwmweb002>
+	<4CA0638F.3030302@deimos.com.pt>,
+	<AANLkTikERwobZT=k7uvfy_Lm18M=SFj0VokJmNZk5KoF@mail.gmail.com>
+Message-ID: <940722226.2205654.1285626015369.JavaMail.fmail@mwmweb004>
+
+Hi,
+
+I've tried to install spgrass6 in my Windows-R.2.11.1, there seems to be no problem. see down. please contact the r-user-ml for R-related problems.
+
+best regards
+Helmut
+
+___________________________________________
+R version 2.11.1 (2010-05-31)
+Copyright (C) 2010 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R ist freie Software und kommt OHNE JEGLICHE GARANTIE.
+Sie sind eingeladen, es unter bestimmten Bedingungen weiter zu verbreiten.
+Tippen Sie 'license()' or 'licence()' f?r Details dazu.
+
+R ist ein Gemeinschaftsprojekt mit vielen Beitragenden.
+Tippen Sie 'contributors()' f?r mehr Information und 'citation()',
+um zu erfahren, wie R oder R packages in Publikationen zitiert werden k?nnen.
+
+Tippen Sie 'demo()' f?r einige Demos, 'help()' f?r on-line Hilfe, oder
+'help.start()' f?r eine HTML Browserschnittstelle zur Hilfe.
+Tippen Sie 'q()', um R zu verlassen.
+
+> chooseCRANmirror()
+> install.packages("spgrass6", dependencies=TRUE)
+Warnung in install.packages("spgrass6", dependencies = TRUE) :
+ Argument 'lib' fehlt: nutze 'C:\Users\syringia\Documents/R/win-library/2.11'
+versuche URL 'http://cran.at.r-project.org/bin/windows/contrib/2.11/spgrass6_0.6-20.zip'
+Content type 'application/zip' length 367628 bytes (359 Kb)
+URL ge?ffnet
+downloaded 359 Kb
+
+Paket 'spgrass6' erfolgreich ausgepackt und MD5 Summen abgeglichen
+
+Die heruntergeladenen Pakete sind in 
+ C:\Users\syringia\AppData\Local\Temp\RtmpzLFz82\downloaded_packages
+> 
+
+_________________________________________________________
+
+
+
+---------------------
+Von: "Abdoul Dia" 
+Gesendet: 27.09.2010 19:00:00
+An: "Ant?nio Rocha"
+Betreff: Re: [GRASS-stats] Re: GRASS-R connection in Windows
+
+
+Hi everyone,
+ 
+I'm wondering if I can ask my question here as I'm not sure to be on the right place?! I'm trying to connect Grass 6.4 with R.2.11 so I can use spgrass6 and GRASS packages under R but I can't get the gmeta() or gmeta6() output. I can't even install spgrass6 on linux. I tried on windows as well as on linux (ubuntu karmic). Is there someone who faced such a problem and how can I solve?
+ 
+Thanks in advance.
+ 
+Abdoul O. Dia
+
+
+2010/9/27 Ant?nio Rocha <[antonio.rocha@deimos.com.pt]>
+
+Hello Helmut
+First of all, let me thank you for your reply.
+
+
+
+
+Helmut Kudrnovsky wrote:
+
+
+(2) you can start "Grass-command-line" - it's a windows-command-line, not a msys-rxvt-terminal (you can find this
+ starting option under Programs -> Grass64 -> Grass command line; but not as a desktop icon)
+ 
+
+
+Here I have a question: Is it possible to run a GRASS-Python Script with R-commands just like a normal GRASS-Python Script? (without having to run R in command-line)- I believe it has to do with Ticket #1103 right?
+
+Best regards,
+Antonio Rocha
+
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature database 5482 (20100927) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+[http://www.eset.com]
+
+
+_______________________________________________
+grass-stats mailing list
+[grass-stats@lists.osgeo.org]
+[http://lists.osgeo.org/mailman/listinfo/grass-stats]
+
+
+
+
+
+-- 
+Abdoul Ousmane DIA
+___________________________________________________________
+GRATIS: Spider-Man 1-3 sowie 300 weitere Videos!
+Jetzt kostenlose Movie-FLAT freischalten! http://movieflat.web.de
+From hamish_b at yahoo.com  Mon Sep 27 18:37:27 2010
+From: hamish_b at yahoo.com (Hamish)
+Date: Mon Sep 27 18:44:10 2010
+Subject: [GRASS-stats] Re: GRASS-R connection in Windows
+In-Reply-To: <532957319.2196951.1285624725029.JavaMail.fmail@mwmweb004>
+Message-ID: <606849.97816.qm@web110012.mail.gq1.yahoo.com>
+
+> > Here I have a question: Is it possible to run a GRASS-Python
+> > Script with R-commands just like a normal GRASS-Python Script?
+> > (without having to run R in command-line)-
+
+it is an advanced example, but have a look at Anne's v.kridge(.py)
+module.
+
+
+Hamish
+
+
+
+      
+From Roger.Bivand at nhh.no  Wed Sep 29 15:16:06 2010
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Sep 29 15:15:08 2010
+Subject: [GRASS-stats] Anyone still using GRASS 5?
+Message-ID: <alpine.LRH.2.00.1009292113080.29781@reclus.nhh.no>
+
+Is anyone still using GRASS 5 and the R "GRASS" package? With GRASS 6.*, 
+the spgrass6 package is actively maintained. If nobody is using GRASS 5, I 
+would like to archive and retire the R "GRASS" package. However, if 
+someone is actively using GRASS5 and the matching R "GRASS" package, I'll 
+keep it active until you let me know that you are through.
+
+Roger
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+

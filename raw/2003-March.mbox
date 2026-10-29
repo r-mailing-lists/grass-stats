@@ -1,0 +1,238 @@
+From rn001 at cebas.csic.es  Mon Mar 17 07:41:53 2003
+From: rn001 at cebas.csic.es (javier garcia - CEBAS)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] PostgreSQL - R
+Message-ID: <200303171231.h2HCVF222205@natura.cebas.csic.es>
+
+Hi;
+Perhaps this is not the best place for my question.
+Do you know if the interface between R and Postgrest is already done and 
+works properly?
+Where could I find it?
+Thank you very much?
+
+Javier
+
+
+
+From neteler at itc.it  Mon Mar 17 08:01:29 2003
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] PostgreSQL - R
+In-Reply-To: <200303171231.h2HCVF222205@natura.cebas.csic.es>; from rn001@cebas.csic.es on Mon, Mar 17, 2003 at 01:41:53PM +0100
+References: <200303171231.h2HCVF222205@natura.cebas.csic.es>
+Message-ID: <20030317140129.J20248@itc.it>
+
+On Mon, Mar 17, 2003 at 01:41:53PM +0100, javier garcia - CEBAS wrote:
+> Hi;
+> Perhaps this is not the best place for my question.
+> Do you know if the interface between R and Postgrest is already done and 
+> works properly?
+> Where could I find it?
+
+You will need Rdbi and Rdbi.PgSQL packages (but not DBI!).
+
+Have a look here:
+http://grass.itc.it/statsgrass/learning_r1.html#Connecting_R_to_RDBMS
+
+I am using that interface daily, it works well & fast.
+
+Cheers
+
+ Markus
+
+
+From rn001 at cebas.csic.es  Mon Mar 17 08:04:10 2003
+From: rn001 at cebas.csic.es (javier garcia - CEBAS)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] sites import problem
+Message-ID: <200303171253.h2HCrX222646@natura.cebas.csic.es>
+
+Hi;
+I've imported a sites file into R, but get the following warning messages:
+------------------------------------------------------------------------------------------------------
+> Cotas <- sites.get(G, slist="cotas_5000", debug=FALSE)
+> ls()
+[1] "Cotas"  "G"      "system"
+> summary(Cotas)
+      east            north              var1
+ Min.   :632206   Min.   :4163710   Min.   :   0.00
+ 1st Qu.:657634   1st Qu.:4174570   1st Qu.:  65.13
+ Median :666414   Median :4179580   Median : 140.00
+ Mean   :    NA   Mean   :     NA   Mean   : 161.71
+ 3rd Qu.:676889   3rd Qu.:4184840   3rd Qu.: 240.00
+ Max.   :688899   Max.   :4198600   Max.   :1116.18
+Warning messages:
+1: Integer overflow in sum(.); use sum(as.numeric(.))
+2: Integer overflow in sum(.); use sum(as.numeric(.))
+---------------------------------------------------------------------------------------------
+I can't understand the consecuences of this warning nor how to avoid it
+Any help?
+
+Javier
+
+
+From Roger.Bivand at nhh.no  Mon Mar 17 08:28:35 2003
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] sites import problem
+In-Reply-To: <200303171253.h2HCrX222646@natura.cebas.csic.es>
+Message-ID: <Pine.LNX.4.44.0303171416530.16930-100000@reclus.nhh.no>
+
+On Mon, 17 Mar 2003, javier garcia - CEBAS wrote:
+
+> Hi;
+> I've imported a sites file into R, but get the following warning messages:
+> ------------------------------------------------------------------------------------------------------
+> > Cotas <- sites.get(G, slist="cotas_5000", debug=FALSE)
+> > ls()
+> [1] "Cotas"  "G"      "system"
+> > summary(Cotas)
+>       east            north              var1
+>  Min.   :632206   Min.   :4163710   Min.   :   0.00
+>  1st Qu.:657634   1st Qu.:4174570   1st Qu.:  65.13
+>  Median :666414   Median :4179580   Median : 140.00
+>  Mean   :    NA   Mean   :     NA   Mean   : 161.71
+>  3rd Qu.:676889   3rd Qu.:4184840   3rd Qu.: 240.00
+>  Max.   :688899   Max.   :4198600   Max.   :1116.18
+> Warning messages:
+> 1: Integer overflow in sum(.); use sum(as.numeric(.))
+> 2: Integer overflow in sum(.); use sum(as.numeric(.))
+> ---------------------------------------------------------------------------------------------
+> I can't understand the consecuences of this warning nor how to avoid it
+> Any help?
+
+Which version of R, and the interface package are you using - it always 
+helps to know?
+
+If there are many points, then the sums of the coordinates may exceed 
+INT_MAX=2147483647 in calculating the means. The warning means that if you 
+need the mean of for example Cotas$east, which is represented as an 
+integer, you could do summary(as.double(Cotas$east)), which will run.
+
+For integer northings you run out of integers (at 4000km N of the equator)  
+after 540 points, for your eastings you run out at about 3600 points.  
+Another way to do this is to divide the coordinates by 1000 to represent
+values as km.
+
+I'll look at why sites.get() is returning integers, when it should 
+probably be returning doubles.
+
+Roger 
+
+> 
+> Javier
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From Roger.Bivand at nhh.no  Mon Mar 17 10:01:14 2003
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] sites import problem
+In-Reply-To: <Pine.LNX.4.44.0303171416530.16930-100000@reclus.nhh.no>
+Message-ID: <Pine.LNX.4.44.0303171556290.17396-100000@reclus.nhh.no>
+
+On Mon, 17 Mar 2003, Roger Bivand wrote:
+
+> On Mon, 17 Mar 2003, javier garcia - CEBAS wrote:
+> 
+> > Hi;
+> > I've imported a sites file into R, but get the following warning messages:
+> > ------------------------------------------------------------------------------------------------------
+> > > Cotas <- sites.get(G, slist="cotas_5000", debug=FALSE)
+> > > ls()
+> > [1] "Cotas"  "G"      "system"
+> > > summary(Cotas)
+> >       east            north              var1
+> >  Min.   :632206   Min.   :4163710   Min.   :   0.00
+> >  1st Qu.:657634   1st Qu.:4174570   1st Qu.:  65.13
+> >  Median :666414   Median :4179580   Median : 140.00
+> >  Mean   :    NA   Mean   :     NA   Mean   : 161.71
+> >  3rd Qu.:676889   3rd Qu.:4184840   3rd Qu.: 240.00
+> >  Max.   :688899   Max.   :4198600   Max.   :1116.18
+> > Warning messages:
+> > 1: Integer overflow in sum(.); use sum(as.numeric(.))
+> > 2: Integer overflow in sum(.); use sum(as.numeric(.))
+> > ---------------------------------------------------------------------------------------------
+> > I can't understand the consecuences of this warning nor how to avoid it
+> > Any help?
+> 
+> Which version of R, and the interface package are you using - it always 
+> helps to know?
+
+In the current version (0.2-6 on CRAN, 0.2-7 on 
+html://spatial.nhh.no/R/GRASS/), the compiled sites.get() function used 
+doubles for coordinates. I think you are using a version earlier than 
+0.2-1, with the interpreted function, in which you get the representation 
+seen by scan() in the temporary text file used for transfer. as.double() 
+should fix your immediate problem, but updating to the compiled interface 
+may be a better solution.
+
+Roger
+
+> 
+> If there are many points, then the sums of the coordinates may exceed 
+> INT_MAX=2147483647 in calculating the means. The warning means that if you 
+> need the mean of for example Cotas$east, which is represented as an 
+> integer, you could do summary(as.double(Cotas$east)), which will run.
+> 
+> For integer northings you run out of integers (at 4000km N of the equator)  
+> after 540 points, for your eastings you run out at about 3600 points.  
+> Another way to do this is to divide the coordinates by 1000 to represent
+> values as km.
+> 
+> I'll look at why sites.get() is returning integers, when it should 
+> probably be returning doubles.
+> 
+> Roger 
+> 
+> > 
+> > Javier
+> > 
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From alobo at ija.csic.es  Mon Mar 31 12:34:59 2003
+From: alobo at ija.csic.es (Agustin Lobo)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Grass link to Gstat
+Message-ID: <Pine.OSF.3.91.1030331193221.12539N-100000@paleo.ija.csic.es>
+
+Hi there!
+Is there any info on actually how to use
+Gstat on grass raster layers? The links in
+the gstat and grass web pages are circular.
+The gstat page indicates how to compile for
+grass support but not how to use it. The pdf
+manual does not include any mention to grass.
+
+Thanks for any help!
+
+Agus
+
+
+Dr. Agustin Lobo
+Instituto de Ciencias de la Tierra (CSIC)
+Lluis Sole Sabaris s/n
+08028 Barcelona SPAIN
+tel 34 93409 5410
+fax 34 93411 0012
+alobo@ija.csic.es
+
+
+

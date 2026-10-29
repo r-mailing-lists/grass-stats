@@ -1,0 +1,3185 @@
+From Roger.Bivand at nhh.no  Sat Mar  4 15:31:04 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: [GRASSLIST:10737] krigging result looks weird
+In-Reply-To: <bd07447b0603041148y11b5c77bt8840dcdeffd8530c@mail.gmail.com>
+Message-ID: <Pine.LNX.4.44.0603042113570.5145-100000@reclus.nhh.no>
+
+Can we move this to STATGRASS, probably a more suitable list?
+
+Some comments below:
+
+On Sat, 4 Mar 2006, Carlos "Gu?no" Grohmann wrote:
+
+> Hello again
+> 
+> I was playing with R, I get a SRTM (90m) raster, converted it to
+> vector, put it into R, calculate variogram and krigged a new map, with
+> 30m resolution. The final maps looks "pixelate" (see attach)... Maybe
+> the parameters I used?
+> 
+> here's what I did:
+> 
+> 1-r.to.vect (90m)
+> 2-g.region res=30
+> 
+> R:
+> 
+> library(spgrass6) ; library(spatial);
+> srtm <- getSites6sp("toposrtm");
+> coords<-coordinates(srtm);
+> class(srtm);
+> G <- gmeta6();
+> grd <- GridTopology(cellcentre.offset=c(G$west+(G$ewres/2),
+> G$south+(G$nsres/2)), cellsize=c(G$ewres, G$nsres),
+> cells.dim=c(G$cols, G$rows));
+> mask_SG <- SpatialGridDataFrame(grd, data=list(k=rep(1,
+> G$cols*G$rows)), proj4string=CRS(G$proj4));
+> class(mask_SG);
+> 
+
+Why do the trend surface outside gstat? 
+Is any other resampling going on?
+Is the artefact in the trend surface residuals?
+Is the artefact visible in image(resid.img)?
+Is the artefact visible in image(OK_pred, "var1.pred")?
+
+> trend <- surf.ls(1, x=coords[,1], y=coords[,2], z=srtm$cat);
+> resid1<-residuals(trend);
+> resid2<-as.data.frame(resid1);
+> resid.trend<-SpatialPointsDataFrame(coords,resid2);
+> resid.img <- SpatialGridDataFrame(grd, resid.trend);
+> 
+> library(gstat);
+> 
+> variog1 <- variogram(resid.trend$resid1 ~ 1, locations=resid.trend,
+> width=90, cutoff=1200);
+> plot(variog1);
+> 
+> vrg.eye<-(vgm(psill=7500, model="Gau", range=420, nugget=0));
+> plot(variog1, model=vrg.eye);
+> 
+> vrg.fit<-fit.variogram(variog1,vrg.eye);
+> vrg.fit;
+> 
+>   model     psill    range
+> 1   Nug  173.7465   0.0000
+> 2   Gau 7661.1776 442.5015
+> 
+> plot(variog1, model=vrg.fit);
+> vrg.eye2<-(vgm(psill=7650, model="Gau", range=440, nugget=170));
+> plot(variog1, model=vrg.eye2);
+> 
+> OK_pred <- krige(srtm$cat ~ 1, loc=srtm, newdata=mask_SG,
+> model=vrg.eye2, maxdist=270);
+> names(OK_pred);
+> writeRast6sp(OK_pred, "srtm.krig", zcol="var1.pred", NODATA=-9999);
+> 
+
+
+
+> 
+> thanks again
+> 
+> --
+> +-----------------------------------------------------------+
+>               Carlos Henrique Grohmann - Guano
+>   Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+> Linux User #89721  - carlos dot grohmann at gmail dot com
+> +-----------------------------------------------------------+
+> _________________
+> "Good morning, doctors. I have taken the liberty of removing Windows
+> 95 from my hard drive."
+> --The winning entry in a "What were HAL's first words" contest judged
+> by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From carlos.grohmann at gmail.com  Tue Mar  7 15:18:09 2006
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: [GRASSLIST:10737] krigging result looks weird
+In-Reply-To: <bd07447b0603041322x517d4e40j6900c6860f9023b3@mail.gmail.com>
+References: <bd07447b0603041148y11b5c77bt8840dcdeffd8530c@mail.gmail.com>
+	 <Pine.LNX.4.44.0603042113570.5145-100000@reclus.nhh.no>
+	 <bd07447b0603041322x517d4e40j6900c6860f9023b3@mail.gmail.com>
+Message-ID: <bd07447b0603071218w5cb027e2lb3532414d3f67077@mail.gmail.com>
+
+> Can we move this to STATGRASS, probably a more suitable list?
+
+OK.
+
+>
+> > Hello again
+> >
+> > I was playing with R, I get a SRTM (90m) raster, converted it to
+> > vector, put it into R, calculate variogram and krigged a new map, with
+> > 30m resolution. The final maps looks "pixelate" (see it in www.igc.usp.br/pessoais/guano/tempo/krigging.jpg)... Maybe
+> > the parameters I used?
+> >
+> > here's what I did:
+> >
+> > 1-r.to.vect (90m)
+> > 2-g.region res=30
+> >
+> > R:
+> >
+> > library(spgrass6) ; library(spatial);
+> > srtm <- getSites6sp("toposrtm");
+> > coords<-coordinates(srtm);
+> > class(srtm);
+> > G <- gmeta6();
+> > grd <- GridTopology(cellcentre.offset=c(G$west+(G$ewres/2),
+> > G$south+(G$nsres/2)), cellsize=c(G$ewres, G$nsres),
+> > cells.dim=c(G$cols, G$rows));
+> > mask_SG <- SpatialGridDataFrame(grd, data=list(k=rep(1,
+> > G$cols*G$rows)), proj4string=CRS(G$proj4));
+> > class(mask_SG);
+> >
+>
+> Why do the trend surface outside gstat?
+> Is any other resampling going on?
+> Is the artefact in the trend surface residuals?
+> Is the artefact visible in image(resid.img)?
+> Is the artefact visible in image(OK_pred, "var1.pred")?
+>
+> > trend <- surf.ls(1, x=coords[,1], y=coords[,2], z=srtm$cat);
+> > resid1<-residuals(trend);
+> > resid2<-as.data.frame(resid1);
+> > resid.trend<-SpatialPointsDataFrame(coords,resid2);
+> > resid.img <- SpatialGridDataFrame(grd, resid.trend);
+> >
+> > library(gstat);
+> >
+> > variog1 <- variogram(resid.trend$resid1 ~ 1, locations=resid.trend,
+> > width=90, cutoff=1200);
+> > plot(variog1);
+> >
+> > vrg.eye<-(vgm(psill=7500, model="Gau", range=420, nugget=0));
+> > plot(variog1, model=vrg.eye);
+> >
+> > vrg.fit<-fit.variogram(variog1,vrg.eye);
+> > vrg.fit;
+> >
+> >   model     psill    range
+> > 1   Nug  173.7465   0.0000
+> > 2   Gau 7661.1776 442.5015
+> >
+> > plot(variog1, model=vrg.fit);
+> > vrg.eye2<-(vgm(psill=7650, model="Gau", range=440, nugget=170));
+> > plot(variog1, model=vrg.eye2);
+> >
+> > OK_pred <- krige(srtm$cat ~ 1, loc=srtm, newdata=mask_SG,
+> > model=vrg.eye2, maxdist=270);
+> > names(OK_pred);
+> > writeRast6sp(OK_pred, "srtm.krig", zcol="var1.pred", NODATA=-9999);
+> >
+>
+>
+
+
+OK. I did it only in gstat now:
+
+>variog1 <-variogram(srtm$cat~coords[,1]+coords[,2], loc=srtm, srtm);
+
+I don't see the artifact in
+
+>image(OK_pred, "var1.pred") (although I don't know how to zoom
+in...the area is bigger than in the sample image I send)
+
+The only resample was when I changed the GRASS region from 90m
+resolution to 30m. The boundaries are the same.
+
+image in: www.igc.usp.br/pessoais/guano/tempo/krigging.jpg
+
+thanks
+
+--
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+
+From Roger.Bivand at nhh.no  Tue Mar  7 15:41:44 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: [GRASSLIST:10737] krigging result looks weird
+In-Reply-To: <bd07447b0603071218w5cb027e2lb3532414d3f67077@mail.gmail.com>
+Message-ID: <Pine.LNX.4.44.0603072126280.27716-100000@reclus.nhh.no>
+
+On Tue, 7 Mar 2006, Carlos "Gu?no" Grohmann wrote:
+
+> > Can we move this to STATGRASS, probably a more suitable list?
+> 
+> OK.
+> 
+> >
+> > > Hello again
+> > >
+> > > I was playing with R, I get a SRTM (90m) raster, converted it to
+> > > vector, put it into R, calculate variogram and krigged a new map, with
+> > > 30m resolution. The final maps looks "pixelate" (see it in www.igc.usp.br/pessoais/guano/tempo/krigging.jpg)... Maybe
+> > > the parameters I used?
+> > >
+> > > here's what I did:
+> > >
+> > > 1-r.to.vect (90m)
+> > > 2-g.region res=30
+> > >
+> > > R:
+> > >
+> > > library(spgrass6) ; library(spatial);
+> > > srtm <- getSites6sp("toposrtm");
+> > > coords<-coordinates(srtm);
+> > > class(srtm);
+> > > G <- gmeta6();
+> > > grd <- GridTopology(cellcentre.offset=c(G$west+(G$ewres/2),
+> > > G$south+(G$nsres/2)), cellsize=c(G$ewres, G$nsres),
+> > > cells.dim=c(G$cols, G$rows));
+> > > mask_SG <- SpatialGridDataFrame(grd, data=list(k=rep(1,
+> > > G$cols*G$rows)), proj4string=CRS(G$proj4));
+> > > class(mask_SG);
+> > >
+> >
+> > Why do the trend surface outside gstat?
+> > Is any other resampling going on?
+> > Is the artefact in the trend surface residuals?
+> > Is the artefact visible in image(resid.img)?
+> > Is the artefact visible in image(OK_pred, "var1.pred")?
+> >
+> > > trend <- surf.ls(1, x=coords[,1], y=coords[,2], z=srtm$cat);
+> > > resid1<-residuals(trend);
+> > > resid2<-as.data.frame(resid1);
+> > > resid.trend<-SpatialPointsDataFrame(coords,resid2);
+> > > resid.img <- SpatialGridDataFrame(grd, resid.trend);
+> > >
+> > > library(gstat);
+> > >
+> > > variog1 <- variogram(resid.trend$resid1 ~ 1, locations=resid.trend,
+> > > width=90, cutoff=1200);
+> > > plot(variog1);
+> > >
+> > > vrg.eye<-(vgm(psill=7500, model="Gau", range=420, nugget=0));
+> > > plot(variog1, model=vrg.eye);
+> > >
+> > > vrg.fit<-fit.variogram(variog1,vrg.eye);
+> > > vrg.fit;
+> > >
+> > >   model     psill    range
+> > > 1   Nug  173.7465   0.0000
+> > > 2   Gau 7661.1776 442.5015
+> > >
+> > > plot(variog1, model=vrg.fit);
+> > > vrg.eye2<-(vgm(psill=7650, model="Gau", range=440, nugget=170));
+> > > plot(variog1, model=vrg.eye2);
+> > >
+> > > OK_pred <- krige(srtm$cat ~ 1, loc=srtm, newdata=mask_SG,
+> > > model=vrg.eye2, maxdist=270);
+> > > names(OK_pred);
+> > > writeRast6sp(OK_pred, "srtm.krig", zcol="var1.pred", NODATA=-9999);
+> > >
+> >
+> >
+> 
+> 
+> OK. I did it only in gstat now:
+> 
+> >variog1 <-variogram(srtm$cat~coords[,1]+coords[,2], loc=srtm, srtm);
+> 
+> I don't see the artifact in
+> 
+> >image(OK_pred, "var1.pred") (although I don't know how to zoom
+> in...the area is bigger than in the sample image I send)
+
+Before trying alternatives for moving the raster back to GRASS, maybe we 
+should zoom in and increase the number of breaks from the default. You can 
+use the xlim= and ylim= arguments to view a part of the image. To get more 
+breaks, give it for example col=topo.colors(80).
+
+> 
+> The only resample was when I changed the GRASS region from 90m
+> resolution to 30m. The boundaries are the same.
+
+OK, the input data are points from the 90m grid, and the region read from 
+GRASS is for a 30m grid. 
+
+> 
+> image in: www.igc.usp.br/pessoais/guano/tempo/krigging.jpg
+> 
+
+This is showing the data passed back to GRASS when just using gstat, so 
+the problem is still there, right? Am I wrong that the "off" pixels are 
+(roughly) on the 90m spots? What happens if you overplot the d.rast with a 
+d.vect toposrtm? do the "off" pixels match? Does the same happen if you 
+overplot in R?
+
+We can try other intermediate files later on, but I've a feeling that 
+something is happening to the predictions at the fit points. For a 
+subscene, we could use overlay() to pull out the predictions at the data 
+points, but we need to see the same artefact in R first - GRASS is using 
+many more colours than R, so the details may be there anyway.
+
+Best wishes,
+
+Roger
+
+
+
+> thanks
+> 
+> --
+> +-----------------------------------------------------------+
+>               Carlos Henrique Grohmann - Guano
+>   Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+> Linux User #89721  - carlos dot grohmann at gmail dot com
+> +-----------------------------------------------------------+
+> _________________
+> "Good morning, doctors. I have taken the liberty of removing Windows
+> 95 from my hard drive."
+> --The winning entry in a "What were HAL's first words" contest judged
+> by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From e.pebesma at geo.uu.nl  Tue Mar  7 16:55:25 2006
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: [GRASSLIST:10737] krigging result looks weird
+In-Reply-To: <Pine.LNX.4.44.0603072126280.27716-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0603072126280.27716-100000@reclus.nhh.no>
+Message-ID: <440E014D.2070500@geo.uu.nl>
+
+At the risk of being too obvious/ignorant, is the issue that kriging 
+reproduces
+observed values where grid cell centres exactly coincide with data points?
+A solution to that may be to shift the grid (or data) over a very small 
+distance.
+--
+Edzer
+
+
+From Roger.Bivand at nhh.no  Tue Mar  7 16:02:20 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: [GRASSLIST:10737] krigging result looks weird
+In-Reply-To: <440E014D.2070500@geo.uu.nl>
+Message-ID: <Pine.LNX.4.44.0603072158130.27716-100000@reclus.nhh.no>
+
+On Tue, 7 Mar 2006, Edzer J. Pebesma wrote:
+
+> At the risk of being too obvious/ignorant, is the issue that kriging 
+> reproduces
+> observed values where grid cell centres exactly coincide with data points?
+> A solution to that may be to shift the grid (or data) over a very small 
+> distance.
+
+No, I asked Carlos to move this here because I suspected that there might 
+be a direct explanation. Carlos, could you try jittering the input data 
+points, would just moving them within a target 30m cell be enough, say 
+within +/-15m? x+runif(*, -15, +15), y the same, and hope that both 
+runif()s don't say 0?
+
+Thanks!
+
+Roger
+
+> --
+> Edzer
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From carlos.grohmann at gmail.com  Tue Mar  7 16:25:28 2006
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: [GRASSLIST:10737] krigging result looks weird
+In-Reply-To: <Pine.LNX.4.44.0603072158130.27716-100000@reclus.nhh.no>
+References: <440E014D.2070500@geo.uu.nl>
+	 <Pine.LNX.4.44.0603072158130.27716-100000@reclus.nhh.no>
+Message-ID: <bd07447b0603071325v15bcf02ao5c50268b97bd8d85@mail.gmail.com>
+
+OK I did understant what you wan tme to do and why, but I didn't get how...
+BTW I overlaid the vector points and the krigged map in GRASS and yes,
+the artifacs position match the points position
+
+Carlos
+
+On 3/7/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Tue, 7 Mar 2006, Edzer J. Pebesma wrote:
+>
+> > At the risk of being too obvious/ignorant, is the issue that kriging
+> > reproduces
+> > observed values where grid cell centres exactly coincide with data points?
+> > A solution to that may be to shift the grid (or data) over a very small
+> > distance.
+>
+> No, I asked Carlos to move this here because I suspected that there might
+> be a direct explanation. Carlos, could you try jittering the input data
+> points, would just moving them within a target 30m cell be enough, say
+> within +/-15m? x+runif(*, -15, +15), y the same, and hope that both
+> runif()s don't say 0?
+>
+> Thanks!
+>
+> Roger
+>
+> > --
+> > Edzer
+> >
+>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+>
+
+
+--
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+
+From Roger.Bivand at nhh.no  Tue Mar  7 17:33:18 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: [GRASSLIST:10737] krigging result looks weird
+In-Reply-To: <bd07447b0603071325v15bcf02ao5c50268b97bd8d85@mail.gmail.com>
+Message-ID: <Pine.LNX.4.44.0603072323260.27716-100000@reclus.nhh.no>
+
+On Tue, 7 Mar 2006, Carlos "Gu?no" Grohmann wrote:
+
+> OK I did understant what you wan tme to do and why, but I didn't get how...
+> BTW I overlaid the vector points and the krigged map in GRASS and yes,
+> the artifacs position match the points position
+
+Something like:
+
+coords <- coordinates(srtm)
+jcoords <- cbind(jitter(coords[,1]), jitter(coords[,2]))
+
+should be enough. As I understand ?jitter, it will take each coordinate 
+and add runif(n, -a, a), where n is the number of points and a by default 
+is factor=1 * d/5, and d is the smallest difference between coordinate 
+values, so a=18 for d=90. If this is too strong, you can adjust factor= or 
+amount= in the calls to jitter.
+
+This moves the point within the flat 90m cell close to its centre, but 
+avoids the distance between the data point and the prediction point 
+falling to zero. If need be, you can check whether any rows of jcoords are 
+equal to the same row in coords, but getting runif == 0 in both calls is 
+highly unlikely.
+
+Hope this helps.
+
+Roger
+
+
+> 
+> Carlos
+> 
+> On 3/7/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> > On Tue, 7 Mar 2006, Edzer J. Pebesma wrote:
+> >
+> > > At the risk of being too obvious/ignorant, is the issue that kriging
+> > > reproduces
+> > > observed values where grid cell centres exactly coincide with data points?
+> > > A solution to that may be to shift the grid (or data) over a very small
+> > > distance.
+> >
+> > No, I asked Carlos to move this here because I suspected that there might
+> > be a direct explanation. Carlos, could you try jittering the input data
+> > points, would just moving them within a target 30m cell be enough, say
+> > within +/-15m? x+runif(*, -15, +15), y the same, and hope that both
+> > runif()s don't say 0?
+> >
+> > Thanks!
+> >
+> > Roger
+> >
+> > > --
+> > > Edzer
+> > >
+> >
+> > --
+> > Roger Bivand
+> > Economic Geography Section, Department of Economics, Norwegian School of
+> > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > e-mail: Roger.Bivand@nhh.no
+> >
+> >
+> 
+> 
+> --
+> +-----------------------------------------------------------+
+>               Carlos Henrique Grohmann - Guano
+>   Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+> Linux User #89721  - carlos dot grohmann at gmail dot com
+> +-----------------------------------------------------------+
+> _________________
+> "Good morning, doctors. I have taken the liberty of removing Windows
+> 95 from my hard drive."
+> --The winning entry in a "What were HAL's first words" contest judged
+> by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From carlos.grohmann at gmail.com  Tue Mar  7 17:35:54 2006
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: [GRASSLIST:10737] krigging result looks weird
+In-Reply-To: <bd07447b0603071325v15bcf02ao5c50268b97bd8d85@mail.gmail.com>
+References: <440E014D.2070500@geo.uu.nl>
+	 <Pine.LNX.4.44.0603072158130.27716-100000@reclus.nhh.no>
+	 <bd07447b0603071325v15bcf02ao5c50268b97bd8d85@mail.gmail.com>
+Message-ID: <bd07447b0603071435g518c6c25r32601635649c7fa6@mail.gmail.com>
+
+And Yes, the artifacts are present in R.
+
+Carlos
+
+On 3/7/06, Carlos Gu?no Grohmann <carlos.grohmann@gmail.com> wrote:
+> OK I did understant what you wan tme to do and why, but I didn't get how...
+> BTW I overlaid the vector points and the krigged map in GRASS and yes,
+> the artifacs position match the points position
+>
+> Carlos
+>
+> On 3/7/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> > On Tue, 7 Mar 2006, Edzer J. Pebesma wrote:
+> >
+> > > At the risk of being too obvious/ignorant, is the issue that kriging
+> > > reproduces
+> > > observed values where grid cell centres exactly coincide with data points?
+> > > A solution to that may be to shift the grid (or data) over a very small
+> > > distance.
+> >
+> > No, I asked Carlos to move this here because I suspected that there might
+> > be a direct explanation. Carlos, could you try jittering the input data
+> > points, would just moving them within a target 30m cell be enough, say
+> > within +/-15m? x+runif(*, -15, +15), y the same, and hope that both
+> > runif()s don't say 0?
+> >
+> > Thanks!
+> >
+> > Roger
+> >
+> > > --
+> > > Edzer
+> > >
+> >
+> > --
+> > Roger Bivand
+> > Economic Geography Section, Department of Economics, Norwegian School of
+> > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > e-mail: Roger.Bivand@nhh.no
+> >
+> >
+>
+>
+> --
+> +-----------------------------------------------------------+
+>               Carlos Henrique Grohmann - Guano
+>   Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+> Linux User #89721  - carlos dot grohmann at gmail dot com
+> +-----------------------------------------------------------+
+> _________________
+> "Good morning, doctors. I have taken the liberty of removing Windows
+> 95 from my hard drive."
+> --The winning entry in a "What were HAL's first words" contest judged
+> by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+>
+
+
+--
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+
+From carlos.grohmann at gmail.com  Tue Mar  7 19:17:34 2006
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: [GRASSLIST:10737] krigging result looks weird
+In-Reply-To: <bd07447b0603071435g518c6c25r32601635649c7fa6@mail.gmail.com>
+References: <440E014D.2070500@geo.uu.nl>
+	 <Pine.LNX.4.44.0603072158130.27716-100000@reclus.nhh.no>
+	 <bd07447b0603071325v15bcf02ao5c50268b97bd8d85@mail.gmail.com>
+	 <bd07447b0603071435g518c6c25r32601635649c7fa6@mail.gmail.com>
+Message-ID: <bd07447b0603071617m77192e24l99f599591055f248@mail.gmail.com>
+
+Something like:
+
+coords <- coordinates(srtm)
+jcoords <- cbind(jitter(coords[,1]), jitter(coords[,2]))
+
+> str(jcoords)
+ num [1:60888, 1:2] 744797 744896 744981 745063 745148 ...
+> class(jcoords)
+[1] "matrix"
+
+> jcoords
+             [,1]    [,2]
+    [1,] 744796.6 7277799
+    [2,] 744896.2 7277797
+    [3,] 744981.4 7277802
+    [4,] 745063.3 7277800
+    [5,] 745147.9 7277805
+    [6,] 745233.0 7277802
+    [7,] 745350.3 7277807
+    [8,] 745436.6 7277799
+    [9,] 745506.7 7277812
+   [10,] 745604.9 7277810
+   [11,] 745706.2 7277793
+   [12,] 745787.0 7277796
+   [13,] 745882.2 7277820
+   [14,] 745965.8 7277800
+   [15,] 746057.1 7277790
+   [16,] 746154.6 7277810
+   [17,] 746227.9 7277817
+   [18,] 746321.9 7277812
+   [19,] 746423.8 7277820
+   [20,] 746490.9 7277799
+   [21,] 746593.1 7277792
+   [22,] 746684.7 7277811
+   [23,] 746762.5 7277794
+   [24,] 746871.6 7277811
+   [25,] 746965.6 7277814
+   [26,] 747040.6 7277807
+   [27,] 747143.3 7277789
+   [28,] 747215.3 7277819
+   [29,] 747310.1 7277800
+   [30,] 747416.2 7277813
+
+
+So they won't fall in the exac spot as before:
+
+> OK_pred <- krige(srtm$cat ~ 1, loc=~jcoords[,1]+jcoords[,2], newdata=mask_SG, model=vrg.eye2, maxdist=270)
+Error in "coordinates<-"(`*tmp*`, value = ~jcoords[, 1] + jcoords[, 2]) :
+        no direct or inherited method for function 'coordinates<-' for this call
+
+I need a data frame:
+
+> cat<-as.data.frame(srtm$cat)
+> class(cat)
+[1] "data.frame"
+> srtm2<-SpatialPointsDataFrame(jcoords,cat)
+> class(srtm2)
+[1] "SpatialPointsDataFrame"
+attr(,"package")
+[1] "sp"
+> str(srtm2)
+Formal class 'SpatialPointsDataFrame' [package "sp"] with 5 slots
+  ..@ data       :Formal class 'AttributeList' [package "sp"] with 1 slots
+  .. .. ..@ att:List of 1
+  .. .. .. ..$ srtm$cat: num [1:60888] 103 114 123 93 81 75 68 75 89 105 ...
+  ..@ coords.nrs : num(0)
+  ..@ coords     : num [1:60888, 1:2] 744797 744896 744981 745063 745148 ...
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : NULL
+  .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+  ..@ bbox       : num [1:2, 1:2]  744779 7261949  775681 7277821
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+  .. .. ..$ : chr [1:2] "min" "max"
+  ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+  .. .. ..@ projargs: chr NA
+
+> OK_pred <- krige(srtm$cat ~ 1, loc=srtm2, newdata=mask_SG, model=vrg.eye2, maxdist=270)
+Error in predict.gstat(g, newdata = newdata, block = block, nsim = nsim,  :
+        data items in gstat object and newdata have different
+coordinate reference systems
+
+
+I fotgot the proj4 when I created srtm2...
+
+>srtm2<-SpatialPointsDataFrame(jcoords,cat,proj4string=CRS(G$proj4));
+
+> str(srtm2)
+Formal class 'SpatialPointsDataFrame' [package "sp"] with 5 slots
+  ..@ data       :Formal class 'AttributeList' [package "sp"] with 1 slots
+  .. .. ..@ att:List of 1
+  .. .. .. ..$ srtm$cat: num [1:60888] 103 114 123 93 81 75 68 75 89 105 ...
+  ..@ coords.nrs : num(0)
+  ..@ coords     : num [1:60888, 1:2] 744798 744885 744968 745067 745171 ...
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : NULL
+  .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+  ..@ bbox       : num [1:2, 1:2]  744779 7261949  775681 7277821
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+  .. .. ..$ : chr [1:2] "min" "max"
+  ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+  .. .. ..@ projargs: chr "+proj=utm +south +zone=22 +a=6378160
++rf=298.25 +no_defs +towgs84=-60.0,-2.0,-41.0"
+
+Seems good, let's try it.
+
+> OK_pred <- krige(srtm$cat ~ 1, loc=srtm2, newdata=mask_SG, model=vrg.eye2, maxdist=270)
+[using ordinary kriging]
+
+Hurray!!! This worked!
+
+see the images:
+
+ www.igc.usp.br/pessoais/guano/tempo/krigging_good.jpg
+ www.igc.usp.br/pessoais/guano/tempo/krigging_good_zoom.jpg
+
+
+Thanks Roger and Edzer!
+
+Carlos
+
+On 3/7/06, Carlos Gu?no Grohmann <carlos.grohmann@gmail.com> wrote:
+> And Yes, the artifacts are present in R.
+>
+> Carlos
+>
+> On 3/7/06, Carlos Gu?no Grohmann <carlos.grohmann@gmail.com> wrote:
+> > OK I did understant what you wan tme to do and why, but I didn't get how...
+> > BTW I overlaid the vector points and the krigged map in GRASS and yes,
+> > the artifacs position match the points position
+> >
+> > Carlos
+> >
+> > On 3/7/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> > > On Tue, 7 Mar 2006, Edzer J. Pebesma wrote:
+> > >
+> > > > At the risk of being too obvious/ignorant, is the issue that kriging
+> > > > reproduces
+> > > > observed values where grid cell centres exactly coincide with data points?
+> > > > A solution to that may be to shift the grid (or data) over a very small
+> > > > distance.
+> > >
+> > > No, I asked Carlos to move this here because I suspected that there might
+> > > be a direct explanation. Carlos, could you try jittering the input data
+> > > points, would just moving them within a target 30m cell be enough, say
+> > > within +/-15m? x+runif(*, -15, +15), y the same, and hope that both
+> > > runif()s don't say 0?
+> > >
+> > > Thanks!
+> > >
+> > > Roger
+> > >
+> > > > --
+> > > > Edzer
+> > > >
+> > >
+> > > --
+> > > Roger Bivand
+> > > Economic Geography Section, Department of Economics, Norwegian School of
+> > > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> > > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > > e-mail: Roger.Bivand@nhh.no
+> > >
+> > >
+> >
+> >
+> > --
+> > +-----------------------------------------------------------+
+> >               Carlos Henrique Grohmann - Guano
+> >   Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+> > Linux User #89721  - carlos dot grohmann at gmail dot com
+> > +-----------------------------------------------------------+
+> > _________________
+> > "Good morning, doctors. I have taken the liberty of removing Windows
+> > 95 from my hard drive."
+> > --The winning entry in a "What were HAL's first words" contest judged
+> > by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+> >
+>
+>
+> --
+> +-----------------------------------------------------------+
+>               Carlos Henrique Grohmann - Guano
+>   Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+> Linux User #89721  - carlos dot grohmann at gmail dot com
+> +-----------------------------------------------------------+
+> _________________
+> "Good morning, doctors. I have taken the liberty of removing Windows
+> 95 from my hard drive."
+> --The winning entry in a "What were HAL's first words" contest judged
+> by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+>
+
+
+--
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+
+From massimodisasha at yahoo.it  Mon Mar 13 04:14:17 2006
+From: massimodisasha at yahoo.it (massimo)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] (no subject)
+Message-ID: <59505F89-7D98-44A4-9E28-DEC0FEF3F5AB@yahoo.it>
+
+Salve a tutti,
+
+sto provando ad installare gstat-2.4.5 su di un mac-osx con  
+installati grass (5.4 + 6.1),
+  le versioni .dmg gi? compilate.
+ma ricevo questo messaggio di errore:
+http://www.rafb.net/paste/results/VsCmAH43.html
+
+il comando che digito per l'installazione ? il seguente:
+./configure --with-grass=/usr/local/grasslib/
+make ??error!
+potete aiutarmi?
+ci sono varie versioni di gstat, una delle quali ? :  
+gstat-2.4.3_mac.zip (ma una volta scaricata noto che ? un  
+"eseguibile", avete qualche consiglio???)
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20060313/75669fb4/attachment.html
+From carlos.grohmann at gmail.com  Tue Mar 14 18:29:36 2006
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] krigged dem lost detail
+Message-ID: <bd07447b0603141529p43f1a145k965b31b6da7e9de5@mail.gmail.com>
+
+Hello,
+
+I am comparing the results we get when re-interpolating a DEM to a
+higher resolution. I did it with krigging (in R, with gstat) and with
+RST. In the final result it looks like the krigged DEM has lost
+detail, while the RST DEM kept those.
+see it:
+http://www.igc.usp.br/pessoais/guano/tempo/krigging.jpg
+http://www.igc.usp.br/pessoais/guano/tempo/rst.jpg
+
+I don't know why this happens, since they were interpolated wit the
+same resolution, based on the same dataset.
+
+thanks
+
+Carlos
+
+--
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+
+From hamish_nospam at yahoo.com  Wed Mar 15 01:16:11 2006
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] krigged dem lost detail
+In-Reply-To: <bd07447b0603141529p43f1a145k965b31b6da7e9de5@mail.gmail.com>
+References: <bd07447b0603141529p43f1a145k965b31b6da7e9de5@mail.gmail.com>
+Message-ID: <20060315191611.01c727c2.hamish_nospam@yahoo.com>
+
+> I am comparing the results we get when re-interpolating a DEM to a
+> higher resolution. I did it with krigging (in R, with gstat) and with
+> RST. In the final result it looks like the krigged DEM has lost
+> detail, while the RST DEM kept those.
+> see it:
+> http://www.igc.usp.br/pessoais/guano/tempo/krigging.jpg
+> http://www.igc.usp.br/pessoais/guano/tempo/rst.jpg
+> 
+> I don't know why this happens, since they were interpolated wit the
+> same resolution, based on the same dataset.
+
+
+be careful you haven't added detail that isn't really there due to
+spline artifacts. Perhaps resample known DEM at lower resoution and then
+re-interpolate at original resolution to compare which does a better
+job recreating the original DEM?
+
+r.resamp.rst
+
+
+
+Hamish
+
+
+From neteler at itc.it  Wed Mar 15 04:40:26 2006
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] krigged dem lost detail
+In-Reply-To: <20060315191611.01c727c2.hamish_nospam@yahoo.com>
+References: <bd07447b0603141529p43f1a145k965b31b6da7e9de5@mail.gmail.com> <20060315191611.01c727c2.hamish_nospam@yahoo.com>
+Message-ID: <20060315094026.GH31413@bartok.itc.it>
+
+Carlos,
+
+I didn't follow this thread in details (although very interesting).
+There is cross validation for optimizing tension and smoothing,
+did you make use of that (sorry, if already written...)?
+
+I received a script from Jaro to automate the parametrization.
+Let me know if you need it (maybe it should go into the Wiki,
+so that you/others could document the procedure)
+
+Markus
+
+On Wed, Mar 15, 2006 at 07:16:11PM +1300, Hamish wrote:
+> > I am comparing the results we get when re-interpolating a DEM to a
+> > higher resolution. I did it with krigging (in R, with gstat) and with
+> > RST. In the final result it looks like the krigged DEM has lost
+> > detail, while the RST DEM kept those.
+> > see it:
+> > http://www.igc.usp.br/pessoais/guano/tempo/krigging.jpg
+> > http://www.igc.usp.br/pessoais/guano/tempo/rst.jpg
+> > 
+> > I don't know why this happens, since they were interpolated wit the
+> > same resolution, based on the same dataset.
+> 
+> 
+> be careful you haven't added detail that isn't really there due to
+> spline artifacts. Perhaps resample known DEM at lower resoution and then
+> re-interpolate at original resolution to compare which does a better
+> job recreating the original DEM?
+> 
+> r.resamp.rst
+> 
+> 
+> 
+> Hamish
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+-- 
+Markus Neteler     <neteler itc it>       http://mpa.itc.it
+ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+
+From rsadler at cyllene.uwa.edu.au  Thu Mar 16 20:39:06 2006
+From: rsadler at cyllene.uwa.edu.au (rsadler@cyllene.uwa.edu.au)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] multi session slow down
+Message-ID: <20060317093906.0bmluqbeg90080w4@webmail-1.ucs.uwa.edu.au>
+
+Dear List,
+
+I have implemented Monte Carlo inference for a random closed set model  
+that mimics the different "phases" of vegetation patterning to be  
+found in images of a semi-arid grassland in north west Australia. The  
+procedure is implemented using the multiple sessions capability of  
+grass60 on a computing cluster with shared disk space. The problem is  
+that when running a single machine alone I can generate 500  
+simulations an hour. However when I run all 30 machines concurrently  
+simulation rate drops dramatically to 20 sessions an hour for a single  
+machine (all machines are the same).
+
+I am first contacting the statsgrass list because the procedure uses  
+the grass/R interface for a number of separate tasks. What I don't  
+know is whether the slow down is a result of the grass/R interface or  
+whether the slow done occurs on the grass side of things where there  
+is some shared file that all sessions use (like .grass.bashrc but not  
+that). The program is run as an R batch file using vanilla and slave,  
+with all output is being written to separate text files. All sessions  
+use different locations and therefore different mapsets.
+
+Please advise
+
+Regards
+Rohan Sadler
+
+PhD Student
+School of Plant Biology
+School of Mathematics and Statistics
+Bushfire Cooperative Research Centre
+The University of Western Australia
+
+
+From pittj2 at lincoln.ac.nz  Thu Mar 16 21:09:57 2006
+From: pittj2 at lincoln.ac.nz (Joel Pitt)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] multi session slow down
+In-Reply-To: <20060317093906.0bmluqbeg90080w4@webmail-1.ucs.uwa.edu.au>
+References: <20060317093906.0bmluqbeg90080w4@webmail-1.ucs.uwa.edu.au>
+Message-ID: <200603171510.01080.pittj2@lincoln.ac.nz>
+
+Without knowing much about the R interface I would guess that it may be slow 
+due to all machines trying to access data off of the same disk. Have you got 
+any way to measure disk reads and the network bandwidth to the machine 
+hosting the disk?
+
+-Joel
+
+On Friday 17 March 2006 2:39 pm, rsadler@cyllene.uwa.edu.au wrote:
+> Dear List,
+>
+> I have implemented Monte Carlo inference for a random closed set model
+> that mimics the different "phases" of vegetation patterning to be
+> found in images of a semi-arid grassland in north west Australia. The
+> procedure is implemented using the multiple sessions capability of
+> grass60 on a computing cluster with shared disk space. The problem is
+> that when running a single machine alone I can generate 500
+> simulations an hour. However when I run all 30 machines concurrently
+> simulation rate drops dramatically to 20 sessions an hour for a single
+> machine (all machines are the same).
+>
+> I am first contacting the statsgrass list because the procedure uses
+> the grass/R interface for a number of separate tasks. What I don't
+> know is whether the slow down is a result of the grass/R interface or
+> whether the slow done occurs on the grass side of things where there
+> is some shared file that all sessions use (like .grass.bashrc but not
+> that). The program is run as an R batch file using vanilla and slave,
+> with all output is being written to separate text files. All sessions
+> use different locations and therefore different mapsets.
+>
+> Please advise
+>
+> Regards
+> Rohan Sadler
+>
+> PhD Student
+> School of Plant Biology
+> School of Mathematics and Statistics
+> Bushfire Cooperative Research Centre
+> The University of Western Australia
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+-- 
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+"Clothes make the man.  Naked people have little
+or no influence on society." -- Mark Twain
+
+Joel Pitt, Room B534
+Bio-Protection & Ecology Division
+PO Box 84, Lincoln University 8150
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 191 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20060317/52857d3b/attachment.bin
+From Roger.Bivand at nhh.no  Fri Mar 17 14:53:22 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] multi session slow down
+In-Reply-To: <200603171510.01080.pittj2@lincoln.ac.nz>
+Message-ID: <Pine.LNX.4.44.0603172049570.19771-100000@reclus.nhh.no>
+
+On Fri, 17 Mar 2006, Joel Pitt wrote:
+
+> Without knowing much about the R interface I would guess that it may be slow 
+> due to all machines trying to access data off of the same disk. Have you got 
+> any way to measure disk reads and the network bandwidth to the machine 
+> hosting the disk?
+
+I agree - I think the original process was also disk-bound, that is 500 
+per hour looks very much like 30 times 20 per hour? This would imply that 
+10 machines would do 50-60 an hour each. So spreading the compute load 
+doesn't help, if this is the case.
+
+Roger
+
+> 
+> -Joel
+> 
+> On Friday 17 March 2006 2:39 pm, rsadler@cyllene.uwa.edu.au wrote:
+> > Dear List,
+> >
+> > I have implemented Monte Carlo inference for a random closed set model
+> > that mimics the different "phases" of vegetation patterning to be
+> > found in images of a semi-arid grassland in north west Australia. The
+> > procedure is implemented using the multiple sessions capability of
+> > grass60 on a computing cluster with shared disk space. The problem is
+> > that when running a single machine alone I can generate 500
+> > simulations an hour. However when I run all 30 machines concurrently
+> > simulation rate drops dramatically to 20 sessions an hour for a single
+> > machine (all machines are the same).
+> >
+> > I am first contacting the statsgrass list because the procedure uses
+> > the grass/R interface for a number of separate tasks. What I don't
+> > know is whether the slow down is a result of the grass/R interface or
+> > whether the slow done occurs on the grass side of things where there
+> > is some shared file that all sessions use (like .grass.bashrc but not
+> > that). The program is run as an R batch file using vanilla and slave,
+> > with all output is being written to separate text files. All sessions
+> > use different locations and therefore different mapsets.
+> >
+> > Please advise
+> >
+> > Regards
+> > Rohan Sadler
+> >
+> > PhD Student
+> > School of Plant Biology
+> > School of Mathematics and Statistics
+> > Bushfire Cooperative Research Centre
+> > The University of Western Australia
+> >
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From Roger.Bivand at nhh.no  Fri Mar 17 15:11:48 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] krigged dem lost detail
+In-Reply-To: <20060315094026.GH31413@bartok.itc.it>
+Message-ID: <Pine.LNX.4.44.0603172103340.19771-100000@reclus.nhh.no>
+
+On Wed, 15 Mar 2006, Markus Neteler wrote:
+
+> Carlos,
+> 
+> I didn't follow this thread in details (although very interesting).
+> There is cross validation for optimizing tension and smoothing,
+> did you make use of that (sorry, if already written...)?
+
+I think that Hamish and Markus are right: both rst and kriging have 
+parameters which may lead to this result if set in particular ways. Maybe 
+cross validation is a way of comparing their leave-one-out prediction 
+performance for (for example) a subscene of the STRM data you've been 
+using. 
+
+You'd have to try a bit to find out which parameters might be the critical
+ones. I have compared gstat kriging using CV with Tps in the fields
+package, I have a presentation with the gory details (it was actually
+comparing with GeoStatistical Analyst on the Meuse Bank data, gstat with
+the flood frequency factor in R came out best).
+
+Because upgrading 90m data is likely to be something a lot of people want 
+to do, it would be worth trying to find out what is going on here. Can you 
+post a suitable subscene and its location metadata - say as a geotiff?
+
+Roger
+
+
+
+> 
+> I received a script from Jaro to automate the parametrization.
+> Let me know if you need it (maybe it should go into the Wiki,
+> so that you/others could document the procedure)
+> 
+> Markus
+> 
+> On Wed, Mar 15, 2006 at 07:16:11PM +1300, Hamish wrote:
+> > > I am comparing the results we get when re-interpolating a DEM to a
+> > > higher resolution. I did it with krigging (in R, with gstat) and with
+> > > RST. In the final result it looks like the krigged DEM has lost
+> > > detail, while the RST DEM kept those.
+> > > see it:
+> > > http://www.igc.usp.br/pessoais/guano/tempo/krigging.jpg
+> > > http://www.igc.usp.br/pessoais/guano/tempo/rst.jpg
+> > > 
+> > > I don't know why this happens, since they were interpolated wit the
+> > > same resolution, based on the same dataset.
+> > 
+> > 
+> > be careful you haven't added detail that isn't really there due to
+> > spline artifacts. Perhaps resample known DEM at lower resoution and then
+> > re-interpolate at original resolution to compare which does a better
+> > job recreating the original DEM?
+> > 
+> > r.resamp.rst
+> > 
+> > 
+> > 
+> > Hamish
+> > 
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From Roger.Bivand at nhh.no  Wed Mar 22 05:20:24 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Re: [GRASS5] r.moran
+In-Reply-To: <Pine.LNX.4.64.0603221038440.3974@localhost.localdomain>
+Message-ID: <Pine.LNX.4.44.0603221114350.12469-100000@reclus.nhh.no>
+
+On Wed, 22 Mar 2006, Wolf Bergenheim wrote:
+
+> On Wed, 22 Mar 2006, Roger Bivand wrote:
+> 
+> >>
+> >> You might be right. But I guess it wouldn't work for vectors?
+> >
+> > No, vectors are fully supported - in fact a raster would be treated as
+> > cell centre points. See the range of functions for building lists of
+> > neighbours in the R spdep package. Are your vectors points or polygons?
+> 
+> Hey that is good to know. Now I even have a reason to join that list (;
+> 
+> I have a bunch of vector areas that I'd need to do Moran's I on. Thing is 
+> that I'm not very comfortable with R, so I guess I'll need some help.
+> 
+> > What criteria for neighbours do you need?
+> 
+> My vectors are polygons, squares actually, with sides of 1 km. So I guess a 
+> neighbour is one that shares a boundary. I guess I could easily convert 
+> these to rasters, but since they are vectors I can connect an attribute 
+> table to them. I have to calculate Moran's I on many attributes.
+> 
+
+OK. Do the squares cover a whole rectanglar region, or are there ragged 
+edges, holes, etc? Are they now stored as GRASS vector - I guess yes? How 
+many are there? What kind(s) of variables do you need to test for 
+autocorrelation, categorical or continuous-valued?
+
+There will be three steps:
+
+1) get the data into R
+
+2) build the neighbour representation, and
+
+3) test
+
+where variants of 1 & 2 will depend on how your data are represented now.
+
+> > We can continue thread this on the STATGRASS list if you like.
+> >
+> 
+> I'm not on that list (yet), so for now if we want (yes we do since this is 
+> OT) to keep this away from here, I guess we could switch to the STATGRASS 
+> list, plus me as Cc.
+> 
+
+I suggested the list (another is R-sig-geo) because other people there may 
+have directly relevant experience, I hope that makes sense!
+
+Roger
+
+> --Wolf
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From Roger.Bivand at nhh.no  Wed Mar 22 08:00:56 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Re: [GRASS5] r.moran
+In-Reply-To: <Pine.LNX.4.64.0603221357410.9402@localhost.localdomain>
+Message-ID: <Pine.LNX.4.44.0603221345550.12469-100000@reclus.nhh.no>
+
+On Wed, 22 Mar 2006, Wolf Bergenheim wrote:
+
+> On Wed, 22 Mar 2006, Roger Bivand wrote:
+> 
+> > On Wed, 22 Mar 2006, Wolf Bergenheim wrote:
+> >
+> >> On Wed, 22 Mar 2006, Roger Bivand wrote:
+> >>
+> >>>>
+> >>>> You might be right. But I guess it wouldn't work for vectors?
+> >>>
+> >>> No, vectors are fully supported - in fact a raster would be treated as
+> >>> cell centre points. See the range of functions for building lists of
+> >>> neighbours in the R spdep package. Are your vectors points or polygons?
+> >>
+> >> Hey that is good to know. Now I even have a reason to join that list (;
+> >>
+> >> I have a bunch of vector areas that I'd need to do Moran's I on. Thing is
+> >> that I'm not very comfortable with R, so I guess I'll need some help.
+> >>
+> >>> What criteria for neighbours do you need?
+> >>
+> >> My vectors are polygons, squares actually, with sides of 1 km. So I guess a
+> >> neighbour is one that shares a boundary. I guess I could easily convert
+> >> these to rasters, but since they are vectors I can connect an attribute
+> >> table to them. I have to calculate Moran's I on many attributes.
+> >>
+> >
+> > OK. Do the squares cover a whole rectanglar region, or are there ragged
+> > edges, holes, etc? Are they now stored as GRASS vector - I guess yes? How
+> > many are there? What kind(s) of variables do you need to test for
+> > autocorrelation, categorical or continuous-valued?
+> 
+> The squares are 1 km2 squares in geographic orientation. They are side-to 
+> side, but some holes exist (i.e. missing squares). The data is categorical. 
+> the grid is a grid of population. so one square includes all residents of 
+> that square km. I have for instance count of children under the age of 6. 
+> I'd like to calculate the Moran's I to see how clustered the children are 
+> both with the absolute count and a percentage (for which there is another 
+> attribute). What kind of databases can R connect to? Would it be hard to 
+> connect to an SQLite database? Currently my data is in grass vector and 
+> the data is in an SQLite DB. I also have the same data as an ESRI 
+> shapefile and the data as a dBASE IV file.
+> 
+> This is what the data looks like:
+> http://wolf.bergenheim.net/tmp/alkoul_i.jpg
+
+What platform are you doing the analysis on?
+
+The immediate easy route is the shapefile. Yes, R can talk to SQLite, but 
+I can't, so can't advise on that.
+
+How had you considered handling the unconnected islands? It looks as 
+though most of the map has low values, and only a few higher values - this 
+is effectively saying that the variable is predicted by its mean, and 
+since most of the map is below the mean, and the rest above, the result is 
+a foregone conclusion, that is the data do not look mean-stationary. So I 
+don't think Moran's I will tell you much you don't know, but I could be 
+wrong. 
+
+Roger
+
+> 
+> Zoomed in a bit:
+> http://wolf.bergenheim.net/tmp/alkoul_i_2.jpg
+> 
+> >
+> > There will be three steps:
+> >
+> > 1) get the data into R
+> >
+> > 2) build the neighbour representation, and
+> >
+> > 3) test
+> 
+> hmm I think I'm going to need help with all steps ):
+> 
+> --Wolf
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From Roger.Bivand at nhh.no  Wed Mar 22 10:57:31 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Re: [GRASS5] r.moran
+In-Reply-To: <Pine.LNX.4.64.0603221716280.9402@localhost.localdomain>
+Message-ID: <Pine.LNX.4.44.0603221631040.12469-100000@reclus.nhh.no>
+
+On Wed, 22 Mar 2006, Wolf Bergenheim wrote:
+
+> On Wed, 22 Mar 2006, Roger Bivand wrote:
+> 
+> >>
+> >> This is what the data looks like:
+> >> http://wolf.bergenheim.net/tmp/alkoul_i.jpg
+> >
+> > What platform are you doing the analysis on?
+> >
+> 
+> Debian Linux, Intel CPU.
+> 
+> > The immediate easy route is the shapefile. Yes, R can talk to SQLite, but
+> > I can't, so can't advise on that.
+> >
+> 
+> So R can can read shapefiles. cool (: I have R installed and I 
+> also installed the spgrass6 package. I have root access so I can install 
+> additional software.
+
+Fine. Can I suggest that you make a personal directory for the additional 
+contributed packages, then you don't need to change who you are too often? 
+In my .bashrc I have:
+
+R_LIBS="$HOME/lib/R" ; export R_LIBS
+
+which R picks up, and uses in addition to the system-wide library. Did you 
+install R from source, or otherwise? Source is nice, because then you know 
+that it figures out your machine and gets dependencies right straight 
+away, but the debian binary builders are very good too.
+
+Under Linux (and other platforms), the easiest way to install contributed 
+packages is from the R prompt, as you've seen. Some packages depend on 
+other R packages, but some have external dependencies, which also need 
+meeting.
+
+You'll need the spdep package and all its dependencies, so:
+
+install.packages("spdep", depencencies=TRUE)
+
+does that, and the packages end up in your own library. 
+
+The easiest way for now to import the shapefile is to do v.out.ogr from 
+GRASS, and 
+
+library(maptools)
+my_shape <- readShapePoly("my_shape.shp")
+plot(my_shape)
+names(my_shape)
+
+maybe
+
+summary(my_shape)
+
+If you are running R within GRASS (start R from the GRASS shell prompt),
+you can give my_shape its coordinate reference system by:
+
+library(spgrass6)
+meta <- gmeta6()
+proj4string(my_shape) <- CRS(meta$proj4)
+
+in case that is needed.
+
+Being brave:
+
+library(classInt)
+var_class_intervals <- classIntervals(my_shape$variable_of_interest, 
+  style="fisher")
+cols <- findColours(var_class_intervals, pal=c("blue", "red"))
+plot(my_shape, cols)
+
+and hope the plot shows the data in similar places to the PNGs.
+
+Shall we try to get that far first - I'm not too sure how many polygons 
+there are, but there seem to be a fair number?
+
+The next bits are simple:
+
+my_nb <- poly2nb(my_shape) 
+
+maybe setting queen=FALSE to only choose neighbours sharing more than just 
+a corner point.
+
+print(my_nb)
+plot(my_nb, coordinates(my_shape))
+
+display the neighbours.
+
+From carlos.grohmann at gmail.com  Wed Mar 22 13:50:33 2006
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] krigged dem lost detail
+In-Reply-To: <Pine.LNX.4.44.0603172103340.19771-100000@reclus.nhh.no>
+References: <20060315094026.GH31413@bartok.itc.it>
+	 <Pine.LNX.4.44.0603172103340.19771-100000@reclus.nhh.no>
+Message-ID: <bd07447b0603221050q11f92911uf05eec459ef76314@mail.gmail.com>
+
+OK Roger. There are some files at:
+
+http://www.igc.usp.br/pessoais/guano/karst.html
+
+There is a TIFF (and TFW) of the karstic region.
+There are 3 region files I've been using, one for the original srtm
+resolution, one subset I used to calculate the variogram and one with
+the same extents as the first, but with 30m resolution.
+
+And there is a ZIP with all of the above.
+
+Carlos
+
+
+
+On 3/17/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Wed, 15 Mar 2006, Markus Neteler wrote:
+>
+> > Carlos,
+> >
+> > I didn't follow this thread in details (although very interesting).
+> > There is cross validation for optimizing tension and smoothing,
+> > did you make use of that (sorry, if already written...)?
+>
+> I think that Hamish and Markus are right: both rst and kriging have
+> parameters which may lead to this result if set in particular ways. Maybe
+> cross validation is a way of comparing their leave-one-out prediction
+> performance for (for example) a subscene of the STRM data you've been
+> using.
+>
+> You'd have to try a bit to find out which parameters might be the critical
+> ones. I have compared gstat kriging using CV with Tps in the fields
+> package, I have a presentation with the gory details (it was actually
+> comparing with GeoStatistical Analyst on the Meuse Bank data, gstat with
+> the flood frequency factor in R came out best).
+>
+> Because upgrading 90m data is likely to be something a lot of people want
+> to do, it would be worth trying to find out what is going on here. Can you
+> post a suitable subscene and its location metadata - say as a geotiff?
+>
+> Roger
+>
+>
+>
+> >
+> > I received a script from Jaro to automate the parametrization.
+> > Let me know if you need it (maybe it should go into the Wiki,
+> > so that you/others could document the procedure)
+> >
+> > Markus
+> >
+> > On Wed, Mar 15, 2006 at 07:16:11PM +1300, Hamish wrote:
+> > > > I am comparing the results we get when re-interpolating a DEM to a
+> > > > higher resolution. I did it with krigging (in R, with gstat) and with
+> > > > RST. In the final result it looks like the krigged DEM has lost
+> > > > detail, while the RST DEM kept those.
+> > > > see it:
+> > > > http://www.igc.usp.br/pessoais/guano/tempo/krigging.jpg
+> > > > http://www.igc.usp.br/pessoais/guano/tempo/rst.jpg
+> > > >
+> > > > I don't know why this happens, since they were interpolated wit the
+> > > > same resolution, based on the same dataset.
+> > >
+> > >
+> > > be careful you haven't added detail that isn't really there due to
+> > > spline artifacts. Perhaps resample known DEM at lower resoution and then
+> > > re-interpolate at original resolution to compare which does a better
+> > > job recreating the original DEM?
+> > >
+> > > r.resamp.rst
+> > >
+> > >
+> > >
+> > > Hamish
+> > >
+> > > _______________________________________________
+> > > statsgrass mailing list
+> > > statsgrass@grass.itc.it
+> > > http://grass.itc.it/mailman/listinfo/statsgrass
+> >
+> >
+>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+>
+
+
+--
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+
+From Roger.Bivand at nhh.no  Wed Mar 22 14:05:26 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] krigged dem lost detail
+In-Reply-To: <bd07447b0603221050q11f92911uf05eec459ef76314@mail.gmail.com>
+Message-ID: <Pine.LNX.4.44.0603222003020.12469-100000@reclus.nhh.no>
+
+On Wed, 22 Mar 2006, Carlos "Gu?no" Grohmann wrote:
+
+> OK Roger. There are some files at:
+> 
+> http://www.igc.usp.br/pessoais/guano/karst.html
+> 
+> There is a TIFF (and TFW) of the karstic region.
+> There are 3 region files I've been using, one for the original srtm
+> resolution, one subset I used to calculate the variogram and one with
+> the same extents as the first, but with 30m resolution.
+> 
+> And there is a ZIP with all of the above.
+> 
+
+If somebody else would like to join in, please do. Does anyone feel called 
+to get the STRM of say spearfish at 30m and 90m and see how close we can 
+get to the 30m interpolating from the 90m? That would give us a chance to 
+see where things fall apart?
+
+Roger
+
+
+> Carlos
+> 
+> 
+> 
+> On 3/17/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> > On Wed, 15 Mar 2006, Markus Neteler wrote:
+> >
+> > > Carlos,
+> > >
+> > > I didn't follow this thread in details (although very interesting).
+> > > There is cross validation for optimizing tension and smoothing,
+> > > did you make use of that (sorry, if already written...)?
+> >
+> > I think that Hamish and Markus are right: both rst and kriging have
+> > parameters which may lead to this result if set in particular ways. Maybe
+> > cross validation is a way of comparing their leave-one-out prediction
+> > performance for (for example) a subscene of the STRM data you've been
+> > using.
+> >
+> > You'd have to try a bit to find out which parameters might be the critical
+> > ones. I have compared gstat kriging using CV with Tps in the fields
+> > package, I have a presentation with the gory details (it was actually
+> > comparing with GeoStatistical Analyst on the Meuse Bank data, gstat with
+> > the flood frequency factor in R came out best).
+> >
+> > Because upgrading 90m data is likely to be something a lot of people want
+> > to do, it would be worth trying to find out what is going on here. Can you
+> > post a suitable subscene and its location metadata - say as a geotiff?
+> >
+> > Roger
+> >
+> >
+> >
+> > >
+> > > I received a script from Jaro to automate the parametrization.
+> > > Let me know if you need it (maybe it should go into the Wiki,
+> > > so that you/others could document the procedure)
+> > >
+> > > Markus
+> > >
+> > > On Wed, Mar 15, 2006 at 07:16:11PM +1300, Hamish wrote:
+> > > > > I am comparing the results we get when re-interpolating a DEM to a
+> > > > > higher resolution. I did it with krigging (in R, with gstat) and with
+> > > > > RST. In the final result it looks like the krigged DEM has lost
+> > > > > detail, while the RST DEM kept those.
+> > > > > see it:
+> > > > > http://www.igc.usp.br/pessoais/guano/tempo/krigging.jpg
+> > > > > http://www.igc.usp.br/pessoais/guano/tempo/rst.jpg
+> > > > >
+> > > > > I don't know why this happens, since they were interpolated wit the
+> > > > > same resolution, based on the same dataset.
+> > > >
+> > > >
+> > > > be careful you haven't added detail that isn't really there due to
+> > > > spline artifacts. Perhaps resample known DEM at lower resoution and then
+> > > > re-interpolate at original resolution to compare which does a better
+> > > > job recreating the original DEM?
+> > > >
+> > > > r.resamp.rst
+> > > >
+> > > >
+> > > >
+> > > > Hamish
+> > > >
+> > > > _______________________________________________
+> > > > statsgrass mailing list
+> > > > statsgrass@grass.itc.it
+> > > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > >
+> > >
+> >
+> > --
+> > Roger Bivand
+> > Economic Geography Section, Department of Economics, Norwegian School of
+> > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > e-mail: Roger.Bivand@nhh.no
+> >
+> >
+> 
+> 
+> --
+> +-----------------------------------------------------------+
+>               Carlos Henrique Grohmann - Guano
+>   Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+> Linux User #89721  - carlos dot grohmann at gmail dot com
+> +-----------------------------------------------------------+
+> _________________
+> "Good morning, doctors. I have taken the liberty of removing Windows
+> 95 from my hard drive."
+> --The winning entry in a "What were HAL's first words" contest judged
+> by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From Roger.Bivand at nhh.no  Thu Mar 23 02:55:25 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Re: [GRASS5] r.moran
+In-Reply-To: <Pine.LNX.4.64.0603230100250.21528@localhost.localdomain>
+Message-ID: <Pine.LNX.4.44.0603230807100.13241-100000@reclus.nhh.no>
+
+On Thu, 23 Mar 2006, Wolf Bergenheim wrote:
+
+> On Wed, 22 Mar 2006, Roger Bivand wrote:
+> 
+> > On Wed, 22 Mar 2006, Wolf Bergenheim wrote:
+> >
+> >> On Wed, 22 Mar 2006, Roger Bivand wrote:
+> >>
+> > Fine. Can I suggest that you make a personal directory for the additional
+> > contributed packages, then you don't need to change who you are too often?
+> > In my .bashrc I have:
+> >
+> > R_LIBS="$HOME/lib/R" ; export R_LIBS
+> 
+> good idea. (: done.
+> 
+> > which R picks up, and uses in addition to the system-wide library. Did you
+> > install R from source, or otherwise? Source is nice, because then you know
+> 
+> Just plain debian binary packages.
+> 
+> > that it figures out your machine and gets dependencies right straight
+> > away, but the debian binary builders are very good too.
+> >
+> > Under Linux (and other platforms), the easiest way to install contributed
+> > packages is from the R prompt, as you've seen. Some packages depend on
+> > other R packages, but some have external dependencies, which also need
+> > meeting.
+> 
+> This is absolutely the coolest plugin system I have ever seen! It simply 
+> rocks!
+> 
+> >
+> > You'll need the spdep package and all its dependencies, so:
+> >
+> > install.packages("spdep", depencencies=TRUE)
+> 
+> for future reference there is a typo in that. it should naturally be
+> install.packages("spdep", dependencies=TRUE)
+>                                 ^
+>                                 +-- notice this 'd'
+> 
+> > does that, and the packages end up in your own library.
+> >
+> > The easiest way for now to import the shapefile is to do v.out.ogr from
+> > GRASS, and
+> 
+> Ok.
+> 
+> >
+> > library(maptools)
+> > my_shape <- readShapePoly("my_shape.shp")
+> > plot(my_shape)
+> > names(my_shape)
+> >
+> > maybe
+> >
+> > summary(my_shape)
+> 
+> 
+> >
+> > If you are running R within GRASS (start R from the GRASS shell prompt),
+> > you can give my_shape its coordinate reference system by:
+> >
+> > library(spgrass6)
+> > meta <- gmeta6()
+> > proj4string(my_shape) <- CRS(meta$proj4)
+> >
+> 
+> I didn't do this, I'll see if I need it later..
+> 
+> > in case that is needed.
+> >
+> > Being brave:
+> >
+> > library(classInt)
+> 
+> I had to install classInp package, no biggie (:
+> 
+> > var_class_intervals <- classIntervals(my_shape$variable_of_interest,
+> >  style="fisher")
+> > cols <- findColours(var_class_intervals, pal=c("blue", "red"))
+> 
+> so far so good.
+> 
+> > plot(my_shape, cols)
+> 
+> my grass wanted this to be
+> 
+> plot(my_shape, col=cols)
+> 
+> >
+> > and hope the plot shows the data in similar places to the PNGs.
+> >
+> 
+> It does!
+> 
+> > Shall we try to get that far first - I'm not too sure how many polygons
+> > there are, but there seem to be a fair number?
+> 
+> reading them took a while, but other then that R seems to be able to 
+> handle this just fine.
+
+Yes, each polygon - and here there are quite a few - gets checked fairly 
+thoroughly, though not as thoroughly or topologically as v.clean, gets a 
+centroid, an area, and a plot order to try to stop included small polygons 
+being overpainted by large including ones. It could be faster, but once 
+it's done, the object is there, and can be save()ed out as a 
+SpatialPolygonsDataFrame object.
+
+> 
+> >
+> > The next bits are simple:
+> >
+> > my_nb <- poly2nb(my_shape)
+> 
+> R says: Error: couldn't find function "poly2nb"
+> 
+> perhaps something is missing?
+> 
+> Ahh... I found it. help.search("poly2nb") talks about spdep.
+> so I had to:
+> 
+> library(spdep)
+
+No, I didn't do that on purpose just to see how you did! Very typically 
+users and developers work in an edit/run/edit/run/... mode, I tend to use 
+Vim to edit and source() to run (or copy&paste), very many power users use 
+Emacs Speaks Statistics which has a run buffer, and the same facilities 
+are available in RWinEdt and other editors. So a lot of things get 
+forgotten first time through ...
+
+> 
+> This is simply just great. I really wish I'd have had more time to study 
+> R. I guess now is as good a time as any.
+
+Being driven by pressing need is always good motivation, IMHO!
+
+> 
+> >
+> > maybe setting queen=FALSE to only choose neighbours sharing more than
+> > just
+> > a corner point.
+> 
+> Hmm it complains that my_shape isn't a polygon list... ):
+> What is the correct spell?
+
+Another slip on my part - I should have cast to a SpatialPolygons object:
+
+my_nb <- poly2nb(as(my_shape, "SpatialPolygons"))
+
+which will also run for a fair while.
+
+> 
+> >
+> > print(my_nb)
+> > plot(my_nb, coordinates(my_shape))
+> >
+> > display the neighbours.
+> >
+> > From there it is just
+> >
+> > moran.test(my_shape$variable_of_interest, listw=nb2listw(my_nb, style="W",
+> > zero.policy=TRUE), zero.policy=TRUE)
+> >
+> > roughly, depending on whether you have cells that have zero neighbours.
+> > But we can get back to this once the shapefile is on board.
+> 
+> OK. Now I have the shapefile locked and loaded, now to just pull the 
+> moran numbers out of it (: and I will be solid.
+> 
+
+moran.test() returns an object of class "htest", which has a print method. 
+So what you see is the output of that. How do you need the output? The
+
+res <- moran.test(my_shape$variable_of_interest, listw=nb2listw(my_nb, 
+  style="W", zero.policy=TRUE), zero.policy=TRUE)
+res # just to have a look
+sink("tmp/output_file.txt")
+res
+sink()
+
+makes a text file copy. You can get it as HTML formatted too:
+
+library(R2HTML)
+dir.create("tmp/morantest")
+HTMLStart("tmp/morantest")
+HTML(res)
+HTMLStop()
+
+but you'll need to edit it a bit afterwards (or copy & paste from a 
+browser to say oowriter). There is pretty good LaTeX support too, as 
+you'd expect with statisticians.
+
+By the way, if names(my_shape) says for example:
+
+"children", "totalPop"
+
+and you want the percentage,
+
+my_shape$percent_children <- (100*my_shape$children)/my_shape$totalPop
+
+does the stuff.
+
+Or if you want the local Moran's I in the same object, do str() on the
+output object of localmoran() (a matrix, nb. different access syntax than
+data frames) to work our which column you want - probably Z.Ii, put it in
+my_shape, and do:
+
+writePolyShape(my_shape, "new_my_shape")
+
+to write out to a new shapefile. At this point simple working out the 
+appropriate row ID and writing out using functions in the RSQLite package 
+might be the most natural for you? 
+
+One of the ideas Markus and Helena mention in their book is writing small 
+shell scripts from GRASS passing some values to R through environmental 
+variables to be used in an R script with the R interface hidden from the 
+user, because R can be run with a script from the command line. 
+
+So "get the local moran values for my polygons" could be run from the
+GRASS prompt if enough of the options and other user decisions can be
+handled sensibly. R can write to DBF too, and most external databases, but
+the very range of choices makes writing a robust script hard. In the 
+polygon contiguity neighbour definition, we can actually pass out a 
+neighbour structure directly from GRASS, and R can read the GRASS 
+attribute databases directly, so it could be made quite "tight".
+
+Just thinking aloud ...
+
+Roger
+
+
+> The ever grateful
+> Wolf
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From uleopold at science.uva.nl  Thu Mar 23 04:58:02 2006
+From: uleopold at science.uva.nl (Ulrich Leopold)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] spgrass6 rastget6 bug??
+Message-ID: <40061.158.64.4.14.1143107882.squirrel@webmail.science.uva.nl>
+
+Dear list,
+
+I am trying to automate some statistics with the help of the latest version of
+spgrass6 and rastget6. The problem I encounter is that when I load maps from
+within GRASS-6.0.1 with
+
+alzette <- rast.get6(c("surface_alzette_sealed", "precip_obkp"), cat=c(TRUE,
+FALSE))
+
+it shows a progress which only counts to 96%. Then this number blocks the next
+command in a script. The only way to get around it is to press return on the
+command line which I cannot do in the script.
+
+Is this a bug. And if yes. Do you know any work arounds?
+
+Any help appreciated.
+
+Cheers, Ulrich
+
+
+From Roger.Bivand at nhh.no  Thu Mar 23 06:41:17 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: SV: [STATSGRASS] spgrass6 rastget6 bug??
+Message-ID: <6B6649B7F4ECA549A0332CEC519751F30C8F14@TOLAR.valuta.nhh.no>
+
+Please try the command by hand within R with debug(rast.get6). When rast.get6() calls other interface functions, please enter debug(that_function) to follow the trail all the way back to the command that is giving the progress report. If the annoying progress percentages are on stderr, probably they can be caught somewhere, but first we need to see where they are coming from and stop them.
+
+---
+Roger Bivand, NHH, Helleveien 30, N-5045 Bergen,
+Roger.Bivand@nhh.no
+
+
+
+-----Opprinnelig melding-----
+Fra: statsgrass-admin@grass.itc.it p? vegne av Ulrich Leopold
+Sendt: to 23.03.2006 10:58
+Til: statsgrass@grass.itc.it
+Emne: [STATSGRASS] spgrass6 rastget6 bug??
+ 
+Dear list,
+
+I am trying to automate some statistics with the help of the latest version of
+spgrass6 and rastget6. The problem I encounter is that when I load maps from
+within GRASS-6.0.1 with
+
+alzette <- rast.get6(c("surface_alzette_sealed", "precip_obkp"), cat=c(TRUE,
+FALSE))
+
+it shows a progress which only counts to 96%. Then this number blocks the next
+command in a script. The only way to get around it is to press return on the
+command line which I cannot do in the script.
+
+Is this a bug. And if yes. Do you know any work arounds?
+
+Any help appreciated.
+
+Cheers, Ulrich
+
+_______________________________________________
+statsgrass mailing list
+statsgrass@grass.itc.it
+http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20060323/eb95a97e/attachment.html
+From uleopold at science.uva.nl  Thu Mar 23 09:17:45 2006
+From: uleopold at science.uva.nl (Ulrich Leopold)
+Date: Wed Nov 14 16:58:14 2007
+Subject: SV: [STATSGRASS] spgrass6 rastget6 bug??
+In-Reply-To: <6B6649B7F4ECA549A0332CEC519751F30C8F14@TOLAR.valuta.nhh.no>
+References: <6B6649B7F4ECA549A0332CEC519751F30C8F14@TOLAR.valuta.nhh.no>
+Message-ID: <38512.158.64.4.14.1143123465.squirrel@webmail.science.uva.nl>
+
+> Please try the command by hand within R with debug(rast.get6). When
+> rast.get6() calls other interface functions, please enter debug(that_function)
+> to follow the trail all the way back to the command that is giving the
+> progress report. If the annoying progress percentages are on stderr, probably
+> they can be caught somewhere, but first we need to see where they are coming
+> from and stop them.
+
+Roger, I used
+
+debug(rast.get6(c("surface_alzette_sealed", "precip_obkp"), cat=c(TRUE,FALSE)))
+
+but it did not stop anywhere and produced a large entry in the RAM (1.5GB).
+But I was watching the processes and it came to my mind that r.out.arc could
+cause teh problem. So I checked on the GRASS commandline to be sure and it
+indeed gives the progress percentage.
+
+So I used the following command to stop GRASS writing a message to stderr:
+
+r.out.arc input=map output=map.txt 2>/dev/null
+
+This command "r.out.arc" is used by readFLOAT6sp in rast.get6 on line 11 (here
+line 12). But where can I built in now "2>/dev/null" there and write the new
+function?
+
+readFLOAT6sp
+function (vname)
+{
+    pid <- as.integer(round(runif(1, 1, 1000)))
+    p4 <- CRS(getLocationProj())
+    for (i in seq(along = vname)) {
+        gtmpfl1 <- system(paste("g.tempfile pid=", pid, sep = ""),
+            intern = TRUE)
+        rtmpfl1 <- ifelse(.Platform$OS.type == "windows",
+system(paste("cygpath -w",
+            gtmpfl1, sep = " "), intern = TRUE), gtmpfl1)
+        system(paste("r.out.arc input=", vname[i], " output=",
+            gtmpfl1, sep = ""))
+        res <- readAsciiGrid(rtmpfl1, colname = vname[i], proj4string = p4)
+        to_int <- length(which(unlist(strsplit(system(paste("r.info -t",
+            vname[i]), intern = TRUE), "=")) == "CELL")) > 0
+        if (to_int)
+            res@data[[1]] <- as.integer(res@data[[1]])
+        unlink(rtmpfl1)
+        if (i == 1)
+            resa <- res
+        else {
+            grida <- getGridTopology(resa)
+            grid <- getGridTopology(res)
+            if (!isTRUE(all.equal(grida, grid)))
+                stop("topology is not equal")
+            onames <- c(names(resa@data), names(res@data))
+            ncols <- dim(resa@data)[2]
+            lst <- vector(mode = "list", length = ncols + 1)
+            names(lst) <- onames
+            for (i in 1:ncols) lst[[i]] <- resa@data[[i]]
+            lst[[ncols + 1]] <- res@data[[1]]
+            resa <- SpatialGridDataFrame(grid = grida, data = AttributeList(lst),
+                proj4string = p4)
+        }
+    }
+    resa
+}
+
+
+
+
+
+> ---
+> Roger Bivand, NHH, Helleveien 30, N-5045 Bergen,
+> Roger.Bivand@nhh.no
+>
+>
+>
+> -----Opprinnelig melding-----
+> Fra: statsgrass-admin@grass.itc.it p? vegne av Ulrich Leopold
+> Sendt: to 23.03.2006 10:58
+> Til: statsgrass@grass.itc.it
+> Emne: [STATSGRASS] spgrass6 rastget6 bug??
+>
+> Dear list,
+>
+> I am trying to automate some statistics with the help of the latest version of
+> spgrass6 and rastget6. The problem I encounter is that when I load maps from
+> within GRASS-6.0.1 with
+>
+> alzette <- rast.get6(c("surface_alzette_sealed", "precip_obkp"), cat=c(TRUE,
+> FALSE))
+>
+> it shows a progress which only counts to 96%. Then this number blocks the next
+> command in a script. The only way to get around it is to press return on the
+> command line which I cannot do in the script.
+>
+> Is this a bug. And if yes. Do you know any work arounds?
+>
+> Any help appreciated.
+>
+> Cheers, Ulrich
+
+
+
+From Roger.Bivand at nhh.no  Thu Mar 23 11:17:02 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: SV: SV: [STATSGRASS] spgrass6 rastget6 bug??
+Message-ID: <6B6649B7F4ECA549A0332CEC519751F30C8F16@TOLAR.valuta.nhh.no>
+
+If you can download the source package and edit that line in the only file in the R directory, then do R CMD INSTALL spgrass6, you'll get a version with your change which will stay around between R sessions. An even faster way is to say fix(readFLOAT6sp), you can edit it for that session (and maybe save it with 
+sink("new_version.R") etc.
+
+I'll change the function in the package when I have access to the codebase.
+
+Roger
+
+
+---
+Roger Bivand, NHH, Helleveien 30, N-5045 Bergen,
+Roger.Bivand@nhh.no
+
+
+
+-----Opprinnelig melding-----
+Fra: Ulrich Leopold [mailto:uleopold@science.uva.nl]
+Sendt: to 23.03.2006 15:17
+Til: Roger Bivand
+Kopi: uleopold@science.uva.nl; statsgrass@grass.itc.it
+Emne: Re: SV: [STATSGRASS] spgrass6 rastget6 bug??
+ 
+> Please try the command by hand within R with debug(rast.get6). When
+> rast.get6() calls other interface functions, please enter debug(that_function)
+> to follow the trail all the way back to the command that is giving the
+> progress report. If the annoying progress percentages are on stderr, probably
+> they can be caught somewhere, but first we need to see where they are coming
+> from and stop them.
+
+Roger, I used
+
+debug(rast.get6(c("surface_alzette_sealed", "precip_obkp"), cat=c(TRUE,FALSE)))
+
+but it did not stop anywhere and produced a large entry in the RAM (1.5GB).
+But I was watching the processes and it came to my mind that r.out.arc could
+cause teh problem. So I checked on the GRASS commandline to be sure and it
+indeed gives the progress percentage.
+
+So I used the following command to stop GRASS writing a message to stderr:
+
+r.out.arc input=map output=map.txt 2>/dev/null
+
+This command "r.out.arc" is used by readFLOAT6sp in rast.get6 on line 11 (here
+line 12). But where can I built in now "2>/dev/null" there and write the new
+function?
+
+readFLOAT6sp
+function (vname)
+{
+    pid <- as.integer(round(runif(1, 1, 1000)))
+    p4 <- CRS(getLocationProj())
+    for (i in seq(along = vname)) {
+        gtmpfl1 <- system(paste("g.tempfile pid=", pid, sep = ""),
+            intern = TRUE)
+        rtmpfl1 <- ifelse(.Platform$OS.type == "windows",
+system(paste("cygpath -w",
+            gtmpfl1, sep = " "), intern = TRUE), gtmpfl1)
+        system(paste("r.out.arc input=", vname[i], " output=",
+            gtmpfl1, sep = ""))
+        res <- readAsciiGrid(rtmpfl1, colname = vname[i], proj4string = p4)
+        to_int <- length(which(unlist(strsplit(system(paste("r.info -t",
+            vname[i]), intern = TRUE), "=")) == "CELL")) > 0
+        if (to_int)
+            res@data[[1]] <- as.integer(res@data[[1]])
+        unlink(rtmpfl1)
+        if (i == 1)
+            resa <- res
+        else {
+            grida <- getGridTopology(resa)
+            grid <- getGridTopology(res)
+            if (!isTRUE(all.equal(grida, grid)))
+                stop("topology is not equal")
+            onames <- c(names(resa@data), names(res@data))
+            ncols <- dim(resa@data)[2]
+            lst <- vector(mode = "list", length = ncols + 1)
+            names(lst) <- onames
+            for (i in 1:ncols) lst[[i]] <- resa@data[[i]]
+            lst[[ncols + 1]] <- res@data[[1]]
+            resa <- SpatialGridDataFrame(grid = grida, data = AttributeList(lst),
+                proj4string = p4)
+        }
+    }
+    resa
+}
+
+
+
+
+
+> ---
+> Roger Bivand, NHH, Helleveien 30, N-5045 Bergen,
+> Roger.Bivand@nhh.no
+>
+>
+>
+> -----Opprinnelig melding-----
+> Fra: statsgrass-admin@grass.itc.it p? vegne av Ulrich Leopold
+> Sendt: to 23.03.2006 10:58
+> Til: statsgrass@grass.itc.it
+> Emne: [STATSGRASS] spgrass6 rastget6 bug??
+>
+> Dear list,
+>
+> I am trying to automate some statistics with the help of the latest version of
+> spgrass6 and rastget6. The problem I encounter is that when I load maps from
+> within GRASS-6.0.1 with
+>
+> alzette <- rast.get6(c("surface_alzette_sealed", "precip_obkp"), cat=c(TRUE,
+> FALSE))
+>
+> it shows a progress which only counts to 96%. Then this number blocks the next
+> command in a script. The only way to get around it is to press return on the
+> command line which I cannot do in the script.
+>
+> Is this a bug. And if yes. Do you know any work arounds?
+>
+> Any help appreciated.
+>
+> Cheers, Ulrich
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20060323/b4ff1944/attachment.html
+From Roger.Bivand at nhh.no  Fri Mar 24 02:33:11 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: SV: [STATSGRASS] spgrass6 rastget6 bug??
+In-Reply-To: <38512.158.64.4.14.1143123465.squirrel@webmail.science.uva.nl>
+Message-ID: <Pine.LNX.4.44.0603240827370.14025-101000@reclus.nhh.no>
+
+On Thu, 23 Mar 2006, Ulrich Leopold wrote:
+
+Ulrich:
+
+Assuming you are not running under cygwin, please install the attached 
+draft release. All the functions calling system() now have an 
+ignore.stderr= function (default FALSE) which can be set TRUE, so:
+
+rast.get6(c("surface_alzette_sealed", "precip_obkp"), cat=c(TRUE,FALSE),
+  ignore.stderr=TRUE)
+
+should work and be more platform-independent that using /dev/null 
+(/dev/null is C:\ on Windows??)
+
+The arguments are not documented yet, that'll come later. I'm afraid that 
+you may also need to install the rgdal package, because your request 
+caught me during other revision work that is not yet complete.
+
+Please report back whether this solves your problem.
+
+Roger
+
+> > Please try the command by hand within R with debug(rast.get6). When
+> > rast.get6() calls other interface functions, please enter debug(that_function)
+> > to follow the trail all the way back to the command that is giving the
+> > progress report. If the annoying progress percentages are on stderr, probably
+> > they can be caught somewhere, but first we need to see where they are coming
+> > from and stop them.
+> 
+> Roger, I used
+> 
+> debug(rast.get6(c("surface_alzette_sealed", "precip_obkp"), cat=c(TRUE,FALSE)))
+> 
+> but it did not stop anywhere and produced a large entry in the RAM (1.5GB).
+> But I was watching the processes and it came to my mind that r.out.arc could
+> cause teh problem. So I checked on the GRASS commandline to be sure and it
+> indeed gives the progress percentage.
+> 
+> So I used the following command to stop GRASS writing a message to stderr:
+> 
+> r.out.arc input=map output=map.txt 2>/dev/null
+> 
+> This command "r.out.arc" is used by readFLOAT6sp in rast.get6 on line 11 (here
+> line 12). But where can I built in now "2>/dev/null" there and write the new
+> function?
+> 
+> readFLOAT6sp
+> function (vname)
+> {
+>     pid <- as.integer(round(runif(1, 1, 1000)))
+>     p4 <- CRS(getLocationProj())
+>     for (i in seq(along = vname)) {
+>         gtmpfl1 <- system(paste("g.tempfile pid=", pid, sep = ""),
+>             intern = TRUE)
+>         rtmpfl1 <- ifelse(.Platform$OS.type == "windows",
+> system(paste("cygpath -w",
+>             gtmpfl1, sep = " "), intern = TRUE), gtmpfl1)
+>         system(paste("r.out.arc input=", vname[i], " output=",
+>             gtmpfl1, sep = ""))
+>         res <- readAsciiGrid(rtmpfl1, colname = vname[i], proj4string = p4)
+>         to_int <- length(which(unlist(strsplit(system(paste("r.info -t",
+>             vname[i]), intern = TRUE), "=")) == "CELL")) > 0
+>         if (to_int)
+>             res@data[[1]] <- as.integer(res@data[[1]])
+>         unlink(rtmpfl1)
+>         if (i == 1)
+>             resa <- res
+>         else {
+>             grida <- getGridTopology(resa)
+>             grid <- getGridTopology(res)
+>             if (!isTRUE(all.equal(grida, grid)))
+>                 stop("topology is not equal")
+>             onames <- c(names(resa@data), names(res@data))
+>             ncols <- dim(resa@data)[2]
+>             lst <- vector(mode = "list", length = ncols + 1)
+>             names(lst) <- onames
+>             for (i in 1:ncols) lst[[i]] <- resa@data[[i]]
+>             lst[[ncols + 1]] <- res@data[[1]]
+>             resa <- SpatialGridDataFrame(grid = grida, data = AttributeList(lst),
+>                 proj4string = p4)
+>         }
+>     }
+>     resa
+> }
+> 
+> 
+> 
+> 
+> 
+> > ---
+> > Roger Bivand, NHH, Helleveien 30, N-5045 Bergen,
+> > Roger.Bivand@nhh.no
+> >
+> >
+> >
+> > -----Opprinnelig melding-----
+> > Fra: statsgrass-admin@grass.itc.it p? vegne av Ulrich Leopold
+> > Sendt: to 23.03.2006 10:58
+> > Til: statsgrass@grass.itc.it
+> > Emne: [STATSGRASS] spgrass6 rastget6 bug??
+> >
+> > Dear list,
+> >
+> > I am trying to automate some statistics with the help of the latest version of
+> > spgrass6 and rastget6. The problem I encounter is that when I load maps from
+> > within GRASS-6.0.1 with
+> >
+> > alzette <- rast.get6(c("surface_alzette_sealed", "precip_obkp"), cat=c(TRUE,
+> > FALSE))
+> >
+> > it shows a progress which only counts to 96%. Then this number blocks the next
+> > command in a script. The only way to get around it is to press return on the
+> > command line which I cannot do in the script.
+> >
+> > Is this a bug. And if yes. Do you know any work arounds?
+> >
+> > Any help appreciated.
+> >
+> > Cheers, Ulrich
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: spgrass6_0.2-2.tar.gz
+Type: application/x-gzip
+Size: 3955 bytes
+Desc: 
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20060324/1ad12d9e/spgrass6_0.2-2.tar.gz
+From Roger.Bivand at nhh.no  Fri Mar 24 12:41:46 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Re: [GRASS5] r.moran
+In-Reply-To: <Pine.LNX.4.64.0603240811350.21528@localhost.localdomain>
+Message-ID: <Pine.LNX.4.44.0603241827280.14168-100000@reclus.nhh.no>
+
+On Fri, 24 Mar 2006, Wolf Bergenheim wrote:
+
+> On Thu, 23 Mar 2006, Roger Bivand wrote:
+> 
+> >>
+> >>>
+> >>> The next bits are simple:
+> >>>
+> >>> my_nb <- poly2nb(my_shape)
+> >>
+> >> R says: Error: couldn't find function "poly2nb"
+> >>
+> >> perhaps something is missing?
+> >>
+> >> Ahh... I found it. help.search("poly2nb") talks about spdep.
+> >> so I had to:
+> >>
+> >> library(spdep)
+> >
+> > No, I didn't do that on purpose just to see how you did! Very typically
+> > users and developers work in an edit/run/edit/run/... mode, I tend to use
+> > Vim to edit and source() to run (or copy&paste), very many power users use
+> > Emacs Speaks Statistics which has a run buffer, and the same facilities
+> > are available in RWinEdt and other editors. So a lot of things get
+> > forgotten first time through ...
+> >
+> >>
+> >> This is simply just great. I really wish I'd have had more time to study
+> >> R. I guess now is as good a time as any.
+> >
+> > Being driven by pressing need is always good motivation, IMHO!
+> >
+> 
+> (: Hmm is there any way to zoom in on the plot?
+
+Use plot() again with the same arguments but add xlim= and ylim=, there is 
+no interactive zoom on the standard output devices. You can grab the 
+coordinates with locator().
+
+> 
+> >>
+> >>>
+> >>> maybe setting queen=FALSE to only choose neighbours sharing more than
+> >>> just
+> >>> a corner point.
+> >>
+> >> Hmm it complains that my_shape isn't a polygon list... ):
+> >> What is the correct spell?
+> >
+> > Another slip on my part - I should have cast to a SpatialPolygons object:
+> >
+> > my_nb <- poly2nb(as(my_shape, "SpatialPolygons"))
+> >
+> > which will also run for a fair while.
+> 
+> Ah. ok, now it does indeed run!
+> 
+> >
+> >>
+> >>>
+> >>> print(my_nb)
+> >>> plot(my_nb, coordinates(my_shape))
+> >>>
+> >>> display the neighbours.
+> >>>
+> >>> From there it is just
+> >>>
+> >>> moran.test(my_shape$variable_of_interest, listw=nb2listw(my_nb, style="W",
+> >>> zero.policy=TRUE), zero.policy=TRUE)
+> >>>
+> >>> roughly, depending on whether you have cells that have zero neighbours.
+> >>> But we can get back to this once the shapefile is on board.
+> 
+> Yes indeed.  now I do get Moran's I and it looks just about right. I did 
+> the same analysis in ArcMap, and the results look similar. The I value 
+> differs a bit though... I wonder how critical this is.
+> 
+> In ArcMap I got Moran's I as 0.35 and with R I get 0.54. ArcMap gave a Z 
+> value of 217.3 and R gave 52.2.
+
+That is useful. I've got another conversation going off-list on the R side 
+about the Arc Moran's I, there are issues with how the spatial weights are 
+specified. We've managed to reproduce some values, but not all. It will be 
+documented on the R-sig-geo archive (which is searchable through 
+RSiteSearch() from the R prompt) before long, but if you could add your 
+case, that would help a lot. 
+
+What we need is the R commands used to create the weights plus the results
+of running moran.test() on the data, and the equivalent (copy&paste from
+the ArcGIS Python results popup window (the one with the progress bar at
+the top with a good deal of meaningless text and number that are not
+properly rounded)).
+
+So far we know that for a points shapefile, the default in ArcGIS is to
+join all points to all and use inverse distance, not standardising the
+weights. Also the flat distance threshold can be reproduced. We haven't
+tried a polygon layer yet.
+
+
+If you could contribute matched argument sets with the same output, that 
+would be great, but any documentation of what is going on will be 
+valuable, either to show that spdep/GeoDa and ArcGIS give the same results 
+or otherwise.
+
+Thanks for your patience!
+
+Roger
+
+> 
+> >>
+> >> OK. Now I have the shapefile locked and loaded, now to just pull the
+> >> moran numbers out of it (: and I will be solid.
+> >>
+> >
+> > moran.test() returns an object of class "htest", which has a print method.
+> > So what you see is the output of that. How do you need the output? The
+> >
+> > res <- moran.test(my_shape$variable_of_interest, listw=nb2listw(my_nb,
+> >  style="W", zero.policy=TRUE), zero.policy=TRUE)
+> > res # just to have a look
+> > sink("tmp/output_file.txt")
+> > res
+> > sink()
+> 
+> Nice!
+> 
+> >
+> > makes a text file copy. You can get it as HTML formatted too:
+> >
+> > library(R2HTML)
+> > dir.create("tmp/morantest")
+> > HTMLStart("tmp/morantest")
+> > HTML(res)
+> > HTMLStop()
+> >
+> 
+> cool!
+> 
+> > but you'll need to edit it a bit afterwards (or copy & paste from a
+> > browser to say oowriter). There is pretty good LaTeX support too, as
+> > you'd expect with statisticians.
+> >
+> 
+> That can come in handy as well.
+> 
+> > By the way, if names(my_shape) says for example:
+> >
+> > "children", "totalPop"
+> >
+> > and you want the percentage,
+> >
+> > my_shape$percent_children <- (100*my_shape$children)/my_shape$totalPop
+> >
+> > does the stuff.
+> 
+> Good to know.
+> 
+> >
+> > Or if you want the local Moran's I in the same object, do str() on the
+> > output object of localmoran() (a matrix, nb. different access syntax than
+> > data frames) to work our which column you want - probably Z.Ii, put it in
+> > my_shape, and do:
+> >
+> > writePolyShape(my_shape, "new_my_shape")
+> >
+> > to write out to a new shapefile. At this point simple working out the
+> > appropriate row ID and writing out using functions in the RSQLite package
+> > might be the most natural for you?
+> >
+> 
+> I think I might go via the shape file. it seems more straight forward. (; 
+> but I'll definitely look into the RSQLite package.
+> 
+> > One of the ideas Markus and Helena mention in their book is writing small
+> > shell scripts from GRASS passing some values to R through environmental
+> > variables to be used in an R script with the R interface hidden from the
+> > user, because R can be run with a script from the command line.
+> >
+> 
+> Heh, I expected as much (;
+> 
+> > So "get the local moran values for my polygons" could be run from the
+> > GRASS prompt if enough of the options and other user decisions can be
+> > handled sensibly. R can write to DBF too, and most external databases, but
+> > the very range of choices makes writing a robust script hard. In the
+> > polygon contiguity neighbour definition, we can actually pass out a
+> > neighbour structure directly from GRASS, and R can read the GRASS
+> > attribute databases directly, so it could be made quite "tight".
+> >
+> > Just thinking aloud ...
+> 
+> Hmm good ideas. (:
+> 
+> --Wolf
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From massimodisasha at yahoo.it  Sat Mar 25 08:56:59 2006
+From: massimodisasha at yahoo.it (epi fanio)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] gstat on mac osx with grass
+Message-ID: <2A1A16A0-F3D4-4FB3-B4CE-C5EE229324FB@yahoo.it>
+
+hi !!!
+i'm new to this list,
+
+i've a problem with gstat :
+
+i'm on a mac osx 10.4.5
+
+i've download a source code of gstat-2.4.0 from here :
+
+    http://www.gstat.org/download.html
+
+i've unzipped the file on my desktop
+
+then  in my  shell (bash)   :
+
+
+   >>>>>>>      cd /Users/epi/Desktop/gstat-2.4.0/
+
+
+and :
+
+   >>>>>>>     ./configure --with-grass6=/usr/local/grasslib/
+
+the result is :
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+<<<<<<<<<<<<
+loading cache ./config.cache
+checking for gcc... (cached) gcc
+checking whether the C compiler (gcc  ) works... yes
+checking whether the C compiler (gcc  ) is a cross-compiler... no
+checking whether we are using GNU C... (cached) yes
+checking whether gcc accepts -g... (cached) yes
+checking for ranlib... (cached) ranlib
+checking for a BSD compatible install... (cached) /usr/bin/install -c
+checking how to run the C preprocessor... (cached) gcc -E
+checking for ANSI C header files... (cached) yes
+checking for gcc option to accept ANSI C... (cached)
+checking for function prototypes... yes
+checking for working const... (cached) yes
+checking for MS-DOS/djgpp... (cached) no
+checking for flex... (cached) flex
+checking for yywrap in -lfl... (cached) yes
+checking for bison... (cached) bison -y
+checking for stat.h... (cached) no
+checking for unistd.h... (cached) yes
+checking for getopt.h... (cached) yes
+checking whether time.h and sys/time.h may both be included...  
+(cached) yes
+checking for 8-bit clean memcmp... (cached) yes
+checking for vprintf... (cached) yes
+checking for strstr... (cached) yes
+checking for strtod... (cached) yes
+checking for strtol... (cached) yes
+checking for popen... (cached) yes
+checking for drand48... (cached) yes
+checking for gettimeofday... (cached) yes
+checking for getopt... (cached) yes
+checking whether byte ordering is bigendian... (cached) yes
+checking for main in -lncurses... (cached) yes
+checking for gdImagePng in -lgd... (cached) no
+checking for gdImageGif in -lgd... (cached) no
+checking for main in -lnetcdf... (cached) no
+checking for QRfactor in -lmeschach... (cached) no
+checking for G_gisinit in -lgis... (cached) no
+checking for main in -lgsl... (cached) no
+creating ./config.status
+creating makefile
+creating src/makefile
+creating libcsf/src/makefile
+creating doc/tex/makefile
+creating src/config.h
+src/config.h is unchanged
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
+ >>>>>>>>>>>>>
+
+but when i try to make :
+
+
+  >>>>>>   make
+
+i've this error :
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+<<<<<<<<<<<<
+(cd libcsf/src; make)
+gcc -c -O -I../include -DHAVE_CONFIG_H  _getcell.c
+In file included from ../include/csf.h:13,
+                  from _getcell.c:9:
+../include/csftypes.h:161:4: error: #error BYTE ORDER NOT SPECIFIED  
+(CPU_LITTLE_ENDIAN or CPU_BIG_ENDIAN)
+make[1]: *** [_getcell.o] Error 1
+make: *** [libcsf/src/libcsf.a] Error 2
+powerbook-g4-12-di-epifanio:~/Desktop/gstat-2.4.0 epi$
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
+ >>>>>>>>>>>>>
+
+
+if i try without    <----with-grass6=/usr/local/grasslib/>
+in the ./ command, i've the same error!
+how can i do?
+can you help me ?
+
+thanks to oll  !!!
+
+Massimo.
+
+
+From Thomas.Adams at noaa.gov  Sat Mar 25 09:48:17 2006
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] gstat on mac osx with grass
+In-Reply-To: <2A1A16A0-F3D4-4FB3-B4CE-C5EE229324FB@yahoo.it>
+References: <2A1A16A0-F3D4-4FB3-B4CE-C5EE229324FB@yahoo.it>
+Message-ID: <44255831.40709@noaa.gov>
+
+Epi,
+
+I'm guessing here that you are using the latest Apple Development tools 
+that can compile either for the Intel or PowerPC based Macs; the Byte 
+ordering is different, so you may need to set a compiler flag to let 
+GSTAT know which platform you have. I have built GSTAT on a PowerPC 
+based Mac with Mac OS X 10.4.5 without problems, but I used the 
+development tools that came with 10.4.
+
+I hope this helps some...
+
+Regards,
+Tom
+
+
+epi fanio wrote:
+> hi !!!
+> i'm new to this list,
+>
+> i've a problem with gstat :
+>
+> i'm on a mac osx 10.4.5
+>
+> i've download a source code of gstat-2.4.0 from here :
+>
+>    http://www.gstat.org/download.html
+>
+> i've unzipped the file on my desktop
+>
+> then  in my  shell (bash)   :
+>
+>
+>   >>>>>>>      cd /Users/epi/Desktop/gstat-2.4.0/
+>
+>
+> and :
+>
+>   >>>>>>>     ./configure --with-grass6=/usr/local/grasslib/
+>
+> the result is :
+> <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+>
+> loading cache ./config.cache
+> checking for gcc... (cached) gcc
+> checking whether the C compiler (gcc  ) works... yes
+> checking whether the C compiler (gcc  ) is a cross-compiler... no
+> checking whether we are using GNU C... (cached) yes
+> checking whether gcc accepts -g... (cached) yes
+> checking for ranlib... (cached) ranlib
+> checking for a BSD compatible install... (cached) /usr/bin/install -c
+> checking how to run the C preprocessor... (cached) gcc -E
+> checking for ANSI C header files... (cached) yes
+> checking for gcc option to accept ANSI C... (cached)
+> checking for function prototypes... yes
+> checking for working const... (cached) yes
+> checking for MS-DOS/djgpp... (cached) no
+> checking for flex... (cached) flex
+> checking for yywrap in -lfl... (cached) yes
+> checking for bison... (cached) bison -y
+> checking for stat.h... (cached) no
+> checking for unistd.h... (cached) yes
+> checking for getopt.h... (cached) yes
+> checking whether time.h and sys/time.h may both be included... 
+> (cached) yes
+> checking for 8-bit clean memcmp... (cached) yes
+> checking for vprintf... (cached) yes
+> checking for strstr... (cached) yes
+> checking for strtod... (cached) yes
+> checking for strtol... (cached) yes
+> checking for popen... (cached) yes
+> checking for drand48... (cached) yes
+> checking for gettimeofday... (cached) yes
+> checking for getopt... (cached) yes
+> checking whether byte ordering is bigendian... (cached) yes
+> checking for main in -lncurses... (cached) yes
+> checking for gdImagePng in -lgd... (cached) no
+> checking for gdImageGif in -lgd... (cached) no
+> checking for main in -lnetcdf... (cached) no
+> checking for QRfactor in -lmeschach... (cached) no
+> checking for G_gisinit in -lgis... (cached) no
+> checking for main in -lgsl... (cached) no
+> creating ./config.status
+> creating makefile
+> creating src/makefile
+> creating libcsf/src/makefile
+> creating doc/tex/makefile
+> creating src/config.h
+> src/config.h is unchanged
+> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
+>
+>
+> but when i try to make :
+>
+>
+>  >>>>>>   make
+>
+> i've this error :
+>
+> <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+>
+> (cd libcsf/src; make)
+> gcc -c -O -I../include -DHAVE_CONFIG_H  _getcell.c
+> In file included from ../include/csf.h:13,
+>                  from _getcell.c:9:
+> ../include/csftypes.h:161:4: error: #error BYTE ORDER NOT SPECIFIED 
+> (CPU_LITTLE_ENDIAN or CPU_BIG_ENDIAN)
+> make[1]: *** [_getcell.o] Error 1
+> make: *** [libcsf/src/libcsf.a] Error 2
+> powerbook-g4-12-di-epifanio:~/Desktop/gstat-2.4.0 epi$
+> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
+>
+>
+>
+> if i try without    <----with-grass6=/usr/local/grasslib/>
+> in the ./ command, i've the same error!
+> how can i do?
+> can you help me ?
+>
+> thanks to oll  !!!
+>
+> Massimo.
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+
+From e.pebesma at geo.uu.nl  Mon Mar 27 03:18:05 2006
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] gstat on mac osx with grass
+In-Reply-To: <2A1A16A0-F3D4-4FB3-B4CE-C5EE229324FB@yahoo.it>
+References: <2A1A16A0-F3D4-4FB3-B4CE-C5EE229324FB@yahoo.it>
+Message-ID: <44279FBD.7080609@geo.uu.nl>
+
+epi fanio wrote:
+> hi !!! 
+....
+>  >>>>>>   make
+>
+> i've this error :
+>
+> <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+>
+> (cd libcsf/src; make)
+> gcc -c -O -I../include -DHAVE_CONFIG_H  _getcell.c
+> In file included from ../include/csf.h:13,
+>                  from _getcell.c:9:
+> ../include/csftypes.h:161:4: error: #error BYTE ORDER NOT SPECIFIED 
+> (CPU_LITTLE_ENDIAN or CPU_BIG_ENDIAN)
+> make[1]: *** [_getcell.o] Error 1
+> make: *** [libcsf/src/libcsf.a] Error 2
+> powerbook-g4-12-di-epifanio:~/Desktop/gstat-2.4.0 epi$
+> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
+>
+Massimo, is there a specific reason why you tried gstat 2.4.0 instead of the
+more recent 2.4.5? I'm asking this because in my working version all 
+files related
+to csf (PCRaster) have been removed; csf is picked up as a separate library
+when present, or picked up as part of (recent releases of) gdal.
+--
+Edzer
+
+
+From massimodisasha at yahoo.it  Mon Mar 27 04:09:25 2006
+From: massimodisasha at yahoo.it (epi fanio)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] gstat-grass on mac osx
+Message-ID: <B1573168-4F04-4575-8A51-0D3A0D9E86AA@yahoo.it>
+
+hi!
+i resolve the error :
+(cd libcsf/src; make)
+> gcc -c -O -I../include -DHAVE_CONFIG_H  _getcell.c
+> In file included from ../include/csf.h:13,
+>                  from _getcell.c:9:
+> ../include/csftypes.h:161:4: error: #error BYTE ORDER NOT SPECIFIED  
+> (CPU_LITTLE_ENDIAN or CPU_BIG_ENDIAN)
+> make[1]: *** [_getcell.o] Error 1
+> make: *** [libcsf/src/libcsf.a] Error 2
+> powerbook-g4-12-di-epifanio:~/Desktop/gstat-2.4.0 epi$
+
+now i' ve installed gstat 2.4.5 :
+
+---./configure --with-grass=/Applications/Grass/grass54.app/Contents/ 
+Resources/grass54/  --with-grass6=/Applications/grass/grass61cvs.app/ 
+Contents/Resources/grass-6.1.cvs/
+---make
+---sudo make install
+
+
+but:
+---gstat -v
+
+powerbook-g4-12-di-epifanio:~/Desktop/gstat-2.4.5 2 epi$ gstat -v
+compiled on:          Mar 26 2006
+with libraries:       gdal ncurses
+last modified on:     Fri Jun 17 13:58:48 CEST 2005
+gstat home page:      http://www.gstat.org/
+questions, bugs etc.  mailto:gstat-info@geog.uu.nl
+
+gstat: unknown version 2.4.5 (17 June 2005)
+Copyright (C) 1992, 2004 Edzer J. Pebesma
+Updates, manuals, sources: http://www.gstat.org/
+usage: gstat [options] [file [file ...]]
+gstat: no command file
+powerbook-g4-12-di-epifanio:~/Desktop/gstat-2.4.5 2 epi$
+
+i've used : (xcode2.2)
+
+my grass version is:
+
+grass-6.1.cvs.dmg
+with grasslib.pkj
+(downloaded at the grass site)
+
+at line 5 :   with libraries:       gdal ncurses
+there is gdal but not grass support ???
+
+thank you to oll.
+
+Massimo.
+
+
+
+From Roger.Bivand at nhh.no  Mon Mar 27 16:30:01 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Re: [GRASS5] r.moran
+In-Reply-To: <Pine.LNX.4.64.0603272051320.19783@localhost.localdomain>
+Message-ID: <Pine.LNX.4.44.0603272325210.12286-100000@reclus.nhh.no>
+
+On Mon, 27 Mar 2006, Wolf Bergenheim wrote:
+
+> On Fri, 24 Mar 2006, Roger Bivand wrote:
+> 
+> >> In ArcMap I got Moran's I as 0.35 and with R I get 0.54. ArcMap gave a Z
+> >> value of 217.3 and R gave 52.2.
+> >
+> > That is useful. I've got another conversation going off-list on the R side
+> > about the Arc Moran's I, there are issues with how the spatial weights are
+> > specified. We've managed to reproduce some values, but not all. It will be
+> > documented on the R-sig-geo archive (which is searchable through
+> > RSiteSearch() from the R prompt) before long, but if you could add your
+> > case, that would help a lot.
+> >
+> > What we need is the R commands used to create the weights plus the results
+> > of running moran.test() on the data, and the equivalent (copy&paste from
+> > the ArcGIS Python results popup window (the one with the progress bar at
+> > the top with a good deal of meaningless text and number that are not
+> > properly rounded)).
+> >
+> 
+> I'll do that when I'm at the GIS lab again. Tomorrow or next week.
+> 
+> > So far we know that for a points shapefile, the default in ArcGIS is to
+> > join all points to all and use inverse distance, not standardising the
+> > weights. Also the flat distance threshold can be reproduced. We haven't
+> > tried a polygon layer yet.
+> >
+> 
+> In ArcGIS I was able to choose the weight, and IIRC I used the inverse of 
+> the distance squared, but it is possible that I selected only inverse of 
+> the distance. I'll double check and get back to you on that.
+> 
+> >
+> > If you could contribute matched argument sets with the same output, that
+> > would be great, but any documentation of what is going on will be
+> > valuable, either to show that spdep/GeoDa and ArcGIS give the same results
+> > or otherwise.
+> >
+> 
+> Sure, but I think that I'm not allowed to share the data. I'll have to 
+> check that. Or better yet do you have some standard data (with areas) as a 
+> shapefile? I could run it in Arc, and give you back the results.
+
+Preliminary investigations of the Arc Moran's I indicates a question about 
+the estimated variance when row standardisation is chosen. I've put some 
+simulated point data on:
+
+http://spatial.nhh.no/R/etc/simdata.zip
+
+which would avoid opening closed data. Using inverse distance for polygon 
+data also strikes me as being unusual - most of the literature uses 
+contiguity. The zip archive includes results from GeoDa, R, Stata, and 
+ArcGIS, and all agree apart from row standardized ArcGIS.
+
+Roger
+
+> 
+> > Thanks for your patience!
+> 
+> No, thank *you* for your help!
+> 
+> --Wolf
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From sisma66 at tiscali.it  Fri Mar 31 06:10:09 2006
+From: sisma66 at tiscali.it (Pierluig De Rosa)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] 2 script to perform kriging interpolation (v.variogram and v.krige)
+Message-ID: <200603311310.09901.sisma66@tiscali.it>
+
+Dear all grass users,
+We have written to scripts to perform kriging surface interpolation.
+The first one v.variogram create an omnidirectional experimental variogram.
+The v.krige script perform a surface kriging interpolation using an 
+exponential variogram model. The model parameter (nugget, sill and range) are 
+desumend from experimental semi-variogram produced by v.variogram.
+If you wont to try, go to the wiki grass page:
+http://grass.gdf-hannover.de/twiki/bin/view/GRASS/GrassAddOns#Vector_add_ons 
+
+All two scripts needs R software to be installed on your machine.
+
+Thanks to all
+Pierluigi
+
+-- 
+
+Pierluigi De Rosa
+
+Department of Enviromental & Civil engineering 
+Faculty of Engineering 
+Perugia (Italy)
+
+

@@ -1,0 +1,1034 @@
+From sholl at gmx.net  Mon Sep 12 10:30:06 2005
+From: sholl at gmx.net (Stephan Holl)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] [ANNOUNCE]: English GDF Hannover GRASS GIS tutorial, Version 1.2
+ released
+Message-ID: <20050912163006.4f31a901@localhost>
+
+Dear FOSS GIS users,
+
+[sorry for crossposting]
+
+GDF Hannover is proud to present the English translation of the
+well-known German GRASS GIS Tutorial version 1.2.
+
+The book covers an introduction to the Free Geographic Information
+System GRASS 6.0. It extends the available literature about GRASS 6 
+by aspects of installation and practical usage and offers up to date
+material for the use of the latest GRASS developments at the time of
+writing.
+
+The document focuses on the new vector functionalities, network
+analysis, database management systems (DBMS) and the new graphical
+user interface (GUI). A section about the interaction with Quantum GIS
+as graphical user interface is also included.
+
+It is released under GNU/FDL and available from:
+
+	http://www.gdf-hannover.de/literature
+
+Best regards
+
+Your GDF Hannover
+
+-- 
+Stephan Holl
+
+Check headers for GnuPG Key!
+http://www.gdf-hannover.de
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 189 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20050912/6ce3f2f1/attachment.bin
+From bhudspeth at edac.unm.edu  Mon Sep 12 16:40:41 2005
+From: bhudspeth at edac.unm.edu (William Hudspeth)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Problems using rast.get() in a script
+Message-ID: <1126557641.5560.20.camel@localhost.localdomain>
+
+Hello, 
+
+I am using R 2.0.1, GRASS 5.3, and the GRASS R module 0.2-2 on a Linux
+machine running Fedora Core 3. 
+
+I am using the R GRASS module in a Python script to return basic
+statistics about the values in GRASS raster layers. A simple sequence of
+events in my code looks like this:
+
+1. Edit/change the region settings for a specific GRASS location using a
+Python-based system command.
+2. Create a temporary raster in GRASS with r.mapcalc.
+3. Run gmeta() to load the location metadata/region settings into a
+list.
+4. Run rast.get() to move the temporary GRASS raster into an R data
+structure.
+5. Perform basic statistics on the R representation of the raster.
+6. Remove the temporary GRASS raster with g.remove.
+7. Repeat the above steps.
+
+I can run this script once with no problems. The second time, however,
+it crashes at the rast.get() function, with an error message stating
+that the "Current GRASS region changed: north". While the technical
+notes on the internet stress that "rast.get() assumes that the region of
+the GRASS LOCATION has not been changed since gmeta() was last run," I
+must stress that gmeta() is run immediately before rast.get() in my
+code. I would appreciate any insight on why I am getting the error.
+
+Thank you,
+
+William
+
+
+
+
+From Roger.Bivand at nhh.no  Tue Sep 13 02:47:53 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Problems using rast.get() in a script
+In-Reply-To: <1126557641.5560.20.camel@localhost.localdomain>
+Message-ID: <Pine.LNX.4.44.0509130841220.28550-100000@reclus.nhh.no>
+
+On Mon, 12 Sep 2005, William Hudspeth wrote:
+
+> Hello, 
+> 
+> I am using R 2.0.1, GRASS 5.3, and the GRASS R module 0.2-2 on a Linux
+> machine running Fedora Core 3. 
+
+Please try GRASS 0.2-24, 0.2-2 is very old, and certainly pre-dates 
+changes avoiding the caching of the Cell_head window structure in 
+libgis.a. 
+
+> 
+> I am using the R GRASS module in a Python script to return basic
+> statistics about the values in GRASS raster layers. A simple sequence of
+> events in my code looks like this:
+> 
+> 1. Edit/change the region settings for a specific GRASS location using a
+> Python-based system command.
+> 2. Create a temporary raster in GRASS with r.mapcalc.
+> 3. Run gmeta() to load the location metadata/region settings into a
+> list.
+> 4. Run rast.get() to move the temporary GRASS raster into an R data
+> structure.
+> 5. Perform basic statistics on the R representation of the raster.
+> 6. Remove the temporary GRASS raster with g.remove.
+> 7. Repeat the above steps.
+> 
+> I can run this script once with no problems. The second time, however,
+> it crashes at the rast.get() function, with an error message stating
+> that the "Current GRASS region changed: north". While the technical
+> notes on the internet stress that "rast.get() assumes that the region of
+> the GRASS LOCATION has not been changed since gmeta() was last run," I
+> must stress that gmeta() is run immediately before rast.get() in my
+> code. I would appreciate any insight on why I am getting the error.
+> 
+
+Please don't say "crash", that suggests a malfunction. The error message 
+is from line 54 in the current src/rastget.c, and if your copy of the 
+source file doesn't have the preceding comment:
+
+    /* G_get_window(&cellhd); calls G_fatal_error internally */
+
+then the problem has been identified and solved. If not, then more details 
+are needed.
+
+Roger
+
+> Thank you,
+> 
+> William
+> 
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From rsadler at cyllene.uwa.edu.au  Wed Sep 28 01:50:55 2005
+From: rsadler at cyllene.uwa.edu.au (rsadler@cyllene.uwa.edu.au)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] CRS(): PROJ4 argument-value pairs must begin with +
+Message-ID: <20050928135055.jo4lwk6i1eoko048@webmail-3.ucs.uwa.edu.au>
+
+Hi,
+
+I have just installed grass6.0 on a new machine, and come up with a new
+error (for me!).
+
+
+ test5x<-readCELL6sp("test.product5")
+Error in CRS(system("g.proj -j -f", intern = TRUE)) :
+        PROJ4 argument-value pairs must begin with +: XY location
+(unprojected)
+
+It looks like the CRS function in readCELL6sp is not liking the projection
+information (or lack thereof), hence can't provide a projection when
+reading in ascii.grid format.  When I exclude P4<-CRS(...) and just use
+CRS(as.char(NA)) my later functions that process the coverage bug out.
+
+What do I do from here?
+
+The raster coverage has worked on a previous machine using readCELL6sp.
+
+The coverage does have nodata values amongst other integer category values
+
+Regards
+rohan sadler
+
+
+system("g.proj -j")
+XY location (unprojected)
+
+r.info map=test.product5
+ +----------------------------------------------------------------------------+
+ | Layer:    test.product5                  Date: Wed Sep 28 11:48:57 2005
+   |
+ | Mapset:   rsadler                        Login of Creator: rsadler     
+   |
+ | Location: bananabrains                                                 
+   |
+ | DataBase: /home/rohan/simulations                                      
+   |
+ | Title:     ( test.product5 )                                           
+   |
+ |----------------------------------------------------------------------------|
+ |                                                                        
+   |
+ |   Type of Map:  cell                Number of Categories: 393          
+   |
+ |   Data Type:    CELL                                                   
+   |
+ |   Rows:         250                                                    
+   |
+ |   Columns:      250                                                    
+   |
+ |   Total Cells:  62500                                                  
+   |
+ |        Projection: x,y (zone 0)                                        
+   |
+ |            N:          1    S:          0   Res: 0.004                 
+   |
+ |            E:          1    W:          0   Res: 0.004                 
+   |
+ |   Range of data:    min =  1 max = 393                                 
+   |
+ |                                                                        
+   |
+ |   Data Source:                                                         
+   |
+ |                                                                        
+   |
+ |                                                                        
+   |
+ |                                                                        
+   |
+ |   Data Description:                                                    
+   |
+ |    generated by r.mapcalc                                              
+   |
+ |                                                                        
+   |
+ |   Comments:                                                            
+   |
+ |    test51 * test52                                                     
+   |
+ |                                                                        
+   |
+ +----------------------------------------------------------------------------+
+
+Regards
+Rohan
+
+
+From Roger.Bivand at nhh.no  Wed Sep 28 02:50:11 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] CRS(): PROJ4 argument-value pairs must begin with
+ +
+In-Reply-To: <20050928135055.jo4lwk6i1eoko048@webmail-3.ucs.uwa.edu.au>
+Message-ID: <Pine.LNX.4.44.0509280831550.7185-200000@reclus.nhh.no>
+
+On Wed, 28 Sep 2005, rsadler@cyllene.uwa.edu.au wrote:
+
+> Hi,
+> 
+> I have just installed grass6.0 on a new machine, and come up with a new
+> error (for me!).
+> 
+> 
+>  test5x<-readCELL6sp("test.product5")
+> Error in CRS(system("g.proj -j -f", intern = TRUE)) :
+>         PROJ4 argument-value pairs must begin with +: XY location
+> (unprojected)
+
+Thanks, the current code assumes that g.proj -j -f always returns a valid 
+PROJ.4 string, which isn't the case for XY locations. The next release 
+will check more carefully, and will set the coordinate reference system to 
+NA if it doesn't look like a valid string.
+
+> 
+> It looks like the CRS function in readCELL6sp is not liking the projection
+> information (or lack thereof), hence can't provide a projection when
+> reading in ascii.grid format.  When I exclude P4<-CRS(...) and just use
+> CRS(as.char(NA)) my later functions that process the coverage bug out.
+> 
+
+Since I can't see where the "later functions that process the coverage" 
+might hit trouble, I'm attaching a file with the modified code to source() 
+- could you then report details of what happens next (you will also need 
+to install the maptools package and upgrade sp to >= 0.8)?
+
+Roger
+
+> What do I do from here?
+> 
+> The raster coverage has worked on a previous machine using readCELL6sp.
+> 
+> The coverage does have nodata values amongst other integer category values
+> 
+> Regards
+> rohan sadler
+> 
+> 
+> system("g.proj -j")
+> XY location (unprojected)
+> 
+> r.info map=test.product5
+>  +----------------------------------------------------------------------------+
+>  | Layer:    test.product5                  Date: Wed Sep 28 11:48:57 2005
+>    |
+>  | Mapset:   rsadler                        Login of Creator: rsadler     
+>    |
+>  | Location: bananabrains                                                 
+>    |
+>  | DataBase: /home/rohan/simulations                                      
+>    |
+>  | Title:     ( test.product5 )                                           
+>    |
+>  |----------------------------------------------------------------------------|
+>  |                                                                        
+>    |
+>  |   Type of Map:  cell                Number of Categories: 393          
+>    |
+>  |   Data Type:    CELL                                                   
+>    |
+>  |   Rows:         250                                                    
+>    |
+>  |   Columns:      250                                                    
+>    |
+>  |   Total Cells:  62500                                                  
+>    |
+>  |        Projection: x,y (zone 0)                                        
+>    |
+>  |            N:          1    S:          0   Res: 0.004                 
+>    |
+>  |            E:          1    W:          0   Res: 0.004                 
+>    |
+>  |   Range of data:    min =  1 max = 393                                 
+>    |
+>  |                                                                        
+>    |
+>  |   Data Source:                                                         
+>    |
+>  |                                                                        
+>    |
+>  |                                                                        
+>    |
+>  |                                                                        
+>    |
+>  |   Data Description:                                                    
+>    |
+>  |    generated by r.mapcalc                                              
+>    |
+>  |                                                                        
+>    |
+>  |   Comments:                                                            
+>    |
+>  |    test51 * test52                                                     
+>    |
+>  |                                                                        
+>    |
+>  +----------------------------------------------------------------------------+
+> 
+> Regards
+> Rohan
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+-------------- next part --------------
+# Interpreted GRASS 6 interface functions
+# Copyright (c) 2005 Roger S. Bivand
+#
+
+
+
+readCELL6sp <- function(vname, cat=FALSE) {
+	tmpfl <- tempfile()
+	system(paste("r.out.arc input=", vname, " output=", tmpfl, sep=""))
+#	library(sp)
+	library(maptools)
+# too strict assumption on g.proj Rohan Sadler 20050928
+	projstr <- system("g.proj -j -f", intern=TRUE)
+	if (length(grep("XY location (unprojected)", projstr)) > 1)
+		projstr <- as.character(NA)
+	if (length(grep("latlong", projstr)) > 1)
+		projstr <- sub("latlong", "longlat", projstr)
+    	if (is.na(projargs)) uprojargs <- projstr
+    	else uprojargs <- paste(unique(unlist(strsplit(projargs, " "))), 
+		collapse=" ")
+    	if (length(grep("= ", uprojargs)) != 0) {
+		warning(paste("No spaces permitted in PROJ4",
+			"argument-value pairs:", uprojargs))
+		uprojargs <- as.character(NA)
+	}
+    	if (length(grep(" [:alnum:]", uprojargs)) != 0) {
+		warning(paste("PROJ4 argument-value pairs",
+			"must begin with +:", uprojargs))
+		uprojargs <- as.character(NA)
+	}
+	p4 <- CRS(uprojargs)
+	res <- readAsciiGrid(tmpfl, colname=vname, proj4string=p4)
+	if (cat) {
+		cats <- strsplit(system(paste("r.stats -l -q", vname), 
+			intern=TRUE), " ")
+		catnos <- sapply(cats, function(x) x[1])
+		catlabs <- sapply(cats, function(x) paste(x[-1], collapse=" "))
+		if (any(!is.na(match(catnos, "*")))) {
+			isNA <- which(catnos == "*")
+			catnos <- catnos[-isNA]
+			catlabs <- catlabs[-isNA]
+		}
+		res@data[[1]] <- factor(res@data[[1]], levels=catnos, labels=catlabs)
+	} else {
+		res@data[[1]] <- as.integer(res@data[[1]])
+	}
+	res
+}
+
+readFLOAT6sp <- function(vname) {
+	tmpfl <- tempfile()
+	system(paste("r.out.arc input=", vname, " output=", tmpfl, sep=""))
+#	library(sp)
+	library(maptools)
+# too strict assumption on g.proj Rohan Sadler 20050928
+	projstr <- system("g.proj -j -f", intern=TRUE)
+	if (length(grep("XY location (unprojected)", projstr)) > 1)
+		projstr <- as.character(NA)
+	if (length(grep("latlong", projstr)) > 1)
+		projstr <- sub("latlong", "longlat", projstr)
+    	if (is.na(projargs)) uprojargs <- projstr
+    	else uprojargs <- paste(unique(unlist(strsplit(projargs, " "))), 
+		collapse=" ")
+    	if (length(grep("= ", uprojargs)) != 0) {
+		warning(paste("No spaces permitted in PROJ4",
+			"argument-value pairs:", uprojargs))
+		uprojargs <- as.character(NA)
+	}
+    	if (length(grep(" [:alnum:]", uprojargs)) != 0) {
+		warning(paste("PROJ4 argument-value pairs",
+			"must begin with +:", uprojargs))
+		uprojargs <- as.character(NA)
+	}
+	p4 <- CRS(uprojargs)
+	res <- readAsciiGrid(tmpfl, colname=vname, proj4string=p4)
+	res
+}
+
+
+From sholl at gmx.net  Wed Sep 28 11:06:26 2005
+From: sholl at gmx.net (Stephan Holl)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] [ANNOUNCE]: New GRASS 6 Translation Repository
+Message-ID: <20050928170626.4ad9e8cb@localhost>
+
+Dear FOSS GIS users,
+
+[sorry for crossposting]
+
+GDF Hannover provides a new Translation Repository for the GRASS 6
+Tutorial!
+
+As you may know, we publish tutorials on GRASS GIS under terms of the
+GNU FDL (GNU Free Document License) for years. Translations into Czech
+by Jachym Cepicky and English by Kerstin Holl are available to the user
+community since a few months. 
+
+Within the last weeks we were asked by many GRASS users from all over
+the world, that they would like to translate the current tutorial into
+Spanish and Italian. For this reason we now established a new
+Translation Repository[1] based on subversion.  
+
+	http://www.gdf-hannover.de/translation
+
+We hope this is a further step to increase the popularity of GRASS GIS.
+If you feel like supporting this portal, we would be pleased to
+integrate you or your money to the portal. Further languages could be
+added as well. 
+
+We are running a mailinglist on which further information will be posted
+to. If you are interested in contributing to the project please
+subscribe[2] to this list to be up-to-date.
+
+best wishes, 
+	
+	GDF Hannover
+
+
+[1] http://www.gdf-hannover.de/translation
+[2] https://www.gdf-hannover.de/mailman/listinfo/gdf-translation
+
+
+-- 
+Stephan Holl
+
+Check headers for GnuPG Key!
+http://www.gdf-hannover.de
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 189 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20050928/f39301be/attachment.bin
+From rsadler at cyllene.uwa.edu.au  Thu Sep 29 01:32:04 2005
+From: rsadler at cyllene.uwa.edu.au (rsadler@cyllene.uwa.edu.au)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] CRS(): PROJ4 argument-value pairs must begin
+	with +
+Message-ID: <20050929133204.ghahl18f6rusc4kk@webmail-3.ucs.uwa.edu.au>
+
+On running readCELL6sp we have an error
+
+>system("r.mapcalc test.product5=test51*test52")
+>  test.junk<-readCELL6sp("test.product5")
+ Error in readCELL6sp("test.product5") : Object "projargs" not found
+
+This arises on line 12 & 13 of readCELL6sp (and readFLOAT6sp) where
+projargs is used but not previously defined.
+
+if (is.na(projargs)) uprojargs <- projstr
+    else uprojargs <- paste(unique(unlist(strsplit(projargs, " "))),
+                                    collapse=" ")
+
+sp and maptools upgraded
+
+Rohan
+
+
+>> I have just installed grass6.0 on a new machine, and come up with a new
+>> error (for me!).
+>
+>
+>>  test5x<-readCELL6sp("test.product5")
+>> Error in CRS(system("g.proj -j -f", intern = TRUE)) :
+>>         PROJ4 argument-value pairs must begin with +: XY location
+>> (unprojected)
+
+>Thanks, the current code assumes that g.proj -j -f always returns a valid
+>PROJ.4 string, which isn't the case for XY locations. The next release
+>will check more carefully, and will set the coordinate reference system
+to
+>NA if it doesn't look like a valid string.
+
+>>
+>> It looks like the CRS function in readCELL6sp is not liking the
+projection
+>> information (or lack thereof), hence can't provide a projection when
+>> reading in ascii.grid format.  When I exclude P4<-CRS(...) and just use
+>> CRS(as.char(NA)) my later functions that process the coverage bug out.
+>>
+
+>Since I can't see where the "later functions that process the coverage"
+>might hit trouble, I'm attaching a file with the modified code to
+source()
+>- could you then report details of what happens next (you will also need
+>to install the maptools package and upgrade sp to >= 0.8)?
+
+>Roger
+
+
+
+
+From Roger.Bivand at nhh.no  Thu Sep 29 02:43:56 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] CRS(): PROJ4 argument-value pairs must begin with
+ +
+In-Reply-To: <20050929133204.ghahl18f6rusc4kk@webmail-3.ucs.uwa.edu.au>
+Message-ID: <Pine.LNX.4.44.0509290841310.8853-200000@reclus.nhh.no>
+
+On Thu, 29 Sep 2005, rsadler@cyllene.uwa.edu.au wrote:
+
+> On running readCELL6sp we have an error
+> 
+> >system("r.mapcalc test.product5=test51*test52")
+> >  test.junk<-readCELL6sp("test.product5")
+>  Error in readCELL6sp("test.product5") : Object "projargs" not found
+> 
+> This arises on line 12 & 13 of readCELL6sp (and readFLOAT6sp) where
+> projargs is used but not previously defined.
+> 
+> if (is.na(projargs)) uprojargs <- projstr
+>     else uprojargs <- paste(unique(unlist(strsplit(projargs, " "))),
+>                                     collapse=" ")
+
+Sorry, I added some extra checks to prevent the creation of the CRS object 
+throwing an error, setting the projection string to NA instead, without 
+checking. The attached works for me on spearfish and on a vanilla XY 
+location (where the projection is set to NA).
+
+Roger
+
+> 
+> sp and maptools upgraded
+> 
+> Rohan
+> 
+> 
+> >> I have just installed grass6.0 on a new machine, and come up with a new
+> >> error (for me!).
+> >
+> >
+> >>  test5x<-readCELL6sp("test.product5")
+> >> Error in CRS(system("g.proj -j -f", intern = TRUE)) :
+> >>         PROJ4 argument-value pairs must begin with +: XY location
+> >> (unprojected)
+> 
+> >Thanks, the current code assumes that g.proj -j -f always returns a valid
+> >PROJ.4 string, which isn't the case for XY locations. The next release
+> >will check more carefully, and will set the coordinate reference system
+> to
+> >NA if it doesn't look like a valid string.
+> 
+> >>
+> >> It looks like the CRS function in readCELL6sp is not liking the
+> projection
+> >> information (or lack thereof), hence can't provide a projection when
+> >> reading in ascii.grid format.  When I exclude P4<-CRS(...) and just use
+> >> CRS(as.char(NA)) my later functions that process the coverage bug out.
+> >>
+> 
+> >Since I can't see where the "later functions that process the coverage"
+> >might hit trouble, I'm attaching a file with the modified code to
+> source()
+> >- could you then report details of what happens next (you will also need
+> >to install the maptools package and upgrade sp to >= 0.8)?
+> 
+> >Roger
+> 
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+-------------- next part --------------
+# Interpreted GRASS 6 interface functions
+# Copyright (c) 2005 Roger S. Bivand
+#
+
+
+
+readCELL6sp <- function(vname, cat=FALSE) {
+	tmpfl <- tempfile()
+	system(paste("r.out.arc input=", vname, " output=", tmpfl, sep=""))
+#	library(sp)
+	library(maptools)
+# too strict assumption on g.proj Rohan Sadler 20050928
+	projstr <- system("g.proj -j -f", intern=TRUE)
+	if (length(grep("XY location", projstr)) > 0)
+		projstr <- as.character(NA)
+	if (length(grep("latlong", projstr)) > 0)
+		projstr <- sub("latlong", "longlat", projstr)
+    	if (is.na(projstr)) uprojargs <- projstr
+    	else uprojargs <- paste(unique(unlist(strsplit(projstr, " "))), 
+		collapse=" ")
+    	if (length(grep("= ", uprojargs)) != 0) {
+		warning(paste("No spaces permitted in PROJ4",
+			"argument-value pairs:", uprojargs))
+		uprojargs <- as.character(NA)
+	}
+    	if (length(grep(" [:alnum:]", uprojargs)) != 0) {
+		warning(paste("PROJ4 argument-value pairs",
+			"must begin with +:", uprojargs))
+		uprojargs <- as.character(NA)
+	}
+	p4 <- CRS(uprojargs)
+	res <- readAsciiGrid(tmpfl, colname=vname, proj4string=p4)
+	if (cat) {
+		cats <- strsplit(system(paste("r.stats -l -q", vname), 
+			intern=TRUE), " ")
+		catnos <- sapply(cats, function(x) x[1])
+		catlabs <- sapply(cats, function(x) paste(x[-1], collapse=" "))
+		if (any(!is.na(match(catnos, "*")))) {
+			isNA <- which(catnos == "*")
+			catnos <- catnos[-isNA]
+			catlabs <- catlabs[-isNA]
+		}
+		res@data[[1]] <- factor(res@data[[1]], levels=catnos, labels=catlabs)
+	} else {
+		res@data[[1]] <- as.integer(res@data[[1]])
+	}
+	res
+}
+
+readFLOAT6sp <- function(vname) {
+	tmpfl <- tempfile()
+	system(paste("r.out.arc input=", vname, " output=", tmpfl, sep=""))
+#	library(sp)
+	library(maptools)
+# too strict assumption on g.proj Rohan Sadler 20050928
+	projstr <- system("g.proj -j -f", intern=TRUE)
+	if (length(grep("XY location", projstr)) > 0)
+		projstr <- as.character(NA)
+	if (length(grep("latlong", projstr)) > 0)
+		projstr <- sub("latlong", "longlat", projstr)
+    	if (is.na(projstr)) uprojargs <- projstr
+    	else uprojargs <- paste(unique(unlist(strsplit(projstr, " "))), 
+		collapse=" ")
+    	if (length(grep("= ", uprojargs)) != 0) {
+		warning(paste("No spaces permitted in PROJ4",
+			"argument-value pairs:", uprojargs))
+		uprojargs <- as.character(NA)
+	}
+    	if (length(grep(" [:alnum:]", uprojargs)) != 0) {
+		warning(paste("PROJ4 argument-value pairs",
+			"must begin with +:", uprojargs))
+		uprojargs <- as.character(NA)
+	}
+	p4 <- CRS(uprojargs)
+	res <- readAsciiGrid(tmpfl, colname=vname, proj4string=p4)
+	res
+}
+
+
+From rsadler at cyllene.uwa.edu.au  Thu Sep 29 03:54:22 2005
+From: rsadler at cyllene.uwa.edu.au (rsadler@cyllene.uwa.edu.au)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] CRS(): PROJ4 argument-value pairs must begin with
+	+
+Message-ID: <20050929155422.2am9ue0l908cwg84@webmail-3.ucs.uwa.edu.au>
+
+Your updated code works fine.
+
+Now, its time for me to see to what is not working in the rest of my
+code!!
+
+Rohan
+
+> On running readCELL6sp we have an error
+>
+> >system("r.mapcalc test.product5=test51*test52")
+> >  test.junk<-readCELL6sp("test.product5")
+>  Error in readCELL6sp("test.product5") : Object "projargs" not found
+>
+> This arises on line 12 & 13 of readCELL6sp (and readFLOAT6sp) where
+> projargs is used but not previously defined.
+>
+> if (is.na(projargs)) uprojargs <- projstr
+>     else uprojargs <- paste(unique(unlist(strsplit(projargs, " "))),
+>                                     collapse=" ")
+
+Sorry, I added some extra checks to prevent the creation of the CRS object
+throwing an error, setting the projection string to NA instead, without
+checking. The attached works for me on spearfish and on a vanilla XY
+location (where the projection is set to NA).
+
+Roger
+
+>
+> sp and maptools upgraded
+>
+> Rohan
+>
+>
+> >> I have just installed grass6.0 on a new machine, and come up with a
+new
+> >> error (for me!).
+> >
+> >
+> >>  test5x<-readCELL6sp("test.product5")
+> >> Error in CRS(system("g.proj -j -f", intern = TRUE)) :
+> >>         PROJ4 argument-value pairs must begin with +: XY location
+> >> (unprojected)
+>
+> >Thanks, the current code assumes that g.proj -j -f always returns a
+valid
+> >PROJ.4 string, which isn't the case for XY locations. The next release
+> >will check more carefully, and will set the coordinate reference system
+> to
+> >NA if it doesn't look like a valid string.
+>
+> >>
+> >> It looks like the CRS function in readCELL6sp is not liking the
+> projection
+> >> information (or lack thereof), hence can't provide a projection when
+> >> reading in ascii.grid format.  When I exclude P4<-CRS(...) and just
+use
+> >> CRS(as.char(NA)) my later functions that process the coverage bug
+out.
+> >>
+>
+> >Since I can't see where the "later functions that process the coverage"
+> >might hit trouble, I'm attaching a file with the modified code to
+> source()
+> >- could you then report details of what happens next (you will also
+need
+> >to install the maptools package and upgrade sp to >= 0.8)?
+>
+> >Roger
+>
+>
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+----- End forwarded message -----
+
+-------------- next part --------------
+# Interpreted GRASS 6 interface functions
+# Copyright (c) 2005 Roger S. Bivand
+#
+
+
+
+readCELL6sp <- function(vname, cat=FALSE) {
+	tmpfl <- tempfile()
+	system(paste("r.out.arc input=", vname, " output=", tmpfl, sep=""))
+#	library(sp)
+	library(maptools)
+# too strict assumption on g.proj Rohan Sadler 20050928
+	projstr <- system("g.proj -j -f", intern=TRUE)
+	if (length(grep("XY location", projstr)) > 0)
+		projstr <- as.character(NA)
+	if (length(grep("latlong", projstr)) > 0)
+		projstr <- sub("latlong", "longlat", projstr)
+    	if (is.na(projstr)) uprojargs <- projstr
+    	else uprojargs <- paste(unique(unlist(strsplit(projstr, " "))), 
+		collapse=" ")
+    	if (length(grep("= ", uprojargs)) != 0) {
+		warning(paste("No spaces permitted in PROJ4",
+			"argument-value pairs:", uprojargs))
+		uprojargs <- as.character(NA)
+	}
+    	if (length(grep(" [:alnum:]", uprojargs)) != 0) {
+		warning(paste("PROJ4 argument-value pairs",
+			"must begin with +:", uprojargs))
+		uprojargs <- as.character(NA)
+	}
+	p4 <- CRS(uprojargs)
+	res <- readAsciiGrid(tmpfl, colname=vname, proj4string=p4)
+	if (cat) {
+		cats <- strsplit(system(paste("r.stats -l -q", vname), 
+			intern=TRUE), " ")
+		catnos <- sapply(cats, function(x) x[1])
+		catlabs <- sapply(cats, function(x) paste(x[-1], collapse=" "))
+		if (any(!is.na(match(catnos, "*")))) {
+			isNA <- which(catnos == "*")
+			catnos <- catnos[-isNA]
+			catlabs <- catlabs[-isNA]
+		}
+		res@data[[1]] <- factor(res@data[[1]], levels=catnos, labels=catlabs)
+	} else {
+		res@data[[1]] <- as.integer(res@data[[1]])
+	}
+	res
+}
+
+readFLOAT6sp <- function(vname) {
+	tmpfl <- tempfile()
+	system(paste("r.out.arc input=", vname, " output=", tmpfl, sep=""))
+#	library(sp)
+	library(maptools)
+# too strict assumption on g.proj Rohan Sadler 20050928
+	projstr <- system("g.proj -j -f", intern=TRUE)
+	if (length(grep("XY location", projstr)) > 0)
+		projstr <- as.character(NA)
+	if (length(grep("latlong", projstr)) > 0)
+		projstr <- sub("latlong", "longlat", projstr)
+    	if (is.na(projstr)) uprojargs <- projstr
+    	else uprojargs <- paste(unique(unlist(strsplit(projstr, " "))), 
+		collapse=" ")
+    	if (length(grep("= ", uprojargs)) != 0) {
+		warning(paste("No spaces permitted in PROJ4",
+			"argument-value pairs:", uprojargs))
+		uprojargs <- as.character(NA)
+	}
+    	if (length(grep(" [:alnum:]", uprojargs)) != 0) {
+		warning(paste("PROJ4 argument-value pairs",
+			"must begin with +:", uprojargs))
+		uprojargs <- as.character(NA)
+	}
+	p4 <- CRS(uprojargs)
+	res <- readAsciiGrid(tmpfl, colname=vname, proj4string=p4)
+	res
+}
+
+
+From Roger.Bivand at nhh.no  Fri Sep 30 03:11:45 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] New release of spgrass6, now works on CygWin
+In-Reply-To: <20050929155422.2am9ue0l908cwg84@webmail-3.ucs.uwa.edu.au>
+Message-ID: <Pine.LNX.4.44.0509300901001.15668-100000@reclus.nhh.no>
+
+Following Rohan's question below, I have completed some more steps on
+spgrass6, and have just released version 0.1-5 on r-spatial. This version
+replaces v.in.ascii/v.out.ascii for moving sites (vector points) by
+v.in.ogr and v.out.ogr, and the package now depends on the maptools
+package, which should also be installed. The raster reading functions now
+allow multiple rasters to be read into the same SpatialGridDataFrame
+object.
+
+Finally, the package now works (for me) under CygWin, so a Windows binary 
+package is also released (at last). The package now uses g.tempfile and 
+converts the path to Windows fron CygWin using cygpath -w, giving R access 
+to the same file/directory as GRASS under CygWin (R thinks it is running 
+on Windows, GRASS is running on CygWin which is running on Windows). I 
+would be very grateful for feedback on these changes.
+
+Roger
+
+PS. Install instructions from R:
+
+rSpatial <- "http://r-spatial.sourceforge.net/R"
+install.packages("spgrass6", repos=rSpatial)
+
+
+On Thu, 29 Sep 2005, rsadler@cyllene.uwa.edu.au wrote:
+
+> Your updated code works fine.
+> 
+> Now, its time for me to see to what is not working in the rest of my
+> code!!
+> 
+> Rohan
+> 
+> > On running readCELL6sp we have an error
+> >
+> > >system("r.mapcalc test.product5=test51*test52")
+> > >  test.junk<-readCELL6sp("test.product5")
+> >  Error in readCELL6sp("test.product5") : Object "projargs" not found
+> >
+> > This arises on line 12 & 13 of readCELL6sp (and readFLOAT6sp) where
+> > projargs is used but not previously defined.
+> >
+> > if (is.na(projargs)) uprojargs <- projstr
+> >     else uprojargs <- paste(unique(unlist(strsplit(projargs, " "))),
+> >                                     collapse=" ")
+> 
+> Sorry, I added some extra checks to prevent the creation of the CRS object
+> throwing an error, setting the projection string to NA instead, without
+> checking. The attached works for me on spearfish and on a vanilla XY
+> location (where the projection is set to NA).
+> 
+> Roger
+> 
+> >
+> > sp and maptools upgraded
+> >
+> > Rohan
+> >
+> >
+> > >> I have just installed grass6.0 on a new machine, and come up with a
+> new
+> > >> error (for me!).
+> > >
+> > >
+> > >>  test5x<-readCELL6sp("test.product5")
+> > >> Error in CRS(system("g.proj -j -f", intern = TRUE)) :
+> > >>         PROJ4 argument-value pairs must begin with +: XY location
+> > >> (unprojected)
+> >
+> > >Thanks, the current code assumes that g.proj -j -f always returns a
+> valid
+> > >PROJ.4 string, which isn't the case for XY locations. The next release
+> > >will check more carefully, and will set the coordinate reference system
+> > to
+> > >NA if it doesn't look like a valid string.
+> >
+> > >>
+> > >> It looks like the CRS function in readCELL6sp is not liking the
+> > projection
+> > >> information (or lack thereof), hence can't provide a projection when
+> > >> reading in ascii.grid format.  When I exclude P4<-CRS(...) and just
+> use
+> > >> CRS(as.char(NA)) my later functions that process the coverage bug
+> out.
+> > >>
+> >
+> > >Since I can't see where the "later functions that process the coverage"
+> > >might hit trouble, I'm attaching a file with the modified code to
+> > source()
+> > >- could you then report details of what happens next (you will also
+> need
+> > >to install the maptools package and upgrade sp to >= 0.8)?
+> >
+> > >Roger
+> >
+> >
+> >
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> >
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+

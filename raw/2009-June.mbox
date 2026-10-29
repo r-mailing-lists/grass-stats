@@ -1,0 +1,4906 @@
+From a.ghisla at gmail.com  Thu Jun 11 13:40:22 2009
+From: a.ghisla at gmail.com (Anne Ghisla)
+Date: Thu Jun 11 13:41:21 2009
+Subject: [GRASS-stats] [Fwd: [Report #2] Kriging with GRASS and R:
+ v.autokrige port to wxPython and more]
+Message-ID: <4A314186.5050702@gmail.com>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Forwarding - sorry for not have announced this project before.
+
+- -------- Messaggio Originale  --------
+Oggetto: [Report #2] Kriging with GRASS and R: v.autokrige port to
+wxPython and more
+Data: Thu, 11 Jun 2009 18:50:36 +0200
+Da: Anne Ghisla <a.ghisla@gmail.com>
+A: OSGeo SoC <soc@lists.osgeo.org>, grass-dev@lists.osgeo.org,
+r-sig-geo@stat.math.ethz.ch
+CC: Martin Landa <landa.martin@gmail.com>
+
+Hello all,
+
+there are some important news about the module!
+
+First of all, the interface is almost finished. See a screenshot on the
+wiki page [0].
+The layout includes a notebook with a page for each R package (automap,
+gstat and geoR), with the available options. Another layout could be a
+chiocebox wht the three packages on the top of Kriging section, that
+redraws the section accourding to the user's choice.
+Let me know which one do you prefer, feel free also to suggest something
+new.
+
+The R-GRASS integration is on its way: autofitting the variogram on a
+map obtained from a DEM sample [1] works in the proof of concept.  rpy2
+is extremely helpful and does not require much more code than the
+original R code. More to come in the next days.
+
+The idea for variogram fitting is to plot the variogram in a new frame
+and add some controls like sliders and/or text boxes to fill up with
+nugget, sill and range values. This will involve Python graphics, not R,
+as the former is more flexible.
+
+Comments, suggestions, critics are welcome!
+
+best regards and happy coding to everyone,
+
+Anne
+
+[0] http://grass.osgeo.org/wiki/V.autokrige_GSoC_2009
+[1] http://casoilresource.lawr.ucdavis.edu/drupal/node/442
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkoxQYYACgkQzZ3g4YwFFga30wCgreflUIm/9ZM1/VNEDkZyMSNm
+d88AoJD5mYQZWcddM7nyh6XN9eNVQm+G
+=Q9I9
+-----END PGP SIGNATURE-----
+From a.ghisla at gmail.com  Fri Jun 12 11:09:33 2009
+From: a.ghisla at gmail.com (Anne Ghisla)
+Date: Fri Jun 12 11:09:31 2009
+Subject: [GRASS-stats] [Report #3] Kriging with GRASS and R: v.autokrige
+ port to wxPython and more
+Message-ID: <4A326FAD.3040107@gmail.com>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Hello all,
+
+this weekly report will be very short, as yesterday I sent this email
+[0] and made little progress.
+
+I'm having some problems in using autoKrige() function work, AFAIK
+because of projection information handling [1].
+
+best regards and happy coding,
+Anne
+
+Homepage of the module:
+http://grass.osgeo.org/wiki/V.autokrige_GSoC_2009
+
+[0] https://stat.ethz.ch/pipermail/r-sig-geo/2009-June/005919.html
+[1] https://stat.ethz.ch/pipermail/r-sig-geo/2009-June/005925.html
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkoyb6wACgkQzZ3g4YwFFgaLqgCgq3QvqbZwQ8ho1Aux82D4nhie
+DH4AoItfbNTC9A7sLa8eSn0UTUxbIpVf
+=2NoY
+-----END PGP SIGNATURE-----
+From jarekj at amu.edu.pl  Fri Jun 19 03:16:48 2009
+From: jarekj at amu.edu.pl (=?ISO-8859-2?Q?Jaros=B3aw_Jasiewicz?=)
+Date: Fri Jun 19 03:25:47 2009
+Subject: [GRASS-stats] gstat error
+Message-ID: <4A3B3B60.6080609@amu.edu.pl>
+
+Hi
+Another gstat error:
+
+ var.krigged=krige(z~x+y,gr,grid,model=var.fitted)
+[using universal kriging]
+
+"chfactor.c", line 130: singular matrix in function LDLfactor()
+Error in predict.gstat(g, newdata = newdata, block = block, nsim = nsim,  :
+  LDLfactor
+
+
+regards
+Jarek
+
+here is structure of my gr spatialPointsDataFrame used in analysis:
+
+str(gr)
+Formal class 'SpatialPointsDataFrame' [package "sp"] with 5 slots
+  ..@ data       :'data.frame':    2201 obs. of  5 variables:
+  .. ..$ cat: num [1:2201] 2 3 4 5 6 7 8 9 10 11 ...
+  .. ..$ naz: Factor w/ 874 levels "1000","1001",..: 874 1 2 3 4 5 6 7 8 
+9 ...
+  .. ..$ x  : num [1:2201] 360175 360176 360178 360169 360167 ...
+  .. ..$ y  : num [1:2201] 512736 512736 512733 512719 512712 ...
+  .. ..$ z  : num [1:2201] 86.5 87.4 87.7 86.9 86 ...
+  ..@ coords.nrs : num(0)
+  ..@ coords     : num [1:2201, 1:2] 360175 360176 360178 360169 360167 ...
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : NULL
+  .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+  ..@ bbox       : num [1:2, 1:2] 359907 512481 360492 512778
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+  .. .. ..$ : chr [1:2] "min" "max"
+  ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+  .. .. ..@ projargs: chr " +proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 
++x_0=500000 +y_0=-5300000 +no_defs +a=6378137 +rf=298.257222101 
++towgs84=0.000,0.000,"| __truncated__
+
+and newdata grid:
+str(grid)
+Formal class 'SpatialGridDataFrame' [package "sp"] with 6 slots
+  ..@ data       :'data.frame':    131352 obs. of  1 variable:
+  .. ..$ region2: int [1:131352] NA NA NA NA NA NA NA NA NA NA ...
+  ..@ grid       :Formal class 'GridTopology' [package "sp"] with 3 slots
+  .. .. ..@ cellcentre.offset: Named num [1:2] 359902 512478
+  .. .. .. ..- attr(*, "names")= chr [1:2] "x" "y"
+  .. .. ..@ cellsize         : num [1:2] 1.001 0.998
+  .. .. ..@ cells.dim        : int [1:2] 421 312
+  ..@ grid.index : int(0)
+  ..@ coords     : num [1:2, 1:2] 359902 360322 512478 512788
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : NULL
+  .. .. ..$ : chr [1:2] "x" "y"
+  ..@ bbox       : num [1:2, 1:2] 359901 512477 360323 512789
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : chr [1:2] "x" "y"
+  .. .. ..$ : chr [1:2] "min" "max"
+  ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+  .. .. ..@ projargs: chr " +proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 
++x_0=500000 +y_0=-5300000 +no_defs +a=6378137 +rf=298.257222101 
++towgs84=0.000,0.000,"| __truncated__
+From Roger.Bivand at nhh.no  Fri Jun 19 03:33:55 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri Jun 19 03:34:01 2009
+Subject: [GRASS-stats] gstat error
+In-Reply-To: <4A3B3B60.6080609@amu.edu.pl>
+References: <4A3B3B60.6080609@amu.edu.pl>
+Message-ID: <alpine.LRH.2.00.0906190929230.11901@reclus.nhh.no>
+
+On Fri, 19 Jun 2009, Jaros?aw Jasiewicz wrote:
+
+> Hi
+> Another gstat error:
+>
+> var.krigged=krige(z~x+y,gr,grid,model=var.fitted)
+> [using universal kriging]
+>
+> "chfactor.c", line 130: singular matrix in function LDLfactor()
+> Error in predict.gstat(g, newdata = newdata, block = block, nsim = nsim,  :
+> LDLfactor
+>
+
+Hi,
+
+Please try ordinary kriging first. I'm pretty sure this has to do with the 
+fact that gr$x and gr$y show very little variation. When you do trend 
+surface, the underlying methods shift the coordinates to the unit square 
+(or similar) to avoid the numerical deterioration that occurs otherwise. 
+You could also use elide() in maptools to shift the data manually, but do 
+do the same on gr and grid.
+
+Hope this helps,
+
+Roger
+
+>
+> regards
+> Jarek
+>
+> here is structure of my gr spatialPointsDataFrame used in analysis:
+>
+> str(gr)
+> Formal class 'SpatialPointsDataFrame' [package "sp"] with 5 slots
+> ..@ data       :'data.frame':    2201 obs. of  5 variables:
+> .. ..$ cat: num [1:2201] 2 3 4 5 6 7 8 9 10 11 ...
+> .. ..$ naz: Factor w/ 874 levels "1000","1001",..: 874 1 2 3 4 5 6 7 8 9 ...
+> .. ..$ x  : num [1:2201] 360175 360176 360178 360169 360167 ...
+> .. ..$ y  : num [1:2201] 512736 512736 512733 512719 512712 ...
+> .. ..$ z  : num [1:2201] 86.5 87.4 87.7 86.9 86 ...
+> ..@ coords.nrs : num(0)
+> ..@ coords     : num [1:2201, 1:2] 360175 360176 360178 360169 360167 ...
+> .. ..- attr(*, "dimnames")=List of 2
+> .. .. ..$ : NULL
+> .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+> ..@ bbox       : num [1:2, 1:2] 359907 512481 360492 512778
+> .. ..- attr(*, "dimnames")=List of 2
+> .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+> .. .. ..$ : chr [1:2] "min" "max"
+> ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+> .. .. ..@ projargs: chr " +proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 
+> +x_0=500000 +y_0=-5300000 +no_defs +a=6378137 +rf=298.257222101 
+> +towgs84=0.000,0.000,"| __truncated__
+>
+> and newdata grid:
+> str(grid)
+> Formal class 'SpatialGridDataFrame' [package "sp"] with 6 slots
+> ..@ data       :'data.frame':    131352 obs. of  1 variable:
+> .. ..$ region2: int [1:131352] NA NA NA NA NA NA NA NA NA NA ...
+> ..@ grid       :Formal class 'GridTopology' [package "sp"] with 3 slots
+> .. .. ..@ cellcentre.offset: Named num [1:2] 359902 512478
+> .. .. .. ..- attr(*, "names")= chr [1:2] "x" "y"
+> .. .. ..@ cellsize         : num [1:2] 1.001 0.998
+> .. .. ..@ cells.dim        : int [1:2] 421 312
+> ..@ grid.index : int(0)
+> ..@ coords     : num [1:2, 1:2] 359902 360322 512478 512788
+> .. ..- attr(*, "dimnames")=List of 2
+> .. .. ..$ : NULL
+> .. .. ..$ : chr [1:2] "x" "y"
+> ..@ bbox       : num [1:2, 1:2] 359901 512477 360323 512789
+> .. ..- attr(*, "dimnames")=List of 2
+> .. .. ..$ : chr [1:2] "x" "y"
+> .. .. ..$ : chr [1:2] "min" "max"
+> ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+> .. .. ..@ projargs: chr " +proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 
+> +x_0=500000 +y_0=-5300000 +no_defs +a=6378137 +rf=298.257222101 
+> +towgs84=0.000,0.000,"| __truncated__
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From a.ghisla at gmail.com  Fri Jun 19 09:43:46 2009
+From: a.ghisla at gmail.com (Anne Ghisla)
+Date: Fri Jun 19 09:49:02 2009
+Subject: [GRASS-stats] [Report #4] Kriging with GRASS and R: v.autokrige
+ port to wxPython and more
+Message-ID: <1245419026.4106.32.camel@galadriel.uagra.net>
+
+Hello all,
+
+this week I made steady progress on the module.
+What I've done:
+* renamed the module v.krige, as its features will go beyond automatic
+kriging.
+* addition of choicebox with only numerical columns, as interpolation
+will be based on such variables
+* refactoring on interface population - more to come
+* started documentation page
+
+Next week I plan to create the splashscreen during dependencies check
+and data load, and examine how to integrate gstat functions.
+
+best regards,
+
+Anne
+
+http://grass.osgeo.org/wiki/V.autokrige_GSoC_2009
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 197 bytes
+Desc: Questa =?ISO-8859-1?Q?=E8?= una parte del messaggio
+	firmata digitalmente
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20090619/cc58149e/attachment.bin
+From michael.barton at asu.edu  Fri Jun 19 10:16:56 2009
+From: michael.barton at asu.edu (Michael Barton)
+Date: Fri Jun 19 10:17:23 2009
+Subject: [GRASS-stats] Re: [SoC] [Report #4] Kriging with GRASS and R:
+	v.autokrige port to wxPython and more
+In-Reply-To: <1245419026.4106.32.camel@galadriel.uagra.net>
+References: <1245419026.4106.32.camel@galadriel.uagra.net>
+Message-ID: <F2D4E9F2-A031-44DB-84F8-7B414FAFC137@asu.edu>
+
+Anne,
+
+Checked the Wiki site. For the vector selection choicebox, use the  
+Select.select class and method we've already created. It's more  
+flexible, will show multiple mapsets in a tree organization, and will  
+save you code.
+
+Michael
+____________________
+C. Michael Barton, Professor of Anthropology
+Director of Graduate Studies, School of Human Evolution & Social Change
+Director, Center for Social Dynamics & Complexity
+Arizona State University
+
+Phone: 480-965-6262
+Fax: 480-965-7671
+www: <www.public.asu.edu/~cmbarton>
+
+
+
+
+On Jun 19, 2009, at 6:43 AM, Anne Ghisla wrote:
+
+> Hello all,
+>
+> this week I made steady progress on the module.
+> What I've done:
+> * renamed the module v.krige, as its features will go beyond automatic
+> kriging.
+> * addition of choicebox with only numerical columns, as interpolation
+> will be based on such variables
+> * refactoring on interface population - more to come
+> * started documentation page
+>
+> Next week I plan to create the splashscreen during dependencies check
+> and data load, and examine how to integrate gstat functions.
+>
+> best regards,
+>
+> Anne
+>
+> http://grass.osgeo.org/wiki/V.autokrige_GSoC_2009
+>
+> <signature.asc><ATT00001.txt>
+
+From jarekj at amu.edu.pl  Fri Jun 19 14:44:14 2009
+From: jarekj at amu.edu.pl (=?ISO-8859-2?Q?Jaros=B3aw_Jasiewicz?=)
+Date: Fri Jun 19 14:44:18 2009
+Subject: [GRASS-stats] another gstat error
+Message-ID: <4A3BDC7E.8020608@amu.edu.pl>
+
+Hi
+Another gstat error:
+
+var.krigged=krige(z~x+y,gr,grid,model=var.fitted)
+[using universal kriging]
+
+"chfactor.c", line 130: singular matrix in function LDLfactor()
+Error in predict.gstat(g, newdata = newdata, block = block, nsim = nsim,  :
+ LDLfactor
+
+I can't imagine the reason
+
+regards
+Jarek
+
+here is structure of my gr spatialPointsDataFrame used in analysis:
+
+str(gr)
+Formal class 'SpatialPointsDataFrame' [package "sp"] with 5 slots
+ ..@ data       :'data.frame':    2201 obs. of  5 variables:
+ .. ..$ cat: num [1:2201] 2 3 4 5 6 7 8 9 10 11 ...
+ .. ..$ naz: Factor w/ 874 levels "1000","1001",..: 874 1 2 3 4 5 6 7 8 
+9 ...
+ .. ..$ x  : num [1:2201] 360175 360176 360178 360169 360167 ...
+ .. ..$ y  : num [1:2201] 512736 512736 512733 512719 512712 ...
+ .. ..$ z  : num [1:2201] 86.5 87.4 87.7 86.9 86 ...
+ ..@ coords.nrs : num(0)
+ ..@ coords     : num [1:2201, 1:2] 360175 360176 360178 360169 360167 ...
+ .. ..- attr(*, "dimnames")=List of 2
+ .. .. ..$ : NULL
+ .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+ ..@ bbox       : num [1:2, 1:2] 359907 512481 360492 512778
+ .. ..- attr(*, "dimnames")=List of 2
+ .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+ .. .. ..$ : chr [1:2] "min" "max"
+ ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+ .. .. ..@ projargs: chr " +proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 
++x_0=500000 +y_0=-5300000 +no_defs +a=6378137 +rf=298.257222101 
++towgs84=0.000,0.000,"| __truncated__
+
+and newdata grid:
+str(grid)
+Formal class 'SpatialGridDataFrame' [package "sp"] with 6 slots
+ ..@ data       :'data.frame':    131352 obs. of  1 variable:
+ .. ..$ region2: int [1:131352] NA NA NA NA NA NA NA NA NA NA ...
+ ..@ grid       :Formal class 'GridTopology' [package "sp"] with 3 slots
+ .. .. ..@ cellcentre.offset: Named num [1:2] 359902 512478
+ .. .. .. ..- attr(*, "names")= chr [1:2] "x" "y"
+ .. .. ..@ cellsize         : num [1:2] 1.001 0.998
+ .. .. ..@ cells.dim        : int [1:2] 421 312
+ ..@ grid.index : int(0)
+ ..@ coords     : num [1:2, 1:2] 359902 360322 512478 512788
+ .. ..- attr(*, "dimnames")=List of 2
+ .. .. ..$ : NULL
+ .. .. ..$ : chr [1:2] "x" "y"
+ ..@ bbox       : num [1:2, 1:2] 359901 512477 360323 512789
+ .. ..- attr(*, "dimnames")=List of 2
+ .. .. ..$ : chr [1:2] "x" "y"
+ .. .. ..$ : chr [1:2] "min" "max"
+ ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+ .. .. ..@ projargs: chr " +proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 
++x_0=500000 +y_0=-5300000 +no_defs +a=6378137 +rf=298.257222101 
++towgs84=0.000,0.000,"| __truncated__
+From Roger.Bivand at nhh.no  Fri Jun 19 15:46:19 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri Jun 19 15:46:23 2009
+Subject: [GRASS-stats] another gstat error
+In-Reply-To: <4A3BDC7E.8020608@amu.edu.pl>
+References: <4A3BDC7E.8020608@amu.edu.pl>
+Message-ID: <alpine.LRH.2.00.0906192143110.20869@reclus.nhh.no>
+
+On Fri, 19 Jun 2009, Jaros?aw Jasiewicz wrote:
+
+> Hi
+> Another gstat error:
+>
+> var.krigged=krige(z~x+y,gr,grid,model=var.fitted)
+> [using universal kriging]
+>
+> "chfactor.c", line 130: singular matrix in function LDLfactor()
+> Error in predict.gstat(g, newdata = newdata, block = block, nsim = nsim,  :
+> LDLfactor
+
+Jarek:
+
+Shall I repeat what I wrote this morning? Did you actually try omitting 
+the x+y in the formula? Including a drift in untransformed coordinates is 
+very likely to lead to numerical chaos. If z~1 works, then the smoking gun 
+is the x+y, isn't it? If you want them, transform them (offset with for 
+example elide() in maptools and transform back afterwards).
+
+Roger
+
+>
+> I can't imagine the reason
+>
+> regards
+> Jarek
+>
+> here is structure of my gr spatialPointsDataFrame used in analysis:
+>
+> str(gr)
+> Formal class 'SpatialPointsDataFrame' [package "sp"] with 5 slots
+> ..@ data       :'data.frame':    2201 obs. of  5 variables:
+> .. ..$ cat: num [1:2201] 2 3 4 5 6 7 8 9 10 11 ...
+> .. ..$ naz: Factor w/ 874 levels "1000","1001",..: 874 1 2 3 4 5 6 7 8 9 ...
+> .. ..$ x  : num [1:2201] 360175 360176 360178 360169 360167 ...
+> .. ..$ y  : num [1:2201] 512736 512736 512733 512719 512712 ...
+> .. ..$ z  : num [1:2201] 86.5 87.4 87.7 86.9 86 ...
+> ..@ coords.nrs : num(0)
+> ..@ coords     : num [1:2201, 1:2] 360175 360176 360178 360169 360167 ...
+> .. ..- attr(*, "dimnames")=List of 2
+> .. .. ..$ : NULL
+> .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+> ..@ bbox       : num [1:2, 1:2] 359907 512481 360492 512778
+> .. ..- attr(*, "dimnames")=List of 2
+> .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+> .. .. ..$ : chr [1:2] "min" "max"
+> ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+> .. .. ..@ projargs: chr " +proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 
+> +x_0=500000 +y_0=-5300000 +no_defs +a=6378137 +rf=298.257222101 
+> +towgs84=0.000,0.000,"| __truncated__
+>
+> and newdata grid:
+> str(grid)
+> Formal class 'SpatialGridDataFrame' [package "sp"] with 6 slots
+> ..@ data       :'data.frame':    131352 obs. of  1 variable:
+> .. ..$ region2: int [1:131352] NA NA NA NA NA NA NA NA NA NA ...
+> ..@ grid       :Formal class 'GridTopology' [package "sp"] with 3 slots
+> .. .. ..@ cellcentre.offset: Named num [1:2] 359902 512478
+> .. .. .. ..- attr(*, "names")= chr [1:2] "x" "y"
+> .. .. ..@ cellsize         : num [1:2] 1.001 0.998
+> .. .. ..@ cells.dim        : int [1:2] 421 312
+> ..@ grid.index : int(0)
+> ..@ coords     : num [1:2, 1:2] 359902 360322 512478 512788
+> .. ..- attr(*, "dimnames")=List of 2
+> .. .. ..$ : NULL
+> .. .. ..$ : chr [1:2] "x" "y"
+> ..@ bbox       : num [1:2, 1:2] 359901 512477 360323 512789
+> .. ..- attr(*, "dimnames")=List of 2
+> .. .. ..$ : chr [1:2] "x" "y"
+> .. .. ..$ : chr [1:2] "min" "max"
+> ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+> .. .. ..@ projargs: chr " +proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 
+> +x_0=500000 +y_0=-5300000 +no_defs +a=6378137 +rf=298.257222101 
+> +towgs84=0.000,0.000,"| __truncated__
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From jarekj at amu.edu.pl  Fri Jun 19 23:58:19 2009
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Fri Jun 19 23:58:26 2009
+Subject: [GRASS-stats] another gstat error
+In-Reply-To: <alpine.LRH.2.00.0906192143110.20869@reclus.nhh.no>
+References: <4A3BDC7E.8020608@amu.edu.pl>
+	<alpine.LRH.2.00.0906192143110.20869@reclus.nhh.no>
+Message-ID: <4A3C5E5B.6030906@amu.edu.pl>
+
+
+
+Roger Bivand pisze:
+> On Fri, 19 Jun 2009, Jaros?aw Jasiewicz wrote:
+>
+>> Hi
+>> Another gstat error:
+>>
+>> var.krigged=krige(z~x+y,gr,grid,model=var.fitted)
+>> [using universal kriging]
+>>
+>> "chfactor.c", line 130: singular matrix in function LDLfactor()
+>> Error in predict.gstat(g, newdata = newdata, block = block, nsim = 
+>> nsim,  :
+>> LDLfactor
+>
+> Jarek:
+>
+> Shall I repeat what I wrote this morning? 
+????
+> Did you actually try omitting the x+y in the formula? 
+Yes, before I send post I tried firrst z~(x+y)^2 and if it failed I used 
+z~1 to try without drift. The same error ocurs
+> Including a drift in untransformed coordinates is very likely to lead 
+> to numerical chaos. If z~1 works, then the smoking gun is the x+y, 
+> isn't it? If you want them, transform them (offset with for example 
+> elide() in maptools and transform back afterwards).
+>
+> Roger
+>
+>>
+>> I can't imagine the reason
+>>
+>> regards
+>> Jarek
+>>
+>> here is structure of my gr spatialPointsDataFrame used in analysis:
+>>
+>> str(gr)
+>> Formal class 'SpatialPointsDataFrame' [package "sp"] with 5 slots
+>> ..@ data       :'data.frame':    2201 obs. of  5 variables:
+>> .. ..$ cat: num [1:2201] 2 3 4 5 6 7 8 9 10 11 ...
+>> .. ..$ naz: Factor w/ 874 levels "1000","1001",..: 874 1 2 3 4 5 6 7 
+>> 8 9 ...
+>> .. ..$ x  : num [1:2201] 360175 360176 360178 360169 360167 ...
+>> .. ..$ y  : num [1:2201] 512736 512736 512733 512719 512712 ...
+>> .. ..$ z  : num [1:2201] 86.5 87.4 87.7 86.9 86 ...
+>> ..@ coords.nrs : num(0)
+>> ..@ coords     : num [1:2201, 1:2] 360175 360176 360178 360169 360167 
+>> ...
+>> .. ..- attr(*, "dimnames")=List of 2
+>> .. .. ..$ : NULL
+>> .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+>> ..@ bbox       : num [1:2, 1:2] 359907 512481 360492 512778
+>> .. ..- attr(*, "dimnames")=List of 2
+>> .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+>> .. .. ..$ : chr [1:2] "min" "max"
+>> ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+>> .. .. ..@ projargs: chr " +proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 
+>> +x_0=500000 +y_0=-5300000 +no_defs +a=6378137 +rf=298.257222101 
+>> +towgs84=0.000,0.000,"| __truncated__
+>>
+>> and newdata grid:
+>> str(grid)
+>> Formal class 'SpatialGridDataFrame' [package "sp"] with 6 slots
+>> ..@ data       :'data.frame':    131352 obs. of  1 variable:
+>> .. ..$ region2: int [1:131352] NA NA NA NA NA NA NA NA NA NA ...
+>> ..@ grid       :Formal class 'GridTopology' [package "sp"] with 3 slots
+>> .. .. ..@ cellcentre.offset: Named num [1:2] 359902 512478
+>> .. .. .. ..- attr(*, "names")= chr [1:2] "x" "y"
+>> .. .. ..@ cellsize         : num [1:2] 1.001 0.998
+>> .. .. ..@ cells.dim        : int [1:2] 421 312
+>> ..@ grid.index : int(0)
+>> ..@ coords     : num [1:2, 1:2] 359902 360322 512478 512788
+>> .. ..- attr(*, "dimnames")=List of 2
+>> .. .. ..$ : NULL
+>> .. .. ..$ : chr [1:2] "x" "y"
+>> ..@ bbox       : num [1:2, 1:2] 359901 512477 360323 512789
+>> .. ..- attr(*, "dimnames")=List of 2
+>> .. .. ..$ : chr [1:2] "x" "y"
+>> .. .. ..$ : chr [1:2] "min" "max"
+>> ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+>> .. .. ..@ projargs: chr " +proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 
+>> +x_0=500000 +y_0=-5300000 +no_defs +a=6378137 +rf=298.257222101 
+>> +towgs84=0.000,0.000,"| __truncated__
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>
+From Roger.Bivand at nhh.no  Sat Jun 20 05:01:34 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sat Jun 20 05:01:36 2009
+Subject: [GRASS-stats] another gstat error
+In-Reply-To: <4A3C5E5B.6030906@amu.edu.pl>
+References: <4A3BDC7E.8020608@amu.edu.pl>
+	<alpine.LRH.2.00.0906192143110.20869@reclus.nhh.no>
+	<4A3C5E5B.6030906@amu.edu.pl>
+Message-ID: <alpine.LRH.2.00.0906201055420.30041@reclus.nhh.no>
+
+On Sat, 20 Jun 2009, Jarek Jasiewicz wrote:
+
+>
+>
+> Roger Bivand pisze:
+>> On Fri, 19 Jun 2009, Jaros?aw Jasiewicz wrote:
+>> 
+>>> Hi
+>>> Another gstat error:
+>>> 
+>>> var.krigged=krige(z~x+y,gr,grid,model=var.fitted)
+>>> [using universal kriging]
+>>> 
+>>> "chfactor.c", line 130: singular matrix in function LDLfactor()
+>>> Error in predict.gstat(g, newdata = newdata, block = block, nsim = nsim, 
+>>> :
+>>> LDLfactor
+>> 
+>> Jarek:
+>> 
+>> Shall I repeat what I wrote this morning? 
+> ????
+
+My reply is in the list archives and nabble, so I don't know why you 
+didn't get it.
+
+>> Did you actually try omitting the x+y in the formula? 
+> Yes, before I send post I tried firrst z~(x+y)^2 and if it failed I used z~1 
+> to try without drift. The same error ocurs
+
+Googling 'gstat "chfactor.c", line 130: singular matrix in function 
+LDLfactor', I got to:
+
+http://osdir.com/ml/lang.r.geo/2006-07/msg00049.html
+
+which says:
+
+HINT: Read the manual at http://www.gstat.org/ ;
+look for: Trouble shooting -> Error messages -> From meschach
+
+"chfactor.c", line 130: singular matrix in function LDLfactor()
+Error in predict.gstat(g, newdata = newdata, block = block, nsim = nsim, :
+matrix library error: gstat: matrix library error: singular matrix
+---end R output
+
+after consulting the gstat manual I found the following reference:
+
+"These two error messages may occur (a) during simulation, when an
+observation falls almost exactly at a simulation location (b) when two
+observations occur at identical location occur and noaverage was defined 
+in
+its data definition. Solution to (a): increase the value of zero, to (b):
+remove the noaverage. Read also the next section."
+
+My input file was converted from lat/long to UTM using spTransform. The
+sampling density is quite high and it is possible that after conversion
+from latlong to UTM because of rounding some measurements fall on 
+identical
+coordinates. Is this a possible explanation for the error?
+
+The GSTAT online manual suggests to remove "noaverage" or increase "zero"
+to overcome the problem. However, I have not figured out how to do this
+when running gstat under R.
+
+So it looks as though you may have points that are seen as identical in 
+your data set.
+
+Hope this helps,
+
+Roger
+
+>> Including a drift in untransformed coordinates is very likely to lead to 
+>> numerical chaos. If z~1 works, then the smoking gun is the x+y, isn't it? 
+>> If you want them, transform them (offset with for example elide() in 
+>> maptools and transform back afterwards).
+>> 
+>> Roger
+>> 
+>>> 
+>>> I can't imagine the reason
+>>> 
+>>> regards
+>>> Jarek
+>>> 
+>>> here is structure of my gr spatialPointsDataFrame used in analysis:
+>>> 
+>>> str(gr)
+>>> Formal class 'SpatialPointsDataFrame' [package "sp"] with 5 slots
+>>> ..@ data       :'data.frame':    2201 obs. of  5 variables:
+>>> .. ..$ cat: num [1:2201] 2 3 4 5 6 7 8 9 10 11 ...
+>>> .. ..$ naz: Factor w/ 874 levels "1000","1001",..: 874 1 2 3 4 5 6 7 8 9 
+>>> ...
+>>> .. ..$ x  : num [1:2201] 360175 360176 360178 360169 360167 ...
+>>> .. ..$ y  : num [1:2201] 512736 512736 512733 512719 512712 ...
+>>> .. ..$ z  : num [1:2201] 86.5 87.4 87.7 86.9 86 ...
+>>> ..@ coords.nrs : num(0)
+>>> ..@ coords     : num [1:2201, 1:2] 360175 360176 360178 360169 360167 ...
+>>> .. ..- attr(*, "dimnames")=List of 2
+>>> .. .. ..$ : NULL
+>>> .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+>>> ..@ bbox       : num [1:2, 1:2] 359907 512481 360492 512778
+>>> .. ..- attr(*, "dimnames")=List of 2
+>>> .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+>>> .. .. ..$ : chr [1:2] "min" "max"
+>>> ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+>>> .. .. ..@ projargs: chr " +proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 
+>>> +x_0=500000 +y_0=-5300000 +no_defs +a=6378137 +rf=298.257222101 
+>>> +towgs84=0.000,0.000,"| __truncated__
+>>> 
+>>> and newdata grid:
+>>> str(grid)
+>>> Formal class 'SpatialGridDataFrame' [package "sp"] with 6 slots
+>>> ..@ data       :'data.frame':    131352 obs. of  1 variable:
+>>> .. ..$ region2: int [1:131352] NA NA NA NA NA NA NA NA NA NA ...
+>>> ..@ grid       :Formal class 'GridTopology' [package "sp"] with 3 slots
+>>> .. .. ..@ cellcentre.offset: Named num [1:2] 359902 512478
+>>> .. .. .. ..- attr(*, "names")= chr [1:2] "x" "y"
+>>> .. .. ..@ cellsize         : num [1:2] 1.001 0.998
+>>> .. .. ..@ cells.dim        : int [1:2] 421 312
+>>> ..@ grid.index : int(0)
+>>> ..@ coords     : num [1:2, 1:2] 359902 360322 512478 512788
+>>> .. ..- attr(*, "dimnames")=List of 2
+>>> .. .. ..$ : NULL
+>>> .. .. ..$ : chr [1:2] "x" "y"
+>>> ..@ bbox       : num [1:2, 1:2] 359901 512477 360323 512789
+>>> .. ..- attr(*, "dimnames")=List of 2
+>>> .. .. ..$ : chr [1:2] "x" "y"
+>>> .. .. ..$ : chr [1:2] "min" "max"
+>>> ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+>>> .. .. ..@ projargs: chr " +proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 
+>>> +x_0=500000 +y_0=-5300000 +no_defs +a=6378137 +rf=298.257222101 
+>>> +towgs84=0.000,0.000,"| __truncated__
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats@lists.osgeo.org
+>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>> 
+>> 
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From jarekj at amu.edu.pl  Sat Jun 20 07:32:10 2009
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Sat Jun 20 07:32:16 2009
+Subject: [GRASS-stats] another gstat error
+In-Reply-To: <alpine.LRH.2.00.0906201055420.30041@reclus.nhh.no>
+References: <4A3BDC7E.8020608@amu.edu.pl>
+	<alpine.LRH.2.00.0906192143110.20869@reclus.nhh.no>
+	<4A3C5E5B.6030906@amu.edu.pl>
+	<alpine.LRH.2.00.0906201055420.30041@reclus.nhh.no>
+Message-ID: <4A3CC8BA.108@amu.edu.pl>
+
+
+
+Roger Bivand pisze:
+> On Sat, 20 Jun 2009, Jarek Jasiewicz wrote:
+>
+>>
+>>
+>> Roger Bivand pisze:
+>>> On Fri, 19 Jun 2009, Jaros?aw Jasiewicz wrote:
+>>>
+>>>> Hi
+>>>> Another gstat error:
+>>>>
+>>>> var.krigged=krige(z~x+y,gr,grid,model=var.fitted)
+>>>> [using universal kriging]
+>>>>
+>>>> "chfactor.c", line 130: singular matrix in function LDLfactor()
+>>>> Error in predict.gstat(g, newdata = newdata, block = block, nsim = 
+>>>> nsim, :
+>>>> LDLfactor
+>>>
+>>> Jarek:
+>>>
+>>> Shall I repeat what I wrote this morning? 
+>> ????
+>
+> My reply is in the list archives and nabble, so I don't know why you 
+> didn't get it.
+yes, I found it on archive, I don't know why I did'n recive it, sorry.
+>
+>>> Did you actually try omitting the x+y in the formula? 
+>> Yes, before I send post I tried firrst z~(x+y)^2 and if it failed I 
+>> used z~1 to try without drift. The same error ocurs
+>
+> Googling 'gstat "chfactor.c", line 130: singular matrix in function 
+> LDLfactor', I got to:
+>
+> http://osdir.com/ml/lang.r.geo/2006-07/msg00049.html
+>
+> which says:
+>
+> HINT: Read the manual at http://www.gstat.org/ ;
+> look for: Trouble shooting -> Error messages -> From meschach
+>
+> "chfactor.c", line 130: singular matrix in function LDLfactor()
+> Error in predict.gstat(g, newdata = newdata, block = block, nsim = 
+> nsim, :
+> matrix library error: gstat: matrix library error: singular matrix
+> ---end R output
+>
+> after consulting the gstat manual I found the following reference:
+>
+> "These two error messages may occur (a) during simulation, when an
+> observation falls almost exactly at a simulation location (b) when two
+> observations occur at identical location occur and noaverage was 
+> defined in
+> its data definition. Solution to (a): increase the value of zero, to (b):
+> remove the noaverage. Read also the next section."
+>
+> My input file was converted from lat/long to UTM using spTransform. The
+> sampling density is quite high and it is possible that after conversion
+> from latlong to UTM because of rounding some measurements fall on 
+> identical
+> coordinates. Is this a possible explanation for the error?
+>
+> The GSTAT online manual suggests to remove "noaverage" or increase "zero"
+> to overcome the problem. However, I have not figured out how to do this
+> when running gstat under R.
+>
+> So it looks as though you may have points that are seen as identical 
+> in your data set.
+>
+> Hope this helps,
+>
+> Roger
+Yes, it is possible, I must find method to identyfy and remove 
+duplicates I will try SPATSTAT's remove duplicate functions
+
+Thanks an many
+Jarek
+>
+>>> Including a drift in untransformed coordinates is very likely to 
+>>> lead to numerical chaos. If z~1 works, then the smoking gun is the 
+>>> x+y, isn't it? If you want them, transform them (offset with for 
+>>> example elide() in maptools and transform back afterwards).
+>>>
+>>> Roger
+>>>
+>>>>
+>>>> I can't imagine the reason
+>>>>
+>>>> regards
+>>>> Jarek
+>>>>
+>>>> here is structure of my gr spatialPointsDataFrame used in analysis:
+>>>>
+>>>> str(gr)
+>>>> Formal class 'SpatialPointsDataFrame' [package "sp"] with 5 slots
+>>>> ..@ data       :'data.frame':    2201 obs. of  5 variables:
+>>>> .. ..$ cat: num [1:2201] 2 3 4 5 6 7 8 9 10 11 ...
+>>>> .. ..$ naz: Factor w/ 874 levels "1000","1001",..: 874 1 2 3 4 5 6 
+>>>> 7 8 9 ...
+>>>> .. ..$ x  : num [1:2201] 360175 360176 360178 360169 360167 ...
+>>>> .. ..$ y  : num [1:2201] 512736 512736 512733 512719 512712 ...
+>>>> .. ..$ z  : num [1:2201] 86.5 87.4 87.7 86.9 86 ...
+>>>> ..@ coords.nrs : num(0)
+>>>> ..@ coords     : num [1:2201, 1:2] 360175 360176 360178 360169 
+>>>> 360167 ...
+>>>> .. ..- attr(*, "dimnames")=List of 2
+>>>> .. .. ..$ : NULL
+>>>> .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+>>>> ..@ bbox       : num [1:2, 1:2] 359907 512481 360492 512778
+>>>> .. ..- attr(*, "dimnames")=List of 2
+>>>> .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+>>>> .. .. ..$ : chr [1:2] "min" "max"
+>>>> ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+>>>> .. .. ..@ projargs: chr " +proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 
+>>>> +x_0=500000 +y_0=-5300000 +no_defs +a=6378137 +rf=298.257222101 
+>>>> +towgs84=0.000,0.000,"| __truncated__
+>>>>
+>>>> and newdata grid:
+>>>> str(grid)
+>>>> Formal class 'SpatialGridDataFrame' [package "sp"] with 6 slots
+>>>> ..@ data       :'data.frame':    131352 obs. of  1 variable:
+>>>> .. ..$ region2: int [1:131352] NA NA NA NA NA NA NA NA NA NA ...
+>>>> ..@ grid       :Formal class 'GridTopology' [package "sp"] with 3 
+>>>> slots
+>>>> .. .. ..@ cellcentre.offset: Named num [1:2] 359902 512478
+>>>> .. .. .. ..- attr(*, "names")= chr [1:2] "x" "y"
+>>>> .. .. ..@ cellsize         : num [1:2] 1.001 0.998
+>>>> .. .. ..@ cells.dim        : int [1:2] 421 312
+>>>> ..@ grid.index : int(0)
+>>>> ..@ coords     : num [1:2, 1:2] 359902 360322 512478 512788
+>>>> .. ..- attr(*, "dimnames")=List of 2
+>>>> .. .. ..$ : NULL
+>>>> .. .. ..$ : chr [1:2] "x" "y"
+>>>> ..@ bbox       : num [1:2, 1:2] 359901 512477 360323 512789
+>>>> .. ..- attr(*, "dimnames")=List of 2
+>>>> .. .. ..$ : chr [1:2] "x" "y"
+>>>> .. .. ..$ : chr [1:2] "min" "max"
+>>>> ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+>>>> .. .. ..@ projargs: chr " +proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 
+>>>> +x_0=500000 +y_0=-5300000 +no_defs +a=6378137 +rf=298.257222101 
+>>>> +towgs84=0.000,0.000,"| __truncated__
+>>>> _______________________________________________
+>>>> grass-stats mailing list
+>>>> grass-stats@lists.osgeo.org
+>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>
+>>>
+>>
+>
+From statsgrass at grass.itc.it  Sun Jun 21 18:59:57 2009
+From: statsgrass at grass.itc.it (statsgrass@grass.itc.it)
+Date: Sun Jun 21 19:03:22 2009
+Subject: [GRASS-stats] Supertasty and Healthy. Acai Berry. 
+Message-ID: <000d01c9f2c3$ff6d7dc0$6400a8c0@nearestby2>
+
+Lose wieght and keep it off ,  Try Acai Berry.
+
+We strive to only deliver the highest quality acai get your free trial now.
+
+
+A straight click http://oaoetiea.cn
+
+From edzer.pebesma at uni-muenster.de  Mon Jun 22 04:04:58 2009
+From: edzer.pebesma at uni-muenster.de (Edzer Pebesma)
+Date: Mon Jun 22 04:27:36 2009
+Subject: [GRASS-stats] another gstat error
+In-Reply-To: <4A3CC8BA.108@amu.edu.pl>
+References: <4A3BDC7E.8020608@amu.edu.pl>	<alpine.LRH.2.00.0906192143110.20869@reclus.nhh.no>	<4A3C5E5B.6030906@amu.edu.pl>	<alpine.LRH.2.00.0906201055420.30041@reclus.nhh.no>
+	<4A3CC8BA.108@amu.edu.pl>
+Message-ID: <4A3F3B2A.5030306@uni-muenster.de>
+
+
+
+Jarek Jasiewicz wrote:
+>
+>
+> Roger Bivand pisze:
+>
+...
+>>
+>>
+>> So it looks as though you may have points that are seen as identical
+>> in your data set.
+>>
+>> Hope this helps,
+>>
+>> Roger
+> Yes, it is possible, I must find method to identyfy and remove
+> duplicates I will try SPATSTAT's remove duplicate functions
+package sp has function zerodist for this purpose.
+--
+Edzer
+>
+> Thanks an many
+> Jarek
+>>
+>>>> Including a drift in untransformed coordinates is very likely to
+>>>> lead to numerical chaos. If z~1 works, then the smoking gun is the
+>>>> x+y, isn't it? If you want them, transform them (offset with for
+>>>> example elide() in maptools and transform back afterwards).
+>>>>
+>>>> Roger
+>>>>
+>>>>>
+>>>>> I can't imagine the reason
+>>>>>
+>>>>> regards
+>>>>> Jarek
+>>>>>
+>>>>> here is structure of my gr spatialPointsDataFrame used in analysis:
+>>>>>
+>>>>> str(gr)
+>>>>> Formal class 'SpatialPointsDataFrame' [package "sp"] with 5 slots
+>>>>> ..@ data       :'data.frame':    2201 obs. of  5 variables:
+>>>>> .. ..$ cat: num [1:2201] 2 3 4 5 6 7 8 9 10 11 ...
+>>>>> .. ..$ naz: Factor w/ 874 levels "1000","1001",..: 874 1 2 3 4 5 6
+>>>>> 7 8 9 ...
+>>>>> .. ..$ x  : num [1:2201] 360175 360176 360178 360169 360167 ...
+>>>>> .. ..$ y  : num [1:2201] 512736 512736 512733 512719 512712 ...
+>>>>> .. ..$ z  : num [1:2201] 86.5 87.4 87.7 86.9 86 ...
+>>>>> ..@ coords.nrs : num(0)
+>>>>> ..@ coords     : num [1:2201, 1:2] 360175 360176 360178 360169
+>>>>> 360167 ...
+>>>>> .. ..- attr(*, "dimnames")=List of 2
+>>>>> .. .. ..$ : NULL
+>>>>> .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+>>>>> ..@ bbox       : num [1:2, 1:2] 359907 512481 360492 512778
+>>>>> .. ..- attr(*, "dimnames")=List of 2
+>>>>> .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+>>>>> .. .. ..$ : chr [1:2] "min" "max"
+>>>>> ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+>>>>> .. .. ..@ projargs: chr " +proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993
+>>>>> +x_0=500000 +y_0=-5300000 +no_defs +a=6378137 +rf=298.257222101
+>>>>> +towgs84=0.000,0.000,"| __truncated__
+>>>>>
+>>>>> and newdata grid:
+>>>>> str(grid)
+>>>>> Formal class 'SpatialGridDataFrame' [package "sp"] with 6 slots
+>>>>> ..@ data       :'data.frame':    131352 obs. of  1 variable:
+>>>>> .. ..$ region2: int [1:131352] NA NA NA NA NA NA NA NA NA NA ...
+>>>>> ..@ grid       :Formal class 'GridTopology' [package "sp"] with 3
+>>>>> slots
+>>>>> .. .. ..@ cellcentre.offset: Named num [1:2] 359902 512478
+>>>>> .. .. .. ..- attr(*, "names")= chr [1:2] "x" "y"
+>>>>> .. .. ..@ cellsize         : num [1:2] 1.001 0.998
+>>>>> .. .. ..@ cells.dim        : int [1:2] 421 312
+>>>>> ..@ grid.index : int(0)
+>>>>> ..@ coords     : num [1:2, 1:2] 359902 360322 512478 512788
+>>>>> .. ..- attr(*, "dimnames")=List of 2
+>>>>> .. .. ..$ : NULL
+>>>>> .. .. ..$ : chr [1:2] "x" "y"
+>>>>> ..@ bbox       : num [1:2, 1:2] 359901 512477 360323 512789
+>>>>> .. ..- attr(*, "dimnames")=List of 2
+>>>>> .. .. ..$ : chr [1:2] "x" "y"
+>>>>> .. .. ..$ : chr [1:2] "min" "max"
+>>>>> ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+>>>>> .. .. ..@ projargs: chr " +proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993
+>>>>> +x_0=500000 +y_0=-5300000 +no_defs +a=6378137 +rf=298.257222101
+>>>>> +towgs84=0.000,0.000,"| __truncated__
+>>>>> _______________________________________________
+>>>>> grass-stats mailing list
+>>>>> grass-stats@lists.osgeo.org
+>>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>>
+>>>>
+>>>
+>>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Edzer Pebesma
+Institute for Geoinformatics (ifgi), University of M?nster
+Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+8333081, Fax: +49 251 8339763 http://ifgi.uni-muenster.de/
+http://www.springer.com/978-0-387-78170-9 e.pebesma@wwu.de
+
+From statsgrass at grass.itc.it  Tue Jun 23 10:29:23 2009
+From: statsgrass at grass.itc.it (statsgrass@grass.itc.it)
+Date: Tue Jun 23 09:29:25 2009
+Subject: [GRASS-stats] Acai Berry is good for the mind and soul sign up now
+	for your free trial
+Message-ID: <000d01c9f406$9efbe820$6400a8c0@tattooingo>
+
+Oprah certified wieght loss solution Acai.Berri.
+Acai Berry is your ticket to a slim sexy new you.
+&nbsp;
+Enter everybody
+?
+?
+Thank You! 
+best regards Stuart 
+Richey
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20090623/bbf8ee6a/attachment.html
+From greliermathieu at gmail.com  Thu Jun 25 09:17:34 2009
+From: greliermathieu at gmail.com (mathieu grelier)
+Date: Thu Jun 25 09:17:37 2009
+Subject: [GRASS-stats] universal kriging with spgrass6
+Message-ID: <6d400d3e0906250617p6893d910t62f53a3cf15cbc98@mail.gmail.com>
+
+Dear all,
+I am trying to achieve universal kriging with GRASS and R through spgrass6
+package.
+Maybe you could help me to find the right R syntax.
+As in the gstat doc, the polynomial I try to use for now is "x+y"
+
+In R, with automap package, this works :
+>data(meuse)
+>coordinates(meuse) = ~x+y
+>data(meuse.grid)
+>gridded(meuse.grid) = ~x+y
+>column = "zinc"
+##Ordinary kriging :
+>predictors = "1"
+>autoKrige(as.formula(paste(column,"~", predictors)), meuse, meuse.grid)
+##Universal kriging :
+>predictors = "x+y"
+>autoKrige(as.formula(paste(column,"~", predictors)), meuse, meuse.grid)
+
+But using spgrass6, it becomes (some steps have been skipped):
+>sitesR <- readVECT6("grass_sites")
+...
+>mask_SG <- SpatialGridDataFrame(grd, data=data, CRS(G$proj4))
+...
+
+##Ordinary kriging => WORKS:
+>predictors = "1"
+>kriging_result = autoKrige(as.formula(paste(column,"~",predictors)),
+sitesR, mask_SG)
+
+##Universal kriging => ERROR:
+>predictors = "x+y"
+>kriging_result = autoKrige(as.formula(paste(column,"~",predictors)),
+sitesR, mask_SG)
+>Error in eval(expr, envir, enclos) : "x" object not found
+
+Why can't we use the x an y columns here?
+Maybe it is because the meuse and sites R data.frames don't have the same
+structure ?
+> class(meuse)
+[1] "data.frame"
+> attributes(meuse)
+$names
+ [1] "x"       "y"       "cadmium" "copper"  "lead"    "zinc"    "elev"
+>class(sitesR)
+[1] "SpatialPointsDataFrame"
+> attributes(sitesR)
+$bbox
+...
+$proj4string
+...
+$coords
+...
+$data
+           site value cat        x       y
+1Ai      81.80   1 825094.9 6796083
+2     Al      38.50   2 758780.4 6851508
+3     Ar     103.50   3 818973.3 6796125
+4           Av      52.50   4 775136.0 6877271
+...
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20090625/19d14c3f/attachment.html
+From edzer.pebesma at uni-muenster.de  Thu Jun 25 17:18:43 2009
+From: edzer.pebesma at uni-muenster.de (Edzer Pebesma)
+Date: Thu Jun 25 17:18:48 2009
+Subject: [GRASS-stats] universal kriging with spgrass6
+In-Reply-To: <6d400d3e0906250617p6893d910t62f53a3cf15cbc98@mail.gmail.com>
+References: <6d400d3e0906250617p6893d910t62f53a3cf15cbc98@mail.gmail.com>
+Message-ID: <4A43E9B3.7080102@uni-muenster.de>
+
+Mathieu, that could very well be the case. Note that x+y do not
+"generally" refer to x- and y-coordinates, but are the actual names of
+the coordinates (or something else). From your example I cannot find out
+whether the coordinates are named x and y. In addition, they should have
+identical names in sitesR and mask_SG.
+
+Best regards,
+--
+Edzer
+
+mathieu grelier wrote:
+
+Dear all,
+I am trying to achieve universal kriging with GRASS and R through spgrass6
+package.
+Maybe you could help me to find the right R syntax.
+As in the gstat doc, the polynomial I try to use for now is "x+y"
+
+> Dear all,
+> I am trying to achieve universal kriging with GRASS and R through spgrass6
+> package.
+> Maybe you could help me to find the right R syntax.
+> As in the gstat doc, the polynomial I try to use for now is "x+y"
+>
+> In R, with automap package, this works :
+>   
+>> data(meuse)
+>> coordinates(meuse) = ~x+y
+>> data(meuse.grid)
+>> gridded(meuse.grid) = ~x+y
+>> column = "zinc"
+>>     
+> ##Ordinary kriging :
+>   
+>> predictors = "1"
+>> autoKrige(as.formula(paste(column,"~", predictors)), meuse, meuse.grid)
+>>     
+> ##Universal kriging :
+>   
+>> predictors = "x+y"
+>> autoKrige(as.formula(paste(column,"~", predictors)), meuse, meuse.grid)
+>>     
+>
+> But using spgrass6, it becomes (some steps have been skipped):
+>   
+>> sitesR <- readVECT6("grass_sites")
+>>     
+> ...
+>   
+>> mask_SG <- SpatialGridDataFrame(grd, data=data, CRS(G$proj4))
+>>     
+> ...
+>
+> ##Ordinary kriging => WORKS:
+>   
+>> predictors = "1"
+>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)),
+>>     
+> sitesR, mask_SG)
+>
+> ##Universal kriging => ERROR:
+>   
+>> predictors = "x+y"
+>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)),
+>>     
+> sitesR, mask_SG)
+>   
+>> Error in eval(expr, envir, enclos) : "x" object not found
+>>     
+>
+> Why can't we use the x an y columns here?
+> Maybe it is because the meuse and sites R data.frames don't have the same
+> structure ?
+>   
+>> class(meuse)
+>>     
+> [1] "data.frame"
+>   
+>> attributes(meuse)
+>>     
+> $names
+>  [1] "x"       "y"       "cadmium" "copper"  "lead"    "zinc"    "elev"
+>   
+>> class(sitesR)
+>>     
+> [1] "SpatialPointsDataFrame"
+>   
+>> attributes(sitesR)
+>>     
+> $bbox
+> ...
+> $proj4string
+> ...
+> $coords
+> ...
+> $data
+>            site value cat        x       y
+> 1Ai      81.80   1 825094.9 6796083
+> 2     Al      38.50   2 758780.4 6851508
+> 3     Ar     103.50   3 818973.3 6796125
+> 4           Av      52.50   4 775136.0 6877271
+> ...
+>
+>   
+> ------------------------------------------------------------------------
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>   
+
+-- 
+Edzer Pebesma
+Institute for Geoinformatics (ifgi), University of M?nster
+Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+8333081, Fax: +49 251 8339763 http://ifgi.uni-muenster.de/
+http://www.springer.com/978-0-387-78170-9 e.pebesma@wwu.de
+
+From Roger.Bivand at nhh.no  Fri Jun 26 02:34:58 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri Jun 26 02:35:06 2009
+Subject: [GRASS-stats] universal kriging with spgrass6
+In-Reply-To: <4A43E9B3.7080102@uni-muenster.de>
+References: <6d400d3e0906250617p6893d910t62f53a3cf15cbc98@mail.gmail.com>
+	<4A43E9B3.7080102@uni-muenster.de>
+Message-ID: <alpine.LRH.2.00.0906260824170.8603@reclus.nhh.no>
+
+On Thu, 25 Jun 2009, Edzer Pebesma wrote:
+
+> Mathieu, that could very well be the case. Note that x+y do not
+> "generally" refer to x- and y-coordinates, but are the actual names of
+> the coordinates (or something else). From your example I cannot find out
+> whether the coordinates are named x and y. In addition, they should have
+> identical names in sitesR and mask_SG.
+
+Yes, it is beginning to look like the names in mask_SG, isn't it? Do you 
+have a view on whether degree= should be mandatory, or does the 
+infrastructure recognise coordinate RHS variables and rescale them 
+automatically (I doubt the latter)? Why do users use trend variables in 
+this way - the range of values in the (X'X) matrix becomes enormous with 
+the usual metre metric for coordinates?
+
+Roger
+
+>
+> Best regards,
+> --
+> Edzer
+>
+> mathieu grelier wrote:
+>
+> Dear all,
+> I am trying to achieve universal kriging with GRASS and R through spgrass6
+> package.
+> Maybe you could help me to find the right R syntax.
+> As in the gstat doc, the polynomial I try to use for now is "x+y"
+>
+>> Dear all,
+>> I am trying to achieve universal kriging with GRASS and R through spgrass6
+>> package.
+>> Maybe you could help me to find the right R syntax.
+>> As in the gstat doc, the polynomial I try to use for now is "x+y"
+>>
+>> In R, with automap package, this works :
+>>
+>>> data(meuse)
+>>> coordinates(meuse) = ~x+y
+>>> data(meuse.grid)
+>>> gridded(meuse.grid) = ~x+y
+>>> column = "zinc"
+>>>
+>> ##Ordinary kriging :
+>>
+>>> predictors = "1"
+>>> autoKrige(as.formula(paste(column,"~", predictors)), meuse, meuse.grid)
+>>>
+>> ##Universal kriging :
+>>
+>>> predictors = "x+y"
+>>> autoKrige(as.formula(paste(column,"~", predictors)), meuse, meuse.grid)
+>>>
+>>
+>> But using spgrass6, it becomes (some steps have been skipped):
+>>
+>>> sitesR <- readVECT6("grass_sites")
+>>>
+>> ...
+>>
+>>> mask_SG <- SpatialGridDataFrame(grd, data=data, CRS(G$proj4))
+>>>
+>> ...
+>>
+>> ##Ordinary kriging => WORKS:
+>>
+>>> predictors = "1"
+>>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)),
+>>>
+>> sitesR, mask_SG)
+>>
+>> ##Universal kriging => ERROR:
+>>
+>>> predictors = "x+y"
+>>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)),
+>>>
+>> sitesR, mask_SG)
+>>
+>>> Error in eval(expr, envir, enclos) : "x" object not found
+>>>
+>>
+>> Why can't we use the x an y columns here?
+>> Maybe it is because the meuse and sites R data.frames don't have the same
+>> structure ?
+>>
+>>> class(meuse)
+>>>
+>> [1] "data.frame"
+>>
+>>> attributes(meuse)
+>>>
+>> $names
+>>  [1] "x"       "y"       "cadmium" "copper"  "lead"    "zinc"    "elev"
+>>
+>>> class(sitesR)
+>>>
+>> [1] "SpatialPointsDataFrame"
+>>
+>>> attributes(sitesR)
+>>>
+>> $bbox
+>> ...
+>> $proj4string
+>> ...
+>> $coords
+>> ...
+>> $data
+>>            site value cat        x       y
+>> 1Ai      81.80   1 825094.9 6796083
+>> 2     Al      38.50   2 758780.4 6851508
+>> 3     Ar     103.50   3 818973.3 6796125
+>> 4           Av      52.50   4 775136.0 6877271
+>> ...
+>>
+>>
+>> ------------------------------------------------------------------------
+>>
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From edzer.pebesma at uni-muenster.de  Fri Jun 26 02:43:21 2009
+From: edzer.pebesma at uni-muenster.de (Edzer Pebesma)
+Date: Fri Jun 26 02:43:29 2009
+Subject: [GRASS-stats] universal kriging with spgrass6
+In-Reply-To: <alpine.LRH.2.00.0906260824170.8603@reclus.nhh.no>
+References: <6d400d3e0906250617p6893d910t62f53a3cf15cbc98@mail.gmail.com>
+	<4A43E9B3.7080102@uni-muenster.de>
+	<alpine.LRH.2.00.0906260824170.8603@reclus.nhh.no>
+Message-ID: <4A446E09.9060509@uni-muenster.de>
+
+
+
+Roger Bivand wrote:
+> On Thu, 25 Jun 2009, Edzer Pebesma wrote:
+>
+>> Mathieu, that could very well be the case. Note that x+y do not
+>> "generally" refer to x- and y-coordinates, but are the actual names of
+>> the coordinates (or something else). From your example I cannot find out
+>> whether the coordinates are named x and y. In addition, they should have
+>> identical names in sitesR and mask_SG.
+>
+> Yes, it is beginning to look like the names in mask_SG, isn't it? Do
+> you have a view on whether degree= should be mandatory, or does the
+> infrastructure recognise coordinate RHS variables and rescale them
+> automatically (I doubt the latter)? Why do users use trend variables
+> in this way - the range of values in the (X'X) matrix becomes enormous
+> with the usual metre metric for coordinates?
+Another question we could ask (ourselves) is why in R we allow users to
+give their coordinates the names they like. I remember that for that
+sole reason (need to rename) I added the function
+
+coordnames(x) = c("u", "v")
+
+to sp. In case they're called "lon" and "lat", they also don't change
+name after projection. But maybe I talk too much with people worrying
+about semantics, these days. ;-)
+--
+Edzer
+>
+> Roger
+>
+>>
+>> Best regards,
+>> -- 
+>> Edzer
+>>
+>> mathieu grelier wrote:
+>>
+>> Dear all,
+>> I am trying to achieve universal kriging with GRASS and R through
+>> spgrass6
+>> package.
+>> Maybe you could help me to find the right R syntax.
+>> As in the gstat doc, the polynomial I try to use for now is "x+y"
+>>
+>>> Dear all,
+>>> I am trying to achieve universal kriging with GRASS and R through
+>>> spgrass6
+>>> package.
+>>> Maybe you could help me to find the right R syntax.
+>>> As in the gstat doc, the polynomial I try to use for now is "x+y"
+>>>
+>>> In R, with automap package, this works :
+>>>
+>>>> data(meuse)
+>>>> coordinates(meuse) = ~x+y
+>>>> data(meuse.grid)
+>>>> gridded(meuse.grid) = ~x+y
+>>>> column = "zinc"
+>>>>
+>>> ##Ordinary kriging :
+>>>
+>>>> predictors = "1"
+>>>> autoKrige(as.formula(paste(column,"~", predictors)), meuse,
+>>>> meuse.grid)
+>>>>
+>>> ##Universal kriging :
+>>>
+>>>> predictors = "x+y"
+>>>> autoKrige(as.formula(paste(column,"~", predictors)), meuse,
+>>>> meuse.grid)
+>>>>
+>>>
+>>> But using spgrass6, it becomes (some steps have been skipped):
+>>>
+>>>> sitesR <- readVECT6("grass_sites")
+>>>>
+>>> ...
+>>>
+>>>> mask_SG <- SpatialGridDataFrame(grd, data=data, CRS(G$proj4))
+>>>>
+>>> ...
+>>>
+>>> ##Ordinary kriging => WORKS:
+>>>
+>>>> predictors = "1"
+>>>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)),
+>>>>
+>>> sitesR, mask_SG)
+>>>
+>>> ##Universal kriging => ERROR:
+>>>
+>>>> predictors = "x+y"
+>>>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)),
+>>>>
+>>> sitesR, mask_SG)
+>>>
+>>>> Error in eval(expr, envir, enclos) : "x" object not found
+>>>>
+>>>
+>>> Why can't we use the x an y columns here?
+>>> Maybe it is because the meuse and sites R data.frames don't have the
+>>> same
+>>> structure ?
+>>>
+>>>> class(meuse)
+>>>>
+>>> [1] "data.frame"
+>>>
+>>>> attributes(meuse)
+>>>>
+>>> $names
+>>>  [1] "x"       "y"       "cadmium" "copper"  "lead"    "zinc"    "elev"
+>>>
+>>>> class(sitesR)
+>>>>
+>>> [1] "SpatialPointsDataFrame"
+>>>
+>>>> attributes(sitesR)
+>>>>
+>>> $bbox
+>>> ...
+>>> $proj4string
+>>> ...
+>>> $coords
+>>> ...
+>>> $data
+>>>            site value cat        x       y
+>>> 1Ai      81.80   1 825094.9 6796083
+>>> 2     Al      38.50   2 758780.4 6851508
+>>> 3     Ar     103.50   3 818973.3 6796125
+>>> 4           Av      52.50   4 775136.0 6877271
+>>> ...
+>>>
+>>>
+>>> ------------------------------------------------------------------------
+>>>
+>>>
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats@lists.osgeo.org
+>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>
+>>
+>>
+>
+
+-- 
+Edzer Pebesma
+Institute for Geoinformatics (ifgi), University of M?nster
+Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+8333081, Fax: +49 251 8339763 http://ifgi.uni-muenster.de/
+http://www.springer.com/978-0-387-78170-9 e.pebesma@wwu.de
+
+From a.ghisla at gmail.com  Fri Jun 26 11:02:24 2009
+From: a.ghisla at gmail.com (Anne Ghisla)
+Date: Fri Jun 26 11:02:19 2009
+Subject: [GRASS-stats] [Report #5] Kriging with GRASS and R: v.autokrige
+ port to wxPython and more
+Message-ID: <1246028544.4157.8.camel@galadriel.uagra.net>
+
+Hello all, and sorry for cross-posting,
+
+just few minutes ago I succeded in completing the kriging procedure with
+gstat functions. It runs with a proof-of-concept dataset based on
+spearfish data, see this tutorial [0].
+Martin helped me a lot in getting the standard wxGUI comboboxes to run
+properly with filters.
+
+Next week I plan to adapt the interface to each R package's available
+options and consider how to solve lag issues in populating interface.
+
+The blocking issue about autoKrige() and projections is no more valid as
+I create the grid myself based on GRASS region.
+
+best regards,
+
+Anne
+
+[0] http://casoilresource.lawr.ucdavis.edu/drupal/node/438
+http://grass.osgeo.org/wiki/V.autokrige_GSoC_2009
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 197 bytes
+Desc: Questa =?ISO-8859-1?Q?=E8?= una parte del messaggio
+	firmata digitalmente
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20090626/91bf58ac/attachment.bin
+From michael.barton at asu.edu  Fri Jun 26 11:08:05 2009
+From: michael.barton at asu.edu (Michael Barton)
+Date: Fri Jun 26 11:08:22 2009
+Subject: [GRASS-stats] Re: [SoC] [Report #5] Kriging with GRASS and R:
+	v.autokrige port to wxPython and more
+In-Reply-To: <1246028544.4157.8.camel@galadriel.uagra.net>
+References: <1246028544.4157.8.camel@galadriel.uagra.net>
+Message-ID: <ECFE2E94-B2EB-4FBA-BAF1-6F7A5A3E52E4@asu.edu>
+
+Congratulations!
+
+Michael
+____________________
+C. Michael Barton, Professor of Anthropology
+Director of Graduate Studies, School of Human Evolution & Social Change
+Director, Center for Social Dynamics & Complexity
+Arizona State University
+
+Phone: 480-965-6262
+Fax: 480-965-7671
+www: <www.public.asu.edu/~cmbarton>
+
+
+
+
+On Jun 26, 2009, at 8:02 AM, Anne Ghisla wrote:
+
+> Hello all, and sorry for cross-posting,
+>
+> just few minutes ago I succeded in completing the kriging procedure  
+> with
+> gstat functions. It runs with a proof-of-concept dataset based on
+> spearfish data, see this tutorial [0].
+> Martin helped me a lot in getting the standard wxGUI comboboxes to run
+> properly with filters.
+>
+> Next week I plan to adapt the interface to each R package's available
+> options and consider how to solve lag issues in populating interface.
+>
+> The blocking issue about autoKrige() and projections is no more  
+> valid as
+> I create the grid myself based on GRASS region.
+>
+> best regards,
+>
+> Anne
+>
+> [0] http://casoilresource.lawr.ucdavis.edu/drupal/node/438
+> http://grass.osgeo.org/wiki/V.autokrige_GSoC_2009
+>
+> <signature.asc><ATT00001.txt>
+
+From john.tate at ntlworld.com  Fri Jun 26 11:56:41 2009
+From: john.tate at ntlworld.com (John Tate)
+Date: Fri Jun 26 11:56:50 2009
+Subject: [GRASS-stats] [Report #5] Kriging with GRASS and R: v.autokrige
+	port to wxPython and more
+References: <1246028544.4157.8.camel@galadriel.uagra.net>
+Message-ID: <001c01c9f676$b8b95fa0$0201a8c0@bobnessc294b04>
+
+Hi,
+
+Congrats on the work.
+
+As a new GRASS user and not script/add-on literate etc., I am having
+problems working out exactly how to install it. I am running GRASS
+v.6.4.0svn and installed R 2.9.1.
+
+I have read the guide in the Wiki on installing scripts (which I presume
+this is) and have had no success. I tried copying over the .py file but
+GRASS does not recognise it. I know I am doing something wrong as I do not
+fully understand.
+
+Could someone please take the time to take me through the process?
+
+Cheers
+
+John
+
+----- Original Message ----- 
+From: "Anne Ghisla" <a.ghisla@gmail.com>
+To: "OSGeo SoC" <soc@lists.osgeo.org>; <grass-dev@lists.osgeo.org>;
+<r-sig-geo@stat.math.ethz.ch>; <grass-stats@lists.osgeo.org>; "gfoss italia"
+<gfoss@faunalia.com>
+Sent: Friday, June 26, 2009 4:02 PM
+Subject: [GRASS-stats] [Report #5] Kriging with GRASS and R: v.autokrige
+port to wxPython and more
+
+
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+From john.tate at ntlworld.com  Fri Jun 26 11:52:34 2009
+From: john.tate at ntlworld.com (John Tate)
+Date: Fri Jun 26 12:09:49 2009
+Subject: [GRASS-stats] Re: [SoC] [Report #5] Kriging with GRASS and
+	R:v.autokrige port to wxPython and more
+References: <1246028544.4157.8.camel@galadriel.uagra.net>
+	<ECFE2E94-B2EB-4FBA-BAF1-6F7A5A3E52E4@asu.edu>
+Message-ID: <000d01c9f676$24c872e0$0201a8c0@bobnessc294b04>
+
+Hi,
+
+Congrats on the work.
+
+As a new GRASS user and not script/add-on literate etc., I am having 
+problems working out exactly how to install it. I am running GRASS 
+v.6.4.0svn and installed R 2.9.1.
+
+I have read the guide in the Wiki on installing scripts (which I presume 
+this is) and have had no success. I tried copying over the .py file but 
+GRASS does not recognise it. I know I am doing something wrong as I do not 
+fully understand.
+
+Could someone please take the time to take me through the process?
+
+Cheers
+
+John
+
+----- Original Message ----- 
+From: "Michael Barton" <michael.barton@asu.edu>
+To: "Anne Ghisla" <a.ghisla@gmail.com>
+Cc: <r-sig-geo@stat.math.ethz.ch>; "gfoss italia" <gfoss@faunalia.com>; 
+<grass-dev@lists.osgeo.org>; "OSGeo SoC" <soc@lists.osgeo.org>; 
+<grass-stats@lists.osgeo.org>
+Sent: Friday, June 26, 2009 4:08 PM
+Subject: [GRASS-stats] Re: [SoC] [Report #5] Kriging with GRASS and 
+R:v.autokrige port to wxPython and more
+
+
+> Congratulations!
+>
+> Michael
+> ____________________
+> C. Michael Barton, Professor of Anthropology
+> Director of Graduate Studies, School of Human Evolution & Social Change
+> Director, Center for Social Dynamics & Complexity
+> Arizona State University
+>
+> Phone: 480-965-6262
+> Fax: 480-965-7671
+> www: <www.public.asu.edu/~cmbarton>
+>
+>
+>
+>
+> On Jun 26, 2009, at 8:02 AM, Anne Ghisla wrote:
+>
+>> Hello all, and sorry for cross-posting,
+>>
+>> just few minutes ago I succeded in completing the kriging procedure  with
+>> gstat functions. It runs with a proof-of-concept dataset based on
+>> spearfish data, see this tutorial [0].
+>> Martin helped me a lot in getting the standard wxGUI comboboxes to run
+>> properly with filters.
+>>
+>> Next week I plan to adapt the interface to each R package's available
+>> options and consider how to solve lag issues in populating interface.
+>>
+>> The blocking issue about autoKrige() and projections is no more  valid as
+>> I create the grid myself based on GRASS region.
+>>
+>> best regards,
+>>
+>> Anne
+>>
+>> [0] http://casoilresource.lawr.ucdavis.edu/drupal/node/438
+>> http://grass.osgeo.org/wiki/V.autokrige_GSoC_2009
+>>
+>> <signature.asc><ATT00001.txt>
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats 
+
+From john.tate at ntlworld.com  Fri Jun 26 12:13:36 2009
+From: john.tate at ntlworld.com (John Tate)
+Date: Fri Jun 26 12:13:39 2009
+Subject: [GRASS-stats] Sorry for the multiple posts here.
+Message-ID: <001001c9f679$110473f0$0201a8c0@bobnessc294b04>
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20090626/9184e2fe/attachment.html
+From statsgrass at grass.itc.it  Sat Jun 27 13:34:40 2009
+From: statsgrass at grass.itc.it (statsgrass@grass.itc.it)
+Date: Sat Jun 27 13:35:59 2009
+Subject: [GRASS-stats] Acai Berry higly recommended by health professionals.
+Message-ID: <000d01c9f74d$8cd96650$6400a8c0@guardl3>
+
+natural powers will rejuvinate your health and looks, no cost trial
+Acai suppliments are not available everywhere.
+&nbsp;
+Accept our invitation
+ 
+ 
+Thank You! 
+best regards Magdalen 
+Levine
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20090627/2b1a7c81/attachment.html
+From greliermathieu at gmail.com  Mon Jun 29 06:03:46 2009
+From: greliermathieu at gmail.com (mathieu grelier)
+Date: Mon Jun 29 06:03:50 2009
+Subject: [GRASS-stats] universal kriging with spgrass6
+In-Reply-To: <4A446E09.9060509@uni-muenster.de>
+References: <6d400d3e0906250617p6893d910t62f53a3cf15cbc98@mail.gmail.com>
+	<4A43E9B3.7080102@uni-muenster.de>
+	<alpine.LRH.2.00.0906260824170.8603@reclus.nhh.no>
+	<4A446E09.9060509@uni-muenster.de>
+Message-ID: <6d400d3e0906290303s4132d916r62abe42d101805df@mail.gmail.com>
+
+ok,
+>From your answers, I've tried to play with the SpatialPointsDataFrame object
+imported from GRASS to fit the gstat krige function requirements. Basic idea
+seemed to work with the "data" attribute of the imported object, adding the
+missing coordinates columns :
+
+>sitesR <- readVECT6("grass_sites")
+>class(sitesR)
+> [1] "SpatialPointsDataFrame"
+> d = attr(sitesR,"data")
+>d
+
+           site value cat
+1           Ail      81.80   1
+2     All      38.50   2
+3     Arg     103.50   3
+4           Avb      52.50   4
+...
+
+> sitesR$x <- coordinates(sitesR)[,1]
+>sitesR$y <- coordinates(sitesR)[,2]
+> d = attr(sitesR,"data")
+> class(d)
+[1] "data.frame"
+> d
+           site value cat        x       y
+1           Ail      81.80   1 825094.9 6796083
+2     All      38.50   2 758780.4 6851508
+3     Arg     103.50   3 818973.3 6796125
+4           Avb      52.50   4 775136.0 6877271
+...
+
+> coordinates(d) = ~x+y
+> attr(d, "proj4string") <-CRS(G$proj4)
+
+>G <- gmeta6()
+>grd <- gmeta2grd()
+>slot(grd, "cellsize") <- c(1000, 1000)
+>data <- data.frame(list(k=rep(1,(floor(G$cols)*floor(G$rows)))))
+> mask_SG <- SpatialGridDataFrame(grd, data=data, CRS(G$proj4))
+
+
+>predictors = "x+y"
+>kriging_result = autoKrige(as.formula(paste(column,"~",predictors)), d,
+mask_SG)
+
+Result was :
+
+Error in gstat.formula.predict(d$formula, newdata, na.action = na.action,  :
+
+  NROW(locs) != NROW(X): this should not occur
+Warning messages:
+1: 'newdata' had 7900 rows but variable(s) found have 73 rows
+2: 'newdata' had 7900 rows but variable(s) found have 73 rows
+
+1)do you think this approach could be successful?
+2)If so, can you help me with this error?
+
+Mathieu
+
+2009/6/26 Edzer Pebesma <edzer.pebesma@uni-muenster.de>
+
+>
+>
+> Roger Bivand wrote:
+> > On Thu, 25 Jun 2009, Edzer Pebesma wrote:
+> >
+> >> Mathieu, that could very well be the case. Note that x+y do not
+> >> "generally" refer to x- and y-coordinates, but are the actual names of
+> >> the coordinates (or something else). From your example I cannot find out
+> >> whether the coordinates are named x and y. In addition, they should have
+> >> identical names in sitesR and mask_SG.
+> >
+> > Yes, it is beginning to look like the names in mask_SG, isn't it? Do
+> > you have a view on whether degree= should be mandatory, or does the
+> > infrastructure recognise coordinate RHS variables and rescale them
+> > automatically (I doubt the latter)? Why do users use trend variables
+> > in this way - the range of values in the (X'X) matrix becomes enormous
+> > with the usual metre metric for coordinates?
+> Another question we could ask (ourselves) is why in R we allow users to
+> give their coordinates the names they like. I remember that for that
+> sole reason (need to rename) I added the function
+>
+> coordnames(x) = c("u", "v")
+>
+> to sp. In case they're called "lon" and "lat", they also don't change
+> name after projection. But maybe I talk too much with people worrying
+> about semantics, these days. ;-)
+> --
+> Edzer
+> >
+> > Roger
+> >
+> >>
+> >> Best regards,
+> >> --
+> >> Edzer
+> >>
+> >> mathieu grelier wrote:
+> >>
+> >> Dear all,
+> >> I am trying to achieve universal kriging with GRASS and R through
+> >> spgrass6
+> >> package.
+> >> Maybe you could help me to find the right R syntax.
+> >> As in the gstat doc, the polynomial I try to use for now is "x+y"
+> >>
+> >>> Dear all,
+> >>> I am trying to achieve universal kriging with GRASS and R through
+> >>> spgrass6
+> >>> package.
+> >>> Maybe you could help me to find the right R syntax.
+> >>> As in the gstat doc, the polynomial I try to use for now is "x+y"
+> >>>
+> >>> In R, with automap package, this works :
+> >>>
+> >>>> data(meuse)
+> >>>> coordinates(meuse) = ~x+y
+> >>>> data(meuse.grid)
+> >>>> gridded(meuse.grid) = ~x+y
+> >>>> column = "zinc"
+> >>>>
+> >>> ##Ordinary kriging :
+> >>>
+> >>>> predictors = "1"
+> >>>> autoKrige(as.formula(paste(column,"~", predictors)), meuse,
+> >>>> meuse.grid)
+> >>>>
+> >>> ##Universal kriging :
+> >>>
+> >>>> predictors = "x+y"
+> >>>> autoKrige(as.formula(paste(column,"~", predictors)), meuse,
+> >>>> meuse.grid)
+> >>>>
+> >>>
+> >>> But using spgrass6, it becomes (some steps have been skipped):
+> >>>
+> >>>> sitesR <- readVECT6("grass_sites")
+> >>>>
+> >>> ...
+> >>>
+> >>>> mask_SG <- SpatialGridDataFrame(grd, data=data, CRS(G$proj4))
+> >>>>
+> >>> ...
+> >>>
+> >>> ##Ordinary kriging => WORKS:
+> >>>
+> >>>> predictors = "1"
+> >>>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)),
+> >>>>
+> >>> sitesR, mask_SG)
+> >>>
+> >>> ##Universal kriging => ERROR:
+> >>>
+> >>>> predictors = "x+y"
+> >>>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)),
+> >>>>
+> >>> sitesR, mask_SG)
+> >>>
+> >>>> Error in eval(expr, envir, enclos) : "x" object not found
+> >>>>
+> >>>
+> >>> Why can't we use the x an y columns here?
+> >>> Maybe it is because the meuse and sites R data.frames don't have the
+> >>> same
+> >>> structure ?
+> >>>
+> >>>> class(meuse)
+> >>>>
+> >>> [1] "data.frame"
+> >>>
+> >>>> attributes(meuse)
+> >>>>
+> >>> $names
+> >>>  [1] "x"       "y"       "cadmium" "copper"  "lead"    "zinc"    "elev"
+> >>>
+> >>>> class(sitesR)
+> >>>>
+> >>> [1] "SpatialPointsDataFrame"
+> >>>
+> >>>> attributes(sitesR)
+> >>>>
+> >>> $bbox
+> >>> ...
+> >>> $proj4string
+> >>> ...
+> >>> $coords
+> >>> ...
+> >>> $data
+> >>>            site value cat        x       y
+> >>> 1Ai      81.80   1 825094.9 6796083
+> >>> 2     Al      38.50   2 758780.4 6851508
+> >>> 3     Ar     103.50   3 818973.3 6796125
+> >>> 4           Av      52.50   4 775136.0 6877271
+> >>> ...
+> >>>
+> >>>
+> >>>
+> ------------------------------------------------------------------------
+> >>>
+> >>>
+> >>> _______________________________________________
+> >>> grass-stats mailing list
+> >>> grass-stats@lists.osgeo.org
+> >>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+> >>>
+> >>
+> >>
+> >
+>
+> --
+> Edzer Pebesma
+> Institute for Geoinformatics (ifgi), University of M?nster
+> Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+> 8333081, Fax: +49 251 8339763 http://ifgi.uni-muenster.de/
+> http://www.springer.com/978-0-387-78170-9 e.pebesma@wwu.de
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20090629/296cc3dc/attachment.html
+From Roger.Bivand at nhh.no  Mon Jun 29 06:26:30 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon Jun 29 06:26:34 2009
+Subject: [GRASS-stats] universal kriging with spgrass6
+In-Reply-To: <6d400d3e0906290303s4132d916r62abe42d101805df@mail.gmail.com>
+References: <6d400d3e0906250617p6893d910t62f53a3cf15cbc98@mail.gmail.com>
+	<4A43E9B3.7080102@uni-muenster.de>
+	<alpine.LRH.2.00.0906260824170.8603@reclus.nhh.no>
+	<4A446E09.9060509@uni-muenster.de>
+	<6d400d3e0906290303s4132d916r62abe42d101805df@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.0906291211180.22491@reclus.nhh.no>
+
+On Mon, 29 Jun 2009, mathieu grelier wrote:
+
+> ok,
+> From your answers, I've tried to play with the SpatialPointsDataFrame object
+> imported from GRASS to fit the gstat krige function requirements. Basic idea
+> seemed to work with the "data" attribute of the imported object, adding the
+> missing coordinates columns :
+>
+>> sitesR <- readVECT6("grass_sites")
+>> class(sitesR)
+>> [1] "SpatialPointsDataFrame"
+>> d = attr(sitesR,"data")
+>> d
+>
+>           site value cat
+> 1           Ail      81.80   1
+> 2     All      38.50   2
+> 3     Arg     103.50   3
+> 4           Avb      52.50   4
+> ...
+>
+>> sitesR$x <- coordinates(sitesR)[,1]
+>> sitesR$y <- coordinates(sitesR)[,2]
+>> d = attr(sitesR,"data")
+
+**NO**, there are no attr() in an S4 class. Just do the obvious thing:
+
+d <- as(sitesR, "data.frame")
+
+**BUT** you shouldn't be doing this at all, the data= argument in gstat 
+can take a SpatialPointsDataFrame.
+
+>> class(d)
+> [1] "data.frame"
+>> d
+>           site value cat        x       y
+> 1           Ail      81.80   1 825094.9 6796083
+> 2     All      38.50   2 758780.4 6851508
+> 3     Arg     103.50   3 818973.3 6796125
+> 4           Avb      52.50   4 775136.0 6877271
+> ...
+>
+>> coordinates(d) = ~x+y
+
+(Check, it has lost its x and y columns again, hasn't it?)
+str(d)
+
+>> attr(d, "proj4string") <-CRS(G$proj4)
+
+**NO**!!! These are S4 classes, no attr()!!!
+
+>
+>> G <- gmeta6()
+>> grd <- gmeta2grd()
+
+**PLEASE** don't do this! You cannot set one slot without resetting the 
+others if you want to cover the GRASS region. If you want something 
+different, use g.region in GRASS and just gmeta2grd().
+
+>> slot(grd, "cellsize") <- c(1000, 1000)
+>> data <- data.frame(list(k=rep(1,(floor(G$cols)*floor(G$rows)))))
+>> mask_SG <- SpatialGridDataFrame(grd, data=data, CRS(G$proj4))
+>
+
+What is this supposed to be? What we've told you already is that mask_SG 
+needs to be a Spatial*DataFrame with "x" and "y" columns, why are you not 
+doing it?
+
+>
+>> predictors = "x+y"
+>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)), d,
+> mask_SG)
+>
+> Result was :
+>
+> Error in gstat.formula.predict(d$formula, newdata, na.action = na.action,  :
+>
+>  NROW(locs) != NROW(X): this should not occur
+> Warning messages:
+> 1: 'newdata' had 7900 rows but variable(s) found have 73 rows
+> 2: 'newdata' had 7900 rows but variable(s) found have 73 rows
+>
+
+No traceback()? Why? Isn't it obvious that it has found the x and y values 
+in d (73 long)?
+
+> 1)do you think this approach could be successful?
+> 2)If so, can you help me with this error?
+
+Try doing everything in very small steps manually. Use gstat not automap, 
+to avoid the extra layer of uncertainty. Simply try to set up a gstat() 
+object for trend surface and predict from it:
+
+g_tr1a <- gstat("tr1a", <whatever column was> ~ 1, d, degree=1)
+pr_tr1a <- predict(g_tr1a, mask_SG)
+
+Once that (untried) works, go further, not until. I still suspect that 
+this is to do with the colnames of the coordinates, (x, y) in one case and 
+(coords1, coords2) or some such in the other.
+
+Please do study the gstat help pages and the examples, they will help, but 
+you are jumping to far too many conclusions.
+
+Roger
+
+>
+> Mathieu
+>
+> 2009/6/26 Edzer Pebesma <edzer.pebesma@uni-muenster.de>
+>
+>>
+>>
+>> Roger Bivand wrote:
+>>> On Thu, 25 Jun 2009, Edzer Pebesma wrote:
+>>>
+>>>> Mathieu, that could very well be the case. Note that x+y do not
+>>>> "generally" refer to x- and y-coordinates, but are the actual names of
+>>>> the coordinates (or something else). From your example I cannot find out
+>>>> whether the coordinates are named x and y. In addition, they should have
+>>>> identical names in sitesR and mask_SG.
+>>>
+>>> Yes, it is beginning to look like the names in mask_SG, isn't it? Do
+>>> you have a view on whether degree= should be mandatory, or does the
+>>> infrastructure recognise coordinate RHS variables and rescale them
+>>> automatically (I doubt the latter)? Why do users use trend variables
+>>> in this way - the range of values in the (X'X) matrix becomes enormous
+>>> with the usual metre metric for coordinates?
+>> Another question we could ask (ourselves) is why in R we allow users to
+>> give their coordinates the names they like. I remember that for that
+>> sole reason (need to rename) I added the function
+>>
+>> coordnames(x) = c("u", "v")
+>>
+>> to sp. In case they're called "lon" and "lat", they also don't change
+>> name after projection. But maybe I talk too much with people worrying
+>> about semantics, these days. ;-)
+>> --
+>> Edzer
+>>>
+>>> Roger
+>>>
+>>>>
+>>>> Best regards,
+>>>> --
+>>>> Edzer
+>>>>
+>>>> mathieu grelier wrote:
+>>>>
+>>>> Dear all,
+>>>> I am trying to achieve universal kriging with GRASS and R through
+>>>> spgrass6
+>>>> package.
+>>>> Maybe you could help me to find the right R syntax.
+>>>> As in the gstat doc, the polynomial I try to use for now is "x+y"
+>>>>
+>>>>> Dear all,
+>>>>> I am trying to achieve universal kriging with GRASS and R through
+>>>>> spgrass6
+>>>>> package.
+>>>>> Maybe you could help me to find the right R syntax.
+>>>>> As in the gstat doc, the polynomial I try to use for now is "x+y"
+>>>>>
+>>>>> In R, with automap package, this works :
+>>>>>
+>>>>>> data(meuse)
+>>>>>> coordinates(meuse) = ~x+y
+>>>>>> data(meuse.grid)
+>>>>>> gridded(meuse.grid) = ~x+y
+>>>>>> column = "zinc"
+>>>>>>
+>>>>> ##Ordinary kriging :
+>>>>>
+>>>>>> predictors = "1"
+>>>>>> autoKrige(as.formula(paste(column,"~", predictors)), meuse,
+>>>>>> meuse.grid)
+>>>>>>
+>>>>> ##Universal kriging :
+>>>>>
+>>>>>> predictors = "x+y"
+>>>>>> autoKrige(as.formula(paste(column,"~", predictors)), meuse,
+>>>>>> meuse.grid)
+>>>>>>
+>>>>>
+>>>>> But using spgrass6, it becomes (some steps have been skipped):
+>>>>>
+>>>>>> sitesR <- readVECT6("grass_sites")
+>>>>>>
+>>>>> ...
+>>>>>
+>>>>>> mask_SG <- SpatialGridDataFrame(grd, data=data, CRS(G$proj4))
+>>>>>>
+>>>>> ...
+>>>>>
+>>>>> ##Ordinary kriging => WORKS:
+>>>>>
+>>>>>> predictors = "1"
+>>>>>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)),
+>>>>>>
+>>>>> sitesR, mask_SG)
+>>>>>
+>>>>> ##Universal kriging => ERROR:
+>>>>>
+>>>>>> predictors = "x+y"
+>>>>>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)),
+>>>>>>
+>>>>> sitesR, mask_SG)
+>>>>>
+>>>>>> Error in eval(expr, envir, enclos) : "x" object not found
+>>>>>>
+>>>>>
+>>>>> Why can't we use the x an y columns here?
+>>>>> Maybe it is because the meuse and sites R data.frames don't have the
+>>>>> same
+>>>>> structure ?
+>>>>>
+>>>>>> class(meuse)
+>>>>>>
+>>>>> [1] "data.frame"
+>>>>>
+>>>>>> attributes(meuse)
+>>>>>>
+>>>>> $names
+>>>>>  [1] "x"       "y"       "cadmium" "copper"  "lead"    "zinc"    "elev"
+>>>>>
+>>>>>> class(sitesR)
+>>>>>>
+>>>>> [1] "SpatialPointsDataFrame"
+>>>>>
+>>>>>> attributes(sitesR)
+>>>>>>
+>>>>> $bbox
+>>>>> ...
+>>>>> $proj4string
+>>>>> ...
+>>>>> $coords
+>>>>> ...
+>>>>> $data
+>>>>>            site value cat        x       y
+>>>>> 1Ai      81.80   1 825094.9 6796083
+>>>>> 2     Al      38.50   2 758780.4 6851508
+>>>>> 3     Ar     103.50   3 818973.3 6796125
+>>>>> 4           Av      52.50   4 775136.0 6877271
+>>>>> ...
+>>>>>
+>>>>>
+>>>>>
+>> ------------------------------------------------------------------------
+>>>>>
+>>>>>
+>>>>> _______________________________________________
+>>>>> grass-stats mailing list
+>>>>> grass-stats@lists.osgeo.org
+>>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>>
+>>>>
+>>>>
+>>>
+>>
+>> --
+>> Edzer Pebesma
+>> Institute for Geoinformatics (ifgi), University of M?nster
+>> Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+>> 8333081, Fax: +49 251 8339763 http://ifgi.uni-muenster.de/
+>> http://www.springer.com/978-0-387-78170-9 e.pebesma@wwu.de
+>>
+>>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From greliermathieu at gmail.com  Mon Jun 29 08:47:24 2009
+From: greliermathieu at gmail.com (mathieu grelier)
+Date: Mon Jun 29 08:47:28 2009
+Subject: [GRASS-stats] universal kriging with spgrass6
+In-Reply-To: <alpine.LRH.2.00.0906291211180.22491@reclus.nhh.no>
+References: <6d400d3e0906250617p6893d910t62f53a3cf15cbc98@mail.gmail.com>
+	<4A43E9B3.7080102@uni-muenster.de>
+	<alpine.LRH.2.00.0906260824170.8603@reclus.nhh.no>
+	<4A446E09.9060509@uni-muenster.de>
+	<6d400d3e0906290303s4132d916r62abe42d101805df@mail.gmail.com>
+	<alpine.LRH.2.00.0906291211180.22491@reclus.nhh.no>
+Message-ID: <6d400d3e0906290547v67353ad7vc5bf78768e28640c@mail.gmail.com>
+
+ok
+First I think everyone here has its own domain of competence, so please
+don't answer as if I was at school, I'm not sure all these classes are so
+obvious for all GRASS users. Please clearly display the R requirements to
+post in the list if they exist
+I just try to implement UK in a GRASS process for a larger mapping system
+architecture. I think in some way it could be feasible : it should not be
+for me to understand how.
+
+Also always consider improving your doc and/or your design : it shouldn't be
+normal for a non-specialist to spend so much time to understand how to
+manipulate the objects to achieve UK with GRASS.
+
+Obviously I don't have time to study the R internals and I've just tried to
+quickly reproduce the working R code with meuse dataset, which use a
+dataframe as input data.
+By the way, the rest of the code is yours, you personally gave me at the
+time.
+I understood that this is a colunm name problem and now I'm no longer sure
+what I want to do is possible without modification in gstat.
+But I thought maybe there was a workaround?
+
+Now I see it makes no sense but the initial R example seems to work with a
+data.frame as input data and it induced me in error.
+Best regards.
+
+Mathieu
+
+
+2009/6/29 Roger Bivand <Roger.Bivand@nhh.no>
+
+> On Mon, 29 Jun 2009, mathieu grelier wrote:
+>
+>  ok,
+>> From your answers, I've tried to play with the SpatialPointsDataFrame
+>> object
+>> imported from GRASS to fit the gstat krige function requirements. Basic
+>> idea
+>> seemed to work with the "data" attribute of the imported object, adding
+>> the
+>> missing coordinates columns :
+>>
+>>  sitesR <- readVECT6("grass_sites")
+>>> class(sitesR)
+>>> [1] "SpatialPointsDataFrame"
+>>> d = attr(sitesR,"data")
+>>> d
+>>>
+>>
+>>          site value cat
+>> 1           Ail      81.80   1
+>> 2     All      38.50   2
+>> 3     Arg     103.50   3
+>> 4           Avb      52.50   4
+>> ...
+>>
+>>  sitesR$x <- coordinates(sitesR)[,1]
+>>> sitesR$y <- coordinates(sitesR)[,2]
+>>> d = attr(sitesR,"data")
+>>>
+>>
+> **NO**, there are no attr() in an S4 class. Just do the obvious thing:
+>
+> d <- as(sitesR, "data.frame")
+>
+> **BUT** you shouldn't be doing this at all, the data= argument in gstat can
+> take a SpatialPointsDataFrame.
+>
+>  class(d)
+>>>
+>> [1] "data.frame"
+>>
+>>> d
+>>>
+>>          site value cat        x       y
+>> 1           Ail      81.80   1 825094.9 6796083
+>> 2     All      38.50   2 758780.4 6851508
+>> 3     Arg     103.50   3 818973.3 6796125
+>> 4           Avb      52.50   4 775136.0 6877271
+>> ...
+>>
+>>  coordinates(d) = ~x+y
+>>>
+>>
+> (Check, it has lost its x and y columns again, hasn't it?)
+> str(d)
+>
+>  attr(d, "proj4string") <-CRS(G$proj4)
+>>>
+>>
+> **NO**!!! These are S4 classes, no attr()!!!
+>
+>
+>>  G <- gmeta6()
+>>> grd <- gmeta2grd()
+>>>
+>>
+> **PLEASE** don't do this! You cannot set one slot without resetting the
+> others if you want to cover the GRASS region. If you want something
+> different, use g.region in GRASS and just gmeta2grd().
+>
+>  slot(grd, "cellsize") <- c(1000, 1000)
+>>> data <- data.frame(list(k=rep(1,(floor(G$cols)*floor(G$rows)))))
+>>> mask_SG <- SpatialGridDataFrame(grd, data=data, CRS(G$proj4))
+>>>
+>>
+>>
+> What is this supposed to be? What we've told you already is that mask_SG
+> needs to be a Spatial*DataFrame with "x" and "y" columns, why are you not
+> doing it?
+>
+>
+>>  predictors = "x+y"
+>>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)), d,
+>>>
+>> mask_SG)
+>>
+>> Result was :
+>>
+>> Error in gstat.formula.predict(d$formula, newdata, na.action = na.action,
+>>  :
+>>
+>>  NROW(locs) != NROW(X): this should not occur
+>> Warning messages:
+>> 1: 'newdata' had 7900 rows but variable(s) found have 73 rows
+>> 2: 'newdata' had 7900 rows but variable(s) found have 73 rows
+>>
+>>
+> No traceback()? Why? Isn't it obvious that it has found the x and y values
+> in d (73 long)?
+>
+>  1)do you think this approach could be successful?
+>> 2)If so, can you help me with this error?
+>>
+>
+> Try doing everything in very small steps manually. Use gstat not automap,
+> to avoid the extra layer of uncertainty. Simply try to set up a gstat()
+> object for trend surface and predict from it:
+>
+> g_tr1a <- gstat("tr1a", <whatever column was> ~ 1, d, degree=1)
+> pr_tr1a <- predict(g_tr1a, mask_SG)
+>
+> Once that (untried) works, go further, not until. I still suspect that this
+> is to do with the colnames of the coordinates, (x, y) in one case and
+> (coords1, coords2) or some such in the other.
+>
+> Please do study the gstat help pages and the examples, they will help, but
+> you are jumping to far too many conclusions.
+>
+> Roger
+>
+>
+>
+>> Mathieu
+>>
+>> 2009/6/26 Edzer Pebesma <edzer.pebesma@uni-muenster.de>
+>>
+>>
+>>>
+>>> Roger Bivand wrote:
+>>>
+>>>> On Thu, 25 Jun 2009, Edzer Pebesma wrote:
+>>>>
+>>>>  Mathieu, that could very well be the case. Note that x+y do not
+>>>>> "generally" refer to x- and y-coordinates, but are the actual names of
+>>>>> the coordinates (or something else). From your example I cannot find
+>>>>> out
+>>>>> whether the coordinates are named x and y. In addition, they should
+>>>>> have
+>>>>> identical names in sitesR and mask_SG.
+>>>>>
+>>>>
+>>>> Yes, it is beginning to look like the names in mask_SG, isn't it? Do
+>>>> you have a view on whether degree= should be mandatory, or does the
+>>>> infrastructure recognise coordinate RHS variables and rescale them
+>>>> automatically (I doubt the latter)? Why do users use trend variables
+>>>> in this way - the range of values in the (X'X) matrix becomes enormous
+>>>> with the usual metre metric for coordinates?
+>>>>
+>>> Another question we could ask (ourselves) is why in R we allow users to
+>>> give their coordinates the names they like. I remember that for that
+>>> sole reason (need to rename) I added the function
+>>>
+>>> coordnames(x) = c("u", "v")
+>>>
+>>> to sp. In case they're called "lon" and "lat", they also don't change
+>>> name after projection. But maybe I talk too much with people worrying
+>>> about semantics, these days. ;-)
+>>> --
+>>> Edzer
+>>>
+>>>>
+>>>> Roger
+>>>>
+>>>>
+>>>>> Best regards,
+>>>>> --
+>>>>> Edzer
+>>>>>
+>>>>> mathieu grelier wrote:
+>>>>>
+>>>>> Dear all,
+>>>>> I am trying to achieve universal kriging with GRASS and R through
+>>>>> spgrass6
+>>>>> package.
+>>>>> Maybe you could help me to find the right R syntax.
+>>>>> As in the gstat doc, the polynomial I try to use for now is "x+y"
+>>>>>
+>>>>>  Dear all,
+>>>>>> I am trying to achieve universal kriging with GRASS and R through
+>>>>>> spgrass6
+>>>>>> package.
+>>>>>> Maybe you could help me to find the right R syntax.
+>>>>>> As in the gstat doc, the polynomial I try to use for now is "x+y"
+>>>>>>
+>>>>>> In R, with automap package, this works :
+>>>>>>
+>>>>>>  data(meuse)
+>>>>>>> coordinates(meuse) = ~x+y
+>>>>>>> data(meuse.grid)
+>>>>>>> gridded(meuse.grid) = ~x+y
+>>>>>>> column = "zinc"
+>>>>>>>
+>>>>>>>  ##Ordinary kriging :
+>>>>>>
+>>>>>>  predictors = "1"
+>>>>>>> autoKrige(as.formula(paste(column,"~", predictors)), meuse,
+>>>>>>> meuse.grid)
+>>>>>>>
+>>>>>>>  ##Universal kriging :
+>>>>>>
+>>>>>>  predictors = "x+y"
+>>>>>>> autoKrige(as.formula(paste(column,"~", predictors)), meuse,
+>>>>>>> meuse.grid)
+>>>>>>>
+>>>>>>>
+>>>>>> But using spgrass6, it becomes (some steps have been skipped):
+>>>>>>
+>>>>>>  sitesR <- readVECT6("grass_sites")
+>>>>>>>
+>>>>>>>  ...
+>>>>>>
+>>>>>>  mask_SG <- SpatialGridDataFrame(grd, data=data, CRS(G$proj4))
+>>>>>>>
+>>>>>>>  ...
+>>>>>>
+>>>>>> ##Ordinary kriging => WORKS:
+>>>>>>
+>>>>>>  predictors = "1"
+>>>>>>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)),
+>>>>>>>
+>>>>>>>  sitesR, mask_SG)
+>>>>>>
+>>>>>> ##Universal kriging => ERROR:
+>>>>>>
+>>>>>>  predictors = "x+y"
+>>>>>>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)),
+>>>>>>>
+>>>>>>>  sitesR, mask_SG)
+>>>>>>
+>>>>>>  Error in eval(expr, envir, enclos) : "x" object not found
+>>>>>>>
+>>>>>>>
+>>>>>> Why can't we use the x an y columns here?
+>>>>>> Maybe it is because the meuse and sites R data.frames don't have the
+>>>>>> same
+>>>>>> structure ?
+>>>>>>
+>>>>>>  class(meuse)
+>>>>>>>
+>>>>>>>  [1] "data.frame"
+>>>>>>
+>>>>>>  attributes(meuse)
+>>>>>>>
+>>>>>>>  $names
+>>>>>>  [1] "x"       "y"       "cadmium" "copper"  "lead"    "zinc"
+>>>>>>  "elev"
+>>>>>>
+>>>>>>  class(sitesR)
+>>>>>>>
+>>>>>>>  [1] "SpatialPointsDataFrame"
+>>>>>>
+>>>>>>  attributes(sitesR)
+>>>>>>>
+>>>>>>>  $bbox
+>>>>>> ...
+>>>>>> $proj4string
+>>>>>> ...
+>>>>>> $coords
+>>>>>> ...
+>>>>>> $data
+>>>>>>           site value cat        x       y
+>>>>>> 1Ai      81.80   1 825094.9 6796083
+>>>>>> 2     Al      38.50   2 758780.4 6851508
+>>>>>> 3     Ar     103.50   3 818973.3 6796125
+>>>>>> 4           Av      52.50   4 775136.0 6877271
+>>>>>> ...
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> ------------------------------------------------------------------------
+>>>
+>>>>
+>>>>>>
+>>>>>> _______________________________________________
+>>>>>> grass-stats mailing list
+>>>>>> grass-stats@lists.osgeo.org
+>>>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>>>
+>>>>>>
+>>>>>
+>>>>>
+>>>>
+>>> --
+>>> Edzer Pebesma
+>>> Institute for Geoinformatics (ifgi), University of M?nster
+>>> Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+>>> 8333081, Fax: +49 251 8339763 http://ifgi.uni-muenster.de/
+>>> http://www.springer.com/978-0-387-78170-9 e.pebesma@wwu.de
+>>>
+>>>
+>>>
+>>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20090629/ff54821a/attachment-0001.html
+From Roger.Bivand at nhh.no  Mon Jun 29 09:58:32 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon Jun 29 09:58:37 2009
+Subject: [GRASS-stats] universal kriging with spgrass6
+In-Reply-To: <6d400d3e0906290547v67353ad7vc5bf78768e28640c@mail.gmail.com>
+References: <6d400d3e0906250617p6893d910t62f53a3cf15cbc98@mail.gmail.com>
+	<4A43E9B3.7080102@uni-muenster.de>
+	<alpine.LRH.2.00.0906260824170.8603@reclus.nhh.no>
+	<4A446E09.9060509@uni-muenster.de>
+	<6d400d3e0906290303s4132d916r62abe42d101805df@mail.gmail.com>
+	<alpine.LRH.2.00.0906291211180.22491@reclus.nhh.no>
+	<6d400d3e0906290547v67353ad7vc5bf78768e28640c@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.0906291450340.22491@reclus.nhh.no>
+
+On Mon, 29 Jun 2009, mathieu grelier wrote:
+
+> ok
+> First I think everyone here has its own domain of competence, so please
+> don't answer as if I was at school, I'm not sure all these classes are so
+> obvious for all GRASS users. Please clearly display the R requirements to
+> post in the list if they exist
+> I just try to implement UK in a GRASS process for a larger mapping system
+> architecture. I think in some way it could be feasible : it should not be
+> for me to understand how.
+
+It is always the responsibility of the implementer to back-track to where 
+his or her understanding is wrong. None of the open source software that 
+you are using comes with any warranty whatsoever.
+
+You can do UK, but not trend surface, in a predictable way, because both 
+the data= and newdata= objects have to contain the same variables.
+
+Doing UK with trend surfaces is different, because the "proper" gstat 
+argument is degree=, not including the coordinates as variables. The 
+reason for this is numeric, products and powers of large numbers, like 
+meters from the Equator, overflow double precision very quickly. When 
+degree= is given, the code internally rescales the coordinates before 
+taking powers and products to avoid these numerical problems - in gstat 
+source src/data.c, the calc_polynomial() function rescales - for example:
+
+x' = (x-min(x))/(max(x)-min(x))
+
+If what you want to do is UK with a trend surface, you will have to work 
+though this from the bottom up. In fact, I'm surprised that autoKrige() 
+uses krige() in gstat, rather than first making a gstat() object then 
+predicting from it, making it harder to see what is going on. I suspect 
+that some of the difficulties here are actually caused by:
+
+library(gstat)
+data(meuse)
+coordinates(meuse) <- c("x", "y")
+m1 <- gstat(id="m1", formula=zinc ~ 1, data=meuse, degree=1)
+v1 <- variogram(m1)
+#Error in variogram.gstat(m1) :
+#degree != 0: residual variograms wrt coord trend using degree not supported
+
+which prevents autofitVariogram() from doing what it needs to in the 
+rescaled trend surface case. This is I think supported in free-standing 
+gstat, but not in the R package, I believe.
+
+data(meuse.grid)
+coordinates(meuse.grid) <- c("x", "y")
+m1p <- predict(m1, meuse.grid)
+
+does work happily, but getting to UK with a trend surface is messy, as 
+you've found. It may be that I'm wrong, and that the gstat() formula 
+interface does recognise "x" and "y" as coordinates - it seems to, and 
+that this carries forward to prediction, but I can't see where this is in 
+the gstat package R or C code. The comment in src/s.c that degree > 0 will 
+only work "for a single variable" and "when no other predictors are given" 
+suggests that doing UK with a trend surface using a variogram to fit 
+a variogram model isn't so easy after all.
+
+>
+> Also always consider improving your doc and/or your design : it shouldn't be
+> normal for a non-specialist to spend so much time to understand how to
+> manipulate the objects to achieve UK with GRASS.
+>
+
+Welcome to reality, sorry, but this really is how things are, even in 
+proprietary software, you'll need to know, or reverse-engineer, how things 
+do work, in order to have adequate confidence in your results.
+
+> Obviously I don't have time to study the R internals and I've just tried to
+> quickly reproduce the working R code with meuse dataset, which use a
+> dataframe as input data.
+> By the way, the rest of the code is yours, you personally gave me at the
+> time.
+
+That doesn't mean it works, nobody is infallible. There are consequences 
+of design choices often made for different purposes long ago. The degree= 
+problem is one, another is column names, neither have obvious solutions. 
+Having it work in automap probably means adding checks in autoKrige(), and 
+then altering variogram() and other functions in gstat() to do intial 
+checks and pass the degree= value through, so changes to two underlying 
+packages. If you can volunteer patches to them, this may get resolved 
+faster.
+
+Alternatively, you could do the rescaling yourself first for both 
+the data= and the newdata= arguments to autoKrige(), having first added X 
+and Y coordinate variables to the objects. Check first whether you can get 
+the same trend surface predictions from my code above, from rescaled 
+variables in the same format, and finally through autoKrige() - though 
+here I can't see how to just do a trend surface without the variogram 
+fitting (model=NULL?).
+
+Roger
+
+> I understood that this is a colunm name problem and now I'm no longer sure
+> what I want to do is possible without modification in gstat.
+> But I thought maybe there was a workaround?
+>
+> Now I see it makes no sense but the initial R example seems to work with a
+> data.frame as input data and it induced me in error.
+> Best regards.
+>
+> Mathieu
+>
+>
+> 2009/6/29 Roger Bivand <Roger.Bivand@nhh.no>
+>
+>> On Mon, 29 Jun 2009, mathieu grelier wrote:
+>>
+>>  ok,
+>>> From your answers, I've tried to play with the SpatialPointsDataFrame
+>>> object
+>>> imported from GRASS to fit the gstat krige function requirements. Basic
+>>> idea
+>>> seemed to work with the "data" attribute of the imported object, adding
+>>> the
+>>> missing coordinates columns :
+>>>
+>>>  sitesR <- readVECT6("grass_sites")
+>>>> class(sitesR)
+>>>> [1] "SpatialPointsDataFrame"
+>>>> d = attr(sitesR,"data")
+>>>> d
+>>>>
+>>>
+>>>          site value cat
+>>> 1           Ail      81.80   1
+>>> 2     All      38.50   2
+>>> 3     Arg     103.50   3
+>>> 4           Avb      52.50   4
+>>> ...
+>>>
+>>>  sitesR$x <- coordinates(sitesR)[,1]
+>>>> sitesR$y <- coordinates(sitesR)[,2]
+>>>> d = attr(sitesR,"data")
+>>>>
+>>>
+>> **NO**, there are no attr() in an S4 class. Just do the obvious thing:
+>>
+>> d <- as(sitesR, "data.frame")
+>>
+>> **BUT** you shouldn't be doing this at all, the data= argument in gstat can
+>> take a SpatialPointsDataFrame.
+>>
+>>  class(d)
+>>>>
+>>> [1] "data.frame"
+>>>
+>>>> d
+>>>>
+>>>          site value cat        x       y
+>>> 1           Ail      81.80   1 825094.9 6796083
+>>> 2     All      38.50   2 758780.4 6851508
+>>> 3     Arg     103.50   3 818973.3 6796125
+>>> 4           Avb      52.50   4 775136.0 6877271
+>>> ...
+>>>
+>>>  coordinates(d) = ~x+y
+>>>>
+>>>
+>> (Check, it has lost its x and y columns again, hasn't it?)
+>> str(d)
+>>
+>>  attr(d, "proj4string") <-CRS(G$proj4)
+>>>>
+>>>
+>> **NO**!!! These are S4 classes, no attr()!!!
+>>
+>>
+>>>  G <- gmeta6()
+>>>> grd <- gmeta2grd()
+>>>>
+>>>
+>> **PLEASE** don't do this! You cannot set one slot without resetting the
+>> others if you want to cover the GRASS region. If you want something
+>> different, use g.region in GRASS and just gmeta2grd().
+>>
+>>  slot(grd, "cellsize") <- c(1000, 1000)
+>>>> data <- data.frame(list(k=rep(1,(floor(G$cols)*floor(G$rows)))))
+>>>> mask_SG <- SpatialGridDataFrame(grd, data=data, CRS(G$proj4))
+>>>>
+>>>
+>>>
+>> What is this supposed to be? What we've told you already is that mask_SG
+>> needs to be a Spatial*DataFrame with "x" and "y" columns, why are you not
+>> doing it?
+>>
+>>
+>>>  predictors = "x+y"
+>>>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)), d,
+>>>>
+>>> mask_SG)
+>>>
+>>> Result was :
+>>>
+>>> Error in gstat.formula.predict(d$formula, newdata, na.action = na.action,
+>>>  :
+>>>
+>>>  NROW(locs) != NROW(X): this should not occur
+>>> Warning messages:
+>>> 1: 'newdata' had 7900 rows but variable(s) found have 73 rows
+>>> 2: 'newdata' had 7900 rows but variable(s) found have 73 rows
+>>>
+>>>
+>> No traceback()? Why? Isn't it obvious that it has found the x and y values
+>> in d (73 long)?
+>>
+>>  1)do you think this approach could be successful?
+>>> 2)If so, can you help me with this error?
+>>>
+>>
+>> Try doing everything in very small steps manually. Use gstat not automap,
+>> to avoid the extra layer of uncertainty. Simply try to set up a gstat()
+>> object for trend surface and predict from it:
+>>
+>> g_tr1a <- gstat("tr1a", <whatever column was> ~ 1, d, degree=1)
+>> pr_tr1a <- predict(g_tr1a, mask_SG)
+>>
+>> Once that (untried) works, go further, not until. I still suspect that this
+>> is to do with the colnames of the coordinates, (x, y) in one case and
+>> (coords1, coords2) or some such in the other.
+>>
+>> Please do study the gstat help pages and the examples, they will help, but
+>> you are jumping to far too many conclusions.
+>>
+>> Roger
+>>
+>>
+>>
+>>> Mathieu
+>>>
+>>> 2009/6/26 Edzer Pebesma <edzer.pebesma@uni-muenster.de>
+>>>
+>>>
+>>>>
+>>>> Roger Bivand wrote:
+>>>>
+>>>>> On Thu, 25 Jun 2009, Edzer Pebesma wrote:
+>>>>>
+>>>>>  Mathieu, that could very well be the case. Note that x+y do not
+>>>>>> "generally" refer to x- and y-coordinates, but are the actual names of
+>>>>>> the coordinates (or something else). From your example I cannot find
+>>>>>> out
+>>>>>> whether the coordinates are named x and y. In addition, they should
+>>>>>> have
+>>>>>> identical names in sitesR and mask_SG.
+>>>>>>
+>>>>>
+>>>>> Yes, it is beginning to look like the names in mask_SG, isn't it? Do
+>>>>> you have a view on whether degree= should be mandatory, or does the
+>>>>> infrastructure recognise coordinate RHS variables and rescale them
+>>>>> automatically (I doubt the latter)? Why do users use trend variables
+>>>>> in this way - the range of values in the (X'X) matrix becomes enormous
+>>>>> with the usual metre metric for coordinates?
+>>>>>
+>>>> Another question we could ask (ourselves) is why in R we allow users to
+>>>> give their coordinates the names they like. I remember that for that
+>>>> sole reason (need to rename) I added the function
+>>>>
+>>>> coordnames(x) = c("u", "v")
+>>>>
+>>>> to sp. In case they're called "lon" and "lat", they also don't change
+>>>> name after projection. But maybe I talk too much with people worrying
+>>>> about semantics, these days. ;-)
+>>>> --
+>>>> Edzer
+>>>>
+>>>>>
+>>>>> Roger
+>>>>>
+>>>>>
+>>>>>> Best regards,
+>>>>>> --
+>>>>>> Edzer
+>>>>>>
+>>>>>> mathieu grelier wrote:
+>>>>>>
+>>>>>> Dear all,
+>>>>>> I am trying to achieve universal kriging with GRASS and R through
+>>>>>> spgrass6
+>>>>>> package.
+>>>>>> Maybe you could help me to find the right R syntax.
+>>>>>> As in the gstat doc, the polynomial I try to use for now is "x+y"
+>>>>>>
+>>>>>>  Dear all,
+>>>>>>> I am trying to achieve universal kriging with GRASS and R through
+>>>>>>> spgrass6
+>>>>>>> package.
+>>>>>>> Maybe you could help me to find the right R syntax.
+>>>>>>> As in the gstat doc, the polynomial I try to use for now is "x+y"
+>>>>>>>
+>>>>>>> In R, with automap package, this works :
+>>>>>>>
+>>>>>>>  data(meuse)
+>>>>>>>> coordinates(meuse) = ~x+y
+>>>>>>>> data(meuse.grid)
+>>>>>>>> gridded(meuse.grid) = ~x+y
+>>>>>>>> column = "zinc"
+>>>>>>>>
+>>>>>>>>  ##Ordinary kriging :
+>>>>>>>
+>>>>>>>  predictors = "1"
+>>>>>>>> autoKrige(as.formula(paste(column,"~", predictors)), meuse,
+>>>>>>>> meuse.grid)
+>>>>>>>>
+>>>>>>>>  ##Universal kriging :
+>>>>>>>
+>>>>>>>  predictors = "x+y"
+>>>>>>>> autoKrige(as.formula(paste(column,"~", predictors)), meuse,
+>>>>>>>> meuse.grid)
+>>>>>>>>
+>>>>>>>>
+>>>>>>> But using spgrass6, it becomes (some steps have been skipped):
+>>>>>>>
+>>>>>>>  sitesR <- readVECT6("grass_sites")
+>>>>>>>>
+>>>>>>>>  ...
+>>>>>>>
+>>>>>>>  mask_SG <- SpatialGridDataFrame(grd, data=data, CRS(G$proj4))
+>>>>>>>>
+>>>>>>>>  ...
+>>>>>>>
+>>>>>>> ##Ordinary kriging => WORKS:
+>>>>>>>
+>>>>>>>  predictors = "1"
+>>>>>>>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)),
+>>>>>>>>
+>>>>>>>>  sitesR, mask_SG)
+>>>>>>>
+>>>>>>> ##Universal kriging => ERROR:
+>>>>>>>
+>>>>>>>  predictors = "x+y"
+>>>>>>>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)),
+>>>>>>>>
+>>>>>>>>  sitesR, mask_SG)
+>>>>>>>
+>>>>>>>  Error in eval(expr, envir, enclos) : "x" object not found
+>>>>>>>>
+>>>>>>>>
+>>>>>>> Why can't we use the x an y columns here?
+>>>>>>> Maybe it is because the meuse and sites R data.frames don't have the
+>>>>>>> same
+>>>>>>> structure ?
+>>>>>>>
+>>>>>>>  class(meuse)
+>>>>>>>>
+>>>>>>>>  [1] "data.frame"
+>>>>>>>
+>>>>>>>  attributes(meuse)
+>>>>>>>>
+>>>>>>>>  $names
+>>>>>>>  [1] "x"       "y"       "cadmium" "copper"  "lead"    "zinc"
+>>>>>>>  "elev"
+>>>>>>>
+>>>>>>>  class(sitesR)
+>>>>>>>>
+>>>>>>>>  [1] "SpatialPointsDataFrame"
+>>>>>>>
+>>>>>>>  attributes(sitesR)
+>>>>>>>>
+>>>>>>>>  $bbox
+>>>>>>> ...
+>>>>>>> $proj4string
+>>>>>>> ...
+>>>>>>> $coords
+>>>>>>> ...
+>>>>>>> $data
+>>>>>>>           site value cat        x       y
+>>>>>>> 1Ai      81.80   1 825094.9 6796083
+>>>>>>> 2     Al      38.50   2 758780.4 6851508
+>>>>>>> 3     Ar     103.50   3 818973.3 6796125
+>>>>>>> 4           Av      52.50   4 775136.0 6877271
+>>>>>>> ...
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> ------------------------------------------------------------------------
+>>>>
+>>>>>
+>>>>>>>
+>>>>>>> _______________________________________________
+>>>>>>> grass-stats mailing list
+>>>>>>> grass-stats@lists.osgeo.org
+>>>>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>>>>
+>>>>>>>
+>>>>>>
+>>>>>>
+>>>>>
+>>>> --
+>>>> Edzer Pebesma
+>>>> Institute for Geoinformatics (ifgi), University of M?nster
+>>>> Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+>>>> 8333081, Fax: +49 251 8339763 http://ifgi.uni-muenster.de/
+>>>> http://www.springer.com/978-0-387-78170-9 e.pebesma@wwu.de
+>>>>
+>>>>
+>>>>
+>>>
+>> --
+>> Roger Bivand
+>> Economic Geography Section, Department of Economics, Norwegian School of
+>> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+>> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+>> e-mail: Roger.Bivand@nhh.no
+>>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From greliermathieu at gmail.com  Mon Jun 29 10:52:37 2009
+From: greliermathieu at gmail.com (mathieu grelier)
+Date: Mon Jun 29 10:52:42 2009
+Subject: [GRASS-stats] universal kriging with spgrass6
+In-Reply-To: <alpine.LRH.2.00.0906291450340.22491@reclus.nhh.no>
+References: <6d400d3e0906250617p6893d910t62f53a3cf15cbc98@mail.gmail.com>
+	<4A43E9B3.7080102@uni-muenster.de>
+	<alpine.LRH.2.00.0906260824170.8603@reclus.nhh.no>
+	<4A446E09.9060509@uni-muenster.de>
+	<6d400d3e0906290303s4132d916r62abe42d101805df@mail.gmail.com>
+	<alpine.LRH.2.00.0906291211180.22491@reclus.nhh.no>
+	<6d400d3e0906290547v67353ad7vc5bf78768e28640c@mail.gmail.com>
+	<alpine.LRH.2.00.0906291450340.22491@reclus.nhh.no>
+Message-ID: <6d400d3e0906290752h588fe1fahd66aaf46bd90e861@mail.gmail.com>
+
+Dear all,
+Please read this thread again and understand I'm definitely not aggressive.
+I've just proposed a wrong spgrass syntax, based on a working R code.
+I completely agree with your perspective and respect your great work. Of
+course, no problem with that, I know what open source is, and precisely, I
+am quite tired of this kind of discussions.
+
+I just thought this list was accessible to simple GRASS users. From this
+point of view, even some mistakes may appear too big for specialists, It
+could be a constructive dialog between two communities.
+I also meant that from the engineering point of view, design is adapted to
+users, not the contrary, and you can always learn from users mistakes how to
+improve your design and doc.
+But this is another debate : again I really appreciate your software.
+
+I'm just requesting help for syntax and never R libs consultancy.
+If the solution is too complex, please just indicate it, without any
+condescension,
+and people won't insist.
+
+I now clearly understood that is a quite hard problem so I have my answer.
+When I say "*it should not be for me to understand how*", I mean UK is
+certainly an interesting feature for GRASS, not just for me. So I am
+surprised to see It is like I am the first to ask.
+
+Best regards.
+Mathieu
+
+2009/6/29 Roger Bivand <Roger.Bivand@nhh.no>
+
+> On Mon, 29 Jun 2009, mathieu grelier wrote:
+>
+>  ok
+>> First I think everyone here has its own domain of competence, so please
+>> don't answer as if I was at school, I'm not sure all these classes are so
+>> obvious for all GRASS users. Please clearly display the R requirements to
+>> post in the list if they exist
+>> I just try to implement UK in a GRASS process for a larger mapping system
+>> architecture. I think in some way it could be feasible : it should not be
+>> for me to understand how.
+>>
+>
+> It is always the responsibility of the implementer to back-track to where
+> his or her understanding is wrong. None of the open source software that you
+> are using comes with any warranty whatsoever.
+>
+> You can do UK, but not trend surface, in a predictable way, because both
+> the data= and newdata= objects have to contain the same variables.
+>
+> Doing UK with trend surfaces is different, because the "proper" gstat
+> argument is degree=, not including the coordinates as variables. The reason
+> for this is numeric, products and powers of large numbers, like meters from
+> the Equator, overflow double precision very quickly. When degree= is given,
+> the code internally rescales the coordinates before taking powers and
+> products to avoid these numerical problems - in gstat source src/data.c, the
+> calc_polynomial() function rescales - for example:
+>
+> x' = (x-min(x))/(max(x)-min(x))
+>
+> If what you want to do is UK with a trend surface, you will have to work
+> though this from the bottom up. In fact, I'm surprised that autoKrige() uses
+> krige() in gstat, rather than first making a gstat() object then predicting
+> from it, making it harder to see what is going on. I suspect that some of
+> the difficulties here are actually caused by:
+>
+> library(gstat)
+> data(meuse)
+> coordinates(meuse) <- c("x", "y")
+> m1 <- gstat(id="m1", formula=zinc ~ 1, data=meuse, degree=1)
+> v1 <- variogram(m1)
+> #Error in variogram.gstat(m1) :
+> #degree != 0: residual variograms wrt coord trend using degree not
+> supported
+>
+> which prevents autofitVariogram() from doing what it needs to in the
+> rescaled trend surface case. This is I think supported in free-standing
+> gstat, but not in the R package, I believe.
+>
+> data(meuse.grid)
+> coordinates(meuse.grid) <- c("x", "y")
+> m1p <- predict(m1, meuse.grid)
+>
+> does work happily, but getting to UK with a trend surface is messy, as
+> you've found. It may be that I'm wrong, and that the gstat() formula
+> interface does recognise "x" and "y" as coordinates - it seems to, and that
+> this carries forward to prediction, but I can't see where this is in the
+> gstat package R or C code. The comment in src/s.c that degree > 0 will only
+> work "for a single variable" and "when no other predictors are given"
+> suggests that doing UK with a trend surface using a variogram to fit a
+> variogram model isn't so easy after all.
+>
+>
+>> Also always consider improving your doc and/or your design : it shouldn't
+>> be
+>> normal for a non-specialist to spend so much time to understand how to
+>> manipulate the objects to achieve UK with GRASS.
+>>
+>>
+> Welcome to reality, sorry, but this really is how things are, even in
+> proprietary software, you'll need to know, or reverse-engineer, how things
+> do work, in order to have adequate confidence in your results.
+>
+>  Obviously I don't have time to study the R internals and I've just tried
+>> to
+>> quickly reproduce the working R code with meuse dataset, which use a
+>> dataframe as input data.
+>> By the way, the rest of the code is yours, you personally gave me at the
+>> time.
+>>
+>
+> That doesn't mean it works, nobody is infallible. There are consequences of
+> design choices often made for different purposes long ago. The degree=
+> problem is one, another is column names, neither have obvious solutions.
+> Having it work in automap probably means adding checks in autoKrige(), and
+> then altering variogram() and other functions in gstat() to do intial checks
+> and pass the degree= value through, so changes to two underlying packages.
+> If you can volunteer patches to them, this may get resolved faster.
+>
+> Alternatively, you could do the rescaling yourself first for both the data=
+> and the newdata= arguments to autoKrige(), having first added X and Y
+> coordinate variables to the objects. Check first whether you can get the
+> same trend surface predictions from my code above, from rescaled variables
+> in the same format, and finally through autoKrige() - though here I can't
+> see how to just do a trend surface without the variogram fitting
+> (model=NULL?).
+>
+> Roger
+>
+>
+>  I understood that this is a colunm name problem and now I'm no longer sure
+>> what I want to do is possible without modification in gstat.
+>> But I thought maybe there was a workaround?
+>>
+>> Now I see it makes no sense but the initial R example seems to work with a
+>> data.frame as input data and it induced me in error.
+>> Best regards.
+>>
+>> Mathieu
+>>
+>>
+>> 2009/6/29 Roger Bivand <Roger.Bivand@nhh.no>
+>>
+>>  On Mon, 29 Jun 2009, mathieu grelier wrote:
+>>>
+>>>  ok,
+>>>
+>>>> From your answers, I've tried to play with the SpatialPointsDataFrame
+>>>> object
+>>>> imported from GRASS to fit the gstat krige function requirements. Basic
+>>>> idea
+>>>> seemed to work with the "data" attribute of the imported object, adding
+>>>> the
+>>>> missing coordinates columns :
+>>>>
+>>>>  sitesR <- readVECT6("grass_sites")
+>>>>
+>>>>> class(sitesR)
+>>>>> [1] "SpatialPointsDataFrame"
+>>>>> d = attr(sitesR,"data")
+>>>>> d
+>>>>>
+>>>>>
+>>>>         site value cat
+>>>> 1           Ail      81.80   1
+>>>> 2     All      38.50   2
+>>>> 3     Arg     103.50   3
+>>>> 4           Avb      52.50   4
+>>>> ...
+>>>>
+>>>>  sitesR$x <- coordinates(sitesR)[,1]
+>>>>
+>>>>> sitesR$y <- coordinates(sitesR)[,2]
+>>>>> d = attr(sitesR,"data")
+>>>>>
+>>>>>
+>>>>  **NO**, there are no attr() in an S4 class. Just do the obvious thing:
+>>>
+>>> d <- as(sitesR, "data.frame")
+>>>
+>>> **BUT** you shouldn't be doing this at all, the data= argument in gstat
+>>> can
+>>> take a SpatialPointsDataFrame.
+>>>
+>>>  class(d)
+>>>
+>>>>
+>>>>>  [1] "data.frame"
+>>>>
+>>>>  d
+>>>>>
+>>>>>          site value cat        x       y
+>>>> 1           Ail      81.80   1 825094.9 6796083
+>>>> 2     All      38.50   2 758780.4 6851508
+>>>> 3     Arg     103.50   3 818973.3 6796125
+>>>> 4           Avb      52.50   4 775136.0 6877271
+>>>> ...
+>>>>
+>>>>  coordinates(d) = ~x+y
+>>>>
+>>>>>
+>>>>>
+>>>>  (Check, it has lost its x and y columns again, hasn't it?)
+>>> str(d)
+>>>
+>>>  attr(d, "proj4string") <-CRS(G$proj4)
+>>>
+>>>>
+>>>>>
+>>>>  **NO**!!! These are S4 classes, no attr()!!!
+>>>
+>>>
+>>>   G <- gmeta6()
+>>>>
+>>>>> grd <- gmeta2grd()
+>>>>>
+>>>>>
+>>>>  **PLEASE** don't do this! You cannot set one slot without resetting the
+>>> others if you want to cover the GRASS region. If you want something
+>>> different, use g.region in GRASS and just gmeta2grd().
+>>>
+>>>  slot(grd, "cellsize") <- c(1000, 1000)
+>>>
+>>>> data <- data.frame(list(k=rep(1,(floor(G$cols)*floor(G$rows)))))
+>>>>> mask_SG <- SpatialGridDataFrame(grd, data=data, CRS(G$proj4))
+>>>>>
+>>>>>
+>>>>
+>>>>  What is this supposed to be? What we've told you already is that
+>>> mask_SG
+>>> needs to be a Spatial*DataFrame with "x" and "y" columns, why are you not
+>>> doing it?
+>>>
+>>>
+>>>   predictors = "x+y"
+>>>>
+>>>>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)), d,
+>>>>>
+>>>>>  mask_SG)
+>>>>
+>>>> Result was :
+>>>>
+>>>> Error in gstat.formula.predict(d$formula, newdata, na.action =
+>>>> na.action,
+>>>>  :
+>>>>
+>>>>  NROW(locs) != NROW(X): this should not occur
+>>>> Warning messages:
+>>>> 1: 'newdata' had 7900 rows but variable(s) found have 73 rows
+>>>> 2: 'newdata' had 7900 rows but variable(s) found have 73 rows
+>>>>
+>>>>
+>>>>  No traceback()? Why? Isn't it obvious that it has found the x and y
+>>> values
+>>> in d (73 long)?
+>>>
+>>>  1)do you think this approach could be successful?
+>>>
+>>>> 2)If so, can you help me with this error?
+>>>>
+>>>>
+>>> Try doing everything in very small steps manually. Use gstat not automap,
+>>> to avoid the extra layer of uncertainty. Simply try to set up a gstat()
+>>> object for trend surface and predict from it:
+>>>
+>>> g_tr1a <- gstat("tr1a", <whatever column was> ~ 1, d, degree=1)
+>>> pr_tr1a <- predict(g_tr1a, mask_SG)
+>>>
+>>> Once that (untried) works, go further, not until. I still suspect that
+>>> this
+>>> is to do with the colnames of the coordinates, (x, y) in one case and
+>>> (coords1, coords2) or some such in the other.
+>>>
+>>> Please do study the gstat help pages and the examples, they will help,
+>>> but
+>>> you are jumping to far too many conclusions.
+>>>
+>>> Roger
+>>>
+>>>
+>>>
+>>>  Mathieu
+>>>>
+>>>> 2009/6/26 Edzer Pebesma <edzer.pebesma@uni-muenster.de>
+>>>>
+>>>>
+>>>>
+>>>>> Roger Bivand wrote:
+>>>>>
+>>>>>  On Thu, 25 Jun 2009, Edzer Pebesma wrote:
+>>>>>>
+>>>>>>  Mathieu, that could very well be the case. Note that x+y do not
+>>>>>>
+>>>>>>> "generally" refer to x- and y-coordinates, but are the actual names
+>>>>>>> of
+>>>>>>> the coordinates (or something else). From your example I cannot find
+>>>>>>> out
+>>>>>>> whether the coordinates are named x and y. In addition, they should
+>>>>>>> have
+>>>>>>> identical names in sitesR and mask_SG.
+>>>>>>>
+>>>>>>>
+>>>>>> Yes, it is beginning to look like the names in mask_SG, isn't it? Do
+>>>>>> you have a view on whether degree= should be mandatory, or does the
+>>>>>> infrastructure recognise coordinate RHS variables and rescale them
+>>>>>> automatically (I doubt the latter)? Why do users use trend variables
+>>>>>> in this way - the range of values in the (X'X) matrix becomes enormous
+>>>>>> with the usual metre metric for coordinates?
+>>>>>>
+>>>>>>  Another question we could ask (ourselves) is why in R we allow users
+>>>>> to
+>>>>> give their coordinates the names they like. I remember that for that
+>>>>> sole reason (need to rename) I added the function
+>>>>>
+>>>>> coordnames(x) = c("u", "v")
+>>>>>
+>>>>> to sp. In case they're called "lon" and "lat", they also don't change
+>>>>> name after projection. But maybe I talk too much with people worrying
+>>>>> about semantics, these days. ;-)
+>>>>> --
+>>>>> Edzer
+>>>>>
+>>>>>
+>>>>>> Roger
+>>>>>>
+>>>>>>
+>>>>>>  Best regards,
+>>>>>>> --
+>>>>>>> Edzer
+>>>>>>>
+>>>>>>> mathieu grelier wrote:
+>>>>>>>
+>>>>>>> Dear all,
+>>>>>>> I am trying to achieve universal kriging with GRASS and R through
+>>>>>>> spgrass6
+>>>>>>> package.
+>>>>>>> Maybe you could help me to find the right R syntax.
+>>>>>>> As in the gstat doc, the polynomial I try to use for now is "x+y"
+>>>>>>>
+>>>>>>>  Dear all,
+>>>>>>>
+>>>>>>>> I am trying to achieve universal kriging with GRASS and R through
+>>>>>>>> spgrass6
+>>>>>>>> package.
+>>>>>>>> Maybe you could help me to find the right R syntax.
+>>>>>>>> As in the gstat doc, the polynomial I try to use for now is "x+y"
+>>>>>>>>
+>>>>>>>> In R, with automap package, this works :
+>>>>>>>>
+>>>>>>>>  data(meuse)
+>>>>>>>>
+>>>>>>>>> coordinates(meuse) = ~x+y
+>>>>>>>>> data(meuse.grid)
+>>>>>>>>> gridded(meuse.grid) = ~x+y
+>>>>>>>>> column = "zinc"
+>>>>>>>>>
+>>>>>>>>>  ##Ordinary kriging :
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>>  predictors = "1"
+>>>>>>>>
+>>>>>>>>> autoKrige(as.formula(paste(column,"~", predictors)), meuse,
+>>>>>>>>> meuse.grid)
+>>>>>>>>>
+>>>>>>>>>  ##Universal kriging :
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>>  predictors = "x+y"
+>>>>>>>>
+>>>>>>>>> autoKrige(as.formula(paste(column,"~", predictors)), meuse,
+>>>>>>>>> meuse.grid)
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>  But using spgrass6, it becomes (some steps have been skipped):
+>>>>>>>>
+>>>>>>>>  sitesR <- readVECT6("grass_sites")
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>  ...
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>>  mask_SG <- SpatialGridDataFrame(grd, data=data, CRS(G$proj4))
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>  ...
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> ##Ordinary kriging => WORKS:
+>>>>>>>>
+>>>>>>>>  predictors = "1"
+>>>>>>>>
+>>>>>>>>> kriging_result =
+>>>>>>>>> autoKrige(as.formula(paste(column,"~",predictors)),
+>>>>>>>>>
+>>>>>>>>>  sitesR, mask_SG)
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> ##Universal kriging => ERROR:
+>>>>>>>>
+>>>>>>>>  predictors = "x+y"
+>>>>>>>>
+>>>>>>>>> kriging_result =
+>>>>>>>>> autoKrige(as.formula(paste(column,"~",predictors)),
+>>>>>>>>>
+>>>>>>>>>  sitesR, mask_SG)
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>>  Error in eval(expr, envir, enclos) : "x" object not found
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>  Why can't we use the x an y columns here?
+>>>>>>>> Maybe it is because the meuse and sites R data.frames don't have the
+>>>>>>>> same
+>>>>>>>> structure ?
+>>>>>>>>
+>>>>>>>>  class(meuse)
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>  [1] "data.frame"
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>>  attributes(meuse)
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>  $names
+>>>>>>>>>
+>>>>>>>>  [1] "x"       "y"       "cadmium" "copper"  "lead"    "zinc"
+>>>>>>>>  "elev"
+>>>>>>>>
+>>>>>>>>  class(sitesR)
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>  [1] "SpatialPointsDataFrame"
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>>  attributes(sitesR)
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>  $bbox
+>>>>>>>>>
+>>>>>>>> ...
+>>>>>>>> $proj4string
+>>>>>>>> ...
+>>>>>>>> $coords
+>>>>>>>> ...
+>>>>>>>> $data
+>>>>>>>>          site value cat        x       y
+>>>>>>>> 1Ai      81.80   1 825094.9 6796083
+>>>>>>>> 2     Al      38.50   2 758780.4 6851508
+>>>>>>>> 3     Ar     103.50   3 818973.3 6796125
+>>>>>>>> 4           Av      52.50   4 775136.0 6877271
+>>>>>>>> ...
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> ------------------------------------------------------------------------
+>>>>>>>>
+>>>>>>>
+>>>>>
+>>>>>>
+>>>>>>>> _______________________________________________
+>>>>>>>> grass-stats mailing list
+>>>>>>>> grass-stats@lists.osgeo.org
+>>>>>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>  --
+>>>>> Edzer Pebesma
+>>>>> Institute for Geoinformatics (ifgi), University of M?nster
+>>>>> Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+>>>>> 8333081, Fax: +49 251 8339763 http://ifgi.uni-muenster.de/
+>>>>> http://www.springer.com/978-0-387-78170-9 e.pebesma@wwu.de
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>  --
+>>> Roger Bivand
+>>> Economic Geography Section, Department of Economics, Norwegian School of
+>>> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+>>> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>> e-mail: Roger.Bivand@nhh.no
+>>>
+>>>
+>>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20090629/3f9d037e/attachment-0001.html
+From Roger.Bivand at nhh.no  Mon Jun 29 11:33:32 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon Jun 29 11:33:36 2009
+Subject: [GRASS-stats] universal kriging with spgrass6
+In-Reply-To: <6d400d3e0906290752h588fe1fahd66aaf46bd90e861@mail.gmail.com>
+References: <6d400d3e0906250617p6893d910t62f53a3cf15cbc98@mail.gmail.com>
+	<4A43E9B3.7080102@uni-muenster.de>
+	<alpine.LRH.2.00.0906260824170.8603@reclus.nhh.no>
+	<4A446E09.9060509@uni-muenster.de>
+	<6d400d3e0906290303s4132d916r62abe42d101805df@mail.gmail.com>
+	<alpine.LRH.2.00.0906291211180.22491@reclus.nhh.no>
+	<6d400d3e0906290547v67353ad7vc5bf78768e28640c@mail.gmail.com>
+	<alpine.LRH.2.00.0906291450340.22491@reclus.nhh.no>
+	<6d400d3e0906290752h588fe1fahd66aaf46bd90e861@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.0906291708130.22491@reclus.nhh.no>
+
+On Mon, 29 Jun 2009, mathieu grelier wrote:
+
+> Dear all,
+> Please read this thread again and understand I'm definitely not aggressive.
+> I've just proposed a wrong spgrass syntax, based on a working R code.
+> I completely agree with your perspective and respect your great work. Of
+> course, no problem with that, I know what open source is, and precisely, I
+> am quite tired of this kind of discussions.
+>
+> I just thought this list was accessible to simple GRASS users. From this 
+> point of view, even some mistakes may appear too big for specialists, It 
+> could be a constructive dialog between two communities. I also meant 
+> that from the engineering point of view, design is adapted to users, not 
+> the contrary, and you can always learn from users mistakes how to 
+> improve your design and doc. But this is another debate : again I really 
+> appreciate your software.
+
+These are areas where there is no firm knowledge or implementations, so 
+there is no "design" apart from the formulae, from there implementation, 
+and the difficulties of implementing on hardware.
+
+>
+> I'm just requesting help for syntax and never R libs consultancy.
+
+These are the same thing, when, as is the case here, your requests go 
+beyond what syntax permits. If you read to the end of my reply, you would 
+have seen a possible remedy by re-scaling the coordinates:
+
+library(automap)
+data(meuse)
+coordinates(meuse) <- c("x", "y")
+data(meuse.grid)
+coordinates(meuse.grid) <- c("x", "y")
+gridded(meuse.grid) <- TRUE
+meuse$east <- coordinates(meuse)[,1]
+re_EAST <- (max(meuse$east) - min(meuse$east))
+meuse$re_east <- meuse$east - min(meuse$east)/re_EAST
+meuse$north <- coordinates(meuse)[,2]
+re_NORTH <- (max(meuse$north) - min(meuse$north))
+meuse$re_north <- meuse$north - min(meuse$north)/re_NORTH
+meuse.grid$east <- coordinates(meuse.grid)[,1]
+meuse.grid$north <- coordinates(meuse.grid)[,2]
+meuse.grid$re_east <- meuse.grid$east - min(meuse$east)/re_EAST
+meuse.grid$re_north <- meuse.grid$north - min(meuse$north)/re_NORTH
+o0 <- autoKrige(formula=zinc ~ 1, input_data=meuse, new_data=meuse.grid)
+plot(o0)
+o1 <- autoKrige(formula=zinc ~ re_east + re_north, input_data=meuse,
+   new_data=meuse.grid)
+plot(o1)
+o2 <- autoKrige(formula=zinc ~ re_east + re_north + I(re_east*re_north) +
+   I(re_east^2) + I(re_north^2), input_data=meuse, new_data=meuse.grid)
+plot(o2)
+
+> If the solution is too complex, please just indicate it, without any 
+> condescension, and people won't insist.
+
+That isn't how science works, nothing is "too complex", but with given 
+implementations, it does take time (like everything).
+
+>
+> I now clearly understood that is a quite hard problem so I have my answer.
+> When I say "*it should not be for me to understand how*", I mean UK is
+> certainly an interesting feature for GRASS, not just for me. So I am
+> surprised to see It is like I am the first to ask.
+>
+
+You aren't, others have got similar answers - the specific stumbling block 
+is that variogram() and degree= in gstat don't play well together, for 
+good reasons.
+
+Roger
+
+> Best regards.
+> Mathieu
+>
+> 2009/6/29 Roger Bivand <Roger.Bivand@nhh.no>
+>
+>> On Mon, 29 Jun 2009, mathieu grelier wrote:
+>>
+>>  ok
+>>> First I think everyone here has its own domain of competence, so please
+>>> don't answer as if I was at school, I'm not sure all these classes are so
+>>> obvious for all GRASS users. Please clearly display the R requirements to
+>>> post in the list if they exist
+>>> I just try to implement UK in a GRASS process for a larger mapping system
+>>> architecture. I think in some way it could be feasible : it should not be
+>>> for me to understand how.
+>>>
+>>
+>> It is always the responsibility of the implementer to back-track to where
+>> his or her understanding is wrong. None of the open source software that you
+>> are using comes with any warranty whatsoever.
+>>
+>> You can do UK, but not trend surface, in a predictable way, because both
+>> the data= and newdata= objects have to contain the same variables.
+>>
+>> Doing UK with trend surfaces is different, because the "proper" gstat
+>> argument is degree=, not including the coordinates as variables. The reason
+>> for this is numeric, products and powers of large numbers, like meters from
+>> the Equator, overflow double precision very quickly. When degree= is given,
+>> the code internally rescales the coordinates before taking powers and
+>> products to avoid these numerical problems - in gstat source src/data.c, the
+>> calc_polynomial() function rescales - for example:
+>>
+>> x' = (x-min(x))/(max(x)-min(x))
+>>
+>> If what you want to do is UK with a trend surface, you will have to work
+>> though this from the bottom up. In fact, I'm surprised that autoKrige() uses
+>> krige() in gstat, rather than first making a gstat() object then predicting
+>> from it, making it harder to see what is going on. I suspect that some of
+>> the difficulties here are actually caused by:
+>>
+>> library(gstat)
+>> data(meuse)
+>> coordinates(meuse) <- c("x", "y")
+>> m1 <- gstat(id="m1", formula=zinc ~ 1, data=meuse, degree=1)
+>> v1 <- variogram(m1)
+>> #Error in variogram.gstat(m1) :
+>> #degree != 0: residual variograms wrt coord trend using degree not
+>> supported
+>>
+>> which prevents autofitVariogram() from doing what it needs to in the
+>> rescaled trend surface case. This is I think supported in free-standing
+>> gstat, but not in the R package, I believe.
+>>
+>> data(meuse.grid)
+>> coordinates(meuse.grid) <- c("x", "y")
+>> m1p <- predict(m1, meuse.grid)
+>>
+>> does work happily, but getting to UK with a trend surface is messy, as
+>> you've found. It may be that I'm wrong, and that the gstat() formula
+>> interface does recognise "x" and "y" as coordinates - it seems to, and that
+>> this carries forward to prediction, but I can't see where this is in the
+>> gstat package R or C code. The comment in src/s.c that degree > 0 will only
+>> work "for a single variable" and "when no other predictors are given"
+>> suggests that doing UK with a trend surface using a variogram to fit a
+>> variogram model isn't so easy after all.
+>>
+>>
+>>> Also always consider improving your doc and/or your design : it shouldn't
+>>> be
+>>> normal for a non-specialist to spend so much time to understand how to
+>>> manipulate the objects to achieve UK with GRASS.
+>>>
+>>>
+>> Welcome to reality, sorry, but this really is how things are, even in
+>> proprietary software, you'll need to know, or reverse-engineer, how things
+>> do work, in order to have adequate confidence in your results.
+>>
+>>  Obviously I don't have time to study the R internals and I've just tried
+>>> to
+>>> quickly reproduce the working R code with meuse dataset, which use a
+>>> dataframe as input data.
+>>> By the way, the rest of the code is yours, you personally gave me at the
+>>> time.
+>>>
+>>
+>> That doesn't mean it works, nobody is infallible. There are consequences of
+>> design choices often made for different purposes long ago. The degree=
+>> problem is one, another is column names, neither have obvious solutions.
+>> Having it work in automap probably means adding checks in autoKrige(), and
+>> then altering variogram() and other functions in gstat() to do intial checks
+>> and pass the degree= value through, so changes to two underlying packages.
+>> If you can volunteer patches to them, this may get resolved faster.
+>>
+>> Alternatively, you could do the rescaling yourself first for both the data=
+>> and the newdata= arguments to autoKrige(), having first added X and Y
+>> coordinate variables to the objects. Check first whether you can get the
+>> same trend surface predictions from my code above, from rescaled variables
+>> in the same format, and finally through autoKrige() - though here I can't
+>> see how to just do a trend surface without the variogram fitting
+>> (model=NULL?).
+>>
+>> Roger
+>>
+>>
+>>  I understood that this is a colunm name problem and now I'm no longer sure
+>>> what I want to do is possible without modification in gstat.
+>>> But I thought maybe there was a workaround?
+>>>
+>>> Now I see it makes no sense but the initial R example seems to work with a
+>>> data.frame as input data and it induced me in error.
+>>> Best regards.
+>>>
+>>> Mathieu
+>>>
+>>>
+>>> 2009/6/29 Roger Bivand <Roger.Bivand@nhh.no>
+>>>
+>>>  On Mon, 29 Jun 2009, mathieu grelier wrote:
+>>>>
+>>>>  ok,
+>>>>
+>>>>> From your answers, I've tried to play with the SpatialPointsDataFrame
+>>>>> object
+>>>>> imported from GRASS to fit the gstat krige function requirements. Basic
+>>>>> idea
+>>>>> seemed to work with the "data" attribute of the imported object, adding
+>>>>> the
+>>>>> missing coordinates columns :
+>>>>>
+>>>>>  sitesR <- readVECT6("grass_sites")
+>>>>>
+>>>>>> class(sitesR)
+>>>>>> [1] "SpatialPointsDataFrame"
+>>>>>> d = attr(sitesR,"data")
+>>>>>> d
+>>>>>>
+>>>>>>
+>>>>>         site value cat
+>>>>> 1           Ail      81.80   1
+>>>>> 2     All      38.50   2
+>>>>> 3     Arg     103.50   3
+>>>>> 4           Avb      52.50   4
+>>>>> ...
+>>>>>
+>>>>>  sitesR$x <- coordinates(sitesR)[,1]
+>>>>>
+>>>>>> sitesR$y <- coordinates(sitesR)[,2]
+>>>>>> d = attr(sitesR,"data")
+>>>>>>
+>>>>>>
+>>>>>  **NO**, there are no attr() in an S4 class. Just do the obvious thing:
+>>>>
+>>>> d <- as(sitesR, "data.frame")
+>>>>
+>>>> **BUT** you shouldn't be doing this at all, the data= argument in gstat
+>>>> can
+>>>> take a SpatialPointsDataFrame.
+>>>>
+>>>>  class(d)
+>>>>
+>>>>>
+>>>>>>  [1] "data.frame"
+>>>>>
+>>>>>  d
+>>>>>>
+>>>>>>          site value cat        x       y
+>>>>> 1           Ail      81.80   1 825094.9 6796083
+>>>>> 2     All      38.50   2 758780.4 6851508
+>>>>> 3     Arg     103.50   3 818973.3 6796125
+>>>>> 4           Avb      52.50   4 775136.0 6877271
+>>>>> ...
+>>>>>
+>>>>>  coordinates(d) = ~x+y
+>>>>>
+>>>>>>
+>>>>>>
+>>>>>  (Check, it has lost its x and y columns again, hasn't it?)
+>>>> str(d)
+>>>>
+>>>>  attr(d, "proj4string") <-CRS(G$proj4)
+>>>>
+>>>>>
+>>>>>>
+>>>>>  **NO**!!! These are S4 classes, no attr()!!!
+>>>>
+>>>>
+>>>>   G <- gmeta6()
+>>>>>
+>>>>>> grd <- gmeta2grd()
+>>>>>>
+>>>>>>
+>>>>>  **PLEASE** don't do this! You cannot set one slot without resetting the
+>>>> others if you want to cover the GRASS region. If you want something
+>>>> different, use g.region in GRASS and just gmeta2grd().
+>>>>
+>>>>  slot(grd, "cellsize") <- c(1000, 1000)
+>>>>
+>>>>> data <- data.frame(list(k=rep(1,(floor(G$cols)*floor(G$rows)))))
+>>>>>> mask_SG <- SpatialGridDataFrame(grd, data=data, CRS(G$proj4))
+>>>>>>
+>>>>>>
+>>>>>
+>>>>>  What is this supposed to be? What we've told you already is that
+>>>> mask_SG
+>>>> needs to be a Spatial*DataFrame with "x" and "y" columns, why are you not
+>>>> doing it?
+>>>>
+>>>>
+>>>>   predictors = "x+y"
+>>>>>
+>>>>>> kriging_result = autoKrige(as.formula(paste(column,"~",predictors)), d,
+>>>>>>
+>>>>>>  mask_SG)
+>>>>>
+>>>>> Result was :
+>>>>>
+>>>>> Error in gstat.formula.predict(d$formula, newdata, na.action =
+>>>>> na.action,
+>>>>>  :
+>>>>>
+>>>>>  NROW(locs) != NROW(X): this should not occur
+>>>>> Warning messages:
+>>>>> 1: 'newdata' had 7900 rows but variable(s) found have 73 rows
+>>>>> 2: 'newdata' had 7900 rows but variable(s) found have 73 rows
+>>>>>
+>>>>>
+>>>>>  No traceback()? Why? Isn't it obvious that it has found the x and y
+>>>> values
+>>>> in d (73 long)?
+>>>>
+>>>>  1)do you think this approach could be successful?
+>>>>
+>>>>> 2)If so, can you help me with this error?
+>>>>>
+>>>>>
+>>>> Try doing everything in very small steps manually. Use gstat not automap,
+>>>> to avoid the extra layer of uncertainty. Simply try to set up a gstat()
+>>>> object for trend surface and predict from it:
+>>>>
+>>>> g_tr1a <- gstat("tr1a", <whatever column was> ~ 1, d, degree=1)
+>>>> pr_tr1a <- predict(g_tr1a, mask_SG)
+>>>>
+>>>> Once that (untried) works, go further, not until. I still suspect that
+>>>> this
+>>>> is to do with the colnames of the coordinates, (x, y) in one case and
+>>>> (coords1, coords2) or some such in the other.
+>>>>
+>>>> Please do study the gstat help pages and the examples, they will help,
+>>>> but
+>>>> you are jumping to far too many conclusions.
+>>>>
+>>>> Roger
+>>>>
+>>>>
+>>>>
+>>>>  Mathieu
+>>>>>
+>>>>> 2009/6/26 Edzer Pebesma <edzer.pebesma@uni-muenster.de>
+>>>>>
+>>>>>
+>>>>>
+>>>>>> Roger Bivand wrote:
+>>>>>>
+>>>>>>  On Thu, 25 Jun 2009, Edzer Pebesma wrote:
+>>>>>>>
+>>>>>>>  Mathieu, that could very well be the case. Note that x+y do not
+>>>>>>>
+>>>>>>>> "generally" refer to x- and y-coordinates, but are the actual names
+>>>>>>>> of
+>>>>>>>> the coordinates (or something else). From your example I cannot find
+>>>>>>>> out
+>>>>>>>> whether the coordinates are named x and y. In addition, they should
+>>>>>>>> have
+>>>>>>>> identical names in sitesR and mask_SG.
+>>>>>>>>
+>>>>>>>>
+>>>>>>> Yes, it is beginning to look like the names in mask_SG, isn't it? Do
+>>>>>>> you have a view on whether degree= should be mandatory, or does the
+>>>>>>> infrastructure recognise coordinate RHS variables and rescale them
+>>>>>>> automatically (I doubt the latter)? Why do users use trend variables
+>>>>>>> in this way - the range of values in the (X'X) matrix becomes enormous
+>>>>>>> with the usual metre metric for coordinates?
+>>>>>>>
+>>>>>>>  Another question we could ask (ourselves) is why in R we allow users
+>>>>>> to
+>>>>>> give their coordinates the names they like. I remember that for that
+>>>>>> sole reason (need to rename) I added the function
+>>>>>>
+>>>>>> coordnames(x) = c("u", "v")
+>>>>>>
+>>>>>> to sp. In case they're called "lon" and "lat", they also don't change
+>>>>>> name after projection. But maybe I talk too much with people worrying
+>>>>>> about semantics, these days. ;-)
+>>>>>> --
+>>>>>> Edzer
+>>>>>>
+>>>>>>
+>>>>>>> Roger
+>>>>>>>
+>>>>>>>
+>>>>>>>  Best regards,
+>>>>>>>> --
+>>>>>>>> Edzer
+>>>>>>>>
+>>>>>>>> mathieu grelier wrote:
+>>>>>>>>
+>>>>>>>> Dear all,
+>>>>>>>> I am trying to achieve universal kriging with GRASS and R through
+>>>>>>>> spgrass6
+>>>>>>>> package.
+>>>>>>>> Maybe you could help me to find the right R syntax.
+>>>>>>>> As in the gstat doc, the polynomial I try to use for now is "x+y"
+>>>>>>>>
+>>>>>>>>  Dear all,
+>>>>>>>>
+>>>>>>>>> I am trying to achieve universal kriging with GRASS and R through
+>>>>>>>>> spgrass6
+>>>>>>>>> package.
+>>>>>>>>> Maybe you could help me to find the right R syntax.
+>>>>>>>>> As in the gstat doc, the polynomial I try to use for now is "x+y"
+>>>>>>>>>
+>>>>>>>>> In R, with automap package, this works :
+>>>>>>>>>
+>>>>>>>>>  data(meuse)
+>>>>>>>>>
+>>>>>>>>>> coordinates(meuse) = ~x+y
+>>>>>>>>>> data(meuse.grid)
+>>>>>>>>>> gridded(meuse.grid) = ~x+y
+>>>>>>>>>> column = "zinc"
+>>>>>>>>>>
+>>>>>>>>>>  ##Ordinary kriging :
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>  predictors = "1"
+>>>>>>>>>
+>>>>>>>>>> autoKrige(as.formula(paste(column,"~", predictors)), meuse,
+>>>>>>>>>> meuse.grid)
+>>>>>>>>>>
+>>>>>>>>>>  ##Universal kriging :
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>  predictors = "x+y"
+>>>>>>>>>
+>>>>>>>>>> autoKrige(as.formula(paste(column,"~", predictors)), meuse,
+>>>>>>>>>> meuse.grid)
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>  But using spgrass6, it becomes (some steps have been skipped):
+>>>>>>>>>
+>>>>>>>>>  sitesR <- readVECT6("grass_sites")
+>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>  ...
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>  mask_SG <- SpatialGridDataFrame(grd, data=data, CRS(G$proj4))
+>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>  ...
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> ##Ordinary kriging => WORKS:
+>>>>>>>>>
+>>>>>>>>>  predictors = "1"
+>>>>>>>>>
+>>>>>>>>>> kriging_result =
+>>>>>>>>>> autoKrige(as.formula(paste(column,"~",predictors)),
+>>>>>>>>>>
+>>>>>>>>>>  sitesR, mask_SG)
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> ##Universal kriging => ERROR:
+>>>>>>>>>
+>>>>>>>>>  predictors = "x+y"
+>>>>>>>>>
+>>>>>>>>>> kriging_result =
+>>>>>>>>>> autoKrige(as.formula(paste(column,"~",predictors)),
+>>>>>>>>>>
+>>>>>>>>>>  sitesR, mask_SG)
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>  Error in eval(expr, envir, enclos) : "x" object not found
+>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>  Why can't we use the x an y columns here?
+>>>>>>>>> Maybe it is because the meuse and sites R data.frames don't have the
+>>>>>>>>> same
+>>>>>>>>> structure ?
+>>>>>>>>>
+>>>>>>>>>  class(meuse)
+>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>  [1] "data.frame"
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>  attributes(meuse)
+>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>  $names
+>>>>>>>>>>
+>>>>>>>>>  [1] "x"       "y"       "cadmium" "copper"  "lead"    "zinc"
+>>>>>>>>>  "elev"
+>>>>>>>>>
+>>>>>>>>>  class(sitesR)
+>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>  [1] "SpatialPointsDataFrame"
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>  attributes(sitesR)
+>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>  $bbox
+>>>>>>>>>>
+>>>>>>>>> ...
+>>>>>>>>> $proj4string
+>>>>>>>>> ...
+>>>>>>>>> $coords
+>>>>>>>>> ...
+>>>>>>>>> $data
+>>>>>>>>>          site value cat        x       y
+>>>>>>>>> 1Ai      81.80   1 825094.9 6796083
+>>>>>>>>> 2     Al      38.50   2 758780.4 6851508
+>>>>>>>>> 3     Ar     103.50   3 818973.3 6796125
+>>>>>>>>> 4           Av      52.50   4 775136.0 6877271
+>>>>>>>>> ...
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> ------------------------------------------------------------------------
+>>>>>>>>>
+>>>>>>>>
+>>>>>>
+>>>>>>>
+>>>>>>>>> _______________________________________________
+>>>>>>>>> grass-stats mailing list
+>>>>>>>>> grass-stats@lists.osgeo.org
+>>>>>>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>  --
+>>>>>> Edzer Pebesma
+>>>>>> Institute for Geoinformatics (ifgi), University of M?nster
+>>>>>> Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+>>>>>> 8333081, Fax: +49 251 8339763 http://ifgi.uni-muenster.de/
+>>>>>> http://www.springer.com/978-0-387-78170-9 e.pebesma@wwu.de
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>  --
+>>>> Roger Bivand
+>>>> Economic Geography Section, Department of Economics, Norwegian School of
+>>>> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+>>>> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>>> e-mail: Roger.Bivand@nhh.no
+>>>>
+>>>>
+>>>
+>> --
+>> Roger Bivand
+>> Economic Geography Section, Department of Economics, Norwegian School of
+>> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+>> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+>> e-mail: Roger.Bivand@nhh.no
+>>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From greliermathieu at gmail.com  Mon Jun 29 12:25:16 2009
+From: greliermathieu at gmail.com (mathieu grelier)
+Date: Mon Jun 29 12:25:23 2009
+Subject: [GRASS-stats] universal kriging with spgrass6
+In-Reply-To: <alpine.LRH.2.00.0906291708130.22491@reclus.nhh.no>
+References: <6d400d3e0906250617p6893d910t62f53a3cf15cbc98@mail.gmail.com>
+	<4A43E9B3.7080102@uni-muenster.de>
+	<alpine.LRH.2.00.0906260824170.8603@reclus.nhh.no>
+	<4A446E09.9060509@uni-muenster.de>
+	<6d400d3e0906290303s4132d916r62abe42d101805df@mail.gmail.com>
+	<alpine.LRH.2.00.0906291211180.22491@reclus.nhh.no>
+	<6d400d3e0906290547v67353ad7vc5bf78768e28640c@mail.gmail.com>
+	<alpine.LRH.2.00.0906291450340.22491@reclus.nhh.no>
+	<6d400d3e0906290752h588fe1fahd66aaf46bd90e861@mail.gmail.com>
+	<alpine.LRH.2.00.0906291708130.22491@reclus.nhh.no>
+Message-ID: <6d400d3e0906290925w5a36d99eh752bc95b1bacd27c@mail.gmail.com>
+
+*>>These are areas where there is no firm knowledge or implementations, so
+there is no "design" apart from the formulae, from there implementation, and
+the difficulties of implementing on hardware.*
+
+Yes I understand that. Often when you try to build up a project, a big
+issue, especially with open source software, is to know if you are dealing
+with this kind of area. And also what is the risk of engaging yourself in
+it. Generally you avoid specific hacks using existing libraries for
+Enterprise level projects.
+Debate on design could be very long and actually I would have preferred not
+to mention it.
+*
+>I'm just requesting help for syntax and never R libs consultancy.
+
+>>These are the same thing, when, as is the case here, your requests go
+beyond what syntax permits*
+
+I clearly see that now, so thanks a lot for consultancy :)
+I didn't read your reply before my previous post.
+*
+
+>If the solution is too complex, please just indicate it, without any
+condescension, and people won't insist.
+*
+>
+>  *
+>>That isn't how science works, nothing is "too complex", but with given
+implementations, it does take time (like everything).*
+
+That is true I know.
+But we also know how to define the nature of a problem's complexity...
+
+Thanks for the rescaling tip.
+
+Maybe someone will now propose a simple working R code for UK in GRASS
+through spgrass6, just passing a "predictors" argument (predictors = 1 for
+ordinary kriging).
+
+All the best.
+Mathieu
+
+2009/6/29 Roger Bivand <Roger.Bivand@nhh.no>
+
+> On Mon, 29 Jun 2009, mathieu grelier wrote:
+>
+>  Dear all,
+>> Please read this thread again and understand I'm definitely not
+>> aggressive.
+>> I've just proposed a wrong spgrass syntax, based on a working R code.
+>> I completely agree with your perspective and respect your great work. Of
+>> course, no problem with that, I know what open source is, and precisely, I
+>> am quite tired of this kind of discussions.
+>>
+>> I just thought this list was accessible to simple GRASS users. From this
+>> point of view, even some mistakes may appear too big for specialists, It
+>> could be a constructive dialog between two communities. I also meant that
+>> from the engineering point of view, design is adapted to users, not the
+>> contrary, and you can always learn from users mistakes how to improve your
+>> design and doc. But this is another debate : again I really appreciate your
+>> software.
+>>
+>
+> These are areas where there is no firm knowledge or implementations, so
+> there is no "design" apart from the formulae, from there implementation, and
+> the difficulties of implementing on hardware.
+>
+>
+>> I'm just requesting help for syntax and never R libs consultancy.
+>>
+>
+> These are the same thing, when, as is the case here, your requests go
+> beyond what syntax permits. If you read to the end of my reply, you would
+> have seen a possible remedy by re-scaling the coordinates:
+>
+> library(automap)
+> data(meuse)
+> coordinates(meuse) <- c("x", "y")
+> data(meuse.grid)
+> coordinates(meuse.grid) <- c("x", "y")
+> gridded(meuse.grid) <- TRUE
+> meuse$east <- coordinates(meuse)[,1]
+> re_EAST <- (max(meuse$east) - min(meuse$east))
+> meuse$re_east <- meuse$east - min(meuse$east)/re_EAST
+> meuse$north <- coordinates(meuse)[,2]
+> re_NORTH <- (max(meuse$north) - min(meuse$north))
+> meuse$re_north <- meuse$north - min(meuse$north)/re_NORTH
+> meuse.grid$east <- coordinates(meuse.grid)[,1]
+> meuse.grid$north <- coordinates(meuse.grid)[,2]
+> meuse.grid$re_east <- meuse.grid$east - min(meuse$east)/re_EAST
+> meuse.grid$re_north <- meuse.grid$north - min(meuse$north)/re_NORTH
+> o0 <- autoKrige(formula=zinc ~ 1, input_data=meuse, new_data=meuse.grid)
+> plot(o0)
+> o1 <- autoKrige(formula=zinc ~ re_east + re_north, input_data=meuse,
+>  new_data=meuse.grid)
+> plot(o1)
+> o2 <- autoKrige(formula=zinc ~ re_east + re_north + I(re_east*re_north) +
+>  I(re_east^2) + I(re_north^2), input_data=meuse, new_data=meuse.grid)
+> plot(o2)
+>
+>  If the solution is too complex, please just indicate it, without any
+>> condescension, and people won't insist.
+>>
+>
+> That isn't how science works, nothing is "too complex", but with given
+> implementations, it does take time (like everything).
+>
+>
+>> I now clearly understood that is a quite hard problem so I have my answer.
+>> When I say "*it should not be for me to understand how*", I mean UK is
+>> certainly an interesting feature for GRASS, not just for me. So I am
+>> surprised to see It is like I am the first to ask.
+>>
+>>
+> You aren't, others have got similar answers - the specific stumbling block
+> is that variogram() and degree= in gstat don't play well together, for good
+> reasons.
+>
+> Roger
+>
+>
+>  Best regards.
+>> Mathieu
+>>
+>> 2009/6/29 Roger Bivand <Roger.Bivand@nhh.no>
+>>
+>>  On Mon, 29 Jun 2009, mathieu grelier wrote:
+>>>
+>>>  ok
+>>>
+>>>> First I think everyone here has its own domain of competence, so please
+>>>> don't answer as if I was at school, I'm not sure all these classes are
+>>>> so
+>>>> obvious for all GRASS users. Please clearly display the R requirements
+>>>> to
+>>>> post in the list if they exist
+>>>> I just try to implement UK in a GRASS process for a larger mapping
+>>>> system
+>>>> architecture. I think in some way it could be feasible : it should not
+>>>> be
+>>>> for me to understand how.
+>>>>
+>>>>
+>>> It is always the responsibility of the implementer to back-track to where
+>>> his or her understanding is wrong. None of the open source software that
+>>> you
+>>> are using comes with any warranty whatsoever.
+>>>
+>>> You can do UK, but not trend surface, in a predictable way, because both
+>>> the data= and newdata= objects have to contain the same variables.
+>>>
+>>> Doing UK with trend surfaces is different, because the "proper" gstat
+>>> argument is degree=, not including the coordinates as variables. The
+>>> reason
+>>> for this is numeric, products and powers of large numbers, like meters
+>>> from
+>>> the Equator, overflow double precision very quickly. When degree= is
+>>> given,
+>>> the code internally rescales the coordinates before taking powers and
+>>> products to avoid these numerical problems - in gstat source src/data.c,
+>>> the
+>>> calc_polynomial() function rescales - for example:
+>>>
+>>> x' = (x-min(x))/(max(x)-min(x))
+>>>
+>>> If what you want to do is UK with a trend surface, you will have to work
+>>> though this from the bottom up. In fact, I'm surprised that autoKrige()
+>>> uses
+>>> krige() in gstat, rather than first making a gstat() object then
+>>> predicting
+>>> from it, making it harder to see what is going on. I suspect that some of
+>>> the difficulties here are actually caused by:
+>>>
+>>> library(gstat)
+>>> data(meuse)
+>>> coordinates(meuse) <- c("x", "y")
+>>> m1 <- gstat(id="m1", formula=zinc ~ 1, data=meuse, degree=1)
+>>> v1 <- variogram(m1)
+>>> #Error in variogram.gstat(m1) :
+>>> #degree != 0: residual variograms wrt coord trend using degree not
+>>> supported
+>>>
+>>> which prevents autofitVariogram() from doing what it needs to in the
+>>> rescaled trend surface case. This is I think supported in free-standing
+>>> gstat, but not in the R package, I believe.
+>>>
+>>> data(meuse.grid)
+>>> coordinates(meuse.grid) <- c("x", "y")
+>>> m1p <- predict(m1, meuse.grid)
+>>>
+>>> does work happily, but getting to UK with a trend surface is messy, as
+>>> you've found. It may be that I'm wrong, and that the gstat() formula
+>>> interface does recognise "x" and "y" as coordinates - it seems to, and
+>>> that
+>>> this carries forward to prediction, but I can't see where this is in the
+>>> gstat package R or C code. The comment in src/s.c that degree > 0 will
+>>> only
+>>> work "for a single variable" and "when no other predictors are given"
+>>> suggests that doing UK with a trend surface using a variogram to fit a
+>>> variogram model isn't so easy after all.
+>>>
+>>>
+>>>  Also always consider improving your doc and/or your design : it
+>>>> shouldn't
+>>>> be
+>>>> normal for a non-specialist to spend so much time to understand how to
+>>>> manipulate the objects to achieve UK with GRASS.
+>>>>
+>>>>
+>>>>  Welcome to reality, sorry, but this really is how things are, even in
+>>> proprietary software, you'll need to know, or reverse-engineer, how
+>>> things
+>>> do work, in order to have adequate confidence in your results.
+>>>
+>>>  Obviously I don't have time to study the R internals and I've just tried
+>>>
+>>>> to
+>>>> quickly reproduce the working R code with meuse dataset, which use a
+>>>> dataframe as input data.
+>>>> By the way, the rest of the code is yours, you personally gave me at the
+>>>> time.
+>>>>
+>>>>
+>>> That doesn't mean it works, nobody is infallible. There are consequences
+>>> of
+>>> design choices often made for different purposes long ago. The degree=
+>>> problem is one, another is column names, neither have obvious solutions.
+>>> Having it work in automap probably means adding checks in autoKrige(),
+>>> and
+>>> then altering variogram() and other functions in gstat() to do intial
+>>> checks
+>>> and pass the degree= value through, so changes to two underlying
+>>> packages.
+>>> If you can volunteer patches to them, this may get resolved faster.
+>>>
+>>> Alternatively, you could do the rescaling yourself first for both the
+>>> data=
+>>> and the newdata= arguments to autoKrige(), having first added X and Y
+>>> coordinate variables to the objects. Check first whether you can get the
+>>> same trend surface predictions from my code above, from rescaled
+>>> variables
+>>> in the same format, and finally through autoKrige() - though here I can't
+>>> see how to just do a trend surface without the variogram fitting
+>>> (model=NULL?).
+>>>
+>>> Roger
+>>>
+>>>
+>>>  I understood that this is a colunm name problem and now I'm no longer
+>>> sure
+>>>
+>>>> what I want to do is possible without modification in gstat.
+>>>> But I thought maybe there was a workaround?
+>>>>
+>>>> Now I see it makes no sense but the initial R example seems to work with
+>>>> a
+>>>> data.frame as input data and it induced me in error.
+>>>> Best regards.
+>>>>
+>>>> Mathieu
+>>>>
+>>>>
+>>>> 2009/6/29 Roger Bivand <Roger.Bivand@nhh.no>
+>>>>
+>>>>  On Mon, 29 Jun 2009, mathieu grelier wrote:
+>>>>
+>>>>>
+>>>>>  ok,
+>>>>>
+>>>>>  From your answers, I've tried to play with the SpatialPointsDataFrame
+>>>>>> object
+>>>>>> imported from GRASS to fit the gstat krige function requirements.
+>>>>>> Basic
+>>>>>> idea
+>>>>>> seemed to work with the "data" attribute of the imported object,
+>>>>>> adding
+>>>>>> the
+>>>>>> missing coordinates columns :
+>>>>>>
+>>>>>>  sitesR <- readVECT6("grass_sites")
+>>>>>>
+>>>>>>  class(sitesR)
+>>>>>>> [1] "SpatialPointsDataFrame"
+>>>>>>> d = attr(sitesR,"data")
+>>>>>>> d
+>>>>>>>
+>>>>>>>
+>>>>>>>         site value cat
+>>>>>> 1           Ail      81.80   1
+>>>>>> 2     All      38.50   2
+>>>>>> 3     Arg     103.50   3
+>>>>>> 4           Avb      52.50   4
+>>>>>> ...
+>>>>>>
+>>>>>>  sitesR$x <- coordinates(sitesR)[,1]
+>>>>>>
+>>>>>>  sitesR$y <- coordinates(sitesR)[,2]
+>>>>>>> d = attr(sitesR,"data")
+>>>>>>>
+>>>>>>>
+>>>>>>>   **NO**, there are no attr() in an S4 class. Just do the obvious
+>>>>>> thing:
+>>>>>>
+>>>>>
+>>>>> d <- as(sitesR, "data.frame")
+>>>>>
+>>>>> **BUT** you shouldn't be doing this at all, the data= argument in gstat
+>>>>> can
+>>>>> take a SpatialPointsDataFrame.
+>>>>>
+>>>>>  class(d)
+>>>>>
+>>>>>
+>>>>>>   [1] "data.frame"
+>>>>>>>
+>>>>>>
+>>>>>>  d
+>>>>>>
+>>>>>>>
+>>>>>>>         site value cat        x       y
+>>>>>>>
+>>>>>> 1           Ail      81.80   1 825094.9 6796083
+>>>>>> 2     All      38.50   2 758780.4 6851508
+>>>>>> 3     Arg     103.50   3 818973.3 6796125
+>>>>>> 4           Avb      52.50   4 775136.0 6877271
+>>>>>> ...
+>>>>>>
+>>>>>>  coordinates(d) = ~x+y
+>>>>>>
+>>>>>>
+>>>>>>>
+>>>>>>>   (Check, it has lost its x and y columns again, hasn't it?)
+>>>>>>
+>>>>> str(d)
+>>>>>
+>>>>>  attr(d, "proj4string") <-CRS(G$proj4)
+>>>>>
+>>>>>
+>>>>>>
+>>>>>>>   **NO**!!! These are S4 classes, no attr()!!!
+>>>>>>
+>>>>>
+>>>>>
+>>>>>  G <- gmeta6()
+>>>>>
+>>>>>>
+>>>>>>  grd <- gmeta2grd()
+>>>>>>>
+>>>>>>>
+>>>>>>>   **PLEASE** don't do this! You cannot set one slot without resetting
+>>>>>> the
+>>>>>>
+>>>>> others if you want to cover the GRASS region. If you want something
+>>>>> different, use g.region in GRASS and just gmeta2grd().
+>>>>>
+>>>>>  slot(grd, "cellsize") <- c(1000, 1000)
+>>>>>
+>>>>>  data <- data.frame(list(k=rep(1,(floor(G$cols)*floor(G$rows)))))
+>>>>>>
+>>>>>>> mask_SG <- SpatialGridDataFrame(grd, data=data, CRS(G$proj4))
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>  What is this supposed to be? What we've told you already is that
+>>>>>>
+>>>>> mask_SG
+>>>>> needs to be a Spatial*DataFrame with "x" and "y" columns, why are you
+>>>>> not
+>>>>> doing it?
+>>>>>
+>>>>>
+>>>>>  predictors = "x+y"
+>>>>>
+>>>>>>
+>>>>>>  kriging_result = autoKrige(as.formula(paste(column,"~",predictors)),
+>>>>>>> d,
+>>>>>>>
+>>>>>>>  mask_SG)
+>>>>>>>
+>>>>>>
+>>>>>> Result was :
+>>>>>>
+>>>>>> Error in gstat.formula.predict(d$formula, newdata, na.action =
+>>>>>> na.action,
+>>>>>>  :
+>>>>>>
+>>>>>>  NROW(locs) != NROW(X): this should not occur
+>>>>>> Warning messages:
+>>>>>> 1: 'newdata' had 7900 rows but variable(s) found have 73 rows
+>>>>>> 2: 'newdata' had 7900 rows but variable(s) found have 73 rows
+>>>>>>
+>>>>>>
+>>>>>>  No traceback()? Why? Isn't it obvious that it has found the x and y
+>>>>>>
+>>>>> values
+>>>>> in d (73 long)?
+>>>>>
+>>>>>  1)do you think this approach could be successful?
+>>>>>
+>>>>>  2)If so, can you help me with this error?
+>>>>>>
+>>>>>>
+>>>>>>  Try doing everything in very small steps manually. Use gstat not
+>>>>> automap,
+>>>>> to avoid the extra layer of uncertainty. Simply try to set up a gstat()
+>>>>> object for trend surface and predict from it:
+>>>>>
+>>>>> g_tr1a <- gstat("tr1a", <whatever column was> ~ 1, d, degree=1)
+>>>>> pr_tr1a <- predict(g_tr1a, mask_SG)
+>>>>>
+>>>>> Once that (untried) works, go further, not until. I still suspect that
+>>>>> this
+>>>>> is to do with the colnames of the coordinates, (x, y) in one case and
+>>>>> (coords1, coords2) or some such in the other.
+>>>>>
+>>>>> Please do study the gstat help pages and the examples, they will help,
+>>>>> but
+>>>>> you are jumping to far too many conclusions.
+>>>>>
+>>>>> Roger
+>>>>>
+>>>>>
+>>>>>
+>>>>>  Mathieu
+>>>>>
+>>>>>>
+>>>>>> 2009/6/26 Edzer Pebesma <edzer.pebesma@uni-muenster.de>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>  Roger Bivand wrote:
+>>>>>>>
+>>>>>>>  On Thu, 25 Jun 2009, Edzer Pebesma wrote:
+>>>>>>>
+>>>>>>>>
+>>>>>>>>  Mathieu, that could very well be the case. Note that x+y do not
+>>>>>>>>
+>>>>>>>>  "generally" refer to x- and y-coordinates, but are the actual names
+>>>>>>>>> of
+>>>>>>>>> the coordinates (or something else). From your example I cannot
+>>>>>>>>> find
+>>>>>>>>> out
+>>>>>>>>> whether the coordinates are named x and y. In addition, they should
+>>>>>>>>> have
+>>>>>>>>> identical names in sitesR and mask_SG.
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>  Yes, it is beginning to look like the names in mask_SG, isn't it?
+>>>>>>>> Do
+>>>>>>>> you have a view on whether degree= should be mandatory, or does the
+>>>>>>>> infrastructure recognise coordinate RHS variables and rescale them
+>>>>>>>> automatically (I doubt the latter)? Why do users use trend variables
+>>>>>>>> in this way - the range of values in the (X'X) matrix becomes
+>>>>>>>> enormous
+>>>>>>>> with the usual metre metric for coordinates?
+>>>>>>>>
+>>>>>>>>  Another question we could ask (ourselves) is why in R we allow
+>>>>>>>> users
+>>>>>>>>
+>>>>>>> to
+>>>>>>> give their coordinates the names they like. I remember that for that
+>>>>>>> sole reason (need to rename) I added the function
+>>>>>>>
+>>>>>>> coordnames(x) = c("u", "v")
+>>>>>>>
+>>>>>>> to sp. In case they're called "lon" and "lat", they also don't change
+>>>>>>> name after projection. But maybe I talk too much with people worrying
+>>>>>>> about semantics, these days. ;-)
+>>>>>>> --
+>>>>>>> Edzer
+>>>>>>>
+>>>>>>>
+>>>>>>>  Roger
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>  Best regards,
+>>>>>>>>
+>>>>>>>>> --
+>>>>>>>>> Edzer
+>>>>>>>>>
+>>>>>>>>> mathieu grelier wrote:
+>>>>>>>>>
+>>>>>>>>> Dear all,
+>>>>>>>>> I am trying to achieve universal kriging with GRASS and R through
+>>>>>>>>> spgrass6
+>>>>>>>>> package.
+>>>>>>>>> Maybe you could help me to find the right R syntax.
+>>>>>>>>> As in the gstat doc, the polynomial I try to use for now is "x+y"
+>>>>>>>>>
+>>>>>>>>>  Dear all,
+>>>>>>>>>
+>>>>>>>>>  I am trying to achieve universal kriging with GRASS and R through
+>>>>>>>>>> spgrass6
+>>>>>>>>>> package.
+>>>>>>>>>> Maybe you could help me to find the right R syntax.
+>>>>>>>>>> As in the gstat doc, the polynomial I try to use for now is "x+y"
+>>>>>>>>>>
+>>>>>>>>>> In R, with automap package, this works :
+>>>>>>>>>>
+>>>>>>>>>>  data(meuse)
+>>>>>>>>>>
+>>>>>>>>>>  coordinates(meuse) = ~x+y
+>>>>>>>>>>> data(meuse.grid)
+>>>>>>>>>>> gridded(meuse.grid) = ~x+y
+>>>>>>>>>>> column = "zinc"
+>>>>>>>>>>>
+>>>>>>>>>>>  ##Ordinary kriging :
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>  predictors = "1"
+>>>>>>>>>>
+>>>>>>>>>>  autoKrige(as.formula(paste(column,"~", predictors)), meuse,
+>>>>>>>>>>> meuse.grid)
+>>>>>>>>>>>
+>>>>>>>>>>>  ##Universal kriging :
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>  predictors = "x+y"
+>>>>>>>>>>
+>>>>>>>>>>  autoKrige(as.formula(paste(column,"~", predictors)), meuse,
+>>>>>>>>>>> meuse.grid)
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>>  But using spgrass6, it becomes (some steps have been skipped):
+>>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>  sitesR <- readVECT6("grass_sites")
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>>  ...
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>  mask_SG <- SpatialGridDataFrame(grd, data=data, CRS(G$proj4))
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>>  ...
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>> ##Ordinary kriging => WORKS:
+>>>>>>>>>>
+>>>>>>>>>>  predictors = "1"
+>>>>>>>>>>
+>>>>>>>>>>  kriging_result =
+>>>>>>>>>>> autoKrige(as.formula(paste(column,"~",predictors)),
+>>>>>>>>>>>
+>>>>>>>>>>>  sitesR, mask_SG)
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>> ##Universal kriging => ERROR:
+>>>>>>>>>>
+>>>>>>>>>>  predictors = "x+y"
+>>>>>>>>>>
+>>>>>>>>>>  kriging_result =
+>>>>>>>>>>> autoKrige(as.formula(paste(column,"~",predictors)),
+>>>>>>>>>>>
+>>>>>>>>>>>  sitesR, mask_SG)
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>  Error in eval(expr, envir, enclos) : "x" object not found
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>>  Why can't we use the x an y columns here?
+>>>>>>>>>>>
+>>>>>>>>>> Maybe it is because the meuse and sites R data.frames don't have
+>>>>>>>>>> the
+>>>>>>>>>> same
+>>>>>>>>>> structure ?
+>>>>>>>>>>
+>>>>>>>>>>  class(meuse)
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>>  [1] "data.frame"
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>  attributes(meuse)
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>>  $names
+>>>>>>>>>>>
+>>>>>>>>>>>   [1] "x"       "y"       "cadmium" "copper"  "lead"    "zinc"
+>>>>>>>>>>  "elev"
+>>>>>>>>>>
+>>>>>>>>>>  class(sitesR)
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>>  [1] "SpatialPointsDataFrame"
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>  attributes(sitesR)
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>>  $bbox
+>>>>>>>>>>>
+>>>>>>>>>>>  ...
+>>>>>>>>>> $proj4string
+>>>>>>>>>> ...
+>>>>>>>>>> $coords
+>>>>>>>>>> ...
+>>>>>>>>>> $data
+>>>>>>>>>>         site value cat        x       y
+>>>>>>>>>> 1Ai      81.80   1 825094.9 6796083
+>>>>>>>>>> 2     Al      38.50   2 758780.4 6851508
+>>>>>>>>>> 3     Ar     103.50   3 818973.3 6796125
+>>>>>>>>>> 4           Av      52.50   4 775136.0 6877271
+>>>>>>>>>> ...
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> ------------------------------------------------------------------------
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>
+>>>>>>>>  _______________________________________________
+>>>>>>>>>> grass-stats mailing list
+>>>>>>>>>> grass-stats@lists.osgeo.org
+>>>>>>>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>   --
+>>>>>>>>
+>>>>>>> Edzer Pebesma
+>>>>>>> Institute for Geoinformatics (ifgi), University of M?nster
+>>>>>>> Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+>>>>>>> 8333081, Fax: +49 251 8339763 http://ifgi.uni-muenster.de/
+>>>>>>> http://www.springer.com/978-0-387-78170-9 e.pebesma@wwu.de
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>   --
+>>>>>>
+>>>>> Roger Bivand
+>>>>> Economic Geography Section, Department of Economics, Norwegian School
+>>>>> of
+>>>>> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+>>>>> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>>>> e-mail: Roger.Bivand@nhh.no
+>>>>>
+>>>>>
+>>>>>
+>>>>  --
+>>> Roger Bivand
+>>> Economic Geography Section, Department of Economics, Norwegian School of
+>>> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+>>> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>> e-mail: Roger.Bivand@nhh.no
+>>>
+>>>
+>>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20090629/100a7c24/attachment-0001.html
+From hamish_b at yahoo.com  Tue Jun 30 02:45:07 2009
+From: hamish_b at yahoo.com (Hamish)
+Date: Tue Jun 30 02:45:29 2009
+Subject: [GRASS-stats] universal kriging with spgrass6
+Message-ID: <753754.11106.qm@web110013.mail.gq1.yahoo.com>
+
+
+This is of course an entirely volunteer run operation and document
+contributions are a most welcome form of thank-you:
+
+http://grass.osgeo.org/wiki/Main_Page
+
+
+Often a fresh pair of eyes are the best for creating a step by step guide
+for the newcomer as they have just been through the learning process
+themselves and make no assumptions about prior knowledge, etc.
+
+
+regards,
+Hamish
+
+
+
+      
+

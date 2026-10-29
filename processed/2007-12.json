@@ -1,0 +1,269 @@
+{
+  "list": "grass-stats",
+  "description": "",
+  "month": "2007-12",
+  "messages": [
+    {
+      "id": "msg-4724205a884b",
+      "message_id": "<14159473.post@talk.nabble.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "73e9da7b2c1d0e534d377da3bf890f3ba9c3b670edcc49676dae22e891d58afa",
+      "date": "2007-12-04T16:12:48Z",
+      "subject": "[GRASS-stats] readVECT6 problem fo importing null data",
+      "subject_clean": "[GRASS-stats] readVECT6 problem fo importing null data",
+      "in_reply_to": "<Pine.LNX.4.64.0711290931270.31808@reclus.nhh.no>",
+      "references": [
+        "<474B0DBD.9050501@amu.edu.pl>",
+        "<Pine.LNX.4.64.0711262054110.23687@reclus.nhh.no>",
+        "<474E783E.8020005@amu.edu.pl>",
+        "<Pine.LNX.4.64.0711290931270.31808@reclus.nhh.no>"
+      ],
+      "body_plain": "Dear all,\n\nRoger notified me about this issue (I sometimes read here as time\npermits). I made some tests using out NC OSGeo data set\n(http://www.grassbook.org/data_menu3rd.php):\n\n# copy the map into your MAPSET and check for NULL\ng.copy vect=lakes,mylakes\nv.db.select mylakes\nv.db.select mylakes where=\"FTYPE IS NULL\"\n\n# display the lakes, show undefined FTYPE lakes in red\ng.region swwake_10m\nd.mon x0\nd.erase\nd.vect mylakes where=\"FTYPE NOT NULL\" type=area col=blue\nd.vect mylakes where=\"FTYPE IS NULL\" type=area col=red\n# This works pretty well.\n\n# Export test:\nv.out.ogr mylakes dsn=mylakes.shp type=area\n\n# Looking at it in openoffice:\ncat,N,11,0,AREA,N,24,15,PERIMETER,N,24,15,FULL_HYDRO,N,24,15,FULL_HYDR2,N,24,15,FTYPE,C,80,FCODE,N,11,0,NAME,C,80\n8,5310.04,334.89,9,55660,LAKE/POND,39000,\n33,21739.17,709.53,34,54836,LAKE/POND,39000,\n63,469.77,105.84,64,0,,0,\n84,10564.66,402.43,85,55595,ROCK/ISLAND,44100,\n93,7655.72,344.71,94,53621,DAM/WEIR,34300,\n94,1357.21,178.47,95,0,,0,\n...\n\nNo problem at all: some empty FTYPE fields as desired.\nThe problem must be elsewhere (or I misunderstand the problem,\ndidn't read all messages).\n\nBest wishes,\nMarkus\n\n\n\n\nRoger Bivand wrote:\n> \n> On Thu, 29 Nov 2007, Jarosaw Jasiewicz wrote:\n> \n>>\n>>>\n>>>  I can reproduce the problem, which seems related to DBFIsAttributeNULL\n>>> not\n>>>  being handled adequately on either side (both are using the OGR\n>>> library).\n>>>  Could you please try to write the temporary shapefile directly using\n>>>  v.out.ogr, and then try to read it with readOGR() and with readShape*()\n>>>  with * as Points, Lines, or Poly depending on what getinfo.shape()\n>>> says?\n>>>  I'll try to debug using the DBF code in the foreign package to start\n>>> with\n>>>  - numeric fields should have value /* NULL numeric fields have value\n>>>  \"****************\" */ from dbfopen.c, but do not seem to.\n>>> \n>> I tried what you sugested. I can't probably help more, but I found that:\n>>\n>> - v.out.ogr produce dbf with 0 instead null;\n>> - readOGR() reads dbf with 0 instead null;\n>> - if grass dbf table null are treated as 0, but displayed as null;\n>>\n>> I use RdbiPgSQL to import data with null values and nad readVECT6 to\n>> import \n>> vector and use  substitute () to merge them (if needed). it is a\n>> temporary \n>> solution\n> \n> Jarek,\n> \n> Thanks - I am adding comments to the readOGR() and readVECT6() help pages. \n> OGR does not promise to handle missing values at all, because there are no \n> standards as such - so this affects GRASS vector handling generally.\n> \n> Two questions if you have time:\n> \n> 1) can you try to read from PostgreSQL directly using readOGR() - I guess \n> that your GDAL/OGR includes the PostgreSQL/PostGIS driver?\n> \n> 2) can you see whether the missing values are visible correctly within \n> GRASS, maybe with db.select (the v.db.univar script assumes that there \n> are no missing values)? If they are seen, then the problem is in \n> v.out.ogr not checking.\n> \n> I can see isNull fields in dbmi.h; they seem to be used in the fetch.c \n> files for mysql, odbc, ogr, postgres, and sqlite drivers in db/drivers/. I \n> can only see this retrieved in vector/v.univar/main - but Martin Landa \n> probably added this recently, and he is active. There are traces in \n> lib/db/dbmi_base/value.c, lib/db/dbmi_base/xdrvalue.c, and \n> lib/db/dbmi_client/select.c.\n> \n> I think that Martin will be interested in this, so maybe it's worth \n> checking. I do not run PostgreSQL, so I'm afraid I can't check myself. If \n> you do, maybe post to grass-dev?\n> \n> Roger\n> \n> \n>>\n>> Jarek\n>>\n> \n> -- \n> Roger Bivand\n> Economic Geography Section, Department of Economics, Norwegian School of\n> Economics and Business Administration, Helleveien 30, N-5045 Bergen,\n> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43\n> e-mail: Roger.Bivand@nhh.no\n> \n\n-- \nView this message in context: http://www.nabble.com/-GRASS-stats--readVECT6-problem-fo-importing-null-data-tf4876840.html#a14159473\nSent from the Grass - Stats mailing list archive at Nabble.com.",
+      "body_snippet": "Dear all,\n\nRoger notified me about this issue (I sometimes read here as time\npermits). I made some tests using out NC OSGeo data set\n(http://www.grassbook.org/data_menu3rd.php):\n\n# copy the map into y",
+      "thread_id": "thread-4724205a884b",
+      "thread_depth": 0,
+      "month": "2007-12"
+    },
+    {
+      "id": "msg-9e90e7b6fecf",
+      "message_id": "<47563979.1000902@amu.edu.pl>",
+      "from_name": "Jarek Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2007-12-05T00:39:24Z",
+      "subject": "[GRASS-stats] readVECT6 problem fo importing null data",
+      "subject_clean": "[GRASS-stats] readVECT6 problem fo importing null data",
+      "in_reply_to": "<14159473.post@talk.nabble.com>",
+      "references": [
+        "<474B0DBD.9050501@amu.edu.pl>",
+        "<Pine.LNX.4.64.0711262054110.23687@reclus.nhh.no>",
+        "<474E783E.8020005@amu.edu.pl>",
+        "<Pine.LNX.4.64.0711290931270.31808@reclus.nhh.no>",
+        "<14159473.post@talk.nabble.com>"
+      ],
+      "body_plain": "Dear Markus!\n\nThe problem most probable concerns export only, when atributres are \nstored in postgreSQL database and it happens when data during v.out.ogr \nto shp with dbf table, in spite of NOT NULL in pgsql  is set\ncheers\nJarek\n\nMarkus Neteler wrote:\n> Dear all,\n>\n> Roger notified me about this issue (I sometimes read here as time\n> permits). I made some tests using out NC OSGeo data set\n> (http://www.grassbook.org/data_menu3rd.php):\n>\n> # copy the map into your MAPSET and check for NULL\n> g.copy vect=lakes,mylakes\n> v.db.select mylakes\n> v.db.select mylakes where=\"FTYPE IS NULL\"\n>\n> # display the lakes, show undefined FTYPE lakes in red\n> g.region swwake_10m\n> d.mon x0\n> d.erase\n> d.vect mylakes where=\"FTYPE NOT NULL\" type=area col=blue\n> d.vect mylakes where=\"FTYPE IS NULL\" type=area col=red\n> # This works pretty well.\n>\n> # Export test:\n> v.out.ogr mylakes dsn=mylakes.shp type=area\n>\n> # Looking at it in openoffice:\n> cat,N,11,0,AREA,N,24,15,PERIMETER,N,24,15,FULL_HYDRO,N,24,15,FULL_HYDR2,N,24,15,FTYPE,C,80,FCODE,N,11,0,NAME,C,80\n> 8,5310.04,334.89,9,55660,LAKE/POND,39000,\n> 33,21739.17,709.53,34,54836,LAKE/POND,39000,\n> 63,469.77,105.84,64,0,,0,\n> 84,10564.66,402.43,85,55595,ROCK/ISLAND,44100,\n> 93,7655.72,344.71,94,53621,DAM/WEIR,34300,\n> 94,1357.21,178.47,95,0,,0,\n> ...\n>\n> No problem at all: some empty FTYPE fields as desired.\n> The problem must be elsewhere (or I misunderstand the problem,\n> didn't read all messages).\n>\n> Best wishes,\n> Markus\n>",
+      "body_snippet": "Dear Markus!\n\nThe problem most probable concerns export only, when atributres are \nstored in postgreSQL database and it happens when data during v.out.ogr \nto shp with dbf table, in spite of NOT NULL ",
+      "thread_id": "thread-4724205a884b",
+      "thread_depth": 1,
+      "month": "2007-12"
+    },
+    {
+      "id": "msg-4e29fe8a27a4",
+      "message_id": "<14167439.post@talk.nabble.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "73e9da7b2c1d0e534d377da3bf890f3ba9c3b670edcc49676dae22e891d58afa",
+      "date": "2007-12-05T03:49:04Z",
+      "subject": "[GRASS-stats] readVECT6 problem fo importing null data",
+      "subject_clean": "[GRASS-stats] readVECT6 problem fo importing null data",
+      "in_reply_to": "<47563979.1000902@amu.edu.pl>",
+      "references": [
+        "<474B0DBD.9050501@amu.edu.pl>",
+        "<Pine.LNX.4.64.0711262054110.23687@reclus.nhh.no>",
+        "<474E783E.8020005@amu.edu.pl>",
+        "<Pine.LNX.4.64.0711290931270.31808@reclus.nhh.no>",
+        "<14159473.post@talk.nabble.com>",
+        "<47563979.1000902@amu.edu.pl>"
+      ],
+      "body_plain": "Dear Jarek,\n\nok, I made again a test using out NC OSGeo data set\nbut now PostgreSQL:\n\ndb.connect driver=pg database=\"host=localhost,dbname=postgres\"\ndb.tables -p\ninformation_schema.sql_features\n...\n\n# copy the map into your MAPSET and check for NULL\ng.copy vect=lakes,mylakes\nv.db.select mylakes\nv.db.select mylakes where=\"FTYPE IS NULL\"\n\n# display the lakes, show undefined FTYPE lakes in red\ng.region swwake_10m\nd.mon x0\nd.erase\nd.vect mylakes where=\"FTYPE IS NOT NULL\" type=area col=blue\nd.vect mylakes where=\"FTYPE IS NULL\" type=area col=red\n# ... works.\n\n# Export test:\nv.out.ogr mylakes dsn=mylakes.shp type=area\n\n# Looking at it in openoffice: \nopenoffice.org2.3 mylakes.dbf\ncat,N,11,0,area,N,24,15,perimeter,N,24,15,full_hydro,N,24,15,full_hydr2,N,24,15,ftype,C,80,fcode,N,11,0,name,C,80\n8,5310.04,334.89,9,55660,LAKE/POND,39000,\n33,21739.17,709.53,34,54836,LAKE/POND,39000,\n63,469.77,105.84,64,0,,0,\n84,10564.66,402.43,85,55595,ROCK/ISLAND,44100,\n93,7655.72,344.71,94,53621,DAM/WEIR,34300,\n94,1357.21,178.47,95,0,,0,\n96,26382.58,1286.95,97,53957,ROCK/ISLAND,44100,\n...\n\nAlso the expected empty fields here. I am using PG 8.2.5 and\nGRASS 6.3-CVS.\nCan you replicate this example?\n\nMarkus\n\n\nJarek Jasiewicz wrote:\n> \n> Dear Markus!\n> \n> The problem most probable concerns export only, when atributres are \n> stored in postgreSQL database and it happens when data during v.out.ogr \n> to shp with dbf table, in spite of NOT NULL in pgsql  is set\n> cheers\n> Jarek\n> \n\n-- \nView this message in context: http://www.nabble.com/-GRASS-stats--readVECT6-problem-fo-importing-null-data-tf4876840.html#a14167439\nSent from the Grass - Stats mailing list archive at Nabble.com.",
+      "body_snippet": "Dear Jarek,\n\nok, I made again a test using out NC OSGeo data set\nbut now PostgreSQL:\n\ndb.connect driver=pg database=\"host=localhost,dbname=postgres\"\ndb.tables -p\ninformation_schema.sql_features\n...\n\n#",
+      "thread_id": "thread-4724205a884b",
+      "thread_depth": 2,
+      "month": "2007-12"
+    },
+    {
+      "id": "msg-64573ed96d43",
+      "message_id": "<Pine.LNX.4.64.0712050953080.6537@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2007-12-05T04:01:30Z",
+      "subject": "[GRASS-stats] readVECT6 problem fo importing null data",
+      "subject_clean": "[GRASS-stats] readVECT6 problem fo importing null data",
+      "in_reply_to": "<14167439.post@talk.nabble.com>",
+      "references": [
+        "<474B0DBD.9050501@amu.edu.pl>",
+        "<Pine.LNX.4.64.0711262054110.23687@reclus.nhh.no>",
+        "<474E783E.8020005@amu.edu.pl>",
+        "<Pine.LNX.4.64.0711290931270.31808@reclus.nhh.no>",
+        "<14159473.post@talk.nabble.com>",
+        "<47563979.1000902@amu.edu.pl>",
+        "<14167439.post@talk.nabble.com>"
+      ],
+      "body_plain": "On Wed, 5 Dec 2007, Markus Neteler wrote:\n\n>\n> Dear Jarek,\n>\n> ok, I made again a test using out NC OSGeo data set\n> but now PostgreSQL:\n>\n> db.connect driver=pg database=\"host=localhost,dbname=postgres\"\n> db.tables -p\n> information_schema.sql_features\n> ...\n>\n> # copy the map into your MAPSET and check for NULL\n> g.copy vect=lakes,mylakes\n> v.db.select mylakes\n> v.db.select mylakes where=\"FTYPE IS NULL\"\n>\n> # display the lakes, show undefined FTYPE lakes in red\n> g.region swwake_10m\n> d.mon x0\n> d.erase\n> d.vect mylakes where=\"FTYPE IS NOT NULL\" type=area col=blue\n> d.vect mylakes where=\"FTYPE IS NULL\" type=area col=red\n> # ... works.\n>\n> # Export test:\n> v.out.ogr mylakes dsn=mylakes.shp type=area\n>\n> # Looking at it in openoffice:\n> openoffice.org2.3 mylakes.dbf\n> cat,N,11,0,area,N,24,15,perimeter,N,24,15,full_hydro,N,24,15,full_hydr2,N,24,15,ftype,C,80,fcode,N,11,0,name,C,80\n> 8,5310.04,334.89,9,55660,LAKE/POND,39000,\n> 33,21739.17,709.53,34,54836,LAKE/POND,39000,\n> 63,469.77,105.84,64,0,,0,\n> 84,10564.66,402.43,85,55595,ROCK/ISLAND,44100,\n> 93,7655.72,344.71,94,53621,DAM/WEIR,34300,\n> 94,1357.21,178.47,95,0,,0,\n> 96,26382.58,1286.95,97,53957,ROCK/ISLAND,44100,\n> ...\n\nThere is also the question of numerical fields, and please remember that \nan empty field is not NULL, it is a zero-length text string:\n\n> a <- \"\"\n> is.na(a)\n[1] FALSE\n\nso one needs to do:\n\n> is.na(a) <- nchar(a) == 0\n> is.na(a)\n[1] TRUE\n\nand remember that character fields are cast to factor - so use \nas.character(a) too. This means that the encoding for each field needs to \nbe known and transferred *outside* the *.dbf file. I think that the DBF \nformat is still the default for vector attribute data, isn't it? Maybe \nSQLite does a better job, then we could look at different OGR drivers, or \nESRI Shapefile for the geometry and RSQLite for the data? Jarek had found \nthat numerical NULL was being set to 0 if I remember.\n\nRoger\n\n>\n> Also the expected empty fields here. I am using PG 8.2.5 and\n> GRASS 6.3-CVS.\n> Can you replicate this example?\n>\n> Markus\n>\n>\n> Jarek Jasiewicz wrote:\n>>\n>> Dear Markus!\n>>\n>> The problem most probable concerns export only, when atributres are\n>> stored in postgreSQL database and it happens when data during v.out.ogr\n>> to shp with dbf table, in spite of NOT NULL in pgsql  is set\n>> cheers\n>> Jarek\n>>\n>\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Wed, 5 Dec 2007, Markus Neteler wrote:\n\n>\n> Dear Jarek,\n>\n> ok, I made again a test using out NC OSGeo data set\n> but now PostgreSQL:\n>\n> db.connect driver=pg database=\"host=localhost,dbname=postgr",
+      "thread_id": "thread-4724205a884b",
+      "thread_depth": 3,
+      "month": "2007-12"
+    },
+    {
+      "id": "msg-d436031bd739",
+      "message_id": "<47567D58.7090008@amu.edu.pl>",
+      "from_name": "Jarosław Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2007-12-05T05:28:48Z",
+      "subject": "[GRASS-stats] readVECT6 problem fo importing null data",
+      "subject_clean": "[GRASS-stats] readVECT6 problem fo importing null data",
+      "in_reply_to": "<14167439.post@talk.nabble.com>",
+      "references": [
+        "<474B0DBD.9050501@amu.edu.pl>",
+        "<Pine.LNX.4.64.0711262054110.23687@reclus.nhh.no>",
+        "<474E783E.8020005@amu.edu.pl>",
+        "<Pine.LNX.4.64.0711290931270.31808@reclus.nhh.no>",
+        "<14159473.post@talk.nabble.com>",
+        "<47563979.1000902@amu.edu.pl>",
+        "<14167439.post@talk.nabble.com>"
+      ],
+      "body_plain": "Markus Neteler pisze:\n> Dear Jarek,\n>\n> ok, I made again a test using out NC OSGeo data set\n> but now PostgreSQL:\n>\n> db.connect driver=pg database=\"host=localhost,dbname=postgres\"\n> db.tables -p\n> information_schema.sql_features\n> ...\n>\n> # copy the map into your MAPSET and check for NULL\n> g.copy vect=lakes,mylakes\n> v.db.select mylakes\n> v.db.select mylakes where=\"FTYPE IS NULL\"\n>\n> # display the lakes, show undefined FTYPE lakes in red\n> g.region swwake_10m\n> d.mon x0\n> d.erase\n> d.vect mylakes where=\"FTYPE IS NOT NULL\" type=area col=blue\n> d.vect mylakes where=\"FTYPE IS NULL\" type=area col=red\n> # ... works.\n>\n> # Export test:\n> v.out.ogr mylakes dsn=mylakes.shp type=area\n>\n> # Looking at it in openoffice: \n> openoffice.org2.3 mylakes.dbf\n> cat,N,11,0,area,N,24,15,perimeter,N,24,15,full_hydro,N,24,15,full_hydr2,N,24,15,ftype,C,80,fcode,N,11,0,name,C,80\n> 8,5310.04,334.89,9,55660,LAKE/POND,39000,\n> 33,21739.17,709.53,34,54836,LAKE/POND,39000,\n> 63,469.77,105.84,64,0,,0,\n> 84,10564.66,402.43,85,55595,ROCK/ISLAND,44100,\n> 93,7655.72,344.71,94,53621,DAM/WEIR,34300,\n> 94,1357.21,178.47,95,0,,0,\n> 96,26382.58,1286.95,97,53957,ROCK/ISLAND,44100,\n> ...\n>\n> Also the expected empty fields here. I am using PG 8.2.5 and\n> GRASS 6.3-CVS.\n> Can you replicate this example?\n>\n> Markus\n>\n>\n> Jarek Jasiewicz wrote:\n>   \n>> Dear Markus!\n>>\n>> The problem most probable concerns export only, when atributres are \n>> stored in postgreSQL database and it happens when data during v.out.ogr \n>> to shp with dbf table, in spite of NOT NULL in pgsql  is set\n>> cheers\n>> Jarek\n>>\n>>     \n>\n>   \nMarcus!\n\nFCODE type is character, but problem concerns ONLY numeric data. \nCharacter data are exported propertly, probably because it is rather \nzerolengh string for dbf\n\nAFAIK, handling numeric NULL in dbf is problematic not only for grass users\n\nbest wishes\nJarek",
+      "body_snippet": "Markus Neteler pisze:\n> Dear Jarek,\n>\n> ok, I made again a test using out NC OSGeo data set\n> but now PostgreSQL:\n>\n> db.connect driver=pg database=\"host=localhost,dbname=postgres\"\n> db.tables -p\n> in",
+      "thread_id": "thread-4724205a884b",
+      "thread_depth": 3,
+      "month": "2007-12"
+    },
+    {
+      "id": "msg-2a41666dc3da",
+      "message_id": "<14172945.post@talk.nabble.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "73e9da7b2c1d0e534d377da3bf890f3ba9c3b670edcc49676dae22e891d58afa",
+      "date": "2007-12-05T09:46:45Z",
+      "subject": "[GRASS-stats] readVECT6 problem fo importing null data",
+      "subject_clean": "[GRASS-stats] readVECT6 problem fo importing null data",
+      "in_reply_to": "<47567D58.7090008@amu.edu.pl>",
+      "references": [
+        "<474B0DBD.9050501@amu.edu.pl>",
+        "<Pine.LNX.4.64.0711262054110.23687@reclus.nhh.no>",
+        "<474E783E.8020005@amu.edu.pl>",
+        "<Pine.LNX.4.64.0711290931270.31808@reclus.nhh.no>",
+        "<14159473.post@talk.nabble.com>",
+        "<47563979.1000902@amu.edu.pl>",
+        "<14167439.post@talk.nabble.com>",
+        "<47567D58.7090008@amu.edu.pl>"
+      ],
+      "body_plain": "Jarek Jasiewicz wrote:\n> \n> Marcus!\n> \n> FCODE type is character, but problem concerns ONLY numeric data. \n> Character data are exported propertly, probably because it is rather \n> zerolengh string for dbf\n> \n> AFAIK, handling numeric NULL in dbf is problematic not only for grass\n> users\n> \n> best wishes\n> Jarek\n> \n\nI have debugged a bit.\n\nGRASS 6.3.cvs (nc_spm_06):~ > db.connect -p\ndriver:dbf\ndatabase:$GISDBASE/$LOCATION_NAME/$MAPSET/dbf/\nschema:\ngroup:\n\nGRASS 6.3.cvs (nc_spm_06):~ > v.db.update mylakes col=AREA value=NULL\nwhere=\"AREA > 6000\"\n\nGRASS 6.3.cvs (nc_spm_06):~ > v.db.select mylakes | head\ncat|AREA|PERIMETER|FULL_HYDRO|FULL_HYDR2|FTYPE|FCODE|NAME\n1||2853.9372|2|55626|LAKE/POND|39000|\n2||404.28643|3|55650|DAM/WEIR|34300|\n3||708.44683|4|55652|LAKE/POND|39000|\n4|1132.10986|151.16533|5|53514|LAKE/POND|39000|\n5|2849.43244|249.99941|6|53510|DAM/WEIR|34300|\n6|5908.42064|413.13377|7|55640|DAM/WEIR|34300|\n7||567.89134|8|55644|LAKE/POND|39000|\n8|5310.04399|334.89296|9|55660|LAKE/POND|39000|\n9||404.72896|10|55624|TUNNEL/CULVERT|47800|\n...\n\n# -> areas removed.\n\nv.out.ogr mylakes dsn=mylakes.shp type=area\n\nopenoffice2.3 mylakes.dbf\ncat,N,11,0,AREA,N,24,15,PERIMETER,N,24,15,FULL_HYDRO,N,24,15,FULL_HYDR2,N,24,15,FTYPE,C,80,FCODE,N,11,0,NAME,C,80\n8,5310.04,334.89,9,55660,LAKE/POND,39000,\n33,0,709.53,34,54836,LAKE/POND,39000,\n63,469.77,105.84,64,0,,0,\n84,0,402.43,85,55595,ROCK/ISLAND,44100,\n93,0,344.71,94,53621,DAM/WEIR,34300,\n\nHooray, problem reproduced :)\n\nBUT:\ng.gisenv set=DEBUG=3\nv.db.select mylakes\n...\nD2/3:   ncols = 8 nrows = 10\nD2/3: load_table_head(): tab = 9,\n/home/neteler/grassdata/nc_spm_06/neteler/dbf//mylakes.dbf\ncat|AREA|PERIMETER|FULL_HYDRO|FULL_HYDR2|FTYPE|FCODE|NAME\n1||2853.9372|2|55626|LAKE/POND|39000|\n2||404.28643|3|55650|DAM/WEIR|34300|\n3||708.44683|4|55652|LAKE/POND|39000|\n4|1132.10986|151.16533|5|53514|LAKE/POND|39000|\n5|2849.43244|249.99941|6|53510|DAM/WEIR|34300|\n6|5908.42064|413.13377|7|55640|DAM/WEIR|34300|\n7||567.89134|8|55644|LAKE/POND|39000|\n8|5310.04399|334.89296|9|55660|LAKE/POND|39000|\n9||404.72896|10|55624|TUNNEL/CULVERT|47800|\n10||3010.93109|11|55625|LAKE/POND|39000|\n...\n# -> so far ok\n\ndbfdump /home/neteler/grassdata/nc_spm_06/neteler/dbf/mylakes.dbf\n  cat          AREA       PERIMETER    FULL_HYDRO     FULL_HYDR2  FTYPE           \nFCODE NAME\n    1        (NULL)     2853.937200      2.000000   55626.000000  LAKE/POND     \n39000 (NULL)\n    2        (NULL)      404.286430      3.000000   55650.000000  DAM/WEIR      \n34300 (NULL)\n    3        (NULL)      708.446830      4.000000   55652.000000  LAKE/POND     \n39000 (NULL)\n    4   1132.109860      151.165330      5.000000   53514.000000  LAKE/POND     \n39000 (NULL)\n    5   2849.432440      249.999410      6.000000   53510.000000  DAM/WEIR      \n34300 (NULL)\n    6   5908.420640      413.133770      7.000000   55640.000000  DAM/WEIR      \n34300 (NULL)\n    7        (NULL)      567.891340      8.000000   55644.000000  LAKE/POND     \n39000 (NULL)\n    8   5310.043990      334.892960      9.000000   55660.000000  LAKE/POND     \n39000 (NULL)\n    9        (NULL)      404.728960     10.000000   55624.000000 \nTUNNEL/CULVERT 47800 (NULL)\n   10        (NULL)     3010.931090     11.000000   55625.000000  LAKE/POND     \n39000 (NULL)\n...\n# -> so far ok\n\nogrinfo /home/neteler/grassdata/nc_spm_06/neteler/dbf//mylakes.dbf mylakes\n...\ncat: Real (11.0)\nAREA: Real (20.6)\nPERIMETER: Real (20.6)\nFULL_HYDRO: Real (20.6)\nFULL_HYDR2: Real (20.6)\nFTYPE: String (24.0)\nFCODE: Real (11.0)\nNAME: String (99.0)\nOGRFeature(mylakes2):0\n  cat (Real) =           1\n  AREA (Real) = (null)\n  PERIMETER (Real) =          2853.937200\n  FULL_HYDRO (Real) =             2.000000\n  FULL_HYDR2 (Real) =         55626.000000\n  FTYPE (String) = LAKE/POND\n  FCODE (Real) =       39000\n  NAME (String) = (null)\n...\n# -> so far ok\n\nv.out.ogr ...\nD2/2: load_table_head(): tab = 9,\n/home/neteler/grassdata/nc_spm_06/neteler/dbf//mylakes.dbf\nD2/2: col 0 : val = 10\nD2/2:   colctype = 2\nD2/2: col 1 : val =               <- using db_get_string (&dbstring): works\nD2/2:   colctype = 3\nD2/2: DBMI db_get_value_double: val = 0.000000              <- using\ndb_get_value_double(Value): fails\nD2/2: DBMI db_get_value_double: val = 0.000000\nD2/2: col db_get_value_double: val = 0.000000\nD2/2: DBMI db_get_value_double: val = 3010.931090\nD2/2: col 2 : val = 3010.93109\nD2/2:   colctype = 3\n\nIt seems to be a non.feature/bug in db_get_value_double(Value), maybe also \ndb_get_value_int(Value) or how the values are stored in dbValue:\nlib/db/dbmi_base/value.c\n\nThis should be taken to the grass-dev list.\n\nMarkus\n-- \nView this message in context: http://www.nabble.com/-GRASS-stats--readVECT6-problem-fo-importing-null-data-tf4876840.html#a14172945\nSent from the Grass - Stats mailing list archive at Nabble.com.",
+      "body_snippet": "Jarek Jasiewicz wrote:\n> \n> Marcus!\n> \n> FCODE type is character, but problem concerns ONLY numeric data. \n> Character data are exported propertly, probably because it is rather \n> zerolengh string fo",
+      "thread_id": "thread-4724205a884b",
+      "thread_depth": 4,
+      "month": "2007-12"
+    },
+    {
+      "id": "msg-aee2ff812804",
+      "message_id": "<14174046.post@talk.nabble.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "73e9da7b2c1d0e534d377da3bf890f3ba9c3b670edcc49676dae22e891d58afa",
+      "date": "2007-12-05T10:38:11Z",
+      "subject": "[GRASS-stats] readVECT6 problem fo importing null data",
+      "subject_clean": "[GRASS-stats] readVECT6 problem fo importing null data",
+      "in_reply_to": "<14172945.post@talk.nabble.com>",
+      "references": [
+        "<474B0DBD.9050501@amu.edu.pl>",
+        "<Pine.LNX.4.64.0711262054110.23687@reclus.nhh.no>",
+        "<474E783E.8020005@amu.edu.pl>",
+        "<Pine.LNX.4.64.0711290931270.31808@reclus.nhh.no>",
+        "<14159473.post@talk.nabble.com>",
+        "<47563979.1000902@amu.edu.pl>",
+        "<14167439.post@talk.nabble.com>",
+        "<47567D58.7090008@amu.edu.pl>",
+        "<14172945.post@talk.nabble.com>"
+      ],
+      "body_plain": "I am close but ...\n\nRCS file: /home/grass/grassrepository/grass6/vector/v.out.ogr/main.c,v\nretrieving revision 1.48\ndiff -u -r1.48 main.c\n--- main.c      3 Oct 2007 09:40:32 -0000       1.48\n+++ main.c      5 Dec 2007 15:34:50 -0000\n@@ -630,8 +630,11 @@\n                                OGR_F_SetFieldInteger( Ogr_feature, j,\ndb_get_value_int(Value) );\n                                break;\n                             case DB_C_TYPE_DOUBLE:\n-                               OGR_F_SetFieldDouble( Ogr_feature, j,\ndb_get_value_double(Value) );\n-                               break;\n+                               if ( strlen(db_get_string (&dbstring)) != 0\n)\n+                                   OGR_F_SetFieldDouble( Ogr_feature, j,\ndb_get_value_double(Value) );\n+                               else\n+                                  G_debug(2, \"skipping NULL field\");\n+                            break;\n                             case DB_C_TYPE_STRING:\n                                OGR_F_SetFieldString( Ogr_feature, j,\ndb_get_value_string(Value) );\n                                break;\n\nshould skip the field if NULL was found. but still 0 is inserted.\n\nI suspect that OGR_F_UnsetField() is the problem which is used in line 597\netc.\nhttp://www.gdal.org/ogr/ogr__api_8h.html#a70b7675a003141e63f9603c752ee22e\n\n    /* Attributes */\n    /* Reset */\n    if ( doatt ) {\n        for (j = 0; j < ncol; j++) OGR_F_UnsetField(Ogr_feature, j);\n    } else {\n        OGR_F_UnsetField(Ogr_feature, 0);\n    }\n\nNo idea how to solve this but cannot be so hard.\n\nMarkus\n-- \nView this message in context: http://www.nabble.com/-GRASS-stats--readVECT6-problem-fo-importing-null-data-tf4876840.html#a14174046\nSent from the Grass - Stats mailing list archive at Nabble.com.",
+      "body_snippet": "I am close but ...\n\nRCS file: /home/grass/grassrepository/grass6/vector/v.out.ogr/main.c,v\nretrieving revision 1.48\ndiff -u -r1.48 main.c\n--- main.c      3 Oct 2007 09:40:32 -0000       1.48\n+++ main.",
+      "thread_id": "thread-4724205a884b",
+      "thread_depth": 5,
+      "month": "2007-12"
+    },
+    {
+      "id": "msg-ac4aec41dc85",
+      "message_id": "<47690255.5090002@ucd.ie>",
+      "from_name": "Daniel McInerney",
+      "from_email_hash": "aa811aebadbefa14af44fc5f86c951fd14483e134881518654da6fa62852205a",
+      "date": "2007-12-19T06:38:18Z",
+      "subject": "[GRASS-stats] Re: [GRASS-user] grass/stats mapping/prediction question",
+      "subject_clean": "[GRASS-stats] Re: [GRASS-user] grass/stats mapping/prediction question",
+      "in_reply_to": "<7a4569180712181822g325383c1naaed0fe72e0e97dd@mail.gmail.com>",
+      "references": [
+        "<7a4569180712181822g325383c1naaed0fe72e0e97dd@mail.gmail.com>"
+      ],
+      "body_plain": "Hi Andy,\n\n > I am unsure how to then move the 'outmap' back across to grass.\n > How can i convert the df to a spatial grid object.\n\nAFAIK, 'predict' won't create a dataframe object.\nR should return FALSE for is.data.frame(outmap) and\nTRUE for is.numeric(outmap)\n\nYou can slot the model output to the AttributeList of\none of the SpatialGridDataFrames that you created when\nyou read in a GRASS raster and then use writeRAST6 to\nwrite it back to GRASS.\n\ne.g. using 'anmax' from your example\n\nanmax$anmax <- outmap\n#if that doesn't work, you might try\nanmax$anmax <- as.numeric(outmap)\nwriteRAST6(anmax, \"NameOfNewGRASSRaster\", \"anmax\")\n\nRegards,\nDaniel.\n\ncc: grass-stats@lists.osgeo.org\n\nandrew haywood wrote:\n> Dear List,\n>  \n> I am having some problems analysing some ecoligical models in grass \n> using the spgrass package through R.\n>  \n> I have 130 plot locations where i have observed presence/absence  of a \n> species.\n> I have followed a similar framework to the BUGSITE modelling \n> example from Markus's 2003 grass gis handouts (Grass 5)\n> I have no problems constructing the model based on the 130 plots and the \n> environmental layers from grass.\n>  \n> However, I am having problems bringing all the maps through into R so I \n> can make a prediction map.\n> The region isnt too large 1600 by 800 cells at 10m resolution\n> I can bring all the environmental layers through to R using readRAST6() \n> which doesnt take too much time at all.\n>  \n> However i assume I must convert the spatial grid objects into dataframes \n> to apply the predicted model function.\n> So I then coerce them into dataframes using as.dataframe (this takes ages)\n> I then merge all the dataframes into a single dataframe. (this takes ages)\n>  \n> I then apply the model predict to the new data frame.\n>  \n> I am unsure how to then move the 'outmap' back across to grass.\n> How can i convert the df to a spatial grid object.\n>  \n> Im thinking i must be doing something wrong. As it quite quick to pull \n> through the layers . But seems to take quite a lot of processing to get \n> the layers into a datframe appropppriate for applying the predictions.\n>  \n> Any help would be greatly appreciated.\n>  \n> Andy\n>  \n>  \n> #pull through environmental layers\n> #FAST\n> anmax <- readRAST6(\"anmax\", ignore.stderr=TRUE)\n> anmin <- readRAST6(\"anmin\", ignore.stderr=TRUE)\n> aspect <- readRAST6(\"aspect\", ignore.stderr=TRUE)\n> dem10_lidar <- readRAST6(\"dem10_lidar\", ignore.stderr=TRUE)\n>  \n> #coerce to dataframe\n> #SLOW\n> mypred_anmaxDF<-as.data.frame(anmax)\n> mypred_anminDF<-as.data.frame(anmin)\n> mypred_aspectDF<-as.data.frame(aspect)\n> mypred_dem10_lidarDF<-as.data.frame(dem10_lidar)\n>  \n> #merge into single dataframe\n> #VERY SLOW\n> merge_tmp<-merge(mypred_anmaxDF,mypred_anminDF)\n> rm(mypred_anmaxDF,mypred_anminDF)\n> merge_tmp1<-merge(merge_tmp,mypred_aspectDF)\n> rm(merge_tmp,mypred_aspectDF)\n> mypredDF<-merge(merge_tmp1,mypred_dem10_lidarDF)\n>  \n> #apply model\n> outmap   <- predict(tree,newdata=mypredDF, type=\"class\")\n>  \n> \n> \n> ------------------------------------------------------------------------\n> \n> _______________________________________________\n> grass-user mailing list\n> grass-user@lists.osgeo.org\n> http://lists.osgeo.org/mailman/listinfo/grass-user",
+      "body_snippet": "Hi Andy,\n\n > I am unsure how to then move the 'outmap' back across to grass.\n > How can i convert the df to a spatial grid object.\n\nAFAIK, 'predict' won't create a dataframe object.\nR should return FA",
+      "thread_id": "thread-ac4aec41dc85",
+      "thread_depth": 0,
+      "month": "2007-12"
+    },
+    {
+      "id": "msg-d96c6e332c7d",
+      "message_id": "<Pine.LNX.4.64.0712191246070.7984@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2007-12-19T07:09:12Z",
+      "subject": "[GRASS-stats] Re: [GRASS-user] grass/stats mapping/prediction question",
+      "subject_clean": "[GRASS-stats] Re: [GRASS-user] grass/stats mapping/prediction question",
+      "in_reply_to": "<47690255.5090002@ucd.ie>",
+      "references": [
+        "<7a4569180712181822g325383c1naaed0fe72e0e97dd@mail.gmail.com>",
+        "<47690255.5090002@ucd.ie>"
+      ],
+      "body_plain": "On Wed, 19 Dec 2007, Daniel McInerney wrote:\n\nThe original questioner should have written to the grass-stats list in the \nfirst place - thanks for CC-ing. See below for inline comments:\n\n> Hi Andy,\n>\n>>  I am unsure how to then move the 'outmap' back across to grass.\n>>  How can i convert the df to a spatial grid object.\n>\n> AFAIK, 'predict' won't create a dataframe object.\n> R should return FALSE for is.data.frame(outmap) and\n> TRUE for is.numeric(outmap)\n>\n> You can slot the model output to the AttributeList of\n\nIt hasn't been an AttributeList for a long time - the data slot *is* a \ndata frame. We *always* need the output of sessionInfo() to help - \nupdate.packages() is most often very helpful too.\n\n> one of the SpatialGridDataFrames that you created when\n> you read in a GRASS raster and then use writeRAST6 to\n> write it back to GRASS.\n>\n> e.g. using 'anmax' from your example\n>\n> anmax$anmax <- outmap\n> #if that doesn't work, you might try\n> anmax$anmax <- as.numeric(outmap)\n> writeRAST6(anmax, \"NameOfNewGRASSRaster\", \"anmax\")\n>\n> Regards,\n> Daniel.\n>\n> cc: grass-stats@lists.osgeo.org\n>\n> andrew haywood wrote:\n>>  Dear List,\n>>\n>>  I am having some problems analysing some ecoligical models in grass using\n>>  the spgrass package through R.\n>>\n>>  I have 130 plot locations where i have observed presence/absence of a\n>>  species. I have followed a similar framework to the BUGSITE modelling\n>>  example from Markus's 2003 grass gis handouts (Grass 5) I have no\n>>  problems constructing the model based on the 130 plots and the\n>>  environmental layers from grass.\n\nSee the OSGeo tutorial September 2006:\n\nhttp://www.foss4g2006.org/contributionDisplay.py?contribId=46&sessionId=59&confId=1\n\nand the OSGeo Journal note:\n\nhttp://www.osgeo.org/files/journal/final_pdfs/OSGeo_vol1_GRASS-R.pdf\n\nfor more up-to-date information.\n\n>>\n>>  However, I am having problems bringing all the maps through into R so I\n>>  can make a prediction map.\n>>  The region isnt too large 1600 by 800 cells at 10m resolution\n>>  I can bring all the environmental layers through to R using readRAST6()\n>>  which doesnt take too much time at all.\n>>\n>>  However i assume I must convert the spatial grid objects into dataframes\n>>  to apply the predicted model function.\n\nNo, usually not at all, since the objects have a data.frame in the data\nslot, and have the standard access methods.\n\n>>  So I then coerce them into dataframes using as.dataframe (this takes ages)\n>>  I then merge all the dataframes into a single dataframe. (this takes ages)\n>>\n>>  I then apply the model predict to the new data frame.\n>>\n>>  I am unsure how to then move the 'outmap' back across to grass.\n>>  How can i convert the df to a spatial grid object.\n>>\n>>  Im thinking i must be doing something wrong. As it quite quick to pull\n>>  through the layers . But seems to take quite a lot of processing to get\n>>  the layers into a datframe appropppriate for applying the predictions.\n>>\n>>  Any help would be greatly appreciated.\n>>\n>>  Andy\n>>\n>> \n>> # pull through environmental layers\n>> # FAST\n>>  anmax <- readRAST6(\"anmax\", ignore.stderr=TRUE)\n>>  anmin <- readRAST6(\"anmin\", ignore.stderr=TRUE)\n>>  aspect <- readRAST6(\"aspect\", ignore.stderr=TRUE)\n>>  dem10_lidar <- readRAST6(\"dem10_lidar\", ignore.stderr=TRUE)\n\nWrong, do:\n\nmydata <- readRAST6(c(\"anmax\", \"anmin\", \"aspect\", \"dem10_lidar\"),\n   ignore.stderr=TRUE)\n\nthen the data slot of the object is a data frame. Look at\n\nsummary(mydata)\n\nfor a sanity check.\n\n>> \n>> # coerce to dataframe\n>> # SLOW\n>>  mypred_anmaxDF<-as.data.frame(anmax)\n>>  mypred_anminDF<-as.data.frame(anmin)\n>>  mypred_aspectDF<-as.data.frame(aspect)\n>>  mypred_dem10_lidarDF<-as.data.frame(dem10_lidar)\n>> \n>> # merge into single dataframe\n>> # VERY SLOW\n>>  merge_tmp<-merge(mypred_anmaxDF,mypred_anminDF)\n>>  rm(mypred_anmaxDF,mypred_anminDF)\n>>  merge_tmp1<-merge(merge_tmp,mypred_aspectDF)\n>>  rm(merge_tmp,mypred_aspectDF)\n>>  mypredDF<-merge(merge_tmp1,mypred_dem10_lidarDF)\n>>\n>>  #apply model\n\nWhat is tree? You may need to do extra steps depending on what class(tree) \nsays - if you have used rpart() or some such, you may find that\n\noutmap   <- predict(tree,newdata=mydata, type=\"class\")\n\nworks,\n\nor\n\noutmap   <- predict(tree,newdata=as(mydata, \"data.frame\"), type=\"class\")\n\nMaybe just assign into mydata straight away:\n\nmydata$outmap   <- predict(tree,newdata=as(mydata, \"data.frame\"),\n   type=\"class\")\n\ngiven ?predict.rpart saying:\n\n\"If 'type=\"class\"': (for a classification tree) a factor of \nclassifications based on the responses.\"\n\nwhich looks like a vector for a vector response in the formula to rpart(). \nBut do check what happens if there are NA in the newdata, because the \ndefault predict() behaviour may be to drop those observations. Look at \nsummary(mydata).\n\nSome formula-using model fitting functions just work, like lm() and \nthe predict() method for lm objects.\n\n>From there, as Daniel wrote:\n\nwriteRAST6(mydata, \"rpartpred\", \"outmap\")\n\nHope this helps,\n\nRoger\n\n\n>>  outmap   <- predict(tree,newdata=mypredDF, type=\"class\")\n>>\n>>\n>>\n>>  ------------------------------------------------------------------------\n>>\n>>  _______________________________________________\n>>  grass-user mailing list\n>>  grass-user@lists.osgeo.org\n>>  http://lists.osgeo.org/mailman/listinfo/grass-user\n> _______________________________________________\n> grass-stats mailing list\n> grass-stats@lists.osgeo.org\n> http://lists.osgeo.org/mailman/listinfo/grass-stats\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Wed, 19 Dec 2007, Daniel McInerney wrote:\n\nThe original questioner should have written to the grass-stats list in the \nfirst place - thanks for CC-ing. See below for inline comments:\n\n> Hi Andy,\n>\n",
+      "thread_id": "thread-ac4aec41dc85",
+      "thread_depth": 1,
+      "month": "2007-12"
+    },
+    {
+      "id": "msg-924d95f822fd",
+      "message_id": "<Pine.LNX.4.64.0712191942420.7984@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2007-12-19T13:46:21Z",
+      "subject": "[GRASS-stats] Re: [GRASS-user] grass/stats mapping/prediction question",
+      "subject_clean": "[GRASS-stats] Re: [GRASS-user] grass/stats mapping/prediction question",
+      "in_reply_to": "<200712191033.29265.dylan.beaudette@gmail.com>",
+      "references": [
+        "<7a4569180712181822g325383c1naaed0fe72e0e97dd@mail.gmail.com>",
+        "<47690255.5090002@ucd.ie>",
+        "<Pine.LNX.4.64.0712191246070.7984@reclus.nhh.no>",
+        "<200712191033.29265.dylan.beaudette@gmail.com>"
+      ],
+      "body_plain": "On Wed, 19 Dec 2007, Dylan Beaudette wrote:\n\n> On Wednesday 19 December 2007, Roger Bivand wrote:\n>> On Wed, 19 Dec 2007, Daniel McInerney wrote:\n>>\n>> The original questioner should have written to the grass-stats list in the\n>>\n>> first place - thanks for CC-ing. See below for inline comments:\n>>> Hi Andy,\n>>>\n>>>>  I am unsure how to then move the 'outmap' back across to grass.\n>>>>  How can i convert the df to a spatial grid object.\n>>>\n>>> AFAIK, 'predict' won't create a dataframe object.\n>>> R should return FALSE for is.data.frame(outmap) and\n>>> TRUE for is.numeric(outmap)\n>>>\n>>> You can slot the model output to the AttributeList of\n>>\n>> It hasn't been an AttributeList for a long time - the data slot *is* a\n>> data frame. We *always* need the output of sessionInfo() to help -\n>> update.packages() is most often very helpful too.\n>>\n>>> one of the SpatialGridDataFrames that you created when\n>>> you read in a GRASS raster and then use writeRAST6 to\n>>> write it back to GRASS.\n>>>\n>>> e.g. using 'anmax' from your example\n>>>\n>>> anmax$anmax <- outmap\n>>> #if that doesn't work, you might try\n>>> anmax$anmax <- as.numeric(outmap)\n>>> writeRAST6(anmax, \"NameOfNewGRASSRaster\", \"anmax\")\n>>>\n>>> Regards,\n>>> Daniel.\n>>>\n>>> cc: grass-stats@lists.osgeo.org\n>>>\n>>> andrew haywood wrote:\n>>>>  Dear List,\n>>>>\n>>>>  I am having some problems analysing some ecoligical models in grass\n>>>> using the spgrass package through R.\n>>>>\n>>>>  I have 130 plot locations where i have observed presence/absence of a\n>>>>  species. I have followed a similar framework to the BUGSITE modelling\n>>>>  example from Markus's 2003 grass gis handouts (Grass 5) I have no\n>>>>  problems constructing the model based on the 130 plots and the\n>>>>  environmental layers from grass.\n>>\n>> See the OSGeo tutorial September 2006:\n>>\n>> http://www.foss4g2006.org/contributionDisplay.py?contribId=46&sessionId=59&\n>> confId=1\n>>\n>> and the OSGeo Journal note:\n>>\n>> http://www.osgeo.org/files/journal/final_pdfs/OSGeo_vol1_GRASS-R.pdf\n>>\n>> for more up-to-date information.\n>>\n>>>>  However, I am having problems bringing all the maps through into R so I\n>>>>  can make a prediction map.\n>>>>  The region isnt too large 1600 by 800 cells at 10m resolution\n>>>>  I can bring all the environmental layers through to R using readRAST6()\n>>>>  which doesnt take too much time at all.\n>>>>\n>>>>  However i assume I must convert the spatial grid objects into\n>>>> dataframes to apply the predicted model function.\n>>\n>> No, usually not at all, since the objects have a data.frame in the data\n>> slot, and have the standard access methods.\n>>\n>>>>  So I then coerce them into dataframes using as.dataframe (this takes\n>>>> ages) I then merge all the dataframes into a single dataframe. (this\n>>>> takes ages)\n>>>>\n>>>>  I then apply the model predict to the new data frame.\n>>>>\n>>>>  I am unsure how to then move the 'outmap' back across to grass.\n>>>>  How can i convert the df to a spatial grid object.\n>>>>\n>>>>  Im thinking i must be doing something wrong. As it quite quick to pull\n>>>>  through the layers . But seems to take quite a lot of processing to get\n>>>>  the layers into a datframe appropppriate for applying the predictions.\n>>>>\n>>>>  Any help would be greatly appreciated.\n>>>>\n>>>>  Andy\n>>>>\n>>>>\n>>>> # pull through environmental layers\n>>>> # FAST\n>>>>  anmax <- readRAST6(\"anmax\", ignore.stderr=TRUE)\n>>>>  anmin <- readRAST6(\"anmin\", ignore.stderr=TRUE)\n>>>>  aspect <- readRAST6(\"aspect\", ignore.stderr=TRUE)\n>>>>  dem10_lidar <- readRAST6(\"dem10_lidar\", ignore.stderr=TRUE)\n>>\n>> Wrong, do:\n>>\n>> mydata <- readRAST6(c(\"anmax\", \"anmin\", \"aspect\", \"dem10_lidar\"),\n>>    ignore.stderr=TRUE)\n>>\n>> then the data slot of the object is a data frame. Look at\n>>\n>> summary(mydata)\n>>\n>> for a sanity check.\n>>\n>>>> # coerce to dataframe\n>>>> # SLOW\n>>>>  mypred_anmaxDF<-as.data.frame(anmax)\n>>>>  mypred_anminDF<-as.data.frame(anmin)\n>>>>  mypred_aspectDF<-as.data.frame(aspect)\n>>>>  mypred_dem10_lidarDF<-as.data.frame(dem10_lidar)\n>>>>\n>>>> # merge into single dataframe\n>>>> # VERY SLOW\n>>>>  merge_tmp<-merge(mypred_anmaxDF,mypred_anminDF)\n>>>>  rm(mypred_anmaxDF,mypred_anminDF)\n>>>>  merge_tmp1<-merge(merge_tmp,mypred_aspectDF)\n>>>>  rm(merge_tmp,mypred_aspectDF)\n>>>>  mypredDF<-merge(merge_tmp1,mypred_dem10_lidarDF)\n>>>>\n>>>>  #apply model\n>>\n>> What is tree? You may need to do extra steps depending on what class(tree)\n>> says - if you have used rpart() or some such, you may find that\n>>\n>> outmap   <- predict(tree,newdata=mydata, type=\"class\")\n>>\n>> works,\n>>\n>> or\n>>\n>> outmap   <- predict(tree,newdata=as(mydata, \"data.frame\"), type=\"class\")\n>>\n>> Maybe just assign into mydata straight away:\n>>\n>> mydata$outmap   <- predict(tree,newdata=as(mydata, \"data.frame\"),\n>>    type=\"class\")\n>>\n>> given ?predict.rpart saying:\n>>\n>> \"If 'type=\"class\"': (for a classification tree) a factor of\n>> classifications based on the responses.\"\n>>\n>> which looks like a vector for a vector response in the formula to rpart().\n>> But do check what happens if there are NA in the newdata, because the\n>> default predict() behaviour may be to drop those observations. Look at\n>> summary(mydata).\n>>\n>> Some formula-using model fitting functions just work, like lm() and\n>> the predict() method for lm objects.\n>>\n>>> From there, as Daniel wrote:\n>>\n>> writeRAST6(mydata, \"rpartpred\", \"outmap\")\n>>\n>> Hope this helps,\n>>\n>> Roger\n>>\n>>>>  outmap   <- predict(tree,newdata=mypredDF, type=\"class\")\n>>>>\n>>>>\n>\n>\n> An article on this in the OSGeo newsletter might be a nice way to document\n> simple modeling examples with GRASS and R\n\nPerhaps, and then there is the section in chapter 10 in \"Open Source GIS\nA GRASS GIS Approach\", 3rd edition (my copy is still on its way, but from \nthe ToC, it looks as though pages 353-363 should be very helpful).\n\nIn fact, your site is a convenient collection of resources, I ought to \nhave mentioned it in my reply!\n\nRoger\n\n>\n> D\n>\n>\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Wed, 19 Dec 2007, Dylan Beaudette wrote:\n\n> On Wednesday 19 December 2007, Roger Bivand wrote:\n>> On Wed, 19 Dec 2007, Daniel McInerney wrote:\n>>\n>> The original questioner should have written to t",
+      "thread_id": "thread-924d95f822fd",
+      "thread_depth": 0,
+      "month": "2007-12"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-4724205a884b",
+      "subject": "[GRASS-stats] readVECT6 problem fo importing null data",
+      "message_count": 7,
+      "participants": [
+        "Jarek Jasiewicz",
+        "Jarosław Jasiewicz",
+        "Markus Neteler",
+        "Roger Bivand"
+      ],
+      "started": "2007-12-04T16:12:48Z",
+      "last_reply": "2007-12-05T10:38:11Z",
+      "root_message_id": "msg-4724205a884b"
+    },
+    {
+      "id": "thread-ac4aec41dc85",
+      "subject": "[GRASS-stats] Re: [GRASS-user] grass/stats mapping/prediction question",
+      "message_count": 2,
+      "participants": [
+        "Daniel McInerney",
+        "Roger Bivand"
+      ],
+      "started": "2007-12-19T06:38:18Z",
+      "last_reply": "2007-12-19T07:09:12Z",
+      "root_message_id": "msg-ac4aec41dc85"
+    },
+    {
+      "id": "thread-924d95f822fd",
+      "subject": "[GRASS-stats] Re: [GRASS-user] grass/stats mapping/prediction question",
+      "message_count": 1,
+      "participants": [
+        "Roger Bivand"
+      ],
+      "started": "2007-12-19T13:46:21Z",
+      "last_reply": "2007-12-19T13:46:21Z",
+      "root_message_id": "msg-924d95f822fd"
+    }
+  ]
+}

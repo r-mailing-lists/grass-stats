@@ -1,0 +1,276 @@
+From giuseppe.amatulli at gmail.com  Fri May  6 04:40:51 2011
+From: giuseppe.amatulli at gmail.com (Giuseppe Amatulli)
+Date: Fri May  6 08:13:19 2011
+Subject: [GRASS-stats] Modeling training using GRASS R and OS tools
+Message-ID: <BANLkTimi9DqyVq8rLak7cJgxy0zZ-YFHbQ@mail.gmail.com>
+
+HI,
+we are pleased to announce  the 2011 PhD summer school on "Ecological
+modeling using GRASS, R, BASH, AWL and more Open sources tools, in
+Linux environment".
+
+The training is organized by the University of Copenhagen, Faculty of
+Life Science - Forest and Landscape Inst. 4-15 July 2011.
+
+more info and application form :
+http://en.sl.life.ku.dk/upload/use_of_open_source_tools_for_spatial__ecological_modelling.doc
+
+
+and at http://www.spatial-ecology.net/doku.php
+
+Please forward to  interested persons.
+
+Giuseppe Amatulli
+and
+Stefano Casalegno
+From kaufmann at slu.edu  Fri May  6 11:50:10 2011
+From: kaufmann at slu.edu (Eric Kaufmann)
+Date: Fri May  6 15:53:32 2011
+Subject: [GRASS-stats] Installing Grass on R
+Message-ID: <BANLkTinp+9i9N5H4cHchv_X7qcBYXbe5KA@mail.gmail.com>
+
+I am trying to install GRASS on R. We are using Cento OS. According to the
+installation instructions, the most current rpm should contain Grass.
+
+Is this correct?
+
+Thanks,
+
+Eric
+
+-- 
+Eric Kaufmann |  Application Support Analyst -  Advanced Technology Group |
+Saint Louis University | 314-977-2257 | kaufmann@slu.edu
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20110506/ed86ec83/attachment.html
+From daniel.o.mcinerney at gmail.com  Fri May  6 17:04:28 2011
+From: daniel.o.mcinerney at gmail.com (daniel mcinerney)
+Date: Fri May  6 21:17:54 2011
+Subject: [GRASS-stats] Installing Grass on R
+In-Reply-To: <BANLkTinp+9i9N5H4cHchv_X7qcBYXbe5KA@mail.gmail.com>
+References: <BANLkTinp+9i9N5H4cHchv_X7qcBYXbe5KA@mail.gmail.com>
+Message-ID: <BANLkTikZzUsGAZiDOEMbJkCh2nC4r9wHYw@mail.gmail.com>
+
+Hi Eric,
+Which installation instructions are you referring to?
+You should first ensure that you have GRASS-GIS installed
+on your system. You'll find detailed instructions about
+installing GRASS from source or an rpm here [1].
+
+Once you have successfully installed GRASS, you should
+then install the R package, spgrass6 [2]. This can be
+done from within R by running the command:
+>install.packages("spgrass6", dep=TRUE)
+
+Further instructions can be found here [3]. You should
+then be able to access GRASS from R [4].
+
+Hope this is of use. Let us know if you have further
+questions.
+
+Regards,
+Daniel.
+
+[1] http://grass.osgeo.org/wiki/Installation_Guide
+[2] http://cran.r-project.org/web/packages/spgrass6/index.html
+[3] http://grass.osgeo.org/wiki/R_statistics#Installation
+[4] http://grass.osgeo.org/wiki/R_statistics#Running
+
+
+2011/5/6 Eric Kaufmann <kaufmann@slu.edu>
+
+> I am trying to install GRASS on R. We are using Cento OS. According to the
+> installation instructions, the most current rpm should contain Grass.
+>
+> Is this correct?
+>
+> Thanks,
+>
+> Eric
+>
+> --
+> Eric Kaufmann |  Application Support Analyst -  Advanced Technology Group
+> | Saint Louis University | 314-977-2257 | kaufmann@slu.edu
+>
+>
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20110506/c0ec7691/attachment.html
+From r.m.krug at gmail.com  Thu May 19 09:35:26 2011
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Fri May 20 09:35:44 2011
+Subject: [GRASS-stats] Re: [R-sig-Geo] readRAST6() in {spgrass6}
+In-Reply-To: <alpine.LRH.2.00.1105180724260.24493@reclus.nhh.no>
+References: <003f01cc0f48$3f7a66b0$be6f3410$@umail.ucsb.edu>
+	<BANLkTi=1MTqesqeiyaoAp0kapSJc271JfA@mail.gmail.com>
+	<007701cc140f$b84227b0$28c67710$@umail.ucsb.edu>
+	<BANLkTi=rPeh9nrXh6ZdDbAjzHzzz=DtQgA@mail.gmail.com>
+	<alpine.LRH.2.00.1105170613130.20286@reclus.nhh.no>
+	<003301cc14ed$ff63b170$fe2b1450$@umail.ucsb.edu>
+	<alpine.LRH.2.00.1105180724260.24493@reclus.nhh.no>
+Message-ID: <BANLkTi=+y8ky5WhFiOV5eiTyt00qjLUbMg@mail.gmail.com>
+
+Hi Roger,
+
+On Wed, May 18, 2011 at 7:56 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> I do not have your location, so cannot check. It appears that your workflow
+> is highly non-standard - which you have not made clear previously. If you
+> are using spgrass6 to interface R with an existing GRASS location - which
+> seems to be the case, you should not use initGRASS(), and should not use the
+> PERMANENT mapset. The initGRASS() function is for creating one-time,
+> throwaway GRASS locations to use GRASS modules from R when no GISDBASE or
+> LOCATION is required.
+
+Could you please give some explanation, why the initGRASS() function
+should *not* be used when accessing an existing location? I use it
+extensively in my simulations to create a new mapset in a already
+existing location and I haven't experienced any problems which I would
+link to that.
+What kind of problems could occur, or why is this the non-standard
+usage of initGRASS()? I always assumed, that the idea is that
+initGRASS() actually replaces the "running R inside GRASS" approach?
+
+Cheers,
+
+Rainer
+
+
+>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+> _______________________________________________
+> R-sig-Geo mailing list
+> R-sig-Geo@r-project.org
+> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+>
+
+
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation
+Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel : ? ? ? +33 - (0)9 53 10 27 44
+Cell: ? ? ? +33 - (0)6 85 62 59 98
+Fax (F): ? ? ? +33 - (0)9 58 10 27 44
+
+Fax (D): ? ?+49 - (0)3 21 21 25 22 44
+
+email: ? ? ?Rainer@krugs.de
+
+Skype: ? ? ?RMkrug
+From Roger.Bivand at nhh.no  Thu May 19 10:04:06 2011
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu May 19 10:04:47 2011
+Subject: [GRASS-stats] Re: [R-sig-Geo] readRAST6() in {spgrass6}
+In-Reply-To: <BANLkTi=+y8ky5WhFiOV5eiTyt00qjLUbMg@mail.gmail.com>
+References: <003f01cc0f48$3f7a66b0$be6f3410$@umail.ucsb.edu>
+	<BANLkTi=1MTqesqeiyaoAp0kapSJc271JfA@mail.gmail.com>
+	<007701cc140f$b84227b0$28c67710$@umail.ucsb.edu>
+	<BANLkTi=rPeh9nrXh6ZdDbAjzHzzz=DtQgA@mail.gmail.com>
+	<alpine.LRH.2.00.1105170613130.20286@reclus.nhh.no>
+	<003301cc14ed$ff63b170$fe2b1450$@umail.ucsb.edu>
+	<alpine.LRH.2.00.1105180724260.24493@reclus.nhh.no>
+	<BANLkTi=+y8ky5WhFiOV5eiTyt00qjLUbMg@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.1105191547010.29187@reclus.nhh.no>
+
+On Thu, 19 May 2011, Rainer M Krug wrote:
+
+> Hi Roger,
+>
+> On Wed, May 18, 2011 at 7:56 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> I do not have your location, so cannot check. It appears that your workflow
+>> is highly non-standard - which you have not made clear previously. If you
+>> are using spgrass6 to interface R with an existing GRASS location - which
+>> seems to be the case, you should not use initGRASS(), and should not use the
+>> PERMANENT mapset. The initGRASS() function is for creating one-time,
+>> throwaway GRASS locations to use GRASS modules from R when no GISDBASE or
+>> LOCATION is required.
+>
+> Could you please give some explanation, why the initGRASS() function
+> should *not* be used when accessing an existing location? I use it
+> extensively in my simulations to create a new mapset in a already
+> existing location and I haven't experienced any problems which I would
+> link to that.
+> What kind of problems could occur, or why is this the non-standard
+> usage of initGRASS()? I always assumed, that the idea is that
+> initGRASS() actually replaces the "running R inside GRASS" approach?
+
+The function was introduced to make it possible to use GRASS modules 
+without a GRASS GISDBASE/LOCATION file tree, in throwaway mode for 
+non-expert users. The advice offered was also for non-expert users: unless 
+you understand fully what you are doing, choose between using R within 
+GRASS for existing LOCATION file trees, and initGRASS() when you are not 
+using data from "inside" GRASS. This advice holds for all users who do not 
+understand the possible inconvenience of trashing their .gisrc file.
+
+If, on the other hand, the user takes responsibility for over-riding the 
+regular GRASS startup mechanisms, initGRASS() can be used, as you decribe, 
+for scripting GRASS. Not every user, however, should consider this 
+possibility if all of the consequences are not understood.
+
+The main file at risk is .gisrc, but it is fully possible that the GRASS 
+mapset-specific temporary files will not be cleaned up properly, and 
+environment variables set by initGRASS() may interfere with GRASS in 
+unexpected ways across different OS while the R session has not been 
+terminated - I've not established any harmful interactions, but that 
+doesn't mean that they are not present on at least some platforms. In 
+principle the compute processes should not "leak", but on some OS, odd 
+things happen, so being cautious rather than principled seems justified.
+
+In the case that started this thread, the user does not seem to have had a 
+clear idea of what was happening, and was copying a script found online 
+intended for a different setting and an example data set. He needed to be 
+pointed to a more helpful setting, that is: start GRASS (and the GRASS 
+GUI) in Windows, start R in GRASS from the MSYS console, and be able to 
+manipulate the current GRASS region from the GUI to tile or resample the 
+data down to a size that admitted analysis.
+
+>
+> Cheers,
+>
+> Rainer
+>
+>
+>>
+>> --
+>> Roger Bivand
+>> Economic Geography Section, Department of Economics, Norwegian School of
+>> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+>> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+>> e-mail: Roger.Bivand@nhh.no
+>>
+>> _______________________________________________
+>> R-sig-Geo mailing list
+>> R-sig-Geo@r-project.org
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+>>
+>
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+

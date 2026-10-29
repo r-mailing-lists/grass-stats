@@ -1,0 +1,118 @@
+From Roger.Bivand at nhh.no  Thu Apr  5 08:54:05 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] Re: [R-sig-Geo] error in krig interpolation
+In-Reply-To: <4614EBE9.8040001@geo.uu.nl>
+Message-ID: <Pine.LNX.4.44.0704051436310.1188-100000@reclus.nhh.no>
+
+On Thu, 5 Apr 2007, Edzer J. Pebesma wrote:
+
+> el1 is already a SpatialPointsDataFrame, so omit the locations argument.
+> 
+> You may try something as simple as
+> 
+> zz <- krige(log(z) ~ 1, el1, mask_SG, efitted) 
+
+The real problem is that "ORDINARY KRIGING IN R WITH GRASS6 DATA" is on a 
+wiki with no responsible owner or maintainer, and no automatic way of 
+synchronising it with current code:
+
+http://grass.gdf-hannover.de/wiki/GRASS_6_Tutorial#GRASS_and_R_kriging_interpolation
+
+The original is not signed, with no attached data sets or location, so we
+can't ask anyone to keep it working.  I've added:
+
+(WARNING!! Most of the code quoted here is very out of date, and simply 
+does not work for current R/sp/gstat/spgrass6. Untried suggestions 
+have been edited in, but without a test location, there is no 
+guarantee that they will work! Roger Bivand, 5 April 2007)
+
+at the top of the section, and tried to indicate the worst inaccuracies.
+
+Roger
+
+> 
+> --
+> Edzer
+> 
+> temiz wrote:
+> > when does this error occur ?
+> >
+> >  > zz <- krige(formula = log(el1$z) ~ 1, locations = ~x+y , data = el1 
+> > ,newdata = mask_SG , model = efitted) Error in function (classes, fdef, 
+> > mtable)  :
+> >         unable to find an inherited method for function "coordinates<-", 
+> > for signature "SpatialPointsDataFrame"
+> >
+> >
+> > str(el1) gives:
+> >
+> > Formal class 'SpatialPointsDataFrame' [package "sp"] with 5 slots
+> >   ..@ data       :'data.frame': 24051 obs. of  4 variables:
+> >   .. ..$ cat: num [1:24051] 1 2 3 4 5 6 7 8 9 10 ...
+> >   .. ..$ x  : num [1:24051] 449114 449204 449262 449263 449276 ...
+> >   .. ..$ y  : num [1:24051] 4590406 4590375 4590117 4590304 4590214 ...
+> >   .. ..$ z  : num [1:24051] 110 110 110 110 110 110 110 110 110 110 ...
+> >   ..@ coords.nrs : num(0)
+> >   ..@ coords     : num [1:24051, 1:2] 449114 449204 449262 449263 449276 ...
+> >   .. ..- attr(*, "dimnames")=List of 2
+> >   .. .. ..$ : NULL
+> >   .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+> >   ..@ bbox       : num [1:2, 1:2]  449083 4584531  456552 4591890
+> >   .. ..- attr(*, "dimnames")=List of 2
+> >   .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+> >   .. .. ..$ : chr [1:2] "min" "max"
+> >   ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+> >   .. .. ..@ projargs: chr " +proj=utm +zone=36 +ellps=intl +units=m 
+> > +no_defs"
+> >
+> >
+> >
+> > regards
+> >
+> >
+> 
+> _______________________________________________
+> R-sig-Geo mailing list
+> R-sig-Geo@stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From lanczos at t-zones.sk  Sat Apr 14 07:19:30 2007
+From: lanczos at t-zones.sk (Tomas Lanczos)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] test
+Message-ID: <4620B8C2.70001@t-zones.sk>
+
+just testing
+
+
+From rivera at pstat.ucsb.edu  Mon Apr 23 14:22:53 2007
+From: rivera at pstat.ucsb.edu (rivera@pstat.ucsb.edu)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] pseudo variograms
+Message-ID: <20070423112253.8are4wvsask0w088@mail.pstat.ucsb.edu>
+
+I have two questions about pseudo cross-variograms. It seems that they are only
+calculated if the variables of interest are not co-located. Is there anyway to
+calculate them even if the data is co-located? Cressie, 1991 pg 140 suggests
+that using the 'classical' cross-variograms cannot guarantee optimal co-kriging
+predictors. I would like to compare the results of each cross-variogram.
+Secondly, if there is a way to calculate pseudo cross-variograms for co-located
+data. Does the variogram function automatically standarize the variables? In
+other  words, my three variables of interest DO NOT have the same measurement
+units so each one of them should be standarized (by subtracting the mean and
+dividing by the calculated standard deviation) for the empirical pseudo
+cross-variogram equation to make any sense. Thanks ahead,
+                                                                 Roberto
+
+

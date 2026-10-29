@@ -1,0 +1,650 @@
+From twiebke at arcor.de  Sun Jul 12 07:31:18 2015
+From: twiebke at arcor.de (Torsten Wiebke)
+Date: Sun, 12 Jul 2015 16:31:18 +0200
+Subject: [GRASS-stats] Precision of GNSS-Points
+Message-ID: <13686207.lOX2DVYHqj@david-xps13-9333>
+
+Hello,
+I want to compare different GNSS-Receivers in forest. Now I 
+have various Shapefiles and ths data in GRASS from the GNSS-
+Receiver and one layer with the real points. How could I 
+compare them by GRASS and R? 
+I would be glad if I can get some recommondations how to do 
+that.
+
+
+Thanks in advance
+Torsten
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150712/8fe6236d/attachment.html>
+
+From neteler at osgeo.org  Sun Jul 19 09:26:08 2015
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sun, 19 Jul 2015 18:26:08 +0200
+Subject: [GRASS-stats] rgrass7: readVECT() issue with drivers other than
+ ESRI Shapefile
+In-Reply-To: <CALFmHht_-DvdL2H1Vu3iY9NOPWyDJT1KBYfSOf_rmZOCuX2Kfw@mail.gmail.com>
+References: <CALFmHhvdMNdoANtc+RqXcsKqcPt38SjeZ=e4tLspD2nFD-ny9w@mail.gmail.com>
+	<alpine.LFD.2.11.1506171238470.20257@reclus.nhh.no>
+	<CALFmHhvcchUWX=iYGd+GpfXUt4nt8_ruS3mpDLa6DAWQh7b-ow@mail.gmail.com>
+	<CALFmHhuBJCzcj-9w5zC-jguB6vjvPoe=YDeBtcw8EOgaNvzD-w@mail.gmail.com>
+	<alpine.LFD.2.11.1506181019420.5199@reclus.nhh.no>
+	<CALFmHhstGs-pSOJeN=XY-TBOj0YL0Zvm5kDyOn+XtQaaD82VUA@mail.gmail.com>
+	<alpine.LFD.2.11.1506181147200.5199@reclus.nhh.no>
+	<CALFmHhv6rN3KgYf-_M_UgjjnJVf3mLKKhsGiBYBrUtkkkj+c_w@mail.gmail.com>
+	<CALFmHht_-DvdL2H1Vu3iY9NOPWyDJT1KBYfSOf_rmZOCuX2Kfw@mail.gmail.com>
+Message-ID: <CALFmHht2dm6Bwu7Tk7-im4Zrsj-=pMy6=aB7dhGznUO52fMmkw@mail.gmail.com>
+
+Roger, all,
+
+greetings from the community sprint:
+http://grasswiki.osgeo.org/wiki/Talk:GRASS_Community_Sprint_Como_2015
+
+
+On Fri, Jun 19, 2015 at 9:15 AM, Markus Neteler <neteler at osgeo.org> wrote:
+> All,
+>
+> attached a simple (potentially ugly?) change to enable "SQLite" as a
+> new driver for reading GRASS GIS 7 vector data into R
+> (readVECT("vectmap, driver="SQLite")).
+> I would really appreciate to see "SQLite" support added since it seems
+> to be the only lossless OGR driver (e.g. unlike the default "SHAPE"
+> file driver).
+>
+> I'll not commit this myself to r-forge since I am not sure if it
+> should be implemented differently.
+> Please verify.
+
+
+Do you have any suggestions how to add SQLite support for a better
+vector interface?
+
+thanks
+Markus
+
+From Roger.Bivand at nhh.no  Sun Jul 19 15:58:34 2015
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon, 20 Jul 2015 00:58:34 +0200
+Subject: [GRASS-stats] rgrass7: readVECT() issue with drivers other than
+ ESRI Shapefile
+In-Reply-To: <CALFmHht2dm6Bwu7Tk7-im4Zrsj-=pMy6=aB7dhGznUO52fMmkw@mail.gmail.com>
+References: <CALFmHhvdMNdoANtc+RqXcsKqcPt38SjeZ=e4tLspD2nFD-ny9w@mail.gmail.com>
+	<alpine.LFD.2.11.1506171238470.20257@reclus.nhh.no>
+	<CALFmHhvcchUWX=iYGd+GpfXUt4nt8_ruS3mpDLa6DAWQh7b-ow@mail.gmail.com>
+	<CALFmHhuBJCzcj-9w5zC-jguB6vjvPoe=YDeBtcw8EOgaNvzD-w@mail.gmail.com>
+	<alpine.LFD.2.11.1506181019420.5199@reclus.nhh.no>
+	<CALFmHhstGs-pSOJeN=XY-TBOj0YL0Zvm5kDyOn+XtQaaD82VUA@mail.gmail.com>
+	<alpine.LFD.2.11.1506181147200.5199@reclus.nhh.no>
+	<CALFmHhv6rN3KgYf-_M_UgjjnJVf3mLKKhsGiBYBrUtkkkj+c_w@mail.gmail.com>
+	<CALFmHht_-DvdL2H1Vu3iY9NOPWyDJT1KBYfSOf_rmZOCuX2Kfw@mail.gmail.com>
+	<CALFmHht2dm6Bwu7Tk7-im4Zrsj-=pMy6=aB7dhGznUO52fMmkw@mail.gmail.com>
+Message-ID: <alpine.LFD.2.11.1507200053110.28338@reclus.nhh.no>
+
+No possibility of helping now, mostly offline to 8 August.
+
+SQLite depends on the GDAL driver, which depends on an external library 
+(or several). The Windows and OSX rgdal binaries are built in as minimal 
+way as possible, linking statically. Adding SQLite possibly with 
+Spatialite is not currently feasible, and binary builds typically include 
+GEOS, which we don't want as it is used through rgeos, not rgdal. We 
+certainly should try to do something, but not by introducing any external 
+dependencies, so first check drivers available in the CRAN Windoes and OSX 
+binaries (which are built by the CRAN team, not me).
+
+Roger
+
+On Sun, 19 Jul 2015, Markus Neteler wrote:
+
+> Roger, all,
+>
+> greetings from the community sprint:
+> http://grasswiki.osgeo.org/wiki/Talk:GRASS_Community_Sprint_Como_2015
+>
+>
+> On Fri, Jun 19, 2015 at 9:15 AM, Markus Neteler <neteler at osgeo.org> wrote:
+>> All,
+>>
+>> attached a simple (potentially ugly?) change to enable "SQLite" as a
+>> new driver for reading GRASS GIS 7 vector data into R
+>> (readVECT("vectmap, driver="SQLite")).
+>> I would really appreciate to see "SQLite" support added since it seems
+>> to be the only lossless OGR driver (e.g. unlike the default "SHAPE"
+>> file driver).
+>>
+>> I'll not commit this myself to r-forge since I am not sure if it
+>> should be implemented differently.
+>> Please verify.
+>
+>
+> Do you have any suggestions how to add SQLite support for a better
+> vector interface?
+>
+> thanks
+> Markus
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+
+
+From veroandreo at gmail.com  Mon Jul 20 08:16:51 2015
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Mon, 20 Jul 2015 12:16:51 -0300
+Subject: [GRASS-stats] error initGRASS - rgrass7
+Message-ID: <CAAMki4H-pnFaaBZGHr1z7sAmwbS7nV82TOghn+NE9RR8u7x5Xg@mail.gmail.com>
+
+Hi,
+
+I'm trying to run GRASS from R using:
+
+library(rgrass7)
+initGRASS(gisBase="/home/veroandreo/software/grass-7.0.svn",
+          home=tempdir(), gisDbase="/home/veroandreo/grassdata",
+          location="latlong_wgs84", mapset="clorofila", override=TRUE)
+
+but I get the following error:
+
+sh: g.gisenv: command not foundsh: g.gisenv: command not foundsh:
+g.gisenv: command not foundsh: g.gisenv: command not foundsh:
+g.gisenv: command not foundsh: g.version: command not foundError in
+system(paste("g.version", get("addEXE", envir = .GRASS_CACHE),  :
+  error in running command
+
+
+Am I lacking something or is the function broken?? How should I use it??
+
+Any help is appretiated :)
+
+
+Thanks much in advance,
+
+Vero
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150720/b6fa6150/attachment.html>
+
+From Rainer at krugs.de  Wed Jul 22 06:11:03 2015
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Wed, 22 Jul 2015 15:11:03 +0200
+Subject: [GRASS-stats] error initGRASS - rgrass7
+In-Reply-To: <CAAMki4H-pnFaaBZGHr1z7sAmwbS7nV82TOghn+NE9RR8u7x5Xg@mail.gmail.com>
+	(Veronica Andreo's message of "Mon, 20 Jul 2015 12:16:51 -0300")
+References: <CAAMki4H-pnFaaBZGHr1z7sAmwbS7nV82TOghn+NE9RR8u7x5Xg@mail.gmail.com>
+Message-ID: <m2egk0xrq0.fsf@krugs.de>
+
+Hi Veronica,
+
+Veronica Andreo <veroandreo at gmail.com> writes:
+
+> Hi,
+>
+> I'm trying to run GRASS from R using:
+>
+> library(rgrass7)
+> initGRASS(gisBase="/home/veroandreo/software/grass-7.0.svn",
+>           home=tempdir(), gisDbase="/home/veroandreo/grassdata",
+>           location="latlong_wgs84", mapset="clorofila", override=TRUE)
+
+I assume you use Linux.
+
+>
+> but I get the following error:
+>
+> sh: g.gisenv: command not foundsh: g.gisenv: command not foundsh:
+> g.gisenv: command not foundsh: g.gisenv: command not foundsh:
+> g.gisenv: command not foundsh: g.version: command not foundError in
+> system(paste("g.version", get("addEXE", envir = .GRASS_CACHE),  :
+>   error in running command
+>
+>
+> Am I lacking something or is the function broken?? How should I use it??
+
+The easiest way of using R and GRASS GIS together, is starting GRASS GIS
+and then in starting R in GRASS. This way, initGRASS() is not needed
+anymore as the environment is already set up.
+
+Are you sure that you gisBase is correct? Does GRASS work if you start
+it?
+
+Cheers,
+
+Rainer
+
+>
+> Any help is appretiated :)
+>
+>
+> Thanks much in advance,
+>
+> Vero
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+PGP: 0x0F52F982
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 480 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150722/047d0aca/attachment.pgp>
+
+From neteler at osgeo.org  Thu Jul 23 13:59:01 2015
+From: neteler at osgeo.org (Markus Neteler)
+Date: Thu, 23 Jul 2015 22:59:01 +0200
+Subject: [GRASS-stats] error initGRASS - rgrass7
+In-Reply-To: <m2egk0xrq0.fsf@krugs.de>
+References: <CAAMki4H-pnFaaBZGHr1z7sAmwbS7nV82TOghn+NE9RR8u7x5Xg@mail.gmail.com>
+	<m2egk0xrq0.fsf@krugs.de>
+Message-ID: <CALFmHhtAMBJSBdo6zuCFPZVpDg3Ebft6Z96A_pmRG-rrdSUoUg@mail.gmail.com>
+
+On Wed, Jul 22, 2015 at 3:11 PM, Rainer M Krug <Rainer at krugs.de> wrote:
+> Hi Veronica,
+>
+> Veronica Andreo <veroandreo at gmail.com> writes:
+>
+>> Hi,
+>>
+>> I'm trying to run GRASS from R using:
+>>
+>> library(rgrass7)
+>> initGRASS(gisBase="/home/veroandreo/software/grass-7.0.svn",
+>>           home=tempdir(), gisDbase="/home/veroandreo/grassdata",
+>>           location="latlong_wgs84", mapset="clorofila", override=TRUE)
+>
+> I assume you use Linux.
+>
+>>
+>> but I get the following error:
+>>
+>> sh: g.gisenv: command not foundsh: g.gisenv: command not foundsh:
+>> g.gisenv: command not foundsh: g.gisenv: command not foundsh:
+>> g.gisenv: command not foundsh: g.version: command not foundError in
+>> system(paste("g.version", get("addEXE", envir = .GRASS_CACHE),  :
+>>   error in running command
+>>
+>>
+>> Am I lacking something or is the function broken?? How should I use it??
+>
+> The easiest way of using R and GRASS GIS together, is starting GRASS GIS
+> and then in starting R in GRASS. This way, initGRASS() is not needed
+> anymore as the environment is already set up.
+
+We (especially Veronica) worked during the recent Community Sprint on
+the Wiki pages
+
+http://grasswiki.osgeo.org/wiki/R_statistics
+
+to improve it, move out subchapters into separate pages etc.
+The scope is to explain both directions which used to work with spgrass6.
+
+Best
+Markus
+
+> Are you sure that you gisBase is correct? Does GRASS work if you start
+> it?
+>
+> Cheers,
+>
+> Rainer
+>
+>>
+>> Any help is appretiated :)
+>>
+>>
+>> Thanks much in advance,
+>>
+>> Vero
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats at lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+> --
+> Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+>
+> Centre of Excellence for Invasion Biology
+> Stellenbosch University
+> South Africa
+>
+> Tel :       +33 - (0)9 53 10 27 44
+> Cell:       +33 - (0)6 85 62 59 98
+> Fax :       +33 - (0)9 58 10 27 44
+>
+> Fax (D):    +49 - (0)3 21 21 25 22 44
+>
+> email:      Rainer at krugs.de
+>
+> Skype:      RMkrug
+>
+> PGP: 0x0F52F982
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+From Rainer at krugs.de  Fri Jul 24 00:47:37 2015
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Fri, 24 Jul 2015 09:47:37 +0200
+Subject: [GRASS-stats] error initGRASS - rgrass7
+In-Reply-To: <CALFmHhtAMBJSBdo6zuCFPZVpDg3Ebft6Z96A_pmRG-rrdSUoUg@mail.gmail.com>
+	(Markus Neteler's message of "Thu, 23 Jul 2015 22:59:01 +0200")
+References: <CAAMki4H-pnFaaBZGHr1z7sAmwbS7nV82TOghn+NE9RR8u7x5Xg@mail.gmail.com>
+	<m2egk0xrq0.fsf@krugs.de>
+	<CALFmHhtAMBJSBdo6zuCFPZVpDg3Ebft6Z96A_pmRG-rrdSUoUg@mail.gmail.com>
+Message-ID: <m2oaj2yp2e.fsf@krugs.de>
+
+Markus Neteler <neteler at osgeo.org> writes:
+
+> On Wed, Jul 22, 2015 at 3:11 PM, Rainer M Krug <Rainer at krugs.de> wrote:
+>> Hi Veronica,
+>>
+>> Veronica Andreo <veroandreo at gmail.com> writes:
+>>
+>>> Hi,
+>>>
+>>> I'm trying to run GRASS from R using:
+>>>
+>>> library(rgrass7)
+>>> initGRASS(gisBase="/home/veroandreo/software/grass-7.0.svn",
+>>>           home=tempdir(), gisDbase="/home/veroandreo/grassdata",
+>>>           location="latlong_wgs84", mapset="clorofila", override=TRUE)
+>>
+>> I assume you use Linux.
+>>
+>>>
+>>> but I get the following error:
+>>>
+>>> sh: g.gisenv: command not foundsh: g.gisenv: command not foundsh:
+>>> g.gisenv: command not foundsh: g.gisenv: command not foundsh:
+>>> g.gisenv: command not foundsh: g.version: command not foundError in
+>>> system(paste("g.version", get("addEXE", envir = .GRASS_CACHE),  :
+>>>   error in running command
+>>>
+>>>
+>>> Am I lacking something or is the function broken?? How should I use it??
+>>
+>> The easiest way of using R and GRASS GIS together, is starting GRASS GIS
+>> and then in starting R in GRASS. This way, initGRASS() is not needed
+>> anymore as the environment is already set up.
+>
+Hi
+
+> We (especially Veronica) worked during the recent Community Sprint on
+> the Wiki pages
+>
+> http://grasswiki.osgeo.org/wiki/R_statistics
+>
+> to improve it, move out subchapters into separate pages etc.
+
+I think this is a brilliant idea.
+
+I just looked at the example (GRASS GIS 7 in R), and it seems you are
+specifying the wrong gisBase argument.
+
+I get the same error in this case. If I specify the correct one, in my
+case "/usr/local/Cellar/grass-70/7.0.0/grass-7.0.0" which looks as
+follow (I highlighted the important directories, as far as I know):
+
+,----
+| 09:42:39 (master) /usr/local/Cellar/grass-70/7.0.0/grass-7.0.0$ ls -l
+| total 240
+| -rw-r--r--    1 rainerkrug  admin  15589 Jul 22 14:54 AUTHORS
+| -rw-r--r--    1 rainerkrug  admin   1136 Jul 22 14:54 CHANGES
+| -rw-r--r--    1 rainerkrug  admin   1458 Jul 22 14:54 COPYING
+| -rw-r--r--    1 rainerkrug  admin  17987 Jul 22 14:54 GPL.TXT
+| -rw-r--r--    1 rainerkrug  admin   7633 Jul 22 14:54 REQUIREMENTS.html
+| drwxr-xr-x  373 rainerkrug  admin  12682 Jul 22 14:54 bin   <<<<<<<<<<<<<<<<<<<<<<<<
+| -rwxr-xr-x    1 rainerkrug  admin  30466 Jul 22 14:54 config.status
+| -rw-r--r--    1 rainerkrug  admin   3556 Jul 22 14:54 contributors.csv
+| -rw-r--r--    1 rainerkrug  admin   1672 Jul 22 14:54 contributors_extra.csv
+| drwxr-xr-x    4 rainerkrug  admin    136 Jul 22 14:54 demolocation
+| drwxr-xr-x    4 rainerkrug  admin    136 Jul 22 14:52 docs
+| drwxr-xr-x    3 rainerkrug  admin    102 Jul 22 14:52 driver
+| drwxr-xr-x   28 rainerkrug  admin    952 Jul 22 14:54 etc
+| drwxr-xr-x   25 rainerkrug  admin    850 Jul 22 14:52 fonts
+| lrwxr-xr-x    1 rainerkrug  admin     14 Jul 22 14:55 grass70.sh -> ../bin/grass70
+| drwxr-xr-x    7 rainerkrug  admin    238 Jul 22 14:54 gui
+| drwxr-xr-x    4 rainerkrug  admin    136 Jul 22 14:52 include
+| drwxr-xr-x  105 rainerkrug  admin   3570 Jul 22 14:54 lib   <<<<<<<<<<<<<<<<<<<<<<<<
+| drwxr-xr-x   24 rainerkrug  admin    816 Jul 22 14:54 locale
+| drwxr-xr-x  125 rainerkrug  admin   4250 Jul 22 14:54 scripts
+| drwxr-xr-x    4 rainerkrug  admin    136 Jul 22 14:54 share
+| drwxr-xr-x    9 rainerkrug  admin    306 Jul 22 14:52 tools
+| -rw-r--r--    1 rainerkrug  admin  12668 Jul 22 14:54 translation_status.json
+| -rw-r--r--    1 rainerkrug  admin   4111 Jul 22 14:54 translators.csv
+`----
+
+it works without any problems (Mac OSX Yosemite).
+
+,----
+| > sessionInfo()
+| R version 3.2.1 (2015-06-18)
+| Platform: x86_64-apple-darwin14.4.0 (64-bit)
+| Running under: OS X 10.10.4 (Yosemite)
+| 
+| locale:
+| [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+| 
+| attached base packages:
+| [1] stats     graphics  grDevices utils     datasets  methods   base
+| 
+| other attached packages:
+| [1] rgrass7_0.1-0 XML_3.98-1.3  sp_1.1-1
+| 
+| loaded via a namespace (and not attached):
+| [1] tools_3.2.1     grid_3.2.1      lattice_0.20-31
+| > version
+|                _
+| platform       x86_64-apple-darwin14.4.0
+| arch           x86_64
+| os             darwin14.4.0
+| system         x86_64, darwin14.4.0
+| status
+| major          3
+| minor          2.1
+| year           2015
+| month          06
+| day            18
+| svn rev        68531
+| language       R
+| version.string R version 3.2.1 (2015-06-18)
+| nickname       World-Famous Astronaut
+| >
+`----
+
+Hope this helps.
+
+Rainer
+
+> The scope is to explain both directions which used to work with spgrass6.
+>
+> Best
+> Markus
+>
+>> Are you sure that you gisBase is correct? Does GRASS work if you start
+>> it?
+>>
+>> Cheers,
+>>
+>> Rainer
+>>
+>>>
+>>> Any help is appretiated :)
+>>>
+>>>
+>>> Thanks much in advance,
+>>>
+>>> Vero
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats at lists.osgeo.org
+>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>> --
+>> Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+>>
+>> Centre of Excellence for Invasion Biology
+>> Stellenbosch University
+>> South Africa
+>>
+>> Tel :       +33 - (0)9 53 10 27 44
+>> Cell:       +33 - (0)6 85 62 59 98
+>> Fax :       +33 - (0)9 58 10 27 44
+>>
+>> Fax (D):    +49 - (0)3 21 21 25 22 44
+>>
+>> email:      Rainer at krugs.de
+>>
+>> Skype:      RMkrug
+>>
+>> PGP: 0x0F52F982
+>>
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats at lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+PGP: 0x0F52F982
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 480 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150724/ff1c3f35/attachment.pgp>
+
+From neteler at osgeo.org  Fri Jul 31 07:45:19 2015
+From: neteler at osgeo.org (Markus Neteler)
+Date: Fri, 31 Jul 2015 16:45:19 +0200
+Subject: [GRASS-stats] Precision of GNSS-Points
+In-Reply-To: <13686207.lOX2DVYHqj@david-xps13-9333>
+References: <13686207.lOX2DVYHqj@david-xps13-9333>
+Message-ID: <CALFmHhsEQ7qNi9eP8jiShwQrY-MYC6qma5De0SfqsAGe=8ianw@mail.gmail.com>
+
+On Sun, Jul 12, 2015 at 4:31 PM, Torsten Wiebke <twiebke at arcor.de> wrote:
+> Hello,
+>
+> I want to compare different GNSS-Receivers in forest. Now I have various
+> Shapefiles and ths data in GRASS from the GNSS-Receiver and one layer with
+> the real points. How could I compare them by GRASS and R?
+
+While currently not having much time to think about this, I would
+suggest to look at v.distance and then
+http://grasswiki.osgeo.org/wiki/R_statistics/rgrass7
+
+Best
+Markus
+
+From neteler at osgeo.org  Fri Jul 31 07:56:04 2015
+From: neteler at osgeo.org (Markus Neteler)
+Date: Fri, 31 Jul 2015 16:56:04 +0200
+Subject: [GRASS-stats] error initGRASS - rgrass7
+In-Reply-To: <m2oaj2yp2e.fsf@krugs.de>
+References: <CAAMki4H-pnFaaBZGHr1z7sAmwbS7nV82TOghn+NE9RR8u7x5Xg@mail.gmail.com>
+	<m2egk0xrq0.fsf@krugs.de>
+	<CALFmHhtAMBJSBdo6zuCFPZVpDg3Ebft6Z96A_pmRG-rrdSUoUg@mail.gmail.com>
+	<m2oaj2yp2e.fsf@krugs.de>
+Message-ID: <CALFmHhvPSmcfpyMFF3oUFr1DsdZxhX+NM0Xr+OLp1iEdaE+RJA@mail.gmail.com>
+
+Hi,
+
+On Fri, Jul 24, 2015 at 9:47 AM, Rainer M Krug <Rainer at krugs.de> wrote:
+> Markus Neteler <neteler at osgeo.org> writes:
+>
+>> On Wed, Jul 22, 2015 at 3:11 PM, Rainer M Krug <Rainer at krugs.de> wrote:
+>>> Hi Veronica,
+>>>
+>>> Veronica Andreo <veroandreo at gmail.com> writes:
+>>>
+>>>> Hi,
+>>>>
+>>>> I'm trying to run GRASS from R using:
+>>>>
+>>>> library(rgrass7)
+>>>> initGRASS(gisBase="/home/veroandreo/software/grass-7.0.svn",
+>>>>           home=tempdir(), gisDbase="/home/veroandreo/grassdata",
+>>>>           location="latlong_wgs84", mapset="clorofila", override=TRUE)
+>>>
+>>> I assume you use Linux.
+>>>
+>>>>
+>>>> but I get the following error:
+>>>>
+>>>> sh: g.gisenv: command not found
+
+so, I found the trick:
+
+In the first place, find out the path to the GRASS GIS library. This
+can be easily done with the following command (still outside of R; or
+through a system() call inside of R):
+
+ grass70 --config path
+
+
+It may report something like:
+ /home/veroandreo/software/grass-7.0.svn/dist.x86_64-unknown-linux-gnu
+
+This path must be used then:
+
+library(rgrass7)
+
+# initialisation and the use of North Carolina sample dataset
+initGRASS(gisBase =
+"/home/veroandreo/software/grass-7.0.svn/dist.x86_64-unknown-linux-gnu",
+home = tempdir(),
+          gisDbase = "/home/veroandreo/grassdata/",
+          location = "nc_spm_08_grass7", mapset = "user1", SG="elevation",
+          override = TRUE)
+...
+
+and it works fine.
+
+I have updated the Wiki page accordingly:
+http://grasswiki.osgeo.org/wiki/R_statistics/rgrass7#GRASS_within_R
+
+Cheers
+Markus
+

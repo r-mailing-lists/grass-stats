@@ -1,0 +1,4848 @@
+From carlos.grohmann at gmail.com  Tue Oct  2 11:18:04 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] speed of GRASS/R interface
+Message-ID: <bd07447b0710020818q776b897ft3c1030b61dfdd96b@mail.gmail.com>
+
+I've been thinking about the time it takes to import a raster from GRASS to
+R. I have some rasters with about 2000 rows and 2500 columns. importing
+starts fine, creates the header, then goes to 100%, and it hangs there for
+about 10 minutes, before get ready for the next command.
+Any way of decrease this waiting time?
+
+cheers
+
+Carlos
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Visiting Researcher at Kingston University London - UK
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows 95 from
+my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged by
+2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20071002/f716ff67/attachment.html
+From carlos.grohmann at gmail.com  Tue Oct  2 13:28:25 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] speed of GRASS/R interface
+In-Reply-To: <47027DA0.7060101@ija.csic.es>
+References: <bd07447b0710020818q776b897ft3c1030b61dfdd96b@mail.gmail.com>
+	<47027DA0.7060101@ija.csic.es>
+Message-ID: <bd07447b0710021028v3b6690eevba4b03380432f668@mail.gmail.com>
+
+Thanks for the quick reply, Augustin.
+
+I am doing a multi-scale study of surface roughness. So I have 180 rasters,
+created using 3 different methods, 5 different resolutions, and with 12
+moving-window sizes. In R, I am importing the data to produce histograms,
+density plots and so on. More as a summary statistics tool than really
+analysis. In R I can plot density curves for various maps in one graphic,
+and see what is the behaviour of the morphometric variable when resolution
+or moving-window size changes.
+
+
+Carlos
+
+
+
+
+On 10/2/07, Agustin Lobo <Agustin.Lobo@ija.csic.es> wrote:
+>
+> It makes sense, R puts everything in memory.
+> In general, unless you have small raster layers,
+> the best is to use the gis for the processing, get
+> intermediate data out of the raster and process these data in R.
+> Then back to gis for displaying if required.
+> In other words, no way of using R instead of r.mapcalc
+> unless the raster is very small.
+>
+> If you can let us know what you want to do with the raster
+> we can try to be more specific on how a combined use of grass/r could
+> solve the problem (hopefully).
+>
+> Agus
+>
+> Carlos "Gu?no" Grohmann escribi?:
+> > I've been thinking about the time it takes to import a raster from GRASS
+> > to R. I have some rasters with about 2000 rows and 2500 columns.
+> > importing starts fine, creates the header, then goes to 100%, and it
+> > hangs there for about 10 minutes, before get ready for the next command.
+> > Any way of decrease this waiting time?
+> >
+> > cheers
+> >
+> > Carlos
+> >
+> > --
+> > +-----------------------------------------------------------+
+> >               Carlos Henrique Grohmann - Guano
+> >   Visiting Researcher at Kingston University London - UK
+> >   Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+> > Linux User #89721  - carlos dot grohmann at gmail dot com
+> > +-----------------------------------------------------------+
+> > _________________
+> > "Good morning, doctors. I have taken the liberty of removing Windows 95
+> > from my hard drive."
+> > --The winning entry in a "What were HAL's first words" contest judged by
+> > 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+> >
+> > Can't stop the signal.
+> >
+> >
+> > ------------------------------------------------------------------------
+> >
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> >
+>
+> --
+> Dr. Agustin Lobo
+> Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+> LLuis Sole Sabaris s/n
+> 08028 Barcelona
+> Spain
+> Tel. 34 934095410
+> Fax. 34 934110012
+> email: Agustin.Lobo@ija.csic.es
+> http://www.ija.csic.es/gt/obster
+>
+
+
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Visiting Researcher at Kingston University London - UK
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows 95 from
+my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged by
+2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20071002/5d80c122/attachment.html
+From Agustin.Lobo at ija.csic.es  Wed Oct  3 05:54:43 2007
+From: Agustin.Lobo at ija.csic.es (Agustin Lobo)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] speed of GRASS/R interface
+In-Reply-To: <bd07447b0710021028v3b6690eevba4b03380432f668@mail.gmail.com>
+References: <bd07447b0710020818q776b897ft3c1030b61dfdd96b@mail.gmail.com>	<47027DA0.7060101@ija.csic.es>
+	<bd07447b0710021028v3b6690eevba4b03380432f668@mail.gmail.com>
+Message-ID: <470366E3.1050808@ija.csic.es>
+
+Carlos,
+
+Just as an example, the attached R script which uses
+the following grass shell script stats_aux.scr:
+
+r.statistics base=$1 cover=$2 method=average output=delme --overwrite
+cp /home/alobo/PERU/seg1/2001u/cats/delme delme.m1
+r.statistics base=$1 cover=$2 method=variance output=delme --overwrite
+cp /home/alobo/PERU/seg1/2001u/cats/delme delme.v1
+r.statistics base=$1 cover=$2 method=sum output=delme --overwrite
+cp /home/alobo/PERU/seg1/2001u/cats/delme delme.s1
+#
+r.statistics base=$1 cover=$3 method=average output=delme --overwrite
+cp /home/alobo/PERU/seg1/2001u/cats/delme delme.m2
+r.statistics base=$1 cover=$3 method=variance output=delme --overwrite
+cp /home/alobo/PERU/seg1/2001u/cats/delme delme.v2
+#
+r.statistics base=$1 cover=$4 method=average output=delme --overwrite
+cp /home/alobo/PERU/seg1/2001u/cats/delme delme.m3
+r.statistics base=$1 cover=$4 method=variance output=delme --overwrite
+cp /home/alobo/PERU/seg1/2001u/cats/delme delme.v3
+#
+g.remove rast=delme
+
+
+The script calculates a table of stratified
+statistics (one reference raster as strata and 3 rasters for the
+data). I.e., You can calculate the average, sd etc of 3 bands for each
+class on a given landcover map. There are probably other
+(better) ways of doing this, probably using r.stats instead of 
+r.statistics, but this could be a guide. The idea is
+use r.stats and get that input into R instead of the
+actual rasters. For example
+r.stats -c in=miraster out=delme.txt
+
+and then get delme.txt into R with read.table().For stratified stats:
+
+r.stats -c in=reference,band out=delme.txt
+
+
+
+Agus
+
+
+
+Carlos "Gu?no" Grohmann escribi?:
+> Thanks for the quick reply, Augustin.
+> 
+> I am doing a multi-scale study of surface roughness. So I have 180 
+> rasters, created using 3 different methods, 5 different resolutions, and 
+> with 12 moving-window sizes. In R, I am importing the data to produce 
+> histograms, density plots and so on. More as a summary statistics tool 
+> than really analysis. In R I can plot density curves for various maps in 
+> one graphic, and see what is the behaviour of the morphometric variable 
+> when resolution or moving-window size changes.
+> 
+> 
+> Carlos
+> 
+> 
+> 
+> 
+> On 10/2/07, *Agustin Lobo* <Agustin.Lobo@ija.csic.es 
+> <mailto:Agustin.Lobo@ija.csic.es>> wrote:
+> 
+>     It makes sense, R puts everything in memory.
+>     In general, unless you have small raster layers,
+>     the best is to use the gis for the processing, get
+>     intermediate data out of the raster and process these data in R.
+>     Then back to gis for displaying if required.
+>     In other words, no way of using R instead of r.mapcalc
+>     unless the raster is very small.
+> 
+>     If you can let us know what you want to do with the raster
+>     we can try to be more specific on how a combined use of grass/r could
+>     solve the problem (hopefully).
+> 
+>     Agus
+> 
+>     Carlos "Gu?no" Grohmann escribi?:
+>      > I've been thinking about the time it takes to import a raster
+>     from GRASS
+>      > to R. I have some rasters with about 2000 rows and 2500 columns.
+>      > importing starts fine, creates the header, then goes to 100%, and it
+>      > hangs there for about 10 minutes, before get ready for the next
+>     command.
+>      > Any way of decrease this waiting time?
+>      >
+>      > cheers
+>      >
+>      > Carlos
+>      >
+>      > --
+>      > +-----------------------------------------------------------+
+>      >               Carlos Henrique Grohmann - Guano
+>      >   Visiting Researcher at Kingston University London - UK
+>      >   Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+>      > Linux User #89721  - carlos dot grohmann at gmail dot com
+>      > +-----------------------------------------------------------+
+>      > _________________
+>      > "Good morning, doctors. I have taken the liberty of removing
+>     Windows 95
+>      > from my hard drive."
+>      > --The winning entry in a "What were HAL's first words" contest
+>     judged by
+>      > 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+>      >
+>      > Can't stop the signal.
+>      >
+>      >
+>      >
+>     ------------------------------------------------------------------------
+>      >
+>      > _______________________________________________
+>      > statsgrass mailing list
+>      > statsgrass@grass.itc.it <mailto:statsgrass@grass.itc.it>
+>      > http://grass.itc.it/mailman/listinfo/statsgrass
+>      >
+> 
+>     --
+>     Dr. Agustin Lobo
+>     Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+>     LLuis Sole Sabaris s/n
+>     08028 Barcelona
+>     Spain
+>     Tel. 34 934095410
+>     Fax. 34 934110012
+>     email: Agustin.Lobo@ija.csic.es <mailto:Agustin.Lobo@ija.csic.es>
+>     http://www.ija.csic.es/gt/obster
+> 
+> 
+> 
+> 
+> -- 
+> +-----------------------------------------------------------+
+>               Carlos Henrique Grohmann - Guano  
+>   Visiting Researcher at Kingston University London - UK
+>   Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+> Linux User #89721  - carlos dot grohmann at gmail dot com
+> +-----------------------------------------------------------+
+> _________________
+> "Good morning, doctors. I have taken the liberty of removing Windows 95 
+> from my hard drive."
+> --The winning entry in a "What were HAL's first words" contest judged by 
+> 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+> 
+> Can't stop the signal.
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Dr. Agustin Lobo
+Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+LLuis Sole Sabaris s/n
+08028 Barcelona
+Spain
+Tel. 34 934095410
+Fax. 34 934110012
+email: Agustin.Lobo@ija.csic.es
+http://www.ija.csic.es/gt/obster
+-------------- next part --------------
+"sgr.stats" <- function(nom.ref="t1pc1e3c", nompc1="t1pc1", nompc2="t1pc2",nompc3="t1pc3")
+{
+print("Executing sgr.stats...")
+require(spgrass6)
+G <- gmeta6()
+comm <- paste("/home/alobo/PERU/stats_aux.scr", nom.ref, nompc1, nompc2, nompc3)
+print(comm)
+print("Grass...")
+system(comm)
+print("back to R...")
+print(paste("    command executed in grass:",comm))
+
+#Calculates the stat file for imorm
+m1 <- read.table("delme.m1", skip=4,sep=":")
+m1[m1=="*"] <- NA
+m2 <- read.table("delme.m2", skip=4,sep=":")
+m2[m2=="*"] <- NA
+m3 <- read.table("delme.m3", skip=4,sep=":")
+m3[m3=="*"] <- NA
+v1 <- read.table("delme.v1", skip=4,sep=":")
+v1[v1=="*"] <- NA
+v2 <- read.table("delme.v2", skip=4,sep=":")
+v2[v2=="*"] <- NA
+v3 <- read.table("delme.v3", skip=4,sep=":")
+v3[v3=="*"] <- NA
+v1[,2] <- sqrt(v1[,2])
+v2[,2] <- sqrt(v2[,2])
+v3[,2] <- sqrt(v3[,2])
+s1 <- read.table("delme.s1", skip=4,sep=":")
+s1[s1=="*"] <- NA
+n <- s1[,2]/m1[,2]
+lin <- colu <- n*0
+cv1 <- v1[,2]*100/m1[,2]
+cv2 <- v2[,2]*100/m2[,2]
+cv3 <- v3[,2]*100/m3[,2]
+res <- cbind(m1[,1],lin, colu,n,
+                              m1[,2],m2[,2],m3[,2],
+                              v1[,2],v2[,2],v3[,2],
+                              cv1,cv2,cv3)
+dimnames(res)[[2]] <- c("etiq","lin", "col", "num",
+                    "media 1", "media 2", "media 3",
+                    "sd 1", "sd 2", "sd 3",
+                    "cv 1", "cv 2", "cv 3")
+system (paste("rm delme.m*", "delme.s*", "delme.v*"))
+res
+}
+From matteo.dallamico at ing.unitn.it  Fri Oct  5 03:39:24 2007
+From: matteo.dallamico at ing.unitn.it (Matteo Dall'Amico)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] graphics in R
+In-Reply-To: <bd07447b0710021028v3b6690eevba4b03380432f668@mail.gmail.com>
+References: <bd07447b0710020818q776b897ft3c1030b61dfdd96b@mail.gmail.com>
+	<47027DA0.7060101@ija.csic.es>
+	<bd07447b0710021028v3b6690eevba4b03380432f668@mail.gmail.com>
+Message-ID: <02C5E231-79D0-4C47-B8B8-5BAD170F9771@ing.unitn.it>
+
+Hello,
+I would like to raise a question about plotting: I would like to plot  
+on the SAME graph the temperature with time of sensors at different  
+depth.
+That means, I would like to have in the same graph on the x-axis the  
+time, y-axis the temperature, and on the graph several curves with  
+different colors representing the different depth.
+I have a file with the first column representing the time, column 2  
+representing the temperature at depth1, column 3 the temperature at  
+depth2... and so on.
+Does someone know how I could do that?
+Thanks a lot in advance,
+
+Matteo
+
+---------------------------------
+Matteo Dall'Amico
+PhD candidate
+CUDAM and department of Civil and Environmental Engineering
+Universita' degli Studi di Trento
+Via Mesiano 77 - 38050 Trento - Italy
+email: matteo.dallamico@ing.unitn.it
+Tel. +39 0461 882610
+Fax +39 0461 882672
+http://www.dottorato.it/trento/
+---------------------------------
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20071005/9dc83fc4/attachment.html
+From e.pebesma at geo.uu.nl  Fri Oct  5 04:27:51 2007
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] graphics in R
+In-Reply-To: <02C5E231-79D0-4C47-B8B8-5BAD170F9771@ing.unitn.it>
+References: <bd07447b0710020818q776b897ft3c1030b61dfdd96b@mail.gmail.com>	<47027DA0.7060101@ija.csic.es>	<bd07447b0710021028v3b6690eevba4b03380432f668@mail.gmail.com>
+	<02C5E231-79D0-4C47-B8B8-5BAD170F9771@ing.unitn.it>
+Message-ID: <4705F587.8010309@geo.uu.nl>
+
+Matteo, you might try:
+
+ d = data.frame(a = rnorm(5), b = rnorm(5), c = rnorm(5), t = 
+as.POSIXct(Sys.time()+1:5))
+ library(lattice)
+xyplot(a+b+c~t, d, auto.key = TRUE)
+
+Hope this helps,
+--
+Edzer
+
+Matteo Dall'Amico wrote:
+> Hello,
+> I would like to raise a question about plotting: I would like to plot 
+> on the SAME graph the temperature with time of sensors at different depth.
+> That means, I would like to have in the same graph on the x-axis the 
+> time, y-axis the temperature, and on the graph several curves with 
+> different colors representing the different depth.
+> I have a file with the first column representing the time, column 2 
+> representing the temperature at depth1, column 3 the temperature at 
+> depth2... and so on.
+> Does someone know how I could do that?
+> Thanks a lot in advance,
+>
+> Matteo
+>
+> ---------------------------------
+> Matteo Dall'Amico
+> PhD candidate
+> CUDAM and department of Civil and Environmental Engineering
+> Universita' degli Studi di Trento
+> Via Mesiano 77 - 38050 Trento - Italy
+> email: matteo.dallamico@ing.unitn.it 
+> <mailto:matteo.dallamico@ing.unitn.it>
+> Tel. +39 0461 882610
+> Fax +39 0461 882672
+> http://www.dottorato.it/trento/
+> ---------------------------------
+>
+>
+> ------------------------------------------------------------------------
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>   
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20071005/c24eca3e/attachment.html
+From hzambran.newsgroups at gmail.com  Fri Oct  5 05:34:59 2007
+From: hzambran.newsgroups at gmail.com (Mauricio Zambrano)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] using spplot (sp package) with 5 quantiles
+Message-ID: <63d616b0710050234o7c319849gc93e601392a36208@mail.gmail.com>
+
+Hi,
+
+I'm using R 2.5.1 and gstat 0.9-39 library and I'm working with the
+jura data set provided by gstat library.
+
+I tried to plot a graph of metal concentrations (let's say Cd) with
+the command spplot, but I realized that the default lags are equally
+distributed between Min and Max. I did:
+
+library(gstat)
+data(jura)
+jura.pred.xy <- jura.pred
+names(jura.pred.xy)[1:2] <- c("x", "y")
+coordinates(jura.pred.xy) <- ~x+y
+spplot(jura.pred.xy, scales=list(draw=TRUE), xlab="X direction",
+ylab="Y direction", "Cd", main="Cd concentrations, [ppm]")
+
+I need to use the five quantiles as interval separation and I tried
+with the xyplot and levelplot help of lattice library, but I couldn't
+find how to change this limits.
+
+I know that I can use the command bubble to do this job:
+
+bubble(jura.pred.xy, xlab="X direction", ylab="Y direction", main="Cd
+concentrations, [ppm]")
+
+but I would like to know haw to do it with spplot command
+
+Thanks in advance
+
+-- 
+Mauricio
+
+Linux user  #454569 -- Ubuntu user #17469
+
+
+From jarekj at amu.edu.pl  Fri Oct  5 06:26:21 2007
+From: jarekj at amu.edu.pl (=?UTF-8?B?SmFyb3PFgmF3IEphc2lld2ljeg==?=)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] graphics in R
+In-Reply-To: <02C5E231-79D0-4C47-B8B8-5BAD170F9771@ing.unitn.it>
+References: <bd07447b0710020818q776b897ft3c1030b61dfdd96b@mail.gmail.com>	<47027DA0.7060101@ija.csic.es>	<bd07447b0710021028v3b6690eevba4b03380432f668@mail.gmail.com>
+	<02C5E231-79D0-4C47-B8B8-5BAD170F9771@ing.unitn.it>
+Message-ID: <4706114D.8080101@amu.edu.pl>
+
+Matteo Dall'Amico napisa?(a):
+
+> Hello,
+> I would like to raise a question about plotting: I would like to plot 
+> on the SAME graph the temperature with time of sensors at different depth.
+> That means, I would like to have in the same graph on the x-axis the 
+> time, y-axis the temperature, and on the graph several curves with 
+> different colors representing the different depth.
+> I have a file with the first column representing the time, column 2 
+> representing the temperature at depth1, column 3 the temperature at 
+> depth2... and so on.
+> Does someone know how I could do that?
+> Thanks a lot in advance,
+>
+> Matteo
+>
+> ---------------------------------
+> Matteo Dall'Amico
+> PhD candidate
+> CUDAM and department of Civil and Environmental Engineering
+> Universita' degli Studi di Trento
+> Via Mesiano 77 - 38050 Trento - Italy
+> email: matteo.dallamico@ing.unitn.it 
+> <mailto:matteo.dallamico@ing.unitn.it>
+> Tel. +39 0461 882610
+> Fax +39 0461 882672
+> http://www.dottorato.it/trento/
+> ---------------------------------
+>
+>
+>------------------------------------------------------------------------
+>
+>_______________________________________________
+>statsgrass mailing list
+>statsgrass@grass.itc.it
+>http://grass.itc.it/mailman/listinfo/statsgrass
+>  
+>
+plot(first_graph, col=red, xlim=c(min_time_of_whole_data, 
+max_time_of_whole_data), ylim=c(min_temp_of_whole_data, 
+max_temp_of_whole_data),....)
+plot(second_graph, col="green", add=TRUE)
+.....
+plot(n_graph, col="anyone", add=TRUE)
+
+hope you need this
+
+Jarek
+
+
+From e.pebesma at geo.uu.nl  Fri Oct  5 07:30:51 2007
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] using spplot (sp package) with 5 quantiles
+In-Reply-To: <63d616b0710050234o7c319849gc93e601392a36208@mail.gmail.com>
+References: <63d616b0710050234o7c319849gc93e601392a36208@mail.gmail.com>
+Message-ID: <4706206B.8080902@geo.uu.nl>
+
+Please try
+
+library(sp)
+data(meuse)
+coordinates(meuse) = ~x+y
+spplot(meuse, "zinc", cuts = quantile(meuse$zinc))
+
+Best wishes,
+--
+Edzer
+
+Mauricio Zambrano wrote:
+> Hi,
+>
+> I'm using R 2.5.1 and gstat 0.9-39 library and I'm working with the
+> jura data set provided by gstat library.
+>
+> I tried to plot a graph of metal concentrations (let's say Cd) with
+> the command spplot, but I realized that the default lags are equally
+> distributed between Min and Max. I did:
+>
+> library(gstat)
+> data(jura)
+> jura.pred.xy <- jura.pred
+> names(jura.pred.xy)[1:2] <- c("x", "y")
+> coordinates(jura.pred.xy) <- ~x+y
+> spplot(jura.pred.xy, scales=list(draw=TRUE), xlab="X direction",
+> ylab="Y direction", "Cd", main="Cd concentrations, [ppm]")
+>
+> I need to use the five quantiles as interval separation and I tried
+> with the xyplot and levelplot help of lattice library, but I couldn't
+> find how to change this limits.
+>
+> I know that I can use the command bubble to do this job:
+>
+> bubble(jura.pred.xy, xlab="X direction", ylab="Y direction", main="Cd
+> concentrations, [ppm]")
+>
+> but I would like to know haw to do it with spplot command
+>
+> Thanks in advance
+>
+>   
+
+
+From matteo.dallamico at ing.unitn.it  Fri Oct  5 09:11:06 2007
+From: matteo.dallamico at ing.unitn.it (Matteo Dall'Amico)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] graphics in R
+In-Reply-To: <4706114D.8080101@amu.edu.pl>
+References: <bd07447b0710020818q776b897ft3c1030b61dfdd96b@mail.gmail.com>	<47027DA0.7060101@ija.csic.es>	<bd07447b0710021028v3b6690eevba4b03380432f668@mail.gmail.com>
+	<02C5E231-79D0-4C47-B8B8-5BAD170F9771@ing.unitn.it>
+	<4706114D.8080101@amu.edu.pl>
+Message-ID: <7B9531AF-D163-4B2C-9FFE-0368289CCFA6@ing.unitn.it>
+
+Thank you Jaroslaw,
+I tried but "plot" doesn't seem to accept "add" as an argument:
+
+ > plot(temp[,2],add=TRUE)
+Warning messages:
+1: "add" is not a graphical parameter in: plot.window(xlim, ylim,  
+log, asp, ...)
+2: "add" is not a graphical parameter in: plot.xy(xy, type, pch, lty,  
+col, bg, cex, lwd, ...)
+3: "add" is not a graphical parameter in: axis(side, at,  
+as.graphicsAnnot(labels), tick, line, pos, outer,
+4: "add" is not a graphical parameter in: axis(side, at,  
+as.graphicsAnnot(labels), tick, line, pos, outer,
+5: "add" is not a graphical parameter in: box(which = which, lty =  
+lty, ...)
+6: "add" is not a graphical parameter in: title(main, sub, xlab,  
+ylab, line, outer, ...)
+
+Suggestions?
+Thanks,
+
+Matteo
+
+On 5 Oct 2007, at 12:26, Jaros?aw Jasiewicz wrote:
+
+> Matteo Dall'Amico napisa?(a):
+>
+>> Hello,
+>> I would like to raise a question about plotting: I would like to  
+>> plot on the SAME graph the temperature with time of sensors at  
+>> different depth.
+>> That means, I would like to have in the same graph on the x-axis  
+>> the time, y-axis the temperature, and on the graph several curves  
+>> with different colors representing the different depth.
+>> I have a file with the first column representing the time, column  
+>> 2 representing the temperature at depth1, column 3 the temperature  
+>> at depth2... and so on.
+>> Does someone know how I could do that?
+>> Thanks a lot in advance,
+>>
+>> Matteo
+>>
+>> ---------------------------------
+>> Matteo Dall'Amico
+>> PhD candidate
+>> CUDAM and department of Civil and Environmental Engineering
+>> Universita' degli Studi di Trento
+>> Via Mesiano 77 - 38050 Trento - Italy
+>> email: matteo.dallamico@ing.unitn.it  
+>> <mailto:matteo.dallamico@ing.unitn.it>
+>> Tel. +39 0461 882610
+>> Fax +39 0461 882672
+>> http://www.dottorato.it/trento/
+>> ---------------------------------
+>>
+>>
+>> --------------------------------------------------------------------- 
+>> ---
+>>
+>> _______________________________________________
+>> statsgrass mailing list
+>> statsgrass@grass.itc.it
+>> http://grass.itc.it/mailman/listinfo/statsgrass
+>>
+> plot(first_graph, col=red, xlim=c(min_time_of_whole_data,  
+> max_time_of_whole_data), ylim=c(min_temp_of_whole_data,  
+> max_temp_of_whole_data),....)
+> plot(second_graph, col="green", add=TRUE)
+> .....
+> plot(n_graph, col="anyone", add=TRUE)
+>
+> hope you need this
+>
+> Jarek
+>
+
+
+
+From Roger.Bivand at nhh.no  Sat Oct  6 13:58:36 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] speed of GRASS/R interface
+In-Reply-To: <bd07447b0710020818q776b897ft3c1030b61dfdd96b@mail.gmail.com>
+References: <bd07447b0710020818q776b897ft3c1030b61dfdd96b@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0710061917190.26273@reclus.nhh.no>
+
+On Tue, 2 Oct 2007, Carlos "Gu?no" Grohmann wrote:
+
+> I've been thinking about the time it takes to import a raster from GRASS to
+> R. I have some rasters with about 2000 rows and 2500 columns. importing
+> starts fine, creates the header, then goes to 100%, and it hangs there for
+> about 10 minutes, before get ready for the next command.
+> Any way of decrease this waiting time?
+
+I'm looking into this, as far as I can see as of now it is somewhere in 
+the new("SpatialGridDataFrame", ...) call in
+res <- SpatialGridDataFrame(...) in readBinGrid(). Confusingly, the 
+Rprof() output points at unlist() taking 90% of the total run time. I'll 
+let you know where I get.
+
+Roger
+
+>
+> cheers
+>
+> Carlos
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From jarekj at amu.edu.pl  Sat Oct  6 14:37:30 2007
+From: jarekj at amu.edu.pl (jarekj@amu.edu.pl)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] speed of GRASS/R interface
+In-Reply-To: <Pine.LNX.4.64.0710061917190.26273@reclus.nhh.no>
+Message-ID: <gX2RF32V.1191695850.5971700.jarekj@amu.edu.pl>
+
+
+Roger!
+
+I also notice that of Carlos wrote.
+
+That hangs not occured when spgrass6 was based on r.out.ascii instead of
+binary input-output and in fact it was realably faster. Maybe back to
+previouis solution be good temporal solution. I also exchange data
+between grass and R very often so that hang make me sometimes inpatient
+
+greetengs and regards
+Jarek
+
+
+6/10/2007, "Roger Bivand" <Roger.Bivand@nhh.no> napisa?/a:
+
+>On Tue, 2 Oct 2007, Carlos "Gu?no" Grohmann wrote:
+>
+>> I've been thinking about the time it takes to import a raster from GRASS to
+>> R. I have some rasters with about 2000 rows and 2500 columns. importing
+>> starts fine, creates the header, then goes to 100%, and it hangs there for
+>> about 10 minutes, before get ready for the next command.
+>> Any way of decrease this waiting time?
+>
+>I'm looking into this, as far as I can see as of now it is somewhere in 
+>the new("SpatialGridDataFrame", ...) call in
+>res <- SpatialGridDataFrame(...) in readBinGrid(). Confusingly, the 
+>Rprof() output points at unlist() taking 90% of the total run time. I'll 
+>let you know where I get.
+>
+>Roger
+>
+>>
+>> cheers
+>>
+>> Carlos
+>>
+>>
+>
+>-- 
+>Roger Bivand
+>Economic Geography Section, Department of Economics, Norwegian School of
+>Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+>Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+>e-mail: Roger.Bivand@nhh.no
+
+
+From Roger.Bivand at nhh.no  Sat Oct  6 17:37:56 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] speed of GRASS/R interface
+In-Reply-To: <gX2RF32V.1191695850.5971700.jarekj@amu.edu.pl>
+References: <gX2RF32V.1191695850.5971700.jarekj@amu.edu.pl>
+Message-ID: <Pine.LNX.4.64.0710062238070.26273@reclus.nhh.no>
+
+On Sat, 6 Oct 2007, jarekj@amu.edu.pl wrote:
+
+>
+> Roger!
+>
+> I also notice that of Carlos wrote.
+>
+> That hangs not occured when spgrass6 was based on r.out.ascii instead of
+> binary input-output and in fact it was realably faster. Maybe back to
+> previouis solution be good temporal solution. I also exchange data
+> between grass and R very often so that hang make me sometimes inpatient
+>
+> greetengs and regards
+> Jarek
+
+The problem is in new("SpatialGrid", SPix):
+
+library(sp)
+sessionInfo()
+cellcentre.offset <- c(-16.821667, 13.060307)
+cellsize <- c(0.000833, 0.000833)
+cells.dim <- c(3629.000000, 921.00000)
+grd <- GridTopology(cellcentre.offset, cellsize, cells.dim)
+pts <- sp:::boguspoints(grd)
+pts@bbox[,1] = pts@bbox[,1] - 0.5 * grd@cellsize
+pts@bbox[,2] = pts@bbox[,2] + 0.5 * grd@cellsize
+proj4string(pts) = CRS(paste("+proj=longlat +a=6378137 +rf=298.257223563",
+   "+no_defs +towgs84=0.000,0.000,0.000"))
+SPix <- new("SpatialPixels", pts, grid = grd, grid.index = integer(0))
+SG <- new("SpatialGrid", SPix)
+
+with rapidly increasing memory use. I have no idea why. My system:
+
+> sessionInfo()
+R version 2.6.0 (2007-10-03)
+i686-pc-linux-gnu
+
+locale:
+LC_CTYPE=en_GB;LC_NUMERIC=C;LC_TIME=en_GB;LC_COLLATE=en_GB;LC_MONETARY=en_GB;LC_MESSAGES=en_GB;LC_PAPER=en_GB;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_GB;LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] sp_0.9-14
+
+loaded via a namespace (and not attached):
+[1] grid_2.6.0      lattice_0.16-5  rcompgen_0.1-15
+
+and the message after Ctrl-C:
+
+Error in coordinates(coords) :
+   error in evaluating the argument 'obj' in selecting a method for function 'coordinates'
+Error in bbox(object) :
+   error in evaluating the argument 'obj' in selecting a method for function 'bbox'
+
+which makes me suspect that the new() is (now?) going to completely 
+senseless places. This has the same effect:
+
+sG <- new("SpatialGrid", bbox=pts@bbox, proj4string=pts@proj4string,
+   coords=pts@coords, grid=grd, grid.index=integer(0))
+
+unfortunately. It also impacts the rgdal route, because its call to make 
+the output SGDF is the same.
+
+However, replacing the call to new("SpatialGrid", ...) to one of building 
+an empty object with just new(), and stuffing the slots manually with 
+slot() <- reduces import from over 12 minutes to 6 seconds (!). Perhaps 
+the problem is that S4 classes have got "cleverer" and dislike the 
+definition of SpatialGrid as only having a "SpatialPixels" representation?
+
+I have committed the very draft readRAST6() to CVS on sourceforge, but the 
+real solution needs doing in sp itself (end of the SpatialGrid() function 
+in SpatialGrid-methods.R).
+
+I'll carry on playing ...
+
+Roger
+
+
+>
+>
+> 6/10/2007, "Roger Bivand" <Roger.Bivand@nhh.no> napisa?/a:
+>
+>> On Tue, 2 Oct 2007, Carlos "Gu?no" Grohmann wrote:
+>>
+>>> I've been thinking about the time it takes to import a raster from GRASS to
+>>> R. I have some rasters with about 2000 rows and 2500 columns. importing
+>>> starts fine, creates the header, then goes to 100%, and it hangs there for
+>>> about 10 minutes, before get ready for the next command.
+>>> Any way of decrease this waiting time?
+>>
+>> I'm looking into this, as far as I can see as of now it is somewhere in
+>> the new("SpatialGridDataFrame", ...) call in
+>> res <- SpatialGridDataFrame(...) in readBinGrid(). Confusingly, the
+>> Rprof() output points at unlist() taking 90% of the total run time. I'll
+>> let you know where I get.
+>>
+>> Roger
+>>
+>>>
+>>> cheers
+>>>
+>>> Carlos
+>>>
+>>>
+>>
+>> --
+>> Roger Bivand
+>> Economic Geography Section, Department of Economics, Norwegian School of
+>> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+>> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+>> e-mail: Roger.Bivand@nhh.no
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From Roger.Bivand at nhh.no  Sat Oct  6 17:52:53 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [R-spatial-devel] [STATSGRASS] speed of GRASS/R interface
+In-Reply-To: <Pine.LNX.4.64.0710062238070.26273@reclus.nhh.no>
+References: <gX2RF32V.1191695850.5971700.jarekj@amu.edu.pl>
+	<Pine.LNX.4.64.0710062238070.26273@reclus.nhh.no>
+Message-ID: <Pine.LNX.4.64.0710062347010.26273@reclus.nhh.no>
+
+Hi,
+
+Modification also committed in sp on sourceforge, speedup from from ~ 12 
+minutes to 6.5 seconds on a 900 by 3600 raster, and no memory explosion. 
+I'm seeing similar speedups in rgdal. Still no idea why - a change in the 
+methods package? When we release a fresh sp, the need for special fixes 
+will go away, I hope.
+
+Could somebody try the current sourceforge CVS of sp and see if you see 
+the same speedup? May need to wait for the anonymous CVS to synch.
+
+Best wishes,
+
+Roger
+
+
+On Sat, 6 Oct 2007, Roger Bivand wrote:
+
+> On Sat, 6 Oct 2007, jarekj@amu.edu.pl wrote:
+>
+>>
+>>  Roger!
+>>
+>>  I also notice that of Carlos wrote.
+>>
+>>  That hangs not occured when spgrass6 was based on r.out.ascii instead of
+>>  binary input-output and in fact it was realably faster. Maybe back to
+>>  previouis solution be good temporal solution. I also exchange data
+>>  between grass and R very often so that hang make me sometimes inpatient
+>>
+>>  greetengs and regards
+>>  Jarek
+>
+> The problem is in new("SpatialGrid", SPix):
+>
+> library(sp)
+> sessionInfo()
+> cellcentre.offset <- c(-16.821667, 13.060307)
+> cellsize <- c(0.000833, 0.000833)
+> cells.dim <- c(3629.000000, 921.00000)
+> grd <- GridTopology(cellcentre.offset, cellsize, cells.dim)
+> pts <- sp:::boguspoints(grd)
+> pts@bbox[,1] = pts@bbox[,1] - 0.5 * grd@cellsize
+> pts@bbox[,2] = pts@bbox[,2] + 0.5 * grd@cellsize
+> proj4string(pts) = CRS(paste("+proj=longlat +a=6378137 +rf=298.257223563",
+>  "+no_defs +towgs84=0.000,0.000,0.000"))
+> SPix <- new("SpatialPixels", pts, grid = grd, grid.index = integer(0))
+> SG <- new("SpatialGrid", SPix)
+>
+> with rapidly increasing memory use. I have no idea why. My system:
+>
+>>  sessionInfo()
+> R version 2.6.0 (2007-10-03)
+> i686-pc-linux-gnu
+>
+> locale:
+> LC_CTYPE=en_GB;LC_NUMERIC=C;LC_TIME=en_GB;LC_COLLATE=en_GB;LC_MONETARY=en_GB;LC_MESSAGES=en_GB;LC_PAPER=en_GB;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_GB;LC_IDENTIFICATION=C
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base
+>
+> other attached packages:
+> [1] sp_0.9-14
+>
+> loaded via a namespace (and not attached):
+> [1] grid_2.6.0      lattice_0.16-5  rcompgen_0.1-15
+>
+> and the message after Ctrl-C:
+>
+> Error in coordinates(coords) :
+>  error in evaluating the argument 'obj' in selecting a method for function 
+> 'coordinates'
+> Error in bbox(object) :
+>   error in evaluating the argument 'obj' in selecting a method for function
+>   'bbox'
+>
+> which makes me suspect that the new() is (now?) going to completely senseless 
+> places. This has the same effect:
+>
+> sG <- new("SpatialGrid", bbox=pts@bbox, proj4string=pts@proj4string,
+>   coords=pts@coords, grid=grd, grid.index=integer(0))
+>
+> unfortunately. It also impacts the rgdal route, because its call to make the 
+> output SGDF is the same.
+>
+> However, replacing the call to new("SpatialGrid", ...) to one of building an 
+> empty object with just new(), and stuffing the slots manually with slot() <- 
+> reduces import from over 12 minutes to 6 seconds (!). Perhaps the problem is 
+> that S4 classes have got "cleverer" and dislike the definition of SpatialGrid 
+> as only having a "SpatialPixels" representation?
+>
+> I have committed the very draft readRAST6() to CVS on sourceforge, but the 
+> real solution needs doing in sp itself (end of the SpatialGrid() function in 
+> SpatialGrid-methods.R).
+>
+> I'll carry on playing ...
+>
+> Roger
+>
+>
+>> 
+>>
+>>  6/10/2007, "Roger Bivand" <Roger.Bivand@nhh.no> napisa?/a:
+>> 
+>> >  On Tue, 2 Oct 2007, Carlos "Gu?no" Grohmann wrote:
+>> > 
+>> > >  I've been thinking about the time it takes to import a raster from 
+>> > >  GRASS to
+>> > >  R. I have some rasters with about 2000 rows and 2500 columns. 
+>> > >  importing
+>> > >  starts fine, creates the header, then goes to 100%, and it hangs there 
+>> > >  for
+>> > >  about 10 minutes, before get ready for the next command.
+>> > >  Any way of decrease this waiting time?
+>> > 
+>> >  I'm looking into this, as far as I can see as of now it is somewhere in
+>> >  the new("SpatialGridDataFrame", ...) call in
+>> >  res <- SpatialGridDataFrame(...) in readBinGrid(). Confusingly, the
+>> >  Rprof() output points at unlist() taking 90% of the total run time. I'll
+>> >  let you know where I get.
+>> > 
+>> >  Roger
+>> > 
+>> > > 
+>> > >  cheers
+>> > > 
+>> > >  Carlos
+>> > > 
+>> > > 
+>> > 
+>> >  --
+>> >  Roger Bivand
+>> >  Economic Geography Section, Department of Economics, Norwegian School of
+>> >  Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+>> >  Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+>> >  e-mail: Roger.Bivand@nhh.no
+>> 
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From Rainer+grass at krugs.de  Mon Oct  8 06:20:36 2007
+From: Rainer+grass at krugs.de (Rainer M. Krug)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Using R functions in r.mapcalc?
+Message-ID: <470A0474.7090903@krugs.de>
+
+Hi
+
+is it possible to use R functions in r.mapcalc? I guess not, but I think 
+it would be great if this would be possible.
+
+Thanks,
+
+Rainer
+
+
+From giohappy at gmail.com  Mon Oct  8 06:55:18 2007
+From: giohappy at gmail.com (G. Allegri)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Using R functions in r.mapcalc?
+In-Reply-To: <470A0474.7090903@krugs.de>
+References: <470A0474.7090903@krugs.de>
+Message-ID: <e12429640710080355u2e20f6bap860b26c73059031d@mail.gmail.com>
+
+You can't use R functions directly, but you can use R in shell scripting.
+So, IMHO, it makes no sense thinking to a "porting" of R into Grass. Using
+spgrass6 you can easily use R with r.mapcalc too...
+
+Giovanni
+
+2007/10/8, Rainer M. Krug <Rainer+grass@krugs.de>:
+>
+> Hi
+>
+> is it possible to use R functions in r.mapcalc? I guess not, but I think
+> it would be great if this would be possible.
+>
+> Thanks,
+>
+> Rainer
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20071008/86e091fc/attachment.html
+From carlos.grohmann at gmail.com  Mon Oct  8 13:50:35 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [R-spatial-devel] [STATSGRASS] speed of GRASS/R interface
+In-Reply-To: <Pine.LNX.4.64.0710062347010.26273@reclus.nhh.no>
+References: <gX2RF32V.1191695850.5971700.jarekj@amu.edu.pl>
+	<Pine.LNX.4.64.0710062238070.26273@reclus.nhh.no>
+	<Pine.LNX.4.64.0710062347010.26273@reclus.nhh.no>
+Message-ID: <bd07447b0710081050q15a50063r849abf187aa050e@mail.gmail.com>
+
+Hi,
+
+I just downloaded/compiled/installed the current sourceforge CVS for
+sp and spgrass6, and it's WAY faster than before.
+
+thanks, Roger!
+
+Carlos
+
+
+On 10/6/07, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> Hi,
+>
+> Modification also committed in sp on sourceforge, speedup from from ~ 12
+> minutes to 6.5 seconds on a 900 by 3600 raster, and no memory explosion.
+> I'm seeing similar speedups in rgdal. Still no idea why - a change in the
+> methods package? When we release a fresh sp, the need for special fixes
+> will go away, I hope.
+>
+> Could somebody try the current sourceforge CVS of sp and see if you see
+> the same speedup? May need to wait for the anonymous CVS to synch.
+>
+> Best wishes,
+>
+> Roger
+>
+>
+> On Sat, 6 Oct 2007, Roger Bivand wrote:
+>
+> > On Sat, 6 Oct 2007, jarekj@amu.edu.pl wrote:
+> >
+> >>
+> >>  Roger!
+> >>
+> >>  I also notice that of Carlos wrote.
+> >>
+> >>  That hangs not occured when spgrass6 was based on r.out.ascii instead of
+> >>  binary input-output and in fact it was realably faster. Maybe back to
+> >>  previouis solution be good temporal solution. I also exchange data
+> >>  between grass and R very often so that hang make me sometimes inpatient
+> >>
+> >>  greetengs and regards
+> >>  Jarek
+> >
+> > The problem is in new("SpatialGrid", SPix):
+> >
+> > library(sp)
+> > sessionInfo()
+> > cellcentre.offset <- c(-16.821667, 13.060307)
+> > cellsize <- c(0.000833, 0.000833)
+> > cells.dim <- c(3629.000000, 921.00000)
+> > grd <- GridTopology(cellcentre.offset, cellsize, cells.dim)
+> > pts <- sp:::boguspoints(grd)
+> > pts@bbox[,1] = pts@bbox[,1] - 0.5 * grd@cellsize
+> > pts@bbox[,2] = pts@bbox[,2] + 0.5 * grd@cellsize
+> > proj4string(pts) = CRS(paste("+proj=longlat +a=6378137 +rf=298.257223563",
+> >  "+no_defs +towgs84=0.000,0.000,0.000"))
+> > SPix <- new("SpatialPixels", pts, grid = grd, grid.index = integer(0))
+> > SG <- new("SpatialGrid", SPix)
+> >
+> > with rapidly increasing memory use. I have no idea why. My system:
+> >
+> >>  sessionInfo()
+> > R version 2.6.0 (2007-10-03)
+> > i686-pc-linux-gnu
+> >
+> > locale:
+> > LC_CTYPE=en_GB;LC_NUMERIC=C;LC_TIME=en_GB;LC_COLLATE=en_GB;LC_MONETARY=en_GB;LC_MESSAGES=en_GB;LC_PAPER=en_GB;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_GB;LC_IDENTIFICATION=C
+> >
+> > attached base packages:
+> > [1] stats     graphics  grDevices utils     datasets  methods   base
+> >
+> > other attached packages:
+> > [1] sp_0.9-14
+> >
+> > loaded via a namespace (and not attached):
+> > [1] grid_2.6.0      lattice_0.16-5  rcompgen_0.1-15
+> >
+> > and the message after Ctrl-C:
+> >
+> > Error in coordinates(coords) :
+> >  error in evaluating the argument 'obj' in selecting a method for function
+> > 'coordinates'
+> > Error in bbox(object) :
+> >   error in evaluating the argument 'obj' in selecting a method for function
+> >   'bbox'
+> >
+> > which makes me suspect that the new() is (now?) going to completely senseless
+> > places. This has the same effect:
+> >
+> > sG <- new("SpatialGrid", bbox=pts@bbox, proj4string=pts@proj4string,
+> >   coords=pts@coords, grid=grd, grid.index=integer(0))
+> >
+> > unfortunately. It also impacts the rgdal route, because its call to make the
+> > output SGDF is the same.
+> >
+> > However, replacing the call to new("SpatialGrid", ...) to one of building an
+> > empty object with just new(), and stuffing the slots manually with slot() <-
+> > reduces import from over 12 minutes to 6 seconds (!). Perhaps the problem is
+> > that S4 classes have got "cleverer" and dislike the definition of SpatialGrid
+> > as only having a "SpatialPixels" representation?
+> >
+> > I have committed the very draft readRAST6() to CVS on sourceforge, but the
+> > real solution needs doing in sp itself (end of the SpatialGrid() function in
+> > SpatialGrid-methods.R).
+> >
+> > I'll carry on playing ...
+> >
+> > Roger
+> >
+> >
+> >>
+> >>
+> >>  6/10/2007, "Roger Bivand" <Roger.Bivand@nhh.no> napisa?/a:
+> >>
+> >> >  On Tue, 2 Oct 2007, Carlos "Gu?no" Grohmann wrote:
+> >> >
+> >> > >  I've been thinking about the time it takes to import a raster from
+> >> > >  GRASS to
+> >> > >  R. I have some rasters with about 2000 rows and 2500 columns.
+> >> > >  importing
+> >> > >  starts fine, creates the header, then goes to 100%, and it hangs there
+> >> > >  for
+> >> > >  about 10 minutes, before get ready for the next command.
+> >> > >  Any way of decrease this waiting time?
+> >> >
+> >> >  I'm looking into this, as far as I can see as of now it is somewhere in
+> >> >  the new("SpatialGridDataFrame", ...) call in
+> >> >  res <- SpatialGridDataFrame(...) in readBinGrid(). Confusingly, the
+> >> >  Rprof() output points at unlist() taking 90% of the total run time. I'll
+> >> >  let you know where I get.
+> >> >
+> >> >  Roger
+> >> >
+> >> > >
+> >> > >  cheers
+> >> > >
+> >> > >  Carlos
+> >> > >
+> >> > >
+> >> >
+> >> >  --
+> >> >  Roger Bivand
+> >> >  Economic Geography Section, Department of Economics, Norwegian School of
+> >> >  Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> >> >  Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> >> >  e-mail: Roger.Bivand@nhh.no
+> >>
+> >
+> >
+>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Visiting Researcher at Kingston University London - UK
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+
+
+From carlos.grohmann at gmail.com  Mon Oct  8 14:12:47 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [R-spatial-devel] [STATSGRASS] speed of GRASS/R interface
+In-Reply-To: <470A7087.2030801@ija.csic.es>
+References: <gX2RF32V.1191695850.5971700.jarekj@amu.edu.pl>
+	<Pine.LNX.4.64.0710062238070.26273@reclus.nhh.no>
+	<Pine.LNX.4.64.0710062347010.26273@reclus.nhh.no>
+	<bd07447b0710081050q15a50063r849abf187aa050e@mail.gmail.com>
+	<470A7087.2030801@ija.csic.es>
+Message-ID: <bd07447b0710081112i5db27a11h829b0b16f831652f@mail.gmail.com>
+
+It took about 6 seconds to read a raster with 2200x2500 cells, and
+about 3 secs to build a truehist().
+
+don't have any categorical map, though.
+
+Carlos
+
+
+
+On 10/8/07, Agustin Lobo <Agustin.Lobo@ija.csic.es> wrote:
+> How long it takes computing the histogram of the 900*3600 raster in R?
+> If you have a categorical map for the same region, could you check
+> how long it takes computing the stratified statistics?
+>
+> Thanks!
+>
+> Agus
+>
+> Carlos "Gu?no" Grohmann escribi?:
+> > Hi,
+> >
+> > I just downloaded/compiled/installed the current sourceforge CVS for
+> > sp and spgrass6, and it's WAY faster than before.
+> >
+> > thanks, Roger!
+> >
+> > Carlos
+> >
+> >
+> > On 10/6/07, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> >> Hi,
+> >>
+> >> Modification also committed in sp on sourceforge, speedup from from ~ 12
+> >> minutes to 6.5 seconds on a 900 by 3600 raster, and no memory explosion.
+> >> I'm seeing similar speedups in rgdal. Still no idea why - a change in the
+> >> methods package? When we release a fresh sp, the need for special fixes
+> >> will go away, I hope.
+> >>
+> >> Could somebody try the current sourceforge CVS of sp and see if you see
+> >> the same speedup? May need to wait for the anonymous CVS to synch.
+> >>
+> >> Best wishes,
+> >>
+> >> Roger
+> >>
+> >>
+> >> On Sat, 6 Oct 2007, Roger Bivand wrote:
+> >>
+> >>> On Sat, 6 Oct 2007, jarekj@amu.edu.pl wrote:
+> >>>
+> >>>>  Roger!
+> >>>>
+> >>>>  I also notice that of Carlos wrote.
+> >>>>
+> >>>>  That hangs not occured when spgrass6 was based on r.out.ascii instead of
+> >>>>  binary input-output and in fact it was realably faster. Maybe back to
+> >>>>  previouis solution be good temporal solution. I also exchange data
+> >>>>  between grass and R very often so that hang make me sometimes inpatient
+> >>>>
+> >>>>  greetengs and regards
+> >>>>  Jarek
+> >>> The problem is in new("SpatialGrid", SPix):
+> >>>
+> >>> library(sp)
+> >>> sessionInfo()
+> >>> cellcentre.offset <- c(-16.821667, 13.060307)
+> >>> cellsize <- c(0.000833, 0.000833)
+> >>> cells.dim <- c(3629.000000, 921.00000)
+> >>> grd <- GridTopology(cellcentre.offset, cellsize, cells.dim)
+> >>> pts <- sp:::boguspoints(grd)
+> >>> pts@bbox[,1] = pts@bbox[,1] - 0.5 * grd@cellsize
+> >>> pts@bbox[,2] = pts@bbox[,2] + 0.5 * grd@cellsize
+> >>> proj4string(pts) = CRS(paste("+proj=longlat +a=6378137 +rf=298.257223563",
+> >>>  "+no_defs +towgs84=0.000,0.000,0.000"))
+> >>> SPix <- new("SpatialPixels", pts, grid = grd, grid.index = integer(0))
+> >>> SG <- new("SpatialGrid", SPix)
+> >>>
+> >>> with rapidly increasing memory use. I have no idea why. My system:
+> >>>
+> >>>>  sessionInfo()
+> >>> R version 2.6.0 (2007-10-03)
+> >>> i686-pc-linux-gnu
+> >>>
+> >>> locale:
+> >>> LC_CTYPE=en_GB;LC_NUMERIC=C;LC_TIME=en_GB;LC_COLLATE=en_GB;LC_MONETARY=en_GB;LC_MESSAGES=en_GB;LC_PAPER=en_GB;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_GB;LC_IDENTIFICATION=C
+> >>>
+> >>> attached base packages:
+> >>> [1] stats     graphics  grDevices utils     datasets  methods   base
+> >>>
+> >>> other attached packages:
+> >>> [1] sp_0.9-14
+> >>>
+> >>> loaded via a namespace (and not attached):
+> >>> [1] grid_2.6.0      lattice_0.16-5  rcompgen_0.1-15
+> >>>
+> >>> and the message after Ctrl-C:
+> >>>
+> >>> Error in coordinates(coords) :
+> >>>  error in evaluating the argument 'obj' in selecting a method for function
+> >>> 'coordinates'
+> >>> Error in bbox(object) :
+> >>>   error in evaluating the argument 'obj' in selecting a method for function
+> >>>   'bbox'
+> >>>
+> >>> which makes me suspect that the new() is (now?) going to completely senseless
+> >>> places. This has the same effect:
+> >>>
+> >>> sG <- new("SpatialGrid", bbox=pts@bbox, proj4string=pts@proj4string,
+> >>>   coords=pts@coords, grid=grd, grid.index=integer(0))
+> >>>
+> >>> unfortunately. It also impacts the rgdal route, because its call to make the
+> >>> output SGDF is the same.
+> >>>
+> >>> However, replacing the call to new("SpatialGrid", ...) to one of building an
+> >>> empty object with just new(), and stuffing the slots manually with slot() <-
+> >>> reduces import from over 12 minutes to 6 seconds (!). Perhaps the problem is
+> >>> that S4 classes have got "cleverer" and dislike the definition of SpatialGrid
+> >>> as only having a "SpatialPixels" representation?
+> >>>
+> >>> I have committed the very draft readRAST6() to CVS on sourceforge, but the
+> >>> real solution needs doing in sp itself (end of the SpatialGrid() function in
+> >>> SpatialGrid-methods.R).
+> >>>
+> >>> I'll carry on playing ...
+> >>>
+> >>> Roger
+> >>>
+> >>>
+> >>>>
+> >>>>  6/10/2007, "Roger Bivand" <Roger.Bivand@nhh.no> napisa?/a:
+> >>>>
+> >>>>>  On Tue, 2 Oct 2007, Carlos "Gu?no" Grohmann wrote:
+> >>>>>
+> >>>>>>  I've been thinking about the time it takes to import a raster from
+> >>>>>>  GRASS to
+> >>>>>>  R. I have some rasters with about 2000 rows and 2500 columns.
+> >>>>>>  importing
+> >>>>>>  starts fine, creates the header, then goes to 100%, and it hangs there
+> >>>>>>  for
+> >>>>>>  about 10 minutes, before get ready for the next command.
+> >>>>>>  Any way of decrease this waiting time?
+> >>>>>  I'm looking into this, as far as I can see as of now it is somewhere in
+> >>>>>  the new("SpatialGridDataFrame", ...) call in
+> >>>>>  res <- SpatialGridDataFrame(...) in readBinGrid(). Confusingly, the
+> >>>>>  Rprof() output points at unlist() taking 90% of the total run time. I'll
+> >>>>>  let you know where I get.
+> >>>>>
+> >>>>>  Roger
+> >>>>>
+> >>>>>>  cheers
+> >>>>>>
+> >>>>>>  Carlos
+> >>>>>>
+> >>>>>>
+> >>>>>  --
+> >>>>>  Roger Bivand
+> >>>>>  Economic Geography Section, Department of Economics, Norwegian School of
+> >>>>>  Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> >>>>>  Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> >>>>>  e-mail: Roger.Bivand@nhh.no
+> >>>
+> >> --
+> >> Roger Bivand
+> >> Economic Geography Section, Department of Economics, Norwegian School of
+> >> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> >> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> >> e-mail: Roger.Bivand@nhh.no
+> >>
+> >
+> >
+>
+> --
+> Dr. Agustin Lobo
+> Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+> LLuis Sole Sabaris s/n
+> 08028 Barcelona
+> Spain
+> Tel. 34 934095410
+> Fax. 34 934110012
+> email: Agustin.Lobo@ija.csic.es
+> http://www.ija.csic.es/gt/obster
+>
+
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Visiting Researcher at Kingston University London - UK
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+
+
+From Roger.Bivand at nhh.no  Mon Oct  8 14:27:07 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [R-spatial-devel] [STATSGRASS] speed of GRASS/R interface
+In-Reply-To: <bd07447b0710081050q15a50063r849abf187aa050e@mail.gmail.com>
+References: <gX2RF32V.1191695850.5971700.jarekj@amu.edu.pl> 
+	<Pine.LNX.4.64.0710062238070.26273@reclus.nhh.no> 
+	<Pine.LNX.4.64.0710062347010.26273@reclus.nhh.no>
+	<bd07447b0710081050q15a50063r849abf187aa050e@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0710081951340.26153@reclus.nhh.no>
+
+On Mon, 8 Oct 2007, Carlos "Gu?no" Grohmann wrote:
+
+> Hi,
+>
+> I just downloaded/compiled/installed the current sourceforge CVS for
+> sp and spgrass6, and it's WAY faster than before.
+
+Thanks, I'll back out of the spgrass6 changes, which are in sp too. I see 
+very big speed-ups in rgdal too, and have R CMD check'ed the released 
+gstat for problems. I have no idea why the methods recursed into the new 
+SpatialGrid object, but they obviously did.
+
+Roger
+
+>
+> thanks, Roger!
+>
+> Carlos
+>
+>
+> On 10/6/07, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> Hi,
+>>
+>> Modification also committed in sp on sourceforge, speedup from from ~ 12
+>> minutes to 6.5 seconds on a 900 by 3600 raster, and no memory explosion.
+>> I'm seeing similar speedups in rgdal. Still no idea why - a change in the
+>> methods package? When we release a fresh sp, the need for special fixes
+>> will go away, I hope.
+>>
+>> Could somebody try the current sourceforge CVS of sp and see if you see
+>> the same speedup? May need to wait for the anonymous CVS to synch.
+>>
+>> Best wishes,
+>>
+>> Roger
+>>
+>>
+>> On Sat, 6 Oct 2007, Roger Bivand wrote:
+>>
+>>> On Sat, 6 Oct 2007, jarekj@amu.edu.pl wrote:
+>>>
+>>>>
+>>>>  Roger!
+>>>>
+>>>>  I also notice that of Carlos wrote.
+>>>>
+>>>>  That hangs not occured when spgrass6 was based on r.out.ascii instead of
+>>>>  binary input-output and in fact it was realably faster. Maybe back to
+>>>>  previouis solution be good temporal solution. I also exchange data
+>>>>  between grass and R very often so that hang make me sometimes inpatient
+>>>>
+>>>>  greetengs and regards
+>>>>  Jarek
+>>>
+>>> The problem is in new("SpatialGrid", SPix):
+>>>
+>>> library(sp)
+>>> sessionInfo()
+>>> cellcentre.offset <- c(-16.821667, 13.060307)
+>>> cellsize <- c(0.000833, 0.000833)
+>>> cells.dim <- c(3629.000000, 921.00000)
+>>> grd <- GridTopology(cellcentre.offset, cellsize, cells.dim)
+>>> pts <- sp:::boguspoints(grd)
+>>> pts@bbox[,1] = pts@bbox[,1] - 0.5 * grd@cellsize
+>>> pts@bbox[,2] = pts@bbox[,2] + 0.5 * grd@cellsize
+>>> proj4string(pts) = CRS(paste("+proj=longlat +a=6378137 +rf=298.257223563",
+>>>  "+no_defs +towgs84=0.000,0.000,0.000"))
+>>> SPix <- new("SpatialPixels", pts, grid = grd, grid.index = integer(0))
+>>> SG <- new("SpatialGrid", SPix)
+>>>
+>>> with rapidly increasing memory use. I have no idea why. My system:
+>>>
+>>>>  sessionInfo()
+>>> R version 2.6.0 (2007-10-03)
+>>> i686-pc-linux-gnu
+>>>
+>>> locale:
+>>> LC_CTYPE=en_GB;LC_NUMERIC=C;LC_TIME=en_GB;LC_COLLATE=en_GB;LC_MONETARY=en_GB;LC_MESSAGES=en_GB;LC_PAPER=en_GB;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_GB;LC_IDENTIFICATION=C
+>>>
+>>> attached base packages:
+>>> [1] stats     graphics  grDevices utils     datasets  methods   base
+>>>
+>>> other attached packages:
+>>> [1] sp_0.9-14
+>>>
+>>> loaded via a namespace (and not attached):
+>>> [1] grid_2.6.0      lattice_0.16-5  rcompgen_0.1-15
+>>>
+>>> and the message after Ctrl-C:
+>>>
+>>> Error in coordinates(coords) :
+>>>  error in evaluating the argument 'obj' in selecting a method for function
+>>> 'coordinates'
+>>> Error in bbox(object) :
+>>>   error in evaluating the argument 'obj' in selecting a method for function
+>>>   'bbox'
+>>>
+>>> which makes me suspect that the new() is (now?) going to completely senseless
+>>> places. This has the same effect:
+>>>
+>>> sG <- new("SpatialGrid", bbox=pts@bbox, proj4string=pts@proj4string,
+>>>   coords=pts@coords, grid=grd, grid.index=integer(0))
+>>>
+>>> unfortunately. It also impacts the rgdal route, because its call to make the
+>>> output SGDF is the same.
+>>>
+>>> However, replacing the call to new("SpatialGrid", ...) to one of building an
+>>> empty object with just new(), and stuffing the slots manually with slot() <-
+>>> reduces import from over 12 minutes to 6 seconds (!). Perhaps the problem is
+>>> that S4 classes have got "cleverer" and dislike the definition of SpatialGrid
+>>> as only having a "SpatialPixels" representation?
+>>>
+>>> I have committed the very draft readRAST6() to CVS on sourceforge, but the
+>>> real solution needs doing in sp itself (end of the SpatialGrid() function in
+>>> SpatialGrid-methods.R).
+>>>
+>>> I'll carry on playing ...
+>>>
+>>> Roger
+>>>
+>>>
+>>>>
+>>>>
+>>>>  6/10/2007, "Roger Bivand" <Roger.Bivand@nhh.no> napisa?/a:
+>>>>
+>>>>>  On Tue, 2 Oct 2007, Carlos "Gu?no" Grohmann wrote:
+>>>>>
+>>>>>>  I've been thinking about the time it takes to import a raster from
+>>>>>>  GRASS to
+>>>>>>  R. I have some rasters with about 2000 rows and 2500 columns.
+>>>>>>  importing
+>>>>>>  starts fine, creates the header, then goes to 100%, and it hangs there
+>>>>>>  for
+>>>>>>  about 10 minutes, before get ready for the next command.
+>>>>>>  Any way of decrease this waiting time?
+>>>>>
+>>>>>  I'm looking into this, as far as I can see as of now it is somewhere in
+>>>>>  the new("SpatialGridDataFrame", ...) call in
+>>>>>  res <- SpatialGridDataFrame(...) in readBinGrid(). Confusingly, the
+>>>>>  Rprof() output points at unlist() taking 90% of the total run time. I'll
+>>>>>  let you know where I get.
+>>>>>
+>>>>>  Roger
+>>>>>
+>>>>>>
+>>>>>>  cheers
+>>>>>>
+>>>>>>  Carlos
+>>>>>>
+>>>>>>
+>>>>>
+>>>>>  --
+>>>>>  Roger Bivand
+>>>>>  Economic Geography Section, Department of Economics, Norwegian School of
+>>>>>  Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+>>>>>  Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+>>>>>  e-mail: Roger.Bivand@nhh.no
+>>>>
+>>>
+>>>
+>>
+>> --
+>> Roger Bivand
+>> Economic Geography Section, Department of Economics, Norwegian School of
+>> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+>> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+>> e-mail: Roger.Bivand@nhh.no
+>>
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From carlos.grohmann at gmail.com  Tue Oct  9 06:19:38 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] NULL values and readRAST6
+Message-ID: <bd07447b0710090319t7a70090coaee39d336b09ab73@mail.gmail.com>
+
+Hi,
+Can readRAST6 handle NULL values? How?
+
+I tried NODATA=NULL but it needs a numeric value..
+
+tks
+
+Carlos
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Visiting Researcher at Kingston University London - UK
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+
+
+From Roger.Bivand at nhh.no  Tue Oct  9 06:44:38 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] NULL values and readRAST6
+In-Reply-To: <bd07447b0710090319t7a70090coaee39d336b09ab73@mail.gmail.com>
+References: <bd07447b0710090319t7a70090coaee39d336b09ab73@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0710091240290.28159@reclus.nhh.no>
+
+On Tue, 9 Oct 2007, Carlos "Gu?no" Grohmann wrote:
+
+> Hi,
+> Can readRAST6 handle NULL values? How?
+>
+> I tried NODATA=NULL but it needs a numeric value..
+
+This is passed to r.out.bin, which says:
+
+null=integer
+     Value to write out for null
+     Default: 0
+
+so in fact it has to be an integer - I'll fix the documentation and 
+function (which didn't check what value was assigned to NODATA).
+
+Roger
+
+>
+> tks
+>
+> Carlos
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From Roger.Bivand at nhh.no  Tue Oct  9 07:47:30 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] NULL values and readRAST6
+In-Reply-To: <Pine.LNX.4.64.0710091240290.28159@reclus.nhh.no>
+References: <bd07447b0710090319t7a70090coaee39d336b09ab73@mail.gmail.com>
+	<Pine.LNX.4.64.0710091240290.28159@reclus.nhh.no>
+Message-ID: <Pine.LNX.4.64.0710091344160.28159@reclus.nhh.no>
+
+On Tue, 9 Oct 2007, Roger Bivand wrote:
+
+> On Tue, 9 Oct 2007, Carlos "Gu?no" Grohmann wrote:
+>
+>>  Hi,
+>>  Can readRAST6 handle NULL values? How?
+>>
+>>  I tried NODATA=NULL but it needs a numeric value..
+>
+> This is passed to r.out.bin, which says:
+>
+> null=integer
+>     Value to write out for null
+>     Default: 0
+>
+> so in fact it has to be an integer - I'll fix the documentation and function 
+> (which didn't check what value was assigned to NODATA).
+
+To make this a bit clearer - the raster layer in GRASS has missing values 
+set to NULL, but NULL cannot be exported by r.out.bin. So r.out.bin is 
+given a NODATA value to assign to NULL cells, which are then read into R, 
+and the NODATA valued cells are set to NA. The only need for the value is 
+to keep r.out.bin (and r.in.bin) happy, because they do not encode NULL 
+directly.
+
+Roger
+
+>
+> Roger
+>
+>>
+>>  tks
+>>
+>>  Carlos
+>> 
+>> 
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From neteler at itc.it  Tue Oct  9 07:55:38 2007
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] NULL values and readRAST6
+In-Reply-To: <Pine.LNX.4.64.0710091344160.28159@reclus.nhh.no>
+References: <bd07447b0710090319t7a70090coaee39d336b09ab73@mail.gmail.com>
+	<Pine.LNX.4.64.0710091240290.28159@reclus.nhh.no>
+	<Pine.LNX.4.64.0710091344160.28159@reclus.nhh.no>
+Message-ID: <13114083.post@talk.nabble.com>
+
+
+
+Roger Bivand wrote:
+> 
+> On Tue, 9 Oct 2007, Roger Bivand wrote:
+>> On Tue, 9 Oct 2007, Carlos "Gu?no" Grohmann wrote:
+>>
+>>>  Hi,
+>>>  Can readRAST6 handle NULL values? How?
+>>>
+>>>  I tried NODATA=NULL but it needs a numeric value..
+>>
+>> This is passed to r.out.bin, which says:
+>>
+>> null=integer
+>>     Value to write out for null
+>>     Default: 0
+>>
+>> so in fact it has to be an integer - I'll fix the documentation and
+>> function 
+>> (which didn't check what value was assigned to NODATA).
+> 
+> To make this a bit clearer - the raster layer in GRASS has missing values 
+> set to NULL, but NULL cannot be exported by r.out.bin. So r.out.bin is 
+> given a NODATA value to assign to NULL cells, which are then read into R, 
+> and the NODATA valued cells are set to NA. The only need for the value is 
+> to keep r.out.bin (and r.in.bin) happy, because they do not encode NULL 
+> directly.
+> 
+> Roger
+> 
+
+Could this be automated by using 
+r.info -r map
+to get the range and then auto-use a value outside
+of this range as NULL encoder and something in R with
+min()/max() to do the same in the other direction?
+
+But maybe I misunderstand the problem.
+
+Markus
+-- 
+View this message in context: http://www.nabble.com/NULL-values-and-readRAST6-tf4593303.html#a13114083
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+
+
+From Roger.Bivand at nhh.no  Tue Oct  9 08:03:08 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] NULL values and readRAST6
+In-Reply-To: <13114083.post@talk.nabble.com>
+References: <bd07447b0710090319t7a70090coaee39d336b09ab73@mail.gmail.com>
+	<Pine.LNX.4.64.0710091240290.28159@reclus.nhh.no>
+	<Pine.LNX.4.64.0710091344160.28159@reclus.nhh.no>
+	<13114083.post@talk.nabble.com>
+Message-ID: <Pine.LNX.4.64.0710091402340.28159@reclus.nhh.no>
+
+On Tue, 9 Oct 2007, Markus Neteler wrote:
+
+>
+>
+> Roger Bivand wrote:
+>>
+>> On Tue, 9 Oct 2007, Roger Bivand wrote:
+>>> On Tue, 9 Oct 2007, Carlos "Gu?no" Grohmann wrote:
+>>>
+>>>>  Hi,
+>>>>  Can readRAST6 handle NULL values? How?
+>>>>
+>>>>  I tried NODATA=NULL but it needs a numeric value..
+>>>
+>>> This is passed to r.out.bin, which says:
+>>>
+>>> null=integer
+>>>     Value to write out for null
+>>>     Default: 0
+>>>
+>>> so in fact it has to be an integer - I'll fix the documentation and
+>>> function
+>>> (which didn't check what value was assigned to NODATA).
+>>
+>> To make this a bit clearer - the raster layer in GRASS has missing values
+>> set to NULL, but NULL cannot be exported by r.out.bin. So r.out.bin is
+>> given a NODATA value to assign to NULL cells, which are then read into R,
+>> and the NODATA valued cells are set to NA. The only need for the value is
+>> to keep r.out.bin (and r.in.bin) happy, because they do not encode NULL
+>> directly.
+>>
+>> Roger
+>>
+>
+> Could this be automated by using
+> r.info -r map
+> to get the range and then auto-use a value outside
+> of this range as NULL encoder and something in R with
+> min()/max() to do the same in the other direction?
+
+Yes, I think that it could, I'll take a look - thanks!
+
+Roger
+
+>
+> But maybe I misunderstand the problem.
+>
+> Markus
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From hamish_nospam at yahoo.com  Tue Oct  9 09:08:27 2007
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] NULL values and readRAST6
+In-Reply-To: <Pine.LNX.4.64.0710091402340.28159@reclus.nhh.no>
+Message-ID: <862116.38067.qm@web52702.mail.re2.yahoo.com>
+
+Roger Bivand wrote:
+> To make this a bit clearer - the raster layer in GRASS has missing values
+> set to NULL, but NULL cannot be exported by r.out.bin. So r.out.bin is
+> given a NODATA value to assign to NULL cells, which are then read into R,
+> and the NODATA valued cells are set to NA. The only need for the value is
+> to keep r.out.bin (and r.in.bin) happy, because they do not encode NULL
+> directly.
+
+
+IIUC there is a rgdal pacakge. Why not use it to directly read the GRASS map?
+If GDAL's GRASS plugin is not present or the rgdal package is not loaded in R
+it can fall back to using the r.{in|out}.bin or r.{in|out}.ascii methods.
+
+(given the r.out.bin NULL restriction, maybe the r.out.ascii format is safer,
+albeit a bit slower)
+
+?,
+Hamish
+
+
+
+      ____________________________________________________________________________________
+Don't let your dream ride pass you by. Make it a reality with Yahoo! Autos.
+http://autos.yahoo.com/index.html
+ 
+
+
+
+From Roger.Bivand at nhh.no  Tue Oct  9 09:20:18 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] NULL values and readRAST6
+In-Reply-To: <862116.38067.qm@web52702.mail.re2.yahoo.com>
+References: <862116.38067.qm@web52702.mail.re2.yahoo.com>
+Message-ID: <Pine.LNX.4.64.0710091511420.28159@reclus.nhh.no>
+
+On Tue, 9 Oct 2007, Hamish wrote:
+
+> Roger Bivand wrote:
+>> To make this a bit clearer - the raster layer in GRASS has missing values
+>> set to NULL, but NULL cannot be exported by r.out.bin. So r.out.bin is
+>> given a NODATA value to assign to NULL cells, which are then read into R,
+>> and the NODATA valued cells are set to NA. The only need for the value is
+>> to keep r.out.bin (and r.in.bin) happy, because they do not encode NULL
+>> directly.
+>
+>
+> IIUC there is a rgdal pacakge. Why not use it to directly read the GRASS map?
+> If GDAL's GRASS plugin is not present or the rgdal package is not loaded in R
+> it can fall back to using the r.{in|out}.bin or r.{in|out}.ascii methods.
+>
+> (given the r.out.bin NULL restriction, maybe the r.out.ascii format is safer,
+> albeit a bit slower)
+
+Because GRASS 6.2 is still the scripted r.out.gdal, using the plugin, 
+*and* the plugin does not (correct me?) use the current region, but uses 
+the raster map in its "native" form, so doing an r.out.gdal -> tempfile -> 
+readGDAL() risks getting different regions etc. Getting the plugin working 
+properly across platforms is less than convenient too. This is a 
+showstopper when reading multiple rasters into a single 
+SpatialGridDataFrame.
+
+With GRASS 6.3 this goes away, because r.out.gdal is compiled and does 
+respect the current region (like r.out.bin does).
+
+As the interface needs to support both GRASS < 6.3 and >= 6.3, using 
+r.*.bin is simpler. A bit lame, but the GRASS 5 interface is still 
+supported for users who are still there.
+
+Roger
+
+>
+> ?,
+> Hamish
+>
+>
+>
+>      ____________________________________________________________________________________
+> Don't let your dream ride pass you by. Make it a reality with Yahoo! Autos.
+> http://autos.yahoo.com/index.html
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From neteler at itc.it  Mon Oct 15 08:58:27 2007
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] [R-spatial-devel] speed of GRASS/R interface
+In-Reply-To: <bd07447b0710081112i5db27a11h829b0b16f831652f@mail.gmail.com>
+References: <bd07447b0710020818q776b897ft3c1030b61dfdd96b@mail.gmail.com>
+	<Pine.LNX.4.64.0710061917190.26273@reclus.nhh.no>
+	<gX2RF32V.1191695850.5971700.jarekj@amu.edu.pl>
+	<Pine.LNX.4.64.0710062238070.26273@reclus.nhh.no>
+	<Pine.LNX.4.64.0710062347010.26273@reclus.nhh.no>
+	<bd07447b0710081050q15a50063r849abf187aa050e@mail.gmail.com>
+	<bd07447b0710081112i5db27a11h829b0b16f831652f@mail.gmail.com>
+Message-ID: <13212226.post@talk.nabble.com>
+
+
+Today I downloaded 'sp' and 'spgrass6' from CVS (http://r-spatial.sf.net/),
+steps here to enable more people to try:
+
+# use empty password == <enter> key:
+cvs -d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial
+login
+# fetch classes:
+cvs -z3
+-d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial co -P
+sp
+cvs -z3
+-d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial co -P
+spgrass6
+
+# install from the same directory:
+R CMD INSTALL sp
+R CMD INSTALL spgrass6
+
+Then I tried the new classes: INCREDIBLY FAST!
+
+Seems that I can now start working with my satellite data
+in R - thanks for this speedup!
+
+best wishes,
+Markus
+
+
+guano wrote:
+> 
+> It took about 6 seconds to read a raster with 2200x2500 cells, and
+> about 3 secs to build a truehist().
+> 
+> don't have any categorical map, though.
+> 
+> Carlos
+> 
+
+-- 
+View this message in context: http://www.nabble.com/speed-of-GRASS-R-interface-tf4555475.html#a13212226
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+
+From furlan at itc.it  Mon Oct 15 09:14:27 2007
+From: furlan at itc.it (Cesare Furlanello)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] [R-spatial-devel] speed of GRASS/R interface
+In-Reply-To: <13212226.post@talk.nabble.com>
+Message-ID: <B468075745478540A810F30B195F7041290D949388@ntmail2.pc.itc.it>
+
+Hi Markus / Roger
+is this upgrade being propagated to the R CRAN repository?
+-- cesare
+
+
+-----Original Message-----
+From: statsgrass-bounces@grass.itc.it [mailto:statsgrass-bounces@grass.itc.it] On Behalf Of Markus Neteler
+Sent: luned? 15 ottobre 2007 14.58
+To: statsgrass@grass.itc.it
+Subject: Re: [STATSGRASS] [R-spatial-devel] speed of GRASS/R interface
+
+
+Today I downloaded 'sp' and 'spgrass6' from CVS (http://r-spatial.sf.net/),
+steps here to enable more people to try:
+
+# use empty password == <enter> key:
+cvs -d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial
+login
+# fetch classes:
+cvs -z3
+-d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial co -P
+sp
+cvs -z3
+-d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial co -P
+spgrass6
+
+# install from the same directory:
+R CMD INSTALL sp
+R CMD INSTALL spgrass6
+
+Then I tried the new classes: INCREDIBLY FAST!
+
+Seems that I can now start working with my satellite data
+in R - thanks for this speedup!
+
+best wishes,
+Markus
+
+
+guano wrote:
+>
+> It took about 6 seconds to read a raster with 2200x2500 cells, and
+> about 3 secs to build a truehist().
+>
+> don't have any categorical map, though.
+>
+> Carlos
+>
+
+--
+View this message in context: http://www.nabble.com/speed-of-GRASS-R-interface-tf4555475.html#a13212226
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+_______________________________________________
+statsgrass mailing list
+statsgrass@grass.itc.it
+http://grass.itc.it/mailman/listinfo/statsgrass
+
+------------------
+ITC -> dall'1 marzo 2007 Fondazione Bruno Kessler
+ITC -> since 1 March 2007 Fondazione Bruno Kessler
+------------------
+
+
+From tutey at o2.pl  Mon Oct 15 09:22:33 2007
+From: tutey at o2.pl (Maciej Sieczka)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] NULL values and readRAST6
+In-Reply-To: <Pine.LNX.4.64.0710091511420.28159@reclus.nhh.no>
+References: <862116.38067.qm@web52702.mail.re2.yahoo.com>
+	<Pine.LNX.4.64.0710091511420.28159@reclus.nhh.no>
+Message-ID: <47136999.5030901@o2.pl>
+
+Roger Bivand wrote:
+
+> With GRASS 6.3 this goes away, because r.out.gdal is compiled and does
+> respect the current region
+
+Note it fails to export NULL values properly [1]. Hopefully
+to be fixed before GRASS 6.3 release.
+
+[1]http://wald.intevation.org/tracker/?func=detail&atid=204&aid=405&group_id=21
+
+Maciek
+
+
+From Thomas.Adams at noaa.gov  Mon Oct 15 09:24:41 2007
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] [R-spatial-devel] speed of GRASS/R interface
+In-Reply-To: <13212226.post@talk.nabble.com>
+References: <bd07447b0710020818q776b897ft3c1030b61dfdd96b@mail.gmail.com>
+	<Pine.LNX.4.64.0710061917190.26273@reclus.nhh.no>
+	<gX2RF32V.1191695850.5971700.jarekj@amu.edu.pl>
+	<Pine.LNX.4.64.0710062238070.26273@reclus.nhh.no>
+	<Pine.LNX.4.64.0710062347010.26273@reclus.nhh.no>
+	<bd07447b0710081050q15a50063r849abf187aa050e@mail.gmail.com>
+	<bd07447b0710081112i5db27a11h829b0b16f831652f@mail.gmail.com>
+	<13212226.post@talk.nabble.com>
+Message-ID: <47136A19.4070906@noaa.gov>
+
+Markus,
+
+Thanks for the information; I have never tried this before, but when I 
+do try, I get:
+
+cvs login: warning: failed to open /Users/adams/.cvspass for reading: No 
+such file or directory
+
+With subsequent attempts I just get returned to my local prompt.
+
+Regards,
+Tom
+
+
+Markus Neteler wrote:
+> Today I downloaded 'sp' and 'spgrass6' from CVS (http://r-spatial.sf.net/),
+> steps here to enable more people to try:
+>
+> # use empty password == <enter> key:
+> cvs -d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial
+> login
+> # fetch classes:
+> cvs -z3
+> -d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial co -P
+> sp
+> cvs -z3
+> -d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial co -P
+> spgrass6
+>
+> # install from the same directory:
+> R CMD INSTALL sp
+> R CMD INSTALL spgrass6
+>
+> Then I tried the new classes: INCREDIBLY FAST!
+>
+> Seems that I can now start working with my satellite data
+> in R - thanks for this speedup!
+>
+> best wishes,
+> Markus
+>
+>
+> guano wrote:
+>   
+>> It took about 6 seconds to read a raster with 2200x2500 cells, and
+>> about 3 secs to build a truehist().
+>>
+>> don't have any categorical map, though.
+>>
+>> Carlos
+>>
+>>     
+>
+>   
+
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+
+From edzer.pebesma at uni-muenster.de  Mon Oct 15 09:22:52 2007
+From: edzer.pebesma at uni-muenster.de (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] [R-spatial-devel] speed of GRASS/R interface
+In-Reply-To: <B468075745478540A810F30B195F7041290D949388@ntmail2.pc.itc.it>
+References: <B468075745478540A810F30B195F7041290D949388@ntmail2.pc.itc.it>
+Message-ID: <471369AC.6050605@uni-muenster.de>
+
+I just submitted sp 0.9-16 (the cvs version) to CRAN.
+--
+Edzer
+
+Cesare Furlanello wrote:
+> Hi Markus / Roger
+> is this upgrade being propagated to the R CRAN repository?
+> -- cesare
+>
+>
+> -----Original Message-----
+> From: statsgrass-bounces@grass.itc.it [mailto:statsgrass-bounces@grass.itc.it] On Behalf Of Markus Neteler
+> Sent: luned? 15 ottobre 2007 14.58
+> To: statsgrass@grass.itc.it
+> Subject: Re: [STATSGRASS] [R-spatial-devel] speed of GRASS/R interface
+>
+>
+> Today I downloaded 'sp' and 'spgrass6' from CVS (http://r-spatial.sf.net/),
+> steps here to enable more people to try:
+>
+> # use empty password == <enter> key:
+> cvs -d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial
+> login
+> # fetch classes:
+> cvs -z3
+> -d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial co -P
+> sp
+> cvs -z3
+> -d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial co -P
+> spgrass6
+>
+> # install from the same directory:
+> R CMD INSTALL sp
+> R CMD INSTALL spgrass6
+>
+> Then I tried the new classes: INCREDIBLY FAST!
+>
+> Seems that I can now start working with my satellite data
+> in R - thanks for this speedup!
+>
+> best wishes,
+> Markus
+>
+>
+> guano wrote:
+>   
+>> It took about 6 seconds to read a raster with 2200x2500 cells, and
+>> about 3 secs to build a truehist().
+>>
+>> don't have any categorical map, though.
+>>
+>> Carlos
+>>
+>>     
+>
+> --
+> View this message in context: http://www.nabble.com/speed-of-GRASS-R-interface-tf4555475.html#a13212226
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+> ------------------
+> ITC -> dall'1 marzo 2007 Fondazione Bruno Kessler
+> ITC -> since 1 March 2007 Fondazione Bruno Kessler
+> ------------------
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>   
+
+
+From neteler at itc.it  Mon Oct 15 09:38:51 2007
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] [R-spatial-devel] speed of GRASS/R interface
+In-Reply-To: <47136A19.4070906@noaa.gov>
+References: <bd07447b0710020818q776b897ft3c1030b61dfdd96b@mail.gmail.com>
+	<Pine.LNX.4.64.0710061917190.26273@reclus.nhh.no>
+	<gX2RF32V.1191695850.5971700.jarekj@amu.edu.pl>
+	<Pine.LNX.4.64.0710062238070.26273@reclus.nhh.no>
+	<Pine.LNX.4.64.0710062347010.26273@reclus.nhh.no>
+	<bd07447b0710081050q15a50063r849abf187aa050e@mail.gmail.com>
+	<bd07447b0710081112i5db27a11h829b0b16f831652f@mail.gmail.com>
+	<13212226.post@talk.nabble.com> <47136A19.4070906@noaa.gov>
+Message-ID: <20071015133851.GA22567@bartok.itc.it>
+
+Tom,
+
+I have no clue about this error but Edzer just posted
+that he sent the new version to CRAN. So, an update from there
+should do it now as well (once propagated, not sure how
+much time that takes).
+
+best,
+Markus
+
+On Mon, Oct 15, 2007 at 03:24:41PM +0200, Thomas Adams wrote:
+> Markus,
+> 
+> Thanks for the information; I have never tried this before, but when I
+> do try, I get:
+> 
+> cvs login: warning: failed to open /Users/adams/.cvspass for reading: No
+> such file or directory
+> 
+> With subsequent attempts I just get returned to my local prompt.
+> 
+> Regards,
+> Tom
+> 
+> --
+> Thomas E Adams
+> National Weather Service
+> Ohio River Forecast Center
+> 1901 South State Route 134
+> Wilmington, OH 45177
+> 
+> EMAIL:  thomas.adams@noaa.gov
+> 
+> VOICE:  937-383-0528
+> FAX:    937-383-0033
+> 
+
+-- 
+Markus Neteler  <neteler itc it>  http://mpa.itc.it/markus/
+FBK-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+------------------
+ITC -> dall'1 marzo 2007 Fondazione Bruno Kessler
+ITC -> since 1 March 2007 Fondazione Bruno Kessler
+------------------
+
+
+From Roger.Bivand at nhh.no  Mon Oct 15 09:40:17 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] [R-spatial-devel] speed of GRASS/R interface
+In-Reply-To: <B468075745478540A810F30B195F7041290D949388@ntmail2.pc.itc.it>
+References: <B468075745478540A810F30B195F7041290D949388@ntmail2.pc.itc.it>
+Message-ID: <Pine.LNX.4.64.0710151536190.19931@reclus.nhh.no>
+
+On Mon, 15 Oct 2007, Cesare Furlanello wrote:
+
+> Hi Markus / Roger
+> is this upgrade being propagated to the R CRAN repository?
+
+We will try to release sp to CRAN soon. The problem has been that the 
+new("SpatialGrid", ...) method has called the validObject() method for the 
+SpatialGrid object, which recurses into all of the constituent objects, 
+even though the documentation of new style classes and methods says that 
+it should accept the SpatialPixels object that is passed to it as already 
+verified. We have been trying to find a "proper" solution, but maybe we'll 
+just release sp as it is, and make further changes if this release breaks 
+anything.
+
+Roger
+
+> -- cesare
+>
+>
+> -----Original Message-----
+> From: statsgrass-bounces@grass.itc.it [mailto:statsgrass-bounces@grass.itc.it] On Behalf Of Markus Neteler
+> Sent: luned? 15 ottobre 2007 14.58
+> To: statsgrass@grass.itc.it
+> Subject: Re: [STATSGRASS] [R-spatial-devel] speed of GRASS/R interface
+>
+>
+> Today I downloaded 'sp' and 'spgrass6' from CVS (http://r-spatial.sf.net/),
+> steps here to enable more people to try:
+>
+> # use empty password == <enter> key:
+> cvs -d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial
+> login
+> # fetch classes:
+> cvs -z3
+> -d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial co -P
+> sp
+> cvs -z3
+> -d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial co -P
+> spgrass6
+>
+> # install from the same directory:
+> R CMD INSTALL sp
+> R CMD INSTALL spgrass6
+>
+> Then I tried the new classes: INCREDIBLY FAST!
+>
+> Seems that I can now start working with my satellite data
+> in R - thanks for this speedup!
+>
+> best wishes,
+> Markus
+>
+>
+> guano wrote:
+>>
+>> It took about 6 seconds to read a raster with 2200x2500 cells, and
+>> about 3 secs to build a truehist().
+>>
+>> don't have any categorical map, though.
+>>
+>> Carlos
+>>
+>
+> --
+> View this message in context: http://www.nabble.com/speed-of-GRASS-R-interface-tf4555475.html#a13212226
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+> ------------------
+> ITC -> dall'1 marzo 2007 Fondazione Bruno Kessler
+> ITC -> since 1 March 2007 Fondazione Bruno Kessler
+> ------------------
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From Roger.Bivand at nhh.no  Tue Oct 16 03:52:18 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] sp_0.9-16 source on CRAN
+Message-ID: <Pine.LNX.4.64.0710160944460.22362@reclus.nhh.no>
+
+A new version of the foundation sp package is reaching CRAN mirrors, and 
+Windows and OSX binaries should follow within a day or so. There is a 
+significant change in how SpatialGrid objects are created, which we hope 
+will not affect users negatively, and which is giving a two orders of 
+magnitude speedup for reading larger rasters (single band 900 by 3600 down 
+from 12 minutes to 6 seconds on an older 1.5GHz machine).
+
+If anyone sees any negative impacts, please contact the authors 
+immediately directly.
+
+Roger
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From Rainer+grass at krugs.de  Tue Oct 16 05:16:55 2007
+From: Rainer+grass at krugs.de (Rainer M. Krug)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] sp_0.9-16 source on CRAN
+In-Reply-To: <Pine.LNX.4.64.0710160944460.22362@reclus.nhh.no>
+References: <Pine.LNX.4.64.0710160944460.22362@reclus.nhh.no>
+Message-ID: <47148187.8020004@krugs.de>
+
+Hi
+
+I just upgraded to the new version, and I get an error message when 
+importing an existing raster. The output is below.
+
+
+ > readRAST6("Hakea_seeds_2007")
+Creating BIL support files ...
+Header File = ld
+World File = 
+/home/rkrug/Documents/Projects/AlienSpread/R/../grass/simulation/.tmp/rkrug-linux/Hakea_seeds_2007.wld
+Exporting Raster as double values(bytes=8)
+Using the Current Region settings ...
+north=6247000.000000
+south=6195000.000000
+east=270200.000000
+west=251000.000000
+r=520
+c=192
+
+Percent complete:
+r.out.bin complete.
+Error in readBinGrid(rtmpfl11, colname = vname[i], proj4string = p4, 
+integer = to_int) :
+   no such file: 
+/home/rkrug/Documents/Projects/AlienSpread/R/../grass/simulation/.tmp/rkrug-linux/Hakea_seeds_2007.hdr
+ >
+
+The contents of the folder are as follow:
+
+(grass):~/Documents/Projects/AlienSpread/grass/simulation/.tmp/rkrug-linux 
+ > ll Hakea*
+-rw-r--r-- 1 rkrug users 798720 2007-10-16 11:10 Hakea_seeds_2007
+-rw-r--r-- 1 rkrug users     60 2007-10-16 11:10 Hakea_seeds_2007.wld
+-rw-r--r-- 1 rkrug users 798720 2007-10-16 10:52 Hakea_seedsDispersed_2007
+-rw-r--r-- 1 rkrug users     60 2007-10-16 10:52 
+Hakea_seedsDispersed_2007.wld
+[Raster MASK present]
+GRASS 6.2.2 
+(grass):~/Documents/Projects/AlienSpread/grass/simulation/.tmp/rkrug-linux 
+ >
+
+Is there something wrong in my paths or os there a bug?
+
+Thanks a lot,
+
+
+Rainer
+
+
+Roger Bivand wrote:
+> A new version of the foundation sp package is reaching CRAN mirrors, and 
+> Windows and OSX binaries should follow within a day or so. There is a 
+> significant change in how SpatialGrid objects are created, which we hope 
+> will not affect users negatively, and which is giving a two orders of 
+> magnitude speedup for reading larger rasters (single band 900 by 3600 
+> down from 12 minutes to 6 seconds on an older 1.5GHz machine).
+> 
+> If anyone sees any negative impacts, please contact the authors 
+> immediately directly.
+> 
+> Roger
+> 
+
+
+From Roger.Bivand at nhh.no  Tue Oct 16 05:46:19 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] sp_0.9-16 source on CRAN
+In-Reply-To: <47148187.8020004@krugs.de>
+References: <Pine.LNX.4.64.0710160944460.22362@reclus.nhh.no>
+	<47148187.8020004@krugs.de>
+Message-ID: <Pine.LNX.4.64.0710161133551.22362@reclus.nhh.no>
+
+On Tue, 16 Oct 2007, Rainer M. Krug wrote:
+
+> Hi
+>
+> I just upgraded to the new version, and I get an error message when importing 
+> an existing raster. The output is below.
+
+This is not related to the sp update. Please do debug(readRAST6) and 
+re-run, stepping through until you pass the the setting of the command 
+string for r.out.bin. Please then print the cmd variable to screen and 
+copy&paste it. It should have a -b flag. Please also give the output of 
+sessionInfo() for your system, and the output of system("g.version") too.
+
+The *.wld file got put in the correct place, so the *.hdr ought to have 
+been there too.
+
+If you do debug(readBinGrid), you'll see where it fails now, about 4 lines 
+in. You could also do list.files(dirname(fname)) just before it fails in 
+readBinGrid(), to check whether there ia anything else odd going on. Have 
+you checked to see whether it has been written anywhere else?
+
+Roger
+
+>
+>
+>>  readRAST6("Hakea_seeds_2007")
+> Creating BIL support files ...
+> Header File = ld
+> World File = 
+> /home/rkrug/Documents/Projects/AlienSpread/R/../grass/simulation/.tmp/rkrug-linux/Hakea_seeds_2007.wld
+> Exporting Raster as double values(bytes=8)
+> Using the Current Region settings ...
+> north=6247000.000000
+> south=6195000.000000
+> east=270200.000000
+> west=251000.000000
+> r=520
+> c=192
+>
+> Percent complete:
+> r.out.bin complete.
+> Error in readBinGrid(rtmpfl11, colname = vname[i], proj4string = p4, integer 
+> = to_int) :
+>  no such file: 
+> /home/rkrug/Documents/Projects/AlienSpread/R/../grass/simulation/.tmp/rkrug-linux/Hakea_seeds_2007.hdr
+>> 
+>
+> The contents of the folder are as follow:
+>
+> (grass):~/Documents/Projects/AlienSpread/grass/simulation/.tmp/rkrug-linux
+>>  ll Hakea*
+> -rw-r--r-- 1 rkrug users 798720 2007-10-16 11:10 Hakea_seeds_2007
+> -rw-r--r-- 1 rkrug users     60 2007-10-16 11:10 Hakea_seeds_2007.wld
+> -rw-r--r-- 1 rkrug users 798720 2007-10-16 10:52 Hakea_seedsDispersed_2007
+> -rw-r--r-- 1 rkrug users     60 2007-10-16 10:52 
+> Hakea_seedsDispersed_2007.wld
+> [Raster MASK present]
+> GRASS 6.2.2 
+> (grass):~/Documents/Projects/AlienSpread/grass/simulation/.tmp/rkrug-linux 
+>> 
+>
+> Is there something wrong in my paths or os there a bug?
+>
+> Thanks a lot,
+>
+>
+> Rainer
+>
+>
+> Roger Bivand wrote:
+>>  A new version of the foundation sp package is reaching CRAN mirrors, and
+>>  Windows and OSX binaries should follow within a day or so. There is a
+>>  significant change in how SpatialGrid objects are created, which we hope
+>>  will not affect users negatively, and which is giving a two orders of
+>>  magnitude speedup for reading larger rasters (single band 900 by 3600 down
+>>  from 12 minutes to 6 seconds on an older 1.5GHz machine).
+>>
+>>  If anyone sees any negative impacts, please contact the authors
+>>  immediately directly.
+>>
+>>  Roger
+>> 
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From Rainer+grass at krugs.de  Tue Oct 16 06:22:32 2007
+From: Rainer+grass at krugs.de (Rainer M Krug)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] sp_0.9-16 source on CRAN
+In-Reply-To: <Pine.LNX.4.64.0710161133551.22362@reclus.nhh.no>
+References: <Pine.LNX.4.64.0710160944460.22362@reclus.nhh.no>
+	<47148187.8020004@krugs.de>
+	<Pine.LNX.4.64.0710161133551.22362@reclus.nhh.no>
+Message-ID: <471490E8.4060504@krugs.de>
+
+Hi Roger
+
+first of all thanks a lot for your prompt reply. I tried it with two 
+other raster layers, and one worked.
+
+I played around, and the problem seems top be the length of the output 
+variable:
+
+GRASS 6.2.2 (grass):~/Documents/Projects/AlienSpread/R > r.out.bin -b 
+input=Hakea_dc_2007 
+output=/home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee 
+null=-1
+Creating BIL support files ...
+Header File = eeeeee.wld          <<<<<<------HERE IT IS NOT
+World File = 
+/home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.wld
+Exporting Raster as integer values (bytes=2)
+Using the Current Region settings ...
+north=6247000.000000
+south=6195000.000000
+east=270200.000000
+west=251000.000000
+r=520
+c=192
+
+Percent complete:  100%
+r.out.bin complete.
+[Raster MASK present]
+GRASS 6.2.2 (grass):~/Documents/Projects/AlienSpread/R > ll /home/rkrug/eee*
+-rw-r--r-- 1 rkrug users 199680 2007-10-16 12:18 
+/home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-rw-r--r-- 1 rkrug users     60 2007-10-16 12:18 
+/home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.wld
+[Raster MASK present]
+GRASS 6.2.2 (grass):~/Documents/Projects/AlienSpread/R > r.out.bin -b 
+input=Hakea_dc_2007 
+output=/home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee 
+null=-1
+Creating BIL support files ...
+Header File = 
+/home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.hdr 
+<<<<<<------HERE IT IS
+World File = 
+/home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.wld
+Exporting Raster as integer values (bytes=2)
+Using the Current Region settings ...
+north=6247000.000000
+south=6195000.000000
+east=270200.000000
+west=251000.000000
+r=520
+c=192
+
+Percent complete:  100%
+r.out.bin complete.
+[Raster MASK present]
+GRASS 6.2.2 (grass):~/Documents/Projects/AlienSpread/R > ll /home/rkrug/eee*
+-rw-r--r-- 1 rkrug users 199680 2007-10-16 12:18 
+/home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-rw-r--r-- 1 rkrug users 199680 2007-10-16 12:18 
+/home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-rw-r--r-- 1 rkrug users     60 2007-10-16 12:18 
+/home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.wld
+-rw-r--r-- 1 rkrug users     83 2007-10-16 12:18 
+/home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.hdr
+-rw-r--r-- 1 rkrug users     60 2007-10-16 12:18 
+/home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.wld
+[Raster MASK present]
+GRASS 6.2.2 (grass):~/Documents/Projects/AlienSpread/R >
+
+
+So it is a problem in grass itself.
+I should be able to find a way around, but I should file a bug report.
+
+Thanks a million,
+
+Rainer
+
+
+
+
+Roger Bivand wrote:
+> On Tue, 16 Oct 2007, Rainer M. Krug wrote:
+> 
+>> Hi
+>>
+>> I just upgraded to the new version, and I get an error message when 
+>> importing an existing raster. The output is below.
+> 
+> This is not related to the sp update. Please do debug(readRAST6) and 
+> re-run, stepping through until you pass the the setting of the command 
+> string for r.out.bin. Please then print the cmd variable to screen and 
+
+debug: tull <- ifelse(.Platform$OS.type == "windows", system(cmd), 
+system(cmd,
+     ignore.stderr = ignore.stderr))
+Browse[1]> cmd
+[1] "r.out.bin -b input=Hakea_seeds_2007 
+output=/home/rkrug/Documents/Projects/AlienSpread/R/../grass/simulation/.tmp/rkrug-linux/Hakea_seeds_2007 
+null=-1"
+Browse[1]>
+
+
+> copy&paste it. It should have a -b flag. Please also give the output of 
+> sessionInfo() for your system, and the output of system("g.version") too.
+
+ > sessionInfo()
+R version 2.6.0 (2007-10-03)
+i686-pc-linux-gnu
+
+locale:
+LC_CTYPE=en_GB.UTF-8;LC_NUMERIC=C;LC_TIME=en_GB.UTF-8;LC_COLLATE=en_GB.UTF-8;LC_MONETARY=en_GB.UTF-8;LC_MESSAGES=en_GB.UTF-8;LC_PAPER=en_GB.UTF-8;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_GB.UTF-8;LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] gstat_0.9-40    spgrass6_0.4-3  maptools_0.6-17 rgdal_0.5-15
+[5] sp_0.9-16       foreign_0.8-23
+
+loaded via a namespace (and not attached):
+[1] grid_2.6.0     lattice_0.16-5
+
+
+ > system("g.version")
+GRASS 6.2.2 (2007)
+ >
+
+
+
+> 
+> The *.wld file got put in the correct place, so the *.hdr ought to have 
+> been there too.
+> 
+> If you do debug(readBinGrid), you'll see where it fails now, about 4 
+> lines in. You could also do list.files(dirname(fname)) just before it 
+> fails in readBinGrid(), to check whether there ia anything else odd 
+> going on. Have you checked to see whether it has been written anywhere 
+> else?
+> 
+> Roger
+> 
+>>
+>>
+>>>  readRAST6("Hakea_seeds_2007")
+>> Creating BIL support files ...
+>> Header File = ld
+>> World File = 
+>> /home/rkrug/Documents/Projects/AlienSpread/R/../grass/simulation/.tmp/rkrug-linux/Hakea_seeds_2007.wld 
+>>
+>> Exporting Raster as double values(bytes=8)
+>> Using the Current Region settings ...
+>> north=6247000.000000
+>> south=6195000.000000
+>> east=270200.000000
+>> west=251000.000000
+>> r=520
+>> c=192
+>>
+>> Percent complete:
+>> r.out.bin complete.
+>> Error in readBinGrid(rtmpfl11, colname = vname[i], proj4string = p4, 
+>> integer = to_int) :
+>>  no such file: 
+>> /home/rkrug/Documents/Projects/AlienSpread/R/../grass/simulation/.tmp/rkrug-linux/Hakea_seeds_2007.hdr 
+>>
+>>>
+>>
+>> The contents of the folder are as follow:
+>>
+>> (grass):~/Documents/Projects/AlienSpread/grass/simulation/.tmp/rkrug-linux 
+>>
+>>>  ll Hakea*
+>> -rw-r--r-- 1 rkrug users 798720 2007-10-16 11:10 Hakea_seeds_2007
+>> -rw-r--r-- 1 rkrug users     60 2007-10-16 11:10 Hakea_seeds_2007.wld
+>> -rw-r--r-- 1 rkrug users 798720 2007-10-16 10:52 
+>> Hakea_seedsDispersed_2007
+>> -rw-r--r-- 1 rkrug users     60 2007-10-16 10:52 
+>> Hakea_seedsDispersed_2007.wld
+>> [Raster MASK present]
+>> GRASS 6.2.2 
+>> (grass):~/Documents/Projects/AlienSpread/grass/simulation/.tmp/rkrug-linux 
+>>
+>>>
+>>
+>> Is there something wrong in my paths or os there a bug?
+>>
+>> Thanks a lot,
+>>
+>>
+>> Rainer
+>>
+>>
+>> Roger Bivand wrote:
+>>>  A new version of the foundation sp package is reaching CRAN mirrors, 
+>>> and
+>>>  Windows and OSX binaries should follow within a day or so. There is a
+>>>  significant change in how SpatialGrid objects are created, which we 
+>>> hope
+>>>  will not affect users negatively, and which is giving a two orders of
+>>>  magnitude speedup for reading larger rasters (single band 900 by 
+>>> 3600 down
+>>>  from 12 minutes to 6 seconds on an older 1.5GHz machine).
+>>>
+>>>  If anyone sees any negative impacts, please contact the authors
+>>>  immediately directly.
+>>>
+>>>  Roger
+>>>
+>>
+> 
+
+
+From Roger.Bivand at nhh.no  Tue Oct 16 06:49:57 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] sp_0.9-16 source on CRAN
+In-Reply-To: <471490E8.4060504@krugs.de>
+References: <Pine.LNX.4.64.0710160944460.22362@reclus.nhh.no>
+	<47148187.8020004@krugs.de>
+	<Pine.LNX.4.64.0710161133551.22362@reclus.nhh.no>
+	<471490E8.4060504@krugs.de>
+Message-ID: <Pine.LNX.4.64.0710161232590.22362@reclus.nhh.no>
+
+On Tue, 16 Oct 2007, Rainer M Krug wrote:
+
+> Hi Roger
+>
+> first of all thanks a lot for your prompt reply. I tried it with two other 
+> raster layers, and one worked.
+>
+> I played around, and the problem seems top be the length of the output 
+> variable:
+>
+> GRASS 6.2.2 (grass):~/Documents/Projects/AlienSpread/R > r.out.bin -b 
+> input=Hakea_dc_2007 
+> output=/home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee 
+> null=-1
+> Creating BIL support files ...
+> Header File = eeeeee.wld          <<<<<<------HERE IT IS NOT
+> World File = 
+> /home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.wld
+> Exporting Raster as integer values (bytes=2)
+> Using the Current Region settings ...
+> north=6247000.000000
+> south=6195000.000000
+> east=270200.000000
+> west=251000.000000
+> r=520
+> c=192
+>
+> Percent complete:  100%
+> r.out.bin complete.
+> [Raster MASK present]
+> GRASS 6.2.2 (grass):~/Documents/Projects/AlienSpread/R > ll /home/rkrug/eee*
+> -rw-r--r-- 1 rkrug users 199680 2007-10-16 12:18 
+> /home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+> -rw-r--r-- 1 rkrug users     60 2007-10-16 12:18 
+> /home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.wld
+> [Raster MASK present]
+> GRASS 6.2.2 (grass):~/Documents/Projects/AlienSpread/R > r.out.bin -b 
+> input=Hakea_dc_2007 
+> output=/home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee 
+> null=-1
+> Creating BIL support files ...
+> Header File = 
+> /home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.hdr 
+> <<<<<<------HERE IT IS
+> World File = 
+> /home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.wld
+> Exporting Raster as integer values (bytes=2)
+> Using the Current Region settings ...
+> north=6247000.000000
+> south=6195000.000000
+> east=270200.000000
+> west=251000.000000
+> r=520
+> c=192
+>
+> Percent complete:  100%
+> r.out.bin complete.
+> [Raster MASK present]
+> GRASS 6.2.2 (grass):~/Documents/Projects/AlienSpread/R > ll /home/rkrug/eee*
+> -rw-r--r-- 1 rkrug users 199680 2007-10-16 12:18 
+> /home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+> -rw-r--r-- 1 rkrug users 199680 2007-10-16 12:18 
+> /home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+> -rw-r--r-- 1 rkrug users     60 2007-10-16 12:18 
+> /home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.wld
+> -rw-r--r-- 1 rkrug users     83 2007-10-16 12:18 
+> /home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.hdr
+> -rw-r--r-- 1 rkrug users     60 2007-10-16 12:18 
+> /home/rkrug/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.wld
+> [Raster MASK present]
+> GRASS 6.2.2 (grass):~/Documents/Projects/AlienSpread/R >
+>
+>
+> So it is a problem in grass itself.
+> I should be able to find a way around, but I should file a bug report.
+
+Yes, I should have remembered that something like it did come up before. I 
+can see email traffic from July this year, thread here:
+
+http://grass.itc.it/pipermail/statsgrass/2007-July/000619.html
+
+So it is fixed in CVS for 6.3 and in CVS for 6.2.3.
+
+Roger
+
+>
+> Thanks a million,
+>
+> Rainer
+>
+>
+>
+>
+> Roger Bivand wrote:
+>>  On Tue, 16 Oct 2007, Rainer M. Krug wrote:
+>> 
+>> >  Hi
+>> > 
+>> >  I just upgraded to the new version, and I get an error message when 
+>> >  importing an existing raster. The output is below.
+>>
+>>  This is not related to the sp update. Please do debug(readRAST6) and
+>>  re-run, stepping through until you pass the the setting of the command
+>>  string for r.out.bin. Please then print the cmd variable to screen and 
+>
+> debug: tull <- ifelse(.Platform$OS.type == "windows", system(cmd), 
+> system(cmd,
+>    ignore.stderr = ignore.stderr))
+> Browse[1]> cmd
+> [1] "r.out.bin -b input=Hakea_seeds_2007 
+> output=/home/rkrug/Documents/Projects/AlienSpread/R/../grass/simulation/.tmp/rkrug-linux/Hakea_seeds_2007 
+> null=-1"
+> Browse[1]>
+>
+>
+>>  copy&paste it. It should have a -b flag. Please also give the output of
+>>  sessionInfo() for your system, and the output of system("g.version") too.
+>
+>>  sessionInfo()
+> R version 2.6.0 (2007-10-03)
+> i686-pc-linux-gnu
+>
+> locale:
+> LC_CTYPE=en_GB.UTF-8;LC_NUMERIC=C;LC_TIME=en_GB.UTF-8;LC_COLLATE=en_GB.UTF-8;LC_MONETARY=en_GB.UTF-8;LC_MESSAGES=en_GB.UTF-8;LC_PAPER=en_GB.UTF-8;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_GB.UTF-8;LC_IDENTIFICATION=C
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base
+>
+> other attached packages:
+> [1] gstat_0.9-40    spgrass6_0.4-3  maptools_0.6-17 rgdal_0.5-15
+> [5] sp_0.9-16       foreign_0.8-23
+>
+> loaded via a namespace (and not attached):
+> [1] grid_2.6.0     lattice_0.16-5
+>
+>
+>>  system("g.version")
+> GRASS 6.2.2 (2007)
+>> 
+>
+>
+>
+>>
+>>  The *.wld file got put in the correct place, so the *.hdr ought to have
+>>  been there too.
+>>
+>>  If you do debug(readBinGrid), you'll see where it fails now, about 4 lines
+>>  in. You could also do list.files(dirname(fname)) just before it fails in
+>>  readBinGrid(), to check whether there ia anything else odd going on. Have
+>>  you checked to see whether it has been written anywhere else?
+>>
+>>  Roger
+>> 
+>> > 
+>> > 
+>> > >   readRAST6("Hakea_seeds_2007")
+>> >  Creating BIL support files ...
+>> >  Header File = ld
+>> >  World File = 
+>> >  /home/rkrug/Documents/Projects/AlienSpread/R/../grass/simulation/.tmp/rkrug-linux/Hakea_seeds_2007.wld 
+>> > 
+>> >  Exporting Raster as double values(bytes=8)
+>> >  Using the Current Region settings ...
+>> >  north=6247000.000000
+>> >  south=6195000.000000
+>> >  east=270200.000000
+>> >  west=251000.000000
+>> >  r=520
+>> >  c=192
+>> > 
+>> >  Percent complete:
+>> >  r.out.bin complete.
+>> >  Error in readBinGrid(rtmpfl11, colname = vname[i], proj4string = p4, 
+>> >  integer = to_int) :
+>> >  no such file: 
+>> >  /home/rkrug/Documents/Projects/AlienSpread/R/../grass/simulation/.tmp/rkrug-linux/Hakea_seeds_2007.hdr 
+>> > 
+>> > > 
+>> > 
+>> >  The contents of the folder are as follow:
+>> > 
+>> >  (grass):~/Documents/Projects/AlienSpread/grass/simulation/.tmp/rkrug-linux 
+>> > 
+>> > >   ll Hakea*
+>> >  -rw-r--r-- 1 rkrug users 798720 2007-10-16 11:10 Hakea_seeds_2007
+>> >  -rw-r--r-- 1 rkrug users     60 2007-10-16 11:10 Hakea_seeds_2007.wld
+>> >  -rw-r--r-- 1 rkrug users 798720 2007-10-16 10:52 
+>> >  Hakea_seedsDispersed_2007
+>> >  -rw-r--r-- 1 rkrug users     60 2007-10-16 10:52 
+>> >  Hakea_seedsDispersed_2007.wld
+>> >  [Raster MASK present]
+>> >  GRASS 6.2.2 
+>> >  (grass):~/Documents/Projects/AlienSpread/grass/simulation/.tmp/rkrug-linux 
+>> > 
+>> > > 
+>> > 
+>> >  Is there something wrong in my paths or os there a bug?
+>> > 
+>> >  Thanks a lot,
+>> > 
+>> > 
+>> >  Rainer
+>> > 
+>> > 
+>> >  Roger Bivand wrote:
+>> > >  A new version of the foundation sp package is reaching CRAN mirrors, 
+>> > >  and
+>> > >   Windows and OSX binaries should follow within a day or so. There is a
+>> > >   significant change in how SpatialGrid objects are created, which we 
+>> > >  hope
+>> > >   will not affect users negatively, and which is giving a two orders of
+>> > >   magnitude speedup for reading larger rasters (single band 900 by 
+>> > >  3600 down
+>> > >   from 12 minutes to 6 seconds on an older 1.5GHz machine).
+>> > > 
+>> > >   If anyone sees any negative impacts, please contact the authors
+>> > >   immediately directly.
+>> > > 
+>> > >   Roger
+>> > > 
+>> >
+>> 
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From Rainer+grass at krugs.de  Tue Oct 16 06:49:30 2007
+From: Rainer+grass at krugs.de (Rainer M Krug)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] sp_0.9-16 source on CRAN
+In-Reply-To: <Pine.LNX.4.64.0710161232590.22362@reclus.nhh.no>
+References: <Pine.LNX.4.64.0710160944460.22362@reclus.nhh.no>
+	<47148187.8020004@krugs.de>
+	<Pine.LNX.4.64.0710161133551.22362@reclus.nhh.no>
+	<471490E8.4060504@krugs.de>
+	<Pine.LNX.4.64.0710161232590.22362@reclus.nhh.no>
+Message-ID: <4714973A.3080201@krugs.de>
+
+Roger Bivand wrote:
+> On Tue, 16 Oct 2007, Rainer M Krug wrote:
+> 
+>> Hi Roger
+>>
+>> first of all thanks a lot for your prompt reply. I tried it with two 
+>> other raster layers, and one worked.
+>>
+>> I played around, and the problem seems top be the length of the output 
+>> variable:
+>>
+SNIP
+>>
+>>
+>> So it is a problem in grass itself.
+>> I should be able to find a way around, but I should file a bug report.
+> 
+> Yes, I should have remembered that something like it did come up before. 
+> I can see email traffic from July this year, thread here:
+> 
+> http://grass.itc.it/pipermail/statsgrass/2007-July/000619.html
+> 
+> So it is fixed in CVS for 6.3 and in CVS for 6.2.3.
+
+Thanks a lot for all your help - I'll work around the problem .
+And it is really MUCH faster now.
+
+Rainer
+
+
+> 
+> Roger
+> 
+>>
+>> Thanks a million,
+>>
+>> Rainer
+>>
+>>
+>>
+>>
+>> Roger Bivand wrote:
+>>>  On Tue, 16 Oct 2007, Rainer M. Krug wrote:
+>>>
+>>> >  Hi
+>>> > >  I just upgraded to the new version, and I get an error message 
+>>> when >  importing an existing raster. The output is below.
+>>>
+>>>  This is not related to the sp update. Please do debug(readRAST6) and
+>>>  re-run, stepping through until you pass the the setting of the command
+>>>  string for r.out.bin. Please then print the cmd variable to screen and 
+>>
+>> debug: tull <- ifelse(.Platform$OS.type == "windows", system(cmd), 
+>> system(cmd,
+>>    ignore.stderr = ignore.stderr))
+>> Browse[1]> cmd
+>> [1] "r.out.bin -b input=Hakea_seeds_2007 
+>> output=/home/rkrug/Documents/Projects/AlienSpread/R/../grass/simulation/.tmp/rkrug-linux/Hakea_seeds_2007 
+>> null=-1"
+>> Browse[1]>
+>>
+>>
+>>>  copy&paste it. It should have a -b flag. Please also give the output of
+>>>  sessionInfo() for your system, and the output of system("g.version") 
+>>> too.
+>>
+>>>  sessionInfo()
+>> R version 2.6.0 (2007-10-03)
+>> i686-pc-linux-gnu
+>>
+>> locale:
+>> LC_CTYPE=en_GB.UTF-8;LC_NUMERIC=C;LC_TIME=en_GB.UTF-8;LC_COLLATE=en_GB.UTF-8;LC_MONETARY=en_GB.UTF-8;LC_MESSAGES=en_GB.UTF-8;LC_PAPER=en_GB.UTF-8;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_GB.UTF-8;LC_IDENTIFICATION=C 
+>>
+>>
+>> attached base packages:
+>> [1] stats     graphics  grDevices utils     datasets  methods   base
+>>
+>> other attached packages:
+>> [1] gstat_0.9-40    spgrass6_0.4-3  maptools_0.6-17 rgdal_0.5-15
+>> [5] sp_0.9-16       foreign_0.8-23
+>>
+>> loaded via a namespace (and not attached):
+>> [1] grid_2.6.0     lattice_0.16-5
+>>
+>>
+>>>  system("g.version")
+>> GRASS 6.2.2 (2007)
+>>>
+>>
+>>
+>>
+>>>
+>>>  The *.wld file got put in the correct place, so the *.hdr ought to have
+>>>  been there too.
+>>>
+>>>  If you do debug(readBinGrid), you'll see where it fails now, about 4 
+>>> lines
+>>>  in. You could also do list.files(dirname(fname)) just before it 
+>>> fails in
+>>>  readBinGrid(), to check whether there ia anything else odd going on. 
+>>> Have
+>>>  you checked to see whether it has been written anywhere else?
+>>>
+>>>  Roger
+>>>
+>>> > > > >   readRAST6("Hakea_seeds_2007")
+>>> >  Creating BIL support files ...
+>>> >  Header File = ld
+>>> >  World File = >  
+>>> /home/rkrug/Documents/Projects/AlienSpread/R/../grass/simulation/.tmp/rkrug-linux/Hakea_seeds_2007.wld 
+>>> > >  Exporting Raster as double values(bytes=8)
+>>> >  Using the Current Region settings ...
+>>> >  north=6247000.000000
+>>> >  south=6195000.000000
+>>> >  east=270200.000000
+>>> >  west=251000.000000
+>>> >  r=520
+>>> >  c=192
+>>> > >  Percent complete:
+>>> >  r.out.bin complete.
+>>> >  Error in readBinGrid(rtmpfl11, colname = vname[i], proj4string = 
+>>> p4, >  integer = to_int) :
+>>> >  no such file: >  
+>>> /home/rkrug/Documents/Projects/AlienSpread/R/../grass/simulation/.tmp/rkrug-linux/Hakea_seeds_2007.hdr 
+>>> > > > > >  The contents of the folder are as follow:
+>>> > >  
+>>> (grass):~/Documents/Projects/AlienSpread/grass/simulation/.tmp/rkrug-linux 
+>>> > > >   ll Hakea*
+>>> >  -rw-r--r-- 1 rkrug users 798720 2007-10-16 11:10 Hakea_seeds_2007
+>>> >  -rw-r--r-- 1 rkrug users     60 2007-10-16 11:10 Hakea_seeds_2007.wld
+>>> >  -rw-r--r-- 1 rkrug users 798720 2007-10-16 10:52 >  
+>>> Hakea_seedsDispersed_2007
+>>> >  -rw-r--r-- 1 rkrug users     60 2007-10-16 10:52 >  
+>>> Hakea_seedsDispersed_2007.wld
+>>> >  [Raster MASK present]
+>>> >  GRASS 6.2.2 >  
+>>> (grass):~/Documents/Projects/AlienSpread/grass/simulation/.tmp/rkrug-linux 
+>>> > > > > >  Is there something wrong in my paths or os there a bug?
+>>> > >  Thanks a lot,
+>>> > > >  Rainer
+>>> > > >  Roger Bivand wrote:
+>>> > >  A new version of the foundation sp package is reaching CRAN 
+>>> mirrors, > >  and
+>>> > >   Windows and OSX binaries should follow within a day or so. 
+>>> There is a
+>>> > >   significant change in how SpatialGrid objects are created, 
+>>> which we > >  hope
+>>> > >   will not affect users negatively, and which is giving a two 
+>>> orders of
+>>> > >   magnitude speedup for reading larger rasters (single band 900 
+>>> by > >  3600 down
+>>> > >   from 12 minutes to 6 seconds on an older 1.5GHz machine).
+>>> > > > >   If anyone sees any negative impacts, please contact the 
+>>> authors
+>>> > >   immediately directly.
+>>> > > > >   Roger
+>>> > > >
+>>>
+>>
+> 
+
+
+From neteler at itc.it  Tue Oct 16 06:59:15 2007
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] sp_0.9-16 source on CRAN
+In-Reply-To: <Pine.LNX.4.64.0710161232590.22362@reclus.nhh.no>
+References: <Pine.LNX.4.64.0710160944460.22362@reclus.nhh.no>
+	<47148187.8020004@krugs.de>
+	<Pine.LNX.4.64.0710161133551.22362@reclus.nhh.no>
+	<471490E8.4060504@krugs.de>
+	<Pine.LNX.4.64.0710161232590.22362@reclus.nhh.no>
+Message-ID: <20071016105915.GL24662@bartok.itc.it>
+
+On Tue, Oct 16, 2007 at 12:49:57PM +0200, Roger Bivand wrote:
+> On Tue, 16 Oct 2007, Rainer M Krug wrote:
+...
+> > So it is a problem in grass itself.
+> > I should be able to find a way around, but I should file a bug report.
+> 
+> Yes, I should have remembered that something like it did come up before. I
+> can see email traffic from July this year, thread here:
+> 
+> http://grass.itc.it/pipermail/statsgrass/2007-July/000619.html
+> 
+> So it is fixed in CVS for 6.3 and in CVS for 6.2.3.
+
+We should have 6.2.3 shortly (days), once Moritz has fixed
+another gis.m issue.
+
+Markus
+
+------------------
+ITC -> dall'1 marzo 2007 Fondazione Bruno Kessler
+ITC -> since 1 March 2007 Fondazione Bruno Kessler
+------------------
+
+
+From Rainer at krugs.de  Tue Oct 16 07:19:57 2007
+From: Rainer at krugs.de (Rainer M. Krug)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] sp_0.9-16 source on CRAN
+In-Reply-To: <20071016105915.GL24662@bartok.itc.it>
+References: <Pine.LNX.4.64.0710160944460.22362@reclus.nhh.no>	<47148187.8020004@krugs.de>	<Pine.LNX.4.64.0710161133551.22362@reclus.nhh.no>	<471490E8.4060504@krugs.de>	<Pine.LNX.4.64.0710161232590.22362@reclus.nhh.no>
+	<20071016105915.GL24662@bartok.itc.it>
+Message-ID: <47149E5D.6080102@krugs.de>
+
+Markus Neteler wrote:
+> On Tue, Oct 16, 2007 at 12:49:57PM +0200, Roger Bivand wrote:
+>> On Tue, 16 Oct 2007, Rainer M Krug wrote:
+> ...
+>>> So it is a problem in grass itself.
+>>> I should be able to find a way around, but I should file a bug report.
+>> Yes, I should have remembered that something like it did come up before. I
+>> can see email traffic from July this year, thread here:
+>>
+>> http://grass.itc.it/pipermail/statsgrass/2007-July/000619.html
+>>
+>> So it is fixed in CVS for 6.3 and in CVS for 6.2.3.
+> 
+> We should have 6.2.3 shortly (days), once Moritz has fixed
+> another gis.m issue.
+
+Good news
+
+Rainer
+
+> 
+> Markus
+> 
+> ------------------
+> ITC -> dall'1 marzo 2007 Fondazione Bruno Kessler
+> ITC -> since 1 March 2007 Fondazione Bruno Kessler
+> ------------------
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+-- 
+NEW EMAIL ADDRESS AND ADDRESS:
+
+Rainer.Krug@uct.ac.za
+
+RKrug@sun.ac.za WILL BE DISCONTINUED END OF MARCH
+
+Rainer M. Krug, Dipl. Phys. (Germany), MSc Conservation
+Biology (UCT)
+
+Plant Conservation Unit
+Department of Botany
+University of Cape Town
+Rondebosch 7701
+South Africa
+
+Tel:		+27 - (0)21 650 5776 (w)
+Fax:		+27 - (0)86 516 2782
+Fax:		+27 - (0)21 650 2440 (w)
+Cell:		+27 - (0)83 9479 042
+
+Skype:		RMkrug
+
+email:	Rainer.Krug@uct.ac.za
+       	Rainer@krugs.de
+
+
+From Rainer+grass at krugs.de  Tue Oct 16 09:57:59 2007
+From: Rainer+grass at krugs.de (Rainer M Krug)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] "Neighbourhood modifier" from r.mapcalc in R?
+Message-ID: <4714C367.1030806@krugs.de>
+
+Hi
+
+I want to do some map calculations which involve binominal distributed 
+random numbers which I can not obtain in r.mapcalc. Therefore I import 
+the raster via readRAST6() into R and I want to do the calculations 
+there. But I am stuck...
+
+In r.mapcalc I use somthing like
+
+OUTPUT=INPUT1[-2,-2]*INPUT2+INPUT1[+2,+2]*INPUT2
+
+How can I translate this into R?
+
+rA <- readRAST6("INPUT1")
+rB <- readRAST6("INPUT2")
+but now?
+
+rA$A gives me all cell values,
+rA[1:2,1:2]$A gives me the cell values from columns and row 1 and 2,
+
+But I have no idea where I should put the offset in.
+
+Rainer
+
+
+From Thomas.Adams at noaa.gov  Tue Oct 16 11:56:24 2007
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] spgrass6 compile problem
+In-Reply-To: <Pine.LNX.4.64.0710161232590.22362@reclus.nhh.no>
+References: <Pine.LNX.4.64.0710160944460.22362@reclus.nhh.no>
+	<47148187.8020004@krugs.de>
+	<Pine.LNX.4.64.0710161133551.22362@reclus.nhh.no>
+	<471490E8.4060504@krugs.de>
+	<Pine.LNX.4.64.0710161232590.22362@reclus.nhh.no>
+Message-ID: <4714DF28.7000102@noaa.gov>
+
+Roger,
+
+I am trying to compile spgrass6 on a Linux system with R 2.6.0. I have 
+compiled all the dependencies without problems, but I am getting:
+
+xt4-tir:adams> R CMD INSTALL spgrass6_0.4-3.tar.gz
+* Installing to library '/awips/rep/lx/local_apps/R.dir/lib/R/library'
+* Installing *source* package 'spgrass6' ...
+** R
+** inst
+** preparing package for lazy loading
+Loading required package: sp
+Loading required package: maptools
+Loading required package: foreign
+Loading required package: rgdal
+Error in dyn.load(file, ...) :
+  unable to load shared library 
+'/awips/rep/lx/local_apps/R.dir/lib/R/library/rgdal/libs/rgdal.so':
+  /awips/hydro/lx/gcc_shlibs/libgcc_s.so.1: version `GCC_3.3' not found 
+(required by /usr/lib/libstdc++.so.6)
+Error: package 'rgdal' could not be loaded
+Execution halted
+ERROR: lazy loading failed for package 'spgrass6'
+** Removing '/awips/rep/lx/local_apps/R.dir/lib/R/library/spgrass6'
+** Restoring previous 
+'/awips/rep/lx/local_apps/R.dir/lib/R/library/spgrass6'
+
+I don't understand this:
+
+  /awips/hydro/lx/gcc_shlibs/libgcc_s.so.1: version `GCC_3.3' not found 
+(required by /usr/lib/libstdc++.so.6)
+
+Do you have any insights? I have previously compiled spgrass6 without 
+problems. But we have had some system changes since that time. System 
+requirements force me to install in a non-standard location.
+
+Regards,
+Tom
+
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+
+From Roger.Bivand at nhh.no  Tue Oct 16 11:59:25 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] "Neighbourhood modifier" from r.mapcalc in R?
+In-Reply-To: <4714C367.1030806@krugs.de>
+References: <4714C367.1030806@krugs.de>
+Message-ID: <Pine.LNX.4.64.0710161749030.22362@reclus.nhh.no>
+
+On Tue, 16 Oct 2007, Rainer M Krug wrote:
+
+> Hi
+>
+> I want to do some map calculations which involve binominal distributed random 
+> numbers which I can not obtain in r.mapcalc. Therefore I import the raster 
+> via readRAST6() into R and I want to do the calculations there. But I am 
+> stuck...
+>
+> In r.mapcalc I use somthing like
+>
+> OUTPUT=INPUT1[-2,-2]*INPUT2+INPUT1[+2,+2]*INPUT2
+>
+> How can I translate this into R?
+>
+> rA <- readRAST6("INPUT1")
+> rB <- readRAST6("INPUT2")
+> but now?
+>
+> rA$A gives me all cell values,
+> rA[1:2,1:2]$A gives me the cell values from columns and row 1 and 2,
+>
+> But I have no idea where I should put the offset in.
+
+As designed, the SpatialGridDataFrame objects are intended to have the 
+same regions in the g.region sense. They do have grid slots, and you could 
+shift the whole grid by changing the cellcentre.offset slot in the 
+GridTopology object in the grid slot, and update the bbox. This would give 
+grids that are offset in relation to each other, but to get the values 
+across all offset grids, you'd need to back the original SpatialGrid out 
+to SpatialPoints, and use the overlay() method for SpatialPoints and 
+SpatialGridDataFrame objects.
+
+An alternative that would need coding is to look inside the "[" method for 
+SpatialGridDataFrame objects (which you refer to above) and see how one 
+might write a relative reference function which would not subset on the i 
+and j arguments, but shift by row and column.
+
+Probably the first alternative involves less work.
+
+Roger
+
+>
+> Rainer
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From Roger.Bivand at nhh.no  Tue Oct 16 12:09:23 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] Re: spgrass6 compile problem
+In-Reply-To: <4714DF28.7000102@noaa.gov>
+References: <Pine.LNX.4.64.0710160944460.22362@reclus.nhh.no>
+	<47148187.8020004@krugs.de>
+	<Pine.LNX.4.64.0710161133551.22362@reclus.nhh.no>
+	<471490E8.4060504@krugs.de>
+	<Pine.LNX.4.64.0710161232590.22362@reclus.nhh.no>
+	<4714DF28.7000102@noaa.gov>
+Message-ID: <Pine.LNX.4.64.0710161801550.22362@reclus.nhh.no>
+
+On Tue, 16 Oct 2007, Thomas Adams wrote:
+
+> Roger,
+>
+> I am trying to compile spgrass6 on a Linux system with R 2.6.0. I have 
+> compiled all the dependencies without problems, but I am getting:
+>
+> xt4-tir:adams> R CMD INSTALL spgrass6_0.4-3.tar.gz
+> * Installing to library '/awips/rep/lx/local_apps/R.dir/lib/R/library'
+> * Installing *source* package 'spgrass6' ...
+> ** R
+> ** inst
+> ** preparing package for lazy loading
+> Loading required package: sp
+> Loading required package: maptools
+> Loading required package: foreign
+> Loading required package: rgdal
+> Error in dyn.load(file, ...) :
+> unable to load shared library 
+> '/awips/rep/lx/local_apps/R.dir/lib/R/library/rgdal/libs/rgdal.so':
+> /awips/hydro/lx/gcc_shlibs/libgcc_s.so.1: version `GCC_3.3' not found 
+> (required by /usr/lib/libstdc++.so.6)
+> Error: package 'rgdal' could not be loaded
+> Execution halted
+> ERROR: lazy loading failed for package 'spgrass6'
+> ** Removing '/awips/rep/lx/local_apps/R.dir/lib/R/library/spgrass6'
+> ** Restoring previous '/awips/rep/lx/local_apps/R.dir/lib/R/library/spgrass6'
+>
+> I don't understand this:
+>
+> /awips/hydro/lx/gcc_shlibs/libgcc_s.so.1: version `GCC_3.3' not found 
+> (required by /usr/lib/libstdc++.so.6)
+>
+> Do you have any insights? I have previously compiled spgrass6 without 
+> problems. But we have had some system changes since that time. System 
+> requirements force me to install in a non-standard location.
+
+What happens if you start R, say library(rgdal), and try to do - say - 
+example(readGDAL)? If the same happens, then most likely rgdal was 
+installed before the system upgrade, and you now have g++4, meaning that 
+the dependencies of rgdal (or GDAL as a whole) are no longer met.
+
+If library(rgdal) fails as I suspect, you'll need to re-install it:
+
+install.packages("rgdal")
+
+ought to be enough, though GDAL may also need to be re-installed (all C++ 
+programs are sensitive to build train upgrades, much more so than C 
+programs). You may also do
+
+update.packages(checkBuilt=TRUE)
+
+which will freshen all the installed packages built with R < 2.6.
+
+If rgdal itself works, then sorry, no idea. Maybe somebody on the list 
+(STATGRASS, R-sig-geo) may have seen something similar. How were R and 
+GDAL installed, from source? What does g++ -v say?
+
+Roger
+
+
+>
+> Regards,
+> Tom
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From Agustin.Lobo at ija.csic.es  Tue Oct 16 12:51:28 2007
+From: Agustin.Lobo at ija.csic.es (Agustin Lobo)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] "Neighbourhood modifier" from r.mapcalc in R?
+In-Reply-To: <4714C367.1030806@krugs.de>
+References: <4714C367.1030806@krugs.de>
+Message-ID: <4714EC10.8060204@ija.csic.es>
+
+Have you tried shift.im() from spat.stats to create the two
+shifted rasters first and then operate with them?
+Or perhaps extracting the matrix from the sp object and doing
+the same in matrix notation. For example, if INPUT1 is a matrix,
+then
+INPUT1NW <- cbind(INPUT1[,-(1:2)],NA*INPUT1[,1:2])
+INPUT1NW <- rbind(INPUT1NW[-(1:2),],NA*INPUT1NW[1:2,])
+and an equivalent for the SE shift (INPUT1SE)
+
+Then
+OUTPUT <- INPUT1NW*INPUT2 + INPUT1SE*INPUT2
+
+and make an sp object with OUTPUT
+
+Agus
+
+
+
+Rainer M Krug escribi?:
+> Hi
+> 
+> I want to do some map calculations which involve binominal distributed 
+> random numbers which I can not obtain in r.mapcalc. Therefore I import 
+> the raster via readRAST6() into R and I want to do the calculations 
+> there. But I am stuck...
+> 
+> In r.mapcalc I use somthing like
+> 
+> OUTPUT=INPUT1[-2,-2]*INPUT2+INPUT1[+2,+2]*INPUT2
+> 
+> How can I translate this into R?
+> 
+> rA <- readRAST6("INPUT1")
+> rB <- readRAST6("INPUT2")
+> but now?
+> 
+> rA$A gives me all cell values,
+> rA[1:2,1:2]$A gives me the cell values from columns and row 1 and 2,
+> 
+> But I have no idea where I should put the offset in.
+> 
+> Rainer
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Dr. Agustin Lobo
+Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+LLuis Sole Sabaris s/n
+08028 Barcelona
+Spain
+Tel. 34 934095410
+Fax. 34 934110012
+email: Agustin.Lobo@ija.csic.es
+http://www.ija.csic.es/gt/obster
+
+
+From Rainer+grass at krugs.de  Wed Oct 17 03:49:17 2007
+From: Rainer+grass at krugs.de (Rainer M Krug)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] "Neighbourhood modifier" from r.mapcalc in R?
+In-Reply-To: <Pine.LNX.4.64.0710161749030.22362@reclus.nhh.no>
+References: <4714C367.1030806@krugs.de>
+	<Pine.LNX.4.64.0710161749030.22362@reclus.nhh.no>
+Message-ID: <4715BE7D.1020004@krugs.de>
+
+Thanks - I'll look into your suggestions later this week.
+
+Rainer
+
+Roger Bivand wrote:
+> On Tue, 16 Oct 2007, Rainer M Krug wrote:
+> 
+>> Hi
+>>
+>> I want to do some map calculations which involve binominal distributed 
+>> random numbers which I can not obtain in r.mapcalc. Therefore I import 
+>> the raster via readRAST6() into R and I want to do the calculations 
+>> there. But I am stuck...
+>>
+>> In r.mapcalc I use somthing like
+>>
+>> OUTPUT=INPUT1[-2,-2]*INPUT2+INPUT1[+2,+2]*INPUT2
+>>
+>> How can I translate this into R?
+>>
+>> rA <- readRAST6("INPUT1")
+>> rB <- readRAST6("INPUT2")
+>> but now?
+>>
+>> rA$A gives me all cell values,
+>> rA[1:2,1:2]$A gives me the cell values from columns and row 1 and 2,
+>>
+>> But I have no idea where I should put the offset in.
+> 
+> As designed, the SpatialGridDataFrame objects are intended to have the 
+> same regions in the g.region sense. They do have grid slots, and you 
+> could shift the whole grid by changing the cellcentre.offset slot in the 
+> GridTopology object in the grid slot, and update the bbox. This would 
+> give grids that are offset in relation to each other, but to get the 
+> values across all offset grids, you'd need to back the original 
+> SpatialGrid out to SpatialPoints, and use the overlay() method for 
+> SpatialPoints and SpatialGridDataFrame objects.
+> 
+> An alternative that would need coding is to look inside the "[" method 
+> for SpatialGridDataFrame objects (which you refer to above) and see how 
+> one might write a relative reference function which would not subset on 
+> the i and j arguments, but shift by row and column.
+> 
+> Probably the first alternative involves less work.
+> 
+> Roger
+> 
+>>
+>> Rainer
+>>
+>> _______________________________________________
+>> statsgrass mailing list
+>> statsgrass@grass.itc.it
+>> http://grass.itc.it/mailman/listinfo/statsgrass
+>>
+>>
+> 
+
+
+From Rainer+grass at krugs.de  Wed Oct 17 03:51:10 2007
+From: Rainer+grass at krugs.de (Rainer M Krug)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] "Neighbourhood modifier" from r.mapcalc in R?
+In-Reply-To: <4714EC10.8060204@ija.csic.es>
+References: <4714C367.1030806@krugs.de> <4714EC10.8060204@ija.csic.es>
+Message-ID: <4715BEEE.1080009@krugs.de>
+
+Hi
+
+Thanks for pointing out shift.im() and the matrix notation - I was 
+thinking along the same lines and will look into it again later this week
+
+Rainer
+
+
+Agustin Lobo wrote:
+> Have you tried shift.im() from spat.stats to create the two
+> shifted rasters first and then operate with them?
+> Or perhaps extracting the matrix from the sp object and doing
+> the same in matrix notation. For example, if INPUT1 is a matrix,
+> then
+> INPUT1NW <- cbind(INPUT1[,-(1:2)],NA*INPUT1[,1:2])
+> INPUT1NW <- rbind(INPUT1NW[-(1:2),],NA*INPUT1NW[1:2,])
+> and an equivalent for the SE shift (INPUT1SE)
+> 
+> Then
+> OUTPUT <- INPUT1NW*INPUT2 + INPUT1SE*INPUT2
+> 
+> and make an sp object with OUTPUT
+> 
+> Agus
+> 
+> 
+> 
+> Rainer M Krug escribi?:
+>> Hi
+>>
+>> I want to do some map calculations which involve binominal distributed 
+>> random numbers which I can not obtain in r.mapcalc. Therefore I import 
+>> the raster via readRAST6() into R and I want to do the calculations 
+>> there. But I am stuck...
+>>
+>> In r.mapcalc I use somthing like
+>>
+>> OUTPUT=INPUT1[-2,-2]*INPUT2+INPUT1[+2,+2]*INPUT2
+>>
+>> How can I translate this into R?
+>>
+>> rA <- readRAST6("INPUT1")
+>> rB <- readRAST6("INPUT2")
+>> but now?
+>>
+>> rA$A gives me all cell values,
+>> rA[1:2,1:2]$A gives me the cell values from columns and row 1 and 2,
+>>
+>> But I have no idea where I should put the offset in.
+>>
+>> Rainer
+>>
+>> _______________________________________________
+>> statsgrass mailing list
+>> statsgrass@grass.itc.it
+>> http://grass.itc.it/mailman/listinfo/statsgrass
+>>
+> 
+
+
+From Thomas.Adams at noaa.gov  Wed Oct 17 08:09:01 2007
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] Re: spgrass6 compile problem
+In-Reply-To: <Pine.LNX.4.64.0710161801550.22362@reclus.nhh.no>
+References: <Pine.LNX.4.64.0710160944460.22362@reclus.nhh.no>
+	<47148187.8020004@krugs.de>
+	<Pine.LNX.4.64.0710161133551.22362@reclus.nhh.no>
+	<471490E8.4060504@krugs.de>
+	<Pine.LNX.4.64.0710161232590.22362@reclus.nhh.no>
+	<4714DF28.7000102@noaa.gov>
+	<Pine.LNX.4.64.0710161801550.22362@reclus.nhh.no>
+Message-ID: <4715FB5D.8000302@noaa.gov>
+
+Roger,
+
+Thank you very much for your suggestions. rgdal did fail to load into R. 
+It turns out that the version of g++ is 3.4.4 implying some kind of 
+mismatch between it and the shared library ../gcc_shlibs/libgcc_s.so.1, 
+which I believe is unused anyhow. So, I simply moved it to another name. 
+Can't see that that has caused any problems.
+
+Anyhow, I have re-compiled gdal, R 2.6.0, sp, and rgdal and now I am 
+getting the following message, which is even more perplexing to me:
+
+ > library(rgdal)
+Error in dyn.load(file, ...) :
+  unable to load shared library 
+'/awips/rep/lx/local_apps/R.dir/lib/R/library/rgdal/libs/rgdal.so':
+  /awips/rep/lx/local_apps/R.dir/lib/R/library/rgdal/libs/rgdal.so: 
+undefined symbol: OGR_G_GetY
+Error: package/namespace load failed for 'rgdal'
+
+which seems to imply (I think) that rgdal is not finding gdal when 
+trying to load; is this correct?
+
+Regards,
+Tom
+
+
+Roger Bivand wrote:
+> On Tue, 16 Oct 2007, Thomas Adams wrote:
+>
+>> Roger,
+>>
+>> I am trying to compile spgrass6 on a Linux system with R 2.6.0. I 
+>> have compiled all the dependencies without problems, but I am getting:
+>>
+>> xt4-tir:adams> R CMD INSTALL spgrass6_0.4-3.tar.gz
+>> * Installing to library '/awips/rep/lx/local_apps/R.dir/lib/R/library'
+>> * Installing *source* package 'spgrass6' ...
+>> ** R
+>> ** inst
+>> ** preparing package for lazy loading
+>> Loading required package: sp
+>> Loading required package: maptools
+>> Loading required package: foreign
+>> Loading required package: rgdal
+>> Error in dyn.load(file, ...) :
+>> unable to load shared library 
+>> '/awips/rep/lx/local_apps/R.dir/lib/R/library/rgdal/libs/rgdal.so':
+>> /awips/hydro/lx/gcc_shlibs/libgcc_s.so.1: version `GCC_3.3' not found 
+>> (required by /usr/lib/libstdc++.so.6)
+>> Error: package 'rgdal' could not be loaded
+>> Execution halted
+>> ERROR: lazy loading failed for package 'spgrass6'
+>> ** Removing '/awips/rep/lx/local_apps/R.dir/lib/R/library/spgrass6'
+>> ** Restoring previous 
+>> '/awips/rep/lx/local_apps/R.dir/lib/R/library/spgrass6'
+>>
+>> I don't understand this:
+>>
+>> /awips/hydro/lx/gcc_shlibs/libgcc_s.so.1: version `GCC_3.3' not found 
+>> (required by /usr/lib/libstdc++.so.6)
+>>
+>> Do you have any insights? I have previously compiled spgrass6 without 
+>> problems. But we have had some system changes since that time. System 
+>> requirements force me to install in a non-standard location.
+>
+> What happens if you start R, say library(rgdal), and try to do - say - 
+> example(readGDAL)? If the same happens, then most likely rgdal was 
+> installed before the system upgrade, and you now have g++4, meaning 
+> that the dependencies of rgdal (or GDAL as a whole) are no longer met.
+>
+> If library(rgdal) fails as I suspect, you'll need to re-install it:
+>
+> install.packages("rgdal")
+>
+> ought to be enough, though GDAL may also need to be re-installed (all 
+> C++ programs are sensitive to build train upgrades, much more so than 
+> C programs). You may also do
+>
+> update.packages(checkBuilt=TRUE)
+>
+> which will freshen all the installed packages built with R < 2.6.
+>
+> If rgdal itself works, then sorry, no idea. Maybe somebody on the list 
+> (STATGRASS, R-sig-geo) may have seen something similar. How were R and 
+> GDAL installed, from source? What does g++ -v say?
+>
+> Roger
+>
+>
+>>
+>> Regards,
+>> Tom
+>>
+>>
+>>
+>
+
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+
+From Roger.Bivand at nhh.no  Wed Oct 17 08:20:54 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] Re: spgrass6 compile problem
+In-Reply-To: <4715FB5D.8000302@noaa.gov>
+References: <Pine.LNX.4.64.0710160944460.22362@reclus.nhh.no>
+	<47148187.8020004@krugs.de>
+	<Pine.LNX.4.64.0710161133551.22362@reclus.nhh.no>
+	<471490E8.4060504@krugs.de>
+	<Pine.LNX.4.64.0710161232590.22362@reclus.nhh.no>
+	<4714DF28.7000102@noaa.gov>
+	<Pine.LNX.4.64.0710161801550.22362@reclus.nhh.no>
+	<4715FB5D.8000302@noaa.gov>
+Message-ID: <Pine.LNX.4.64.0710171418280.4042@reclus.nhh.no>
+
+On Wed, 17 Oct 2007, Thomas Adams wrote:
+
+> Roger,
+>
+> Thank you very much for your suggestions. rgdal did fail to load into R. It 
+> turns out that the version of g++ is 3.4.4 implying some kind of mismatch 
+> between it and the shared library ../gcc_shlibs/libgcc_s.so.1, which I 
+> believe is unused anyhow. So, I simply moved it to another name. Can't see 
+> that that has caused any problems.
+>
+> Anyhow, I have re-compiled gdal, R 2.6.0, sp, and rgdal and now I am getting 
+> the following message, which is even more perplexing to me:
+>
+>>  library(rgdal)
+> Error in dyn.load(file, ...) :
+> unable to load shared library 
+> '/awips/rep/lx/local_apps/R.dir/lib/R/library/rgdal/libs/rgdal.so':
+> /awips/rep/lx/local_apps/R.dir/lib/R/library/rgdal/libs/rgdal.so: undefined 
+> symbol: OGR_G_GetY
+> Error: package/namespace load failed for 'rgdal'
+>
+> which seems to imply (I think) that rgdal is not finding gdal when trying to 
+> load; is this correct?
+
+Well, it has found something, but it hasn't found at least one function 
+inside that something. Are the ogr* utilities working from gdal directly, 
+that is not using R? Does v.in.ogr in GRASS still work?
+
+Roger
+
+>
+> Regards,
+> Tom
+>
+>
+> Roger Bivand wrote:
+>>  On Tue, 16 Oct 2007, Thomas Adams wrote:
+>> 
+>> >  Roger,
+>> > 
+>> >  I am trying to compile spgrass6 on a Linux system with R 2.6.0. I have 
+>> >  compiled all the dependencies without problems, but I am getting:
+>> > 
+>> >  xt4-tir:adams> R CMD INSTALL spgrass6_0.4-3.tar.gz
+>> >  * Installing to library '/awips/rep/lx/local_apps/R.dir/lib/R/library'
+>> >  * Installing *source* package 'spgrass6' ...
+>> >  ** R
+>> >  ** inst
+>> >  ** preparing package for lazy loading
+>> >  Loading required package: sp
+>> >  Loading required package: maptools
+>> >  Loading required package: foreign
+>> >  Loading required package: rgdal
+>> >  Error in dyn.load(file, ...) :
+>> >  unable to load shared library 
+>> >  '/awips/rep/lx/local_apps/R.dir/lib/R/library/rgdal/libs/rgdal.so':
+>> >  /awips/hydro/lx/gcc_shlibs/libgcc_s.so.1: version `GCC_3.3' not found 
+>> >  (required by /usr/lib/libstdc++.so.6)
+>> >  Error: package 'rgdal' could not be loaded
+>> >  Execution halted
+>> >  ERROR: lazy loading failed for package 'spgrass6'
+>> >  ** Removing '/awips/rep/lx/local_apps/R.dir/lib/R/library/spgrass6'
+>> >  ** Restoring previous 
+>> >  '/awips/rep/lx/local_apps/R.dir/lib/R/library/spgrass6'
+>> > 
+>> >  I don't understand this:
+>> > 
+>> >  /awips/hydro/lx/gcc_shlibs/libgcc_s.so.1: version `GCC_3.3' not found 
+>> >  (required by /usr/lib/libstdc++.so.6)
+>> > 
+>> >  Do you have any insights? I have previously compiled spgrass6 without 
+>> >  problems. But we have had some system changes since that time. System 
+>> >  requirements force me to install in a non-standard location.
+>>
+>>  What happens if you start R, say library(rgdal), and try to do - say -
+>>  example(readGDAL)? If the same happens, then most likely rgdal was
+>>  installed before the system upgrade, and you now have g++4, meaning that
+>>  the dependencies of rgdal (or GDAL as a whole) are no longer met.
+>>
+>>  If library(rgdal) fails as I suspect, you'll need to re-install it:
+>>
+>>  install.packages("rgdal")
+>>
+>>  ought to be enough, though GDAL may also need to be re-installed (all C++
+>>  programs are sensitive to build train upgrades, much more so than C
+>>  programs). You may also do
+>>
+>>  update.packages(checkBuilt=TRUE)
+>>
+>>  which will freshen all the installed packages built with R < 2.6.
+>>
+>>  If rgdal itself works, then sorry, no idea. Maybe somebody on the list
+>>  (STATGRASS, R-sig-geo) may have seen something similar. How were R and
+>>  GDAL installed, from source? What does g++ -v say?
+>>
+>>  Roger
+>> 
+>> 
+>> > 
+>> >  Regards,
+>> >  Tom
+>> > 
+>> > 
+>> > 
+>> 
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From marcel.austenfeld at uni-bielefeld.de  Mon Oct 22 03:41:56 2007
+From: marcel.austenfeld at uni-bielefeld.de (Bio7)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] Export ImageJ polygons to shapefile with R
+Message-ID: <13337692.post@talk.nabble.com>
+
+
+Hello,
+
+in my application i use imageJ and have also integrated Rserve for the
+communication with R.
+What i like to do is to create a shapefile from multiple ImageJ selections
+(ROI's) with the help of
+Rserve which i can load then in Grass. At the moment i export the x,y
+coordinates for each 
+polygon as a x list and y list (x0,y0 for the
+first selection, x1,y1 for the second selection etc.) to the workspace of R. 
+My question is, how can i write a shapefile from this x-lists and y lists?
+
+Any help is appreciated
+
+With kind regards
+
+Marcel
+-- 
+View this message in context: http://www.nabble.com/Export-ImageJ-polygons-to-shapefile-with-R-tf4669024.html#a13337692
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+
+From marcel.austenfeld at uni-bielefeld.de  Mon Oct 22 03:42:53 2007
+From: marcel.austenfeld at uni-bielefeld.de (Bio7)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] Export ImageJ polygons to shapefile with R
+Message-ID: <13337692.post@talk.nabble.com>
+
+
+Hello,
+
+in my application i use imageJ and have also integrated Rserve for the
+communication with R.
+What i like to do is to create a shapefile from multiple ImageJ selections
+(ROI's) with the help of
+Rserve which i can load then in Grass. At the moment i export the x,y
+coordinates for each 
+polygon as a x list and y list (x0,y0 for the
+first selection, x1,y1 for the second selection etc.) to the workspace of R. 
+My question is, how can i write a shapefile from this x-lists and y-lists?
+
+Any help is appreciated
+
+With kind regards
+
+Marcel
+-- 
+View this message in context: http://www.nabble.com/Export-ImageJ-polygons-to-shapefile-with-R-tf4669024.html#a13337692
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+
+From Agustin.Lobo at ija.csic.es  Mon Oct 22 10:31:40 2007
+From: Agustin.Lobo at ija.csic.es (Agustin Lobo)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] v.stats.rast for category raster or vector cross
+	statistics
+Message-ID: <471CB44C.4090807@ija.csic.es>
+
+Dear lists,
+
+Given Av (vector of polygons) and Br (raster of a categorical variable, 
+i.e. a classification or a soil map) I want to calculate
+for each polygon in Av, the surface of each category from Br.
+
+v.stats.rast almost does it, but calculates lumped stats for each 
+polygon (i.e, assumes that Br is a continuous variable).
+
+Alternatively, I could have Br as another vector Bv, but don't find
+the way of calculating cross stats as r.stats -a in=Ar,Br would do for 
+raster layers.
+
+Converting Av into raster Ar is inconvenient, as the polygons are few 
+and small and would have to use a very samll cell size (Br is large)
+
+Any easier way through R?
+
+-- 
+Dr. Agustin Lobo
+Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+LLuis Sole Sabaris s/n
+08028 Barcelona
+Spain
+Tel. 34 934095410
+Fax. 34 934110012
+email: Agustin.Lobo@ija.csic.es
+http://www.ija.csic.es/gt/obster
+
+
+From perrygeo at gmail.com  Mon Oct 22 11:22:18 2007
+From: perrygeo at gmail.com (Matthew Perry)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] v.stats.rast for category raster or vector cross
+	statistics
+In-Reply-To: <471CB44C.4090807@ija.csic.es>
+References: <471CB44C.4090807@ija.csic.es>
+Message-ID: <5383fa5e0710220822u5ee1ea37j9d5781ae2d631f1@mail.gmail.com>
+
+Agustin,
+
+
+I would suggest taking a look at starspan
+(http://starspan.casil.ucdavis.edu/). It specializes in
+vector-on-raster analyses and has a --count-by-class flag for
+categorical rasters. I wrote a bit more about it at
+http://www.perrygeo.net/wordpress/?p=30 .
+
+- matt
+ On 10/22/07, Agustin Lobo <Agustin.Lobo@ija.csic.es> wrote:
+> Dear lists,
+>
+> Given Av (vector of polygons) and Br (raster of a categorical variable,
+> i.e. a classification or a soil map) I want to calculate
+> for each polygon in Av, the surface of each category from Br.
+>
+> v.stats.rast almost does it, but calculates lumped stats for each
+> polygon (i.e, assumes that Br is a continuous variable).
+>
+
+> Alternatively, I could have Br as another vector Bv, but don't find
+> the way of calculating cross stats as r.stats -a in=Ar,Br would do for
+> raster layers.
+>
+> Converting Av into raster Ar is inconvenient, as the polygons are few
+> and small and would have to use a very samll cell size (Br is large)
+>
+> Any easier way through R?
+>
+> --
+> Dr. Agustin Lobo
+> Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+> LLuis Sole Sabaris s/n
+> 08028 Barcelona
+> Spain
+> Tel. 34 934095410
+> Fax. 34 934110012
+> email: Agustin.Lobo@ija.csic.es
+> http://www.ija.csic.es/gt/obster
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+
+
+-- 
+Matthew T. Perry
+http://www.perrygeo.net
+
+"Never ascribe to malice, that which can be adequately explained by
+incompetence."
+
+
+From Roger.Bivand at nhh.no  Mon Oct 22 14:47:49 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] Export ImageJ polygons to shapefile with R
+In-Reply-To: <13337692.post@talk.nabble.com>
+References: <13337692.post@talk.nabble.com>
+Message-ID: <Pine.LNX.4.64.0710222040050.17661@reclus.nhh.no>
+
+On Mon, 22 Oct 2007, Bio7 wrote:
+
+>
+> Hello,
+>
+> in my application i use imageJ and have also integrated Rserve for the
+> communication with R.
+> What i like to do is to create a shapefile from multiple ImageJ selections
+> (ROI's) with the help of
+> Rserve which i can load then in Grass. At the moment i export the x,y
+> coordinates for each
+> polygon as a x list and y list (x0,y0 for the
+> first selection, x1,y1 for the second selection etc.) to the workspace of R.
+> My question is, how can i write a shapefile from this x-lists and y-lists?
+
+One possibility is to create a list of Polygons objects, each with a 
+single Polygon object with a matrix of coordinates (cbind(xi, yi) for i=0, 
+n). See Polygons and SpatialPolygons documentation in the sp package. You 
+can then write a SpatialPolygonsDataFrame as a shapefile with writeOGR() 
+in rgdal or writePolyShape() in maptools.
+
+Roger
+
+>
+> Any help is appreciated
+>
+> With kind regards
+>
+> Marcel
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From Roger.Bivand at nhh.no  Mon Oct 22 15:27:54 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [R-sig-Geo] [STATSGRASS] v.stats.rast for category raster or
+	vector cross statistics
+In-Reply-To: <5383fa5e0710220822u5ee1ea37j9d5781ae2d631f1@mail.gmail.com>
+References: <471CB44C.4090807@ija.csic.es>
+	<5383fa5e0710220822u5ee1ea37j9d5781ae2d631f1@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0710222123350.17661@reclus.nhh.no>
+
+On Mon, 22 Oct 2007, Matthew Perry wrote:
+
+> Agustin,
+>
+>
+> I would suggest taking a look at starspan
+> (http://starspan.casil.ucdavis.edu/). It specializes in
+> vector-on-raster analyses and has a --count-by-class flag for
+> categorical rasters. I wrote a bit more about it at
+> http://www.perrygeo.net/wordpress/?p=30 .
+>
+> - matt
+> On 10/22/07, Agustin Lobo <Agustin.Lobo@ija.csic.es> wrote:
+>> Dear lists,
+>>
+>> Given Av (vector of polygons) and Br (raster of a categorical variable,
+>> i.e. a classification or a soil map) I want to calculate
+>> for each polygon in Av, the surface of each category from Br.
+>>
+>> v.stats.rast almost does it, but calculates lumped stats for each
+>> polygon (i.e, assumes that Br is a continuous variable).
+>>
+>
+>> Alternatively, I could have Br as another vector Bv, but don't find
+>> the way of calculating cross stats as r.stats -a in=Ar,Br would do for
+>> raster layers.
+>>
+>> Converting Av into raster Ar is inconvenient, as the polygons are few
+>> and small and would have to use a very samll cell size (Br is large)
+>>
+>> Any easier way through R?
+
+StarSpan is a good suggestion for heavy lifting. Within R, you could look 
+at the overlay methods in sp to create a vector for polygon membership of 
+raster size, then write a tapply function to accumulate tables with zero 
+counts on categories by the polygon index.
+
+Roger
+
+>>
+>> --
+>> Dr. Agustin Lobo
+>> Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+>> LLuis Sole Sabaris s/n
+>> 08028 Barcelona
+>> Spain
+>> Tel. 34 934095410
+>> Fax. 34 934110012
+>> email: Agustin.Lobo@ija.csic.es
+>> http://www.ija.csic.es/gt/obster
+>>
+>> _______________________________________________
+>> statsgrass mailing list
+>> statsgrass@grass.itc.it
+>> http://grass.itc.it/mailman/listinfo/statsgrass
+>>
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From marcel.austenfeld at uni-bielefeld.de  Tue Oct 23 04:52:57 2007
+From: marcel.austenfeld at uni-bielefeld.de (Bio7)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] Export ImageJ polygons to shapefile with R
+In-Reply-To: <Pine.LNX.4.64.0710222040050.17661@reclus.nhh.no>
+References: <13337692.post@talk.nabble.com>
+	<Pine.LNX.4.64.0710222040050.17661@reclus.nhh.no>
+Message-ID: <13359851.post@talk.nabble.com>
+
+
+Thanks for the reply!
+
+I've managed to create SpatialPolygons with the help of your "sp" script and
+could plot
+them.
+
+With kind regards
+
+Marcel
+
+
+
+
+
+
+-- 
+View this message in context: http://www.nabble.com/Export-ImageJ-polygons-to-shapefile-with-R-tf4669024.html#a13359851
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+
+From giohappy at gmail.com  Wed Oct 31 14:03:08 2007
+From: giohappy at gmail.com (G. Allegri)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] problems with installing maptools package (due to
+	Foreign package)
+Message-ID: <e12429640710311103r36a5d6cft558fd247c85383a1@mail.gmail.com>
+
+I'm configuring my new debian lenny, and as I was installing R and the
+related spatial packages I've faced some problems with maptools
+package setup.
+I've installed R via apt, from the debian official repositories. The R
+versione installed is 2.5.1.
+Then I've run the usual commands:
+
+install.packages(c("sp", "maptools", "rgdal"), dependencies=TRUE).
+(Are these packages still enough for gstat?)
+
+Everything seems to have gone ok for sp and rgdal (having previously
+"apt-get-installed" libgdal1-dev and the other 27 Mb of
+dependencies!!!)
+The problem has come with maptools setup which har raised an error
+when trying to load "foreign" package for lazy loading. The exit error
+said
+
+"This is R 2.5.1, package 'foreing' needs >= 2.6.0"
+
+What should I do? It seems there's an inconcistency between the
+packaged versions, but I can I upgrade to 2.6 *without* compiling it?
+
+Thanks in advance,
+Giovanni
+
+
+From daniel.mcinerney at ucd.ie  Wed Oct 31 14:48:26 2007
+From: daniel.mcinerney at ucd.ie (Daniel McInerney)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] problems with installing maptools package (due to
+	Foreign package)
+In-Reply-To: <e12429640710311103r36a5d6cft558fd247c85383a1@mail.gmail.com>
+References: <e12429640710311103r36a5d6cft558fd247c85383a1@mail.gmail.com>
+Message-ID: <4728CDFA.8090608@ucd.ie>
+
+Hi Giovanni,
+The current version of foreign on CRAN is 0.8-23,
+which depends on R >= 2.6.0
+You could try and install a previous version of
+foreign either (0.8-22 or 0.8-21) available under
+the Archived Packages on the cran.r-project website.
+
+If you don't want to compile R 2.6, you could add
+the sid repository to your apt-sources. You should be
+able to safely build for lenny using the sid sources.
+
+Hope this helps.
+regards,
+
+Daniel.
+
+G. Allegri wrote:
+> I'm configuring my new debian lenny, and as I was installing R and the
+> related spatial packages I've faced some problems with maptools
+> package setup.
+> I've installed R via apt, from the debian official repositories. The R
+> versione installed is 2.5.1.
+> Then I've run the usual commands:
+> 
+> install.packages(c("sp", "maptools", "rgdal"), dependencies=TRUE).
+> (Are these packages still enough for gstat?)
+> 
+> Everything seems to have gone ok for sp and rgdal (having previously
+> "apt-get-installed" libgdal1-dev and the other 27 Mb of
+> dependencies!!!)
+> The problem has come with maptools setup which har raised an error
+> when trying to load "foreign" package for lazy loading. The exit error
+> said
+> 
+> "This is R 2.5.1, package 'foreing' needs >= 2.6.0"
+> 
+> What should I do? It seems there's an inconcistency between the
+> packaged versions, but I can I upgrade to 2.6 *without* compiling it?
+> 
+> Thanks in advance,
+> Giovanni
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+
+From giohappy at gmail.com  Wed Oct 31 15:42:12 2007
+From: giohappy at gmail.com (G. Allegri)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] problems with installing maptools package (due to
+	Foreign package)
+In-Reply-To: <4728CDFA.8090608@ucd.ie>
+References: <e12429640710311103r36a5d6cft558fd247c85383a1@mail.gmail.com>
+	<4728CDFA.8090608@ucd.ie>
+Message-ID: <e12429640710311242i4ad82ceav29714415356fda82@mail.gmail.com>
+
+Thanks Daniel,
+I've momentaneously inserted the sid repositories to install r-base.
+Everything seems to have gone right. I've gstat and spgrass6 back
+again! :-)
+It has given me troubles with some recomended packages (exit errors
+for "tkrplot", "rgl" and "gam"), but things seem to work ok anyway...
+I'll solve later whit these.
+
+Bye,
+Giovanni
+
+2007/10/31, Daniel McInerney <daniel.mcinerney@ucd.ie>:
+> Hi Giovanni,
+> The current version of foreign on CRAN is 0.8-23,
+> which depends on R >= 2.6.0
+> You could try and install a previous version of
+> foreign either (0.8-22 or 0.8-21) available under
+> the Archived Packages on the cran.r-project website.
+>
+> If you don't want to compile R 2.6, you could add
+> the sid repository to your apt-sources. You should be
+> able to safely build for lenny using the sid sources.
+>
+> Hope this helps.
+> regards,
+>
+> Daniel.
+>
+> G. Allegri wrote:
+> > I'm configuring my new debian lenny, and as I was installing R and the
+> > related spatial packages I've faced some problems with maptools
+> > package setup.
+> > I've installed R via apt, from the debian official repositories. The R
+> > versione installed is 2.5.1.
+> > Then I've run the usual commands:
+> >
+> > install.packages(c("sp", "maptools", "rgdal"), dependencies=TRUE).
+> > (Are these packages still enough for gstat?)
+> >
+> > Everything seems to have gone ok for sp and rgdal (having previously
+> > "apt-get-installed" libgdal1-dev and the other 27 Mb of
+> > dependencies!!!)
+> > The problem has come with maptools setup which har raised an error
+> > when trying to load "foreign" package for lazy loading. The exit error
+> > said
+> >
+> > "This is R 2.5.1, package 'foreing' needs >= 2.6.0"
+> >
+> > What should I do? It seems there's an inconcistency between the
+> > packaged versions, but I can I upgrade to 2.6 *without* compiling it?
+> >
+> > Thanks in advance,
+> > Giovanni
+> >
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> >
+>
+
+
+From edzer.pebesma at uni-muenster.de  Wed Oct 31 16:53:40 2007
+From: edzer.pebesma at uni-muenster.de (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] problems with installing maptools package (due to
+	Foreign package)
+In-Reply-To: <e12429640710311103r36a5d6cft558fd247c85383a1@mail.gmail.com>
+References: <e12429640710311103r36a5d6cft558fd247c85383a1@mail.gmail.com>
+Message-ID: <4728EB54.9050306@uni-muenster.de>
+
+Giovani, package gstat is formally only dependent on sp, according to
+http://cran.r-project.org/src/contrib/Descriptions/gstat.html
+(rgdal and fields are only needed to run the regression tests)
+
+Of course you may need maptools and rgdal to do all kinds of stuff...
+--
+Edzer
+
+G. Allegri wrote:
+> I'm configuring my new debian lenny, and as I was installing R and the
+> related spatial packages I've faced some problems with maptools
+> package setup.
+> I've installed R via apt, from the debian official repositories. The R
+> versione installed is 2.5.1.
+> Then I've run the usual commands:
+>
+> install.packages(c("sp", "maptools", "rgdal"), dependencies=TRUE).
+> (Are these packages still enough for gstat?)
+>
+> Everything seems to have gone ok for sp and rgdal (having previously
+> "apt-get-installed" libgdal1-dev and the other 27 Mb of
+> dependencies!!!)
+> The problem has come with maptools setup which har raised an error
+> when trying to load "foreign" package for lazy loading. The exit error
+> said
+>
+> "This is R 2.5.1, package 'foreing' needs >= 2.6.0"
+>
+> What should I do? It seems there's an inconcistency between the
+> packaged versions, but I can I upgrade to 2.6 *without* compiling it?
+>
+> Thanks in advance,
+> Giovanni
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>   
+
+
+From giohappy at gmail.com  Wed Oct 31 17:10:30 2007
+From: giohappy at gmail.com (G. Allegri)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] problems with installing maptools package (due to
+	Foreign package)
+In-Reply-To: <4728EB54.9050306@uni-muenster.de>
+References: <e12429640710311103r36a5d6cft558fd247c85383a1@mail.gmail.com>
+	<4728EB54.9050306@uni-muenster.de>
+Message-ID: <e12429640710311410s48db533atebc35536f337b095@mail.gmail.com>
+
+Thanks Edzer,
+I've prefered to install all these packages just in case... :-)
+
+2007/10/31, Edzer J. Pebesma <edzer.pebesma@uni-muenster.de>:
+> Giovani, package gstat is formally only dependent on sp, according to
+> http://cran.r-project.org/src/contrib/Descriptions/gstat.html
+> (rgdal and fields are only needed to run the regression tests)
+>
+> Of course you may need maptools and rgdal to do all kinds of stuff...
+> --
+> Edzer
+>
+> G. Allegri wrote:
+> > I'm configuring my new debian lenny, and as I was installing R and the
+> > related spatial packages I've faced some problems with maptools
+> > package setup.
+> > I've installed R via apt, from the debian official repositories. The R
+> > versione installed is 2.5.1.
+> > Then I've run the usual commands:
+> >
+> > install.packages(c("sp", "maptools", "rgdal"), dependencies=TRUE).
+> > (Are these packages still enough for gstat?)
+> >
+> > Everything seems to have gone ok for sp and rgdal (having previously
+> > "apt-get-installed" libgdal1-dev and the other 27 Mb of
+> > dependencies!!!)
+> > The problem has come with maptools setup which har raised an error
+> > when trying to load "foreign" package for lazy loading. The exit error
+> > said
+> >
+> > "This is R 2.5.1, package 'foreing' needs >= 2.6.0"
+> >
+> > What should I do? It seems there's an inconcistency between the
+> > packaged versions, but I can I upgrade to 2.6 *without* compiling it?
+> >
+> > Thanks in advance,
+> > Giovanni
+> >
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> >
+>
+>
+
+
+From giohappy at gmail.com  Wed Oct 31 17:15:45 2007
+From: giohappy at gmail.com (G. Allegri)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] about geoadditive models
+Message-ID: <e12429640710311415n48dea0d3kb0c6e24fee6c4c23@mail.gmail.com>
+
+I've read something about geoadditive models [1].
+They cites the use of the "lme" package. Does anyone in ML have
+practical experience with these kind of models?
+
+Giovanni
+
+[1] http://www.uow.edu.au/~mwand/publicns/Kammann03.pdf
+
+
+From hamish_nospam at yahoo.com  Wed Oct 31 18:39:32 2007
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] problems with installing maptools package (due to
+	Foreign package)
+In-Reply-To: <4728CDFA.8090608@ucd.ie>
+Message-ID: <493190.90714.qm@web52702.mail.re2.yahoo.com>
+
+> G. Allegri wrote:
+> > The problem has come with maptools setup which har raised an error
+> > when trying to load "foreign" package for lazy loading. The exit error
+> > said
+> > 
+> > "This is R 2.5.1, package 'foreing' needs >= 2.6.0"
+
+Daniel McInerney wrote:
+> The current version of foreign on CRAN is 0.8-23,
+> which depends on R >= 2.6.0
+> You could try and install a previous version of
+> foreign either (0.8-22 or 0.8-21) available under
+> the Archived Packages on the cran.r-project website.
+> 
+> If you don't want to compile R 2.6, you could add
+> the sid repository to your apt-sources. You should be
+> able to safely build for lenny using the sid sources.
+
+
+R 2.6.0 should arrive in testing in the next day or few,
+  http://packages.qa.debian.org/r/r-base.html
+
+I hope there is a good reason for the version dep (which there well may be), as
+it is very annoying when things are not backwards compatible for trival
+reasons. Not everyone is running or wants to run the latest Gentoo.
+
+
+Hamish
+
+
+__________________________________________________
+Do You Yahoo!?
+Tired of spam?  Yahoo! Mail has the best spam protection around 
+http://mail.yahoo.com 
+
+

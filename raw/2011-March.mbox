@@ -1,0 +1,418 @@
+From villers.alexandre at gmail.com  Tue Mar  8 07:18:13 2011
+From: villers.alexandre at gmail.com (Alexandre Villers)
+Date: Tue Mar  8 07:22:48 2011
+Subject: [GRASS-stats] R (spgrass6) / GRASS r.in.gdal error
+Message-ID: <4D761E85.2010800@gmail.com>
+
+Sorry for double posting if it did
+-------------------------------------------------------------------
+
+Good afternoon,
+
+While trying to import a GTiff and process it with spgrass6 with the 
+following:
+
+execGRASS("r.in.gdal", flags=c("o","overwrite"), 
+parameters=list(input="E:/Boulot/WildlifeTrianglesFinland/Covariates/Rainfall/Rain.year1989.tif", 
+output="ref", _band=1_))
+
+or
+
+execGRASS("r.in.gdal", flags=c("o","overwrite"), 
+parameters=list(input="E:/Boulot/WildlifeTrianglesFinland/Covariates/Rainfall/Rain.year1989.tif", 
+output="ref",_band="1"_))
+
+I get
+
+
+Error in doGRASS(cmd, flags = flags, parameters = parameters) :
+   Parameter<band>  does not have integer value
+
+
+
+When I do not specify the band value, the two bands of this GTiff are 
+imported properly....
+Any idea ?
+
+
+Alex
+
+P.S.:
+
+
+>  traceback()
+3: stop(paste("Parameter<", names(parameters)[i],">  does not have integer value",
+        sep = ""))
+2: doGRASS(cmd, flags = flags, parameters = parameters)
+1: execGRASS("r.in.gdal", flags = c("o", "overwrite"), parameters = list(input = "E:/Boulot/WildlifeTrianglesFinland/Covariates/Rainfall/Rain.year1989.tif",
+        output = "ref", band = 1))
+>  sessionInfo()
+R version 2.12.1 (2010-12-16)
+Platform: x86_64-pc-mingw32/x64 (64-bit)
+
+locale:
+[1] LC_COLLATE=English_United Kingdom.1252  LC_CTYPE=English_United Kingdom.1252    LC_MONETARY=English_United Kingdom.1252
+[4] LC_NUMERIC=C                            LC_TIME=English_United Kingdom.1252
+
+attached base packages:
+[1] grDevices datasets  splines   graphics  stats     tcltk     utils     methods   base
+
+other attached packages:
+[1] spgrass6_0.6-23 XML_3.2-0.2     rgdal_0.6-33    sp_0.9-78       svSocket_0.9-51 TinnR_1.0.3     R2HTML_2.2      Hmisc_3.8-3
+[9] survival_2.36-2
+
+loaded via a namespace (and not attached):
+[1] cluster_1.13.3  grid_2.12.1     lattice_0.19-13 svMisc_0.9-61   tools_2.12.1
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20110308/a42a7d06/attachment.html
+From r.m.krug at gmail.com  Tue Mar  8 08:36:29 2011
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Tue Mar  8 08:36:31 2011
+Subject: [GRASS-stats] R (spgrass6) / GRASS r.in.gdal error
+In-Reply-To: <4D761E85.2010800@gmail.com>
+References: <4D761E85.2010800@gmail.com>
+Message-ID: <AANLkTin24WgSyyOAAcNE8ou9ieORGPmtP4GFGjg3oLWT@mail.gmail.com>
+
+2011/3/8 Alexandre Villers <villers.alexandre@gmail.com>:
+> Sorry for double posting if it did
+> -------------------------------------------------------------------
+>
+> Good afternoon,
+>
+> While trying to import a GTiff and process it with spgrass6 with the
+> following:
+>
+> execGRASS("r.in.gdal", flags=c("o","overwrite"),
+> parameters=list(input="E:/Boulot/WildlifeTrianglesFinland/Covariates/Rainfall/Rain.year1989.tif",
+> output="ref", band=1))
+>
+> or
+>
+> execGRASS("r.in.gdal", flags=c("o","overwrite"),
+> parameters=list(input="E:/Boulot/WildlifeTrianglesFinland/Covariates/Rainfall/Rain.year1989.tif",
+> output="ref", band="1"))
+>
+> I get
+>
+>
+> Error in doGRASS(cmd, flags = flags, parameters = parameters) :
+>   Parameter <band> does not have integer value
+
+You specified band="1" , which is a character - try band=1
+
+Disclaimer" I have never used r.in.gdal
+
+Cheers,
+
+Rainer
+>
+> When I do not specify the band value, the two bands of this GTiff are
+> imported properly....
+> Any idea ?
+>
+>
+> Alex
+>
+> P.S.:
+>
+>
+>> traceback()
+> 3: stop(paste("Parameter <", names(parameters)[i], "> does not have integer
+> value",
+>        sep = ""))
+> 2: doGRASS(cmd, flags = flags, parameters = parameters)
+> 1: execGRASS("r.in.gdal", flags = c("o", "overwrite"), parameters =
+> list(input =
+> "E:/Boulot/WildlifeTrianglesFinland/Covariates/Rainfall/Rain.year1989.tif",
+>        output = "ref", band = 1))
+>> sessionInfo()
+> R version 2.12.1 (2010-12-16)
+> Platform: x86_64-pc-mingw32/x64 (64-bit)
+>
+> locale:
+> [1] LC_COLLATE=English_United Kingdom.1252  LC_CTYPE=English_United
+> Kingdom.1252    LC_MONETARY=English_United Kingdom.1252
+> [4] LC_NUMERIC=C                            LC_TIME=English_United
+> Kingdom.1252
+>
+> attached base packages:
+> [1] grDevices datasets  splines   graphics  stats     tcltk     utils
+> methods   base
+>
+> other attached packages:
+> [1] spgrass6_0.6-23 XML_3.2-0.2     rgdal_0.6-33    sp_0.9-78
+> svSocket_0.9-51 TinnR_1.0.3     R2HTML_2.2      Hmisc_3.8-3
+> [9] survival_2.36-2
+>
+> loaded via a namespace (and not attached):
+> [1] cluster_1.13.3  grid_2.12.1     lattice_0.19-13 svMisc_0.9-61
+> tools_2.12.1
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+
+
+
+-- 
+NEW GERMAN FAX NUMBER!!!
+
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation
+Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Natural Sciences Building
+Office Suite 2039
+Stellenbosch University
+Main Campus, Merriman Avenue
+Stellenbosch
+South Africa
+
+Cell:? ? ? ? ?? +27 - (0)83 9479 042
+Fax:? ? ? ? ? ? +27 - (0)86 516 2782
+Fax:? ? ? ? ? ? +49 - (0)321 2125 2244
+email:? ? ? ? ? Rainer@krugs.de
+
+Skype:? ? ? ? ? RMkrug
+Google:? ? ? ?? R.M.Krug@gmail.com
+From Roger.Bivand at nhh.no  Tue Mar  8 08:43:42 2011
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Mar  8 08:43:59 2011
+Subject: [GRASS-stats] R (spgrass6) / GRASS r.in.gdal error
+In-Reply-To: <AANLkTin24WgSyyOAAcNE8ou9ieORGPmtP4GFGjg3oLWT@mail.gmail.com>
+References: <4D761E85.2010800@gmail.com>
+	<AANLkTin24WgSyyOAAcNE8ou9ieORGPmtP4GFGjg3oLWT@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.1103081438140.24065@reclus.nhh.no>
+
+On Tue, 8 Mar 2011, Rainer M Krug wrote:
+
+> 2011/3/8 Alexandre Villers <villers.alexandre@gmail.com>:
+>> Sorry for double posting if it did
+>> -------------------------------------------------------------------
+>>
+>> Good afternoon,
+>>
+>> While trying to import a GTiff and process it with spgrass6 with the
+>> following:
+>>
+>> execGRASS("r.in.gdal", flags=c("o","overwrite"),
+>> parameters=list(input="E:/Boulot/WildlifeTrianglesFinland/Covariates/Rainfall/Rain.year1989.tif",
+>> output="ref", band=1))
+>>
+>> or
+>>
+>> execGRASS("r.in.gdal", flags=c("o","overwrite"),
+>> parameters=list(input="E:/Boulot/WildlifeTrianglesFinland/Covariates/Rainfall/Rain.year1989.tif",
+>> output="ref", band="1"))
+>>
+>> I get
+>>
+>>
+>> Error in doGRASS(cmd, flags = flags, parameters = parameters) :
+>>   Parameter <band> does not have integer value
+>
+> You specified band="1" , which is a character - try band=1
+
+Right, "1" is a character vector of one element. To disambiguate, band 
+must be an integer, and 1 will possibly be treated as a numeric, so 
+band=1L or band=as.integer(1) ought to be used. Looking at the output of 
+parseGRASS() tells you what type the parameter values should be.
+
+Roger
+
+>
+> Disclaimer" I have never used r.in.gdal
+>
+> Cheers,
+>
+> Rainer
+>>
+>> When I do not specify the band value, the two bands of this GTiff are
+>> imported properly....
+>> Any idea ?
+>>
+>>
+>> Alex
+>>
+>> P.S.:
+>>
+>>
+>>> traceback()
+>> 3: stop(paste("Parameter <", names(parameters)[i], "> does not have integer
+>> value",
+>>        sep = ""))
+>> 2: doGRASS(cmd, flags = flags, parameters = parameters)
+>> 1: execGRASS("r.in.gdal", flags = c("o", "overwrite"), parameters =
+>> list(input =
+>> "E:/Boulot/WildlifeTrianglesFinland/Covariates/Rainfall/Rain.year1989.tif",
+>>        output = "ref", band = 1))
+>>> sessionInfo()
+>> R version 2.12.1 (2010-12-16)
+>> Platform: x86_64-pc-mingw32/x64 (64-bit)
+>>
+>> locale:
+>> [1] LC_COLLATE=English_United Kingdom.1252  LC_CTYPE=English_United
+>> Kingdom.1252    LC_MONETARY=English_United Kingdom.1252
+>> [4] LC_NUMERIC=C                            LC_TIME=English_United
+>> Kingdom.1252
+>>
+>> attached base packages:
+>> [1] grDevices datasets  splines   graphics  stats     tcltk     utils
+>> methods   base
+>>
+>> other attached packages:
+>> [1] spgrass6_0.6-23 XML_3.2-0.2     rgdal_0.6-33    sp_0.9-78
+>> svSocket_0.9-51 TinnR_1.0.3     R2HTML_2.2      Hmisc_3.8-3
+>> [9] survival_2.36-2
+>>
+>> loaded via a namespace (and not attached):
+>> [1] cluster_1.13.3  grid_2.12.1     lattice_0.19-13 svMisc_0.9-61
+>> tools_2.12.1
+>>
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>>
+>
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From villers.alexandre at gmail.com  Tue Mar  8 08:46:53 2011
+From: villers.alexandre at gmail.com (Alexandre Villers)
+Date: Tue Mar  8 08:47:48 2011
+Subject: [GRASS-stats] R (spgrass6) / GRASS r.in.gdal error
+In-Reply-To: <alpine.LRH.2.00.1103081438140.24065@reclus.nhh.no>
+References: <4D761E85.2010800@gmail.com>
+	<AANLkTin24WgSyyOAAcNE8ou9ieORGPmtP4GFGjg3oLWT@mail.gmail.com>
+	<alpine.LRH.2.00.1103081438140.24065@reclus.nhh.no>
+Message-ID: <4D76334D.8030605@gmail.com>
+
+Hey,
+
+the argument band=as.integer(1) works fine (while band=1 doesn't)... I 
+should have checked that on my own. Sorry for bothering the list with 
+this and thanks for pointing it to me.
+
+Best regards
+
+Alex
+
+On 08/03/2011 15:43, Roger Bivand wrote:
+> On Tue, 8 Mar 2011, Rainer M Krug wrote:
+>
+>> 2011/3/8 Alexandre Villers <villers.alexandre@gmail.com>:
+>>> Sorry for double posting if it did
+>>> -------------------------------------------------------------------
+>>>
+>>> Good afternoon,
+>>>
+>>> While trying to import a GTiff and process it with spgrass6 with the
+>>> following:
+>>>
+>>> execGRASS("r.in.gdal", flags=c("o","overwrite"),
+>>> parameters=list(input="E:/Boulot/WildlifeTrianglesFinland/Covariates/Rainfall/Rain.year1989.tif", 
+>>>
+>>> output="ref", band=1))
+>>>
+>>> or
+>>>
+>>> execGRASS("r.in.gdal", flags=c("o","overwrite"),
+>>> parameters=list(input="E:/Boulot/WildlifeTrianglesFinland/Covariates/Rainfall/Rain.year1989.tif", 
+>>>
+>>> output="ref", band="1"))
+>>>
+>>> I get
+>>>
+>>>
+>>> Error in doGRASS(cmd, flags = flags, parameters = parameters) :
+>>>   Parameter <band> does not have integer value
+>>
+>> You specified band="1" , which is a character - try band=1
+>
+> Right, "1" is a character vector of one element. To disambiguate, band 
+> must be an integer, and 1 will possibly be treated as a numeric, so 
+> band=1L or band=as.integer(1) ought to be used. Looking at the output 
+> of parseGRASS() tells you what type the parameter values should be.
+>
+> Roger
+>
+>>
+>> Disclaimer" I have never used r.in.gdal
+>>
+>> Cheers,
+>>
+>> Rainer
+>>>
+>>> When I do not specify the band value, the two bands of this GTiff are
+>>> imported properly....
+>>> Any idea ?
+>>>
+>>>
+>>> Alex
+>>>
+>>> P.S.:
+>>>
+>>>
+>>>> traceback()
+>>> 3: stop(paste("Parameter <", names(parameters)[i], "> does not have 
+>>> integer
+>>> value",
+>>>        sep = ""))
+>>> 2: doGRASS(cmd, flags = flags, parameters = parameters)
+>>> 1: execGRASS("r.in.gdal", flags = c("o", "overwrite"), parameters =
+>>> list(input =
+>>> "E:/Boulot/WildlifeTrianglesFinland/Covariates/Rainfall/Rain.year1989.tif", 
+>>>
+>>>        output = "ref", band = 1))
+>>>> sessionInfo()
+>>> R version 2.12.1 (2010-12-16)
+>>> Platform: x86_64-pc-mingw32/x64 (64-bit)
+>>>
+>>> locale:
+>>> [1] LC_COLLATE=English_United Kingdom.1252  LC_CTYPE=English_United
+>>> Kingdom.1252    LC_MONETARY=English_United Kingdom.1252
+>>> [4] LC_NUMERIC=C                            LC_TIME=English_United
+>>> Kingdom.1252
+>>>
+>>> attached base packages:
+>>> [1] grDevices datasets  splines   graphics  stats     tcltk     utils
+>>> methods   base
+>>>
+>>> other attached packages:
+>>> [1] spgrass6_0.6-23 XML_3.2-0.2     rgdal_0.6-33    sp_0.9-78
+>>> svSocket_0.9-51 TinnR_1.0.3     R2HTML_2.2      Hmisc_3.8-3
+>>> [9] survival_2.36-2
+>>>
+>>> loaded via a namespace (and not attached):
+>>> [1] cluster_1.13.3  grid_2.12.1     lattice_0.19-13 svMisc_0.9-61
+>>> tools_2.12.1
+>>>
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats@lists.osgeo.org
+>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>
+>>>
+>>
+>>
+>>
+>>
+>
+
+

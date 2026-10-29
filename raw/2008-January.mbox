@@ -1,0 +1,460 @@
+From matteo.dallamico at ing.unitn.it  Tue Jan 15 11:58:14 2008
+From: matteo.dallamico at ing.unitn.it (Matteo Dall'Amico)
+Date: Wed Jan 16 08:42:23 2008
+Subject: [GRASS-stats] Convert IDL into Julian day
+Message-ID: <1F6E89C9-8E87-4D82-82DF-B9DBCFE265C9@ing.unitn.it>
+
+Hello,
+I need to convert IDL Julian day into the date with the normal format  
+(for example: day/month/Year Hour:Minute:Sec)
+Some of the data are as follows:
+
+IDL Julian Day
+  2450449.54167
+  2450449.58333
+  2450449.62500
+  2450449.66667
+  2450449.70833
+  2450449.75000
+  2450449.79167
+  2450449.83333
+  2450449.87500
+  2450449.91667
+  2450449.95833
+  2450450.00000
+
+Does someone know how to do it?
+Thanks in advance,
+
+Matteo
+
+
+---------------------------------
+Matteo Dall'Amico
+PhD candidate
+CUDAM and department of Civil and Environmental Engineering
+Universita' degli Studi di Trento
+Via Mesiano 77 - 38050 Trento - Italy
+email: matteo.dallamico@ing.unitn.it
+Tel. +39 0461 882610
+Fax +39 0461 882672
+---------------------------------
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20080115/11cf1855/attachment.html
+From matteo.dallamico at ing.unitn.it  Tue Jan 15 12:06:19 2008
+From: matteo.dallamico at ing.unitn.it (Matteo Dall'Amico)
+Date: Wed Jan 16 08:42:23 2008
+Subject: [GRASS-stats] sequence of dates by one hour
+Message-ID: <4F3E8E1C-CE6E-4DAB-B074-61C0BA94E25B@ing.unitn.it>
+
+Hello,
+I need to create a sequence of dates separated by one hour.
+I found in the examples of axis.POSIXct() that it is possible to  
+create it:
+
+Examples
+
+with(beaver1, {
+time <- strptime(paste(1990, day, time %/% 100, time %% 100),
+                  "%Y %j %H %M")
+plot(time, temp, type="l") # axis at 4-hour intervals.
+# now label every hour on the time axis
+plot(time, temp, type="l", xaxt="n")
+r <- as.POSIXct(round(range(time), "hours"))
+axis.POSIXct(1, at=seq(r[1], r[2], by="hour"), format="%H")
+})
+
+
+I tried, but I received the error:
+
+date_graph_in<-chron("1/11/1907","00:39:00",format = c(dates = "d/m/ 
+y", times = "h:m:s"));
+date_graph_fin<-chron("1/11/1998","00:39:00",format = c(dates = "d/m/ 
+y", times = "h:m:s"));
+data_seq<-seq(date_graph_in,date_graph_fin,by="hour")
+
+Error in seq.dates(date_graph_in, date_graph_fin, by = "hour") :
+	"by" must be one of days, weeks, months, or years
+
+
+It seems it is possible to create date sequences separated of days,  
+weeks, months or years but not for hours.
+
+Does someone know how to do it?
+Thanks in advance,
+
+Matteo
+
+---------------------------------
+Matteo Dall'Amico
+PhD candidate
+CUDAM and department of Civil and Environmental Engineering
+Universita' degli Studi di Trento
+Via Mesiano 77 - 38050 Trento - Italy
+email: matteo.dallamico@ing.unitn.it
+Tel. +39 0461 882610
+Fax +39 0461 882672
+http://www.dottorato.it/trento/
+---------------------------------
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20080115/0001022f/attachment.html
+From Roger.Bivand at nhh.no  Wed Jan 16 13:30:42 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Jan 16 13:30:45 2008
+Subject: [GRASS-stats] Convert IDL into Julian day
+In-Reply-To: <1F6E89C9-8E87-4D82-82DF-B9DBCFE265C9@ing.unitn.it>
+References: <1F6E89C9-8E87-4D82-82DF-B9DBCFE265C9@ing.unitn.it>
+Message-ID: <Pine.LNX.4.64.0801161928040.13650@reclus.nhh.no>
+
+On Tue, 15 Jan 2008, Matteo Dall'Amico wrote:
+
+> Hello,
+> I need to convert IDL Julian day into the date with the normal format (for 
+> example: day/month/Year Hour:Minute:Sec)
+> Some of the data are as follows:
+>
+> IDL Julian Day
+> 2450449.54167
+> 2450449.58333
+> 2450449.62500
+> 2450449.66667
+> 2450449.70833
+> 2450449.75000
+> 2450449.79167
+> 2450449.83333
+> 2450449.87500
+> 2450449.91667
+> 2450449.95833
+> 2450450.00000
+>
+> Does someone know how to do it?
+
+If you are asking about R, try RSiteSearch("julian"), although these do 
+seem to be just dates. I guess that your origin is 1 January 4713 B.C.
+
+Roger
+
+> Thanks in advance,
+>
+> Matteo
+>
+>
+> ---------------------------------
+> Matteo Dall'Amico
+> PhD candidate
+> CUDAM and department of Civil and Environmental Engineering
+> Universita' degli Studi di Trento
+> Via Mesiano 77 - 38050 Trento - Italy
+> email: matteo.dallamico@ing.unitn.it
+> Tel. +39 0461 882610
+> Fax +39 0461 882672
+> ---------------------------------
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From Roger.Bivand at nhh.no  Wed Jan 16 13:31:49 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Jan 16 13:31:52 2008
+Subject: [GRASS-stats] sequence of dates by one hour
+In-Reply-To: <4F3E8E1C-CE6E-4DAB-B074-61C0BA94E25B@ing.unitn.it>
+References: <4F3E8E1C-CE6E-4DAB-B074-61C0BA94E25B@ing.unitn.it>
+Message-ID: <Pine.LNX.4.64.0801161931010.13650@reclus.nhh.no>
+
+On Tue, 15 Jan 2008, Matteo Dall'Amico wrote:
+
+Matteo,
+
+Could you please post this on R-help, if you need an answer from someone 
+who uses these classes?
+
+Roger
+
+
+> Hello,
+> I need to create a sequence of dates separated by one hour.
+> I found in the examples of axis.POSIXct() that it is possible to create it:
+>
+> Examples
+>
+> with(beaver1, {
+> time <- strptime(paste(1990, day, time %/% 100, time %% 100),
+>                "%Y %j %H %M")
+> plot(time, temp, type="l") # axis at 4-hour intervals.
+> # now label every hour on the time axis
+> plot(time, temp, type="l", xaxt="n")
+> r <- as.POSIXct(round(range(time), "hours"))
+> axis.POSIXct(1, at=seq(r[1], r[2], by="hour"), format="%H")
+> })
+>
+>
+> I tried, but I received the error:
+>
+> date_graph_in<-chron("1/11/1907","00:39:00",format = c(dates = "d/m/y", times 
+> = "h:m:s"));
+> date_graph_fin<-chron("1/11/1998","00:39:00",format = c(dates = "d/m/y", 
+> times = "h:m:s"));
+> data_seq<-seq(date_graph_in,date_graph_fin,by="hour")
+>
+> Error in seq.dates(date_graph_in, date_graph_fin, by = "hour") :
+> 	 "by" must be one of days, weeks, months, or years
+>
+>
+> It seems it is possible to create date sequences separated of days, weeks, 
+> months or years but not for hours.
+>
+> Does someone know how to do it?
+> Thanks in advance,
+>
+> Matteo
+>
+> ---------------------------------
+> Matteo Dall'Amico
+> PhD candidate
+> CUDAM and department of Civil and Environmental Engineering
+> Universita' degli Studi di Trento
+> Via Mesiano 77 - 38050 Trento - Italy
+> email: matteo.dallamico@ing.unitn.it
+> Tel. +39 0461 882610
+> Fax +39 0461 882672
+> http://www.dottorato.it/trento/
+> ---------------------------------
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From jarekj at amu.edu.pl  Fri Jan 18 15:26:29 2008
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Fri Jan 18 15:26:42 2008
+Subject: [GRASS-stats] using LOESS on spatial data
+Message-ID: <47910B75.6000208@amu.edu.pl>
+
+Hi all!
+
+first of all - all works and results are as I expeted.
+I rather like to consult your opinion about method I used to implement 
+LOESS (Local Polynomial Regression Fitting) to analize spatial data in R
+
+I prepared testing population of random point and sampled 
+spGridDataFrame (with overlay from sp package), next tried to fit local 
+polinominal to points and predict it on grid
+I tried it on the spPointDataFrame:
+ls=loess(height~coords,data=points,span=0.3), and of course it faliled
+
+Next step was with to repit it with ordinary data frame:
+data.frame(points)
+ls=loess(height~(x+y), span=0.3)
+
+and predicted it on oridnary data frame:
+
+grid=data.fame(sp_grid)
+names(grid)=c("f","x","y")
+result=predict(ls,grid)
+and I've substituted: (result is numeric vector)
+sp_grid$f=result
+all is OK, values are as can expected and spatially corected
+
+So I have three question:
+-first: Is there any information about using R fo fit LOESS to spatial 
+data (I didn't found nothing abot it)
+-second is posible and how process this with spatialgrid and spatial 
+points datasets (I suppose it will  be faster)
+-3th: is the procedure proper?
+
+regards
+Jarek
+
+From Roger.Bivand at nhh.no  Sat Jan 19 09:08:58 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sat Jan 19 09:09:02 2008
+Subject: [GRASS-stats] using LOESS on spatial data
+In-Reply-To: <47910B75.6000208@amu.edu.pl>
+References: <47910B75.6000208@amu.edu.pl>
+Message-ID: <Pine.LNX.4.64.0801191501080.27264@reclus.nhh.no>
+
+On Fri, 18 Jan 2008, Jarek Jasiewicz wrote:
+
+> Hi all!
+>
+> first of all - all works and results are as I expeted.
+> I rather like to consult your opinion about method I used to implement LOESS 
+> (Local Polynomial Regression Fitting) to analize spatial data in R
+>
+> I prepared testing population of random point and sampled spGridDataFrame 
+> (with overlay from sp package), next tried to fit local polinominal to points 
+> and predict it on grid
+> I tried it on the spPointDataFrame:
+> ls=loess(height~coords,data=points,span=0.3), and of course it faliled
+
+Inserting coordinates(points) does work, but generates unhelpful internal 
+variable names (see str(ls)) and look for xnames).
+
+>
+> Next step was with to repit it with ordinary data frame:
+> data.frame(points)
+> ls=loess(height~(x+y), span=0.3)
+>
+> and predicted it on oridnary data frame:
+>
+> grid=data.fame(sp_grid)
+> names(grid)=c("f","x","y")
+> result=predict(ls,grid)
+> and I've substituted: (result is numeric vector)
+> sp_grid$f=result
+> all is OK, values are as can expected and spatially corected
+>
+> So I have three question:
+> -first: Is there any information about using R fo fit LOESS to spatial data 
+> (I didn't found nothing abot it)
+
+There may be some general information somewhere - this local regression 
+may end up like using s(x,y) in gam() from mgcv, that is a non-parametric 
+localised smooth.
+
+> -second is posible and how process this with spatialgrid and spatial points 
+> datasets (I suppose it will  be faster)
+
+You'd need to write wrappers and it wouldn't be faster. The mechanism is 
+that model fitting functions construct names of formula (and other 
+argument) variables and store them in the object. The predict method then 
+simply looks for the same names in the newdata object - if newdata$x 
+exists, it will be used as new data for x
+
+> -3th: is the procedure proper?
+
+Like most non- and semi-parametric methods, that depends on your 
+definition of proper. In mgcv, gam() uses cross-validation to choose the 
+smoothing parameters. You might do something similar to choose the span= 
+argument. If you have traning and testing data sets, you can see how well 
+loess predicts the test data given the training data.
+
+Hope this helps,
+
+Roger
+
+>
+> regards
+> Jarek
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From jarekj at amu.edu.pl  Sat Jan 19 13:55:47 2008
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Sat Jan 19 13:56:00 2008
+Subject: [GRASS-stats] using LOESS on spatial data
+In-Reply-To: <Pine.LNX.4.64.0801191501080.27264@reclus.nhh.no>
+References: <47910B75.6000208@amu.edu.pl>
+	<Pine.LNX.4.64.0801191501080.27264@reclus.nhh.no>
+Message-ID: <479247B3.1010400@amu.edu.pl>
+
+
+>
+> Like most non- and semi-parametric methods, that depends on your 
+> definition of proper. In mgcv, gam() uses cross-validation to choose 
+> the smoothing parameters. You might do something similar to choose the 
+> span= argument. If you have traning and testing data sets, you can see 
+> how well loess predicts the test data given the training data.
+>
+> Hope this helps,
+>
+> Roger
+>
+tahanks. I will follow.
+regards
+Jarek
+
+
+From jarekj at amu.edu.pl  Tue Jan 22 14:58:30 2008
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Tue Jan 22 14:58:39 2008
+Subject: [GRASS-stats] subset on spatialGrid??
+Message-ID: <47964AE6.5040702@amu.edu.pl>
+
+Hi?
+
+subset(spGRID, raster==1) or subset(spGRID, data$raster==1)
+Can I do this or something similar??
+
+i.e I'd like to avoid to convert raster to regular data.frame and use 
+subset on dataf.rame due to long time of conversion
+tahnx
+Jarek
+From Roger.Bivand at nhh.no  Tue Jan 22 15:22:28 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Jan 22 15:22:32 2008
+Subject: [GRASS-stats] subset on spatialGrid??
+In-Reply-To: <47964AE6.5040702@amu.edu.pl>
+References: <47964AE6.5040702@amu.edu.pl>
+Message-ID: <Pine.LNX.4.64.0801222120280.3175@reclus.nhh.no>
+
+On Tue, 22 Jan 2008, Jarek Jasiewicz wrote:
+
+> Hi?
+>
+> subset(spGRID, raster==1) or subset(spGRID, data$raster==1)
+> Can I do this or something similar??
+>
+> i.e I'd like to avoid to convert raster to regular data.frame and use subset 
+> on dataf.rame due to long time of conversion
+
+Hi,
+
+There is no guarantee that the output is going to be a full grid, so I 
+suggest casting to SpatialPixelsDataFrame first and subsetting that:
+
+library(sp)
+data(meuse.grid)
+coordinates(meuse.grid) <- c("x", "y")
+gridded(meuse.grid) = TRUE
+fullgrid(meuse.grid) = TRUE
+summary(meuse.grid)
+o1 <- as(meuse.grid, "SpatialPixelsDataFrame")
+o2 <- o1[o1$ffreq == 1,]
+summary(o2)
+
+Hope this helps,
+
+Roger
+
+> tahnx
+> Jarek
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+

@@ -1,0 +1,956 @@
+From maximilianbakenhus at gmail.com  Fri May  6 11:31:59 2016
+From: maximilianbakenhus at gmail.com (Maximilian Bakenhus)
+Date: Fri, 6 May 2016 11:31:59 -0700 (PDT)
+Subject: [GRASS-stats] R in GRASS - v.db.addcolumn Error
+Message-ID: <1462559519545-5265014.post@n6.nabble.com>
+
+Hello Community,
+
+I am a german student and I work with some other students at a GRASS
+Project,
+its about watershed modeling of a DEM Projection and snap measuring points
+over the 
+new streams. 
+
+We do this with the newest version of R Studio and GRASS 7.0.3
+
+This here is part of our code:
+
+
+As we try do do the last order,
+the* v.db.addcolumn*, we retrieve this error:
+
+*Error in system(cmd0, intern = TRUE) : 'v.db.addcolumn.exe' not found
+Error in parseGRASS(cmd, legacyExec = legacyExec) : 
+  v.db.addcolumn not found*
+
+We really dont know, how to fix it and hope someone here does, cause we need
+it very urgent. 
+
+Thanks for reading,
+have a nice day
+
+Max
+
+
+
+
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/R-in-GRASS-v-db-addcolumn-Error-tp5265014.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Fri May  6 13:11:09 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri, 6 May 2016 22:11:09 +0200
+Subject: [GRASS-stats] R in GRASS - v.db.addcolumn Error
+In-Reply-To: <1462559519545-5265014.post@n6.nabble.com>
+References: <1462559519545-5265014.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.20.1605062208050.11639@reclus.nhh.no>
+
+You have still not stated your rgrass7 version. This really is important, 
+without knowing this no help is possible. You must give much more detail 
+of what you are actually doing; make sure that rstudio is not getting in 
+the way (it runs R in separate sessions).
+
+* DO NOT POST IN NABBLE, IT CAN EAT CONTENT*
+
+Roger
+
+On Fri, 6 May 2016, Maximilian Bakenhus wrote:
+
+> Hello Community,
+>
+> I am a german student and I work with some other students at a GRASS
+> Project,
+> its about watershed modeling of a DEM Projection and snap measuring points
+> over the 
+> new streams. 
+>
+> We do this with the newest version of R Studio and GRASS 7.0.3
+>
+> This here is part of our code:
+>
+
+Where???
+
+>
+> As we try do do the last order,
+> the* v.db.addcolumn*, we retrieve this error:
+>
+> *Error in system(cmd0, intern = TRUE) : 'v.db.addcolumn.exe' not found
+> Error in parseGRASS(cmd, legacyExec = legacyExec) :
+>  v.db.addcolumn not found*
+>
+> We really dont know, how to fix it and hope someone here does, cause we need
+> it very urgent. 
+>
+> Thanks for reading,
+> have a nice day
+>
+> Max
+>
+>
+>
+>
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/R-in-GRASS-v-db-addcolumn-Error-tp5265014.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From maximilianbakenhus at gmail.com  Sat May  7 03:49:29 2016
+From: maximilianbakenhus at gmail.com (Maximilian Bakenhus)
+Date: Sat, 7 May 2016 12:49:29 +0200
+Subject: [GRASS-stats] R in GRASS - v.db.addcolumn Error
+In-Reply-To: <alpine.LFD.2.20.1605062208050.11639@reclus.nhh.no>
+References: <1462559519545-5265014.post@n6.nabble.com>
+ <alpine.LFD.2.20.1605062208050.11639@reclus.nhh.no>
+Message-ID: <CAOg0kg1f8bAnJ7O0nTUs2J6ps0s3D_qqGSj=G4PgLLxcdJCRFw@mail.gmail.com>
+
+Okay it seems nabble really ate my content,
+this is the code and my grass version
+
+System Info
+
+GRASS version: 7.0.3
+
+GRASS SVN Revision: 67691
+
+Build Date: 2016-01-10
+
+Build Platform: x86_64-w64-mingw32
+
+GDAL/OGR: 1.11.3
+
+PROJ.4: 4.9.2
+
+GEOS: 3.5.0
+
+SQLite: 3.7.17
+
+Python: 2.7.5
+
+wxPython: 2.8.12.1
+
+Platform: Windows-8-6.2.9200
+
+# Initialize GRASS
+loc <- initGRASS(gisBase = "C:/GRASS GIS 7.0.3",
+                 home = tempdir(),
+                 gisDbase = 'C:/Users/KingGoerge/Documents/GIS DataBase 2',
+                 location = 'usa',
+                 mapset = 'kansas-4', override = TRUE )
+loc
+# perhabs first create loaction and map before in GUI?
+
+# # # read DEM
+execGRASS("r.in.gdal", flags = c("overwrite", "o"),
+          parameters = list(input = 'C:/Users/KingGoerge/Documents/Gis
+Projekte/GIS Advanced
+Projekt/Höhenmodell-Kansas/20160429133734_122375530.tif',
+                            output = "DEM"))
+
+execGRASS("g.list", parameters = list(type = "rast"))
+# set region
+execGRASS("g.region", parameters = list(raster = 'DEM'))
+gmeta()
+
+
+
+###
+----------------------------------------------------------------------------
+# # extract flow direction + streams from dem:
+execGRASS("r.watershed", flags = "overwrite",
+          parameters = list(elevation = "DEM",
+                            drainage = 'fdir',  # save flow direction as
+raster named "fdir"
+                            stream = 'stream',  # save derived streams as
+raster named "stream"
+                            threshold = 750))
+# list all rasters available in GRASS-Session
+execGRASS("g.list", parameters = list(type = "rast"))
+# now with fdir and stream
+
+# thin streams and convert to line and clean
+# thin = make stream 1pixel width
+execGRASS("r.thin", flags = "overwrite", parameters = list(input =
+'stream', output = 'stream_t'))
+# convert to line vector
+execGRASS("r.to.vect",  flags = "overwrite", parameters = list(input =
+'stream_t', output = 'streams', type = 'line' ))
+# clean vector (see help for more information)
+execGRASS("v.clean",  flags = c("overwrite", "c"), parameters = list(input
+= 'streams', output = 'streams_c', tool = 'break'))
+
+
+
+# read sampling sites
+sites3 <- read.table('C:/Users/KingGoerge/Documents/Gis Projekte/GIS
+Advanced Projekt/Messpunkte_Kansas-formatiert.csv', header = TRUE, sep =
+';')
+
+# set coordinates to create a spatial R object
+coordinates(sites3) <- ~longitude + latitude
+plot(sites3)
+# write to GRASS
+writeVECT(sites3, "sites_3", v.in.ogr_flags = c("o", "overwrite"))
+
+# list all vectors
+execGRASS("g.list", parameters = list(type = "vect"))
+
+## snap sites to streams
+# add columns to attributed table of sites
+# for distance id and coordinates of nearest streams,
+execGRASS("v.db.addcolumn", parameters = list(map = "sites_3", columns =
+"dist double precision, cats integer, xm double precision, ym double
+precision"))
+# hat den Befehl nicht gefunden, ausführung über GUI in GRASS über
+Befehlssuche
+
+
+# calc distance of points to nearest stream
+# and save distance and new coordinates to newly created columns
+execGRASS("v.distance",  flags = c("overwrite"),
+          parameters = list(from = 'sites_2',
+                            to = 'streams_c',
+                            output = 'connectors',
+                            upload = 'dist,cat,to_x,to_y',
+                            column = 'dist,cats,xm,ym'))
+
+# extract new points (=snapped coordinates)
+# save to disc
+execGRASS("v.db.select", flags = c('c', 'overwrite'),
+          parameters = list(map = 'sites_2',
+                            columns = c('xm,ym'),
+                            file = 'C:/Users/KingGoerge/Documents/Gis
+Projekte/GIS Advanced Projekt/new_points_kansas.txt'))
+# load from disc
+execGRASS("v.in.ascii", flags = c("overwrite"),
+          parameters = list(input = 'C:/Users/KingGoerge/Documents/Gis
+Projekte/GIS Advanced Projekt//new_points_kansas.txt',
+                            output = "new_sites"))
+
+
+###
+-------------------------------------------------------------------------
+### Calculate catchments
+# read new sites
+snapped <- readVECT('new_sites')
+# copy sites_id from table to vectordata
+snapped at data$site_id <- sites$site_id
+
+# for each Point in snapped...
+for (i in seq_len(nrow(snapped))) {
+  # extract respective point
+  take <- snapped[i,]
+  message(paste0(i, ' out of ', nrow(snapped)))
+  # calculate drainage area
+  execGRASS("r.water.outlet", flags = 'overwrite',
+            parameters = list(input = 'fdir',    # flow direction as input
+                              output = paste0('da_', take at data$site_id),  #
+save as raster named "da_<site_id>" (da = drainage area)
+                              coordinates = coordinates(take)[ ,1:2])) #
+coordinates of point for which drainage should be calculated
+  # execGRASS("g.list", parameters = list(type = "rast"))
+  # make raster to vector
+  execGRASS("r.to.vect",  flags = 'overwrite',
+            parameters = list(input = paste0('da_', take at data$site_id), #
+input = "da_<site_id>" (=raster)
+                              output = paste0('ws_', take at data$site_id), #
+output = "ws_<site_id>" (=vector polygon)
+                              type = 'area'))
+  #   execGRASS("g.list", parameters = list(type = "rast"))
+  #   execGRASS("g.list", parameters = list(type = "vect"))
+  # Add a column 'area_sqkm' for area in sq.km to attributed table
+  execGRASS("v.db.addcolumn",
+            parameters = list(map = paste0('ws_', take at data$site_id),
+                              columns = "area_sqkm double"))
+  # calculate aresa and save to "area_sqkm" column
+  execGRASS("v.to.db", parameters = list(
+    map = paste0('ws_', take at data$site_id),
+    option = 'area',
+    columns = 'area_sqkm',  units = 'kilometers'))
+}
+
+
+
+
+
+2016-05-06 22:11 GMT+02:00 Roger Bivand <Roger.Bivand at nhh.no>:
+
+> You have still not stated your rgrass7 version. This really is important,
+> without knowing this no help is possible. You must give much more detail of
+> what you are actually doing; make sure that rstudio is not getting in the
+> way (it runs R in separate sessions).
+>
+> * DO NOT POST IN NABBLE, IT CAN EAT CONTENT*
+>
+> Roger
+>
+> On Fri, 6 May 2016, Maximilian Bakenhus wrote:
+>
+> Hello Community,
+>>
+>> I am a german student and I work with some other students at a GRASS
+>> Project,
+>> its about watershed modeling of a DEM Projection and snap measuring points
+>> over the new streams.
+>> We do this with the newest version of R Studio and GRASS 7.0.3
+>>
+>> This here is part of our code:
+>>
+>>
+> Where???
+>
+>
+>
+>> As we try do do the last order,
+>> the* v.db.addcolumn*, we retrieve this error:
+>>
+>> *Error in system(cmd0, intern = TRUE) : 'v.db.addcolumn.exe' not found
+>> Error in parseGRASS(cmd, legacyExec = legacyExec) :
+>>  v.db.addcolumn not found*
+>>
+>> We really dont know, how to fix it and hope someone here does, cause we
+>> need
+>> it very urgent.
+>> Thanks for reading,
+>> have a nice day
+>>
+>> Max
+>>
+>>
+>>
+>>
+>> --
+>> View this message in context:
+>> http://osgeo-org.1560.x6.nabble.com/R-in-GRASS-v-db-addcolumn-Error-tp5265014.html
+>> Sent from the Grass - Stats mailing list archive at Nabble.com.
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats at lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>
+> --
+> Roger Bivand
+> Department of Economics, Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 91 00
+> e-mail: Roger.Bivand at nhh.no
+> http://orcid.org/0000-0003-2392-6140
+> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+> http://depsy.org/person/434412
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20160507/254c5e41/attachment-0001.html>
+
+From Roger.Bivand at nhh.no  Sat May  7 11:50:04 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sat, 7 May 2016 20:50:04 +0200
+Subject: [GRASS-stats] R in GRASS - v.db.addcolumn Error
+In-Reply-To: <CAOg0kg1f8bAnJ7O0nTUs2J6ps0s3D_qqGSj=G4PgLLxcdJCRFw@mail.gmail.com>
+References: <1462559519545-5265014.post@n6.nabble.com>
+ <alpine.LFD.2.20.1605062208050.11639@reclus.nhh.no>
+ <CAOg0kg1f8bAnJ7O0nTUs2J6ps0s3D_qqGSj=G4PgLLxcdJCRFw@mail.gmail.com>
+Message-ID: <alpine.LFD.2.20.1605072036080.6978@reclus.nhh.no>
+
+On Sat, 7 May 2016, Maximilian Bakenhus wrote:
+
+> Okay it seems nabble really ate my content,
+> this is the code and my grass version
+>
+> System Info
+
+No, the output of sessionInfo() is essential, unless you know that you are 
+running rgrass7 version 0.1-7, if not, update.
+
+You have:
+
+> execGRASS("v.db.addcolumn", parameters = list(map = "sites_3", columns =
+> "dist double precision, cats integer, xm double precision, ym double
+> precision"))
+> # hat den Befehl nicht gefunden, ausführung über GUI in GRASS über
+> Befehlssuche
+
+and
+
+>  execGRASS("v.db.addcolumn",
+>            parameters = list(map = paste0('ws_', take at data$site_id),
+>                              columns = "area_sqkm double"))
+
+columns= must be a character vector; perhaps:
+
+columns=c("dist double precision", "cats integer", "xm double precision", 
+"ym double precision")
+
+This should be fairly obvious.
+
+Roger
+
+>
+> GRASS version: 7.0.3
+>
+> GRASS SVN Revision: 67691
+>
+> Build Date: 2016-01-10
+>
+> Build Platform: x86_64-w64-mingw32
+>
+> GDAL/OGR: 1.11.3
+>
+> PROJ.4: 4.9.2
+>
+> GEOS: 3.5.0
+>
+> SQLite: 3.7.17
+>
+> Python: 2.7.5
+>
+> wxPython: 2.8.12.1
+>
+> Platform: Windows-8-6.2.9200
+>
+> # Initialize GRASS
+> loc <- initGRASS(gisBase = "C:/GRASS GIS 7.0.3",
+>                 home = tempdir(),
+>                 gisDbase = 'C:/Users/KingGoerge/Documents/GIS DataBase 2',
+>                 location = 'usa',
+>                 mapset = 'kansas-4', override = TRUE )
+> loc
+> # perhabs first create loaction and map before in GUI?
+>
+> # # # read DEM
+> execGRASS("r.in.gdal", flags = c("overwrite", "o"),
+>          parameters = list(input = 'C:/Users/KingGoerge/Documents/Gis
+> Projekte/GIS Advanced
+> Projekt/Höhenmodell-Kansas/20160429133734_122375530.tif',
+>                            output = "DEM"))
+>
+> execGRASS("g.list", parameters = list(type = "rast"))
+> # set region
+> execGRASS("g.region", parameters = list(raster = 'DEM'))
+> gmeta()
+>
+>
+>
+> ###
+> ----------------------------------------------------------------------------
+> # # extract flow direction + streams from dem:
+> execGRASS("r.watershed", flags = "overwrite",
+>          parameters = list(elevation = "DEM",
+>                            drainage = 'fdir',  # save flow direction as
+> raster named "fdir"
+>                            stream = 'stream',  # save derived streams as
+> raster named "stream"
+>                            threshold = 750))
+> # list all rasters available in GRASS-Session
+> execGRASS("g.list", parameters = list(type = "rast"))
+> # now with fdir and stream
+>
+> # thin streams and convert to line and clean
+> # thin = make stream 1pixel width
+> execGRASS("r.thin", flags = "overwrite", parameters = list(input =
+> 'stream', output = 'stream_t'))
+> # convert to line vector
+> execGRASS("r.to.vect",  flags = "overwrite", parameters = list(input =
+> 'stream_t', output = 'streams', type = 'line' ))
+> # clean vector (see help for more information)
+> execGRASS("v.clean",  flags = c("overwrite", "c"), parameters = list(input
+> = 'streams', output = 'streams_c', tool = 'break'))
+>
+>
+>
+> # read sampling sites
+> sites3 <- read.table('C:/Users/KingGoerge/Documents/Gis Projekte/GIS
+> Advanced Projekt/Messpunkte_Kansas-formatiert.csv', header = TRUE, sep =
+> ';')
+>
+> # set coordinates to create a spatial R object
+> coordinates(sites3) <- ~longitude + latitude
+> plot(sites3)
+> # write to GRASS
+> writeVECT(sites3, "sites_3", v.in.ogr_flags = c("o", "overwrite"))
+>
+> # list all vectors
+> execGRASS("g.list", parameters = list(type = "vect"))
+>
+> ## snap sites to streams
+> # add columns to attributed table of sites
+> # for distance id and coordinates of nearest streams,
+> execGRASS("v.db.addcolumn", parameters = list(map = "sites_3", columns =
+> "dist double precision, cats integer, xm double precision, ym double
+> precision"))
+> # hat den Befehl nicht gefunden, ausführung über GUI in GRASS über
+> Befehlssuche
+>
+>
+> # calc distance of points to nearest stream
+> # and save distance and new coordinates to newly created columns
+> execGRASS("v.distance",  flags = c("overwrite"),
+>          parameters = list(from = 'sites_2',
+>                            to = 'streams_c',
+>                            output = 'connectors',
+>                            upload = 'dist,cat,to_x,to_y',
+>                            column = 'dist,cats,xm,ym'))
+>
+> # extract new points (=snapped coordinates)
+> # save to disc
+> execGRASS("v.db.select", flags = c('c', 'overwrite'),
+>          parameters = list(map = 'sites_2',
+>                            columns = c('xm,ym'),
+>                            file = 'C:/Users/KingGoerge/Documents/Gis
+> Projekte/GIS Advanced Projekt/new_points_kansas.txt'))
+> # load from disc
+> execGRASS("v.in.ascii", flags = c("overwrite"),
+>          parameters = list(input = 'C:/Users/KingGoerge/Documents/Gis
+> Projekte/GIS Advanced Projekt//new_points_kansas.txt',
+>                            output = "new_sites"))
+>
+>
+> ###
+> -------------------------------------------------------------------------
+> ### Calculate catchments
+> # read new sites
+> snapped <- readVECT('new_sites')
+> # copy sites_id from table to vectordata
+> snapped at data$site_id <- sites$site_id
+>
+> # for each Point in snapped...
+> for (i in seq_len(nrow(snapped))) {
+>  # extract respective point
+>  take <- snapped[i,]
+>  message(paste0(i, ' out of ', nrow(snapped)))
+>  # calculate drainage area
+>  execGRASS("r.water.outlet", flags = 'overwrite',
+>            parameters = list(input = 'fdir',    # flow direction as input
+>                              output = paste0('da_', take at data$site_id),  #
+> save as raster named "da_<site_id>" (da = drainage area)
+>                              coordinates = coordinates(take)[ ,1:2])) #
+> coordinates of point for which drainage should be calculated
+>  # execGRASS("g.list", parameters = list(type = "rast"))
+>  # make raster to vector
+>  execGRASS("r.to.vect",  flags = 'overwrite',
+>            parameters = list(input = paste0('da_', take at data$site_id), #
+> input = "da_<site_id>" (=raster)
+>                              output = paste0('ws_', take at data$site_id), #
+> output = "ws_<site_id>" (=vector polygon)
+>                              type = 'area'))
+>  #   execGRASS("g.list", parameters = list(type = "rast"))
+>  #   execGRASS("g.list", parameters = list(type = "vect"))
+>  # Add a column 'area_sqkm' for area in sq.km to attributed table
+>  execGRASS("v.db.addcolumn",
+>            parameters = list(map = paste0('ws_', take at data$site_id),
+>                              columns = "area_sqkm double"))
+>  # calculate aresa and save to "area_sqkm" column
+>  execGRASS("v.to.db", parameters = list(
+>    map = paste0('ws_', take at data$site_id),
+>    option = 'area',
+>    columns = 'area_sqkm',  units = 'kilometers'))
+> }
+>
+>
+>
+>
+>
+> 2016-05-06 22:11 GMT+02:00 Roger Bivand <Roger.Bivand at nhh.no>:
+>
+>> You have still not stated your rgrass7 version. This really is important,
+>> without knowing this no help is possible. You must give much more detail of
+>> what you are actually doing; make sure that rstudio is not getting in the
+>> way (it runs R in separate sessions).
+>>
+>> * DO NOT POST IN NABBLE, IT CAN EAT CONTENT*
+>>
+>> Roger
+>>
+>> On Fri, 6 May 2016, Maximilian Bakenhus wrote:
+>>
+>> Hello Community,
+>>>
+>>> I am a german student and I work with some other students at a GRASS
+>>> Project,
+>>> its about watershed modeling of a DEM Projection and snap measuring points
+>>> over the new streams.
+>>> We do this with the newest version of R Studio and GRASS 7.0.3
+>>>
+>>> This here is part of our code:
+>>>
+>>>
+>> Where???
+>>
+>>
+>>
+>>> As we try do do the last order,
+>>> the* v.db.addcolumn*, we retrieve this error:
+>>>
+>>> *Error in system(cmd0, intern = TRUE) : 'v.db.addcolumn.exe' not found
+>>> Error in parseGRASS(cmd, legacyExec = legacyExec) :
+>>>  v.db.addcolumn not found*
+>>>
+>>> We really dont know, how to fix it and hope someone here does, cause we
+>>> need
+>>> it very urgent.
+>>> Thanks for reading,
+>>> have a nice day
+>>>
+>>> Max
+>>>
+>>>
+>>>
+>>>
+>>> --
+>>> View this message in context:
+>>> http://osgeo-org.1560.x6.nabble.com/R-in-GRASS-v-db-addcolumn-Error-tp5265014.html
+>>> Sent from the Grass - Stats mailing list archive at Nabble.com.
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats at lists.osgeo.org
+>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>
+>>
+>> --
+>> Roger Bivand
+>> Department of Economics, Norwegian School of Economics,
+>> Helleveien 30, N-5045 Bergen, Norway.
+>> voice: +47 55 95 93 55; fax +47 55 95 91 00
+>> e-mail: Roger.Bivand at nhh.no
+>> http://orcid.org/0000-0003-2392-6140
+>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>> http://depsy.org/person/434412
+>>
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From Roger.Bivand at nhh.no  Sat May  7 23:42:13 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun, 8 May 2016 08:42:13 +0200
+Subject: [GRASS-stats] R in GRASS - v.db.addcolumn Error
+In-Reply-To: <alpine.LFD.2.20.1605072036080.6978@reclus.nhh.no>
+References: <1462559519545-5265014.post@n6.nabble.com>
+ <alpine.LFD.2.20.1605062208050.11639@reclus.nhh.no>
+ <CAOg0kg1f8bAnJ7O0nTUs2J6ps0s3D_qqGSj=G4PgLLxcdJCRFw@mail.gmail.com>
+ <alpine.LFD.2.20.1605072036080.6978@reclus.nhh.no>
+Message-ID: <alpine.LFD.2.20.1605080835240.17387@reclus.nhh.no>
+
+On Sat, 7 May 2016, Roger Bivand wrote:
+
+> On Sat, 7 May 2016, Maximilian Bakenhus wrote:
+>
+>>  Okay it seems nabble really ate my content,
+>>  this is the code and my grass version
+>>
+>>  System Info
+>
+> No, the output of sessionInfo() is essential, unless you know that you are 
+> running rgrass7 version 0.1-7, if not, update.
+
+On Windows, v.db.addcolumn is a batch file not an executable:
+
+C:/Program Files/GRASS GIS 7.0.3/bin/v.db.addcolumn.bat
+
+https://cran.r-project.org/web/packages/rgrass7/ChangeLog
+
+shows that Windows *.bat issues were addressed in January and April this 
+year, so are fixed in 0.1-7. Update rgrass7!
+
+Roger
+
+
+
+>
+> You have:
+>
+>>  execGRASS("v.db.addcolumn", parameters = list(map = "sites_3", columns =
+>>  "dist double precision, cats integer, xm double precision, ym double
+>>  precision"))
+>>  # hat den Befehl nicht gefunden, ausführung über GUI in GRASS über
+>>  Befehlssuche
+>
+> and
+>
+>>   execGRASS("v.db.addcolumn",
+>>             parameters = list(map = paste0('ws_', take at data$site_id),
+>>                               columns = "area_sqkm double"))
+>
+> columns= must be a character vector; perhaps:
+>
+> columns=c("dist double precision", "cats integer", "xm double precision", "ym 
+> double precision")
+>
+> This should be fairly obvious.
+>
+> Roger
+>
+>>
+>>  GRASS version: 7.0.3
+>>
+>>  GRASS SVN Revision: 67691
+>>
+>>  Build Date: 2016-01-10
+>>
+>>  Build Platform: x86_64-w64-mingw32
+>>
+>>  GDAL/OGR: 1.11.3
+>>
+>>  PROJ.4: 4.9.2
+>>
+>>  GEOS: 3.5.0
+>>
+>>  SQLite: 3.7.17
+>>
+>>  Python: 2.7.5
+>>
+>>  wxPython: 2.8.12.1
+>>
+>>  Platform: Windows-8-6.2.9200
+>>
+>>  # Initialize GRASS
+>>  loc <- initGRASS(gisBase = "C:/GRASS GIS 7.0.3",
+>>                  home = tempdir(),
+>>                  gisDbase = 'C:/Users/KingGoerge/Documents/GIS DataBase 2',
+>>                  location = 'usa',
+>>                  mapset = 'kansas-4', override = TRUE )
+>>  loc
+>>  # perhabs first create loaction and map before in GUI?
+>>
+>>  # # # read DEM
+>>  execGRASS("r.in.gdal", flags = c("overwrite", "o"),
+>>           parameters = list(input = 'C:/Users/KingGoerge/Documents/Gis
+>>  Projekte/GIS Advanced
+>>  Projekt/Höhenmodell-Kansas/20160429133734_122375530.tif',
+>>                             output = "DEM"))
+>>
+>>  execGRASS("g.list", parameters = list(type = "rast"))
+>>  # set region
+>>  execGRASS("g.region", parameters = list(raster = 'DEM'))
+>>  gmeta()
+>> 
+>> 
+>>
+>>  ###
+>>  ----------------------------------------------------------------------------
+>>  # # extract flow direction + streams from dem:
+>>  execGRASS("r.watershed", flags = "overwrite",
+>>           parameters = list(elevation = "DEM",
+>>                             drainage = 'fdir',  # save flow direction as
+>>  raster named "fdir"
+>>                             stream = 'stream',  # save derived streams as
+>>  raster named "stream"
+>>                             threshold = 750))
+>>  # list all rasters available in GRASS-Session
+>>  execGRASS("g.list", parameters = list(type = "rast"))
+>>  # now with fdir and stream
+>> 
+>> #  thin streams and convert to line and clean
+>> #  thin = make stream 1pixel width
+>>  execGRASS("r.thin", flags = "overwrite", parameters = list(input =
+>>  'stream', output = 'stream_t'))
+>>  # convert to line vector
+>>  execGRASS("r.to.vect",  flags = "overwrite", parameters = list(input =
+>>  'stream_t', output = 'streams', type = 'line' ))
+>>  # clean vector (see help for more information)
+>>  execGRASS("v.clean",  flags = c("overwrite", "c"), parameters = list(input
+>>  = 'streams', output = 'streams_c', tool = 'break'))
+>> 
+>> 
+>>
+>>  # read sampling sites
+>>  sites3 <- read.table('C:/Users/KingGoerge/Documents/Gis Projekte/GIS
+>>  Advanced Projekt/Messpunkte_Kansas-formatiert.csv', header = TRUE, sep =
+>>  ';')
+>>
+>>  # set coordinates to create a spatial R object
+>>  coordinates(sites3) <- ~longitude + latitude
+>>  plot(sites3)
+>>  # write to GRASS
+>>  writeVECT(sites3, "sites_3", v.in.ogr_flags = c("o", "overwrite"))
+>>
+>>  # list all vectors
+>>  execGRASS("g.list", parameters = list(type = "vect"))
+>>
+>>  ## snap sites to streams
+>> #  add columns to attributed table of sites
+>> #  for distance id and coordinates of nearest streams,
+>>  execGRASS("v.db.addcolumn", parameters = list(map = "sites_3", columns =
+>>  "dist double precision, cats integer, xm double precision, ym double
+>>  precision"))
+>>  # hat den Befehl nicht gefunden, ausführung über GUI in GRASS über
+>>  Befehlssuche
+>> 
+>> 
+>> #  calc distance of points to nearest stream
+>> #  and save distance and new coordinates to newly created columns
+>>  execGRASS("v.distance",  flags = c("overwrite"),
+>>           parameters = list(from = 'sites_2',
+>>                             to = 'streams_c',
+>>                             output = 'connectors',
+>>                             upload = 'dist,cat,to_x,to_y',
+>>                             column = 'dist,cats,xm,ym'))
+>> 
+>> #  extract new points (=snapped coordinates)
+>> #  save to disc
+>>  execGRASS("v.db.select", flags = c('c', 'overwrite'),
+>>           parameters = list(map = 'sites_2',
+>>                             columns = c('xm,ym'),
+>>                             file = 'C:/Users/KingGoerge/Documents/Gis
+>>  Projekte/GIS Advanced Projekt/new_points_kansas.txt'))
+>>  # load from disc
+>>  execGRASS("v.in.ascii", flags = c("overwrite"),
+>>           parameters = list(input = 'C:/Users/KingGoerge/Documents/Gis
+>>  Projekte/GIS Advanced Projekt//new_points_kansas.txt',
+>>                             output = "new_sites"))
+>> 
+>>
+>>  ###
+>>  -------------------------------------------------------------------------
+>>  ### Calculate catchments
+>>  # read new sites
+>>  snapped <- readVECT('new_sites')
+>>  # copy sites_id from table to vectordata
+>>  snapped at data$site_id <- sites$site_id
+>>
+>>  # for each Point in snapped...
+>>  for (i in seq_len(nrow(snapped))) {
+>>   # extract respective point
+>>   take <- snapped[i,]
+>>   message(paste0(i, ' out of ', nrow(snapped)))
+>>   # calculate drainage area
+>>   execGRASS("r.water.outlet", flags = 'overwrite',
+>>             parameters = list(input = 'fdir',    # flow direction as input
+>>                               output = paste0('da_', take at data$site_id),  #
+>>  save as raster named "da_<site_id>" (da = drainage area)
+>>                               coordinates = coordinates(take)[ ,1:2])) #
+>>  coordinates of point for which drainage should be calculated
+>> #  execGRASS("g.list", parameters = list(type = "rast"))
+>> #  make raster to vector
+>>   execGRASS("r.to.vect",  flags = 'overwrite',
+>>             parameters = list(input = paste0('da_', take at data$site_id), #
+>>  input = "da_<site_id>" (=raster)
+>>                               output = paste0('ws_', take at data$site_id), #
+>>  output = "ws_<site_id>" (=vector polygon)
+>>                               type = 'area'))
+>> #    execGRASS("g.list", parameters = list(type = "rast"))
+>> #    execGRASS("g.list", parameters = list(type = "vect"))
+>> #  Add a column 'area_sqkm' for area in sq.km to attributed table
+>>   execGRASS("v.db.addcolumn",
+>>             parameters = list(map = paste0('ws_', take at data$site_id),
+>>                               columns = "area_sqkm double"))
+>>   # calculate aresa and save to "area_sqkm" column
+>>   execGRASS("v.to.db", parameters = list(
+>>     map = paste0('ws_', take at data$site_id),
+>>     option = 'area',
+>>     columns = 'area_sqkm',  units = 'kilometers'))
+>>  }
+>> 
+>> 
+>> 
+>> 
+>>
+>>  2016-05-06 22:11 GMT+02:00 Roger Bivand <Roger.Bivand at nhh.no>:
+>> 
+>> >  You have still not stated your rgrass7 version. This really is 
+>> >  important,
+>> >  without knowing this no help is possible. You must give much more detail 
+>> >  of
+>> >  what you are actually doing; make sure that rstudio is not getting in 
+>> >  the
+>> >  way (it runs R in separate sessions).
+>> > 
+>> >  * DO NOT POST IN NABBLE, IT CAN EAT CONTENT*
+>> > 
+>> >  Roger
+>> > 
+>> >  On Fri, 6 May 2016, Maximilian Bakenhus wrote:
+>> > 
+>> >  Hello Community,
+>> > > 
+>> > >  I am a german student and I work with some other students at a GRASS
+>> > >  Project,
+>> > >  its about watershed modeling of a DEM Projection and snap measuring 
+>> > >  points
+>> > >  over the new streams.
+>> > >  We do this with the newest version of R Studio and GRASS 7.0.3
+>> > > 
+>> > >  This here is part of our code:
+>> > > 
+>> > > 
+>> >  Where???
+>> > 
+>> > 
+>> > 
+>> > >  As we try do do the last order,
+>> > >  the* v.db.addcolumn*, we retrieve this error:
+>> > > 
+>> > >  *Error in system(cmd0, intern = TRUE) : 'v.db.addcolumn.exe' not found
+>> > >  Error in parseGRASS(cmd, legacyExec = legacyExec) :
+>> > >   v.db.addcolumn not found*
+>> > > 
+>> > >  We really dont know, how to fix it and hope someone here does, cause 
+>> > >  we
+>> > >  need
+>> > >  it very urgent.
+>> > >  Thanks for reading,
+>> > >  have a nice day
+>> > > 
+>> > >  Max
+>> > > 
+>> > > 
+>> > > 
+>> > > 
+>> > >  --
+>> > >  View this message in context:
+>> > >  http://osgeo-org.1560.x6.nabble.com/R-in-GRASS-v-db-addcolumn-Error-tp5265014.html
+>> > >  Sent from the Grass - Stats mailing list archive at Nabble.com.
+>> > >  _______________________________________________
+>> > >  grass-stats mailing list
+>> > >  grass-stats at lists.osgeo.org
+>> > >  http://lists.osgeo.org/mailman/listinfo/grass-stats
+>> > > 
+>> > 
+>> >  --
+>> >  Roger Bivand
+>> >  Department of Economics, Norwegian School of Economics,
+>> >  Helleveien 30, N-5045 Bergen, Norway.
+>> >  voice: +47 55 95 93 55; fax +47 55 95 91 00
+>> >  e-mail: Roger.Bivand at nhh.no
+>> >  http://orcid.org/0000-0003-2392-6140
+>> >  https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>> >  http://depsy.org/person/434412
+>> > 
+>> 
+>
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+

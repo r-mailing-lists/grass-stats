@@ -1,0 +1,413 @@
+From plowright.andrew at gmail.com  Sat Feb  6 16:28:48 2016
+From: plowright.andrew at gmail.com (Andrew Plowright)
+Date: Sat, 6 Feb 2016 16:28:48 -0800
+Subject: [GRASS-stats] initGRASS() never stops running?
+Message-ID: <CAOHs3k0g1QJb-MXHGVjpOCzmoq1-wdmHZZuQ2pZSuziN4Cag=g@mail.gmail.com>
+
+Hello,
+
+I recently subscribed to this mailing list since I was hoping to get a bit
+of help setting up the rgrass7 package. I do all my GIS work in R, and am
+very excited by the prospect of using GRASS functions through the R
+environment. Unfortunately, I haven't gotten very far since I don't seem to
+be able to use the initGRASS() function correctly! When I run:
+
+library(rgrass7)
+initGRASS("C:\\Program Files\\GRASS GIS 7.0.3", home=tempdir())
+
+... R Studio simply runs forever. It does not give me an error message...
+it just keeps running until I force close the program. I am using R version
+3.2.2, and have installed GRASS version 7.0.3, which is installed in
+"C:\Program Files\GRASS GIS 7.0.3" folder. GRASS GIS seems to be running
+perfectly fine on its own.
+
+Any help would be greatly appreciated. Thank you!
+
+Andrew Plowright
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20160206/1d5921f8/attachment.html>
+
+From Roger.Bivand at nhh.no  Sun Feb  7 06:25:58 2016
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun, 7 Feb 2016 15:25:58 +0100
+Subject: [GRASS-stats] initGRASS() never stops running?
+In-Reply-To: <CAOHs3k0g1QJb-MXHGVjpOCzmoq1-wdmHZZuQ2pZSuziN4Cag=g@mail.gmail.com>
+References: <CAOHs3k0g1QJb-MXHGVjpOCzmoq1-wdmHZZuQ2pZSuziN4Cag=g@mail.gmail.com>
+Message-ID: <alpine.LFD.2.20.1602071519420.15458@reclus.nhh.no>
+
+On Sun, 7 Feb 2016, Andrew Plowright wrote:
+
+> Hello,
+>
+> I recently subscribed to this mailing list since I was hoping to get a bit
+> of help setting up the rgrass7 package. I do all my GIS work in R, and am
+> very excited by the prospect of using GRASS functions through the R
+> environment. Unfortunately, I haven't gotten very far since I don't seem to
+> be able to use the initGRASS() function correctly! When I run:
+>
+> library(rgrass7)
+> initGRASS("C:\\Program Files\\GRASS GIS 7.0.3", home=tempdir())
+>
+> ... R Studio simply runs forever. It does not give me an error message...
+> it just keeps running until I force close the program. I am using R version
+> 3.2.2, and have installed GRASS version 7.0.3, which is installed in
+> "C:\Program Files\GRASS GIS 7.0.3" folder. GRASS GIS seems to be running
+> perfectly fine on its own.
+
+
+Rstudio is very likely running the system*() commands and the commands 
+setting environment variables in ways that interfere in your case. Start 
+by using R from the command line, then RGui, then find out how to debug 
+running functions in Rstudio and run initGRASS under the debugger to see 
+at which step contact gets lost.
+
+I believe that there are reports of success using Rstudio within GRASS (in 
+an existing GRASS location, starting Rstudio within GRASS).
+
+Does anyone have any experience? (I do not use Rstudio, so cannot tell - 
+under Linux it wants R built in a specific way that I don't want to be 
+forced to change to).
+
+Roger
+
+>
+> Any help would be greatly appreciated. Thank you!
+>
+> Andrew Plowright
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+http://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+http://depsy.org/person/434412
+
+From p.vanbreugel at gmail.com  Sun Feb  7 07:39:08 2016
+From: p.vanbreugel at gmail.com (Paulo van Breugel)
+Date: Sun, 7 Feb 2016 16:39:08 +0100
+Subject: [GRASS-stats] initGRASS() never stops running?
+In-Reply-To: <alpine.LFD.2.20.1602071519420.15458@reclus.nhh.no>
+References: <CAOHs3k0g1QJb-MXHGVjpOCzmoq1-wdmHZZuQ2pZSuziN4Cag=g@mail.gmail.com>
+ <alpine.LFD.2.20.1602071519420.15458@reclus.nhh.no>
+Message-ID: <CAGrkfcJrJvDJqVq47TRdWM=WprXCr6m0zPEWnzLFbcNd760ZMg@mail.gmail.com>
+
+On Sun, Feb 7, 2016 at 3:25 PM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+
+> On Sun, 7 Feb 2016, Andrew Plowright wrote:
+>
+> Hello,
+>>
+>> I recently subscribed to this mailing list since I was hoping to get a bit
+>> of help setting up the rgrass7 package. I do all my GIS work in R, and am
+>> very excited by the prospect of using GRASS functions through the R
+>> environment. Unfortunately, I haven't gotten very far since I don't seem
+>> to
+>> be able to use the initGRASS() function correctly! When I run:
+>>
+>> library(rgrass7)
+>> initGRASS("C:\\Program Files\\GRASS GIS 7.0.3", home=tempdir())
+>>
+>> ... R Studio simply runs forever. It does not give me an error message...
+>> it just keeps running until I force close the program. I am using R
+>> version
+>> 3.2.2, and have installed GRASS version 7.0.3, which is installed in
+>> "C:\Program Files\GRASS GIS 7.0.3" folder. GRASS GIS seems to be running
+>> perfectly fine on its own.
+>>
+>
+>
+> Rstudio is very likely running the system*() commands and the commands
+> setting environment variables in ways that interfere in your case. Start by
+> using R from the command line, then RGui, then find out how to debug
+> running functions in Rstudio and run initGRASS under the debugger to see at
+> which step contact gets lost.
+>
+> I believe that there are reports of success using Rstudio within GRASS (in
+> an existing GRASS location, starting Rstudio within GRASS).
+>
+> Does anyone have any experience? (I do not use Rstudio, so cannot tell -
+> under Linux it wants R built in a specific way that I don't want to be
+> forced to change to).
+>
+
+I am using Rstudio within GRASS without problems (on Ubuntu 14.04). No
+specific configuration required as far as I remember. Also on Windows I
+generally have no problem running Rstudio under GRASS (the latter installed
+using OSGeo4W), but there I had to define the path to Rstudio (
+https://pvanb.wordpress.com/2014/12/17/access-r-from-grass-gis-on-windows/)
+
+
+>
+> Roger
+>
+>
+>> Any help would be greatly appreciated. Thank you!
+>>
+>> Andrew Plowright
+>>
+>>
+> --
+> Roger Bivand
+> Department of Economics, Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 91 00
+> e-mail: Roger.Bivand at nhh.no
+> http://orcid.org/0000-0003-2392-6140
+> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+> http://depsy.org/person/434412
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20160207/049559a2/attachment.html>
+
+From plowright.andrew at gmail.com  Sun Feb  7 09:56:19 2016
+From: plowright.andrew at gmail.com (Andrew Plowright)
+Date: Sun, 7 Feb 2016 09:56:19 -0800
+Subject: [GRASS-stats] initGRASS() never stops running?
+In-Reply-To: <alpine.LFD.2.20.1602071519420.15458@reclus.nhh.no>
+References: <CAOHs3k0g1QJb-MXHGVjpOCzmoq1-wdmHZZuQ2pZSuziN4Cag=g@mail.gmail.com>
+ <alpine.LFD.2.20.1602071519420.15458@reclus.nhh.no>
+Message-ID: <CAOHs3k1dR9xAXFa96oeZGy+Gt6tLEurd=vfoQszRq04oBg850A@mail.gmail.com>
+
+Hi Roger and Paulo,
+
+Thanks for your replies. Just to be specific, I'm trying to run GRASS from
+within RStudio, not the other way around. I noticed that the version of
+rgrass7 I was using was built under R v.3.2.3, so I updated that. However,
+even when trying to run initGRASS() from RGui, I run into the same problem
+(I'm not quite sure how to run things from the command line).
+
+When searching for solutions to this problem, I came across an old thread
+from this mailing list that said that initGRASS() was not necessary when
+GRASS was running. I launched GRASS, but still, when running loading the
+rgrass7 library from Rgui I get the message:
+
+> library(rgrass7)
+Loading required package: sp
+Loading required package: XML
+GRASS GIS interface loaded with GRASS version: (GRASS not running)
+
+I guess R and GRASS are really just not communicating?
+
+Andrew
+
+On Sun, Feb 7, 2016 at 6:25 AM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+
+> On Sun, 7 Feb 2016, Andrew Plowright wrote:
+>
+> Hello,
+>>
+>> I recently subscribed to this mailing list since I was hoping to get a bit
+>> of help setting up the rgrass7 package. I do all my GIS work in R, and am
+>> very excited by the prospect of using GRASS functions through the R
+>> environment. Unfortunately, I haven't gotten very far since I don't seem
+>> to
+>> be able to use the initGRASS() function correctly! When I run:
+>>
+>> library(rgrass7)
+>> initGRASS("C:\\Program Files\\GRASS GIS 7.0.3", home=tempdir())
+>>
+>> ... R Studio simply runs forever. It does not give me an error message...
+>> it just keeps running until I force close the program. I am using R
+>> version
+>> 3.2.2, and have installed GRASS version 7.0.3, which is installed in
+>> "C:\Program Files\GRASS GIS 7.0.3" folder. GRASS GIS seems to be running
+>> perfectly fine on its own.
+>>
+>
+>
+> Rstudio is very likely running the system*() commands and the commands
+> setting environment variables in ways that interfere in your case. Start by
+> using R from the command line, then RGui, then find out how to debug
+> running functions in Rstudio and run initGRASS under the debugger to see at
+> which step contact gets lost.
+>
+> I believe that there are reports of success using Rstudio within GRASS (in
+> an existing GRASS location, starting Rstudio within GRASS).
+>
+> Does anyone have any experience? (I do not use Rstudio, so cannot tell -
+> under Linux it wants R built in a specific way that I don't want to be
+> forced to change to).
+>
+> Roger
+>
+>
+>> Any help would be greatly appreciated. Thank you!
+>>
+>> Andrew Plowright
+>>
+>>
+> --
+> Roger Bivand
+> Department of Economics, Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 91 00
+> e-mail: Roger.Bivand at nhh.no
+> http://orcid.org/0000-0003-2392-6140
+> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+> http://depsy.org/person/434412
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20160207/49f85c96/attachment.html>
+
+From p.vanbreugel at gmail.com  Sun Feb  7 10:17:15 2016
+From: p.vanbreugel at gmail.com (Paulo van Breugel)
+Date: Sun, 7 Feb 2016 19:17:15 +0100
+Subject: [GRASS-stats] initGRASS() never stops running?
+In-Reply-To: <CAOHs3k1dR9xAXFa96oeZGy+Gt6tLEurd=vfoQszRq04oBg850A@mail.gmail.com>
+References: <CAOHs3k0g1QJb-MXHGVjpOCzmoq1-wdmHZZuQ2pZSuziN4Cag=g@mail.gmail.com>
+ <alpine.LFD.2.20.1602071519420.15458@reclus.nhh.no>
+ <CAOHs3k1dR9xAXFa96oeZGy+Gt6tLEurd=vfoQszRq04oBg850A@mail.gmail.com>
+Message-ID: <CAGrkfcL-izFBue2P2agrqmxp2LaNMxHoW6_BeXp_W58v+-eUmA@mail.gmail.com>
+
+Hi Andrew
+
+The easiest way to get GRASS commands to run from within RStudio is:
+
+1) Start GRASS
+2) From the same command line start RStudio
+3) in RStudio load the rgrass7 library: library(rgrass7)
+4) Run your GRASS commands, e..g, execGRASS("g.region", flags="p")
+
+Following these steps, there should be no need to run initGRASS(). Now,
+there are user cases in which you may want to run GRASS commands from R
+without first starting R from within a GRASS session, but from what you
+write the steps above are probably more convenient.
+
+For more details on both approaches, see
+https://grasswiki.osgeo.org/wiki/R_statistics/rgrass7
+
+Paulo
+
+
+
+
+On Sun, Feb 7, 2016 at 6:56 PM, Andrew Plowright <plowright.andrew at gmail.com
+> wrote:
+
+> Hi Roger and Paulo,
+>
+> Thanks for your replies. Just to be specific, I'm trying to run GRASS from
+> within RStudio, not the other way around. I noticed that the version of
+> rgrass7 I was using was built under R v.3.2.3, so I updated that. However,
+> even when trying to run initGRASS() from RGui, I run into the same problem
+> (I'm not quite sure how to run things from the command line).
+>
+> When searching for solutions to this problem, I came across an old thread
+> from this mailing list that said that initGRASS() was not necessary when
+> GRASS was running. I launched GRASS, but still, when running loading the
+> rgrass7 library from Rgui I get the message:
+>
+> > library(rgrass7)
+> Loading required package: sp
+> Loading required package: XML
+> GRASS GIS interface loaded with GRASS version: (GRASS not running)
+>
+> I guess R and GRASS are really just not communicating?
+>
+> Andrew
+>
+> On Sun, Feb 7, 2016 at 6:25 AM, Roger Bivand <Roger.Bivand at nhh.no> wrote:
+>
+>> On Sun, 7 Feb 2016, Andrew Plowright wrote:
+>>
+>> Hello,
+>>>
+>>> I recently subscribed to this mailing list since I was hoping to get a
+>>> bit
+>>> of help setting up the rgrass7 package. I do all my GIS work in R, and am
+>>> very excited by the prospect of using GRASS functions through the R
+>>> environment. Unfortunately, I haven't gotten very far since I don't seem
+>>> to
+>>> be able to use the initGRASS() function correctly! When I run:
+>>>
+>>> library(rgrass7)
+>>> initGRASS("C:\\Program Files\\GRASS GIS 7.0.3", home=tempdir())
+>>>
+>>> ... R Studio simply runs forever. It does not give me an error message...
+>>> it just keeps running until I force close the program. I am using R
+>>> version
+>>> 3.2.2, and have installed GRASS version 7.0.3, which is installed in
+>>> "C:\Program Files\GRASS GIS 7.0.3" folder. GRASS GIS seems to be running
+>>> perfectly fine on its own.
+>>>
+>>
+>>
+>> Rstudio is very likely running the system*() commands and the commands
+>> setting environment variables in ways that interfere in your case. Start by
+>> using R from the command line, then RGui, then find out how to debug
+>> running functions in Rstudio and run initGRASS under the debugger to see at
+>> which step contact gets lost.
+>>
+>> I believe that there are reports of success using Rstudio within GRASS
+>> (in an existing GRASS location, starting Rstudio within GRASS).
+>>
+>> Does anyone have any experience? (I do not use Rstudio, so cannot tell -
+>> under Linux it wants R built in a specific way that I don't want to be
+>> forced to change to).
+>>
+>> Roger
+>>
+>>
+>>> Any help would be greatly appreciated. Thank you!
+>>>
+>>> Andrew Plowright
+>>>
+>>>
+>> --
+>> Roger Bivand
+>> Department of Economics, Norwegian School of Economics,
+>> Helleveien 30, N-5045 Bergen, Norway.
+>> voice: +47 55 95 93 55; fax +47 55 95 91 00
+>> e-mail: Roger.Bivand at nhh.no
+>> http://orcid.org/0000-0003-2392-6140
+>> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>> http://depsy.org/person/434412
+>>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20160207/e012d7ff/attachment-0001.html>
+
+From hellik at web.de  Sat Feb 13 00:31:18 2016
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Sat, 13 Feb 2016 00:31:18 -0800 (PST)
+Subject: [GRASS-stats] initGRASS() never stops running?
+In-Reply-To: <CAGrkfcJrJvDJqVq47TRdWM=WprXCr6m0zPEWnzLFbcNd760ZMg@mail.gmail.com>
+References: <CAOHs3k0g1QJb-MXHGVjpOCzmoq1-wdmHZZuQ2pZSuziN4Cag=g@mail.gmail.com>
+ <alpine.LFD.2.20.1602071519420.15458@reclus.nhh.no>
+ <CAGrkfcJrJvDJqVq47TRdWM=WprXCr6m0zPEWnzLFbcNd760ZMg@mail.gmail.com>
+Message-ID: <1455352278828-5250356.post@n6.nabble.com>
+
+>I am using Rstudio within GRASS without problems (on Ubuntu 14.04). No
+specific configuration required as >far as I remember. Also on Windows I
+generally have no problem running Rstudio under GRASS (the latter >installed
+using OSGeo4W), but there I had to define the path to Rstudio
+(https://pvanb.wordpress.com
+>/2014/12/17/access-r-from-grass-gis-on-windows/)
+
+it shouldn't be needed anymore; some time ago I've added the path to R
+studio to OSGeo4W- and standalone winGRASS 7, see:
+
+https://trac.osgeo.org/grass/browser/grass/branches/releasebranch_7_0/mswindows/env.bat#L18
+https://trac.osgeo.org/grass/browser/grass/branches/releasebranch_7_0/mswindows/osgeo4w/env.bat.tmpl#L18
+
+
+
+-----
+best regards
+Helmut
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/initGRASS-never-stops-running-tp5249279p5250356.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+

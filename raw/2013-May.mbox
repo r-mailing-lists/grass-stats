@@ -1,0 +1,581 @@
+From Roger.Bivand at nhh.no  Thu May  2 23:44:03 2013
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri, 3 May 2013 08:44:03 +0200
+Subject: [GRASS-stats] Changes in spgrass6 0.8-1
+Message-ID: <alpine.LRH.2.03.1305030843020.21490@reclus.nhh.no>
+
+The new release of spgrass6, the package interfacing R and GRASS 6 and 7, 
+includes changes in the way commands are handled. Users should continue to 
+use their scripts unchanged, but internally on "unix" platforms (all but 
+Windows), GRASS error messages are now trapped in R and will issue stop() 
+or warning() calls, rather than simply being printed to console and not 
+being "seen" by the R process. This involved substituting system2() for 
+system() in the package code in a number of places. Please report directly 
+to the maintainer if problems arise.
+
+Thanks to Rainer Krug for ideas and help testing.
+
+Roger
+
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand at nhh.no
+
+
+From nicolasalejandromari at gmail.com  Tue May 21 12:45:29 2013
+From: nicolasalejandromari at gmail.com (=?ISO-8859-1?Q?Nicol=E1s_Mari?=)
+Date: Tue, 21 May 2013 16:45:29 -0300
+Subject: [GRASS-stats] How to give projection to polygons and calculate area
+Message-ID: <CABPT5Xsx_AxNwPz0JD+y+RYG5cSdpFC1807L8Kevi_KCdPOSjw@mail.gmail.com>
+
+Dear all,
+
+I am working with GRASS functions in R batch job:
+
+I need to calculate areas from polygons which are in a geographical
+projection. To do so, i would like to define a new projection (Lamert
+Azimutal Equal Area) to my polygons, and the to calculate areas.
+
+Please let me know how can i do. I apreciate you help.
+
+
+-- 
+Nicol?s
+
+*P** *Think before print
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20130521/b5732840/attachment.html>
+
+From hamish_b at yahoo.com  Tue May 21 14:54:46 2013
+From: hamish_b at yahoo.com (Hamish)
+Date: Tue, 21 May 2013 14:54:46 -0700 (PDT)
+Subject: [GRASS-stats] How to give projection to polygons and calculate
+	area
+Message-ID: <1369173286.65479.YahooMailClassic@web140005.mail.bf1.yahoo.com>
+
+Nicol?s wrote:
+> I am working with GRASS functions in R batch job:
+> I need to calculate areas from polygons which are in a
+> geographical projection. To do so, i would like to define a new
+> projection (Lamert Azimutal Equal Area) to my polygons, and the
+> to calculate areas.
+
+raster areas or vector areas?
+
+(GRASS's r.* modules generally deal with that and give the
+correct area in sq-meters automatically, so no need to reproject;
+the v.* modules generally/often do not [yet])
+
+if you'd like to make a new location in GRASS via a script,
+you can use the g.proj module to do that (-c flag), then use
+a GRASS_BATCH_JOB to automatically pull the vector map in with
+v.proj and do the calculation.
+
+
+Hamish
+
+From Rainer at krugs.de  Wed May 22 00:57:32 2013
+From: Rainer at krugs.de (Rainer M. Krug)
+Date: Wed, 22 May 2013 09:57:32 +0200
+Subject: [GRASS-stats] List on gmane?
+Message-ID: <87ppwjtpjn.fsf@krugs.de>
+
+Hi
+
+I am switching to gmane for my mailing lists, and couldn't find
+grass-stats on gmane. Is there a reason for it or could I add it to
+gmane?
+
+Thanks,
+
+Rainer
+
+
+-- 
+Rainer M. Krug
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+From neteler at osgeo.org  Wed May 22 04:26:59 2013
+From: neteler at osgeo.org (Markus Neteler)
+Date: Wed, 22 May 2013 13:26:59 +0200
+Subject: [GRASS-stats] List on gmane?
+In-Reply-To: <87ppwjtpjn.fsf@krugs.de>
+References: <87ppwjtpjn.fsf@krugs.de>
+Message-ID: <CALFmHhvxGOZR0YFRwUGgS+U6TOrAx3kBTn_PuQpXTOXRdZDqGA@mail.gmail.com>
+
+On Wed, May 22, 2013 at 9:57 AM, Rainer M. Krug <Rainer at krugs.de> wrote:
+> Hi
+>
+> I am switching to gmane for my mailing lists, and couldn't find
+> grass-stats on gmane. Is there a reason for it or could I add it to
+> gmane?
+
+For Nabble, it is managed via OSGeo SAC:
+
+http://wiki.osgeo.org/wiki/Mailing_Lists#Nabble
+
+No idea for Gmane, though (Hamish?).
+
+Markus
+
+From markus.metz.giswork at gmail.com  Wed May 22 07:22:00 2013
+From: markus.metz.giswork at gmail.com (Markus Metz)
+Date: Wed, 22 May 2013 16:22:00 +0200
+Subject: [GRASS-stats] How to give projection to polygons and calculate
+	area
+In-Reply-To: <1369173286.65479.YahooMailClassic@web140005.mail.bf1.yahoo.com>
+References: <1369173286.65479.YahooMailClassic@web140005.mail.bf1.yahoo.com>
+Message-ID: <CAG+h=FFdUQ02WeymNgu6JeWOujGbGK1v0Zsr4O3Fmt=fhWDwJg@mail.gmail.com>
+
+On Tue, May 21, 2013 at 11:54 PM, Hamish <hamish_b at yahoo.com> wrote:
+> Nicol?s wrote:
+>> I am working with GRASS functions in R batch job:
+>> I need to calculate areas from polygons which are in a
+>> geographical projection. To do so, i would like to define a new
+>> projection (Lamert Azimutal Equal Area) to my polygons, and the
+>> to calculate areas.
+>
+> raster areas or vector areas?
+>
+> (GRASS's r.* modules generally deal with that and give the
+> correct area in sq-meters automatically, so no need to reproject;
+> the v.* modules generally/often do not [yet])
+
+A simple query by clicking on the polygon will give square meters for
+latlon. v.to.db uploads values in meters or square meters for latlon,
+or miles, feet, acres, hectares when requested.
+
+Markus M
+
+>
+> if you'd like to make a new location in GRASS via a script,
+> you can use the g.proj module to do that (-c flag), then use
+> a GRASS_BATCH_JOB to automatically pull the vector map in with
+> v.proj and do the calculation.
+>
+>
+> Hamish
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+
+From nicolasalejandromari at gmail.com  Wed May 22 11:58:34 2013
+From: nicolasalejandromari at gmail.com (=?ISO-8859-1?Q?Nicol=E1s_Mari?=)
+Date: Wed, 22 May 2013 15:58:34 -0300
+Subject: [GRASS-stats] How to give projection to polygons and calculate
+	area
+In-Reply-To: <CAG+h=FFdUQ02WeymNgu6JeWOujGbGK1v0Zsr4O3Fmt=fhWDwJg@mail.gmail.com>
+References: <1369173286.65479.YahooMailClassic@web140005.mail.bf1.yahoo.com>
+	<CAG+h=FFdUQ02WeymNgu6JeWOujGbGK1v0Zsr4O3Fmt=fhWDwJg@mail.gmail.com>
+Message-ID: <CABPT5XvZ9yXp6EKXmyNgWeLQA1P2ecpnJyX2VxYko0pii3ydtg@mail.gmail.com>
+
+Dear Markus and Hamish,
+
+Thanks a lot.
+
+I am working with vectors.
+
+How can i give the parameters of the new location via g.proj -c? for
+example for a laea projection? (All inside R via execGRASS)
+
+when i have the new location a use v,proj.
+
+And then i use v.db.addcol to add a column called area.
+
+then i use v.to.db to calculate it.
+
+Do you think that is allright?
+
+Thanks for your help.
+
+Nicolas
+
+
+
+
+2013/5/22 Markus Metz <markus.metz.giswork at gmail.com>
+
+> On Tue, May 21, 2013 at 11:54 PM, Hamish <hamish_b at yahoo.com> wrote:
+> > Nicol?s wrote:
+> >> I am working with GRASS functions in R batch job:
+> >> I need to calculate areas from polygons which are in a
+> >> geographical projection. To do so, i would like to define a new
+> >> projection (Lamert Azimutal Equal Area) to my polygons, and the
+> >> to calculate areas.
+> >
+> > raster areas or vector areas?
+> >
+> > (GRASS's r.* modules generally deal with that and give the
+> > correct area in sq-meters automatically, so no need to reproject;
+> > the v.* modules generally/often do not [yet])
+>
+> A simple query by clicking on the polygon will give square meters for
+> latlon. v.to.db uploads values in meters or square meters for latlon,
+> or miles, feet, acres, hectares when requested.
+>
+> Markus M
+>
+> >
+> > if you'd like to make a new location in GRASS via a script,
+> > you can use the g.proj module to do that (-c flag), then use
+> > a GRASS_BATCH_JOB to automatically pull the vector map in with
+> > v.proj and do the calculation.
+> >
+> >
+> > Hamish
+> > _______________________________________________
+> > grass-stats mailing list
+> > grass-stats at lists.osgeo.org
+> > http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+
+
+-- 
+Nicol?s
+
+*P** *Think before print
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20130522/550238ba/attachment.html>
+
+From Rainer at krugs.de  Thu May 23 00:50:00 2013
+From: Rainer at krugs.de (Rainer M. Krug)
+Date: Thu, 23 May 2013 09:50:00 +0200
+Subject: [GRASS-stats] Adding this list to gmane - WAS: List on gmane?
+In-Reply-To: <CALFmHhvxGOZR0YFRwUGgS+U6TOrAx3kBTn_PuQpXTOXRdZDqGA@mail.gmail.com>
+	(Markus Neteler's message of "Wed, 22 May 2013 13:26:59 +0200")
+References: <87ppwjtpjn.fsf@krugs.de>
+	<CALFmHhvxGOZR0YFRwUGgS+U6TOrAx3kBTn_PuQpXTOXRdZDqGA@mail.gmail.com>
+Message-ID: <87mwrmqgnr.fsf_-_@krugs.de>
+
+
+Markus Neteler <neteler at osgeo.org> writes:
+
+> On Wed, May 22, 2013 at 9:57 AM, Rainer M. Krug <Rainer at krugs.de> wrote:
+>> Hi
+>>
+>> I am switching to gmane for my mailing lists, and couldn't find
+>> grass-stats on gmane. Is there a reason for it or could I add it to
+>> gmane?
+>
+> For Nabble, it is managed via OSGeo SAC:
+>
+> http://wiki.osgeo.org/wiki/Mailing_Lists#Nabble
+>
+> No idea for Gmane, though (Hamish?).
+
+OK - if there are no objections, I will add the list to gmane tomorrow.
+
+I will set the posting permission to 
+
+,----
+| Non-public (posting through Gmane allowed for list members)
+`----
+
+and add the list  under
+
+,----
+| gmane.comp.gis.grass.stats
+`----
+
+as there are already a few other grass lists:
+
+,----
+| K   1964: gmane.comp.gis.grass.cz
+|    53258: gmane.comp.gis.grass.devel
+|      704: gmane.comp.gis.grass.gui
+|    14351: gmane.comp.gis.grass.pkg.devel
+|     3571: gmane.comp.gis.grass.pkg.general
+|    47359: gmane.comp.gis.grass.user
+| K    759: gmane.comp.gis.grass.windows
+`----
+
+I assume the project URL should be grass.osgeo.org
+
+Please let me know if you have any objections by this evening.
+
+Cheers,
+
+Rainer
+
+>
+> Markus
+
+
+-- 
+Rainer M. Krug
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 489 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20130523/df682cb9/attachment.pgp>
+
+From Rainer at krugs.de  Fri May 24 00:55:08 2013
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Fri, 24 May 2013 09:55:08 +0200
+Subject: [GRASS-stats] Adding this list to gmane - WAS: List on gmane?
+In-Reply-To: <87mwrmqgnr.fsf_-_@krugs.de>
+References: <87ppwjtpjn.fsf@krugs.de>
+	<CALFmHhvxGOZR0YFRwUGgS+U6TOrAx3kBTn_PuQpXTOXRdZDqGA@mail.gmail.com>
+	<87mwrmqgnr.fsf_-_@krugs.de>
+Message-ID: <CAGhLh6HusUD4Q-7H6E+BRKYk6yANmf9pJs4qMht-7HHpO-Aq_w@mail.gmail.com>
+
+Hi
+
+Just a quick update: I added the list and am awaiting confirmation of
+creation. I'll keep you posted.
+
+Cheers,
+
+Rainer
+
+
+On Thursday, May 23, 2013, Rainer M. Krug wrote:
+
+>
+> Markus Neteler <neteler at osgeo.org <javascript:;>> writes:
+>
+> > On Wed, May 22, 2013 at 9:57 AM, Rainer M. Krug <Rainer at krugs.de<javascript:;>>
+> wrote:
+> >> Hi
+> >>
+> >> I am switching to gmane for my mailing lists, and couldn't find
+> >> grass-stats on gmane. Is there a reason for it or could I add it to
+> >> gmane?
+> >
+> > For Nabble, it is managed via OSGeo SAC:
+> >
+> > http://wiki.osgeo.org/wiki/Mailing_Lists#Nabble
+> >
+> > No idea for Gmane, though (Hamish?).
+>
+> OK - if there are no objections, I will add the list to gmane tomorrow.
+>
+> I will set the posting permission to
+>
+> ,----
+> | Non-public (posting through Gmane allowed for list members)
+> `----
+>
+> and add the list  under
+>
+> ,----
+> | gmane.comp.gis.grass.stats
+> `----
+>
+> as there are already a few other grass lists:
+>
+> ,----
+> | K   1964: gmane.comp.gis.grass.cz
+> |    53258: gmane.comp.gis.grass.devel
+> |      704: gmane.comp.gis.grass.gui
+> |    14351: gmane.comp.gis.grass.pkg.devel
+> |     3571: gmane.comp.gis.grass.pkg.general
+> |    47359: gmane.comp.gis.grass.user
+> | K    759: gmane.comp.gis.grass.windows
+> `----
+>
+> I assume the project URL should be grass.osgeo.org
+>
+> Please let me know if you have any objections by this evening.
+>
+> Cheers,
+>
+> Rainer
+>
+> >
+> > Markus
+>
+>
+> --
+> Rainer M. Krug
+>
+> Centre of Excellence for Invasion Biology
+> Stellenbosch University
+> South Africa
+>
+> Tel :       +33 - (0)9 53 10 27 44
+> Cell:       +33 - (0)6 85 62 59 98
+> Fax :       +33 - (0)9 58 10 27 44
+>
+> Fax (D):    +49 - (0)3 21 21 25 22 44
+>
+> email:      Rainer at krugs.de <javascript:;>
+>
+> Skype:      RMkrug
+>
+
+
+-- 
+NEW GERMAN FAX NUMBER!!!
+
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology,
+UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Natural Sciences Building
+Office Suite 2039
+Stellenbosch University
+Main Campus, Merriman Avenue
+Stellenbosch
+South Africa
+
+Cell:           +27 - (0)83 9479 042
+Fax:            +27 - (0)86 516 2782
+Fax:            +49 - (0)321 2125 2244
+email:          Rainer at krugs.de
+
+Skype:          RMkrug
+Google:         R.M.Krug at gmail.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20130524/9c3fafee/attachment.html>
+
+From Rainer at krugs.de  Mon May 27 01:10:05 2013
+From: Rainer at krugs.de (Rainer M. Krug)
+Date: Mon, 27 May 2013 10:10:05 +0200
+Subject: [GRASS-stats] test - please ignore
+Message-ID: <87txlo4zdu.fsf@krugs.de>
+
+
+-- 
+Rainer M. Krug
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 489 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20130527/bb762070/attachment.pgp>
+
+From Rainer at krugs.de  Mon May 27 01:33:26 2013
+From: Rainer at krugs.de (Rainer M. Krug)
+Date: Mon, 27 May 2013 10:33:26 +0200
+Subject: [GRASS-stats] List on gmane
+Message-ID: <87haho4yax.fsf@krugs.de>
+
+
+Hi
+
+This list is now available on gmane [1] and it has the name 
+
+  gmane.comp.gis.grass.stats
+
+Enjoy,
+
+Rainer
+
+
+Footnotes: 
+[1]  http://gmane.org/info.php?group=gmane.comp.gis.grass.stats
+
+-- 
+Rainer M. Krug
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 489 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20130527/e3962839/attachment.pgp>
+
+From hamish_b at yahoo.com  Mon May 27 23:46:10 2013
+From: hamish_b at yahoo.com (Hamish)
+Date: Mon, 27 May 2013 23:46:10 -0700 (PDT)
+Subject: [GRASS-stats] List on gmane
+In-Reply-To: <87haho4yax.fsf@krugs.de>
+Message-ID: <1369723570.72503.YahooMailClassic@web140004.mail.bf1.yahoo.com>
+
+Rainer wrote:
+> This list is now available on gmane [1] and it has the name
+> ? gmane.comp.gis.grass.stats
+...
+> [1]? http://gmane.org/info.php?group=gmane.comp.gis.grass.stats
+
+
+thanks,
+
+hopefully when a free moment arrives :-) we can generate the
+mbox file history to send to the gmane admins to merge in.
+
+
+Hamish
+
+From Rainer at krugs.de  Tue May 28 00:35:03 2013
+From: Rainer at krugs.de (Rainer M. Krug)
+Date: Tue, 28 May 2013 09:35:03 +0200
+Subject: [GRASS-stats] List on gmane
+References: <87haho4yax.fsf@krugs.de>
+	<1369723570.72503.YahooMailClassic@web140004.mail.bf1.yahoo.com>
+Message-ID: <87wqqjo8uw.fsf@krugs.de>
+
+
+Hamish <hamish_b at yahoo.com> writes:
+
+> Rainer wrote:
+>> This list is now available on gmane [1] and it has the name
+>> ? gmane.comp.gis.grass.stats
+> ...
+>> [1]? http://gmane.org/info.php?group=gmane.comp.gis.grass.stats
+>
+>
+> thanks,
+>
+> hopefully when a free moment arrives :-) we can generate the
+> mbox file history to send to the gmane admins to merge in.
+
+That would be really brilliant.
+
+Rainer
+
+>
+>
+> Hamish
+
+
+-- 
+Rainer M. Krug
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 489 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20130528/e6c7311f/attachment.pgp>
+

@@ -1,0 +1,4710 @@
+From Matthew.Redding at dpi.qld.gov.au  Tue Mar  8 16:54:23 2005
+From: Matthew.Redding at dpi.qld.gov.au (Redding, Matthew)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] R, GRASS, and CYGWIN under version GRASS54
+Message-ID: <200503082154.j28LsPtp021485@dpi-gw1.dpi.qld.gov.au>
+
+Hi GRASS and R Gurus, 
+
+I sent an email on this subject prior to confirming my subscription to the group, so I hope no-one recieves this message twice.
+
+I have had a look through the archive to see if GRASS54 will work under cygwin with R2.0.
+I notice that some people are using GRASS 54 with R, but the most recent mention of 
+using it with cygwin was back in 2002, and all the advice I have been able to find does not seem to work.
+
+Will it actually work with my setup of R 2, GRASS 54 and cygwin?
+
+Where should I look for info on how to get it all running?
+
+The help material in R indicates a few suggestions, that do not seem to work for me.
+
+For example, one of my problems is that I cannot find any file called .grassrc5
+or anything much like it, as mentioned in the 
+?grass.connect() documentation under R.
+
+
+Any suggestions on how to get it working?
+
+Thanks, 
+
+Matt Redding 
+
+********************************DISCLAIMER****************************
+The information contained in the above e-mail message or messages 
+(which includes any attachments) is confidential and may be legally 
+privileged.  It is intended only for the use of the person or entity 
+to which it is addressed.  If you are not the addressee any form of 
+disclosure, copying, modification, distribution or any action taken 
+or omitted in reliance on the information is unauthorised.  Opinions 
+contained in the message(s) do not necessarily reflect the opinions 
+of the Queensland Government and its authorities.  If you received 
+this communication in error, please notify the sender immediately and 
+delete it from your computer system network. 
+
+
+From Roger.Bivand at nhh.no  Wed Mar  9 02:27:34 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] R, GRASS, and CYGWIN under version GRASS54
+In-Reply-To: <200503082154.j28LsPtp021485@dpi-gw1.dpi.qld.gov.au>
+Message-ID: <Pine.LNX.4.44.0503090818400.20712-100000@reclus.nhh.no>
+
+On Wed, 9 Mar 2005, Redding, Matthew wrote:
+
+> Hi GRASS and R Gurus, 
+> 
+> I sent an email on this subject prior to confirming my subscription to the group, so I hope no-one recieves this message twice.
+> 
+> I have had a look through the archive to see if GRASS54 will work under cygwin with R2.0.
+> I notice that some people are using GRASS 54 with R, but the most recent mention of 
+> using it with cygwin was back in 2002, and all the advice I have been able to find does not seem to work.
+> 
+> Will it actually work with my setup of R 2, GRASS 54 and cygwin?
+> 
+> Where should I look for info on how to get it all running?
+> 
+> The help material in R indicates a few suggestions, that do not seem to
+> work for me.
+> 
+> For example, one of my problems is that I cannot find any file called
+> .grassrc5 or anything much like it, as mentioned in the ?grass.connect()
+> documentation under R.
+
+Please try the following (based on the guess that the advice should have 
+said look for .grassrc5* - in 5.4 it is probably .grassrc54). From the 
+cygwin terminal prompt, start GRASS in text mode. Once you've chosen your 
+location and mapset, you get to the GRASS prompt. Try again to find your 
+.grassrc5* in your home directory (cat ~/.grassrc5*). If it is there, 
+start R (either GUI or terminal), and library(GRASS), then 
+set.cygwinstring(), or other routes to getting the cygwin prefix right.
+
+I think your difficulty has been looking for .grassrc5 not .grassrc5* - 
+please let the list know if this helps. The general setup should work, 
+from reports from other users, you just need to get the specific naming 
+magic right for the cygwin prefix for the GISDBASE, I hope.
+
+Roger
+
+> 
+> 
+> Any suggestions on how to get it working?
+> 
+> Thanks, 
+> 
+> Matt Redding 
+> 
+> ********************************DISCLAIMER****************************
+> The information contained in the above e-mail message or messages 
+> (which includes any attachments) is confidential and may be legally 
+> privileged.  It is intended only for the use of the person or entity 
+> to which it is addressed.  If you are not the addressee any form of 
+> disclosure, copying, modification, distribution or any action taken 
+> or omitted in reliance on the information is unauthorised.  Opinions 
+> contained in the message(s) do not necessarily reflect the opinions 
+> of the Queensland Government and its authorities.  If you received 
+> this communication in error, please notify the sender immediately and 
+> delete it from your computer system network. 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From Roger.Bivand at nhh.no  Thu Mar 10 02:41:18 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] R, GRASS, and CYGWIN under version GRASS54
+In-Reply-To: <200503092202.j29M2ltp025756@dpi-gw1.dpi.qld.gov.au>
+Message-ID: <Pine.LNX.4.44.0503100832500.21369-100000@reclus.nhh.no>
+
+First - please always reply to the list on which you asked the question!!
+
+If you do not, no-body else will share what you have learnt, nor will they 
+be able to join in. It also makes the list archives useless, because they 
+only contain open questions, not confirmations of resolution.
+
+On Thu, 10 Mar 2005, Redding, Matthew wrote:
+
+> Thanks Roger and Hamish, 
+> 
+> I think I am getting close to the real problem here.
+> When I start grass, I end up on my network drive n:...
+> and that is where the .grassrc54 is.
+> 
+> My grassdata directory is:
+> 
+> c:/cygwin/usr/local/share/grassdata.
+> 
+> so I did this:
+> 
+> set.cygwinstring("n:/")
+
+I'm doubtful about this - from the above, the cygwin root is:
+
+c:/cygwin
+
+isn't it?
+
+Please as far as possible copy the full console interaction - both your 
+commands, and what the system responds. Please remember that the list is 
+not looking over your shoulder.
+
+> 
+> I am not sure where the GISDBASE is.....
+> would it be in 
+> c:/cygwin/usr/local/share/grassdata ?
+> 
+> I suppose if that is the case, I need to then use something like:
+> 
+> GRASS.connect(manual=TRUE, gisdbase="c:/cygwin/usr/local/share/grasdata"
+> 	, loc="Jack", mapset="PERMANENT")
+> 
+
+Well, what happened when you tried it? Please say more about what happens? 
+What happens when you start GRASS - you are running R within GRASS, aren't 
+you?
+
+
+
+> 
+> Is that correct? Is that enought to get things fully operational?
+> 
+> I can now access data from the mapset listed.  So I have had derinate
+> progress.
+
+That sounds positive. Please post a recipe of the steps you need, 
+preferably copy and paste from your console, than others can benefit from 
+your learning too!
+
+Best wishes,
+
+Roger
+
+> 
+> Thanks very much.
+> 
+> Thanks, 
+> 
+> Matt Redding
+> 
+> -----Original Message-----
+> From: statsgrass-admin@grass.itc.it
+> [mailto:statsgrass-admin@grass.itc.it]On Behalf Of Roger Bivand
+> Sent: Wednesday, 9 March 2005 5:28 PM
+> To: Redding, Matthew
+> Cc: statsgrass@grass.itc.it
+> Subject: Re: [STATSGRASS] R, GRASS, and CYGWIN under version GRASS54
+> 
+> 
+> On Wed, 9 Mar 2005, Redding, Matthew wrote:
+> 
+> > Hi GRASS and R Gurus, 
+> > 
+> > I sent an email on this subject prior to confirming my subscription to the group, so I hope no-one recieves this message twice.
+> > 
+> > I have had a look through the archive to see if GRASS54 will work under cygwin with R2.0.
+> > I notice that some people are using GRASS 54 with R, but the most recent mention of 
+> > using it with cygwin was back in 2002, and all the advice I have been able to find does not seem to work.
+> > 
+> > Will it actually work with my setup of R 2, GRASS 54 and cygwin?
+> > 
+> > Where should I look for info on how to get it all running?
+> > 
+> > The help material in R indicates a few suggestions, that do not seem to
+> > work for me.
+> > 
+> > For example, one of my problems is that I cannot find any file called
+> > .grassrc5 or anything much like it, as mentioned in the ?grass.connect()
+> > documentation under R.
+> 
+> Please try the following (based on the guess that the advice should have
+> said look for .grassrc5* - in 5.4 it is probably .grassrc54). From the 
+> cygwin terminal prompt, start GRASS in text mode. Once you've chosen your
+> location and mapset, you get to the GRASS prompt. Try again to find your
+> .grassrc5* in your home directory (cat ~/.grassrc5*). If it is there, 
+> start R (either GUI or terminal), and library(GRASS), then 
+> set.cygwinstring(), or other routes to getting the cygwin prefix right.
+> 
+> I think your difficulty has been looking for .grassrc5 not .grassrc5* - 
+> please let the list know if this helps. The general setup should work, 
+> from reports from other users, you just need to get the specific naming 
+> magic right for the cygwin prefix for the GISDBASE, I hope.
+> 
+> Roger
+> 
+> > 
+> > 
+> > Any suggestions on how to get it working?
+> > 
+> > Thanks, 
+> > 
+> > Matt Redding 
+> > 
+> > ********************************DISCLAIMER****************************
+> > The information contained in the above e-mail message or messages 
+> > (which includes any attachments) is confidential and may be legally 
+> > privileged.  It is intended only for the use of the person or entity 
+> > to which it is addressed.  If you are not the addressee any form of 
+> > disclosure, copying, modification, distribution or any action taken 
+> > or omitted in reliance on the information is unauthorised.  Opinions 
+> > contained in the message(s) do not necessarily reflect the opinions 
+> > of the Queensland Government and its authorities.  If you received 
+> > this communication in error, please notify the sender immediately and 
+> > delete it from your computer system network. 
+> > 
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+
+
+From Matthew.Redding at dpi.qld.gov.au  Thu Mar 10 17:34:39 2005
+From: Matthew.Redding at dpi.qld.gov.au (Redding, Matthew)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] R, GRASS, and CYGWIN under version GRASS54
+Message-ID: <200503102234.j2AMYmtp012401@dpi-gw1.dpi.qld.gov.au>
+
+Hi Roger,
+
+I agree, that was just an oversight.
+
+The weird thing is, cygwin seems to habitually install so that my home directory is
+the n:/ drive.  So while that is not where the data is, it is where the .grassrc54 is.
+
+But it does not seem to matter what I put in the cygwin string....your version works fine...
+What does it actually do?  Does the grass.connect(...) command over-ride it anyway?
+
+This is the sequence I used to get things going:
+
+> library(GRASS)
+Warning message: 
+package 'GRASS' was built under R version 2.0.1 
+> set.cygwinstring("c:/cygwin")
+[1] "c:/cygwin"
+> GRASS.connect(manual=TRUE, gisdbase="c:/cygwin/usr/local/share/grassdata"
++ , loc="Jack", mapset="PERMANENT")
+GRASS environment variables inserted manually
+NULL
+> G<-gmeta()
+> G
+$LOCATION
+[1] "Jack"
+....
+
+NOTE: I am NOT using R from within grass.  I am using R and accessing grass.  I am far more familliar wtih R than I am with grass,
+so that is just the way I ended up doing it.  In fact, I am not at all sure about how to run my normal R installation
+from with GRASS -- suggestions welcome.
+
+
+I used the system intensively yesterday with "set.cygwinstring("n:/")" 
+and found everything that I used worked well.  I used gmeta, sites.get, sites.put, and the equivalent raster commands.
+
+It all worked very well!
+
+Now, if I can run my windows R installation from within GRASS , I would like to learn that!
+
+Thanks, 
+
+Matt Redding
+
+-----Original Message-----
+From: Roger Bivand [mailto:Roger.Bivand@nhh.no]
+Sent: Thursday, 10 March 2005 5:41 PM
+To: Redding, Matthew
+Cc: statsgrass@grass.itc.it
+Subject: RE: [STATSGRASS] R, GRASS, and CYGWIN under version GRASS54
+
+
+First - please always reply to the list on which you asked the question!!
+
+If you do not, no-body else will share what you have learnt, nor will they 
+be able to join in. It also makes the list archives useless, because they 
+only contain open questions, not confirmations of resolution.
+
+On Thu, 10 Mar 2005, Redding, Matthew wrote:
+
+> Thanks Roger and Hamish, 
+> 
+> I think I am getting close to the real problem here.
+> When I start grass, I end up on my network drive n:...
+> and that is where the .grassrc54 is.
+> 
+> My grassdata directory is:
+> 
+> c:/cygwin/usr/local/share/grassdata.
+> 
+> so I did this:
+> 
+> set.cygwinstring("n:/")
+
+I'm doubtful about this - from the above, the cygwin root is:
+
+c:/cygwin
+
+isn't it?
+
+Please as far as possible copy the full console interaction - both your 
+commands, and what the system responds. Please remember that the list is 
+not looking over your shoulder.
+
+> 
+> I am not sure where the GISDBASE is.....
+> would it be in 
+> c:/cygwin/usr/local/share/grassdata ?
+> 
+> I suppose if that is the case, I need to then use something like:
+> 
+> GRASS.connect(manual=TRUE, gisdbase="c:/cygwin/usr/local/share/grasdata"
+> 	, loc="Jack", mapset="PERMANENT")
+> 
+
+Well, what happened when you tried it? Please say more about what happens? 
+What happens when you start GRASS - you are running R within GRASS, aren't 
+you?
+
+
+
+> 
+> Is that correct? Is that enought to get things fully operational?
+> 
+> I can now access data from the mapset listed.  So I have had derinate
+> progress.
+
+That sounds positive. Please post a recipe of the steps you need, 
+preferably copy and paste from your console, than others can benefit from 
+your learning too!
+
+Best wishes,
+
+Roger
+
+> 
+> Thanks very much.
+> 
+> Thanks, 
+> 
+> Matt Redding
+> 
+> -----Original Message-----
+> From: statsgrass-admin@grass.itc.it
+> [mailto:statsgrass-admin@grass.itc.it]On Behalf Of Roger Bivand
+> Sent: Wednesday, 9 March 2005 5:28 PM
+> To: Redding, Matthew
+> Cc: statsgrass@grass.itc.it
+> Subject: Re: [STATSGRASS] R, GRASS, and CYGWIN under version GRASS54
+> 
+> 
+> On Wed, 9 Mar 2005, Redding, Matthew wrote:
+> 
+> > Hi GRASS and R Gurus, 
+> > 
+> > I sent an email on this subject prior to confirming my subscription to the group, so I hope no-one recieves this message twice.
+> > 
+> > I have had a look through the archive to see if GRASS54 will work under cygwin with R2.0.
+> > I notice that some people are using GRASS 54 with R, but the most recent mention of 
+> > using it with cygwin was back in 2002, and all the advice I have been able to find does not seem to work.
+> > 
+> > Will it actually work with my setup of R 2, GRASS 54 and cygwin?
+> > 
+> > Where should I look for info on how to get it all running?
+> > 
+> > The help material in R indicates a few suggestions, that do not seem to
+> > work for me.
+> > 
+> > For example, one of my problems is that I cannot find any file called
+> > .grassrc5 or anything much like it, as mentioned in the ?grass.connect()
+> > documentation under R.
+> 
+> Please try the following (based on the guess that the advice should have
+> said look for .grassrc5* - in 5.4 it is probably .grassrc54). From the 
+> cygwin terminal prompt, start GRASS in text mode. Once you've chosen your
+> location and mapset, you get to the GRASS prompt. Try again to find your
+> .grassrc5* in your home directory (cat ~/.grassrc5*). If it is there, 
+> start R (either GUI or terminal), and library(GRASS), then 
+> set.cygwinstring(), or other routes to getting the cygwin prefix right.
+> 
+> I think your difficulty has been looking for .grassrc5 not .grassrc5* - 
+> please let the list know if this helps. The general setup should work, 
+> from reports from other users, you just need to get the specific naming 
+> magic right for the cygwin prefix for the GISDBASE, I hope.
+> 
+> Roger
+> 
+> > 
+> > 
+> > Any suggestions on how to get it working?
+> > 
+> > Thanks, 
+> > 
+> > Matt Redding 
+> > 
+> > ********************************DISCLAIMER****************************
+> > The information contained in the above e-mail message or messages 
+> > (which includes any attachments) is confidential and may be legally 
+> > privileged.  It is intended only for the use of the person or entity 
+> > to which it is addressed.  If you are not the addressee any form of 
+> > disclosure, copying, modification, distribution or any action taken 
+> > or omitted in reliance on the information is unauthorised.  Opinions 
+> > contained in the message(s) do not necessarily reflect the opinions 
+> > of the Queensland Government and its authorities.  If you received 
+> > this communication in error, please notify the sender immediately and 
+> > delete it from your computer system network. 
+> > 
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+
+
+
+
+From Thomas.Adams at noaa.gov  Tue Mar 15 14:00:27 2005
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] GSTAT 2.4.3 compile problem with GRASS 5.4
+Message-ID: <423730CB.4060907@noaa.gov>
+
+I am having GSTAT 2.4.3 compile problems with GRASS 5.4. When 
+configuring gstat for compilation I use:
+
+./configure --with-grass=/awips/rep/lx/local_apps/grass-build
+
+The GRASS 5.4 lib & include directories are located in 
+/awips/rep/lx/local_apps/grass-build, but I notice when gstat is being 
+configured for compilation, I get:
+
+checking for G_gisinit in -lgrass_gis... no
+checking for G_gisinit in -lgis... no
+
+
+This is what is located in the lib & include directories:
+
+lx7-tir:adams> cd lib;ls
+libgrass_bitmap.so    libgrass_dlg.so     libgrass_gproj.so   
+libgrass_raster.so
+libgrass_btree.so     libgrass_D.so     libgrass_ibtree.so  
+libgrass_rowio.so
+libgrass_coorcnv.so   libgrass_g3d.so     libgrass_icon.so    
+libgrass_segment.so
+libgrass_datetime.so  libgrass_gedit.so  libgrass_I.so         
+libgrass_vask.so
+libgrass_dig_atts.so  libgrass_gis.so     libgrass_linkm.so   
+libgrass_vect_combined.so
+libgrass_display.so   libgrass_gmath.so  libgrass_lock.so
+
+lx7-tir:adams> cd ../include
+lx7-tir:adams> ls
+datetime.h  gisdefs.h  gis.h  P_datetime.h  P_site.h  site.h
+
+I get repeated "undefined reference" to various functions 'G_***' during 
+make. Everything seems to build OK up to:
+
+data.o: In function `read_grass_data':
+/awips/rep/lx/local_apps/gstat-2.4.3/src/data.c:2202: undefined 
+reference to `G_projection'
+
+I'm trying to make GRASS, R, & GSTAT available on other Linux machines 
+different from what I was using previously.
+
+Regards,
+Tom
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:    thomas.adams@noaa.gov
+
+VOICE:    937-383-0528
+FAX:    937-383-0033
+
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20050315/2d4c8fea/attachment.html
+From Roger.Bivand at nhh.no  Tue Mar 15 15:17:00 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] GSTAT 2.4.3 compile problem with GRASS 5.4
+In-Reply-To: <423730CB.4060907@noaa.gov>
+Message-ID: <Pine.LNX.4.44.0503152104570.3419-100000@reclus.nhh.no>
+
+On Tue, 15 Mar 2005, Thomas Adams wrote:
+
+> I am having GSTAT 2.4.3 compile problems with GRASS 5.4. When 
+> configuring gstat for compilation I use:
+> 
+> ./configure --with-grass=/awips/rep/lx/local_apps/grass-build
+> 
+> The GRASS 5.4 lib & include directories are located in 
+> /awips/rep/lx/local_apps/grass-build, but I notice when gstat is being 
+> configured for compilation, I get:
+> 
+> checking for G_gisinit in -lgrass_gis... no
+> checking for G_gisinit in -lgis... no
+> 
+
+Edzer: is this related to 5.4.0 going just shared? That only the *.so are 
+in build/dist*/lib? On grass5, Glynn asked on Sunday:
+
+"I think that the point is that binary distributions should always
+include the libraries regardless of whether they are shared or static. 
+IIRC, we currently only include the libraries if they are shared
+libraries.
+
+From Roger.Bivand at nhh.no  Tue Mar 15 15:44:26 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] GSTAT 2.4.3 compile problem with GRASS 5.4
+In-Reply-To: <423747A8.1040104@geo.uu.nl>
+Message-ID: <Pine.LNX.4.44.0503152141320.3419-100000@reclus.nhh.no>
+
+On Tue, 15 Mar 2005, Edzer J. Pebesma wrote:
+
+> 
+> 
+> Roger Bivand wrote:
+> > On Tue, 15 Mar 2005, Thomas Adams wrote:
+> > 
+> > 
+> >>I am having GSTAT 2.4.3 compile problems with GRASS 5.4. When 
+> >>configuring gstat for compilation I use:
+> >>
+> >>./configure --with-grass=/awips/rep/lx/local_apps/grass-build
+> >>
+> >>The GRASS 5.4 lib & include directories are located in 
+> >>/awips/rep/lx/local_apps/grass-build, but I notice when gstat is being 
+> >>configured for compilation, I get:
+> >>
+> >>checking for G_gisinit in -lgrass_gis... no
+> >>checking for G_gisinit in -lgis... no
+> >>
+> > 
+> > 
+> > Edzer: is this related to 5.4.0 going just shared? That only the *.so are 
+> > in build/dist*/lib? On grass5, Glynn asked on Sunday:
+> > 
+> > "I think that the point is that binary distributions should always
+> > include the libraries regardless of whether they are shared or static. 
+> > IIRC, we currently only include the libraries if they are shared
+> > libraries.
+> > 
+> > From a packaging (RPM etc) perspective, static libraries would
+> > normally go into a separate -devel package, along with the headers,
+> > while shared libraries would go into the main package."
+> > 
+> > The configure seems to fail because it is looking for libgis.a or 
+> > libgrass_gis.a at:
+> > 
+> >  AC_CHECK_LIB(grass_gis, G_gisinit, GISLIB="-lgrass_gis -lgrass_datetime",
+> >   AC_CHECK_LIB(gis, G_gisinit, GISLIB="-lgis -ldatetime"))
+> > 
+> > isn't it? Should it see a *.so as an *.a, they are different animals, 
+> > aren't they?
+> 
+> No. They're different, but the .a are not required. gstat 2.4.4
+> links to grass-6.0.0beta1, which contains only .so in the lib dir;
+> I tried the 2.4.3 (targeted at grass 5.x) and the configure
+> worked on the grass6 machine, it finds the .so libraries. Then it
+> doesn't compile, for obvious reasons.
+> 
+> Thomas, could you double-check the directory names?
+
+It could be that grass-build is actually grass-build/dist.*
+
+I've tried without success with 2.4.3 on 5.4.0 on my machine, both going 
+for the grass-build/dist* and the install directory grass54/ which has lib 
+in it. I've got a working 5.4.0 (I think).
+
+> 
+> I need to set up grass 5.4 here in order to check it out.
+> --
+> Edzer
+> > 
+> > 
+> >>This is what is located in the lib & include directories:
+> >>
+> >>lx7-tir:adams> cd lib;ls
+> >>libgrass_bitmap.so    libgrass_dlg.so     libgrass_gproj.so   
+> >>libgrass_raster.so
+> >>libgrass_btree.so     libgrass_D.so     libgrass_ibtree.so  
+> >>libgrass_rowio.so
+> >>libgrass_coorcnv.so   libgrass_g3d.so     libgrass_icon.so    
+> >>libgrass_segment.so
+> >>libgrass_datetime.so  libgrass_gedit.so  libgrass_I.so         
+> >>libgrass_vask.so
+> >>libgrass_dig_atts.so  libgrass_gis.so     libgrass_linkm.so   
+> >>libgrass_vect_combined.so
+> >>libgrass_display.so   libgrass_gmath.so  libgrass_lock.so
+> >>
+> >>lx7-tir:adams> cd ../include
+> >>lx7-tir:adams> ls
+> >>datetime.h  gisdefs.h  gis.h  P_datetime.h  P_site.h  site.h
+> >>
+> >>I get repeated "undefined reference" to various functions 'G_***' during 
+> >>make. Everything seems to build OK up to:
+> >>
+> >>data.o: In function `read_grass_data':
+> >>/awips/rep/lx/local_apps/gstat-2.4.3/src/data.c:2202: undefined 
+> >>reference to `G_projection'
+> >>
+> >>I'm trying to make GRASS, R, & GSTAT available on other Linux machines 
+> >>different from what I was using previously.
+> > 
+> > 
+> > Tom:
+> > 
+> > Maybe get to gstat through R rather than directly until you can resolve 
+> > this, since gstat is available as an R package, and the compiled interface 
+> > still works between R and GRASS <= 5.4.0.
+> > 
+> > Roger
+> > 
+> > 
+> >>Regards,
+> >>Tom
+> >>
+> >>
+> > 
+> > 
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From e.pebesma at geog.uu.nl  Wed Mar 16 02:36:16 2005
+From: e.pebesma at geog.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] GSTAT 2.4.3 compile problem with GRASS 5.4
+In-Reply-To: <Pine.LNX.4.44.0503152141320.3419-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0503152141320.3419-100000@reclus.nhh.no>
+Message-ID: <4237E1F0.9000706@geog.uu.nl>
+
+Roger Bivand wrote:
+
+>On Tue, 15 Mar 2005, Edzer J. Pebesma wrote:
+>
+>  
+>
+>>Roger Bivand wrote:
+>>    
+>>
+>>>On Tue, 15 Mar 2005, Thomas Adams wrote:
+>>>
+>>>
+>>>      
+>>>
+>>>>I am having GSTAT 2.4.3 compile problems with GRASS 5.4. When 
+>>>>configuring gstat for compilation I use:
+>>>>
+>>>>./configure --with-grass=/awips/rep/lx/local_apps/grass-build
+>>>>
+>>>>The GRASS 5.4 lib & include directories are located in 
+>>>>/awips/rep/lx/local_apps/grass-build, but I notice when gstat is being 
+>>>>configured for compilation, I get:
+>>>>
+>>>>checking for G_gisinit in -lgrass_gis... no
+>>>>checking for G_gisinit in -lgis... no
+>>>>
+>>>>        
+>>>>
+>>>Edzer: is this related to 5.4.0 going just shared? That only the *.so are 
+>>>in build/dist*/lib? On grass5, Glynn asked on Sunday:
+>>>
+>>>"I think that the point is that binary distributions should always
+>>>include the libraries regardless of whether they are shared or static. 
+>>>IIRC, we currently only include the libraries if they are shared
+>>>libraries.
+>>>
+>>>From a packaging (RPM etc) perspective, static libraries would
+>>>normally go into a separate -devel package, along with the headers,
+>>>while shared libraries would go into the main package."
+>>>
+>>>The configure seems to fail because it is looking for libgis.a or 
+>>>libgrass_gis.a at:
+>>>
+>>> AC_CHECK_LIB(grass_gis, G_gisinit, GISLIB="-lgrass_gis -lgrass_datetime",
+>>>  AC_CHECK_LIB(gis, G_gisinit, GISLIB="-lgis -ldatetime"))
+>>>
+>>>isn't it? Should it see a *.so as an *.a, they are different animals, 
+>>>aren't they?
+>>>      
+>>>
+>>No. They're different, but the .a are not required. gstat 2.4.4
+>>links to grass-6.0.0beta1, which contains only .so in the lib dir;
+>>I tried the 2.4.3 (targeted at grass 5.x) and the configure
+>>worked on the grass6 machine, it finds the .so libraries. Then it
+>>doesn't compile, for obvious reasons.
+>>
+>>Thomas, could you double-check the directory names?
+>>    
+>>
+>
+>It could be that grass-build is actually grass-build/dist.*
+>
+>I've tried without success with 2.4.3 on 5.4.0 on my machine, both going 
+>for the grass-build/dist* and the install directory grass54/ which has lib 
+>in it. I've got a working 5.4.0 (I think).
+>
+>  
+>
+Roger, I'm sorry, you were right, but it can be solved easily.
+
+The issue is that dynamic libraries are only linked against
+automatically if they are in a "trusted"
+directory, which are on my machine listed in /etc/ld.so.conf
+(run ldconfig after you modify it; read man ldconfig).
+
+So if you want to run gstat with grass support any way,
+you'd have to add the /usr/local/grassxxx/lib directory
+there, and run ldconfig.
+
+If you _only_ want to run gstat within grass sessions (which
+makes sense, because only then it should know where to
+look for data!) you should run
+
+./configure --with-grass=/path/to/grass
+
+within the grass shell, because grass sets the
+environment variable to your active grass version lib dir:
+
+LD_LIBRARY_PATH=/usr/local/grass-6.0.0beta1/lib
+
+which has the same effect, but only for the session in
+which this env var is set.
+
+In that case, when gstat is ran outside a grass session
+you'll get something like
+
+gstat: error while loading shared libraries: libgrass_gis.so: cannot 
+open shared object file: No such file or directory
+
+because gstat (actually the runtime linker) doesn't know
+where to find the .so files. I figure you get this too when
+running grass binaries outside a grass shell.
+
+Best regards,
+--
+Edzer
+
+
+From e.pebesma at geo.uu.nl  Tue Mar 15 15:38:00 2005
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] GSTAT 2.4.3 compile problem with GRASS 5.4
+In-Reply-To: <Pine.LNX.4.44.0503152104570.3419-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0503152104570.3419-100000@reclus.nhh.no>
+Message-ID: <423747A8.1040104@geo.uu.nl>
+
+
+Roger Bivand wrote:
+> On Tue, 15 Mar 2005, Thomas Adams wrote:
+> 
+> 
+>>I am having GSTAT 2.4.3 compile problems with GRASS 5.4. When 
+>>configuring gstat for compilation I use:
+>>
+>>./configure --with-grass=/awips/rep/lx/local_apps/grass-build
+>>
+>>The GRASS 5.4 lib & include directories are located in 
+>>/awips/rep/lx/local_apps/grass-build, but I notice when gstat is being 
+>>configured for compilation, I get:
+>>
+>>checking for G_gisinit in -lgrass_gis... no
+>>checking for G_gisinit in -lgis... no
+>>
+> 
+> 
+> Edzer: is this related to 5.4.0 going just shared? That only the *.so are 
+> in build/dist*/lib? On grass5, Glynn asked on Sunday:
+> 
+> "I think that the point is that binary distributions should always
+> include the libraries regardless of whether they are shared or static. 
+> IIRC, we currently only include the libraries if they are shared
+> libraries.
+> 
+> From a packaging (RPM etc) perspective, static libraries would
+> normally go into a separate -devel package, along with the headers,
+> while shared libraries would go into the main package."
+> 
+> The configure seems to fail because it is looking for libgis.a or 
+> libgrass_gis.a at:
+> 
+>  AC_CHECK_LIB(grass_gis, G_gisinit, GISLIB="-lgrass_gis -lgrass_datetime",
+>   AC_CHECK_LIB(gis, G_gisinit, GISLIB="-lgis -ldatetime"))
+> 
+> isn't it? Should it see a *.so as an *.a, they are different animals, 
+> aren't they?
+
+No. They're different, but the .a are not required. gstat 2.4.4
+links to grass-6.0.0beta1, which contains only .so in the lib dir;
+I tried the 2.4.3 (targeted at grass 5.x) and the configure
+worked on the grass6 machine, it finds the .so libraries. Then it
+doesn't compile, for obvious reasons.
+
+Thomas, could you double-check the directory names?
+
+I need to set up grass 5.4 here in order to check it out.
+--
+Edzer
+> 
+> 
+>>This is what is located in the lib & include directories:
+>>
+>>lx7-tir:adams> cd lib;ls
+>>libgrass_bitmap.so    libgrass_dlg.so     libgrass_gproj.so   
+>>libgrass_raster.so
+>>libgrass_btree.so     libgrass_D.so     libgrass_ibtree.so  
+>>libgrass_rowio.so
+>>libgrass_coorcnv.so   libgrass_g3d.so     libgrass_icon.so    
+>>libgrass_segment.so
+>>libgrass_datetime.so  libgrass_gedit.so  libgrass_I.so         
+>>libgrass_vask.so
+>>libgrass_dig_atts.so  libgrass_gis.so     libgrass_linkm.so   
+>>libgrass_vect_combined.so
+>>libgrass_display.so   libgrass_gmath.so  libgrass_lock.so
+>>
+>>lx7-tir:adams> cd ../include
+>>lx7-tir:adams> ls
+>>datetime.h  gisdefs.h  gis.h  P_datetime.h  P_site.h  site.h
+>>
+>>I get repeated "undefined reference" to various functions 'G_***' during 
+>>make. Everything seems to build OK up to:
+>>
+>>data.o: In function `read_grass_data':
+>>/awips/rep/lx/local_apps/gstat-2.4.3/src/data.c:2202: undefined 
+>>reference to `G_projection'
+>>
+>>I'm trying to make GRASS, R, & GSTAT available on other Linux machines 
+>>different from what I was using previously.
+> 
+> 
+> Tom:
+> 
+> Maybe get to gstat through R rather than directly until you can resolve 
+> this, since gstat is available as an R package, and the compiled interface 
+> still works between R and GRASS <= 5.4.0.
+> 
+> Roger
+> 
+> 
+>>Regards,
+>>Tom
+>>
+>>
+> 
+> 
+
+-- 
+Edzer
+
+
+From Roger.Bivand at nhh.no  Wed Mar 16 04:22:31 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] GSTAT 2.4.3 compile problem with GRASS 5.4
+In-Reply-To: <4237E1F0.9000706@geog.uu.nl>
+Message-ID: <Pine.LNX.4.44.0503161011080.4013-100000@reclus.nhh.no>
+
+On Wed, 16 Mar 2005, Edzer J. Pebesma wrote:
+
+> Roger Bivand wrote:
+> 
+> >On Tue, 15 Mar 2005, Edzer J. Pebesma wrote:
+> >
+> >  
+> >
+> >>Roger Bivand wrote:
+> >>    
+> >>
+> >>>On Tue, 15 Mar 2005, Thomas Adams wrote:
+> >>>
+> >>>
+> >>>      
+> >>>
+> >>>>I am having GSTAT 2.4.3 compile problems with GRASS 5.4. When 
+> >>>>configuring gstat for compilation I use:
+> >>>>
+> >>>>./configure --with-grass=/awips/rep/lx/local_apps/grass-build
+> >>>>
+> >>>>The GRASS 5.4 lib & include directories are located in 
+> >>>>/awips/rep/lx/local_apps/grass-build, but I notice when gstat is being 
+> >>>>configured for compilation, I get:
+> >>>>
+> >>>>checking for G_gisinit in -lgrass_gis... no
+> >>>>checking for G_gisinit in -lgis... no
+> >>>>
+> >>>>        
+> >>>>
+> >>>Edzer: is this related to 5.4.0 going just shared? That only the *.so are 
+> >>>in build/dist*/lib? On grass5, Glynn asked on Sunday:
+> >>>
+> >>>"I think that the point is that binary distributions should always
+> >>>include the libraries regardless of whether they are shared or static. 
+> >>>IIRC, we currently only include the libraries if they are shared
+> >>>libraries.
+> >>>
+> >>>From a packaging (RPM etc) perspective, static libraries would
+> >>>normally go into a separate -devel package, along with the headers,
+> >>>while shared libraries would go into the main package."
+> >>>
+> >>>The configure seems to fail because it is looking for libgis.a or 
+> >>>libgrass_gis.a at:
+> >>>
+> >>> AC_CHECK_LIB(grass_gis, G_gisinit, GISLIB="-lgrass_gis -lgrass_datetime",
+> >>>  AC_CHECK_LIB(gis, G_gisinit, GISLIB="-lgis -ldatetime"))
+> >>>
+> >>>isn't it? Should it see a *.so as an *.a, they are different animals, 
+> >>>aren't they?
+> >>>      
+> >>>
+> >>No. They're different, but the .a are not required. gstat 2.4.4
+> >>links to grass-6.0.0beta1, which contains only .so in the lib dir;
+> >>I tried the 2.4.3 (targeted at grass 5.x) and the configure
+> >>worked on the grass6 machine, it finds the .so libraries. Then it
+> >>doesn't compile, for obvious reasons.
+> >>
+> >>Thomas, could you double-check the directory names?
+> >>    
+> >>
+> >
+> >It could be that grass-build is actually grass-build/dist.*
+> >
+> >I've tried without success with 2.4.3 on 5.4.0 on my machine, both going 
+> >for the grass-build/dist* and the install directory grass54/ which has lib 
+> >in it. I've got a working 5.4.0 (I think).
+> >
+> >  
+> >
+> Roger, I'm sorry, you were right, but it can be solved easily.
+> 
+> The issue is that dynamic libraries are only linked against
+> automatically if they are in a "trusted"
+> directory, which are on my machine listed in /etc/ld.so.conf
+> (run ldconfig after you modify it; read man ldconfig).
+> 
+> So if you want to run gstat with grass support any way,
+> you'd have to add the /usr/local/grassxxx/lib directory
+> there, and run ldconfig.
+> 
+> If you _only_ want to run gstat within grass sessions (which
+> makes sense, because only then it should know where to
+> look for data!) you should run
+> 
+> ./configure --with-grass=/path/to/grass
+> 
+> within the grass shell, because grass sets the
+> environment variable to your active grass version lib dir:
+> 
+> LD_LIBRARY_PATH=/usr/local/grass-6.0.0beta1/lib
+> 
+> which has the same effect, but only for the session in
+> which this env var is set.
+
+Yes, I can confirm that this works:
+
+[rsb@localhost gstat-2.4.3]$ ~/topics/grass54/bin/grass54
+GRASS:~/tmp/gstat-2.4.3 > ./configure --with-grass=/home/rsb/topics/grass54/grass54
+...
+checking for G_gisinit in -lgrass_gis... yes
+...
+
+but this is better:
+
+GRASS:~/tmp/gstat-2.4.3 > ./configure --with-grass=$GISBASE
+...
+checking for G_gisinit in -lgrass_gis... yes
+...
+
+from inside GRASS.
+
+But it will bite - won't it - if gstat is compiled and linked against 5.4 
+but started in 6.0? The version check function is only in 6.0, so 
+otherwise only g.version is available at the shell level.
+
+$ ls -l *gis*
+-rwxrwxr-x    1 rsb      rsb        815955 Dec 27 16:21 libgrass_gis.so*
+$ pwd
+/home/rsb/topics/grass54/grass54/lib
+$ ls -l *gis*
+-rwxrwxr-x    1 rsb      rsb        838602 Mar 10 14:09 
+libgrass_gis.6.0.0.so*
+lrwxrwxrwx    1 rsb      rsb            21 Mar 10 14:20 libgrass_gis.so -> libgrass_gis.6.0.0.so*
+$ pwd /home/rsb/topics/grass600/grass-6.0.0/lib
+
+I agree with Glynn, GRASS should ship with *.a too, and for binary 
+installers, there should be *-devel packages.
+
+Roger
+
+
+> 
+> In that case, when gstat is ran outside a grass session
+> you'll get something like
+> 
+> gstat: error while loading shared libraries: libgrass_gis.so: cannot 
+> open shared object file: No such file or directory
+> 
+> because gstat (actually the runtime linker) doesn't know
+> where to find the .so files. I figure you get this too when
+> running grass binaries outside a grass shell.
+> 
+> Best regards,
+> --
+> Edzer
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From Thomas.Adams at noaa.gov  Wed Mar 16 10:55:28 2005
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] GSTAT 2.4.3 compile problem with GRASS 5.4
+In-Reply-To: <423747A8.1040104@geo.uu.nl>
+References: <Pine.LNX.4.44.0503152104570.3419-100000@reclus.nhh.no> <423747A8.1040104@geo.uu.nl>
+Message-ID: <423856F0.8080503@noaa.gov>
+
+Edzer,
+
+The directory names are correct. Thanks to you and Roger for looking 
+into this.
+
+Regards,
+Tom
+
+
+Edzer J. Pebesma wrote:
+
+>
+>
+> Roger Bivand wrote:
+>
+>> On Tue, 15 Mar 2005, Thomas Adams wrote:
+>>
+>>
+>>> I am having GSTAT 2.4.3 compile problems with GRASS 5.4. When 
+>>> configuring gstat for compilation I use:
+>>>
+>>> ./configure --with-grass=/awips/rep/lx/local_apps/grass-build
+>>>
+>>> The GRASS 5.4 lib & include directories are located in 
+>>> /awips/rep/lx/local_apps/grass-build, but I notice when gstat is 
+>>> being configured for compilation, I get:
+>>>
+>>> checking for G_gisinit in -lgrass_gis... no
+>>> checking for G_gisinit in -lgis... no
+>>>
+>>
+>>
+>> Edzer: is this related to 5.4.0 going just shared? That only the *.so 
+>> are in build/dist*/lib? On grass5, Glynn asked on Sunday:
+>>
+>> "I think that the point is that binary distributions should always
+>> include the libraries regardless of whether they are shared or 
+>> static. IIRC, we currently only include the libraries if they are shared
+>> libraries.
+>>
+>> From a packaging (RPM etc) perspective, static libraries would
+>> normally go into a separate -devel package, along with the headers,
+>> while shared libraries would go into the main package."
+>>
+>> The configure seems to fail because it is looking for libgis.a or 
+>> libgrass_gis.a at:
+>>
+>>  AC_CHECK_LIB(grass_gis, G_gisinit, GISLIB="-lgrass_gis 
+>> -lgrass_datetime",
+>>   AC_CHECK_LIB(gis, G_gisinit, GISLIB="-lgis -ldatetime"))
+>>
+>> isn't it? Should it see a *.so as an *.a, they are different animals, 
+>> aren't they?
+>
+>
+> No. They're different, but the .a are not required. gstat 2.4.4
+> links to grass-6.0.0beta1, which contains only .so in the lib dir;
+> I tried the 2.4.3 (targeted at grass 5.x) and the configure
+> worked on the grass6 machine, it finds the .so libraries. Then it
+> doesn't compile, for obvious reasons.
+>
+> Thomas, could you double-check the directory names?
+>
+> I need to set up grass 5.4 here in order to check it out.
+> -- 
+> Edzer
+>
+>>
+>>
+>>> This is what is located in the lib & include directories:
+>>>
+>>> lx7-tir:adams> cd lib;ls
+>>> libgrass_bitmap.so    libgrass_dlg.so     libgrass_gproj.so   
+>>> libgrass_raster.so
+>>> libgrass_btree.so     libgrass_D.so     libgrass_ibtree.so  
+>>> libgrass_rowio.so
+>>> libgrass_coorcnv.so   libgrass_g3d.so     libgrass_icon.so    
+>>> libgrass_segment.so
+>>> libgrass_datetime.so  libgrass_gedit.so  libgrass_I.so         
+>>> libgrass_vask.so
+>>> libgrass_dig_atts.so  libgrass_gis.so     libgrass_linkm.so   
+>>> libgrass_vect_combined.so
+>>> libgrass_display.so   libgrass_gmath.so  libgrass_lock.so
+>>>
+>>> lx7-tir:adams> cd ../include
+>>> lx7-tir:adams> ls
+>>> datetime.h  gisdefs.h  gis.h  P_datetime.h  P_site.h  site.h
+>>>
+>>> I get repeated "undefined reference" to various functions 'G_***' 
+>>> during make. Everything seems to build OK up to:
+>>>
+>>> data.o: In function `read_grass_data':
+>>> /awips/rep/lx/local_apps/gstat-2.4.3/src/data.c:2202: undefined 
+>>> reference to `G_projection'
+>>>
+>>> I'm trying to make GRASS, R, & GSTAT available on other Linux 
+>>> machines different from what I was using previously.
+>>
+>>
+>>
+>> Tom:
+>>
+>> Maybe get to gstat through R rather than directly until you can 
+>> resolve this, since gstat is available as an R package, and the 
+>> compiled interface still works between R and GRASS <= 5.4.0.
+>>
+>> Roger
+>>
+>>
+>>> Regards,
+>>> Tom
+>>>
+>>>
+>>
+>>
+>
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+
+
+From caumann at ualberta.ca  Thu Mar 17 13:33:02 2005
+From: caumann at ualberta.ca (Craig Aumann)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] Re: Connecting to databases on Windows using R
+In-Reply-To: <1111081249.4239c1210779d@webmail.asu.edu>
+References: <1111081249.4239c1210779d@webmail.asu.edu>
+Message-ID: <1111084382.11398.28.camel@landscape>
+
+See Teague's question below.  As a linux person, I don't know the answer
+to this so am forward this message to the list.  
+
+Having looked also at  http://www.bioconductor.org/ - which links off of
+the main R web page, I see a Windows version of Rdbi (click "What is
+Bioconductor"  and scroll down till you find the heading: "Database
+Interaction").  I'm seeing a RDBI for Windows, but no windows version of
+RdbiPgsql which is a problem! 
+
+Have you tried sending a message to the R-Help list about this - how do
+windows users access PGSQL databases from R?  (R website -> mailing
+lists.)  
+
+On the CRAN site, just searching databases, I saw the following:
+DBI, RMySQL, RODBC, ROracle. Not sure if windows versions exist for any
+of these.   
+
+Also have a look at the links in
+http://cran.r-project.org/doc/manuals/R-data.html .  
+
+Afraid that's all I know about attaching to Databases on Windows - which
+ain't much I'm afraid. 
+
+Cheers!
+Craig
+
+
+
+
+
+
+On Thu, 2005-03-17 at 10:40, Teague O'Mara wrote:
+> Hi Craig.  I came back across this email from awhile ago.  I'm attempting to
+> look at cluster of points in GRASS and have been using the script that Michael
+> Barton wrote, but I'd like to look at a few other things and it seems that using
+> R and my GRASS data will be much easier. I have been using R for basic
+> statistics, but am far from being fluent with it.  If you have a moment, can you
+> help me out with some R issues?  I'm using an XP machine with R 2.0.1.
+> 
+> I'm having a problem downloading and installing Rdbi and RdbiPgSQL.  I can't
+> find these two sets, or any SQL interface that will download from CRAN.  I was
+> able to download these directly from sourcforge (tar.gz format), but I'm not
+> sure what to do with them now.  Is it an issue with this version of R?
+> 
+> Thanks for any help you can offer.
+> 
+> Cheers--
+> Teague
+> 
+> 
+> 
+> Teague O'Mara
+> Department of Anthropology
+> Arizona State University
+> Box 872402
+> Tempe, AZ 85287-2402
+> 480.965.6213
+> 
+> 
+> Quoting Craig Aumann <caumann@ualberta.ca>:
+> 
+> > In glancing at your script, I wondered why you didn't just import the
+> > stuff into a statistical package like R and then use all the
+> > clustering
+> > routines it has.    See www.r-project.org
+> > 
+> > 
+> > 
+> > 
+> > ## Key commands in R are:
+> > 
+> > ## Load the packages to access the database, in particular the PgSQL
+> > ##
+> > database
+> > require(Rdbi)
+> > require(RdbiPgSQL)
+> > 
+> > ## Load some clustering routines
+> > 
+> > require(cluster)
+> > require(mclust)
+> > 
+> > 
+> > ### Connect to the database and read in a points data set "jogis"
+> > ## and read in the dataset "wells_att".  
+> > 
+> > 
+> > conn <- dbConnect(PgSQL(), dbname="jogis", user="caumann")
+> > wells <- dbReadTable(conn, "wells_att")
+> > dbDisconnect(conn)
+> > 
+> > ## Now you can apply any clustering or kernel smoothing technique you
+> > want to the dataset.  
+> > 
+> > If this is of any help, let me know and I can provide more details.  
+> > Cheers!
+> > Craig
+> > 
+> > 
+> 
+> 
+> 
+
+
+From neteler at itc.it  Thu Mar 17 15:30:22 2005
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] Re: Connecting to databases on Windows using R
+In-Reply-To: <1111084382.11398.28.camel@landscape>
+References: <1111081249.4239c1210779d@webmail.asu.edu> <1111084382.11398.28.camel@landscape>
+Message-ID: <20050317203022.GA3073@thuille.itc.it>
+
+Hi 
+
+(for me) it's strange that Rdbi doesn't appear on CRAN but
+I was already notified once not to discuss Rdbi questions on 
+the R Mailing lists... (so better to ask here :-)
+
+Anyway, I have compiled some usage instructions here:
+ http://grass.itc.it/statsgrass/r_and_dbms.html
+which should be more or less still valid. 
+
+Maybe a bit helpful, also comparing speed of Rdbi and RODBC.
+However, it doesn't cover MS-Win installation...
+
+Best
+
+ Markus
+
+On Thu, Mar 17, 2005 at 11:33:02AM -0700, Craig Aumann wrote:
+> See Teague's question below.  As a linux person, I don't know the answer
+> to this so am forward this message to the list.  
+> 
+> Having looked also at  http://www.bioconductor.org/ - which links off of
+> the main R web page, I see a Windows version of Rdbi (click "What is
+> Bioconductor"  and scroll down till you find the heading: "Database
+> Interaction").  I'm seeing a RDBI for Windows, but no windows version of
+> RdbiPgsql which is a problem! 
+> 
+> Have you tried sending a message to the R-Help list about this - how do
+> windows users access PGSQL databases from R?  (R website -> mailing
+> lists.)  
+> 
+> On the CRAN site, just searching databases, I saw the following:
+> DBI, RMySQL, RODBC, ROracle. Not sure if windows versions exist for any
+> of these.   
+> 
+> Also have a look at the links in
+> http://cran.r-project.org/doc/manuals/R-data.html .  
+> 
+> Afraid that's all I know about attaching to Databases on Windows - which
+> ain't much I'm afraid. 
+> 
+> Cheers!
+> Craig
+> 
+> 
+> 
+> 
+> 
+> 
+> On Thu, 2005-03-17 at 10:40, Teague O'Mara wrote:
+> > Hi Craig.  I came back across this email from awhile ago.  I'm attempting to
+> > look at cluster of points in GRASS and have been using the script that Michael
+> > Barton wrote, but I'd like to look at a few other things and it seems that using
+> > R and my GRASS data will be much easier. I have been using R for basic
+> > statistics, but am far from being fluent with it.  If you have a moment, can you
+> > help me out with some R issues?  I'm using an XP machine with R 2.0.1.
+> > 
+> > I'm having a problem downloading and installing Rdbi and RdbiPgSQL.  I can't
+> > find these two sets, or any SQL interface that will download from CRAN.  I was
+> > able to download these directly from sourcforge (tar.gz format), but I'm not
+> > sure what to do with them now.  Is it an issue with this version of R?
+> > 
+> > Thanks for any help you can offer.
+> > 
+> > Cheers--
+> > Teague
+> > 
+> > 
+> > 
+> > Teague O'Mara
+> > Department of Anthropology
+> > Arizona State University
+> > Box 872402
+> > Tempe, AZ 85287-2402
+> > 480.965.6213
+> > 
+> > 
+> > Quoting Craig Aumann <caumann@ualberta.ca>:
+> > 
+> > > In glancing at your script, I wondered why you didn't just import the
+> > > stuff into a statistical package like R and then use all the
+> > > clustering
+> > > routines it has.    See www.r-project.org
+> > > 
+> > > 
+> > > 
+> > > 
+> > > ## Key commands in R are:
+> > > 
+> > > ## Load the packages to access the database, in particular the PgSQL
+> > > ##
+> > > database
+> > > require(Rdbi)
+> > > require(RdbiPgSQL)
+> > > 
+> > > ## Load some clustering routines
+> > > 
+> > > require(cluster)
+> > > require(mclust)
+> > > 
+> > > 
+> > > ### Connect to the database and read in a points data set "jogis"
+> > > ## and read in the dataset "wells_att".  
+> > > 
+> > > 
+> > > conn <- dbConnect(PgSQL(), dbname="jogis", user="caumann")
+> > > wells <- dbReadTable(conn, "wells_att")
+> > > dbDisconnect(conn)
+> > > 
+> > > ## Now you can apply any clustering or kernel smoothing technique you
+> > > want to the dataset.  
+> > > 
+> > > If this is of any help, let me know and I can provide more details.  
+> > > Cheers!
+> > > Craig
+> > > 
+> > > 
+> > 
+> > 
+> > 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+-- 
+Markus Neteler     <neteler itc it>       http://mpa.itc.it
+ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+
+From caumann at ualberta.ca  Thu Mar 17 15:54:10 2005
+From: caumann at ualberta.ca (Craig Aumann)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] Re: Connecting to databases on Windows using R
+In-Reply-To: <20050317203022.GA3073@thuille.itc.it>
+References: <1111081249.4239c1210779d@webmail.asu.edu>
+	 <1111084382.11398.28.camel@landscape>
+	 <20050317203022.GA3073@thuille.itc.it>
+Message-ID: <1111092850.11398.49.camel@landscape>
+
+Well I'm curious to know what R on Windows actually does with the
+following commands:
+
+install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","Rdbi")
+install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","RdbiPgSQL")
+
+Does it successully install the packages, or complain loudly?
+
+
+On Thu, 2005-03-17 at 13:30, Markus Neteler wrote:
+> Hi 
+> 
+> (for me) it's strange that Rdbi doesn't appear on CRAN but
+> I was already notified once not to discuss Rdbi questions on 
+> the R Mailing lists... (so better to ask here :-)
+> 
+> Anyway, I have compiled some usage instructions here:
+>  http://grass.itc.it/statsgrass/r_and_dbms.html
+> which should be more or less still valid. 
+> 
+> Maybe a bit helpful, also comparing speed of Rdbi and RODBC.
+> However, it doesn't cover MS-Win installation...
+> 
+> Best
+> 
+>  Markus
+> 
+> On Thu, Mar 17, 2005 at 11:33:02AM -0700, Craig Aumann wrote:
+> > See Teague's question below.  As a linux person, I don't know the answer
+> > to this so am forward this message to the list.  
+> > 
+> > Having looked also at  http://www.bioconductor.org/ - which links off of
+> > the main R web page, I see a Windows version of Rdbi (click "What is
+> > Bioconductor"  and scroll down till you find the heading: "Database
+> > Interaction").  I'm seeing a RDBI for Windows, but no windows version of
+> > RdbiPgsql which is a problem! 
+> > 
+> > Have you tried sending a message to the R-Help list about this - how do
+> > windows users access PGSQL databases from R?  (R website -> mailing
+> > lists.)  
+> > 
+> > On the CRAN site, just searching databases, I saw the following:
+> > DBI, RMySQL, RODBC, ROracle. Not sure if windows versions exist for any
+> > of these.   
+> > 
+> > Also have a look at the links in
+> > http://cran.r-project.org/doc/manuals/R-data.html .  
+> > 
+> > Afraid that's all I know about attaching to Databases on Windows - which
+> > ain't much I'm afraid. 
+> > 
+> > Cheers!
+> > Craig
+> > 
+> > 
+> > 
+> > 
+> > 
+> > 
+> > On Thu, 2005-03-17 at 10:40, Teague O'Mara wrote:
+> > > Hi Craig.  I came back across this email from awhile ago.  I'm attempting to
+> > > look at cluster of points in GRASS and have been using the script that Michael
+> > > Barton wrote, but I'd like to look at a few other things and it seems that using
+> > > R and my GRASS data will be much easier. I have been using R for basic
+> > > statistics, but am far from being fluent with it.  If you have a moment, can you
+> > > help me out with some R issues?  I'm using an XP machine with R 2.0.1.
+> > > 
+> > > I'm having a problem downloading and installing Rdbi and RdbiPgSQL.  I can't
+> > > find these two sets, or any SQL interface that will download from CRAN.  I was
+> > > able to download these directly from sourcforge (tar.gz format), but I'm not
+> > > sure what to do with them now.  Is it an issue with this version of R?
+> > > 
+> > > Thanks for any help you can offer.
+> > > 
+> > > Cheers--
+> > > Teague
+> > > 
+> > > 
+> > > 
+> > > Teague O'Mara
+> > > Department of Anthropology
+> > > Arizona State University
+> > > Box 872402
+> > > Tempe, AZ 85287-2402
+> > > 480.965.6213
+> > > 
+> > > 
+> > > Quoting Craig Aumann <caumann@ualberta.ca>:
+> > > 
+> > > > In glancing at your script, I wondered why you didn't just import the
+> > > > stuff into a statistical package like R and then use all the
+> > > > clustering
+> > > > routines it has.    See www.r-project.org
+> > > > 
+> > > > 
+> > > > 
+> > > > 
+> > > > ## Key commands in R are:
+> > > > 
+> > > > ## Load the packages to access the database, in particular the PgSQL
+> > > > ##
+> > > > database
+> > > > require(Rdbi)
+> > > > require(RdbiPgSQL)
+> > > > 
+> > > > ## Load some clustering routines
+> > > > 
+> > > > require(cluster)
+> > > > require(mclust)
+> > > > 
+> > > > 
+> > > > ### Connect to the database and read in a points data set "jogis"
+> > > > ## and read in the dataset "wells_att".  
+> > > > 
+> > > > 
+> > > > conn <- dbConnect(PgSQL(), dbname="jogis", user="caumann")
+> > > > wells <- dbReadTable(conn, "wells_att")
+> > > > dbDisconnect(conn)
+> > > > 
+> > > > ## Now you can apply any clustering or kernel smoothing technique you
+> > > > want to the dataset.  
+> > > > 
+> > > > If this is of any help, let me know and I can provide more details.  
+> > > > Cheers!
+> > > > Craig
+> > > > 
+> > > > 
+> > > 
+> > > 
+> > > 
+> > 
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+From neteler at itc.it  Thu Mar 17 16:07:31 2005
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] Re: Connecting to databases on Windows using R
+In-Reply-To: <1111092850.11398.49.camel@landscape>
+References: <1111081249.4239c1210779d@webmail.asu.edu> <1111084382.11398.28.camel@landscape> <20050317203022.GA3073@thuille.itc.it> <1111092850.11398.49.camel@landscape>
+Message-ID: <20050317210731.GD3172@thuille.itc.it>
+
+Craig,
+
+it complains loudly even on Linux... sigh. Things changed again,
+I'll have to update the indicated web page (how to use install.packages()
+with bioconductor?).
+
+Downloading and installing on command line should work (on Linux,
+maybe even Cygwin).
+
+Markus
+
+On Thu, Mar 17, 2005 at 01:54:10PM -0700, Craig Aumann wrote:
+> 
+> Well I'm curious to know what R on Windows actually does with the
+> following commands:
+> 
+> install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","Rdbi")
+> install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","RdbiPgSQL")
+> 
+> Does it successully install the packages, or complain loudly?
+> 
+> 
+> On Thu, 2005-03-17 at 13:30, Markus Neteler wrote:
+> > Hi 
+> > 
+> > (for me) it's strange that Rdbi doesn't appear on CRAN but
+> > I was already notified once not to discuss Rdbi questions on 
+> > the R Mailing lists... (so better to ask here :-)
+> > 
+> > Anyway, I have compiled some usage instructions here:
+> >  http://grass.itc.it/statsgrass/r_and_dbms.html
+> > which should be more or less still valid. 
+> > 
+> > Maybe a bit helpful, also comparing speed of Rdbi and RODBC.
+> > However, it doesn't cover MS-Win installation...
+> > 
+> > Best
+> > 
+> >  Markus
+> > 
+> > On Thu, Mar 17, 2005 at 11:33:02AM -0700, Craig Aumann wrote:
+> > > See Teague's question below.  As a linux person, I don't know the answer
+> > > to this so am forward this message to the list.  
+> > > 
+> > > Having looked also at  http://www.bioconductor.org/ - which links off of
+> > > the main R web page, I see a Windows version of Rdbi (click "What is
+> > > Bioconductor"  and scroll down till you find the heading: "Database
+> > > Interaction").  I'm seeing a RDBI for Windows, but no windows version of
+> > > RdbiPgsql which is a problem! 
+> > > 
+> > > Have you tried sending a message to the R-Help list about this - how do
+> > > windows users access PGSQL databases from R?  (R website -> mailing
+> > > lists.)  
+> > > 
+> > > On the CRAN site, just searching databases, I saw the following:
+> > > DBI, RMySQL, RODBC, ROracle. Not sure if windows versions exist for any
+> > > of these.   
+> > > 
+> > > Also have a look at the links in
+> > > http://cran.r-project.org/doc/manuals/R-data.html .  
+> > > 
+> > > Afraid that's all I know about attaching to Databases on Windows - which
+> > > ain't much I'm afraid. 
+> > > 
+> > > Cheers!
+> > > Craig
+> > > 
+> > > 
+> > > 
+> > > 
+> > > 
+> > > 
+> > > On Thu, 2005-03-17 at 10:40, Teague O'Mara wrote:
+> > > > Hi Craig.  I came back across this email from awhile ago.  I'm attempting to
+> > > > look at cluster of points in GRASS and have been using the script that Michael
+> > > > Barton wrote, but I'd like to look at a few other things and it seems that using
+> > > > R and my GRASS data will be much easier. I have been using R for basic
+> > > > statistics, but am far from being fluent with it.  If you have a moment, can you
+> > > > help me out with some R issues?  I'm using an XP machine with R 2.0.1.
+> > > > 
+> > > > I'm having a problem downloading and installing Rdbi and RdbiPgSQL.  I can't
+> > > > find these two sets, or any SQL interface that will download from CRAN.  I was
+> > > > able to download these directly from sourcforge (tar.gz format), but I'm not
+> > > > sure what to do with them now.  Is it an issue with this version of R?
+> > > > 
+> > > > Thanks for any help you can offer.
+> > > > 
+> > > > Cheers--
+> > > > Teague
+> > > > 
+> > > > 
+> > > > 
+> > > > Teague O'Mara
+> > > > Department of Anthropology
+> > > > Arizona State University
+> > > > Box 872402
+> > > > Tempe, AZ 85287-2402
+> > > > 480.965.6213
+> > > > 
+> > > > 
+> > > > Quoting Craig Aumann <caumann@ualberta.ca>:
+> > > > 
+> > > > > In glancing at your script, I wondered why you didn't just import the
+> > > > > stuff into a statistical package like R and then use all the
+> > > > > clustering
+> > > > > routines it has.    See www.r-project.org
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > ## Key commands in R are:
+> > > > > 
+> > > > > ## Load the packages to access the database, in particular the PgSQL
+> > > > > ##
+> > > > > database
+> > > > > require(Rdbi)
+> > > > > require(RdbiPgSQL)
+> > > > > 
+> > > > > ## Load some clustering routines
+> > > > > 
+> > > > > require(cluster)
+> > > > > require(mclust)
+> > > > > 
+> > > > > 
+> > > > > ### Connect to the database and read in a points data set "jogis"
+> > > > > ## and read in the dataset "wells_att".  
+> > > > > 
+> > > > > 
+> > > > > conn <- dbConnect(PgSQL(), dbname="jogis", user="caumann")
+> > > > > wells <- dbReadTable(conn, "wells_att")
+> > > > > dbDisconnect(conn)
+> > > > > 
+> > > > > ## Now you can apply any clustering or kernel smoothing technique you
+> > > > > want to the dataset.  
+> > > > > 
+> > > > > If this is of any help, let me know and I can provide more details.  
+> > > > > Cheers!
+> > > > > Craig
+> > > > > 
+> > > > > 
+> > > > 
+> > > > 
+> > > > 
+> > > 
+> > > _______________________________________________
+> > > statsgrass mailing list
+> > > statsgrass@grass.itc.it
+> > > http://grass.itc.it/mailman/listinfo/statsgrass
+
+-- 
+Markus Neteler     <neteler itc it>       http://mpa.itc.it
+ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+
+From Teague.Omara at asu.edu  Thu Mar 17 16:11:16 2005
+From: Teague.Omara at asu.edu (Teague O'Mara)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] Re: Connecting to databases on Windows using R
+In-Reply-To: <1111092850.11398.49.camel@landscape>
+References: <1111081249.4239c1210779d@webmail.asu.edu>
+ <1111084382.11398.28.camel@landscape> <20050317203022.GA3073@thuille.itc.it>
+ <1111092850.11398.49.camel@landscape>
+Message-ID: <1111093876.4239f274a89ff@webmail.asu.edu>
+
+Craig and Markus:
+
+Just trying it I get the same complaint for both:
+
+trying URL `http://www.bioconductor.org/repository/devel/package/Source//PACKAGES'
+Error in download.file(url = paste(contriburl, "PACKAGES", sep = "/"),  : 
+        cannot open URL
+`http://www.bioconductor.org/repository/devel/package/Source//PACKAGES'
+In addition: Warning message: 
+cannot open: HTTP status was `404 Not Found' 
+
+Apparently the page has moved, or the packages have been taken off?
+
+Also, Rdbi will load, but I get the following message:
+Loading required package: Rdbi 
+[1] TRUE
+Warning message: 
+package 'Rdbi' was built under R version 2.1.0
+
+I searched around for a new version of R, but it seems that 2.0.1 is the latest
+version.  Or is 2.1 new source code for Linux?
+
+
+Teague
+
+
+
+
+Quoting Craig Aumann <caumann@ualberta.ca>:
+
+> 
+> Well I'm curious to know what R on Windows actually does with the
+> following commands:
+> 
+>
+install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","Rdbi")
+>
+install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","RdbiPgSQL")
+> 
+> Does it successully install the packages, or complain loudly?
+> 
+> 
+> On Thu, 2005-03-17 at 13:30, Markus Neteler wrote:
+> > Hi 
+> > 
+> > (for me) it's strange that Rdbi doesn't appear on CRAN but
+> > I was already notified once not to discuss Rdbi questions on 
+> > the R Mailing lists... (so better to ask here :-)
+> > 
+> > Anyway, I have compiled some usage instructions here:
+> >  http://grass.itc.it/statsgrass/r_and_dbms.html
+> > which should be more or less still valid. 
+> > 
+> > Maybe a bit helpful, also comparing speed of Rdbi and RODBC.
+> > However, it doesn't cover MS-Win installation...
+> > 
+> > Best
+> > 
+> >  Markus
+> > 
+> > On Thu, Mar 17, 2005 at 11:33:02AM -0700, Craig Aumann wrote:
+> > > See Teague's question below.  As a linux person, I don't know the
+> answer
+> > > to this so am forward this message to the list.  
+> > > 
+> > > Having looked also at  http://www.bioconductor.org/ - which links
+> off of
+> > > the main R web page, I see a Windows version of Rdbi (click "What
+> is
+> > > Bioconductor"  and scroll down till you find the heading:
+> "Database
+> > > Interaction").  I'm seeing a RDBI for Windows, but no windows
+> version of
+> > > RdbiPgsql which is a problem! 
+> > > 
+> > > Have you tried sending a message to the R-Help list about this - how
+> do
+> > > windows users access PGSQL databases from R?  (R website ->
+> mailing
+> > > lists.)  
+> > > 
+> > > On the CRAN site, just searching databases, I saw the following:
+> > > DBI, RMySQL, RODBC, ROracle. Not sure if windows versions exist for
+> any
+> > > of these.   
+> > > 
+> > > Also have a look at the links in
+> > > http://cran.r-project.org/doc/manuals/R-data.html .  
+> > > 
+> > > Afraid that's all I know about attaching to Databases on Windows -
+> which
+> > > ain't much I'm afraid. 
+> > > 
+> > > Cheers!
+> > > Craig
+> > > 
+> > > 
+> > > 
+> > > 
+> > > 
+> > > 
+> > > On Thu, 2005-03-17 at 10:40, Teague O'Mara wrote:
+> > > > Hi Craig.  I came back across this email from awhile ago.  I'm
+> attempting to
+> > > > look at cluster of points in GRASS and have been using the script
+> that Michael
+> > > > Barton wrote, but I'd like to look at a few other things and it
+> seems that using
+> > > > R and my GRASS data will be much easier. I have been using R for
+> basic
+> > > > statistics, but am far from being fluent with it.  If you have a
+> moment, can you
+> > > > help me out with some R issues?  I'm using an XP machine with R
+> 2.0.1.
+> > > > 
+> > > > I'm having a problem downloading and installing Rdbi and
+> RdbiPgSQL.  I can't
+> > > > find these two sets, or any SQL interface that will download from
+> CRAN.  I was
+> > > > able to download these directly from sourcforge (tar.gz format),
+> but I'm not
+> > > > sure what to do with them now.  Is it an issue with this version
+> of R?
+> > > > 
+> > > > Thanks for any help you can offer.
+> > > > 
+> > > > Cheers--
+> > > > Teague
+> > > > 
+> > > > 
+> > > > 
+> > > > Teague O'Mara
+> > > > Department of Anthropology
+> > > > Arizona State University
+> > > > Box 872402
+> > > > Tempe, AZ 85287-2402
+> > > > 480.965.6213
+> > > > 
+> > > > 
+> > > > Quoting Craig Aumann <caumann@ualberta.ca>:
+> > > > 
+> > > > > In glancing at your script, I wondered why you didn't just
+> import the
+> > > > > stuff into a statistical package like R and then use all the
+> > > > > clustering
+> > > > > routines it has.    See www.r-project.org
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > ## Key commands in R are:
+> > > > > 
+> > > > > ## Load the packages to access the database, in particular the
+> PgSQL
+> > > > > ##
+> > > > > database
+> > > > > require(Rdbi)
+> > > > > require(RdbiPgSQL)
+> > > > > 
+> > > > > ## Load some clustering routines
+> > > > > 
+> > > > > require(cluster)
+> > > > > require(mclust)
+> > > > > 
+> > > > > 
+> > > > > ### Connect to the database and read in a points data set
+> "jogis"
+> > > > > ## and read in the dataset "wells_att".  
+> > > > > 
+> > > > > 
+> > > > > conn <- dbConnect(PgSQL(), dbname="jogis", user="caumann")
+> > > > > wells <- dbReadTable(conn, "wells_att")
+> > > > > dbDisconnect(conn)
+> > > > > 
+> > > > > ## Now you can apply any clustering or kernel smoothing
+> technique you
+> > > > > want to the dataset.  
+> > > > > 
+> > > > > If this is of any help, let me know and I can provide more
+> details.  
+> > > > > Cheers!
+> > > > > Craig
+> > > > > 
+> > > > > 
+> > > > 
+> > > > 
+> > > > 
+> > > 
+> > > _______________________________________________
+> > > statsgrass mailing list
+> > > statsgrass@grass.itc.it
+> > > http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+
+
+Teague O'Mara
+Department of Anthropology
+Arizona State University
+Box 872402
+Tempe, AZ 85287-2402
+480.965.6213
+
+
+From neteler at itc.it  Thu Mar 17 16:18:09 2005
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] Re: Connecting to databases on Windows using R
+In-Reply-To: <1111093876.4239f274a89ff@webmail.asu.edu>
+References: <1111081249.4239c1210779d@webmail.asu.edu> <1111084382.11398.28.camel@landscape> <20050317203022.GA3073@thuille.itc.it> <1111092850.11398.49.camel@landscape> <1111093876.4239f274a89ff@webmail.asu.edu>
+Message-ID: <20050317211809.GE3172@thuille.itc.it>
+
+On Thu, Mar 17, 2005 at 02:11:16PM -0700, Teague O'Mara wrote:
+> Craig and Markus:
+> 
+> Just trying it I get the same complaint for both:
+> 
+> trying URL `http://www.bioconductor.org/repository/devel/package/Source//PACKAGES'
+> Error in download.file(url = paste(contriburl, "PACKAGES", sep = "/"),  : 
+>         cannot open URL
+> `http://www.bioconductor.org/repository/devel/package/Source//PACKAGES'
+> In addition: Warning message: 
+> cannot open: HTTP status was `404 Not Found' 
+> 
+> Apparently the page has moved, or the packages have been taken off?
+
+the packages *are* there, but they have disabled the nice installation method
+somehow. I am googling for > 20min now, to no avail.
+
+http://www.bioconductor.org/repository/devel/package/html/index.html
+->  Rdbi -> Source package download
+->  RdbiPgSQL -> Source package download
+
+Save to disk. Then first install Rdbi, then RdbiPgSQL.
+Ah, for MS-Win you want to grab the .zip files instead.
+
+ 
+> Also, Rdbi will load, but I get the following message:
+> Loading required package: Rdbi 
+> [1] TRUE
+> Warning message: 
+> package 'Rdbi' was built under R version 2.1.0
+> 
+> I searched around for a new version of R, but it seems that 2.0.1 is the latest
+> version.  Or is 2.1 new source code for Linux?
+
+Maybe the maintainer of the package is a bit ahead?
+According to http://cran.at.r-project.org/ the version 2.0.1 is current.
+
+Worth a mail to the maintainer of Rdbi/RdbiPgSQL.
+
+Markus
+
+> Teague
+> 
+> 
+> 
+> 
+> Quoting Craig Aumann <caumann@ualberta.ca>:
+> 
+> > 
+> > Well I'm curious to know what R on Windows actually does with the
+> > following commands:
+> > 
+> >
+> install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","Rdbi")
+> >
+> install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","RdbiPgSQL")
+> > 
+> > Does it successully install the packages, or complain loudly?
+> > 
+> > 
+> > On Thu, 2005-03-17 at 13:30, Markus Neteler wrote:
+> > > Hi 
+> > > 
+> > > (for me) it's strange that Rdbi doesn't appear on CRAN but
+> > > I was already notified once not to discuss Rdbi questions on 
+> > > the R Mailing lists... (so better to ask here :-)
+> > > 
+> > > Anyway, I have compiled some usage instructions here:
+> > >  http://grass.itc.it/statsgrass/r_and_dbms.html
+> > > which should be more or less still valid. 
+> > > 
+> > > Maybe a bit helpful, also comparing speed of Rdbi and RODBC.
+> > > However, it doesn't cover MS-Win installation...
+> > > 
+> > > Best
+> > > 
+> > >  Markus
+> > > 
+> > > On Thu, Mar 17, 2005 at 11:33:02AM -0700, Craig Aumann wrote:
+> > > > See Teague's question below.  As a linux person, I don't know the
+> > answer
+> > > > to this so am forward this message to the list.  
+> > > > 
+> > > > Having looked also at  http://www.bioconductor.org/ - which links
+> > off of
+> > > > the main R web page, I see a Windows version of Rdbi (click "What
+> > is
+> > > > Bioconductor"  and scroll down till you find the heading:
+> > "Database
+> > > > Interaction").  I'm seeing a RDBI for Windows, but no windows
+> > version of
+> > > > RdbiPgsql which is a problem! 
+> > > > 
+> > > > Have you tried sending a message to the R-Help list about this - how
+> > do
+> > > > windows users access PGSQL databases from R?  (R website ->
+> > mailing
+> > > > lists.)  
+> > > > 
+> > > > On the CRAN site, just searching databases, I saw the following:
+> > > > DBI, RMySQL, RODBC, ROracle. Not sure if windows versions exist for
+> > any
+> > > > of these.   
+> > > > 
+> > > > Also have a look at the links in
+> > > > http://cran.r-project.org/doc/manuals/R-data.html .  
+> > > > 
+> > > > Afraid that's all I know about attaching to Databases on Windows -
+> > which
+> > > > ain't much I'm afraid. 
+> > > > 
+> > > > Cheers!
+> > > > Craig
+> > > > 
+> > > > 
+> > > > 
+> > > > 
+> > > > 
+> > > > 
+> > > > On Thu, 2005-03-17 at 10:40, Teague O'Mara wrote:
+> > > > > Hi Craig.  I came back across this email from awhile ago.  I'm
+> > attempting to
+> > > > > look at cluster of points in GRASS and have been using the script
+> > that Michael
+> > > > > Barton wrote, but I'd like to look at a few other things and it
+> > seems that using
+> > > > > R and my GRASS data will be much easier. I have been using R for
+> > basic
+> > > > > statistics, but am far from being fluent with it.  If you have a
+> > moment, can you
+> > > > > help me out with some R issues?  I'm using an XP machine with R
+> > 2.0.1.
+> > > > > 
+> > > > > I'm having a problem downloading and installing Rdbi and
+> > RdbiPgSQL.  I can't
+> > > > > find these two sets, or any SQL interface that will download from
+> > CRAN.  I was
+> > > > > able to download these directly from sourcforge (tar.gz format),
+> > but I'm not
+> > > > > sure what to do with them now.  Is it an issue with this version
+> > of R?
+> > > > > 
+> > > > > Thanks for any help you can offer.
+> > > > > 
+> > > > > Cheers--
+> > > > > Teague
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > Teague O'Mara
+> > > > > Department of Anthropology
+> > > > > Arizona State University
+> > > > > Box 872402
+> > > > > Tempe, AZ 85287-2402
+> > > > > 480.965.6213
+> > > > > 
+> > > > > 
+> > > > > Quoting Craig Aumann <caumann@ualberta.ca>:
+> > > > > 
+> > > > > > In glancing at your script, I wondered why you didn't just
+> > import the
+> > > > > > stuff into a statistical package like R and then use all the
+> > > > > > clustering
+> > > > > > routines it has.    See www.r-project.org
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > ## Key commands in R are:
+> > > > > > 
+> > > > > > ## Load the packages to access the database, in particular the
+> > PgSQL
+> > > > > > ##
+> > > > > > database
+> > > > > > require(Rdbi)
+> > > > > > require(RdbiPgSQL)
+> > > > > > 
+> > > > > > ## Load some clustering routines
+> > > > > > 
+> > > > > > require(cluster)
+> > > > > > require(mclust)
+> > > > > > 
+> > > > > > 
+> > > > > > ### Connect to the database and read in a points data set
+> > "jogis"
+> > > > > > ## and read in the dataset "wells_att".  
+> > > > > > 
+> > > > > > 
+> > > > > > conn <- dbConnect(PgSQL(), dbname="jogis", user="caumann")
+> > > > > > wells <- dbReadTable(conn, "wells_att")
+> > > > > > dbDisconnect(conn)
+> > > > > > 
+> > > > > > ## Now you can apply any clustering or kernel smoothing
+> > technique you
+> > > > > > want to the dataset.  
+> > > > > > 
+> > > > > > If this is of any help, let me know and I can provide more
+> > details.  
+> > > > > > Cheers!
+> > > > > > Craig
+> > > > > > 
+> > > > > > 
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > 
+> > > > _______________________________________________
+> > > > statsgrass mailing list
+> > > > statsgrass@grass.itc.it
+> > > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> 
+> 
+> 
+> Teague O'Mara
+> Department of Anthropology
+> Arizona State University
+> Box 872402
+> Tempe, AZ 85287-2402
+> 480.965.6213
+
+-- 
+Markus Neteler     <neteler itc it>       http://mpa.itc.it
+ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+
+From Roger.Bivand at nhh.no  Thu Mar 17 16:19:54 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] Re: Connecting to databases on Windows using R
+In-Reply-To: <20050317210731.GD3172@thuille.itc.it>
+Message-ID: <Pine.LNX.4.44.0503172210170.4523-100000@reclus.nhh.no>
+
+On Thu, 17 Mar 2005, Markus Neteler wrote:
+
+> Craig,
+> 
+> it complains loudly even on Linux... sigh. Things changed again,
+> I'll have to update the indicated web page (how to use install.packages()
+> with bioconductor?).
+> 
+> Downloading and installing on command line should work (on Linux,
+> maybe even Cygwin).
+
+Yes, these are source packages, unless some Windows-built packages exist 
+(not cygwin, use MSYS and mingw to compile I think). But maybe look at the 
+BioConductor site a bit more - there seems at least to be a Win32 binary 
+there:
+
+http://www.bioconductor.org/repository/release1.5/package/html/index.html
+
+Download 
+
+http://www.bioconductor.org/repository/release1.5/package/Win32/Rdbi_1.0.4.zip
+
+and install package from local zip file. There is no pre-built Windows 
+binary for RdbiPgSQL, though, suggesting that the combination of Windows 
+and PostgreSQL isn't easy and depends on the local libraries and headers.
+
+Hope you have some luck!
+
+Roger
+
+> 
+> Markus
+> 
+> On Thu, Mar 17, 2005 at 01:54:10PM -0700, Craig Aumann wrote:
+> > 
+> > Well I'm curious to know what R on Windows actually does with the
+> > following commands:
+> > 
+> > install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","Rdbi")
+> > install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","RdbiPgSQL")
+> > 
+> > Does it successully install the packages, or complain loudly?
+> > 
+> > 
+> > On Thu, 2005-03-17 at 13:30, Markus Neteler wrote:
+> > > Hi 
+> > > 
+> > > (for me) it's strange that Rdbi doesn't appear on CRAN but
+> > > I was already notified once not to discuss Rdbi questions on 
+> > > the R Mailing lists... (so better to ask here :-)
+> > > 
+> > > Anyway, I have compiled some usage instructions here:
+> > >  http://grass.itc.it/statsgrass/r_and_dbms.html
+> > > which should be more or less still valid. 
+> > > 
+> > > Maybe a bit helpful, also comparing speed of Rdbi and RODBC.
+> > > However, it doesn't cover MS-Win installation...
+> > > 
+> > > Best
+> > > 
+> > >  Markus
+> > > 
+> > > On Thu, Mar 17, 2005 at 11:33:02AM -0700, Craig Aumann wrote:
+> > > > See Teague's question below.  As a linux person, I don't know the answer
+> > > > to this so am forward this message to the list.  
+> > > > 
+> > > > Having looked also at  http://www.bioconductor.org/ - which links off of
+> > > > the main R web page, I see a Windows version of Rdbi (click "What is
+> > > > Bioconductor"  and scroll down till you find the heading: "Database
+> > > > Interaction").  I'm seeing a RDBI for Windows, but no windows version of
+> > > > RdbiPgsql which is a problem! 
+> > > > 
+> > > > Have you tried sending a message to the R-Help list about this - how do
+> > > > windows users access PGSQL databases from R?  (R website -> mailing
+> > > > lists.)  
+> > > > 
+> > > > On the CRAN site, just searching databases, I saw the following:
+> > > > DBI, RMySQL, RODBC, ROracle. Not sure if windows versions exist for any
+> > > > of these.   
+> > > > 
+> > > > Also have a look at the links in
+> > > > http://cran.r-project.org/doc/manuals/R-data.html .  
+> > > > 
+> > > > Afraid that's all I know about attaching to Databases on Windows - which
+> > > > ain't much I'm afraid. 
+> > > > 
+> > > > Cheers!
+> > > > Craig
+> > > > 
+> > > > 
+> > > > 
+> > > > 
+> > > > 
+> > > > 
+> > > > On Thu, 2005-03-17 at 10:40, Teague O'Mara wrote:
+> > > > > Hi Craig.  I came back across this email from awhile ago.  I'm attempting to
+> > > > > look at cluster of points in GRASS and have been using the script that Michael
+> > > > > Barton wrote, but I'd like to look at a few other things and it seems that using
+> > > > > R and my GRASS data will be much easier. I have been using R for basic
+> > > > > statistics, but am far from being fluent with it.  If you have a moment, can you
+> > > > > help me out with some R issues?  I'm using an XP machine with R 2.0.1.
+> > > > > 
+> > > > > I'm having a problem downloading and installing Rdbi and RdbiPgSQL.  I can't
+> > > > > find these two sets, or any SQL interface that will download from CRAN.  I was
+> > > > > able to download these directly from sourcforge (tar.gz format), but I'm not
+> > > > > sure what to do with them now.  Is it an issue with this version of R?
+> > > > > 
+> > > > > Thanks for any help you can offer.
+> > > > > 
+> > > > > Cheers--
+> > > > > Teague
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > Teague O'Mara
+> > > > > Department of Anthropology
+> > > > > Arizona State University
+> > > > > Box 872402
+> > > > > Tempe, AZ 85287-2402
+> > > > > 480.965.6213
+> > > > > 
+> > > > > 
+> > > > > Quoting Craig Aumann <caumann@ualberta.ca>:
+> > > > > 
+> > > > > > In glancing at your script, I wondered why you didn't just import the
+> > > > > > stuff into a statistical package like R and then use all the
+> > > > > > clustering
+> > > > > > routines it has.    See www.r-project.org
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > ## Key commands in R are:
+> > > > > > 
+> > > > > > ## Load the packages to access the database, in particular the PgSQL
+> > > > > > ##
+> > > > > > database
+> > > > > > require(Rdbi)
+> > > > > > require(RdbiPgSQL)
+> > > > > > 
+> > > > > > ## Load some clustering routines
+> > > > > > 
+> > > > > > require(cluster)
+> > > > > > require(mclust)
+> > > > > > 
+> > > > > > 
+> > > > > > ### Connect to the database and read in a points data set "jogis"
+> > > > > > ## and read in the dataset "wells_att".  
+> > > > > > 
+> > > > > > 
+> > > > > > conn <- dbConnect(PgSQL(), dbname="jogis", user="caumann")
+> > > > > > wells <- dbReadTable(conn, "wells_att")
+> > > > > > dbDisconnect(conn)
+> > > > > > 
+> > > > > > ## Now you can apply any clustering or kernel smoothing technique you
+> > > > > > want to the dataset.  
+> > > > > > 
+> > > > > > If this is of any help, let me know and I can provide more details.  
+> > > > > > Cheers!
+> > > > > > Craig
+> > > > > > 
+> > > > > > 
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > 
+> > > > _______________________________________________
+> > > > statsgrass mailing list
+> > > > statsgrass@grass.itc.it
+> > > > http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From Roger.Bivand at nhh.no  Thu Mar 17 16:22:44 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] Re: Connecting to databases on Windows using R
+In-Reply-To: <20050317211809.GE3172@thuille.itc.it>
+Message-ID: <Pine.LNX.4.44.0503172221171.4523-100000@reclus.nhh.no>
+
+On Thu, 17 Mar 2005, Markus Neteler wrote:
+
+> On Thu, Mar 17, 2005 at 02:11:16PM -0700, Teague O'Mara wrote:
+> > Craig and Markus:
+> > 
+> > Just trying it I get the same complaint for both:
+> > 
+> > trying URL `http://www.bioconductor.org/repository/devel/package/Source//PACKAGES'
+> > Error in download.file(url = paste(contriburl, "PACKAGES", sep = "/"),  : 
+> >         cannot open URL
+> > `http://www.bioconductor.org/repository/devel/package/Source//PACKAGES'
+> > In addition: Warning message: 
+> > cannot open: HTTP status was `404 Not Found' 
+> > 
+> > Apparently the page has moved, or the packages have been taken off?
+> 
+> the packages *are* there, but they have disabled the nice installation method
+> somehow. I am googling for > 20min now, to no avail.
+> 
+> http://www.bioconductor.org/repository/devel/package/html/index.html
+> ->  Rdbi -> Source package download
+> ->  RdbiPgSQL -> Source package download
+> 
+> Save to disk. Then first install Rdbi, then RdbiPgSQL.
+> Ah, for MS-Win you want to grab the .zip files instead.
+> 
+>  
+> > Also, Rdbi will load, but I get the following message:
+> > Loading required package: Rdbi 
+> > [1] TRUE
+> > Warning message: 
+> > package 'Rdbi' was built under R version 2.1.0
+> > 
+> > I searched around for a new version of R, but it seems that 2.0.1 is the latest
+> > version.  Or is 2.1 new source code for Linux?
+> 
+> Maybe the maintainer of the package is a bit ahead?
+> According to http://cran.at.r-project.org/ the version 2.0.1 is current.
+> 
+> Worth a mail to the maintainer of Rdbi/RdbiPgSQL.
+
+Not really, 2.1.0 will be out soon, all it means is that the source 
+package was built using 2.1.0 devel, usually meaning better sanity checks 
+of the package code and documentation.
+
+Roger
+
+> 
+> Markus
+> 
+> > Teague
+> > 
+> > 
+> > 
+> > 
+> > Quoting Craig Aumann <caumann@ualberta.ca>:
+> > 
+> > > 
+> > > Well I'm curious to know what R on Windows actually does with the
+> > > following commands:
+> > > 
+> > >
+> > install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","Rdbi")
+> > >
+> > install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","RdbiPgSQL")
+> > > 
+> > > Does it successully install the packages, or complain loudly?
+> > > 
+> > > 
+> > > On Thu, 2005-03-17 at 13:30, Markus Neteler wrote:
+> > > > Hi 
+> > > > 
+> > > > (for me) it's strange that Rdbi doesn't appear on CRAN but
+> > > > I was already notified once not to discuss Rdbi questions on 
+> > > > the R Mailing lists... (so better to ask here :-)
+> > > > 
+> > > > Anyway, I have compiled some usage instructions here:
+> > > >  http://grass.itc.it/statsgrass/r_and_dbms.html
+> > > > which should be more or less still valid. 
+> > > > 
+> > > > Maybe a bit helpful, also comparing speed of Rdbi and RODBC.
+> > > > However, it doesn't cover MS-Win installation...
+> > > > 
+> > > > Best
+> > > > 
+> > > >  Markus
+> > > > 
+> > > > On Thu, Mar 17, 2005 at 11:33:02AM -0700, Craig Aumann wrote:
+> > > > > See Teague's question below.  As a linux person, I don't know the
+> > > answer
+> > > > > to this so am forward this message to the list.  
+> > > > > 
+> > > > > Having looked also at  http://www.bioconductor.org/ - which links
+> > > off of
+> > > > > the main R web page, I see a Windows version of Rdbi (click "What
+> > > is
+> > > > > Bioconductor"  and scroll down till you find the heading:
+> > > "Database
+> > > > > Interaction").  I'm seeing a RDBI for Windows, but no windows
+> > > version of
+> > > > > RdbiPgsql which is a problem! 
+> > > > > 
+> > > > > Have you tried sending a message to the R-Help list about this - how
+> > > do
+> > > > > windows users access PGSQL databases from R?  (R website ->
+> > > mailing
+> > > > > lists.)  
+> > > > > 
+> > > > > On the CRAN site, just searching databases, I saw the following:
+> > > > > DBI, RMySQL, RODBC, ROracle. Not sure if windows versions exist for
+> > > any
+> > > > > of these.   
+> > > > > 
+> > > > > Also have a look at the links in
+> > > > > http://cran.r-project.org/doc/manuals/R-data.html .  
+> > > > > 
+> > > > > Afraid that's all I know about attaching to Databases on Windows -
+> > > which
+> > > > > ain't much I'm afraid. 
+> > > > > 
+> > > > > Cheers!
+> > > > > Craig
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > On Thu, 2005-03-17 at 10:40, Teague O'Mara wrote:
+> > > > > > Hi Craig.  I came back across this email from awhile ago.  I'm
+> > > attempting to
+> > > > > > look at cluster of points in GRASS and have been using the script
+> > > that Michael
+> > > > > > Barton wrote, but I'd like to look at a few other things and it
+> > > seems that using
+> > > > > > R and my GRASS data will be much easier. I have been using R for
+> > > basic
+> > > > > > statistics, but am far from being fluent with it.  If you have a
+> > > moment, can you
+> > > > > > help me out with some R issues?  I'm using an XP machine with R
+> > > 2.0.1.
+> > > > > > 
+> > > > > > I'm having a problem downloading and installing Rdbi and
+> > > RdbiPgSQL.  I can't
+> > > > > > find these two sets, or any SQL interface that will download from
+> > > CRAN.  I was
+> > > > > > able to download these directly from sourcforge (tar.gz format),
+> > > but I'm not
+> > > > > > sure what to do with them now.  Is it an issue with this version
+> > > of R?
+> > > > > > 
+> > > > > > Thanks for any help you can offer.
+> > > > > > 
+> > > > > > Cheers--
+> > > > > > Teague
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > Teague O'Mara
+> > > > > > Department of Anthropology
+> > > > > > Arizona State University
+> > > > > > Box 872402
+> > > > > > Tempe, AZ 85287-2402
+> > > > > > 480.965.6213
+> > > > > > 
+> > > > > > 
+> > > > > > Quoting Craig Aumann <caumann@ualberta.ca>:
+> > > > > > 
+> > > > > > > In glancing at your script, I wondered why you didn't just
+> > > import the
+> > > > > > > stuff into a statistical package like R and then use all the
+> > > > > > > clustering
+> > > > > > > routines it has.    See www.r-project.org
+> > > > > > > 
+> > > > > > > 
+> > > > > > > 
+> > > > > > > 
+> > > > > > > ## Key commands in R are:
+> > > > > > > 
+> > > > > > > ## Load the packages to access the database, in particular the
+> > > PgSQL
+> > > > > > > ##
+> > > > > > > database
+> > > > > > > require(Rdbi)
+> > > > > > > require(RdbiPgSQL)
+> > > > > > > 
+> > > > > > > ## Load some clustering routines
+> > > > > > > 
+> > > > > > > require(cluster)
+> > > > > > > require(mclust)
+> > > > > > > 
+> > > > > > > 
+> > > > > > > ### Connect to the database and read in a points data set
+> > > "jogis"
+> > > > > > > ## and read in the dataset "wells_att".  
+> > > > > > > 
+> > > > > > > 
+> > > > > > > conn <- dbConnect(PgSQL(), dbname="jogis", user="caumann")
+> > > > > > > wells <- dbReadTable(conn, "wells_att")
+> > > > > > > dbDisconnect(conn)
+> > > > > > > 
+> > > > > > > ## Now you can apply any clustering or kernel smoothing
+> > > technique you
+> > > > > > > want to the dataset.  
+> > > > > > > 
+> > > > > > > If this is of any help, let me know and I can provide more
+> > > details.  
+> > > > > > > Cheers!
+> > > > > > > Craig
+> > > > > > > 
+> > > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > 
+> > > > > _______________________________________________
+> > > > > statsgrass mailing list
+> > > > > statsgrass@grass.itc.it
+> > > > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > 
+> > > _______________________________________________
+> > > statsgrass mailing list
+> > > statsgrass@grass.itc.it
+> > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > 
+> > 
+> > 
+> > 
+> > Teague O'Mara
+> > Department of Anthropology
+> > Arizona State University
+> > Box 872402
+> > Tempe, AZ 85287-2402
+> > 480.965.6213
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From Matthew.Redding at dpi.qld.gov.au  Thu Mar 17 16:26:29 2005
+From: Matthew.Redding at dpi.qld.gov.au (Redding, Matthew)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] R, GRASS, and CYGWIN under version GRASS54
+Message-ID: <200503172126.j2HLQVhx022898@dpi-gw1.dpi.qld.gov.au>
+
+Hi All, 
+
+Am I actually able to use R from within grass, in a windows (XP) R/cygwin grass install?
+
+How do I kick it off?
+
+
+Thanks,
+
+Matt Redding
+
+-----Original Message-----
+From: statsgrass-admin@grass.itc.it
+[mailto:statsgrass-admin@grass.itc.it]On Behalf Of Redding, Matthew
+Sent: Friday, 11 March 2005 8:35 AM
+To: Roger.Bivand@nhh.no
+Cc: statsgrass@grass.itc.it
+Subject: RE: [STATSGRASS] R, GRASS, and CYGWIN under version GRASS54
+
+
+Hi Roger,
+
+I agree, that was just an oversight.
+
+The weird thing is, cygwin seems to habitually install so that my home directory is
+the n:/ drive.  So while that is not where the data is, it is where the .grassrc54 is.
+
+But it does not seem to matter what I put in the cygwin string....your version works fine...
+What does it actually do?  Does the grass.connect(...) command over-ride it anyway?
+
+This is the sequence I used to get things going:
+
+> library(GRASS)
+Warning message: 
+package 'GRASS' was built under R version 2.0.1 
+> set.cygwinstring("c:/cygwin")
+[1] "c:/cygwin"
+> GRASS.connect(manual=TRUE, gisdbase="c:/cygwin/usr/local/share/grassdata"
++ , loc="Jack", mapset="PERMANENT")
+GRASS environment variables inserted manually
+NULL
+> G<-gmeta()
+> G
+$LOCATION
+[1] "Jack"
+....
+
+NOTE: I am NOT using R from within grass.  I am using R and accessing grass.  I am far more familliar wtih R than I am with grass,
+so that is just the way I ended up doing it.  In fact, I am not at all sure about how to run my normal R installation
+from with GRASS -- suggestions welcome.
+
+
+I used the system intensively yesterday with "set.cygwinstring("n:/")" 
+and found everything that I used worked well.  I used gmeta, sites.get, sites.put, and the equivalent raster commands.
+
+It all worked very well!
+
+Now, if I can run my windows R installation from within GRASS , I would like to learn that!
+
+Thanks, 
+
+Matt Redding
+
+-----Original Message-----
+From: Roger Bivand [mailto:Roger.Bivand@nhh.no]
+Sent: Thursday, 10 March 2005 5:41 PM
+To: Redding, Matthew
+Cc: statsgrass@grass.itc.it
+Subject: RE: [STATSGRASS] R, GRASS, and CYGWIN under version GRASS54
+
+
+First - please always reply to the list on which you asked the question!!
+
+If you do not, no-body else will share what you have learnt, nor will they 
+be able to join in. It also makes the list archives useless, because they 
+only contain open questions, not confirmations of resolution.
+
+On Thu, 10 Mar 2005, Redding, Matthew wrote:
+
+> Thanks Roger and Hamish, 
+> 
+> I think I am getting close to the real problem here.
+> When I start grass, I end up on my network drive n:...
+> and that is where the .grassrc54 is.
+> 
+> My grassdata directory is:
+> 
+> c:/cygwin/usr/local/share/grassdata.
+> 
+> so I did this:
+> 
+> set.cygwinstring("n:/")
+
+I'm doubtful about this - from the above, the cygwin root is:
+
+c:/cygwin
+
+isn't it?
+
+Please as far as possible copy the full console interaction - both your 
+commands, and what the system responds. Please remember that the list is 
+not looking over your shoulder.
+
+> 
+> I am not sure where the GISDBASE is.....
+> would it be in 
+> c:/cygwin/usr/local/share/grassdata ?
+> 
+> I suppose if that is the case, I need to then use something like:
+> 
+> GRASS.connect(manual=TRUE, gisdbase="c:/cygwin/usr/local/share/grasdata"
+> 	, loc="Jack", mapset="PERMANENT")
+> 
+
+Well, what happened when you tried it? Please say more about what happens? 
+What happens when you start GRASS - you are running R within GRASS, aren't 
+you?
+
+
+
+> 
+> Is that correct? Is that enought to get things fully operational?
+> 
+> I can now access data from the mapset listed.  So I have had derinate
+> progress.
+
+That sounds positive. Please post a recipe of the steps you need, 
+preferably copy and paste from your console, than others can benefit from 
+your learning too!
+
+Best wishes,
+
+Roger
+
+> 
+> Thanks very much.
+> 
+> Thanks, 
+> 
+> Matt Redding
+> 
+> -----Original Message-----
+> From: statsgrass-admin@grass.itc.it
+> [mailto:statsgrass-admin@grass.itc.it]On Behalf Of Roger Bivand
+> Sent: Wednesday, 9 March 2005 5:28 PM
+> To: Redding, Matthew
+> Cc: statsgrass@grass.itc.it
+> Subject: Re: [STATSGRASS] R, GRASS, and CYGWIN under version GRASS54
+> 
+> 
+> On Wed, 9 Mar 2005, Redding, Matthew wrote:
+> 
+> > Hi GRASS and R Gurus, 
+> > 
+> > I sent an email on this subject prior to confirming my subscription to the group, so I hope no-one recieves this message twice.
+> > 
+> > I have had a look through the archive to see if GRASS54 will work under cygwin with R2.0.
+> > I notice that some people are using GRASS 54 with R, but the most recent mention of 
+> > using it with cygwin was back in 2002, and all the advice I have been able to find does not seem to work.
+> > 
+> > Will it actually work with my setup of R 2, GRASS 54 and cygwin?
+> > 
+> > Where should I look for info on how to get it all running?
+> > 
+> > The help material in R indicates a few suggestions, that do not seem to
+> > work for me.
+> > 
+> > For example, one of my problems is that I cannot find any file called
+> > .grassrc5 or anything much like it, as mentioned in the ?grass.connect()
+> > documentation under R.
+> 
+> Please try the following (based on the guess that the advice should have
+> said look for .grassrc5* - in 5.4 it is probably .grassrc54). From the 
+> cygwin terminal prompt, start GRASS in text mode. Once you've chosen your
+> location and mapset, you get to the GRASS prompt. Try again to find your
+> .grassrc5* in your home directory (cat ~/.grassrc5*). If it is there, 
+> start R (either GUI or terminal), and library(GRASS), then 
+> set.cygwinstring(), or other routes to getting the cygwin prefix right.
+> 
+> I think your difficulty has been looking for .grassrc5 not .grassrc5* - 
+> please let the list know if this helps. The general setup should work, 
+> from reports from other users, you just need to get the specific naming 
+> magic right for the cygwin prefix for the GISDBASE, I hope.
+> 
+> Roger
+> 
+> > 
+> > 
+> > Any suggestions on how to get it working?
+> > 
+> > Thanks, 
+> > 
+> > Matt Redding 
+> > 
+> > ********************************DISCLAIMER****************************
+> > The information contained in the above e-mail message or messages 
+> > (which includes any attachments) is confidential and may be legally 
+> > privileged.  It is intended only for the use of the person or entity 
+> > to which it is addressed.  If you are not the addressee any form of 
+> > disclosure, copying, modification, distribution or any action taken 
+> > or omitted in reliance on the information is unauthorised.  Opinions 
+> > contained in the message(s) do not necessarily reflect the opinions 
+> > of the Queensland Government and its authorities.  If you received 
+> > this communication in error, please notify the sender immediately and 
+> > delete it from your computer system network. 
+> > 
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+
+
+
+_______________________________________________
+statsgrass mailing list
+statsgrass@grass.itc.it
+http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+
+From Teague.Omara at asu.edu  Thu Mar 17 16:31:28 2005
+From: Teague.Omara at asu.edu (Teague O'Mara)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] Re: Connecting to databases on Windows using R
+In-Reply-To: <20050317211809.GE3172@thuille.itc.it>
+References: <1111081249.4239c1210779d@webmail.asu.edu>
+ <1111084382.11398.28.camel@landscape> <20050317203022.GA3073@thuille.itc.it>
+ <1111092850.11398.49.camel@landscape>
+ <1111093876.4239f274a89ff@webmail.asu.edu>
+ <20050317211809.GE3172@thuille.itc.it>
+Message-ID: <1111095088.4239f73018944@webmail.asu.edu>
+
+> the packages *are* there, but they have disabled the nice installation
+> method
+> somehow. I am googling for > 20min now, to no avail.
+> 
+> http://www.bioconductor.org/repository/devel/package/html/index.html
+> ->  Rdbi -> Source package download
+> ->  RdbiPgSQL -> Source package download
+> 
+> Save to disk. Then first install Rdbi, then RdbiPgSQL.
+> Ah, for MS-Win you want to grab the .zip files instead.
+
+Rbdi is available as a .zip, but RdbiPgSQL is only available as source.  I don't
+know how to compile this from source.  Is it possible or will RdbiPgSQL just not
+play nicely with Windows?  I'm beginning to get very irritated with Windows.
+
+Thank you for all of the suggestions and help.
+
+Teague
+
+
+
+
+
+
+
+> 
+>  
+> > Also, Rdbi will load, but I get the following message:
+> > Loading required package: Rdbi 
+> > [1] TRUE
+> > Warning message: 
+> > package 'Rdbi' was built under R version 2.1.0
+> > 
+> > I searched around for a new version of R, but it seems that 2.0.1 is
+> the latest
+> > version.  Or is 2.1 new source code for Linux?
+> 
+> Maybe the maintainer of the package is a bit ahead?
+> According to http://cran.at.r-project.org/ the version 2.0.1 is
+> current.
+> 
+
+
+
+
+
+> Worth a mail to the maintainer of Rdbi/RdbiPgSQL.
+> 
+> Markus
+> 
+> > Teague
+> > 
+> > 
+> > 
+> > 
+> > Quoting Craig Aumann <caumann@ualberta.ca>:
+> > 
+> > > 
+> > > Well I'm curious to know what R on Windows actually does with the
+> > > following commands:
+> > > 
+> > >
+> >
+>
+install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","Rdbi")
+> > >
+> >
+>
+install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","RdbiPgSQL")
+> > > 
+> > > Does it successully install the packages, or complain loudly?
+> > > 
+> > > 
+> > > On Thu, 2005-03-17 at 13:30, Markus Neteler wrote:
+> > > > Hi 
+> > > > 
+> > > > (for me) it's strange that Rdbi doesn't appear on CRAN but
+> > > > I was already notified once not to discuss Rdbi questions on 
+> > > > the R Mailing lists... (so better to ask here :-)
+> > > > 
+> > > > Anyway, I have compiled some usage instructions here:
+> > > >  http://grass.itc.it/statsgrass/r_and_dbms.html
+> > > > which should be more or less still valid. 
+> > > > 
+> > > > Maybe a bit helpful, also comparing speed of Rdbi and RODBC.
+> > > > However, it doesn't cover MS-Win installation...
+> > > > 
+> > > > Best
+> > > > 
+> > > >  Markus
+> > > > 
+> > > > On Thu, Mar 17, 2005 at 11:33:02AM -0700, Craig Aumann wrote:
+> > > > > See Teague's question below.  As a linux person, I don't know
+> the
+> > > answer
+> > > > > to this so am forward this message to the list.  
+> > > > > 
+> > > > > Having looked also at  http://www.bioconductor.org/ - which
+> links
+> > > off of
+> > > > > the main R web page, I see a Windows version of Rdbi (click
+> "What
+> > > is
+> > > > > Bioconductor"  and scroll down till you find the heading:
+> > > "Database
+> > > > > Interaction").  I'm seeing a RDBI for Windows, but no windows
+> > > version of
+> > > > > RdbiPgsql which is a problem! 
+> > > > > 
+> > > > > Have you tried sending a message to the R-Help list about this -
+> how
+> > > do
+> > > > > windows users access PGSQL databases from R?  (R website ->
+> > > mailing
+> > > > > lists.)  
+> > > > > 
+> > > > > On the CRAN site, just searching databases, I saw the
+> following:
+> > > > > DBI, RMySQL, RODBC, ROracle. Not sure if windows versions exist
+> for
+> > > any
+> > > > > of these.   
+> > > > > 
+> > > > > Also have a look at the links in
+> > > > > http://cran.r-project.org/doc/manuals/R-data.html .  
+> > > > > 
+> > > > > Afraid that's all I know about attaching to Databases on Windows
+> -
+> > > which
+> > > > > ain't much I'm afraid. 
+> > > > > 
+> > > > > Cheers!
+> > > > > Craig
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > On Thu, 2005-03-17 at 10:40, Teague O'Mara wrote:
+> > > > > > Hi Craig.  I came back across this email from awhile ago. 
+> I'm
+> > > attempting to
+> > > > > > look at cluster of points in GRASS and have been using the
+> script
+> > > that Michael
+> > > > > > Barton wrote, but I'd like to look at a few other things and
+> it
+> > > seems that using
+> > > > > > R and my GRASS data will be much easier. I have been using R
+> for
+> > > basic
+> > > > > > statistics, but am far from being fluent with it.  If you have
+> a
+> > > moment, can you
+> > > > > > help me out with some R issues?  I'm using an XP machine with
+> R
+> > > 2.0.1.
+> > > > > > 
+> > > > > > I'm having a problem downloading and installing Rdbi and
+> > > RdbiPgSQL.  I can't
+> > > > > > find these two sets, or any SQL interface that will download
+> from
+> > > CRAN.  I was
+> > > > > > able to download these directly from sourcforge (tar.gz
+> format),
+> > > but I'm not
+> > > > > > sure what to do with them now.  Is it an issue with this
+> version
+> > > of R?
+> > > > > > 
+> > > > > > Thanks for any help you can offer.
+> > > > > > 
+> > > > > > Cheers--
+> > > > > > Teague
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > Teague O'Mara
+> > > > > > Department of Anthropology
+> > > > > > Arizona State University
+> > > > > > Box 872402
+> > > > > > Tempe, AZ 85287-2402
+> > > > > > 480.965.6213
+> > > > > > 
+> > > > > > 
+> > > > > > Quoting Craig Aumann <caumann@ualberta.ca>:
+> > > > > > 
+> > > > > > > In glancing at your script, I wondered why you didn't just
+> > > import the
+> > > > > > > stuff into a statistical package like R and then use all
+> the
+> > > > > > > clustering
+> > > > > > > routines it has.    See www.r-project.org
+> > > > > > > 
+> > > > > > > 
+> > > > > > > 
+> > > > > > > 
+> > > > > > > ## Key commands in R are:
+> > > > > > > 
+> > > > > > > ## Load the packages to access the database, in particular
+> the
+> > > PgSQL
+> > > > > > > ##
+> > > > > > > database
+> > > > > > > require(Rdbi)
+> > > > > > > require(RdbiPgSQL)
+> > > > > > > 
+> > > > > > > ## Load some clustering routines
+> > > > > > > 
+> > > > > > > require(cluster)
+> > > > > > > require(mclust)
+> > > > > > > 
+> > > > > > > 
+> > > > > > > ### Connect to the database and read in a points data set
+> > > "jogis"
+> > > > > > > ## and read in the dataset "wells_att".  
+> > > > > > > 
+> > > > > > > 
+> > > > > > > conn <- dbConnect(PgSQL(), dbname="jogis", user="caumann")
+> > > > > > > wells <- dbReadTable(conn, "wells_att")
+> > > > > > > dbDisconnect(conn)
+> > > > > > > 
+> > > > > > > ## Now you can apply any clustering or kernel smoothing
+> > > technique you
+> > > > > > > want to the dataset.  
+> > > > > > > 
+> > > > > > > If this is of any help, let me know and I can provide more
+> > > details.  
+> > > > > > > Cheers!
+> > > > > > > Craig
+> > > > > > > 
+> > > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > 
+> > > > > _______________________________________________
+> > > > > statsgrass mailing list
+> > > > > statsgrass@grass.itc.it
+> > > > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > 
+> > > _______________________________________________
+> > > statsgrass mailing list
+> > > statsgrass@grass.itc.it
+> > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > 
+> > 
+> > 
+> > 
+> > Teague O'Mara
+> > Department of Anthropology
+> > Arizona State University
+> > Box 872402
+> > Tempe, AZ 85287-2402
+> > 480.965.6213
+> 
+> -- 
+> Markus Neteler     <neteler itc it>       http://mpa.itc.it
+> ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+> MPBA - Predictive Models for Biol. & Environ. Data Analysis
+> Via Sommarive, 18        -       38050 Povo (Trento), Italy
+> 
+
+
+
+Teague O'Mara
+Department of Anthropology
+Arizona State University
+Box 872402
+Tempe, AZ 85287-2402
+480.965.6213
+
+
+From Roger.Bivand at nhh.no  Thu Mar 17 16:36:45 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] R, GRASS, and CYGWIN under version GRASS54
+In-Reply-To: <200503172126.j2HLQVhx022898@dpi-gw1.dpi.qld.gov.au>
+Message-ID: <Pine.LNX.4.44.0503172231440.4523-100000@reclus.nhh.no>
+
+On Fri, 18 Mar 2005, Redding, Matthew wrote:
+
+> Hi All, 
+> 
+> Am I actually able to use R from within grass, in a windows (XP)
+> R/cygwin grass install?
+> 
+> How do I kick it off?
+
+Yes, Windows programs, like the versions of R compiled for Windows, can be 
+run (or launched) from the prompt in a Cygwin terminal. For GRASS <= 
+5.4.0, the R/GRASS interface works too, but needs some help to find where 
+things are, see the GRASS.connect help page. For 6.0.0, the compiled 
+interface is broken, and a new interpreted interface is growing on 
+Sourceforge as spgrass6 under r-spatial.
+
+Roger
+
+> 
+> 
+> Thanks,
+> 
+> Matt Redding
+> 
+> -----Original Message-----
+> From: statsgrass-admin@grass.itc.it
+> [mailto:statsgrass-admin@grass.itc.it]On Behalf Of Redding, Matthew
+> Sent: Friday, 11 March 2005 8:35 AM
+> To: Roger.Bivand@nhh.no
+> Cc: statsgrass@grass.itc.it
+> Subject: RE: [STATSGRASS] R, GRASS, and CYGWIN under version GRASS54
+> 
+> 
+> Hi Roger,
+> 
+> I agree, that was just an oversight.
+> 
+> The weird thing is, cygwin seems to habitually install so that my home directory is
+> the n:/ drive.  So while that is not where the data is, it is where the .grassrc54 is.
+> 
+> But it does not seem to matter what I put in the cygwin string....your version works fine...
+> What does it actually do?  Does the grass.connect(...) command over-ride it anyway?
+> 
+> This is the sequence I used to get things going:
+> 
+> > library(GRASS)
+> Warning message: 
+> package 'GRASS' was built under R version 2.0.1 
+> > set.cygwinstring("c:/cygwin")
+> [1] "c:/cygwin"
+> > GRASS.connect(manual=TRUE, gisdbase="c:/cygwin/usr/local/share/grassdata"
+> + , loc="Jack", mapset="PERMANENT")
+> GRASS environment variables inserted manually
+> NULL
+> > G<-gmeta()
+> > G
+> $LOCATION
+> [1] "Jack"
+> ....
+> 
+> NOTE: I am NOT using R from within grass.  I am using R and accessing grass.  I am far more familliar wtih R than I am with grass,
+> so that is just the way I ended up doing it.  In fact, I am not at all sure about how to run my normal R installation
+> from with GRASS -- suggestions welcome.
+> 
+> 
+> I used the system intensively yesterday with "set.cygwinstring("n:/")" 
+> and found everything that I used worked well.  I used gmeta, sites.get, sites.put, and the equivalent raster commands.
+> 
+> It all worked very well!
+> 
+> Now, if I can run my windows R installation from within GRASS , I would like to learn that!
+> 
+> Thanks, 
+> 
+> Matt Redding
+> 
+> -----Original Message-----
+> From: Roger Bivand [mailto:Roger.Bivand@nhh.no]
+> Sent: Thursday, 10 March 2005 5:41 PM
+> To: Redding, Matthew
+> Cc: statsgrass@grass.itc.it
+> Subject: RE: [STATSGRASS] R, GRASS, and CYGWIN under version GRASS54
+> 
+> 
+> First - please always reply to the list on which you asked the question!!
+> 
+> If you do not, no-body else will share what you have learnt, nor will they
+> be able to join in. It also makes the list archives useless, because they
+> only contain open questions, not confirmations of resolution.
+> 
+> On Thu, 10 Mar 2005, Redding, Matthew wrote:
+> 
+> > Thanks Roger and Hamish, 
+> > 
+> > I think I am getting close to the real problem here.
+> > When I start grass, I end up on my network drive n:...
+> > and that is where the .grassrc54 is.
+> > 
+> > My grassdata directory is:
+> > 
+> > c:/cygwin/usr/local/share/grassdata.
+> > 
+> > so I did this:
+> > 
+> > set.cygwinstring("n:/")
+> 
+> I'm doubtful about this - from the above, the cygwin root is:
+> 
+> c:/cygwin
+> 
+> isn't it?
+> 
+> Please as far as possible copy the full console interaction - both your 
+> commands, and what the system responds. Please remember that the list is
+> not looking over your shoulder.
+> 
+> > 
+> > I am not sure where the GISDBASE is.....
+> > would it be in 
+> > c:/cygwin/usr/local/share/grassdata ?
+> > 
+> > I suppose if that is the case, I need to then use something like:
+> > 
+> > GRASS.connect(manual=TRUE, gisdbase="c:/cygwin/usr/local/share/grasdata"
+> > 	, loc="Jack", mapset="PERMANENT")
+> > 
+> 
+> Well, what happened when you tried it? Please say more about what happens?
+> What happens when you start GRASS - you are running R within GRASS, aren't
+> you?
+> 
+> 
+> 
+> > 
+> > Is that correct? Is that enought to get things fully operational?
+> > 
+> > I can now access data from the mapset listed.  So I have had derinate
+> > progress.
+> 
+> That sounds positive. Please post a recipe of the steps you need, 
+> preferably copy and paste from your console, than others can benefit from
+> your learning too!
+> 
+> Best wishes,
+> 
+> Roger
+> 
+> > 
+> > Thanks very much.
+> > 
+> > Thanks, 
+> > 
+> > Matt Redding
+> > 
+> > -----Original Message-----
+> > From: statsgrass-admin@grass.itc.it
+> > [mailto:statsgrass-admin@grass.itc.it]On Behalf Of Roger Bivand
+> > Sent: Wednesday, 9 March 2005 5:28 PM
+> > To: Redding, Matthew
+> > Cc: statsgrass@grass.itc.it
+> > Subject: Re: [STATSGRASS] R, GRASS, and CYGWIN under version GRASS54
+> > 
+> > 
+> > On Wed, 9 Mar 2005, Redding, Matthew wrote:
+> > 
+> > > Hi GRASS and R Gurus, 
+> > > 
+> > > I sent an email on this subject prior to confirming my subscription to the group, so I hope no-one recieves this message twice.
+> > > 
+> > > I have had a look through the archive to see if GRASS54 will work under cygwin with R2.0.
+> > > I notice that some people are using GRASS 54 with R, but the most recent mention of 
+> > > using it with cygwin was back in 2002, and all the advice I have been able to find does not seem to work.
+> > > 
+> > > Will it actually work with my setup of R 2, GRASS 54 and cygwin?
+> > > 
+> > > Where should I look for info on how to get it all running?
+> > > 
+> > > The help material in R indicates a few suggestions, that do not seem to
+> > > work for me.
+> > > 
+> > > For example, one of my problems is that I cannot find any file called
+> > > .grassrc5 or anything much like it, as mentioned in the ?grass.connect()
+> > > documentation under R.
+> > 
+> > Please try the following (based on the guess that the advice should have
+> > said look for .grassrc5* - in 5.4 it is probably .grassrc54). From the
+> > cygwin terminal prompt, start GRASS in text mode. Once you've chosen your
+> > location and mapset, you get to the GRASS prompt. Try again to find your
+> > .grassrc5* in your home directory (cat ~/.grassrc5*). If it is there, 
+> > start R (either GUI or terminal), and library(GRASS), then 
+> > set.cygwinstring(), or other routes to getting the cygwin prefix right.
+> > 
+> > I think your difficulty has been looking for .grassrc5 not .grassrc5* -
+> > please let the list know if this helps. The general setup should work,
+> > from reports from other users, you just need to get the specific naming
+> > magic right for the cygwin prefix for the GISDBASE, I hope.
+> > 
+> > Roger
+> > 
+> > > 
+> > > 
+> > > Any suggestions on how to get it working?
+> > > 
+> > > Thanks, 
+> > > 
+> > > Matt Redding 
+> > > 
+> > > ********************************DISCLAIMER****************************
+> > > The information contained in the above e-mail message or messages 
+> > > (which includes any attachments) is confidential and may be legally 
+> > > privileged.  It is intended only for the use of the person or entity
+> > > to which it is addressed.  If you are not the addressee any form of 
+> > > disclosure, copying, modification, distribution or any action taken 
+> > > or omitted in reliance on the information is unauthorised.  Opinions
+> > > contained in the message(s) do not necessarily reflect the opinions 
+> > > of the Queensland Government and its authorities.  If you received 
+> > > this communication in error, please notify the sender immediately and
+> > > delete it from your computer system network. 
+> > > 
+> > > _______________________________________________
+> > > statsgrass mailing list
+> > > statsgrass@grass.itc.it
+> > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > 
+> > 
+> > 
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From neteler at itc.it  Thu Mar 17 17:14:31 2005
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] Re: Connecting to databases on Windows using R
+In-Reply-To: <1111092850.11398.49.camel@landscape>
+References: <1111081249.4239c1210779d@webmail.asu.edu> <1111084382.11398.28.camel@landscape> <20050317203022.GA3073@thuille.itc.it> <1111092850.11398.49.camel@landscape>
+Message-ID: <20050317221431.GA6413@thuille.itc.it>
+
+OK, found something:
+
+install.packages2("Rdbi")
+install.packages2("RdbiPgSQL")
+
+seems to do the trick (was looking at getBioC.R).
+
+Then I also found:
+ http://www.bioconductor.org/data/downloading.html
+
+I'll update my docs tomorrow after another test (or your
+confirmation).
+
+Markus
+
+On Thu, Mar 17, 2005 at 01:54:10PM -0700, Craig Aumann wrote:
+> 
+> Well I'm curious to know what R on Windows actually does with the
+> following commands:
+> 
+> install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","Rdbi")
+> install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","RdbiPgSQL")
+> 
+> Does it successully install the packages, or complain loudly?
+> 
+> 
+> On Thu, 2005-03-17 at 13:30, Markus Neteler wrote:
+> > Hi 
+> > 
+> > (for me) it's strange that Rdbi doesn't appear on CRAN but
+> > I was already notified once not to discuss Rdbi questions on 
+> > the R Mailing lists... (so better to ask here :-)
+> > 
+> > Anyway, I have compiled some usage instructions here:
+> >  http://grass.itc.it/statsgrass/r_and_dbms.html
+> > which should be more or less still valid. 
+> > 
+> > Maybe a bit helpful, also comparing speed of Rdbi and RODBC.
+> > However, it doesn't cover MS-Win installation...
+> > 
+> > Best
+> > 
+> >  Markus
+> > 
+> > On Thu, Mar 17, 2005 at 11:33:02AM -0700, Craig Aumann wrote:
+> > > See Teague's question below.  As a linux person, I don't know the answer
+> > > to this so am forward this message to the list.  
+> > > 
+> > > Having looked also at  http://www.bioconductor.org/ - which links off of
+> > > the main R web page, I see a Windows version of Rdbi (click "What is
+> > > Bioconductor"  and scroll down till you find the heading: "Database
+> > > Interaction").  I'm seeing a RDBI for Windows, but no windows version of
+> > > RdbiPgsql which is a problem! 
+> > > 
+> > > Have you tried sending a message to the R-Help list about this - how do
+> > > windows users access PGSQL databases from R?  (R website -> mailing
+> > > lists.)  
+> > > 
+> > > On the CRAN site, just searching databases, I saw the following:
+> > > DBI, RMySQL, RODBC, ROracle. Not sure if windows versions exist for any
+> > > of these.   
+> > > 
+> > > Also have a look at the links in
+> > > http://cran.r-project.org/doc/manuals/R-data.html .  
+> > > 
+> > > Afraid that's all I know about attaching to Databases on Windows - which
+> > > ain't much I'm afraid. 
+> > > 
+> > > Cheers!
+> > > Craig
+> > > 
+> > > 
+> > > 
+> > > 
+> > > 
+> > > 
+> > > On Thu, 2005-03-17 at 10:40, Teague O'Mara wrote:
+> > > > Hi Craig.  I came back across this email from awhile ago.  I'm attempting to
+> > > > look at cluster of points in GRASS and have been using the script that Michael
+> > > > Barton wrote, but I'd like to look at a few other things and it seems that using
+> > > > R and my GRASS data will be much easier. I have been using R for basic
+> > > > statistics, but am far from being fluent with it.  If you have a moment, can you
+> > > > help me out with some R issues?  I'm using an XP machine with R 2.0.1.
+> > > > 
+> > > > I'm having a problem downloading and installing Rdbi and RdbiPgSQL.  I can't
+> > > > find these two sets, or any SQL interface that will download from CRAN.  I was
+> > > > able to download these directly from sourcforge (tar.gz format), but I'm not
+> > > > sure what to do with them now.  Is it an issue with this version of R?
+> > > > 
+> > > > Thanks for any help you can offer.
+> > > > 
+> > > > Cheers--
+> > > > Teague
+> > > > 
+> > > > 
+> > > > 
+> > > > Teague O'Mara
+> > > > Department of Anthropology
+> > > > Arizona State University
+> > > > Box 872402
+> > > > Tempe, AZ 85287-2402
+> > > > 480.965.6213
+> > > > 
+> > > > 
+> > > > Quoting Craig Aumann <caumann@ualberta.ca>:
+> > > > 
+> > > > > In glancing at your script, I wondered why you didn't just import the
+> > > > > stuff into a statistical package like R and then use all the
+> > > > > clustering
+> > > > > routines it has.    See www.r-project.org
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > ## Key commands in R are:
+> > > > > 
+> > > > > ## Load the packages to access the database, in particular the PgSQL
+> > > > > ##
+> > > > > database
+> > > > > require(Rdbi)
+> > > > > require(RdbiPgSQL)
+> > > > > 
+> > > > > ## Load some clustering routines
+> > > > > 
+> > > > > require(cluster)
+> > > > > require(mclust)
+> > > > > 
+> > > > > 
+> > > > > ### Connect to the database and read in a points data set "jogis"
+> > > > > ## and read in the dataset "wells_att".  
+> > > > > 
+> > > > > 
+> > > > > conn <- dbConnect(PgSQL(), dbname="jogis", user="caumann")
+> > > > > wells <- dbReadTable(conn, "wells_att")
+> > > > > dbDisconnect(conn)
+> > > > > 
+> > > > > ## Now you can apply any clustering or kernel smoothing technique you
+> > > > > want to the dataset.  
+> > > > > 
+> > > > > If this is of any help, let me know and I can provide more details.  
+> > > > > Cheers!
+> > > > > Craig
+> > > > > 
+> > > > > 
+> > > > 
+> > > > 
+> > > > 
+> > > 
+> > > _______________________________________________
+> > > statsgrass mailing list
+> > > statsgrass@grass.itc.it
+> > > http://grass.itc.it/mailman/listinfo/statsgrass
+
+-- 
+Markus Neteler     <neteler itc it>       http://mpa.itc.it
+ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+
+From caumann at ualberta.ca  Thu Mar 17 17:28:07 2005
+From: caumann at ualberta.ca (Craig Aumann)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] Re: Connecting to databases on Windows using R
+In-Reply-To: <20050317221431.GA6413@thuille.itc.it>
+References: <1111081249.4239c1210779d@webmail.asu.edu>
+	 <1111084382.11398.28.camel@landscape>
+	 <20050317203022.GA3073@thuille.itc.it>
+	 <1111092850.11398.49.camel@landscape>
+	 <20050317221431.GA6413@thuille.itc.it>
+Message-ID: <1111098487.2887.0.camel@landscape>
+
+What the heck is install.packages2?? And where does one get it? 
+
+On Thu, 2005-03-17 at 15:14, Markus Neteler wrote:
+> OK, found something:
+> 
+> install.packages2("Rdbi")
+> install.packages2("RdbiPgSQL")
+> 
+> seems to do the trick (was looking at getBioC.R).
+> 
+> Then I also found:
+>  http://www.bioconductor.org/data/downloading.html
+> 
+> I'll update my docs tomorrow after another test (or your
+> confirmation).
+> 
+> Markus
+> 
+> On Thu, Mar 17, 2005 at 01:54:10PM -0700, Craig Aumann wrote:
+> > 
+> > Well I'm curious to know what R on Windows actually does with the
+> > following commands:
+> > 
+> > install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","Rdbi")
+> > install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","RdbiPgSQL")
+> > 
+> > Does it successully install the packages, or complain loudly?
+> > 
+> > 
+> > On Thu, 2005-03-17 at 13:30, Markus Neteler wrote:
+> > > Hi 
+> > > 
+> > > (for me) it's strange that Rdbi doesn't appear on CRAN but
+> > > I was already notified once not to discuss Rdbi questions on 
+> > > the R Mailing lists... (so better to ask here :-)
+> > > 
+> > > Anyway, I have compiled some usage instructions here:
+> > >  http://grass.itc.it/statsgrass/r_and_dbms.html
+> > > which should be more or less still valid. 
+> > > 
+> > > Maybe a bit helpful, also comparing speed of Rdbi and RODBC.
+> > > However, it doesn't cover MS-Win installation...
+> > > 
+> > > Best
+> > > 
+> > >  Markus
+> > > 
+> > > On Thu, Mar 17, 2005 at 11:33:02AM -0700, Craig Aumann wrote:
+> > > > See Teague's question below.  As a linux person, I don't know the answer
+> > > > to this so am forward this message to the list.  
+> > > > 
+> > > > Having looked also at  http://www.bioconductor.org/ - which links off of
+> > > > the main R web page, I see a Windows version of Rdbi (click "What is
+> > > > Bioconductor"  and scroll down till you find the heading: "Database
+> > > > Interaction").  I'm seeing a RDBI for Windows, but no windows version of
+> > > > RdbiPgsql which is a problem! 
+> > > > 
+> > > > Have you tried sending a message to the R-Help list about this - how do
+> > > > windows users access PGSQL databases from R?  (R website -> mailing
+> > > > lists.)  
+> > > > 
+> > > > On the CRAN site, just searching databases, I saw the following:
+> > > > DBI, RMySQL, RODBC, ROracle. Not sure if windows versions exist for any
+> > > > of these.   
+> > > > 
+> > > > Also have a look at the links in
+> > > > http://cran.r-project.org/doc/manuals/R-data.html .  
+> > > > 
+> > > > Afraid that's all I know about attaching to Databases on Windows - which
+> > > > ain't much I'm afraid. 
+> > > > 
+> > > > Cheers!
+> > > > Craig
+> > > > 
+> > > > 
+> > > > 
+> > > > 
+> > > > 
+> > > > 
+> > > > On Thu, 2005-03-17 at 10:40, Teague O'Mara wrote:
+> > > > > Hi Craig.  I came back across this email from awhile ago.  I'm attempting to
+> > > > > look at cluster of points in GRASS and have been using the script that Michael
+> > > > > Barton wrote, but I'd like to look at a few other things and it seems that using
+> > > > > R and my GRASS data will be much easier. I have been using R for basic
+> > > > > statistics, but am far from being fluent with it.  If you have a moment, can you
+> > > > > help me out with some R issues?  I'm using an XP machine with R 2.0.1.
+> > > > > 
+> > > > > I'm having a problem downloading and installing Rdbi and RdbiPgSQL.  I can't
+> > > > > find these two sets, or any SQL interface that will download from CRAN.  I was
+> > > > > able to download these directly from sourcforge (tar.gz format), but I'm not
+> > > > > sure what to do with them now.  Is it an issue with this version of R?
+> > > > > 
+> > > > > Thanks for any help you can offer.
+> > > > > 
+> > > > > Cheers--
+> > > > > Teague
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > Teague O'Mara
+> > > > > Department of Anthropology
+> > > > > Arizona State University
+> > > > > Box 872402
+> > > > > Tempe, AZ 85287-2402
+> > > > > 480.965.6213
+> > > > > 
+> > > > > 
+> > > > > Quoting Craig Aumann <caumann@ualberta.ca>:
+> > > > > 
+> > > > > > In glancing at your script, I wondered why you didn't just import the
+> > > > > > stuff into a statistical package like R and then use all the
+> > > > > > clustering
+> > > > > > routines it has.    See www.r-project.org
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > ## Key commands in R are:
+> > > > > > 
+> > > > > > ## Load the packages to access the database, in particular the PgSQL
+> > > > > > ##
+> > > > > > database
+> > > > > > require(Rdbi)
+> > > > > > require(RdbiPgSQL)
+> > > > > > 
+> > > > > > ## Load some clustering routines
+> > > > > > 
+> > > > > > require(cluster)
+> > > > > > require(mclust)
+> > > > > > 
+> > > > > > 
+> > > > > > ### Connect to the database and read in a points data set "jogis"
+> > > > > > ## and read in the dataset "wells_att".  
+> > > > > > 
+> > > > > > 
+> > > > > > conn <- dbConnect(PgSQL(), dbname="jogis", user="caumann")
+> > > > > > wells <- dbReadTable(conn, "wells_att")
+> > > > > > dbDisconnect(conn)
+> > > > > > 
+> > > > > > ## Now you can apply any clustering or kernel smoothing technique you
+> > > > > > want to the dataset.  
+> > > > > > 
+> > > > > > If this is of any help, let me know and I can provide more details.  
+> > > > > > Cheers!
+> > > > > > Craig
+> > > > > > 
+> > > > > > 
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > 
+> > > > _______________________________________________
+> > > > statsgrass mailing list
+> > > > statsgrass@grass.itc.it
+> > > > http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+From Teague.Omara at asu.edu  Thu Mar 17 17:59:12 2005
+From: Teague.Omara at asu.edu (Teague O'Mara)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] Re: Connecting to databases on Windows using R
+In-Reply-To: <1111098487.2887.0.camel@landscape>
+References: <1111081249.4239c1210779d@webmail.asu.edu>
+ <1111084382.11398.28.camel@landscape> <20050317203022.GA3073@thuille.itc.it>
+ <1111092850.11398.49.camel@landscape> <20050317221431.GA6413@thuille.itc.it>
+ <1111098487.2887.0.camel@landscape>
+Message-ID: <1111100352.423a0bc01d384@webmail.asu.edu>
+
+I followed the directions from bioconductor FAQ/Windows section and using
+getBioC was able to get Rbdi again, but RdbiPgSQL isn't appearing (or
+Rdbi.PgSQL).  It will open the site and load everything else that I want/need,
+but RdbiPgSQL isn't to be found.  
+
+R returns the message:
+Unable to locate the requested package(s) in any known repository
+
+getBioC("database") should be loading Rdbi and RdbiPgSQL, but when I try to call
+them up through R, Rdbi will work, but RdbiPgSQL isn't in the library.  
+
+Using install.packages2("RdbiPgSQL") gets the same response: it can't find the
+package.
+
+I also tried to install RMySQL, which is supposed to be supported for R on
+Windows, but isn't in the CRAN repository.
+
+Teague
+
+
+
+Quoting Craig Aumann <caumann@ualberta.ca>:
+
+> What the heck is install.packages2?? And where does one get it? 
+> 
+> On Thu, 2005-03-17 at 15:14, Markus Neteler wrote:
+> > OK, found something:
+> > 
+> > install.packages2("Rdbi")
+> > install.packages2("RdbiPgSQL")
+> > 
+> > seems to do the trick (was looking at getBioC.R).
+> > 
+> > Then I also found:
+> >  http://www.bioconductor.org/data/downloading.html
+> > 
+> > I'll update my docs tomorrow after another test (or your
+> > confirmation).
+> > 
+> > Markus
+> > 
+> > On Thu, Mar 17, 2005 at 01:54:10PM -0700, Craig Aumann wrote:
+> > > 
+> > > Well I'm curious to know what R on Windows actually does with the
+> > > following commands:
+> > > 
+> > >
+>
+install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","Rdbi")
+> > >
+>
+install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","RdbiPgSQL")
+> > > 
+> > > Does it successully install the packages, or complain loudly?
+> > > 
+> > > 
+> > > On Thu, 2005-03-17 at 13:30, Markus Neteler wrote:
+> > > > Hi 
+> > > > 
+> > > > (for me) it's strange that Rdbi doesn't appear on CRAN but
+> > > > I was already notified once not to discuss Rdbi questions on 
+> > > > the R Mailing lists... (so better to ask here :-)
+> > > > 
+> > > > Anyway, I have compiled some usage instructions here:
+> > > >  http://grass.itc.it/statsgrass/r_and_dbms.html
+> > > > which should be more or less still valid. 
+> > > > 
+> > > > Maybe a bit helpful, also comparing speed of Rdbi and RODBC.
+> > > > However, it doesn't cover MS-Win installation...
+> > > > 
+> > > > Best
+> > > > 
+> > > >  Markus
+> > > > 
+> > > > On Thu, Mar 17, 2005 at 11:33:02AM -0700, Craig Aumann wrote:
+> > > > > See Teague's question below.  As a linux person, I don't know
+> the answer
+> > > > > to this so am forward this message to the list.  
+> > > > > 
+> > > > > Having looked also at  http://www.bioconductor.org/ - which
+> links off of
+> > > > > the main R web page, I see a Windows version of Rdbi (click
+> "What is
+> > > > > Bioconductor"  and scroll down till you find the heading:
+> "Database
+> > > > > Interaction").  I'm seeing a RDBI for Windows, but no windows
+> version of
+> > > > > RdbiPgsql which is a problem! 
+> > > > > 
+> > > > > Have you tried sending a message to the R-Help list about this -
+> how do
+> > > > > windows users access PGSQL databases from R?  (R website ->
+> mailing
+> > > > > lists.)  
+> > > > > 
+> > > > > On the CRAN site, just searching databases, I saw the
+> following:
+> > > > > DBI, RMySQL, RODBC, ROracle. Not sure if windows versions exist
+> for any
+> > > > > of these.   
+> > > > > 
+> > > > > Also have a look at the links in
+> > > > > http://cran.r-project.org/doc/manuals/R-data.html .  
+> > > > > 
+> > > > > Afraid that's all I know about attaching to Databases on Windows
+> - which
+> > > > > ain't much I'm afraid. 
+> > > > > 
+> > > > > Cheers!
+> > > > > Craig
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > On Thu, 2005-03-17 at 10:40, Teague O'Mara wrote:
+> > > > > > Hi Craig.  I came back across this email from awhile ago.  I'm
+> attempting to
+> > > > > > look at cluster of points in GRASS and have been using the
+> script that Michael
+> > > > > > Barton wrote, but I'd like to look at a few other things and
+> it seems that using
+> > > > > > R and my GRASS data will be much easier. I have been using R
+> for basic
+> > > > > > statistics, but am far from being fluent with it.  If you have
+> a moment, can you
+> > > > > > help me out with some R issues?  I'm using an XP machine with
+> R 2.0.1.
+> > > > > > 
+> > > > > > I'm having a problem downloading and installing Rdbi and
+> RdbiPgSQL.  I can't
+> > > > > > find these two sets, or any SQL interface that will download
+> from CRAN.  I was
+> > > > > > able to download these directly from sourcforge (tar.gz
+> format), but I'm not
+> > > > > > sure what to do with them now.  Is it an issue with this
+> version of R?
+> > > > > > 
+> > > > > > Thanks for any help you can offer.
+> > > > > > 
+> > > > > > Cheers--
+> > > > > > Teague
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > Teague O'Mara
+> > > > > > Department of Anthropology
+> > > > > > Arizona State University
+> > > > > > Box 872402
+> > > > > > Tempe, AZ 85287-2402
+> > > > > > 480.965.6213
+> > > > > > 
+> > > > > > 
+> > > > > > Quoting Craig Aumann <caumann@ualberta.ca>:
+> > > > > > 
+> > > > > > > In glancing at your script, I wondered why you didn't just
+> import the
+> > > > > > > stuff into a statistical package like R and then use all
+> the
+> > > > > > > clustering
+> > > > > > > routines it has.    See www.r-project.org
+> > > > > > > 
+> > > > > > > 
+> > > > > > > 
+> > > > > > > 
+> > > > > > > ## Key commands in R are:
+> > > > > > > 
+> > > > > > > ## Load the packages to access the database, in particular
+> the PgSQL
+> > > > > > > ##
+> > > > > > > database
+> > > > > > > require(Rdbi)
+> > > > > > > require(RdbiPgSQL)
+> > > > > > > 
+> > > > > > > ## Load some clustering routines
+> > > > > > > 
+> > > > > > > require(cluster)
+> > > > > > > require(mclust)
+> > > > > > > 
+> > > > > > > 
+> > > > > > > ### Connect to the database and read in a points data set
+> "jogis"
+> > > > > > > ## and read in the dataset "wells_att".  
+> > > > > > > 
+> > > > > > > 
+> > > > > > > conn <- dbConnect(PgSQL(), dbname="jogis", user="caumann")
+> > > > > > > wells <- dbReadTable(conn, "wells_att")
+> > > > > > > dbDisconnect(conn)
+> > > > > > > 
+> > > > > > > ## Now you can apply any clustering or kernel smoothing
+> technique you
+> > > > > > > want to the dataset.  
+> > > > > > > 
+> > > > > > > If this is of any help, let me know and I can provide more
+> details.  
+> > > > > > > Cheers!
+> > > > > > > Craig
+> > > > > > > 
+> > > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > 
+> > > > > _______________________________________________
+> > > > > statsgrass mailing list
+> > > > > statsgrass@grass.itc.it
+> > > > > http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+
+
+Teague O'Mara
+Department of Anthropology
+Arizona State University
+Box 872402
+Tempe, AZ 85287-2402
+480.965.6213
+
+
+From Roger.Bivand at nhh.no  Fri Mar 18 03:01:04 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] Re: Connecting to databases on Windows using R
+In-Reply-To: <1111100352.423a0bc01d384@webmail.asu.edu>
+Message-ID: <Pine.LNX.4.44.0503180855350.5094-100000@reclus.nhh.no>
+
+On Thu, 17 Mar 2005, Teague O'Mara wrote:
+
+> I followed the directions from bioconductor FAQ/Windows section and using
+> getBioC was able to get Rbdi again, but RdbiPgSQL isn't appearing (or
+> Rdbi.PgSQL).  It will open the site and load everything else that I want/need,
+> but RdbiPgSQL isn't to be found.  
+> 
+> R returns the message:
+> Unable to locate the requested package(s) in any known repository
+> 
+> getBioC("database") should be loading Rdbi and RdbiPgSQL, but when I try to call
+> them up through R, Rdbi will work, but RdbiPgSQL isn't in the library.  
+> 
+> Using install.packages2("RdbiPgSQL") gets the same response: it can't find the
+> package.
+> 
+
+It is only available as a source package, which needs to be built from 
+source locally, linked against the local versions of the PostgreSQL 
+libraries. I think Markus is not using Windows.
+
+> I also tried to install RMySQL, which is supposed to be supported for R on
+> Windows, but isn't in the CRAN repository.
+> 
+
+Correct, but visit CRAN, for example:
+
+http://cran.r-project.org/bin/windows/contrib/2.0/
+
+and read the ReadMe:
+
+"...
+Although the packages
+  RMySQL, ROracle, and snow
+pass make check, it seems to be dangerous to distribute them:
+I do not have the software available these packages depend on.
+RMySQL is available at http://stat.bell-labs.com/RS-DBI/download,
+provided by its maintainer, David A. James."
+
+It's the same thing, you can't automate the building of package binaries 
+that depend on possibly varying external headers and libraries.
+
+Roger
+
+
+> Teague
+> 
+> 
+> 
+> Quoting Craig Aumann <caumann@ualberta.ca>:
+> 
+> > What the heck is install.packages2?? And where does one get it? 
+> > 
+> > On Thu, 2005-03-17 at 15:14, Markus Neteler wrote:
+> > > OK, found something:
+> > > 
+> > > install.packages2("Rdbi")
+> > > install.packages2("RdbiPgSQL")
+> > > 
+> > > seems to do the trick (was looking at getBioC.R).
+> > > 
+> > > Then I also found:
+> > >  http://www.bioconductor.org/data/downloading.html
+> > > 
+> > > I'll update my docs tomorrow after another test (or your
+> > > confirmation).
+> > > 
+> > > Markus
+> > > 
+> > > On Thu, Mar 17, 2005 at 01:54:10PM -0700, Craig Aumann wrote:
+> > > > 
+> > > > Well I'm curious to know what R on Windows actually does with the
+> > > > following commands:
+> > > > 
+> > > >
+> >
+> install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","Rdbi")
+> > > >
+> >
+> install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","RdbiPgSQL")
+> > > > 
+> > > > Does it successully install the packages, or complain loudly?
+> > > > 
+> > > > 
+> > > > On Thu, 2005-03-17 at 13:30, Markus Neteler wrote:
+> > > > > Hi 
+> > > > > 
+> > > > > (for me) it's strange that Rdbi doesn't appear on CRAN but
+> > > > > I was already notified once not to discuss Rdbi questions on 
+> > > > > the R Mailing lists... (so better to ask here :-)
+> > > > > 
+> > > > > Anyway, I have compiled some usage instructions here:
+> > > > >  http://grass.itc.it/statsgrass/r_and_dbms.html
+> > > > > which should be more or less still valid. 
+> > > > > 
+> > > > > Maybe a bit helpful, also comparing speed of Rdbi and RODBC.
+> > > > > However, it doesn't cover MS-Win installation...
+> > > > > 
+> > > > > Best
+> > > > > 
+> > > > >  Markus
+> > > > > 
+> > > > > On Thu, Mar 17, 2005 at 11:33:02AM -0700, Craig Aumann wrote:
+> > > > > > See Teague's question below.  As a linux person, I don't know
+> > the answer
+> > > > > > to this so am forward this message to the list.  
+> > > > > > 
+> > > > > > Having looked also at  http://www.bioconductor.org/ - which
+> > links off of
+> > > > > > the main R web page, I see a Windows version of Rdbi (click
+> > "What is
+> > > > > > Bioconductor"  and scroll down till you find the heading:
+> > "Database
+> > > > > > Interaction").  I'm seeing a RDBI for Windows, but no windows
+> > version of
+> > > > > > RdbiPgsql which is a problem! 
+> > > > > > 
+> > > > > > Have you tried sending a message to the R-Help list about this -
+> > how do
+> > > > > > windows users access PGSQL databases from R?  (R website ->
+> > mailing
+> > > > > > lists.)  
+> > > > > > 
+> > > > > > On the CRAN site, just searching databases, I saw the
+> > following:
+> > > > > > DBI, RMySQL, RODBC, ROracle. Not sure if windows versions exist
+> > for any
+> > > > > > of these.   
+> > > > > > 
+> > > > > > Also have a look at the links in
+> > > > > > http://cran.r-project.org/doc/manuals/R-data.html .  
+> > > > > > 
+> > > > > > Afraid that's all I know about attaching to Databases on Windows
+> > - which
+> > > > > > ain't much I'm afraid. 
+> > > > > > 
+> > > > > > Cheers!
+> > > > > > Craig
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > On Thu, 2005-03-17 at 10:40, Teague O'Mara wrote:
+> > > > > > > Hi Craig.  I came back across this email from awhile ago.  I'm
+> > attempting to
+> > > > > > > look at cluster of points in GRASS and have been using the
+> > script that Michael
+> > > > > > > Barton wrote, but I'd like to look at a few other things and
+> > it seems that using
+> > > > > > > R and my GRASS data will be much easier. I have been using R
+> > for basic
+> > > > > > > statistics, but am far from being fluent with it.  If you have
+> > a moment, can you
+> > > > > > > help me out with some R issues?  I'm using an XP machine with
+> > R 2.0.1.
+> > > > > > > 
+> > > > > > > I'm having a problem downloading and installing Rdbi and
+> > RdbiPgSQL.  I can't
+> > > > > > > find these two sets, or any SQL interface that will download
+> > from CRAN.  I was
+> > > > > > > able to download these directly from sourcforge (tar.gz
+> > format), but I'm not
+> > > > > > > sure what to do with them now.  Is it an issue with this
+> > version of R?
+> > > > > > > 
+> > > > > > > Thanks for any help you can offer.
+> > > > > > > 
+> > > > > > > Cheers--
+> > > > > > > Teague
+> > > > > > > 
+> > > > > > > 
+> > > > > > > 
+> > > > > > > Teague O'Mara
+> > > > > > > Department of Anthropology
+> > > > > > > Arizona State University
+> > > > > > > Box 872402
+> > > > > > > Tempe, AZ 85287-2402
+> > > > > > > 480.965.6213
+> > > > > > > 
+> > > > > > > 
+> > > > > > > Quoting Craig Aumann <caumann@ualberta.ca>:
+> > > > > > > 
+> > > > > > > > In glancing at your script, I wondered why you didn't just
+> > import the
+> > > > > > > > stuff into a statistical package like R and then use all
+> > the
+> > > > > > > > clustering
+> > > > > > > > routines it has.    See www.r-project.org
+> > > > > > > > 
+> > > > > > > > 
+> > > > > > > > 
+> > > > > > > > 
+> > > > > > > > ## Key commands in R are:
+> > > > > > > > 
+> > > > > > > > ## Load the packages to access the database, in particular
+> > the PgSQL
+> > > > > > > > ##
+> > > > > > > > database
+> > > > > > > > require(Rdbi)
+> > > > > > > > require(RdbiPgSQL)
+> > > > > > > > 
+> > > > > > > > ## Load some clustering routines
+> > > > > > > > 
+> > > > > > > > require(cluster)
+> > > > > > > > require(mclust)
+> > > > > > > > 
+> > > > > > > > 
+> > > > > > > > ### Connect to the database and read in a points data set
+> > "jogis"
+> > > > > > > > ## and read in the dataset "wells_att".  
+> > > > > > > > 
+> > > > > > > > 
+> > > > > > > > conn <- dbConnect(PgSQL(), dbname="jogis", user="caumann")
+> > > > > > > > wells <- dbReadTable(conn, "wells_att")
+> > > > > > > > dbDisconnect(conn)
+> > > > > > > > 
+> > > > > > > > ## Now you can apply any clustering or kernel smoothing
+> > technique you
+> > > > > > > > want to the dataset.  
+> > > > > > > > 
+> > > > > > > > If this is of any help, let me know and I can provide more
+> > details.  
+> > > > > > > > Cheers!
+> > > > > > > > Craig
+> > > > > > > > 
+> > > > > > > > 
+> > > > > > > 
+> > > > > > > 
+> > > > > > > 
+> > > > > > 
+> > > > > > _______________________________________________
+> > > > > > statsgrass mailing list
+> > > > > > statsgrass@grass.itc.it
+> > > > > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> 
+> 
+> 
+> Teague O'Mara
+> Department of Anthropology
+> Arizona State University
+> Box 872402
+> Tempe, AZ 85287-2402
+> 480.965.6213
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From neteler at itc.it  Fri Mar 18 04:16:58 2005
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] Re: Connecting to databases on Windows using R
+In-Reply-To: <1111098487.2887.0.camel@landscape>
+References: <1111081249.4239c1210779d@webmail.asu.edu> <1111084382.11398.28.camel@landscape> <20050317203022.GA3073@thuille.itc.it> <1111092850.11398.49.camel@landscape> <20050317221431.GA6413@thuille.itc.it> <1111098487.2887.0.camel@landscape>
+Message-ID: <20050318091658.GE8385@thuille.itc.it>
+
+On Thu, Mar 17, 2005 at 03:28:07PM -0700, Craig Aumann wrote:
+> What the heck is install.packages2?? And where does one get it? 
+ 
+Good question. Does it come with R 2.x? As written, I dicovered it
+in getBioC.R source code and the command did something in the
+direction I was interested in. Yes, Linux.
+
+Markus
+
+> On Thu, 2005-03-17 at 15:14, Markus Neteler wrote:
+> > OK, found something:
+> > 
+> > install.packages2("Rdbi")
+> > install.packages2("RdbiPgSQL")
+> > 
+> > seems to do the trick (was looking at getBioC.R).
+> > 
+> > Then I also found:
+> >  http://www.bioconductor.org/data/downloading.html
+> > 
+> > I'll update my docs tomorrow after another test (or your
+> > confirmation).
+> > 
+> > Markus
+> > 
+> > On Thu, Mar 17, 2005 at 01:54:10PM -0700, Craig Aumann wrote:
+> > > 
+> > > Well I'm curious to know what R on Windows actually does with the
+> > > following commands:
+> > > 
+> > > install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","Rdbi")
+> > > install.packages(contriburl="http://www.bioconductor.org/repository/devel/package/Source/","RdbiPgSQL")
+> > > 
+> > > Does it successully install the packages, or complain loudly?
+> > > 
+> > > 
+> > > On Thu, 2005-03-17 at 13:30, Markus Neteler wrote:
+> > > > Hi 
+> > > > 
+> > > > (for me) it's strange that Rdbi doesn't appear on CRAN but
+> > > > I was already notified once not to discuss Rdbi questions on 
+> > > > the R Mailing lists... (so better to ask here :-)
+> > > > 
+> > > > Anyway, I have compiled some usage instructions here:
+> > > >  http://grass.itc.it/statsgrass/r_and_dbms.html
+> > > > which should be more or less still valid. 
+> > > > 
+> > > > Maybe a bit helpful, also comparing speed of Rdbi and RODBC.
+> > > > However, it doesn't cover MS-Win installation...
+> > > > 
+> > > > Best
+> > > > 
+> > > >  Markus
+> > > > 
+> > > > On Thu, Mar 17, 2005 at 11:33:02AM -0700, Craig Aumann wrote:
+> > > > > See Teague's question below.  As a linux person, I don't know the answer
+> > > > > to this so am forward this message to the list.  
+> > > > > 
+> > > > > Having looked also at  http://www.bioconductor.org/ - which links off of
+> > > > > the main R web page, I see a Windows version of Rdbi (click "What is
+> > > > > Bioconductor"  and scroll down till you find the heading: "Database
+> > > > > Interaction").  I'm seeing a RDBI for Windows, but no windows version of
+> > > > > RdbiPgsql which is a problem! 
+> > > > > 
+> > > > > Have you tried sending a message to the R-Help list about this - how do
+> > > > > windows users access PGSQL databases from R?  (R website -> mailing
+> > > > > lists.)  
+> > > > > 
+> > > > > On the CRAN site, just searching databases, I saw the following:
+> > > > > DBI, RMySQL, RODBC, ROracle. Not sure if windows versions exist for any
+> > > > > of these.   
+> > > > > 
+> > > > > Also have a look at the links in
+> > > > > http://cran.r-project.org/doc/manuals/R-data.html .  
+> > > > > 
+> > > > > Afraid that's all I know about attaching to Databases on Windows - which
+> > > > > ain't much I'm afraid. 
+> > > > > 
+> > > > > Cheers!
+> > > > > Craig
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > On Thu, 2005-03-17 at 10:40, Teague O'Mara wrote:
+> > > > > > Hi Craig.  I came back across this email from awhile ago.  I'm attempting to
+> > > > > > look at cluster of points in GRASS and have been using the script that Michael
+> > > > > > Barton wrote, but I'd like to look at a few other things and it seems that using
+> > > > > > R and my GRASS data will be much easier. I have been using R for basic
+> > > > > > statistics, but am far from being fluent with it.  If you have a moment, can you
+> > > > > > help me out with some R issues?  I'm using an XP machine with R 2.0.1.
+> > > > > > 
+> > > > > > I'm having a problem downloading and installing Rdbi and RdbiPgSQL.  I can't
+> > > > > > find these two sets, or any SQL interface that will download from CRAN.  I was
+> > > > > > able to download these directly from sourcforge (tar.gz format), but I'm not
+> > > > > > sure what to do with them now.  Is it an issue with this version of R?
+> > > > > > 
+> > > > > > Thanks for any help you can offer.
+> > > > > > 
+> > > > > > Cheers--
+> > > > > > Teague
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > Teague O'Mara
+> > > > > > Department of Anthropology
+> > > > > > Arizona State University
+> > > > > > Box 872402
+> > > > > > Tempe, AZ 85287-2402
+> > > > > > 480.965.6213
+> > > > > > 
+> > > > > > 
+> > > > > > Quoting Craig Aumann <caumann@ualberta.ca>:
+> > > > > > 
+> > > > > > > In glancing at your script, I wondered why you didn't just import the
+> > > > > > > stuff into a statistical package like R and then use all the
+> > > > > > > clustering
+> > > > > > > routines it has.    See www.r-project.org
+> > > > > > > 
+> > > > > > > 
+> > > > > > > 
+> > > > > > > 
+> > > > > > > ## Key commands in R are:
+> > > > > > > 
+> > > > > > > ## Load the packages to access the database, in particular the PgSQL
+> > > > > > > ##
+> > > > > > > database
+> > > > > > > require(Rdbi)
+> > > > > > > require(RdbiPgSQL)
+> > > > > > > 
+> > > > > > > ## Load some clustering routines
+> > > > > > > 
+> > > > > > > require(cluster)
+> > > > > > > require(mclust)
+> > > > > > > 
+> > > > > > > 
+> > > > > > > ### Connect to the database and read in a points data set "jogis"
+> > > > > > > ## and read in the dataset "wells_att".  
+> > > > > > > 
+> > > > > > > 
+> > > > > > > conn <- dbConnect(PgSQL(), dbname="jogis", user="caumann")
+> > > > > > > wells <- dbReadTable(conn, "wells_att")
+> > > > > > > dbDisconnect(conn)
+> > > > > > > 
+> > > > > > > ## Now you can apply any clustering or kernel smoothing technique you
+> > > > > > > want to the dataset.  
+> > > > > > > 
+> > > > > > > If this is of any help, let me know and I can provide more details.  
+> > > > > > > Cheers!
+> > > > > > > Craig
+> > > > > > > 
+> > > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > 
+> > > > > _______________________________________________
+> > > > > statsgrass mailing list
+> > > > > statsgrass@grass.itc.it
+> > > > > http://grass.itc.it/mailman/listinfo/statsgrass
+
+-- 
+Markus Neteler     <neteler itc it>       http://mpa.itc.it
+ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+
+From twiens at interbaun.com  Tue Mar 22 00:39:06 2005
+From: twiens at interbaun.com (Trevor Wiens)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] spatial autocorrelation
+Message-ID: <20050321223906.1267f1d6.twiens@interbaun.com>
+
+I've reviewed some of the documentation about accounting for spatial autocorrelation in GRASS and came across an interesting statement in the McCauley Spatial Autocorrelation GRASS Tutorial. 
+
+"If data are measured on a nominal scale, then the join count statistic is used."
+
+I'm using logistic regression to model bird distributions. We reduced our count data to use / availability because there were insufficient data to model abundance. The data was transect gathered. I've avoided the use of a spatial autocorrelate and a trend surface, because this necessitates knowing where things are in order to predict them. If I understand the above statement, the use of Geary's C or Moran's I are thus inappropriate because they are interval / ratio based statistics.
+
+In the point counts along transects, how does one measure a joint count statistic?
+
+T
+-- 
+Trevor Wiens 
+twiens@interbaun.com
+
+The significant problems that we face cannot be solved at the same 
+level of thinking we were at when we created them. 
+(Albert Einstein)
+
+
+From Roger.Bivand at nhh.no  Tue Mar 22 02:38:36 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] spatial autocorrelation
+In-Reply-To: <20050321223906.1267f1d6.twiens@interbaun.com>
+Message-ID: <Pine.LNX.4.44.0503220817480.24244-100000@reclus.nhh.no>
+
+On Mon, 21 Mar 2005, Trevor Wiens wrote:
+
+> I've reviewed some of the documentation about accounting for spatial
+> autocorrelation in GRASS and came across an interesting statement in the
+> McCauley Spatial Autocorrelation GRASS Tutorial.
+> 
+> "If data are measured on a nominal scale, then the join count statistic
+> is used."
+> 
+> I'm using logistic regression to model bird distributions. We reduced
+> our count data to use / availability because there were insufficient
+> data to model abundance. The data was transect gathered. I've avoided
+> the use of a spatial autocorrelate and a trend surface, because this
+> necessitates knowing where things are in order to predict them. If I
+> understand the above statement, the use of Geary's C or Moran's I are
+> thus inappropriate because they are interval / ratio based statistics.
+> 
+> In the point counts along transects, how does one measure a joint count
+> statistic?
+
+A join count statistic treating left and right observations as neighbours 
+will work, but it might be worth looking at runs tests in some form, 
+because you are working on a line - in R, the rle() function gives the 
+runs. You are right that Moran's I is not appropriate. With the join count 
+test, the edge effects can be strong, but for you with a transect this 
+isn't a big issue.
+
+Roger 
+
+> 
+> T
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From timmichelsen at gmx-topmail.de  Tue Mar 22 05:45:45 2005
+From: timmichelsen at gmx-topmail.de (Tim Michelsen)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] isolines [solved]
+In-Reply-To: <Pine.LNX.4.44.0502280849060.21763-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0502280849060.21763-100000@reclus.nhh.no>
+Message-ID: <200503221145.45605.timmichelsen@gmx-topmail.de>
+
+> On Mon, 28 Feb 2005, Tim Michelsen wrote:
+> > > GRASS has limited support for TINs, you would have to extract values at
+> > > the nodes (v.in.ogr? -> vector points), interpolate to a raster map
+> > > using splines (v.surf.rst), then create vector isolines with r.contour.
+> >
+> > Do you know any R package that might be able to do the job?
+>
+> No direct route from points to contours without interpolation in R. The
+> nearest I can see would be to use GMT's pscontour, inputting an ASCII xyz
+> file, and dumping the contour line output to file.
+Finally I used contour() in R native to achive it.
+
+But does anyone know how to plot gradient arrows that demonstrate flow 
+streams?
+E. g. from the higher valued isoline to the lower valued.
+
+Thanks and greetings,
+Tim
+
+
+From hamish_nospam at yahoo.com  Tue Mar 22 19:02:05 2005
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] isolines [solved]
+In-Reply-To: <200503221145.45605.timmichelsen@gmx-topmail.de>
+References: <Pine.LNX.4.44.0502280849060.21763-100000@reclus.nhh.no>
+	<200503221145.45605.timmichelsen@gmx-topmail.de>
+Message-ID: <20050323120205.15ddfc30.hamish_nospam@yahoo.com>
+
+On Tue, 22 Mar 2005 11:45:45 +0100
+Tim Michelsen <timmichelsen@gmx-topmail.de> wrote:
+
+> 
+> > On Mon, 28 Feb 2005, Tim Michelsen wrote:
+> > > > GRASS has limited support for TINs, you would have to extract
+> > > > values at the nodes (v.in.ogr? -> vector points), interpolate to
+> > > > a raster map using splines (v.surf.rst), then create vector
+> > > > isolines with r.contour.
+> > >
+> > > Do you know any R package that might be able to do the job?
+> >
+> > No direct route from points to contours without interpolation in R.
+> > The nearest I can see would be to use GMT's pscontour, inputting an
+> > ASCII xyz file, and dumping the contour line output to file.
+> Finally I used contour() in R native to achive it.
+> 
+> But does anyone know how to plot gradient arrows that demonstrate flow
+> 
+> streams?
+> E. g. from the higher valued isoline to the lower valued.
+
+
+Rather crude, but from a raster surface in GRASS you can use
+d.rast.arrow.
+
+
+Hamish
+
+
+From poizot at cnam.fr  Fri Mar 25 03:10:09 2005
+From: poizot at cnam.fr (Poizot Emmanuel)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] isolines [solved]
+In-Reply-To: <200503221145.45605.timmichelsen@gmx-topmail.de>
+References: <Pine.LNX.4.44.0502280849060.21763-100000@reclus.nhh.no> <200503221145.45605.timmichelsen@gmx-topmail.de>
+Message-ID: <4243C761.8040604@cnam.fr>
+
+Tim Michelsen wrote:
+
+>>On Mon, 28 Feb 2005, Tim Michelsen wrote:
+>>    
+>>
+>>>>GRASS has limited support for TINs, you would have to extract values at
+>>>>the nodes (v.in.ogr? -> vector points), interpolate to a raster map
+>>>>using splines (v.surf.rst), then create vector isolines with r.contour.
+>>>>        
+>>>>
+>>>Do you know any R package that might be able to do the job?
+>>>      
+>>>
+>>No direct route from points to contours without interpolation in R. The
+>>nearest I can see would be to use GMT's pscontour, inputting an ASCII xyz
+>>file, and dumping the contour line output to file.
+>>    
+>>
+>Finally I used contour() in R native to achive it.
+>
+>But does anyone know how to plot gradient arrows that demonstrate flow 
+>streams?
+>E. g. from the higher valued isoline to the lower valued.
+>
+>Thanks and greetings,
+>Tim
+>
+>_______________________________________________
+>statsgrass mailing list
+>statsgrass@grass.itc.it
+>http://grass.itc.it/mailman/listinfo/statsgrass
+>
+>
+>  
+>
+Hi,
+
+you can use arrow.plot from fields package:
+
+arrow.plot(a1, a2, u = NA, v = NA, arrow.ex = 0.05,
+
+          xpd = TRUE, true.angle = FALSE, ...)
+
+Regards
+
+
+Emmanuel Poizot
+
+

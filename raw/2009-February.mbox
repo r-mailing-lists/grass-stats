@@ -1,0 +1,750 @@
+From aloboaleu at gmail.com  Mon Feb  9 09:07:14 2009
+From: aloboaleu at gmail.com (Agustin Lobo)
+Date: Mon Feb  9 09:07:20 2009
+Subject: [GRASS-stats] error rgdal library if used from within Grass plugin
+	(Windows)
+Message-ID: <49903892.5060306@gmail.com>
+
+Hi!
+
+The following error only occurs if the R (2.7.2) session is started
+from a GRASS shell opened through the QGIS GRASS plugin in windows.
+The error does not occur If R is started form its own icon
+or by double click in the .RData  object,  but then the spgrass6
+package would not find the GRASS environment.
+
+It also works in linux.
+The involved  commands  are:
+
+1. Start  QGIS
+2. Star GRASS plugin and open mapset
+3.  Open Grass Shell
+4.  Run R and execute require(spgrass6)
+
+>>>>
+>>>> Loading required package: spgrass6
+>>>> Loading required package: sp
+>>>> Loading required package: rgdal
+>>>> Error in fun(...) :
+>>>>         GDAL Error 1: Can't load requested DLL:
+>>>> C:\OSGeo4W\bin\gdalplugins\gdal_ECW_JP2ECW.dll
+>>>> 126: N?o foi poss?vel encontrar o m?dulo especificado.
+>>>>
+>>>>
+>>>>
+>>>> Error : .onLoad failed in 'loadNamespace' for 'rgdal'
+>>>> Erro: package 'rgdal' could not be loaded
+
+Any help appreciated.
+
+Agus
+
+-- 
+Dr. Agustin Lobo
+Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+LLuis Sole Sabaris s/n
+08028 Barcelona
+Spain
+Tel. 34 934095410
+Fax. 34 934110012
+email: Agustin.Lobo@ija.csic.es
+http://www.ija.csic.es/gt/obster
+
+
+From Roger.Bivand at nhh.no  Mon Feb  9 10:21:42 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon Feb  9 10:21:46 2009
+Subject: [GRASS-stats] error rgdal library if used from within Grass
+	plugin (Windows)
+In-Reply-To: <49903892.5060306@gmail.com>
+References: <49903892.5060306@gmail.com>
+Message-ID: <alpine.LRH.2.00.0902091621320.12628@reclus.nhh.no>
+
+On Mon, 9 Feb 2009, Agustin Lobo wrote:
+
+> Hi!
+>
+> The following error only occurs if the R (2.7.2) session is started
+> from a GRASS shell opened through the QGIS GRASS plugin in windows.
+> The error does not occur If R is started form its own icon
+> or by double click in the .RData  object,  but then the spgrass6
+> package would not find the GRASS environment.
+>
+> It also works in linux.
+> The involved  commands  are:
+>
+> 1. Start  QGIS
+> 2. Star GRASS plugin and open mapset
+> 3.  Open Grass Shell
+> 4.  Run R and execute require(spgrass6)
+>
+>>>>> 
+>>>>> Loading required package: spgrass6
+>>>>> Loading required package: sp
+>>>>> Loading required package: rgdal
+>>>>> Error in fun(...) :
+>>>>>         GDAL Error 1: Can't load requested DLL:
+>>>>> C:\OSGeo4W\bin\gdalplugins\gdal_ECW_JP2ECW.dll
+>>>>> 126: N?o foi poss?vel encontrar o m?dulo especificado.
+>>>>> 
+>>>>> 
+>>>>> 
+>>>>> Error : .onLoad failed in 'loadNamespace' for 'rgdal'
+>>>>> Erro: package 'rgdal' could not be loaded
+>
+
+Which rgdal binary from where? This really is a question for osgeo4w,
+which is bleeding edge at the moment. Are you using the early draft rgdal
+binary built against a specific osgeo4w version and available from my
+website? Can we settle this off-list until osgeo4w stabilises?
+
+Roger
+
+
+> Any help appreciated.
+>
+> Agus
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From neteler at osgeo.org  Tue Feb 10 18:37:14 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Tue Feb 10 18:37:15 2009
+Subject: [GRASS-stats] GRASS/R interface in Fedora 8
+In-Reply-To: <1234251603511-2301310.post@n2.nabble.com>
+References: <1234251603511-2301310.post@n2.nabble.com>
+Message-ID: <1234309034599-2305837.post@n2.nabble.com>
+
+
+
+
+EB wrote:
+> 
+> I installed Grass and R individually. How can I interface GRASS and R in
+> Fedora8
+> 
+
+See here for instructions:
+
+http://grass.osgeo.org/statsgrass/
+-> GRASS 6.x: GRASS6-R interface (installation: see here)
+     http://grass.osgeo.org/statsgrass/grass6_r_install.html
+
+Markus
+-- 
+View this message in context: http://n2.nabble.com/GRASS-R-interface-in-Fedora-8-tp2301310p2305837.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Agustin.Lobo at ija.csic.es  Thu Feb 12 12:58:58 2009
+From: Agustin.Lobo at ija.csic.es (Agustin Lobo)
+Date: Thu Feb 12 12:59:01 2009
+Subject: [GRASS-stats] r.mapcalc, median and NULL
+Message-ID: <27de757d0902120958n474f5b26j9db36d5aea65f6d6@mail.gmail.com>
+
+Hi!
+The grass doc is very clear on the behavior of r.mpacalc regarding NULL:
+"NULL-values in function arguments should result in NULL"
+
+I have to calculate the median of a set of 12 monthly layers, i.e.
+mean(l1,l2,l3,...l12)
+
+the problem is that some layers have some NULL values. I can
+replace NULL by, for example, 0, but this will be having a large effect
+in the value of the mean. Is not there any way of setting something
+like the na.rm=T of R?
+
+Alternatively, could I calculate (in GRASS) a raster of the number of
+months with NULL value present
+for each i, j position? In that way I could replace NULL by 0 but then add up
+the layers and divide by a raster that would be 12 in most cells, 11 in those
+having 1 NULL, 10 in those having 2 NULL etc
+
+Not sure if I explain myself clearly. Would be easily done in R, but
+the raster layers are large. Perhaps a problem for the R raster
+package?
+
+Agus
+
+
+-- 
+Dr. Agustin Lobo
+Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+Lluis Sole Sabaris s/n
+08028 Barcelona
+Spain
+Tel. 34 934095410
+Fax. 34 934110012
+e-mail Agustin.Lobo@ija.csic.es
+http://www.ija.csic.es/gt/obster
+From joel.pitt at gmail.com  Thu Feb 12 13:40:07 2009
+From: joel.pitt at gmail.com (Joel Pitt)
+Date: Thu Feb 12 13:40:10 2009
+Subject: [GRASS-stats] r.mapcalc, median and NULL
+In-Reply-To: <27de757d0902120958n474f5b26j9db36d5aea65f6d6@mail.gmail.com>
+References: <27de757d0902120958n474f5b26j9db36d5aea65f6d6@mail.gmail.com>
+Message-ID: <d7e54a6c0902121040t1069e5ah250f1971277c6896@mail.gmail.com>
+
+I think what you want is r.series
+
+On Fri, Feb 13, 2009 at 6:58 AM, Agustin Lobo <Agustin.Lobo@ija.csic.es> wrote:
+> Hi!
+> The grass doc is very clear on the behavior of r.mpacalc regarding NULL:
+> "NULL-values in function arguments should result in NULL"
+>
+> I have to calculate the median of a set of 12 monthly layers, i.e.
+> mean(l1,l2,l3,...l12)
+>
+> the problem is that some layers have some NULL values. I can
+> replace NULL by, for example, 0, but this will be having a large effect
+> in the value of the mean. Is not there any way of setting something
+> like the na.rm=T of R?
+>
+> Alternatively, could I calculate (in GRASS) a raster of the number of
+> months with NULL value present
+> for each i, j position? In that way I could replace NULL by 0 but then add up
+> the layers and divide by a raster that would be 12 in most cells, 11 in those
+> having 1 NULL, 10 in those having 2 NULL etc
+>
+> Not sure if I explain myself clearly. Would be easily done in R, but
+> the raster layers are large. Perhaps a problem for the R raster
+> package?
+>
+> Agus
+>
+>
+> --
+> Dr. Agustin Lobo
+> Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+> Lluis Sole Sabaris s/n
+> 08028 Barcelona
+> Spain
+> Tel. 34 934095410
+> Fax. 34 934110012
+> e-mail Agustin.Lobo@ija.csic.es
+> http://www.ija.csic.es/gt/obster
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+From neteler at osgeo.org  Thu Feb 12 15:37:54 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Thu Feb 12 15:37:57 2009
+Subject: [GRASS-stats] GRASS/R interface in Fedora 8
+In-Reply-To: <49927D76.70506@gmail.com>
+References: <1234251603511-2301310.post@n2.nabble.com>
+	<1234309034599-2305837.post@n2.nabble.com> <49927D76.70506@gmail.com>
+Message-ID: <86782b610902121237g35dcf4d8ke271e150827ac3f4@mail.gmail.com>
+
+On Wed, Feb 11, 2009 at 8:25 AM, Agustin Lobo <aloboaleu@gmail.com> wrote:
+> In relation to current problems with spgrass6() in a
+> windows osgeo4w QGIS-GRASS-R environment,
+> I'd like to make sure that using spgrass6()
+> actually requires having launched R from within a
+> GRASS terminal, otherwise the user gets the
+> "GRASS not running" error message. Am I wrong? This is an important
+> step in practice that is not mentioned in the documents
+> that you are refering to.
+
+Now mentioned!
+
+best
+Markus
+From nikos.alexandris at felis.uni-freiburg.de  Thu Feb 12 16:03:14 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Thu Feb 12 16:00:21 2009
+Subject: [GRASS-stats] How to calculate the Bhattacharyya distance/index?
+Message-ID: <1234472594.22716.59.camel@vertical>
+
+I need to calculate the Bhattacharyya distance (or better said the
+Bhatt. separability index) for unburned and burned area samples
+extracted from both prefire and postfire MODIS surface reflectance
+products.
+
+I haven't found any foss "tool" that will do this for me. So I am trying
+to code it in R.
+
+#==================================================
+# Calculate bhattacharayya distance in R
+
+# define new function
+dBh <- function(PRE, POST){
+
+        # column-wise mean and cov for PRE
+        m.pre <- colMeans(PRE)
+        c.pre <- cov(PRE)
+
+        # column-wise mean and cov for POST
+        m.post <- colMeans(POST)
+        c.post <- cov(POST)
+
+        # mean difference and its transpose matrix
+        m.diff <- as.matrix(m.pre - m.post)
+                m.diff.t <- t(m.diff)
+
+        # halfsum of covariances
+        C <- (c.pre + c.post)/2
+
+# the index
+index <- 0.125 * m.diff.t %*% C %*% m.diff + 0.5 *
+log10( det(C)/sqrt( det(c.pre)*det(c.post)))
+
+# print result
+index
+}
+#===================================================
+
+I am trying to use the code on two matrices with the following
+structure:
+
+# rows are the total number of pixels sampled
+# columns correspond to MODIS bands 1, 2, 5, 6 and 7
+> str(pre.bs6)
+
+ int [1:371, 1:5] 986 986 1086 1094 1094 1217 1217 1258 1391 1475 ...
+ - attr(*, "dimnames")=List of 2
+  ..$ : NULL
+  ..$ : chr [1:5] "prefire.band1" "prefire.band2" "prefire.band5"
+"prefire.band6" ...
+
+
+> str(post.bs6)
+
+ int [1:371, 1:5] 1007 1175 1007 1039 1146 1077 1078 1280 1249 1218 ...
+ - attr(*, "dimnames")=List of 2
+  ..$ : NULL
+  ..$ : chr [1:5] "postfire.band1" "postfire.band2" "postfire.band5"
+"postfire.band6" ...
+
+
+My problem is that (a) I have coded it falsely  or  (b) I don't
+understand "how to use the result given that the above instructions are
+correct. The result is *too* big, thus it will probably ground the
+Bhattacharayya coefficient to 0.
+
+I expect that prefire samples against postfire samples [ given the very
+good (or good) discrimination ability of those two "classes" in MODIS
+bands 2, 5, (6 and 7) ] will return some "great" Bhattacharayya
+coefficient. Or am I wrong?
+
+Any instructions on how to get it done?
+Thanks, Nikos
+
+---
+[1] http://en.wikipedia.org/wiki/Bhattacharyya_coefficient
+[2] http://en.wikipedia.org/wiki/Bhattacharya_coefficient
+
+From hamish_b at yahoo.com  Fri Feb 13 01:33:32 2009
+From: hamish_b at yahoo.com (Hamish)
+Date: Fri Feb 13 01:36:23 2009
+Subject: [GRASS-stats] r.mapcalc, median and NULL
+In-Reply-To: <27de757d0902120958n474f5b26j9db36d5aea65f6d6@mail.gmail.com>
+Message-ID: <137094.58827.qm@web110010.mail.gq1.yahoo.com>
+
+
+Agustin Lobo wrote:
+> The grass doc is very clear on the behavior of r.mpacalc regarding NULL:
+> "NULL-values in function arguments should result in NULL"
+> 
+> I have to calculate the median of a set of 12 monthly layers, i.e.
+> mean(l1,l2,l3,...l12)
+> 
+> the problem is that some layers have some NULL values. I can
+> replace NULL by, for example, 0, but this will be having a large effect
+> in the value of the mean. Is not there any way of setting something
+> like the na.rm=T of R?
+
+in matlab this is called nanmean(). they (& grass) don't let the default
+mean() do nice tricks like that automatically because it lets you silently
+fool yourself*. If "n" is not consistent across the mean-map the result
+is somewhat suspect. at minimum you'd also want a std dev map.
+* (but excel does let you do that ;)
+
+An idea from a smart friend of mine to fill in those gaps: if data is
+multi-year you can make a null-filled average for each month without
+introducing the temporal bias, then take a propagating-null average
+for the full year from those filled-monthly maps.
+
+see also the sea surface temperature hole-filling and 28-day rolling
+composite ideas here:
+  http://grass.osgeo.org/wiki/MODIS#Removing_holes
+
+
+> Alternatively, could I calculate (in GRASS) a raster of the number of
+> months with NULL value present for each i, j position?
+
+sure, you could do that with r.mapcalc's if( isnull() ).
+
+> In that way I could replace NULL by 0 but then add up the layers and
+> divide by a raster that would be 12 in most cells, 11 in those having
+> 1 NULL, 10 in those having 2 NULL etc
+
+yeah, but consider why those cells are NULL. Maybe this is from satellite
+surface temperature data and an area is often cloudy some time of year
+(eg monsoon) so satellite can't see the ground and no data. e.g. if winter
+months are often cloudy you get lots of NULLs in your winter month maps,
+and by skipping those you are biasing the end result to be warmer than it
+should be.
+
+
+Hamish
+
+
+
+      
+
+From Agustin.Lobo at ija.csic.es  Fri Feb 13 04:47:07 2009
+From: Agustin.Lobo at ija.csic.es (Agustin Lobo)
+Date: Fri Feb 13 04:55:16 2009
+Subject: [GRASS-stats] GRASS/R interface
+Message-ID: <27de757d0902130147j5880149dkcf44c51f802046a9@mail.gmail.com>
+
+Thanks, where?
+Also, there is no way the grass environment could be passed
+to spgrass6 if R had been started from a not-grass terminal?
+This would circumvent a current problem in the
+windows osgeo4w QGIS-GRASS-R environment.
+Agus
+
+2009/2/12 Markus Neteler <neteler@osgeo.org>:
+> On Wed, Feb 11, 2009 at 8:25 AM, Agustin Lobo <aloboaleu@gmail.com> wrote:
+>> In relation to current problems with spgrass6() in a
+>> windows osgeo4w QGIS-GRASS-R environment,
+>> I'd like to make sure that using spgrass6()
+>> actually requires having launched R from within a
+>> GRASS terminal, otherwise the user gets the
+>> "GRASS not running" error message. Am I wrong? This is an important
+>> step in practice that is not mentioned in the documents
+>> that you are refering to.
+>
+> Now mentioned!
+>
+> best
+> Markus
+>
+
+
+
+-- 
+Dr. Agustin Lobo
+Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+Lluis Sole Sabaris s/n
+08028 Barcelona
+Spain
+Tel. 34 934095410
+Fax. 34 934110012
+e-mail Agustin.Lobo@ija.csic.es
+http://www.ija.csic.es/gt/obster
+From Roger.Bivand at nhh.no  Fri Feb 13 05:00:07 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri Feb 13 05:00:10 2009
+Subject: [GRASS-stats] GRASS/R interface
+In-Reply-To: <27de757d0902130147j5880149dkcf44c51f802046a9@mail.gmail.com>
+References: <27de757d0902130147j5880149dkcf44c51f802046a9@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.0902131055570.9592@reclus.nhh.no>
+
+On Fri, 13 Feb 2009, Agustin Lobo wrote:
+
+> Thanks, where?
+> Also, there is no way the grass environment could be passed
+> to spgrass6 if R had been started from a not-grass terminal?
+> This would circumvent a current problem in the
+> windows osgeo4w QGIS-GRASS-R environment.
+
+I'm still unsure of the steps you are taking. Are you opening a GRASS 
+location/mapset - for example from GRASS tools under Plugins ->, then from 
+the tools choosing the console, and entering the command to start R there? 
+Could you put a sequence of screenshots describing your process on a site 
+somewhere - I have no problem with regular QGIS 0.11.0. Starting spgrass6 
+outside the GRASS environment will most likely not work well at all, 
+because nothing that it needs to run is available (progam PATH, data 
+location, etc.).
+
+Roger
+
+> Agus
+>
+> 2009/2/12 Markus Neteler <neteler@osgeo.org>:
+>> On Wed, Feb 11, 2009 at 8:25 AM, Agustin Lobo <aloboaleu@gmail.com> wrote:
+>>> In relation to current problems with spgrass6() in a
+>>> windows osgeo4w QGIS-GRASS-R environment,
+>>> I'd like to make sure that using spgrass6()
+>>> actually requires having launched R from within a
+>>> GRASS terminal, otherwise the user gets the
+>>> "GRASS not running" error message. Am I wrong? This is an important
+>>> step in practice that is not mentioned in the documents
+>>> that you are refering to.
+>>
+>> Now mentioned!
+>>
+>> best
+>> Markus
+>>
+>
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From Agustin.Lobo at ija.csic.es  Fri Feb 13 06:09:48 2009
+From: Agustin.Lobo at ija.csic.es (Agustin Lobo)
+Date: Fri Feb 13 06:09:51 2009
+Subject: [GRASS-stats] GRASS/R interface
+In-Reply-To: <alpine.LRH.2.00.0902131055570.9592@reclus.nhh.no>
+References: <27de757d0902130147j5880149dkcf44c51f802046a9@mail.gmail.com>
+	<alpine.LRH.2.00.0902131055570.9592@reclus.nhh.no>
+Message-ID: <27de757d0902130309j7b8a64e4qeccb4502713f2874@mail.gmail.com>
+
+Roger,
+
+I also recall not having problems with qgis 0.11, I think this is a
+osgeow4 problem.
+The sequence (in windows using osgeo4w qgis1.0 and grass) is:
+
+1. Start QGIS 1.0
+2. Open project
+2. Start GRASS plugin
+3. Open mapset
+4. Start GRASS tools
+5. Start Grass shell
+6. Start R from the shell
+7. Run spgrass6() : gdal error at loading rgdal (which, actually,
+would not be required for
+what we are doing). In our previous messages, we concluded that these
+errors are osgeo4w issues that we would not be able to solve.
+
+spgrass6() loads rgdal with no problems if R is not launched from the
+grass shell, but
+then "grass is not running". This is why I asked if the grass info
+could be passed to
+spgrass6() explicitly by the user as parameters. Another way to
+circumvent the problem would be just leaving the rgdal loading up to
+the user (i.e., spgrass6(rgdal=F) )
+
+Note that this is not an operational problem for me now, we've just
+dropped using
+windows for that project. The same sequence works fine in linux. This
+has actually been
+an advantage, as the student has switched from win to lin. (Many
+students don't because the current R default gui in windows is much
+better than in linux, but this is another story)
+
+Agus
+
+
+
+2009/2/13 Roger Bivand <Roger.Bivand@nhh.no>:
+> On Fri, 13 Feb 2009, Agustin Lobo wrote:
+>
+>> Thanks, where?
+>> Also, there is no way the grass environment could be passed
+>> to spgrass6 if R had been started from a not-grass terminal?
+>> This would circumvent a current problem in the
+>> windows osgeo4w QGIS-GRASS-R environment.
+>
+> I'm still unsure of the steps you are taking. Are you opening a GRASS
+> location/mapset - for example from GRASS tools under Plugins ->, then from
+> the tools choosing the console, and entering the command to start R there?
+> Could you put a sequence of screenshots describing your process on a site
+> somewhere - I have no problem with regular QGIS 0.11.0. Starting spgrass6
+> outside the GRASS environment will most likely not work well at all, because
+> nothing that it needs to run is available (progam PATH, data location,
+> etc.).
+>
+> Roger
+>
+>> Agus
+>>
+>> 2009/2/12 Markus Neteler <neteler@osgeo.org>:
+>>>
+>>> On Wed, Feb 11, 2009 at 8:25 AM, Agustin Lobo <aloboaleu@gmail.com>
+>>> wrote:
+>>>>
+>>>> In relation to current problems with spgrass6() in a
+>>>> windows osgeo4w QGIS-GRASS-R environment,
+>>>> I'd like to make sure that using spgrass6()
+>>>> actually requires having launched R from within a
+>>>> GRASS terminal, otherwise the user gets the
+>>>> "GRASS not running" error message. Am I wrong? This is an important
+>>>> step in practice that is not mentioned in the documents
+>>>> that you are refering to.
+>>>
+>>> Now mentioned!
+>>>
+>>> best
+>>> Markus
+>>>
+>>
+>>
+>>
+>>
+>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+>
+
+
+
+-- 
+Dr. Agustin Lobo
+Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+Lluis Sole Sabaris s/n
+08028 Barcelona
+Spain
+Tel. 34 934095410
+Fax. 34 934110012
+e-mail Agustin.Lobo@ija.csic.es
+http://www.ija.csic.es/gt/obster
+From neteler at osgeo.org  Fri Feb 13 10:38:30 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Fri Feb 13 10:38:37 2009
+Subject: [GRASS-stats] GRASS/R interface
+In-Reply-To: <27de757d0902130147j5880149dkcf44c51f802046a9@mail.gmail.com>
+References: <27de757d0902130147j5880149dkcf44c51f802046a9@mail.gmail.com>
+Message-ID: <86782b610902130738g71a1907dj6bc58329f051da95@mail.gmail.com>
+
+On Fri, Feb 13, 2009 at 10:47 AM, Agustin Lobo <Agustin.Lobo@ija.csic.es> wrote:
+> Thanks, where?
+
+In the micro instructions posted earlier:
+
+http://grass.osgeo.org/statsgrass/
+-> GRASS 6.x: GRASS6-R interface (installation: see here)
+    http://grass.osgeo.org/statsgrass/grass6_r_install.html
+
+Markus
+From Agustin.Lobo at ija.csic.es  Sat Feb 14 07:04:20 2009
+From: Agustin.Lobo at ija.csic.es (Agustin Lobo)
+Date: Sat Feb 14 07:04:25 2009
+Subject: [GRASS-stats] How to calculate the Bhattacharyya distance/index?
+In-Reply-To: <1234557484.8612.8.camel@vertical>
+References: <1234472594.22716.59.camel@vertical>	
+	<27de757d0902130055r622c059n58ce259a90cbad42@mail.gmail.com>
+	<1234557484.8612.8.camel@vertical>
+Message-ID: <4996B344.7040604@ija.csic.es>
+
+JM is bounded between 0 and 2.
+An example here:
+http://wija.ija.csic.es/gt/obster/ABSTRACTS/aloboIJRS2004.pdf
+
+Agus
+
+
+Nikos Alexandris wrote:
+> [...]
+> 
+> Agus,
+> 
+> thank you very much. Your code was very useful for me to understand a
+> mistake in "my" code [1] and (perhaps) use the "JM" [2] distance instead
+> of the Bhattacharayya (?). I am unsure.
+> 
+> Thanks, Nikos
+> 
+> 
+> [1] correct: "solve( ( covariance.1 + covariance.2 ) / 2 )",
+>     wrong: ( ( covariance.1 + covariance.2 ) / 2 )
+> 
+> 
+
+-- 
+Dr. Agustin Lobo
+Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+LLuis Sole Sabaris s/n
+08028 Barcelona
+Spain
+Tel. 34 934095410
+Fax. 34 934110012
+email: Agustin.Lobo@ija.csic.es
+http://www.ija.csic.es/gt/obster
+From nikos.alexandris at felis.uni-freiburg.de  Sat Feb 14 08:27:41 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Sat Feb 14 08:24:44 2009
+Subject: [GRASS-stats] How to calculate the Bhattacharyya distance/index?
+In-Reply-To: <4996B344.7040604@ija.csic.es>
+References: <1234472594.22716.59.camel@vertical>
+	<27de757d0902130055r622c059n58ce259a90cbad42@mail.gmail.com>
+	<1234557484.8612.8.camel@vertical>  <4996B344.7040604@ija.csic.es>
+Message-ID: <1234618061.6870.11.camel@vertical>
+
+Agus,
+
+I really appreciate your kind support. It's important to have some hand
+to push you a bit when you are stuck :-) I am convinced that you know
+that better than many other people.
+
+The problem is that I must use it wrong. I have 42 samples (number of
+pixel varies and is not really too big) extracted from:
+
+(1) a 3x3 matrix with columns MODIS prefire.band2, prefire.band 6 and
+prefire.band7
+
+(2) a 3x3 matrix with columns MODIS postfire.band2, postfire.band 6 and
+postfire.band 7
+
+When I feed these two as PRE and POST in my function JM <-
+function(PRE,POST) etc., I get a Bhattacharayya distance of -50.xxx and
+the JM becomes something like -7.xxx
+
+As you might have noticed I use colMeans() to calculate each bands mean.
+I really am stuck and can't seem to understand what I am doing wrong. Is
+it really that difficult? :-0
+
+Thank you in advance, of course even if you don't have the time to
+reply. Nikos
+
+From nikos.alexandris at felis.uni-freiburg.de  Sat Feb 14 09:01:12 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Sat Feb 14 08:58:13 2009
+Subject: [GRASS-stats] How to calculate the Bhattacharyya distance/index?
+In-Reply-To: <1234618061.6870.11.camel@vertical>
+References: <1234472594.22716.59.camel@vertical>
+	<27de757d0902130055r622c059n58ce259a90cbad42@mail.gmail.com>
+	<1234557484.8612.8.camel@vertical>  <4996B344.7040604@ija.csic.es>
+	<1234618061.6870.11.camel@vertical>
+Message-ID: <1234620072.8331.16.camel@vertical>
+
+On Sat, 2009-02-14 at 14:27 +0100, Nikos Alexandris wrote:
+[...]
+> I have 42 samples (number of
+> pixel varies and is not really too big) extracted from:
+> 
+> (1) a 3x3 matrix with columns MODIS prefire.band2, prefire.band 6 and
+> prefire.band7
+> 
+> (2) a 3x3 matrix with columns MODIS postfire.band2, postfire.band 6
+> and
+> postfire.band 7
+[...]
+
+Sorry, the above is unclear!
+
+I have 42 vector *boxes* (not all of them are rectangulars, manually
+digitised samples) which I used to extract pixels from MODIS, prefire
+and postfire (bands 2, 6 and 7 respectively).
+
+I hat put the prefire samples in a matrix "xxx rows by 3 columns" and
+the same for the postfire samples. Then I try to run the function.
+
+I see that my mistake is that I put them all-together!? I should compare
+them band-wise probably.
+
+Nikos
+

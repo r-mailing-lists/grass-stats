@@ -1,0 +1,104 @@
+From bcoop at neaq.org  Sat Sep 25 15:09:46 2004
+From: bcoop at neaq.org (Bob Cooper)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] rast.get and negative vectors
+Message-ID: <1096139386.20056.28.camel@lorien>
+
+Hi,
+I am having a problem with rast.get and negative length vectors. First,
+I didn't know I had any (?). The only thing I can think of is I am
+working on data from the southern hemisphere where I have negative
+values for latitude. Below is a summary of gmeta() and of the output
+from my rast.get command.
+
+summary(G)
+> Data from GRASS 5.0 LOCATION hectorsll with 87845 columns and 76288 rows;
+> Latitude-Longitude
+> The west-east range is: 172.5666, 173.3308,
+> and the south-north: -44.11695, -43.45325;
+> West-east cell sizes are 8.7e-06 units,
+> and south-north 8.7e-06 units.
+
+
+
+> > topo <- rast.get(G, rlist="topo")
+> Error in rast.get(G, rlist = "topo") : negative length vectors are not allowed
+> >
+
+Any hints would be greatly appreciated.
+
+Bob Cooper
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 189 bytes
+Desc: This is a digitally signed message part
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20040925/7a31057d/attachment.bin
+From Roger.Bivand at nhh.no  Sun Sep 26 09:39:53 2004
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] rast.get and negative vectors
+In-Reply-To: <1096139386.20056.28.camel@lorien>
+Message-ID: <Pine.LNX.4.44.0409261515580.3902-100000@reclus.nhh.no>
+
+On 25 Sep 2004, Bob Cooper wrote:
+
+> Hi,
+> I am having a problem with rast.get and negative length vectors. First,
+> I didn't know I had any (?). The only thing I can think of is I am
+> working on data from the southern hemisphere where I have negative
+> values for latitude. Below is a summary of gmeta() and of the output
+> from my rast.get command.
+> 
+> summary(G)
+> > Data from GRASS 5.0 LOCATION hectorsll with 87845 columns and 76288 rows;
+> > Latitude-Longitude
+> > The west-east range is: 172.5666, 173.3308,
+> > and the south-north: -44.11695, -43.45325;
+> > West-east cell sizes are 8.7e-06 units,
+> > and south-north 8.7e-06 units.
+> 
+
+Well, a first guess would be that
+
+> 87845*76288
+[1] 6701519360
+
+which would be too large anyway even on top-end 64-bit platforms (6.5G * 
+bytes per cell). As of now in rastget.c, all of GR_ncols, GR_nrows, and 
+ncells are declared as int, so cannot be larger than:
+
+> .Machine$integer.max
+[1] 2147483647
+
+(on my 32-bit machine)
+
+The problem will hit you when ncells is used to allocate memory, and where 
+ncells has overflowed maximum integer. Since it seems unlikely that 
+analysing multi-gigabyte rasters in R is sensible, changing the ints to 
+longs is not a high priority, although compiled on a 64-bit machine, int 
+may already allow higher values. Your cells seem to be 0.03 seconds 
+square, about 1 meter? Do you need this level of resolution for your 
+analysis, could you use g.region to choose a more manageable subset?
+
+> 
+> 
+> > > topo <- rast.get(G, rlist="topo")
+> > Error in rast.get(G, rlist = "topo") : negative length vectors are not allowed
+> > >
+> 
+> Any hints would be greatly appreciated.
+> 
+> Bob Cooper
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+

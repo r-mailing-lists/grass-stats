@@ -1,0 +1,37 @@
+From Roger.Bivand at nhh.no  Sun Apr 11 07:48:43 2021
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun, 11 Apr 2021 16:48:43 +0200
+Subject: [GRASS-stats] WinGRASS/rgrass7/rgdal issue
+Message-ID: <d32cf1d-ec9-2a52-bb3c-73c93d30d4ff@reclus.nhh.no>
+
+The issue raised at https://github.com/rsbivand/rgrass7/issues/27 is 
+difficult to address. On Windows, using the latest CRAN binary rgdal and 
+rgrass7 for reading the WinGRASS 7.8.5 location projection, g.proj looks 
+at PROJ_LIB, which is that defined when rgdal was loaded.
+
+The CRAN Windows binary rgdal package was built with the PROJ version 
+bundling EPSG 10.008, but WinGRASS 7.8.5 has EPSG 9.8.6. Because the 
+tables and field names changed EPSG 9 -> 10, WinGRASS g.proj fails to read 
+PROJ proj.db.
+
+If you see this, remotes::install.github("rsbivand/rgrass7") will help, 
+but it does not resolve the problem of RGDAL overwriting the PROJ_LIB 
+environment variable.
+
+Attempts will continue to find ways to leave the environment variable used 
+by g.proj alone in rgdal, as this ESPG 9/10 incompatibility will affect 
+interactions between builds of rgdal binaries used with other software 
+built using proj.db based on EPSG on the "other" side of the 
+incomatibility.
+
+Roger
+
+-- 
+Roger Bivand
+Emeritus Professor
+Department of Economics, Norwegian School of Economics,
+Postboks 3490 Ytre Sandviken, 5045 Bergen, Norway.
+e-mail: Roger.Bivand at nhh.no
+https://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+

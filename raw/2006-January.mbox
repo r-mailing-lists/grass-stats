@@ -1,0 +1,687 @@
+From KWYTHERS at umn.edu  Tue Jan 17 16:15:53 2006
+From: KWYTHERS at umn.edu (Kirk R. Wythers)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] grass 61/R kriging and splining
+Message-ID: <5B6C8A16-7A6A-479A-93FE-A8D534B7ABB6@umn.edu>
+
+I just read Roger and Markus's paper "Open Source geocomputation:  
+using the R data analysis language integrated with GRASS GIS and  
+PostgreSQL data base systems"  with great interest, as I was looking  
+for kriging and splining examples with GRASS and R, and I have just  
+moved my databases over to  PostgreSQL.
+
+There was a reference to document updates in the introduction that  
+may be available on the Hannover site (however I was not able to find  
+anything). Are there any more recent versions of this paper  
+(particularly that address GRASS 6.1 differences). As an alternative,  
+is anyone aware of other kriging or splining examples (I have read  
+the GRASS / R interface article that appeared in vol. 3 of the GRASS  
+news letter) ?
+
+If not, that's ok... I'll continue to muddle forward. But if there  
+are some additional documented kriging and splining examples  
+performed on GRASS 6.1, I would love to see them.
+
+As always, thanks for the thoughts.
+
+Kirk
+
+
+Kirk R. Wythers, Research Fellow
+Dept. of Forest Resources
+University of Minnesota
+1530 Cleveland Ave N
+Saint Paul, MN 55108
+tel: 612.625.2261
+email: kwythers@umn.edu
+
+
+
+
+
+From kwythers at umn.edu  Thu Jan 19 14:37:14 2006
+From: kwythers at umn.edu (Kirk R. Wythers)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] GDAL Error
+Message-ID: <72F6C738-FFF3-472F-A129-F89A3DEC5DCC@umn.edu>
+
+Hey all,
+
+I'm walking through Roger's examples in his vol 3 article. I'm  
+getting a gdal error on the step:
+
+ > gmeta6 <-gmeta6()
+ > fname <- paste(gmeta6$GISDBASE, gmeta6$LOCATION_NAME,
++ "PERMANENT", "cellhd", "soils.ph",
++ sep = "/")
+ > soilsph_GDAL <- read.GDAL(fname)
+Error in .local(.Object, ...) :
+         GDAL Error 4: `/Volumes/disk1/home1/kwythers/grassdata/ 
+spearfish60/PERMANENT/cellhd/soils.ph' not recognised as a supported  
+file format.
+
+All the library loads seems to go smoothly but I was wondering if the  
+fact that I'm on grass61.cvs is a problem? I'm using the spearfish6  
+mapset.
+
+
+From Roger.Bivand at nhh.no  Thu Jan 19 16:06:49 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: [R-sig-Geo] file format error with R and GRASS61
+In-Reply-To: <4D8D52F7-00A7-4652-826F-E28535A14675@umn.edu>
+Message-ID: <Pine.LNX.4.44.0601192202030.32454-100000@reclus.nhh.no>
+
+On Thu, 19 Jan 2006, Kirk R. Wythers wrote:
+
+> I am trying to figure out an GDAL error message about grass file not  
+> being a supported format. The message is:
+> 
+>  > gmeta6 <- gmeta6()
+>  > fname <- paste(gmeta6$GISDBASE, gmeta6$LOCATION_NAME,
+> + "PERMANENT", "cellhd", "soils.ph",
+> + sep="/")
+>  > soilsph_GDAL <- read.GDAL(fname)
+> Error in .local(.Object, ...) :
+>          GDAL Error 4: `~/grassdata/spearfish60/PERMANENT/cellhd/ 
+> soils.ph' not recognised as a supported file format.
+
+If r.out.gdal works for you on that file, then we have a problem. However, 
+I think that your GRASS GDAL plugin is not present, so GDAL doesn't know 
+how to read GRASS rasters natively. What does 
+
+> getGDALDriverNames()
+
+say within R after loading the rgdal package, or equivalently
+
+$ gdalinfo --formats
+
+from the shell prompt? If you see "GRASS" there, we have a problem, if 
+not, please make sure the GDAL GRASS plugin is installed and working (one 
+does this *after* installing GRASS.
+
+Roger
+
+> 
+> This is on grass61 and R 2.2.1 using the spearfish60 location
+> 
+> Thanks in advance for any ideas
+> 
+> _______________________________________________
+> R-sig-Geo mailing list
+> R-sig-Geo@stat.math.ethz.ch
+> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From kwythers at umn.edu  Thu Jan 19 16:22:03 2006
+From: kwythers at umn.edu (Kirk R. Wythers)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: [R-sig-Geo] file format error with R and GRASS61
+In-Reply-To: <Pine.LNX.4.44.0601192202030.32454-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0601192202030.32454-100000@reclus.nhh.no>
+Message-ID: <FF9D5077-27F7-4D04-BD05-B42DC3B4DC98@umn.edu>
+
+On Jan 19, 2006, at 3:06 PM, Roger Bivand wrote:
+
+> On Thu, 19 Jan 2006, Kirk R. Wythers wrote:
+>
+>> I am trying to figure out an GDAL error message about grass file not
+>> being a supported format. The message is:
+>>
+>>> gmeta6 <- gmeta6()
+>>> fname <- paste(gmeta6$GISDBASE, gmeta6$LOCATION_NAME,
+>> + "PERMANENT", "cellhd", "soils.ph",
+>> + sep="/")
+>>> soilsph_GDAL <- read.GDAL(fname)
+>> Error in .local(.Object, ...) :
+>>          GDAL Error 4: `~/grassdata/spearfish60/PERMANENT/cellhd/
+>> soils.ph' not recognised as a supported file format.
+>
+> If r.out.gdal works for you on that file, then we have a problem.  
+> However,
+> I think that your GRASS GDAL plugin is not present, so GDAL doesn't  
+> know
+> how to read GRASS rasters natively. What does
+>
+>> getGDALDriverNames()
+
+ > getGDALDriverNames()
+[1] "VRT"       "GTiff"     "NITF"      "HFA"       "SAR_CEOS"  "CEOS"
+[7] "ELAS"      "AIG"       "AAIGrid"   "SDTS"      "OGDI"      "DTED"
+[13] "PNG"       "JPEG"      "MEM"       "JDEM"      "GIF"       "ESAT"
+[19] "BSB"       "XPM"       "BMP"       "AirSAR"    "RS2"        
+"PCIDSK"
+[25] "PCRaster"  "ILWIS"     "RIK"       "GMT"       "netCDF"    "HDF4"
+[31] "HDF4Image" "PNM"       "DOQ1"      "DOQ2"      "ENVI"      "EHdr"
+[37] "PAux"      "MFF"       "MFF2"      "FujiBAS"   "GSC"       "FAST"
+[43] "BT"        "LAN"       "CPG"       "IDA"       "NDF"        
+"JPEG2000"
+[49] "L1B"       "FIT"       "RMF"       "USGSDEM"   "GXF"
+ >
+
+
+>
+> say within R after loading the rgdal package, or equivalently
+>
+> $ gdalinfo --formats
+
+the same
+
+>
+> from the shell prompt? If you see "GRASS" there, we have a problem, if
+> not, please make sure the GDAL GRASS plugin
+
+I thought I had this installed. You are talking about Frank's 1.3.1  
+version gdal, right?
+
+I used the config options:
+
+./configure --mandir=/usr/local/share/man --without-python --with- 
+threads --with
+-static-proj4=/usr/local --with-libtiff=/usr/local --with-geotiff=/ 
+usr/local --w
+ith-jpeg=/usr/local --with-gif=/usr/local --with-png=/usr/local -- 
+with-jasper=/u
+sr/local --with-pg=/usr/local/pgsql/bin/pg_config --with-mysql=/usr/ 
+local/mysql/
+bin/mysql_config --with-netcdf=/Volumes/disk1/home1/kwythers/src/ 
+netcdf-3.6.0-p1
+--with-hdf4=/Volumes/disk1/home1/kwythers/src/HDF4.2r1/hdf4-darwin - 
+with-ogdi=/
+usr/local --with-geos=/usr/local/bin/geos-config --with-grass=/usr/ 
+local/grass-6
+.1.cvs
+
+
+
+> is installed and working (one
+> does this *after* installing GRASS.
+>
+> Roger
+>
+>>
+>> This is on grass61 and R 2.2.1 using the spearfish60 location
+>>
+>> Thanks in advance for any ideas
+>>
+>> _______________________________________________
+>> R-sig-Geo mailing list
+>> R-sig-Geo@stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+>>
+>
+> -- 
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian  
+> School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+
+
+From kwythers at umn.edu  Thu Jan 19 16:30:40 2006
+From: kwythers at umn.edu (Kirk R. Wythers)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: [R-sig-Geo] file format error with R and GRASS61
+In-Reply-To: <Pine.LNX.4.44.0601192202030.32454-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0601192202030.32454-100000@reclus.nhh.no>
+Message-ID: <6C0CEA71-B01C-48EA-BEDA-5CC1194EA946@umn.edu>
+
+On Jan 19, 2006, at 3:06 PM, Roger Bivand wrote:
+
+> On Thu, 19 Jan 2006, Kirk R. Wythers wrote:
+>
+>> I am trying to figure out an GDAL error message about grass file not
+>> being a supported format. The message is:
+>>
+>>> gmeta6 <- gmeta6()
+>>> fname <- paste(gmeta6$GISDBASE, gmeta6$LOCATION_NAME,
+>> + "PERMANENT", "cellhd", "soils.ph",
+>> + sep="/")
+>>> soilsph_GDAL <- read.GDAL(fname)
+>> Error in .local(.Object, ...) :
+>>          GDAL Error 4: `~/grassdata/spearfish60/PERMANENT/cellhd/
+>> soils.ph' not recognised as a supported file format.
+>
+> If r.out.gdal works for you on that file, then we have a problem.  
+> However,
+> I think that your GRASS GDAL plugin is not present, so GDAL doesn't  
+> know
+> how to read GRASS rasters natively. What does
+>
+>> getGDALDriverNames()
+>
+> say within R after loading the rgdal package, or equivalently
+>
+> $ gdalinfo --formats
+>
+> from the shell prompt? If you see "GRASS" there, we have a problem, if
+> not, please make sure the GDAL GRASS plugin is installed and  
+> working (one
+> does this *after* installing GRASS.
+
+That was it Roger. Thanks. I was sure that I had the plugin  
+installed, but after rebuilding gdal-withgrass and reinstalling,  
+read.GDAL ran just fine.
+
+
+>
+> Roger
+>
+>>
+>> This is on grass61 and R 2.2.1 using the spearfish60 location
+>>
+>> Thanks in advance for any ideas
+>>
+>> _______________________________________________
+>> R-sig-Geo mailing list
+>> R-sig-Geo@stat.math.ethz.ch
+>> https://stat.ethz.ch/mailman/listinfo/r-sig-geo
+>>
+>
+> -- 
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian  
+> School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+
+
+From kwythers at umn.edu  Fri Jan 20 13:41:25 2006
+From: kwythers at umn.edu (Kirk R. Wythers)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: [R-sig-Geo] file format error with R and GRASS61
+In-Reply-To: <99D33528-8E78-41F5-8861-5FA336A2E0BA@carleton.ca>
+References: <Pine.LNX.4.44.0601192202030.32454-100000@reclus.nhh.no> <6C0CEA71-B01C-48EA-BEDA-5CC1194EA946@umn.edu> <99D33528-8E78-41F5-8861-5FA336A2E0BA@carleton.ca>
+Message-ID: <0B00B644-9694-4251-BA4D-B70FDC1E006D@umn.edu>
+
+On Jan 20, 2006, at 12:13 PM, Scott Mitchell wrote:
+
+>
+> Great to hear that you got it working!
+
+Thanks Scott. I appreciate your desire to get the solution  
+documented. Here are the details...
+
+>
+> The procedure Roger was referring to for making everyone play  
+> correctly is slightly different, however, assuming I'm interpreting  
+> your message correctly.  So to make sure it's archived in the  
+> mailing list, here's what I've gathered is now the way to go (same  
+> idea for getting GRASS support fully functional in QGIS, by the way):
+>
+> - build and install GDAL WITHOUT GRASS support
+
+gdal-1.3.1
+
+./configure
+	--mandir=/usr/local/share/man
+	--without-python
+	--with-threads
+	--with-static-proj4=/usr/local
+	--with-libtiff=/usr/local
+	--with-geotiff=/usr/local
+	--with-jpeg=/usr/local
+	--with-gif=/usr/local
+	--with-png=/usr/local
+	--with-jasper=/usr/local
+	--with-pg=/usr/local/pgsql/bin/pg_config
+	--with-mysql=/usr/local/mysql/bin/mysql_config
+	--with-netcdf=/Volumes/disk1/home1/kwythers/src/netcdf-3.6.0-p1
+	--with-hdf4=/Volumes/disk1/home1/kwythers/src/HDF4.2r1/hdf4-darwin
+	--with-ogdi=/usr/local
+	--with-geos=/usr/local/bin/geos-config
+
+
+> - build and install GRASS
+
+grass-6.1.cvs
+
+./configure\
+     --enable-64bit\
+     --enable-sysv\
+     --with-includes=/usr/X11R6/include\
+     --with-libs=/usr/X11R6/lib\
+     --with-freetype\
+     --with-tcltk-includes=/usr/X11R6/include\
+     --with-tcltk-libs=/usr/X11R6/lib\
+     --with-gdal=/usr/local/bin/gdal-config\
+     --with-proj\
+     --with-x\
+     --with-cxx\
+     --with-glw\
+     --with-motif\
+     --without-odbc\
+     --enable-shared\
+     --with-postgres-includes=/usr/local/pgsql/include\
+     --with-postgres-libs=/usr/local/pgsql/lib\
+     --with-mysql\
+     --with-mysql-includes=/usr/local/mysql/include\
+     --with-mysql-libs=/usr/local/mysql/lib\
+     --with-freetype-includes=/usr/local/include/freetype2
+
+
+> - download the separate gdal-grass plugin that is available at the  
+> gdal site
+> (as of this writing, that's http://www.gdal.org/dl/gdal- 
+> grass-1.3.1.1.tar.gz )
+
+In my case I just reconfigured and re-installed gdal-1.3.1 with:
+
+./configure
+	--mandir=/usr/local/share/man
+	--without-python
+	--with-threads
+	--with-static-proj4=/usr/local
+	--with-libtiff=/usr/local
+	--with-geotiff=/usr/local
+	--with-jpeg=/usr/local
+	--with-gif=/usr/local
+	--with-png=/usr/local
+	--with-jasper=/usr/local
+	--with-pg=/usr/local/pgsql/bin/pg_config
+	--with-mysql=/usr/local/mysql/bin/mysql_config
+	--with-netcdf=/Volumes/disk1/home1/kwythers/src/netcdf-3.6.0-p1
+	--with-hdf4=/Volumes/disk1/home1/kwythers/src/HDF4.2r1/hdf4-darwin
+	--with-ogdi=/usr/local
+	--with-geos=/usr/local/bin/geos-config
+	--with-grass=/usr/local/grass-6.1.cvs
+
+
+> and compile that, and the make install process in that directory  
+> will insert just
+> the GRASS driver into your existing GDAL tree
+
+Perhaps this approach would be more efficient. I assume that http:// 
+www.gdal.org/dl/gdal-grass-1.3.1.1.tar.gz  does not rebuild and  
+reinstall whole gdal application?
+
+>
+> Then GDAL called from 3rd applications, e.g. R or QGIS, should be  
+> able to read GRASS rasters.
+>
+> I don't know/can't remember whether this essentially does the same  
+> thing as what you did
+> (i.e. I'm assuming you've recompiled the full GDAL after GRASS with  
+> GRASS functionality turned on), or if there's a functional  
+> difference.  In any case, it's simpler, and is designed
+> to avoid circular dependency problems.
+
+I agree your approach would be simpler. Although since have not had  
+any trouble getting qgis builds to read grass vectors or rasters, it  
+would seem that both approaches work.
+
+
+>
+> Cheers,
+> Scott Mitchell
+>
+> ----
+> Scott Mitchell, Assistant Professor, Carleton University
+> Department of Geography & Environmental Studies, Loeb A209
+> Mailing:  Loeb B349, 1125 Colonel By Dr., Ottawa, ON K1S 5B6 Canada
+> 1-613-520-2600 x2695 Fax: 613-520-4301 Scott_Mitchell@carleton.ca
+>
+>
+
+
+From neteler at itc.it  Mon Jan 23 07:42:54 2006
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: [R-sig-Geo] file format error with R and GRASS61
+In-Reply-To: <99D33528-8E78-41F5-8861-5FA336A2E0BA@carleton.ca>
+References: <Pine.LNX.4.44.0601192202030.32454-100000@reclus.nhh.no> <6C0CEA71-B01C-48EA-BEDA-5CC1194EA946@umn.edu> <99D33528-8E78-41F5-8861-5FA336A2E0BA@carleton.ca>
+Message-ID: <20060123124254.GC9264@bartok.itc.it>
+
+On Fri, Jan 20, 2006 at 01:13:30PM -0500, Scott Mitchell wrote:
+...
+> So to make sure it's archived in the mailing  
+> list, here's what I've gathered is now the way to go (same idea for  
+> getting GRASS support fully functional in QGIS, by the way):
+> 
+> - build and install GDAL WITHOUT GRASS support
+> - build and install GRASS
+> - download the separate gdal-grass plugin that is available at the  
+>  gdal site
+> (as of this writing, that's http://www.gdal.org/dl/gdal-grass-1.3.1.1.tar.gz )
+> and compile that, and the make install process in that directory will  
+> insert just the GRASS driver into your existing GDAL tree
+
+This is documented in the GRASS Wiki:
+
+http://grass.gdf-hannover.de/twiki/bin/view/GRASS/WebHome
+->  How to compile/install GRASS and QGIS with GDAL/OGR Plugin
+    http://grass.gdf-hannover.de/twiki/bin/view/GRASS/GrassQgisGdalOgrPlugin
+
+
+Best
+ Markus
+
+
+From poizot at cnam.fr  Fri Jan 27 05:58:12 2006
+From: poizot at cnam.fr (Poizot Emmanuel)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] v.in.ascii
+Message-ID: <43D9FCC4.1060409@cnam.fr>
+
+Hi all,
+I try to import an ascii file which is, I think, very simple:
+x,y,z
+276.0447173760,10.1098557284,1030.7103
+276.0445919261,10.1095942026,1035.0991
+276.0445111456,10.1096214593,1030.4924
+276.0436962475,10.1098881088,960.6209
+276.0435313979,10.1099409839,943.3556
+276.0446891003,10.1092347607,1024.1261
+276.0445275703,10.1092891300,1014.5844
+276.0442016736,10.1093973778,991.0519
+276.0437099357,10.1095639911,964.0923
+276.0425563156,10.1099390665,857.2236
+276.0428807613,10.1095049230,881.3990
+276.0426860979,10.1092362057,846.4199
+276.0426027050,10.1092605084,831.0676
+276.0424370843,10.1093135629,813.6218
+276.0420994045,10.1094279057,793.6904
+276.0417642082,10.1095263714,736.5096
+276.0415915260,10.1095740807,704.4528
+276.0415049539,10.1095962648,684.4412
+276.0410706576,10.1097332895,635.3551
+276.0445780653,10.1082764653,974.5306
+276.0441651294,10.1084116702,938.8713
+276.0439161533,10.1084955855,923.2671
+276.0438312499,10.1085257975,923.2946
+276.0435768728,10.1086119170,916.9979
+276.0428361340,10.1088463903,840.5004
+276.0426783175,10.1088861157,796.0822
+etc.........
+
+in total arround 869000 lines of x,y,z values.
+I tried this:
+v.in.ascii input=theinputfile.txt output=theoutput fs=',' -z z=3
+but didn't work. I've got the message:
+Maximum input row length: 39
+Maximum number of columns: 3
+Minimum number of columns: 3
+ERROR: x column is not of number type
+That's not verbose enought for me to find what's wrong.
+Does anybody have an idear ?
+Thanks
+
+-- 
+Cordialement
+
+------------------------------------------------
+Emmanuel Poizot
+Cnam/Intechmer
+B.P. 324
+50103 Cherbourg Cedex
+
+Phone (Direct) : (00 33)(0)233887342
+Fax : (00 33)(0)233887339
+------------------------------------------------
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: poizot.32156DEFANGED-vcf
+Type: application/defanged
+Size: 316 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20060127/0a776dcb/poizot.bin
+From neteler at itc.it  Fri Jan 27 06:27:31 2006
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] v.in.ascii
+In-Reply-To: <43D9FCC4.1060409@cnam.fr>
+References: <43D9FCC4.1060409@cnam.fr>
+Message-ID: <20060127112731.GE3770@bartok.itc.it>
+
+On Fri, Jan 27, 2006 at 11:58:12AM +0100, Poizot Emmanuel wrote:
+> Hi all,
+> I try to import an ascii file which is, I think, very simple:
+> x,y,z
+> 276.0447173760,10.1098557284,1030.7103
+> 276.0445919261,10.1095942026,1035.0991
+> 276.0445111456,10.1096214593,1030.4924
+> 276.0436962475,10.1098881088,960.6209
+> 276.0435313979,10.1099409839,943.3556
+> 276.0446891003,10.1092347607,1024.1261
+> 276.0445275703,10.1092891300,1014.5844
+> 276.0442016736,10.1093973778,991.0519
+> 276.0437099357,10.1095639911,964.0923
+> 276.0425563156,10.1099390665,857.2236
+> 276.0428807613,10.1095049230,881.3990
+> 276.0426860979,10.1092362057,846.4199
+> 276.0426027050,10.1092605084,831.0676
+> 276.0424370843,10.1093135629,813.6218
+> 276.0420994045,10.1094279057,793.6904
+> 276.0417642082,10.1095263714,736.5096
+> 276.0415915260,10.1095740807,704.4528
+> 276.0415049539,10.1095962648,684.4412
+> 276.0410706576,10.1097332895,635.3551
+> 276.0445780653,10.1082764653,974.5306
+> 276.0441651294,10.1084116702,938.8713
+> 276.0439161533,10.1084955855,923.2671
+> 276.0438312499,10.1085257975,923.2946
+> 276.0435768728,10.1086119170,916.9979
+> 276.0428361340,10.1088463903,840.5004
+> 276.0426783175,10.1088861157,796.0822
+> etc.........
+> 
+> in total arround 869000 lines of x,y,z values.
+> I tried this:
+> v.in.ascii input=theinputfile.txt output=theoutput fs=',' -z z=3
+> but didn't work. I've got the message:
+> Maximum input row length: 39
+> Maximum number of columns: 3
+> Minimum number of columns: 3
+> ERROR: x column is not of number type
+> That's not verbose enought for me to find what's wrong.
+> Does anybody have an idear ?
+> Thanks
+
+I ad such a problem once, there was a space at the end of the line
+somewhere.
+You may filter the data like this:
+
+cat theinputfile.txt | sed 's+ ++g' > theinputfile_clean.txt
+
+then import 
+v.in.ascii input=theinputfile_clean.txt output=theoutput fs=',' -z z=3
+
+In fact the message should indicate the offending line, but I
+don't know how to implement that. Maybe the author of v.in.ascii knows.
+
+Please let us know if this trick helped.
+
+Markus
+
+
+From hamish_nospam at yahoo.com  Fri Jan 27 19:18:49 2006
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] v.in.ascii
+In-Reply-To: <20060127112731.GE3770@bartok.itc.it>
+References: <43D9FCC4.1060409@cnam.fr>
+	<20060127112731.GE3770@bartok.itc.it>
+Message-ID: <20060128131849.7b6e1856.hamish_nospam@yahoo.com>
+
+> > I try to import an ascii file which is, I think, very simple:
+> > x,y,z
+> > 276.0447173760,10.1098557284,1030.7103
+...
+> > 276.0428361340,10.1088463903,840.5004
+> > 276.0426783175,10.1088861157,796.0822
+> > etc.........
+> > 
+> > in total arround 869000 lines of x,y,z values.
+> > I tried this:
+> > v.in.ascii input=theinputfile.txt output=theoutput fs=',' -z z=3
+> > but didn't work. I've got the message:
+> > Maximum input row length: 39
+> > Maximum number of columns: 3
+> > Minimum number of columns: 3
+> > ERROR: x column is not of number type
+> > That's not verbose enought for me to find what's wrong.
+> > Does anybody have an idear ?
+> > Thanks
+> 
+> I ad such a problem once, there was a space at the end of the line
+> somewhere.
+> You may filter the data like this:
+> 
+> cat theinputfile.txt | sed 's+ ++g' > theinputfile_clean.txt
+
+fyi & iirc, G_strip() isn't used on the input lines as the first or last
+column may be text, in which case the leading/trailing whitespace may be
+
+significant. "%10s"
+
+
+> then import 
+> v.in.ascii input=theinputfile_clean.txt output=theoutput fs=',' -z z=3
+> 
+> In fact the message should indicate the offending line, but I
+> don't know how to implement that. Maybe the author of v.in.ascii
+> knows.
+> 
+> Please let us know if this trick helped.
+
+
+another thing to watch: make sure there is not a blank line at the end 
+of the file.
+
+You could turn on debugging:
+
+g.gisenv set="DEBUG=5"
+
+Which (after a while) will show you where it broke.
+
+
+> > ERROR: x column is not of number type
+..
+> In fact the message should indicate the offending line, but I
+> don't know how to implement that.
+
+The column is scanned, and if it contains non-numeric data anywhere it
+is flagged for varchar(). It is only an error on that line if you set
+column type expicitly to double or int with the columns= option*. I
+guess x= y= z= should imply that.
+
+[*] while this probably should be the case, I am not sure if it triggers
+an error currently, probably not.
+
+
+Hamish
+
+

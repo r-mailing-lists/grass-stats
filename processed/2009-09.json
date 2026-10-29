@@ -1,0 +1,1031 @@
+{
+  "list": "grass-stats",
+  "description": "",
+  "month": "2009-09",
+  "messages": [
+    {
+      "id": "msg-2f1d7a12e6d8",
+      "message_id": "<alpine.LRH.2.00.0909011440250.25549@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2009-09-01T08:44:55Z",
+      "subject": "[GRASS-stats] Re: [R-sig-Geo] GRASS commands (fwd)",
+      "subject_clean": "[GRASS-stats] Re: [R-sig-Geo] GRASS commands (fwd)",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Is this a bug in the interface description of v.mkgrid? It needs \ngrid=rows,columns but sets multiple=NO, so wxpython fails (needing two \nvalues but getting one, but only providing an integer entry box).\n\nRoger\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no\n\n\n---------- Forwarded message ----------\nDate: Tue, 1 Sep 2009 14:40:13 +0200 (CEST)\nFrom: Roger Bivand <Roger.Bivand@nhh.no>\nTo: Alexandre VILLERS <alexandre.villers@cebc.cnrs.fr>\nCc: Aide R SIG GEO <r-sig-geo@stat.math.ethz.ch>\nSubject: Re: [R-sig-Geo] GRASS commands\n\nOn Tue, 1 Sep 2009, Alexandre VILLERS wrote:\n\n> Goord morning,\n> \n> I would like to use v.mkgrid (with spgrass6) and I need to specify box and\n> grid parameters, which both require 2 values box=5000,5000 grid=1000,1000\n> How do I specify this in my parameters list ?\n> parseGRASS6(\"v.mkgrid\") returns\n> Command: v.mkgrid\n> Extension: .exe\n> Description: Creates a GRASS vector map of a user-defined grid.\n> Keywords: vector\n> Parameters:\n> ? name: map, type: string, required: yes, multiple: no\n> ?[Name for output vector map]\n> ? name: grid, type: integer, required: yes, multiple: no\n> ?[Number of rows and columns in grid]\n> ? name: position, type: string, required: no, multiple: no\n> ?[Where to place the grid]\n> ? name: coor, type: float, required: no, multiple: no\n> ?[Lower left easting and northing coordinates of map]\n> ? name: box, type: float, required: no, multiple: no\n> ?[Width and height of boxes in grid]\n> ? name: angle, type: float, required: no, multiple: no\n> ?[Angle of rotation (in degrees counter-clockwise)]\n> Flags:\n> ? name: q [Quiet; No chatter]\n> ? name: overwrite [Allow output files to overwrite existing files]\n> ? name: verbose [Verbose module output]\n> ? name: quiet [Quiet module output]\n> \n> execGRASS(\"v.mkgrid\", flags=\"overwrite\", \nparameters=list(map=\"grilleTest\",\n> grid=c(as.integer(100),as.integer(100)), box=c(5000, 5000),\n> position=\"region\"))\n> returns\n> Erreur dans doGRASS(cmd, flags = flags, parameters = parameters) :\n> ? Parameter <grid> has multiple values\n> \n> How do I specify the two values when multiple is not allowed. I did not get\n> it....\n\nConsider the statsgrass list for use of the interface between R and GRASS, in \nthis case there is an interaction between a possible bug in v.mkgrid and the \nparsing of its parameters.\n\nSince v.mkgrid does declare that grid does *not* take multiple values, the \n(current) logic of doGRASS() is defeated, as it checks that the multiple \nattribute if the GRASS parameter is not \"NO\", see\n\nhttp://trac.osgeo.org/grass/browser/grass/trunk/vector/v.mkgrid/main.c#L74\n\nThe discrepancy between the code and the documentation is obvious.\n\nPlease ask on a GRASS list whether other scripted interfaces experience the \nsame problem - as far as I can see from the wxpython interface, only a single \nvalue is accepted, but running the command fails because two are required (same \nproblem in reverse). Thw widget used for entering the parameter values does not \nthe entry of two values. The work-around for now is to use v.mkgrid in system() \ndirectly.\n\nHope this helps,\n\nRoger\n\n> \n> Thanks\n> \n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "Is this a bug in the interface description of v.mkgrid? It needs \ngrid=rows,columns but sets multiple=NO, so wxpython fails (needing two \nvalues but getting one, but only providing an integer entry bo",
+      "thread_id": "thread-2f1d7a12e6d8",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-f19d51efe594",
+      "message_id": "<4A9D8299.7080809@gmail.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "df295de223f3da952cfe18a88e581a2471aa7d74fcd05406a2156bc9f7e1ef79",
+      "date": "2009-09-01T16:22:56Z",
+      "subject": "[GRASS-stats] Re: [R-sig-Geo] GRASS commands (fwd)",
+      "subject_clean": "[GRASS-stats] Re: [R-sig-Geo] GRASS commands (fwd)",
+      "in_reply_to": "<alpine.LRH.2.00.0909011440250.25549@reclus.nhh.no>",
+      "references": [
+        "<alpine.LRH.2.00.0909011440250.25549@reclus.nhh.no>"
+      ],
+      "body_plain": "2009/9/1 Roger Bivand <Roger.Bivand@nhh.no>:\n > Is this a bug in the interface description of v.mkgrid? It needs\n > grid=rows,columns but sets multiple=NO, so wxpython fails (needing two\n > values but getting one, but only providing an integer entry box).\n\nIt needs two values which are treated as one string, so it is correct.\n(E.g. r.series accepts multiple input maps which are separate tokens which\nrequired multiple=YES).\n\n...\n >> grid=c(as.integer(100),as.integer(100)), box=c(5000, 5000),\n >> position=\"region\"))\n >> returns\n >> Erreur dans doGRASS(cmd, flags = flags, parameters = parameters) :\n >>   Parameter <grid> has multiple values\n >>\n >> How do I specify the two values when multiple is not allowed. I did not\n >> get it....\n\nYou used\n > c(as.integer(100),as.integer(100))\n[1] 100 100\n\n > c(5000, 5000)\n[1] 5000 5000\n\nwhich leads to space separated values. But we want\n\n > paste(as.integer(100), as.integer(100), sep=\",\")\n[1] \"100,100\"\n\n > Consider the statsgrass list for use of the interface between R and \nGRASS,\n > in this case there is an interaction between a possible bug in \nv.mkgrid and\n > the parsing of its parameters.\n >\n > Since v.mkgrid does declare that grid does *not* take multiple \nvalues, the\n > (current) logic of doGRASS() is defeated, as it checks that the multiple\n > attribute if the GRASS parameter is not \"NO\", see\n >\n > \nhttp://trac.osgeo.org/grass/browser/grass/trunk/vector/v.mkgrid/main.c#L74\n >\n > The discrepancy between the code and the documentation is obvious.\n\nThere is no real discrepancy...\nHope above comments clarify it.\n\nIf not, we would need to see some debug output of doGRASS()...\n\nMarkus\n\n-- \nMarkus Neteler\nFoundation Edmund Mach (FEM) - Research and Innovation Centre\nEnvironment and Natural Resources Area\nGIS and Remote Sensing Unit, Trento, Italy\nWeb:  http://gis.fem-environment.eu/",
+      "body_snippet": "2009/9/1 Roger Bivand <Roger.Bivand@nhh.no>:\n > Is this a bug in the interface description of v.mkgrid? It needs\n > grid=rows,columns but sets multiple=NO, so wxpython fails (needing two\n > values but",
+      "thread_id": "thread-2f1d7a12e6d8",
+      "thread_depth": 1,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-8722b69ae90b",
+      "message_id": "<alpine.LRH.2.00.0909021605480.303@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2009-09-02T10:09:16Z",
+      "subject": "[GRASS-stats] Re: [R-sig-Geo] GRASS commands (fwd)",
+      "subject_clean": "[GRASS-stats] Re: [R-sig-Geo] GRASS commands (fwd)",
+      "in_reply_to": "<1251837203.827df4calexandre.villers@cebc.cnrs.fr>",
+      "references": [
+        "<1251837203.827df4calexandre.villers@cebc.cnrs.fr>"
+      ],
+      "body_plain": "On Tue, 1 Sep 2009, alexandre villers wrote:\n\n> Good evening,\n>\n> Thank you for the message. I had already tried this but then got the error message:\n>\n> execGRASS(\"v.mkgrid\", flags=\"overwrite\", parameters=list(map=\"grilleTest\", grid=paste(as.integer(100), as.integer(100), sep=\",\"), box=paste(as.integer(5000),\",\",as.integer(5000),sep=\"\"), position=\"region\")) #cr?er une grille de box1 m?tres sur box2 m?tres sur la r?gion   !!! PB WITH the double argument required for box and grid).\n> Erreur dans doGRASS(cmd, flags = flags, parameters = parameters) :\n>  Parameter <grid> does not have integer value\n\nI've submitted a new version of spgrass6 to CRAN that handles the \nambiguity inherent in the multiple=no and a keydesc count of greater than \n1. When it gets through, please try. If you like, check out the source \nfrom r-spatial on sourceforge. I'd be interested to know whether this also \nresolves your earlier r.neighbors problem.\n\nRoger\n\n>\n> Does this make sense to you ? v.mkgrid is asking for an integer but the paste() has turned integer into character... and list of the 2 integers is also rejected because of the \"multiple = NO\" argument...\n>\n> I'm afraid I can't go further...\n>\n> Best regards\n>\n> Alex\n>\n> -----Original Message-----\n> From: Markus Neteler <neteler@cealp.it>\n> To: Roger.Bivand@nhh.no\n> Date: Tue, 01 Sep 2009 22:22:49 +0200\n> Subject: Re: [GRASS-stats] Re: [R-sig-Geo] GRASS commands (fwd)\n>\n> 2009/9/1 Roger Bivand <Roger.Bivand@nhh.no>:\n> > Is this a bug in the interface description of v.mkgrid? It needs\n> > grid=rows,columns but sets multiple=NO, so wxpython fails (needing two\n> > values but getting one, but only providing an integer entry box).\n>\n> It needs two values which are treated as one string, so it is correct.\n> (E.g. r.series accepts multiple input maps which are separate tokens which\n> required multiple=YES).\n>\n> ...\n> >> grid=c(as.integer(100),as.integer(100)), box=c(5000, 5000),\n> >> position=\"region\"))\n> >> returns\n> >> Erreur dans doGRASS(cmd, flags = flags, parameters = parameters) :\n> >>   Parameter <grid> has multiple values\n> >>\n> >> How do I specify the two values when multiple is not allowed. I did not\n> >> get it....\n>\n> You used\n> > c(as.integer(100),as.integer(100))\n> [1] 100 100\n>\n> > c(5000, 5000)\n> [1] 5000 5000\n>\n> which leads to space separated values. But we want\n>\n> > paste(as.integer(100), as.integer(100), sep=\",\")\n> [1] \"100,100\"\n>\n> > Consider the statsgrass list for use of the interface between R and\n> GRASS,\n> > in this case there is an interaction between a possible bug in\n> v.mkgrid and\n> > the parsing of its parameters.\n> >\n> > Since v.mkgrid does declare that grid does *not* take multiple\n> values, the\n> > (current) logic of doGRASS() is defeated, as it checks that the multiple\n> > attribute if the GRASS parameter is not \"NO\", see\n> >\n> >\n> http://trac.osgeo.org/grass/browser/grass/trunk/vector/v.mkgrid/main.c#L74\n> >\n> > The discrepancy between the code and the documentation is obvious.\n>\n> There is no real discrepancy...\n> Hope above comments clarify it.\n>\n> If not, we would need to see some debug output of doGRASS()...\n>\n> Markus\n>\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Tue, 1 Sep 2009, alexandre villers wrote:\n\n> Good evening,\n>\n> Thank you for the message. I had already tried this but then got the error message:\n>\n> execGRASS(\"v.mkgrid\", flags=\"overwrite\", param",
+      "thread_id": "thread-8722b69ae90b",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-8622ec277e98",
+      "message_id": "<1251995883.823e394alexandre.villers@cebc.cnrs.fr>",
+      "from_name": "alexandre villers",
+      "from_email_hash": "57d5378b264e974d055e0926c8918973779fd8ab12728ef929a92575bd46a47a",
+      "date": "2009-09-03T12:37:49Z",
+      "subject": "[GRASS-stats] spgrass6 and winGRASS 6.4.0 RC5",
+      "subject_clean": "[GRASS-stats] spgrass6 and winGRASS 6.4.0 RC5",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear members,\n\nRoger Bivand advised me to post problems on the R / GRASS interface on this list.\nI was using spgrass6 and R 2.9.2 with win GRASS 6.3.0 without much problems.\nI downloaded winGRASS 6.4 and tried to run again old script and the initGRASS doesn't work.\n\nloc<-initGRASS(\"C:/GRASS\", home=tempdir(), override=T) #intialise GRASS dans un dossier de travail dans tempdir\nInput is not proper UTF-8, indicate encoding !\nBytes: 0xE9 0x66 0x69 0x6E\nError : 1: Input is not proper UTF-8, indicate encoding !\nBytes: 0xE9 0x66 0x69 0x6E\n\nErreur dans parseGRASS(cmd) : g.region not parsed\n\nRoger advised me this could come from file path problem so I also tried, instead of home=tempdir() home=\"C:/temp\" and\n\nloc<-initGRASS(\"C:/GRASS\", home=\"C:/temp/\", override=T) #intialise GRASS dans un dossier de travail dans tempdir\nInput is not proper UTF-8, indicate encoding !\nBytes: 0xE9 0x66 0x69 0x6E\nError : 1: Input is not proper UTF-8, indicate encoding !\nBytes: 0xE9 0x66 0x69 0x6E\n\nErreur dans parseGRASS(cmd) : g.region not parsed\n\nAny idea ?\n\nAlex\n\n\nAlexandre Villers\nPhD. Student\nTeam Biodiversity\nCEBC CNRS\n79360 Beauvoir sur Niort\n\n\n__________ Information from ESET Mail Security, version of virus signature database 4392 (20090903) __________\n\nThe message was checked by ESET Mail Security.\nhttp://www.eset.com",
+      "body_snippet": "Dear members,\n\nRoger Bivand advised me to post problems on the R / GRASS interface on this list.\nI was using spgrass6 and R 2.9.2 with win GRASS 6.3.0 without much problems.\nI downloaded winGRASS 6.4 ",
+      "thread_id": "thread-8622ec277e98",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-afeb18205d81",
+      "message_id": "<alpine.LRH.2.00.0909032213410.6277@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2009-09-03T16:25:59Z",
+      "subject": "[GRASS-stats] Re: spgrass6 and winGRASS 6.4.0 RC5",
+      "subject_clean": "[GRASS-stats] Re: spgrass6 and winGRASS 6.4.0 RC5",
+      "in_reply_to": "<1251995883.823e394alexandre.villers@cebc.cnrs.fr>",
+      "references": [
+        "<1251995883.823e394alexandre.villers@cebc.cnrs.fr>"
+      ],
+      "body_plain": "On Thu, 3 Sep 2009, alexandre villers wrote:\n\n> Dear members,\n>\n> Roger Bivand advised me to post problems on the R / GRASS interface on this list.\n> I was using spgrass6 and R 2.9.2 with win GRASS 6.3.0 without much problems.\n> I downloaded winGRASS 6.4 and tried to run again old script and the initGRASS doesn't work.\n>\n> loc<-initGRASS(\"C:/GRASS\", home=tempdir(), override=T) #intialise GRASS dans un dossier de travail dans tempdir\n> Input is not proper UTF-8, indicate encoding !\n> Bytes: 0xE9 0x66 0x69 0x6E\n> Error : 1: Input is not proper UTF-8, indicate encoding !\n> Bytes: 0xE9 0x66 0x69 0x6E\n>\n> Erreur dans parseGRASS(cmd) : g.region not parsed\n>\n> Roger advised me this could come from file path problem so I also tried, instead of home=tempdir() home=\"C:/temp\" and\n>\n> loc<-initGRASS(\"C:/GRASS\", home=\"C:/temp/\", override=T) #intialise GRASS dans un dossier de travail dans tempdir\n> Input is not proper UTF-8, indicate encoding !\n> Bytes: 0xE9 0x66 0x69 0x6E\n> Error : 1: Input is not proper UTF-8, indicate encoding !\n> Bytes: 0xE9 0x66 0x69 0x6E\n>\n> Erreur dans parseGRASS(cmd) : g.region not parsed\n\nStay with your previous working version of GRASS.\n\nNext time, please include the output of traceback() run immediately after \nthe error, and the output of sessionInfo().\n\nMy guess is that the error is occurring in the last, unimportant, line of \ninitGRASS(), and that the location has been created successfully. What \nfails is attempting to read the XML produced by g.region(.exe) \n--interface-description, which appears to include invalid characters. I \nthink that the error messages are coming from xmlTreeParse(), but don't \nknow without traceback() output. This will likely affect other GRASS \nmodules too.\n\nAs I wrote on R-sig-geo, I have tried to reproduce the problem with \nwinGRASS 6.4.0 RC5 and R 2.9.2 without success - everything worked for me. \nIf you can redirect the output of g.region(.exe) --interface-description \nto a file (with >) at the shell prompt, zip the file, and attach it to me \noff-list, I'll take a look.\n\nThe problem still looks locale-related. If GRASS was internationalised \nbetween RC4 and RC5 with reference to the contents of what \n--interface-description returns, and the contents are malformed, that \nwould explain it. If this is the case (with apologies) make sure that your \ncomputer knows that it is not in a locale using non ACSII signs, or find \nthe right locale for GRASS to match the one R is expecting.\n\nRoger\n\n>\n> Any idea ?\n>\n> Alex\n>\n>\n> Alexandre Villers\n> PhD. Student\n> Team Biodiversity\n> CEBC CNRS\n> 79360 Beauvoir sur Niort\n>\n>\n> __________ Information from ESET Mail Security, version of virus signature database 4392 (20090903) __________\n>\n> The message was checked by ESET Mail Security.\n> http://www.eset.com\n>\n>\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Thu, 3 Sep 2009, alexandre villers wrote:\n\n> Dear members,\n>\n> Roger Bivand advised me to post problems on the R / GRASS interface on this list.\n> I was using spgrass6 and R 2.9.2 with win GRASS 6.",
+      "thread_id": "thread-8622ec277e98",
+      "thread_depth": 1,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-81008d2102f6",
+      "message_id": "<86782b610909031339v201d8879p7b2b1692d9e49328@mail.gmail.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "7ac5ec27e07d088b60f1057a2e6f073bc9436bfcca2e796f93aa91ffa8c6633a",
+      "date": "2009-09-03T16:40:19Z",
+      "subject": "[GRASS-stats] Re: spgrass6 and winGRASS 6.4.0 RC5",
+      "subject_clean": "[GRASS-stats] Re: spgrass6 and winGRASS 6.4.0 RC5",
+      "in_reply_to": "<alpine.LRH.2.00.0909032213410.6277@reclus.nhh.no>",
+      "references": [
+        "<1251995883.823e394alexandre.villers@cebc.cnrs.fr>",
+        "<alpine.LRH.2.00.0909032213410.6277@reclus.nhh.no>"
+      ],
+      "body_plain": "On Thu, Sep 3, 2009 at 10:25 PM, Roger Bivand<Roger.Bivand@nhh.no> wrote:\n> On Thu, 3 Sep 2009, alexandre villers wrote:\n>\n>> Dear members,\n>>\n>> Roger Bivand advised me to post problems on the R / GRASS interface on\n>> this list.\n>> I was using spgrass6 and R 2.9.2 with win GRASS 6.3.0 without much\n>> problems.\n>> I downloaded winGRASS 6.4 and tried to run again old script and the\n>> initGRASS doesn't work.\n>>\n>> loc<-initGRASS(\"C:/GRASS\", home=tempdir(), override=T) #intialise GRASS\n>> dans un dossier de travail dans tempdir\n>> Input is not proper UTF-8, indicate encoding !\n>> Bytes: 0xE9 0x66 0x69 0x6E\n>> Error : 1: Input is not proper UTF-8, indicate encoding !\n>> Bytes: 0xE9 0x66 0x69 0x6E\n>>\n>> Erreur dans parseGRASS(cmd) : g.region not parsed\n>>\n>> Roger advised me this could come from file path problem so I also tried,\n>> instead of home=tempdir() home=\"C:/temp\" and\n>>\n>> loc<-initGRASS(\"C:/GRASS\", home=\"C:/temp/\", override=T) #intialise GRASS\n>> dans un dossier de travail dans tempdir\n>> Input is not proper UTF-8, indicate encoding !\n>> Bytes: 0xE9 0x66 0x69 0x6E\n>> Error : 1: Input is not proper UTF-8, indicate encoding !\n>> Bytes: 0xE9 0x66 0x69 0x6E\n>>\n>> Erreur dans parseGRASS(cmd) : g.region not parsed\n>\n> Stay with your previous working version of GRASS.\n>\n> Next time, please include the output of traceback() run immediately after\n> the error, and the output of sessionInfo().\n>\n> My guess is that the error is occurring in the last, unimportant, line of\n> initGRASS(), and that the location has been created successfully. What fails\n> is attempting to read the XML produced by g.region(.exe)\n> --interface-description, which appears to include invalid characters.\n\nAlexandre, please post the output of\n\ng.region(.exe) --interface-description\n\nI tried in Italian and it worked.\n\n> think that the error messages are coming from xmlTreeParse(), but don't know\n> without traceback() output. This will likely affect other GRASS modules too.\n>\n> As I wrote on R-sig-geo, I have tried to reproduce the problem with winGRASS\n> 6.4.0 RC5 and R 2.9.2 without success - everything worked for me. If you can\n> redirect the output of g.region(.exe) --interface-description to a file\n> (with >) at the shell prompt, zip the file, and attach it to me off-list,\n> I'll take a look.\n>\n> The problem still looks locale-related. If GRASS was internationalised\n> between RC4 and RC5 with reference to the contents of what\n\nAFAIK French translations weren't touched for (too) long time.\n\n> --interface-description returns, and the contents are malformed, that would\n> explain it. If this is the case (with apologies) make sure that your\n> computer knows that it is not in a locale using non ACSII signs, or find the\n> right locale for GRASS to match the one R is expecting.\n>\n> Roger\n\nMarkus",
+      "body_snippet": "On Thu, Sep 3, 2009 at 10:25 PM, Roger Bivand<Roger.Bivand@nhh.no> wrote:\n> On Thu, 3 Sep 2009, alexandre villers wrote:\n>\n>> Dear members,\n>>\n>> Roger Bivand advised me to post problems on the R / GR",
+      "thread_id": "thread-8622ec277e98",
+      "thread_depth": 2,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-19b010dcc877",
+      "message_id": "<494114.71810.qm@web110006.mail.gq1.yahoo.com>",
+      "from_name": "Hamish",
+      "from_email_hash": "7b5e1221f218605bee02ec5f1fa06d37177b328ee34797cb910a47d2fb07a14d",
+      "date": "2009-09-04T01:01:59Z",
+      "subject": "[GRASS-stats] Re: spgrass6 and winGRASS 6.4.0 RC5",
+      "subject_clean": "[GRASS-stats] Re: spgrass6 and winGRASS 6.4.0 RC5",
+      "in_reply_to": "<alpine.LRH.2.00.0909032213410.6277@reclus.nhh.no>",
+      "references": [],
+      "body_plain": "maybe it is grass bug #654, but if using one of the newer svn\nreleases of wingrass that should be fixed. it was only in the\nrc5 release.\n\nhttps://trac.osgeo.org/grass/ticket/654\n\n\nHamish",
+      "body_snippet": "maybe it is grass bug #654, but if using one of the newer svn\nreleases of wingrass that should be fixed. it was only in the\nrc5 release.\n\nhttps://trac.osgeo.org/grass/ticket/654\n\n\nHamish",
+      "thread_id": "thread-8622ec277e98",
+      "thread_depth": 2,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-cc1ca164da11",
+      "message_id": "<1252051778.827c704alexandre.villers@cebc.cnrs.fr>",
+      "from_name": "alexandre villers",
+      "from_email_hash": "57d5378b264e974d055e0926c8918973779fd8ab12728ef929a92575bd46a47a",
+      "date": "2009-09-04T04:09:24Z",
+      "subject": "[GRASS-stats] R and GRASS",
+      "subject_clean": "[GRASS-stats] R and GRASS",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear all,\n\nThanks to R Bivand, a new version of spgrass6 is available on CRAN mirrors, which should solve many minor problems in the specification of the parameters' list, thanks to a keydesc (string descriptor for key).\n\nFor those of you who have always wanted to control a powerfull GIS with R, it's time to start !!!\n\nA Grass Use R\n\n\n\n\n\n\nAlexandre Villers\nPhD. Student\nTeam Biodiversity\nCEBC CNRS\n79360 Beauvoir sur Niort\n\n\n__________ Information from ESET Mail Security, version of virus signature database 4393 (20090904) __________\n\nThe message was checked by ESET Mail Security.\nhttp://www.eset.com",
+      "body_snippet": "Dear all,\n\nThanks to R Bivand, a new version of spgrass6 is available on CRAN mirrors, which should solve many minor problems in the specification of the parameters' list, thanks to a keydesc (string ",
+      "thread_id": "thread-cc1ca164da11",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-ca0d460852fd",
+      "message_id": "<1252073214.827c704alexandre.villers@cebc.cnrs.fr>",
+      "from_name": "alexandre villers",
+      "from_email_hash": "57d5378b264e974d055e0926c8918973779fd8ab12728ef929a92575bd46a47a",
+      "date": "2009-09-04T10:06:37Z",
+      "subject": "[GRASS-stats] Sys.setlocale for GRASS6.4",
+      "subject_clean": "[GRASS-stats] Sys.setlocale for GRASS6.4",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Good afternoon,\n\nSorry bothering you with this on the list, but one of you might know how to list the locale available on my computer.\nIn order to try running GRASS6.4 on my machine (with windows XP), Markus Neteler advised me I needed to set locale to \"French_France.UTF8\"\n\nI tried Sys.setlocale(\"LC_ALL\", locale=\"French_France.UTF8\") but R doesn't seem to find this setting\nWarning message:\nIn Sys.setlocale(category = \"LC_ALL\", locale = \"French_France.UTF8\") :\n  la requ?te OS pour sp?cifier la localisation ? \"French_France.UTF8\" n'a pas pu ?tre honor?e, the warning message meaning the request was not available.\n\nHow do I check I can use the locale proposed ? Shall I download it from somewhere or change something on windows ?\n\nThanks for any hints\n\nAlex\n\n\n\nAlexandre Villers\nPhD. Student\nTeam Biodiversity\nCEBC CNRS\n79360 Beauvoir sur Niort\n\n\n__________ Information from ESET Mail Security, version of virus signature database 4395 (20090904) __________\n\nThe message was checked by ESET Mail Security.\nhttp://www.eset.com",
+      "body_snippet": "Good afternoon,\n\nSorry bothering you with this on the list, but one of you might know how to list the locale available on my computer.\nIn order to try running GRASS6.4 on my machine (with windows XP),",
+      "thread_id": "thread-ca0d460852fd",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-b5de1aa9aee2",
+      "message_id": "<86782b610909040729u141872d3m3ae945d2382f459b@mail.gmail.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "7ac5ec27e07d088b60f1057a2e6f073bc9436bfcca2e796f93aa91ffa8c6633a",
+      "date": "2009-09-04T10:30:02Z",
+      "subject": "[GRASS-stats] Sys.setlocale for GRASS6.4",
+      "subject_clean": "[GRASS-stats] Sys.setlocale for GRASS6.4",
+      "in_reply_to": "<1252073214.827c704alexandre.villers@cebc.cnrs.fr>",
+      "references": [
+        "<1252073214.827c704alexandre.villers@cebc.cnrs.fr>"
+      ],
+      "body_plain": "On Fri, Sep 4, 2009 at 4:06 PM, alexandre\nvillers<alexandre.villers@cebc.cnrs.fr> wrote:\n> Good afternoon,\n>\n> Sorry bothering you with this on the list, but one of you might know how to list the locale available on my computer.\n> In order to try running GRASS6.4 on my machine (with windows XP), Markus Neteler advised me I needed to set locale to \"French_France.UTF8\"\n\n... to give you a bit more background, here excerpts of my related\nofflist mail to Alexandre:\n\n\nOn Fri, Sep 4, 2009 at 12:25 AM, Markus Neteler<neteler.osgeo@gmail.com> wrote:\n>> *g.region --interface-description\n>>\n>> *<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n>> <!DOCTYPE task SYSTEM \"grass-interface.dtd\">\n>\n> -> it wants UTF8.. but it does not get it:\n>\n>> > loc<-initGRASS(\"C:/GRASS\", home=\"C:/temp/\", override=T) #intialise GRASS\n>> > dans un dossier de travail dans tempdir\n>> Input is not proper UTF-8, indicate encoding !\n>> Bytes: 0xE9 0x66 0x69 0x6E\n>> Error : 1: Input is not proper UTF-8, indicate encoding !\n>> Bytes: 0xE9 0x66 0x69 0x6E\n>\n> because in your system:\n>>\n>> locale:\n>> LC_COLLATE=French_France.1252;LC_CTYPE=French_France.1252;LC_MONETARY=French_France.1252;LC_NUMERIC=C;LC_TIME=French_France.1252\n>\n> ... this seems to be a candidate.\n\nWhat I mean: apparently .UTF8 output by GRASS conflicts with expected .1252\ninput in R.\n\nbest\nMarkus",
+      "body_snippet": "On Fri, Sep 4, 2009 at 4:06 PM, alexandre\nvillers<alexandre.villers@cebc.cnrs.fr> wrote:\n> Good afternoon,\n>\n> Sorry bothering you with this on the list, but one of you might know how to list the loca",
+      "thread_id": "thread-ca0d460852fd",
+      "thread_depth": 1,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-478edda1d632",
+      "message_id": "<AD51AB79BC327C40AB2C7EB75D57A3C4051301@TOLAR.valuta.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2009-09-04T13:08:41Z",
+      "subject": "SV: [GRASS-stats] Sys.setlocale for GRASS6.4",
+      "subject_clean": "SV: [GRASS-stats] Sys.setlocale for GRASS6.4",
+      "in_reply_to": null,
+      "references": [
+        "<1252073214.827c704alexandre.villers@cebc.cnrs.fr>"
+      ],
+      "body_plain": "OK, don't worry about that. I'll try to send an updated spgrass6 when I have adequate net access. The problem is that GRASS writes UTF-8 as the encoding into the XML header from --nterface-description, but the French translations seem (on my XP machine) to be in latin1, that is the 0x.. spell eacute (\\'{e}) in latex, then \"fin\" from \"d?fine...\", the first non-ASCII string in the output for g.region.\n \nThe fix is to insert \"latin1\" into the header, so I've updated the package to allow the user to do this from within R\n \nRoger\n \n--- Roger Bivand, NHH, Helleveien 30, N-5045 Bergen, Roger.Bivand@nhh.no\n\n________________________________\n\nFra: grass-stats-bounces@lists.osgeo.org p? vegne av alexandre villers\nSendt: fr 04.09.2009 16:06\nTil: grass-stats@lists.osgeo.org\nEmne: [GRASS-stats] Sys.setlocale for GRASS6.4\n\n\n\nGood afternoon,\n\nSorry bothering you with this on the list, but one of you might know how to list the locale available on my computer.\nIn order to try running GRASS6.4 on my machine (with windows XP), Markus Neteler advised me I needed to set locale to \"French_France.UTF8\"\n\nI tried Sys.setlocale(\"LC_ALL\", locale=\"French_France.UTF8\") but R doesn't seem to find this setting\nWarning message:\nIn Sys.setlocale(category = \"LC_ALL\", locale = \"French_France.UTF8\") :\n  la requ?te OS pour sp?cifier la localisation ? \"French_France.UTF8\" n'a pas pu ?tre honor?e, the warning message meaning the request was not available.\n\nHow do I check I can use the locale proposed ? Shall I download it from somewhere or change something on windows ?\n\nThanks for any hints\n\nAlex\n\n\n\nAlexandre Villers\nPhD. Student\nTeam Biodiversity\nCEBC CNRS\n79360 Beauvoir sur Niort\n\n\n__________ Information from ESET Mail Security, version of virus signature database 4395 (20090904) __________\n\nThe message was checked by ESET Mail Security.\nhttp://www.eset.com <http://www.eset.com/> \n\n\n_______________________________________________\ngrass-stats mailing list\ngrass-stats@lists.osgeo.org\nhttp://lists.osgeo.org/mailman/listinfo/grass-stats\n\n\n-------------- next part --------------\nAn HTML attachment was scrubbed...\nURL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20090904/115461a0/attachment.html",
+      "body_snippet": "OK, don't worry about that. I'll try to send an updated spgrass6 when I have adequate net access. The problem is that GRASS writes UTF-8 as the encoding into the XML header from --nterface-description",
+      "thread_id": "thread-ca0d460852fd",
+      "thread_depth": 1,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-5ecb15ebd586",
+      "message_id": "<86782b610909041023l7bd15231w839aa508ddf45af8@mail.gmail.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "7ac5ec27e07d088b60f1057a2e6f073bc9436bfcca2e796f93aa91ffa8c6633a",
+      "date": "2009-09-04T13:23:26Z",
+      "subject": "[GRASS-stats] Sys.setlocale for GRASS6.4",
+      "subject_clean": "[GRASS-stats] Sys.setlocale for GRASS6.4",
+      "in_reply_to": "<AD51AB79BC327C40AB2C7EB75D57A3C4051301@TOLAR.valuta.nhh.no>",
+      "references": [
+        "<1252073214.827c704alexandre.villers@cebc.cnrs.fr>",
+        "<AD51AB79BC327C40AB2C7EB75D57A3C4051301@TOLAR.valuta.nhh.no>"
+      ],
+      "body_plain": "(cc grass-dev)\n\n@grass-dev: There are encoding issues with --interface-description\n   which states UTF-8 also then the actual language encoding is different:\n\n2009/9/4 Roger Bivand <Roger.Bivand@nhh.no>:\n> OK, don't worry about that. I'll try to send an updated spgrass6 when I have\n> adequate net access. The problem is that GRASS writes UTF-8 as the encoding\n> into the XML header from --nterface-description, but the French translations\n> seem (on my XP machine) to be in latin1, that is the 0x.. spell eacute\n> (\\'{e}) in latex, then \"fin\" from \"d?fine...\", the first non-ASCII string in\n> the output for g.region.\n>\n> The fix is to insert \"latin1\" into the header, so I've updated the package\n> to allow the user to do this from within R\n\nThis gave me another idea to check the .po files in GRASS 6.4:\n\ngrep charset locale/po/grass*_fr.po\nlocale/po/grasslibs_fr.po:\"Content-Type: text/plain; charset=ISO-8859-1\\n\"\nlocale/po/grassmods_fr.po:\"Content-Type: text/plain; charset=ISO-8859-1\\n\"\nlocale/po/grasstcl_fr.po:\"Content-Type: text/plain; charset=UTF-8\\n\"\nlocale/po/grasswxpy_fr.po:\"Content-Type: text/plain; charset=UTF-8\\n\"\n\nApparently the translators mixed several charsets instead of using one,\nthis is valid for various languages supported in GRASS.\n\n@grass-dev: Should we harmonize the encodings to UTF-8 for all/subset\n  of languages? If yes, how? With iconv?\n\n@grass-stats: perhaps we need to do our homework first and fix the mess\n  if it is a mess...\n\nMarkus",
+      "body_snippet": "(cc grass-dev)\n\n@grass-dev: There are encoding issues with --interface-description\n   which states UTF-8 also then the actual language encoding is different:\n\n2009/9/4 Roger Bivand <Roger.Bivand@nhh.n",
+      "thread_id": "thread-ca0d460852fd",
+      "thread_depth": 2,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-e30284fc17b3",
+      "message_id": "<19105.27121.347619.126275@cerise.gclements.plus.com>",
+      "from_name": "Glynn Clements",
+      "from_email_hash": "87a3d3fa005dab4c03c1442b7b86d6548bd3d8f1208b550e67e2c2f91ce6c9bf",
+      "date": "2009-09-04T15:26:47Z",
+      "subject": "[GRASS-dev] Re: [GRASS-stats] Sys.setlocale for GRASS6.4",
+      "subject_clean": "[GRASS-dev] Re: [GRASS-stats] Sys.setlocale for GRASS6.4",
+      "in_reply_to": "<86782b610909041023l7bd15231w839aa508ddf45af8@mail.gmail.com>",
+      "references": [
+        "<1252073214.827c704alexandre.villers@cebc.cnrs.fr>",
+        "<AD51AB79BC327C40AB2C7EB75D57A3C4051301@TOLAR.valuta.nhh.no>",
+        "<86782b610909041023l7bd15231w839aa508ddf45af8@mail.gmail.com>"
+      ],
+      "body_plain": "Markus Neteler wrote:\n\n> @grass-dev: There are encoding issues with --interface-description\n>    which states UTF-8 also then the actual language encoding is different:\n> \n> 2009/9/4 Roger Bivand <Roger.Bivand@nhh.no>:\n> > OK, don't worry about that. I'll try to send an updated spgrass6 when I have\n> > adequate net access. The problem is that GRASS writes UTF-8 as the encoding\n> > into the XML header from --nterface-description, but the French translations\n> > seem (on my XP machine) to be in latin1, that is the 0x.. spell eacute\n> > (\\'{e}) in latex, then \"fin\" from \"d?fine...\", the first non-ASCII string in\n> > the output for g.region.\n> >\n> > The fix is to insert \"latin1\" into the header, so I've updated the package\n> > to allow the user to do this from within R\n> \n> This gave me another idea to check the .po files in GRASS 6.4:\n> \n> grep charset locale/po/grass*_fr.po\n> locale/po/grasslibs_fr.po:\"Content-Type: text/plain; charset=ISO-8859-1\\n\"\n> locale/po/grassmods_fr.po:\"Content-Type: text/plain; charset=ISO-8859-1\\n\"\n> locale/po/grasstcl_fr.po:\"Content-Type: text/plain; charset=UTF-8\\n\"\n> locale/po/grasswxpy_fr.po:\"Content-Type: text/plain; charset=UTF-8\\n\"\n> \n> Apparently the translators mixed several charsets instead of using one,\n> this is valid for various languages supported in GRASS.\n> \n> @grass-dev: Should we harmonize the encodings to UTF-8 for all/subset\n>   of languages? If yes, how? With iconv?\n\nNo.\n\nFor systems using GNU libc, the .mo files use unicode, which is\nconverted to the locale's encoding automatically at run time. If your\nlocale uses ISO-8859-1, that's what the program will get regardless of\nthe encoding used in the .po files.\n\nAdditionally, using \"historical\" encodings provides better\ncompatibility. Systems which support unicode will typically convert\nthe .po files to unicode in the .mo files, then convert this to the\nlocale's encoding at run time, so it doesn't matter which encoding is\nused. Systems which don't support unicode will require the .po files\nto use the locale's historical encoding (ISO-8859-*, EUC-JP, etc).\n\nThe --interface description option needs to either determine the\nlocale's encoding via e.g. nl_langinfo() and use that in the header,\nor convert the data to UTF-8. The latter has the advantage of\nrelieving the reader of the burden of handling multiple encodings.\n\n-- \nGlynn Clements <glynn@gclements.plus.com>",
+      "body_snippet": "Markus Neteler wrote:\n\n> @grass-dev: There are encoding issues with --interface-description\n>    which states UTF-8 also then the actual language encoding is different:\n> \n> 2009/9/4 Roger Bivand <Rog",
+      "thread_id": "thread-ca0d460852fd",
+      "thread_depth": 3,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-91eedb6bddcc",
+      "message_id": "<86782b610909041338k4a6d355ak70630ab9d864d5af@mail.gmail.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "7ac5ec27e07d088b60f1057a2e6f073bc9436bfcca2e796f93aa91ffa8c6633a",
+      "date": "2009-09-04T16:38:57Z",
+      "subject": "[GRASS-dev] Re: [GRASS-stats] Sys.setlocale for GRASS6.4",
+      "subject_clean": "[GRASS-dev] Re: [GRASS-stats] Sys.setlocale for GRASS6.4",
+      "in_reply_to": "<19105.27121.347619.126275@cerise.gclements.plus.com>",
+      "references": [
+        "<1252073214.827c704alexandre.villers@cebc.cnrs.fr>",
+        "<AD51AB79BC327C40AB2C7EB75D57A3C4051301@TOLAR.valuta.nhh.no>",
+        "<86782b610909041023l7bd15231w839aa508ddf45af8@mail.gmail.com>",
+        "<19105.27121.347619.126275@cerise.gclements.plus.com>"
+      ],
+      "body_plain": "On Fri, Sep 4, 2009 at 9:26 PM, Glynn Clements<glynn@gclements.plus.com> wrote:\n> Markus Neteler wrote:\n>> @grass-dev: There are encoding issues with --interface-description\n>> ? ?which states UTF-8 also then the actual language encoding is different:\n\n[then -> when]\n\n...\n> The --interface description option needs to either determine the\n> locale's encoding via e.g. nl_langinfo() and use that in the header,\n\nIt seems to be already there?\n\nlib/gis/parser.c:\n\nstatic void G_usage_xml(void)\n{\n...\n#if defined(HAVE_LANGINFO_H)\n    encoding = nl_langinfo(CODESET);\n    if (!encoding || strlen(encoding) == 0) {\n        encoding = \"UTF-8\";\n    }\n#else\n    encoding = \"UTF-8\";\n#endif\n...\n    fprintf(stdout, \"<?xml version=\\\"1.0\\\" encoding=\\\"%s\\\"?>\\n\", encoding);\n    fprintf(stdout, \"<!DOCTYPE task SYSTEM \\\"grass-interface.dtd\\\">\\n\");\n\nApparently the Windows built was missing HAVE_LANGINFO_H or it\nisn't properly set on Windows.\n\n?\nMarkus",
+      "body_snippet": "On Fri, Sep 4, 2009 at 9:26 PM, Glynn Clements<glynn@gclements.plus.com> wrote:\n> Markus Neteler wrote:\n>> @grass-dev: There are encoding issues with --interface-description\n>> ? ?which states UTF-8 a",
+      "thread_id": "thread-ca0d460852fd",
+      "thread_depth": 4,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-467059787145",
+      "message_id": "<alpine.LRH.2.00.0909051056590.7829@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2009-09-05T05:05:19Z",
+      "subject": "[GRASS-dev] Re: [GRASS-stats] Sys.setlocale for GRASS6.4",
+      "subject_clean": "[GRASS-dev] Re: [GRASS-stats] Sys.setlocale for GRASS6.4",
+      "in_reply_to": "<86782b610909041338k4a6d355ak70630ab9d864d5af@mail.gmail.com>",
+      "references": [
+        "<1252073214.827c704alexandre.villers@cebc.cnrs.fr>",
+        "<AD51AB79BC327C40AB2C7EB75D57A3C4051301@TOLAR.valuta.nhh.no>",
+        "<86782b610909041023l7bd15231w839aa508ddf45af8@mail.gmail.com>",
+        "<19105.27121.347619.126275@cerise.gclements.plus.com>",
+        "<86782b610909041338k4a6d355ak70630ab9d864d5af@mail.gmail.com>"
+      ],
+      "body_plain": "On Fri, 4 Sep 2009, Markus Neteler wrote:\n\n> On Fri, Sep 4, 2009 at 9:26 PM, Glynn Clements<glynn@gclements.plus.com> wrote:\n>> Markus Neteler wrote:\n>>> @grass-dev: There are encoding issues with --interface-description\n>>> ? ?which states UTF-8 also then the actual language encoding is different:\n>\n> [then -> when]\n>\n> ...\n>> The --interface description option needs to either determine the\n>> locale's encoding via e.g. nl_langinfo() and use that in the header,\n>\n> It seems to be already there?\n>\n> lib/gis/parser.c:\n>\n> static void G_usage_xml(void)\n> {\n> ...\n> #if defined(HAVE_LANGINFO_H)\n>    encoding = nl_langinfo(CODESET);\n>    if (!encoding || strlen(encoding) == 0) {\n>        encoding = \"UTF-8\";\n>    }\n> #else\n>    encoding = \"UTF-8\";\n> #endif\n> ...\n>    fprintf(stdout, \"<?xml version=\\\"1.0\\\" encoding=\\\"%s\\\"?>\\n\", encoding);\n>    fprintf(stdout, \"<!DOCTYPE task SYSTEM \\\"grass-interface.dtd\\\">\\n\");\n>\n> Apparently the Windows built was missing HAVE_LANGINFO_H or it\n> isn't properly set on Windows.\n\nAs a work-around, I've submitted to CRAN a revised version of spgrass6 \nallowing the user to manipulate the encoding string in the XML data \ndirectly, since Windows users of binary releases cannot get at this \nthemselves on the GRASS side.\n\nThe user would typically run a parseGRASS(<whatever>) command, see a UTF-8 \nerror message, and then try inserting usual suspects with setXMLencoding() \n- typically \"latin1\" - and retry parseGRASS(<whatever>). Users of \ninitGRASS() will see the UTF-8 error because parseGRASS(\"g.region\") is run \nwhen the function completes.\n\nRoger\n\n>\n> ?\n> Markus\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Fri, 4 Sep 2009, Markus Neteler wrote:\n\n> On Fri, Sep 4, 2009 at 9:26 PM, Glynn Clements<glynn@gclements.plus.com> wrote:\n>> Markus Neteler wrote:\n>>> @grass-dev: There are encoding issues with --i",
+      "thread_id": "thread-ca0d460852fd",
+      "thread_depth": 5,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-e11f97a70f05",
+      "message_id": "<19106.46108.503794.482006@cerise.gclements.plus.com>",
+      "from_name": "Glynn Clements",
+      "from_email_hash": "87a3d3fa005dab4c03c1442b7b86d6548bd3d8f1208b550e67e2c2f91ce6c9bf",
+      "date": "2009-09-05T14:55:29Z",
+      "subject": "[GRASS-dev] Re: [GRASS-stats] Sys.setlocale for GRASS6.4",
+      "subject_clean": "[GRASS-dev] Re: [GRASS-stats] Sys.setlocale for GRASS6.4",
+      "in_reply_to": "<86782b610909041338k4a6d355ak70630ab9d864d5af@mail.gmail.com>",
+      "references": [
+        "<1252073214.827c704alexandre.villers@cebc.cnrs.fr>",
+        "<AD51AB79BC327C40AB2C7EB75D57A3C4051301@TOLAR.valuta.nhh.no>",
+        "<86782b610909041023l7bd15231w839aa508ddf45af8@mail.gmail.com>",
+        "<19105.27121.347619.126275@cerise.gclements.plus.com>",
+        "<86782b610909041338k4a6d355ak70630ab9d864d5af@mail.gmail.com>"
+      ],
+      "body_plain": "Markus Neteler wrote:\n\n> >> @grass-dev: There are encoding issues with --interface-description\n> >> ? ?which states UTF-8 also then the actual language encoding is different:\n> \n> [then -> when]\n> \n> ...\n> > The --interface description option needs to either determine the\n> > locale's encoding via e.g. nl_langinfo() and use that in the header,\n> \n> It seems to be already there?\n> \n> lib/gis/parser.c:\n> \n> static void G_usage_xml(void)\n> {\n> ...\n> #if defined(HAVE_LANGINFO_H)\n>     encoding = nl_langinfo(CODESET);\n>     if (!encoding || strlen(encoding) == 0) {\n>         encoding = \"UTF-8\";\n>     }\n\nThat would explain the sense of d?j? vu ;)\n\n> Apparently the Windows built was missing HAVE_LANGINFO_H or it\n> isn't properly set on Windows.\n\nThis probably won't exist on Windows. I think that we can get the\ninformation from locale_charset(), declared in localcharset.h and\ndefined in both libintl and libgettext.\n\nCan someone try the attached patch?\n\n-- \nGlynn Clements <glynn@gclements.plus.com>\n\n-------------- next part --------------\nIndex: lib/gis/parser.c\n===================================================================\n--- lib/gis/parser.c\t(revision 39007)\n+++ lib/gis/parser.c\t(working copy)\n@@ -77,6 +77,9 @@\n #if defined(HAVE_LANGINFO_H)\n #include <langinfo.h>\n #endif\n+#if defined(__MINGW32__) && defined(USE_NLS)\n+#include <localcharset.h>\n+#endif\n \n #include <stdio.h>\n #include <stdlib.h>\n@@ -1311,6 +1314,11 @@\n     if (!encoding || strlen(encoding) == 0) {\n \tencoding = \"UTF-8\";\n     }\n+#elif defined(__MINGW32__) && defined(USE_NLS)\n+    encoding = locale_charset();\n+    if (!encoding || strlen(encoding) == 0) {\n+\tencoding = \"UTF-8\";\n+    }\n #else\n     encoding = \"UTF-8\";\n #endif",
+      "body_snippet": "Markus Neteler wrote:\n\n> >> @grass-dev: There are encoding issues with --interface-description\n> >> ? ?which states UTF-8 also then the actual language encoding is different:\n> \n> [then -> when]\n> \n> ",
+      "thread_id": "thread-ca0d460852fd",
+      "thread_depth": 5,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-08c6dd655d06",
+      "message_id": "<1252182582.8230a0calexandre.villers@cebc.cnrs.fr>",
+      "from_name": "alexandre villers",
+      "from_email_hash": "57d5378b264e974d055e0926c8918973779fd8ab12728ef929a92575bd46a47a",
+      "date": "2009-09-05T16:29:22Z",
+      "subject": "[GRASS-stats] creating a grid from a contour vector shape",
+      "subject_clean": "[GRASS-stats] creating a grid from a contour vector shape",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Good evening,\n\nI'm a beginner with GRASS. In order to analyse a dataset on the spatial distribution of a bird's species, I wanted to create many spatial grids (with increasing cell size, from 500 to 15000 meters)and then count birds in each cell.\n\nI started with\nv.in.ogr to import a countour shape file for my observation window\nv.to.rast (countour)followed by r.mask to limit the work on that contour limit\nfinally, v.mkgrid to create the grid with the required spatial resolution.\n\nI'm looping this with R and also added 10 different origins (lower left corner of grids) in order to average counts, specially for large grids.\n\nThe next step is to overlay within R, using the sp packages, the layer of points and the grid. The problem (which, by taking the time of reflexion, would have been clear before running the script !) is that some grid cells are cut many times by the countour vector, leading to unique cells having many different IDs (which I didn't want).\n\nSo can I overlay that contour vector on a grid while keeping the cells (intact) intersected by the countour limit (instead of clipping them) ?\n\nHope I was clear enough...\n\nBest regards\n\nAlex\nAlexandre Villers\nPhD. Student\nTeam Biodiversity\nCEBC CNRS\n79360 Beauvoir sur Niort\n\n\n__________ Information from ESET Mail Security, version of virus signature database 4398 (20090905) __________\n\nThe message was checked by ESET Mail Security.\nhttp://www.eset.com",
+      "body_snippet": "Good evening,\n\nI'm a beginner with GRASS. In order to analyse a dataset on the spatial distribution of a bird's species, I wanted to create many spatial grids (with increasing cell size, from 500 to 1",
+      "thread_id": "thread-08c6dd655d06",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-64a5db75c8ff",
+      "message_id": "<63d616b0909090036g2fd16fc0p1a7d2fbffa28e3e@mail.gmail.com>",
+      "from_name": "Mauricio Zambrano",
+      "from_email_hash": "740165a6e6abcc98e4c02a07881b1d96695a2fd5382996e4cd59617a4833e59d",
+      "date": "2009-09-09T03:36:31Z",
+      "subject": "[GRASS-stats] creating a grid from a contour vector shape",
+      "subject_clean": "[GRASS-stats] creating a grid from a contour vector shape",
+      "in_reply_to": "<1252182582.8230a0calexandre.villers@cebc.cnrs.fr>",
+      "references": [
+        "<1252182582.8230a0calexandre.villers@cebc.cnrs.fr>"
+      ],
+      "body_plain": "Hi Alex,\n\nDid you try the commands 'spsample' in R ?\n\nFor creating the grid form the shapefile, you can try something like:\n\nyourgrid <- spsample(yourshafilename.shp, type=\"regular\",\ncellsize=yourcellsize, offset = c(0.5, 0.5))\n\nI hope this helps.\n\nKinds,\n\nMauricio\n-- \nLinux user  #454569 -- Ubuntu user #17469\n\n2009/9/5 alexandre villers <alexandre.villers@cebc.cnrs.fr>:\n> Good evening,\n>\n> I'm a beginner with GRASS. In order to analyse a dataset on the spatial distribution of a bird's species, I wanted to create many spatial grids (with increasing cell size, from 500 to 15000 meters)and then count birds in each cell.\n>\n> I started with\n> v.in.ogr to import a countour shape file for my observation window\n> v.to.rast (countour)followed by r.mask to limit the work on that contour limit\n> finally, v.mkgrid to create the grid with the required spatial resolution.\n>\n> I'm looping this with R and also added 10 different origins (lower left corner of grids) in order to average counts, specially for large grids.\n>\n> The next step is to overlay within R, using the sp packages, the layer of points and the grid. The problem (which, by taking the time of reflexion, would have been clear before running the script !) is that some grid cells are cut many times by the countour vector, leading to unique cells having many different IDs (which I didn't want).\n>\n> So can I overlay that contour vector on a grid while keeping the cells (intact) intersected by the countour limit (instead of clipping them) ?\n>\n> Hope I was clear enough...\n>\n> Best regards\n>\n> Alex\n> Alexandre Villers\n> PhD. Student\n> Team Biodiversity\n> CEBC CNRS\n> 79360 Beauvoir sur Niort\n>\n>\n> __________ Information from ESET Mail Security, version of virus signature database 4398 (20090905) __________\n>\n> The message was checked by ESET Mail Security.\n> http://www.eset.com\n>\n>\n> _______________________________________________\n> grass-stats mailing list\n> grass-stats@lists.osgeo.org\n> http://lists.osgeo.org/mailman/listinfo/grass-stats\n>",
+      "body_snippet": "Hi Alex,\n\nDid you try the commands 'spsample' in R ?\n\nFor creating the grid form the shapefile, you can try something like:\n\nyourgrid <- spsample(yourshafilename.shp, type=\"regular\",\ncellsize=yourcell",
+      "thread_id": "thread-08c6dd655d06",
+      "thread_depth": 1,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-7a0f1b4e4678",
+      "message_id": "<86782b610909090045p239eefccp8084508db2b1a1ac@mail.gmail.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "7ac5ec27e07d088b60f1057a2e6f073bc9436bfcca2e796f93aa91ffa8c6633a",
+      "date": "2009-09-09T03:45:53Z",
+      "subject": "[GRASS-stats] creating a grid from a contour vector shape",
+      "subject_clean": "[GRASS-stats] creating a grid from a contour vector shape",
+      "in_reply_to": "<1252182582.8230a0calexandre.villers@cebc.cnrs.fr>",
+      "references": [
+        "<1252182582.8230a0calexandre.villers@cebc.cnrs.fr>"
+      ],
+      "body_plain": "Hi Alexandre,\n\nOn Sat, Sep 5, 2009 at 10:29 PM, alexandre\nvillers<alexandre.villers@cebc.cnrs.fr> wrote:\n> Good evening,\n>\n> I'm a beginner with GRASS. In order to analyse a dataset on the spatial distribution of a bird's species, I wanted to create many spatial grids (with increasing cell size, from 500 to 15000 meters)and then count birds in each cell.\n>\n> I started with\n> v.in.ogr to import a countour shape file for my observation window\n> v.to.rast (countour)followed by r.mask to limit the work on that contour limit\n> finally, v.mkgrid to create the grid with the required spatial resolution.\n\n>From your personal email I understand that \"contours\" are meant\nhere as boundaries of the study area.\n\nWould this approach work?\nhttp://grass.osgeo.org/wiki/Count_points_in_polygon\n\nBest regards\nMarkus",
+      "body_snippet": "Hi Alexandre,\n\nOn Sat, Sep 5, 2009 at 10:29 PM, alexandre\nvillers<alexandre.villers@cebc.cnrs.fr> wrote:\n> Good evening,\n>\n> I'm a beginner with GRASS. In order to analyse a dataset on the spatial dis",
+      "thread_id": "thread-08c6dd655d06",
+      "thread_depth": 1,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-0d513cf3f981",
+      "message_id": "<4AA7989D.7030401@gmail.com>",
+      "from_name": "Agustin Lobo",
+      "from_email_hash": "b7fde75e33862bf3ff7e6dad3c67daee92c017baa9c2c3114430838483d9c33c",
+      "date": "2009-09-09T07:59:33Z",
+      "subject": "[GRASS-stats] [Fwd: Re: [R-sig-Geo] Errror with gmeta6()]",
+      "subject_clean": "[GRASS-stats] [Fwd: Re: [R-sig-Geo] Errror with gmeta6()]",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Any further help on this list?\nAgus\n-------- Original Message --------\nSubject: Re: [R-sig-Geo] Errror with gmeta6()\nDate: Wed, 9 Sep 2009 13:35:55 +0200 (CEST)\nFrom: Roger Bivand <Roger.Bivand@nhh.no>\nReply-To: Roger.Bivand@nhh.no\nTo: Agustin.Lobo@ija.csic.es\nCC: sig-geo <r-sig-geo@stat.math.ethz.ch>\nReferences: <4AA79069.1010101@gmail.com>\n\nOn Wed, 9 Sep 2009, Agustin Lobo wrote:\n\n> Hi!\n>\n> I've started spgrass6() with no problems\n> (I get:\n> GRASS GIS interface loaded with GRASS version: 6.4.0RC4\n> and location: carlos\n>\n> but then get an error with gmeta6:\n>\n>> gmeta6()\n> g.region: error while loading shared libraries: libgrass_vect.so: cannot open \n> shared object file: No such file or directory\n> Error in if (file.exists(file) == FALSE) if (!missing(asText) && asText ==  :\n> argument is of length zero\n> Error in parseGRASS(cmd) : g.region not parsed\n>\n> I'm using R  2.9.1 on ubuntu jaunty and just\n> made install.packages(\"spgrass6\")\n>\n> g.region -p  works fine in the grass console, but\n>> system(\"g.region -p\")\n> g.region: error while loading shared libraries: libgrass_vect.so: cannot open \n> shared object file: No such file or directory\n\nThis will be a \"dependency hell\" problem between GDAL and GRASS binaries,\nprobably a stale GRASS GDAL plugin somewhere. It has been seen on Debian\nbased distributions before, for example:\n\nhttp://lists.osgeo.org/pipermail/grass-stats/2009-July/001105.html\n\nMost likely you have multiple GDAL and/or GDAL binaries that do not like\neach other, and because of the possible reverse dependence in the GDAL\nGRASS plugin, they get in each others' way. The grass-stats list may be a\ngood place to ask too.\n\nRoger\n\n>\n> Any idea on how to fix this problem?\n> Thanks\n> Agus\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no\n\n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: alobolistas.vcf\nType: text/x-vcard\nSize: 251 bytes\nDesc: not available\nUrl : http://lists.osgeo.org/pipermail/grass-stats/attachments/20090909/8681d8ae/alobolistas.vcf",
+      "body_snippet": "Any further help on this list?\nAgus\n-------- Original Message --------\nSubject: Re: [R-sig-Geo] Errror with gmeta6()\nDate: Wed, 9 Sep 2009 13:35:55 +0200 (CEST)\nFrom: Roger Bivand <Roger.Bivand@nhh.no",
+      "thread_id": "thread-0d513cf3f981",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-ed29f70a7376",
+      "message_id": "<4AA7A538.4030600@gmail.com>",
+      "from_name": "Agustin Lobo",
+      "from_email_hash": "b7fde75e33862bf3ff7e6dad3c67daee92c017baa9c2c3114430838483d9c33c",
+      "date": "2009-09-09T08:59:45Z",
+      "subject": "[GRASS-stats] r.reclass by rules",
+      "subject_clean": "[GRASS-stats] r.reclass by rules",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Is r.reclass leaving as null any original\nvalue for which there is no reclassification rule?\nI mean, if A had a range 1 to 10 and we reclassify\nvalues 1, 4 and 6 to 100, are the rest\nof values changed to null? No way of\nleaving them unchanged?\n\nThanks\n\nAgus\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: alobolistas.vcf\nType: text/x-vcard\nSize: 251 bytes\nDesc: not available\nUrl : http://lists.osgeo.org/pipermail/grass-stats/attachments/20090909/a7ad3332/alobolistas.vcf",
+      "body_snippet": "Is r.reclass leaving as null any original\nvalue for which there is no reclassification rule?\nI mean, if A had a range 1 to 10 and we reclassify\nvalues 1, 4 and 6 to 100, are the rest\nof values changed",
+      "thread_id": "thread-ed29f70a7376",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-1d3ebe0540b1",
+      "message_id": "<86782b610909130059s68afa59ew4b56bf08eec99243@mail.gmail.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "7ac5ec27e07d088b60f1057a2e6f073bc9436bfcca2e796f93aa91ffa8c6633a",
+      "date": "2009-09-13T04:00:19Z",
+      "subject": "[GRASS-dev] Re: [GRASS-stats] Sys.setlocale for GRASS6.4",
+      "subject_clean": "[GRASS-dev] Re: [GRASS-stats] Sys.setlocale for GRASS6.4",
+      "in_reply_to": "<19106.46108.503794.482006@cerise.gclements.plus.com>",
+      "references": [
+        "<1252073214.827c704alexandre.villers@cebc.cnrs.fr>",
+        "<AD51AB79BC327C40AB2C7EB75D57A3C4051301@TOLAR.valuta.nhh.no>",
+        "<86782b610909041023l7bd15231w839aa508ddf45af8@mail.gmail.com>",
+        "<19105.27121.347619.126275@cerise.gclements.plus.com>",
+        "<86782b610909041338k4a6d355ak70630ab9d864d5af@mail.gmail.com>",
+        "<19106.46108.503794.482006@cerise.gclements.plus.com>"
+      ],
+      "body_plain": "(for the record)\n\nOn Sat, Sep 5, 2009 at 8:55 PM, Glynn Clements <glynn@gclements.plus.com> wrote:\n> Markus Neteler wrote:\n>> >> @grass-dev: There are encoding issues with --interface-description\n...\n>> Apparently the Windows built was missing HAVE_LANGINFO_H or it\n>> isn't properly set on Windows.\n>\n> This probably won't exist on Windows. I think that we can get the\n> information from locale_charset(), declared in localcharset.h and\n> defined in both libintl and libgettext.\n>\n> Can someone try the attached patch?\n\nGlynn's patch has been backported to 6.5.svn and 6.4.svn. Hopefully\nthe problem is gone now.\n\nMarkus",
+      "body_snippet": "(for the record)\n\nOn Sat, Sep 5, 2009 at 8:55 PM, Glynn Clements <glynn@gclements.plus.com> wrote:\n> Markus Neteler wrote:\n>> >> @grass-dev: There are encoding issues with --interface-description\n...\n",
+      "thread_id": "thread-ca0d460852fd",
+      "thread_depth": 6,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-01d3956ea029",
+      "message_id": "<86782b610909131059y8e2a4ddq509d58462d765e7a@mail.gmail.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "7ac5ec27e07d088b60f1057a2e6f073bc9436bfcca2e796f93aa91ffa8c6633a",
+      "date": "2009-09-13T14:00:20Z",
+      "subject": "[GRASS-stats] [Fwd: Re: [R-sig-Geo] Errror with gmeta6()]",
+      "subject_clean": "[GRASS-stats] [Fwd: Re: [R-sig-Geo] Errror with gmeta6()]",
+      "in_reply_to": "<4AA7989D.7030401@gmail.com>",
+      "references": [
+        "<4AA7989D.7030401@gmail.com>"
+      ],
+      "body_plain": "2009/9/9 Agustin Lobo <alobolistas@gmail.com>:\n> Any further help on this list?\n> Agus\n> On Wed, 9 Sep 2009, Agustin Lobo wrote:\n>\n>> Hi!\n>>\n>> I've started spgrass6() with no problems\n>> (I get:\n>> GRASS GIS interface loaded with GRASS version: 6.4.0RC4\n>> and location: carlos\n>>\n>> but then get an error with gmeta6:\n>>\n>>> gmeta6()\n>>\n>> g.region: error while loading shared libraries: libgrass_vect.so: cannot\n>> open shared object file: No such file or directory\n>> Error in if (file.exists(file) == FALSE) if (!missing(asText) && asText ==\n>> ?:\n>> argument is of length zero\n>> Error in parseGRASS(cmd) : g.region not parsed\n>>\n>> I'm using R ?2.9.1 on ubuntu jaunty and just\n>> made install.packages(\"spgrass6\")\n>>\n>> g.region -p ?works fine in the grass console, but\n>> > system(\"g.region -p\")\n>>\n>> g.region: error while loading shared libraries: libgrass_vect.so: cannot\n>> open shared object file: No such file or directory\n>\n> This will be a \"dependency hell\" problem between GDAL and GRASS binaries,\n\nI suspect that instead the LD link to the GRASS libraries is missing. I have\na file (create as root):\n\n# something like this (adapt path):\ncat /etc/ld.so.conf.d/grass.conf\n/usr/local/grass640/dist.x86_64-unknown-linux-gnu/lib\n\nThe program \"ldconfig\" needs to be run afterwards.\n\nHope this helps\nMarkus",
+      "body_snippet": "2009/9/9 Agustin Lobo <alobolistas@gmail.com>:\n> Any further help on this list?\n> Agus\n> On Wed, 9 Sep 2009, Agustin Lobo wrote:\n>\n>> Hi!\n>>\n>> I've started spgrass6() with no problems\n>> (I get:\n>> G",
+      "thread_id": "thread-0d513cf3f981",
+      "thread_depth": 1,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-278f4d10ea68",
+      "message_id": "<4AAD3A7F.9060203@gmail.com>",
+      "from_name": "Agustin Lobo",
+      "from_email_hash": "b7fde75e33862bf3ff7e6dad3c67daee92c017baa9c2c3114430838483d9c33c",
+      "date": "2009-09-13T14:31:40Z",
+      "subject": "[GRASS-stats] [Fwd: Re: [R-sig-Geo] Errror with gmeta6()]",
+      "subject_clean": "[GRASS-stats] [Fwd: Re: [R-sig-Geo] Errror with gmeta6()]",
+      "in_reply_to": "<86782b610909131059y8e2a4ddq509d58462d765e7a@mail.gmail.com>",
+      "references": [
+        "<4AA7989D.7030401@gmail.com>",
+        "<86782b610909131059y8e2a4ddq509d58462d765e7a@mail.gmail.com>"
+      ],
+      "body_plain": "I've upgraded to qgis 1.2.0-2~jaunty1build1\nand ligdal1-1.6.0-grass 1.6.0-3~jaunty1\nand everything seems to work fine regarding the qgis grass link.\n\nRegarding R - grass:\nIf I :\n1. start qgis\n2. start qgis grass plugin\n3. open mapset\n4.open maptools\n5.open grass shell\n6. start R\n7. require(spgrass6)\n8.gmeta6() works fine\n\nbut if I\n5. open grass shell\n5a. open en xterm &  (as I've always done, so that I keep an open grass \nconsole)\n6 start R in the new xterm\n7. require(spgrass6) works fine (and notifies the mapset)\n8. gmeta6() does not work:\n > gmeta6()\ng.region: error while loading shared libraries: libgrass_vect.so: cannot \nopen shared object file: No such file or directory\nError in if (file.exists(file) == FALSE) if (!missing(asText) && asText \n==  :\n  argument is of length zero\nError in parseGRASS(cmd) : g.region not parsed\n\nIt might be a different behavior of ubuntu jaunty at opening new xterm \nconsoles?\n\nAgus\n\nMarkus Neteler wrote:\n> 2009/9/9 Agustin Lobo <alobolistas@gmail.com>:\n>   \n>> Any further help on this list?\n>> Agus\n>> On Wed, 9 Sep 2009, Agustin Lobo wrote:\n>>\n>>     \n>>> Hi!\n>>>\n>>> I've started spgrass6() with no problems\n>>> (I get:\n>>> GRASS GIS interface loaded with GRASS version: 6.4.0RC4\n>>> and location: carlos\n>>>\n>>> but then get an error with gmeta6:\n>>>\n>>>       \n>>>> gmeta6()\n>>>>         \n>>> g.region: error while loading shared libraries: libgrass_vect.so: cannot\n>>> open shared object file: No such file or directory\n>>> Error in if (file.exists(file) == FALSE) if (!missing(asText) && asText ==\n>>>  :\n>>> argument is of length zero\n>>> Error in parseGRASS(cmd) : g.region not parsed\n>>>\n>>> I'm using R  2.9.1 on ubuntu jaunty and just\n>>> made install.packages(\"spgrass6\")\n>>>\n>>> g.region -p  works fine in the grass console, but\n>>>       \n>>>> system(\"g.region -p\")\n>>>>         \n>>> g.region: error while loading shared libraries: libgrass_vect.so: cannot\n>>> open shared object file: No such file or directory\n>>>       \n>> This will be a \"dependency hell\" problem between GDAL and GRASS binaries,\n>>     \n>\n> I suspect that instead the LD link to the GRASS libraries is missing. I have\n> a file (create as root):\n>\n> # something like this (adapt path):\n> cat /etc/ld.so.conf.d/grass.conf\n> /usr/local/grass640/dist.x86_64-unknown-linux-gnu/lib\n>\n> The program \"ldconfig\" needs to be run afterwards.\n>\n> Hope this helps\n> Markus\n> _______________________________________________\n> grass-stats mailing list\n> grass-stats@lists.osgeo.org\n> http://lists.osgeo.org/mailman/listinfo/grass-stats\n>\n>   \n\n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: alobolistas.vcf\nType: text/x-vcard\nSize: 251 bytes\nDesc: not available\nUrl : http://lists.osgeo.org/pipermail/grass-stats/attachments/20090913/8cfd8f89/alobolistas.vcf",
+      "body_snippet": "I've upgraded to qgis 1.2.0-2~jaunty1build1\nand ligdal1-1.6.0-grass 1.6.0-3~jaunty1\nand everything seems to work fine regarding the qgis grass link.\n\nRegarding R - grass:\nIf I :\n1. start qgis\n2. start",
+      "thread_id": "thread-0d513cf3f981",
+      "thread_depth": 2,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-f57e50562a83",
+      "message_id": "<4AAD4FBD.40307@gmail.com>",
+      "from_name": "Agustin Lobo",
+      "from_email_hash": "b7fde75e33862bf3ff7e6dad3c67daee92c017baa9c2c3114430838483d9c33c",
+      "date": "2009-09-13T16:02:18Z",
+      "subject": "[GRASS-stats] [Fwd: Re: [R-sig-Geo] Errror with gmeta6()]",
+      "subject_clean": "[GRASS-stats] [Fwd: Re: [R-sig-Geo] Errror with gmeta6()]",
+      "in_reply_to": "<86782b610909131059y8e2a4ddq509d58462d765e7a@mail.gmail.com>",
+      "references": [
+        "<4AA7989D.7030401@gmail.com>",
+        "<86782b610909131059y8e2a4ddq509d58462d765e7a@mail.gmail.com>"
+      ],
+      "body_plain": "Markus,\n\ngemeta6() works fine from any xterm console created\nfrom the grass console after changing\n/usr/lib/grass/lib\nto\n/usr/lib/grass64/lib\n\nin grass.conf\nas you suggested.\n\nI don't remember having made grass.conf though, is there any way\nfor the installation to actually take place of this change of\nthe grass directory name?\n\nThanks!\n\nAgus\n\nMarkus Neteler wrote:\n> 2009/9/9 Agustin Lobo <alobolistas@gmail.com>:\n>> Any further help on this list?\n>> Agus\n>> On Wed, 9 Sep 2009, Agustin Lobo wrote:\n>>\n>>> Hi!\n>>>\n>>> I've started spgrass6() with no problems\n>>> (I get:\n>>> GRASS GIS interface loaded with GRASS version: 6.4.0RC4\n>>> and location: carlos\n>>>\n>>> but then get an error with gmeta6:\n>>>\n>>>> gmeta6()\n>>> g.region: error while loading shared libraries: libgrass_vect.so: cannot\n>>> open shared object file: No such file or directory\n>>> Error in if (file.exists(file) == FALSE) if (!missing(asText) && asText ==\n>>>  :\n>>> argument is of length zero\n>>> Error in parseGRASS(cmd) : g.region not parsed\n>>>\n>>> I'm using R  2.9.1 on ubuntu jaunty and just\n>>> made install.packages(\"spgrass6\")\n>>>\n>>> g.region -p  works fine in the grass console, but\n>>>> system(\"g.region -p\")\n>>> g.region: error while loading shared libraries: libgrass_vect.so: cannot\n>>> open shared object file: No such file or directory\n>> This will be a \"dependency hell\" problem between GDAL and GRASS binaries,\n> \n> I suspect that instead the LD link to the GRASS libraries is missing. I have\n> a file (create as root):\n> \n> # something like this (adapt path):\n> cat /etc/ld.so.conf.d/grass.conf\n> /usr/local/grass640/dist.x86_64-unknown-linux-gnu/lib\n> \n> The program \"ldconfig\" needs to be run afterwards.\n> \n> Hope this helps\n> Markus\n> \n-------------- next part --------------\nA non-text attachment was scrubbed...\nName: alobolistas.vcf\nType: text/x-vcard\nSize: 251 bytes\nDesc: not available\nUrl : http://lists.osgeo.org/pipermail/grass-stats/attachments/20090913/3f14bdb8/alobolistas.vcf",
+      "body_snippet": "Markus,\n\ngemeta6() works fine from any xterm console created\nfrom the grass console after changing\n/usr/lib/grass/lib\nto\n/usr/lib/grass64/lib\n\nin grass.conf\nas you suggested.\n\nI don't remember having ",
+      "thread_id": "thread-0d513cf3f981",
+      "thread_depth": 2,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-9741077420e6",
+      "message_id": "<86782b610909131315r59e7fcc7o3412e6f848a7dd08@mail.gmail.com>",
+      "from_name": "Markus Neteler",
+      "from_email_hash": "7ac5ec27e07d088b60f1057a2e6f073bc9436bfcca2e796f93aa91ffa8c6633a",
+      "date": "2009-09-13T16:16:13Z",
+      "subject": "[GRASS-stats] [Fwd: Re: [R-sig-Geo] Errror with gmeta6()]",
+      "subject_clean": "[GRASS-stats] [Fwd: Re: [R-sig-Geo] Errror with gmeta6()]",
+      "in_reply_to": "<4AAD4FBD.40307@gmail.com>",
+      "references": [
+        "<4AA7989D.7030401@gmail.com>",
+        "<86782b610909131059y8e2a4ddq509d58462d765e7a@mail.gmail.com>",
+        "<4AAD4FBD.40307@gmail.com>"
+      ],
+      "body_plain": "On Sun, Sep 13, 2009 at 10:02 PM, Agustin Lobo <alobolistas@gmail.com> wrote:\n> Markus,\n>\n> gemeta6() works fine from any xterm console created\n> from the grass console after changing\n> /usr/lib/grass/lib\n> to\n> /usr/lib/grass64/lib\n>\n> in grass.conf\n> as you suggested.\n\nExcellent!\n\n> I don't remember having made grass.conf though, is there any way\n> for the installation to actually take place of this change of\n> the grass directory name?\n\nIndeed it is the job of the package manager which installs the\nGRASS-GDAL plugin (or whereever this should happen). If needed,\nplease file a bug there in case it is missing on Ubuntu.\n\nGlad to know it solved for now,\nMarkus",
+      "body_snippet": "On Sun, Sep 13, 2009 at 10:02 PM, Agustin Lobo <alobolistas@gmail.com> wrote:\n> Markus,\n>\n> gemeta6() works fine from any xterm console created\n> from the grass console after changing\n> /usr/lib/grass",
+      "thread_id": "thread-0d513cf3f981",
+      "thread_depth": 3,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-c107e740a660",
+      "message_id": "<4AAF68AE.7060502@gmail.com>",
+      "from_name": "Agustin Lobo",
+      "from_email_hash": "b7fde75e33862bf3ff7e6dad3c67daee92c017baa9c2c3114430838483d9c33c",
+      "date": "2009-09-15T06:13:23Z",
+      "subject": "R: [GRASS-stats] r.reclass by rules",
+      "subject_clean": "R: [GRASS-stats] r.reclass by rules",
+      "in_reply_to": "<C3CB6B9784ED4ACC9EB6FE55301284DE@GEO.UNIPR.IT>",
+      "references": [
+        "<4AA7A538.4030600@gmail.com>",
+        "<C3CB6B9784ED4ACC9EB6FE55301284DE@GEO.UNIPR.IT>"
+      ],
+      "body_plain": "Thanks, this is saving time, as I was having\nto use r.mapcalc after r.reclass.\nIs this important trick in the manual?\nI could not find it. Perhaps I should have figured it out\nafter the example * = NULL, but I think\nthat should be specifically mentioned.\n\nAgus\n\nAldo Clerici wrote:\n> Agus,\n> \n> It should be:\n> 1 4 6 = 100\n> *=*\n> end\n> \n> Greetings\n> A.Clerici\n> \n> \n> -----Messaggio originale-----\n> Da: grass-stats-bounces@lists.osgeo.org\n> [mailto:grass-stats-bounces@lists.osgeo.org] Per conto di Agustin Lobo\n> Inviato: mercoled? 9 settembre 2009 14.53\n> A: grass-stats@lists.osgeo.org\n> Oggetto: [GRASS-stats] r.reclass by rules\n> \n> Is r.reclass leaving as null any original\n> value for which there is no reclassification rule?\n> I mean, if A had a range 1 to 10 and we reclassify\n> values 1, 4 and 6 to 100, are the rest\n> of values changed to null? No way of\n> leaving them unchanged?\n> \n> Thanks\n> \n> Agus\n> \n>",
+      "body_snippet": "Thanks, this is saving time, as I was having\nto use r.mapcalc after r.reclass.\nIs this important trick in the manual?\nI could not find it. Perhaps I should have figured it out\nafter the example * = NU",
+      "thread_id": "thread-c107e740a660",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-0df791a5ac36",
+      "message_id": "<4AAF8B3C.7060206@gmail.com>",
+      "from_name": "Agustin Lobo",
+      "from_email_hash": "b7fde75e33862bf3ff7e6dad3c67daee92c017baa9c2c3114430838483d9c33c",
+      "date": "2009-09-15T08:42:08Z",
+      "subject": "[GRASS-stats] v.reclass",
+      "subject_clean": "[GRASS-stats] v.reclass",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi again,\n\nAs a result of an R process, I have to reclassify\nthe input vector layer. Normally, I would do it\nin R, but as the vector is huge, I prefer making the\nrules file in R and use v.reclass in grass.\n\nMy goal is to reclassify field VALUE of vector Montseny07 according\nto a table generated in R:\n > b3rec[1:3,]\n     v         \n[1,] \"18\"  \"274\"\n[2,] \"22\"  \"274\"\n[3,] \"117\" \"274\n\nso that VALUE 18 would become 274 and so on.\n\nI've made the following in R to create the rules file:\nz <- file(\"delme.txt\", \"w\")\nfor (i in 1:nrow(b3rec)){\n    writeLines(text=paste(\"VALUE\",b3rec[i,2]), con = z, sep = \"\\n\")\n    writeLines(text=paste(\"WHERE VALUE=\",b3rec[i,1],sep=\"\"), con=z, sep \n= \"\\n\")\n}\nclose(z)\n\nwhich creates a file delme.txt such as:\nVALUE 274\nWHERE VALUE=18\nVALUE 274\nWHERE VALUE=22\nVALUE 274\nWHERE VALUE=117\nVALUE 274\nWHERE VALUE=146\n...\n\nMy understanding of this rules file was that\nwhere we had VALUE 18, we would have VALUE 274\nNevertheless, when I run v.reclass, I get an error:\n\n > system(\"v.reclass Montseny07 rules=delme.txt out=Monstseny07b3rec\")\nERROR: Unknown rule option: 'VALUE'\n\nSo I remade the rules files using\ncat 274\nWHERE VALUE=18\netc\n\nbut then I get a vector object with a table with only one field cat. I \nwould prefer\nhaving the same table as in the original vector, just with some of the \nvalues\nin field VALUE modified according to the rules file. Is there a way of \ndoing that?\n\nAlso, is there the equivalent to \"* = *\" in r.reclass to get the rest\nof values unchanged?\n\nThanks!\n\nAgus",
+      "body_snippet": "Hi again,\n\nAs a result of an R process, I have to reclassify\nthe input vector layer. Normally, I would do it\nin R, but as the vector is huge, I prefer making the\nrules file in R and use v.reclass in g",
+      "thread_id": "thread-0df791a5ac36",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-518fd629fe37",
+      "message_id": "<4AB38598.100@cebc.cnrs.fr>",
+      "from_name": "Alexandre VILLERS",
+      "from_email_hash": "57d5378b264e974d055e0926c8918973779fd8ab12728ef929a92575bd46a47a",
+      "date": "2009-09-18T09:05:42Z",
+      "subject": "[GRASS-stats] from vector to raster",
+      "subject_clean": "[GRASS-stats] from vector to raster",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Good afternoon,\n\nI would like to convert a vector (polylines of roads) into a raster \n(using the grid of an existing raster map), by calculating the total \nlength of roads in each pixel.\nHow would you do that ?\n\nThanks.\n\nAlex\n\n-- \nAlexandre Villers\nPhD Student\nTeam \"Biodiversity\"\nCentre d'Etudes Biologiques de Chiz?-CNRS UPR1934\n79360 Beauvoir sur Niort\n\nPhone +33 (0)5 49 09 96 13\nFax   +33 (0)5 49 09 65 26\n\n\n\n\n__________ Information from ESET Mail Security, version of virus signature database 4436 (20090918) __________\n\nThe message was checked by ESET Mail Security.\nhttp://www.eset.com",
+      "body_snippet": "Good afternoon,\n\nI would like to convert a vector (polylines of roads) into a raster \n(using the grid of an existing raster map), by calculating the total \nlength of roads in each pixel.\nHow would you",
+      "thread_id": "thread-518fd629fe37",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-b95443dd6062",
+      "message_id": "<4AB4B9F5.1090301@cebc.cnrs.fr>",
+      "from_name": "Alexandre VILLERS",
+      "from_email_hash": "57d5378b264e974d055e0926c8918973779fd8ab12728ef929a92575bd46a47a",
+      "date": "2009-09-19T07:01:23Z",
+      "subject": "[GRASS-stats] from vector to raster (2nd try) with R or GRASS (GRASS prefered...)",
+      "subject_clean": "[GRASS-stats] from vector to raster (2nd try) with R or GRASS (GRASS prefered...)",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Good morning,\n\nI try to be clearer than I was in my precedent post and also copy this \nto the R SIG GEO.\nOn the one hand, I have a shape of lines representing roads\nOn the other, a GRASS region with a given resolution (250 x 250 meters \npixel)\n\nI would like to create a new raster map identical to my region settings \n(same resolution, extent, etc.) with the length of roads summed in each \npixel.\nBeing a beginner, I tried different ways but got stuck quite rapidely.\n\nAny help appreciated.\n\n\nAlex\n\n-- \nAlexandre Villers\nPhD Student\nTeam \"Biodiversity\"\nCentre d'Etudes Biologiques de Chiz?-CNRS UPR1934\n79360 Beauvoir sur Niort\n\nPhone +33 (0)5 49 09 96 13\nFax   +33 (0)5 49 09 65 26\n\n\n\n\n__________ Information from ESET Mail Security, version of virus signature database 4439 (20090918) __________\n\nThe message was checked by ESET Mail Security.\nhttp://www.eset.com",
+      "body_snippet": "Good morning,\n\nI try to be clearer than I was in my precedent post and also copy this \nto the R SIG GEO.\nOn the one hand, I have a shape of lines representing roads\nOn the other, a GRASS region with a",
+      "thread_id": "thread-b95443dd6062",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-fb55485624ba",
+      "message_id": "<799149.43371.qm@web110013.mail.gq1.yahoo.com>",
+      "from_name": "Hamish",
+      "from_email_hash": "7b5e1221f218605bee02ec5f1fa06d37177b328ee34797cb910a47d2fb07a14d",
+      "date": "2009-09-19T11:30:16Z",
+      "subject": "R: [GRASS-stats] r.reclass by rules",
+      "subject_clean": "R: [GRASS-stats] r.reclass by rules",
+      "in_reply_to": "<4AAF68AE.7060502@gmail.com>",
+      "references": [],
+      "body_plain": "Agustin wrote:\n> Thanks, this is saving time, as I was having\n> to use r.mapcalc after r.reclass.\n> Is this important trick in the manual?\n> I could not find it. Perhaps I should have figured it out\n> after the example * = NULL, but I think\n> that should be specifically mentioned.\n\nthanks for mentioning it was missing. The r.reclass manual is now updated\nin SVN to point out this trick.\n\n\nHelena: some kind soul has added a fail-safe into g.remove, now if you try\nto remove a raster which has a reclass based upon it you get an error\nmessage:\n\nGRASS65> g.remove landuse.copy\nWARNING: [landuse.copy@user1] is a base map. Remove reclassed map first:\n         landuse.copy.reclass@user1\n\nI'm assuming the g.remove -f force flag is there to override that.\nNot sure if it notices that there is a reclass based upon it existing\nin another mapset (perhaps owned by another user), but I guess you\nmake reclass maps based on other people's maps at your own risk. ie you\nwould naturally get mad at them, not the GIS, when they remove it.\n\n\nHamish",
+      "body_snippet": "Agustin wrote:\n> Thanks, this is saving time, as I was having\n> to use r.mapcalc after r.reclass.\n> Is this important trick in the manual?\n> I could not find it. Perhaps I should have figured it out\n>",
+      "thread_id": "thread-c107e740a660",
+      "thread_depth": 1,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-59548fcf18a7",
+      "message_id": "<1254141611034-3729191.post@n2.nabble.com>",
+      "from_name": "Tim Holland",
+      "from_email_hash": "6e88e4cc7976b0a8dfc63a14c3b3848512f1de987d10b91ff0fe28e14d38a2b0",
+      "date": "2009-09-28T08:40:13Z",
+      "subject": "[GRASS-stats] problem installing spgrass6 in R",
+      "subject_clean": "[GRASS-stats] problem installing spgrass6 in R",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear all, \n\nI am trying to install spgrass6 in R, but am having trouble.  I have seen a\nprevious related post\n(http://n2.nabble.com/GRASS-stats-Problems-installing-spgrass6-td1930684.html#a1930684),\nbut I believe this is a different issue as I get different error messages.  \n\nI am installing using the command\n> install.packages(\"spgrass6\", type=\"source\", dependencies=TRUE)\n\nOn MacOSX 10.5.8, with sessionInfo() details as follows:\n\nR version 2.9.2 (2009-08-24) \ni386-apple-darwin8.11.1 \nlocale:\nen_US.UTF-8/en_US.UTF-8/C/C/en_US.UTF-8/en_US.UTF-8\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base     \nloaded via a namespace (and not attached):\n[1] tools_2.9.2\n\nI think I have the GDAL libraries installed, as I believe they are required\nfor GRASS, which I have and which is running fine (version 6.4).  It seems\nlike the most likely problem (based on error messages) is not having an\nacceptable C compiler?  If that is the issue, any guidance on how to find\nand install one would be very appreciated.  \n\nThank you for any help on this.  The error messages I get are below (sorry\nfor so much text). \n\nBest, \nTim\n\n\n\n* Installing *source* package ?bitops? ...\n** libs\n** arch - i386\nsh: make: command not found\nERROR: compilation failed for package ?bitops?\n* Removing\n?/Library/Frameworks/R.framework/Versions/2.9/Resources/library/bitops?\n* Installing *source* package ?sp? ...\n** libs\n** arch - i386\nsh: make: command not found\nERROR: compilation failed for package ?sp?\n* Removing\n?/Library/Frameworks/R.framework/Versions/2.9/Resources/library/sp?\n* Installing *source* package ?XML? ...\nchecking for gcc... no\nchecking for cc... no\nchecking for cc... no\nchecking for cl... no\nconfigure: error: no acceptable C compiler found in $PATH\nSee `config.log' for more details.\nERROR: configuration failed for package ?XML?\n* Removing\n?/Library/Frameworks/R.framework/Versions/2.9/Resources/library/XML?\n* Installing *source* package ?rgdal? ...\ngdal-config: gdal-config\n./configure: line 1311: gdal-config: command not found\nError: gdal-config not found\nThe gdal-config script distributed with GDAL could not be found.\nIf you have not installed the GDAL libraries, you can\ndownload the source from  http://www.gdal.org/\nIf you have installed the GDAL libraries, then make sure that\ngdal-config is in your path. Try typing gdal-config at a\nshell prompt and see if it runs. If not, use:\n --configure-args='--with-gdal-config=/usr/local/bin/gdal-config' echo with\nappropriate values for your installation.\n\nERROR: configuration failed for package ?rgdal?\n* Removing\n?/Library/Frameworks/R.framework/Versions/2.9/Resources/library/rgdal?\n* Installing *source* package ?spgrass6? ...\n** R\n** inst\n** preparing package for lazy loading\nError : package 'sp' required by 'spgrass6' could not be found\nERROR: lazy loading failed for package ?spgrass6?\n* Removing\n?/Library/Frameworks/R.framework/Versions/2.9/Resources/library/spgrass6?\n\nThe downloaded packages are in\n\n?/private/var/folders/nX/nX5WzHJNHoC9btpEipD-dU+++TM/-Tmp-/RtmplsIEHV/downloaded_packages?\nUpdating HTML index of packages in '.Library'\nWarning messages:\n1: In install.packages(\"spgrass6\", type = \"source\", dependencies = TRUE) :\n  installation of package 'bitops' had non-zero exit status\n2: In install.packages(\"spgrass6\", type = \"source\", dependencies = TRUE) :\n  installation of package 'sp' had non-zero exit status\n3: In install.packages(\"spgrass6\", type = \"source\", dependencies = TRUE) :\n  installation of package 'XML' had non-zero exit status\n4: In install.packages(\"spgrass6\", type = \"source\", dependencies = TRUE) :\n  installation of package 'rgdal' had non-zero exit status\n5: In install.packages(\"spgrass6\", type = \"source\", dependencies = TRUE) :\n  installation of package 'spgrass6' had non-zero exit status\n-- \nView this message in context: http://n2.nabble.com/problem-installing-spgrass6-in-R-tp3729191p3729191.html\nSent from the Grass - Stats mailing list archive at Nabble.com.",
+      "body_snippet": "Dear all, \n\nI am trying to install spgrass6 in R, but am having trouble.  I have seen a\nprevious related post\n(http://n2.nabble.com/GRASS-stats-Problems-installing-spgrass6-td1930684.html#a1930684),\nb",
+      "thread_id": "thread-59548fcf18a7",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-1ccfccee643f",
+      "message_id": "<1254142184261-3729224.post@n2.nabble.com>",
+      "from_name": "Tim Holland",
+      "from_email_hash": "6e88e4cc7976b0a8dfc63a14c3b3848512f1de987d10b91ff0fe28e14d38a2b0",
+      "date": "2009-09-28T08:49:46Z",
+      "subject": "[GRASS-stats] from vector to raster (2nd try) with R or GRASS (GRASS prefered...)",
+      "subject_clean": "[GRASS-stats] from vector to raster (2nd try) with R or GRASS (GRASS prefered...)",
+      "in_reply_to": "<4AB4B9F5.1090301@cebc.cnrs.fr>",
+      "references": [
+        "<4AB4B9F5.1090301@cebc.cnrs.fr>"
+      ],
+      "body_plain": "Alexandre VILLERS wrote:\n> \n> \n> On the one hand, I have a shape of lines representing roads\n> On the other, a GRASS region with a given resolution (250 x 250 meters \n> pixel)\n> \n> I would like to create a new raster map identical to my region settings \n> (same resolution, extent, etc.) with the length of roads summed in each \n> pixel.\n> \n> \n\n\n\nOne way would be to create a raster from your roads file at a smaller\nresolution than you want (something that would be divisible by 250, though -\nsay 25m x 25m pixel, or larger depending how big a file this is).  \n\ng.region rast=rast250 #### to set region boundaries to same as your 250m\nraster\ng.region res=X #### to set resolution to whatever 'X' meters you decide\n\nv.to.rast input=roads.vect output=roads.rast.resX use=val value=1  ### to\nmake your roads raster.\n\nThen you need to aggregate your new raster to 250m.  The number of small\npixels that are road within each big pixel should correlate quite well to\nthe length or roads within the big pixel.  This won't be a perfect\ncorrelation, though - a road that cuts across a pixel on a diagonal will be\n1.4 times longer than a road that cuts across a pixel horizontally or\nvertically.  The smaller you make the pixels on your first roads raster, the\nbetter the correlation will be.  \n\nI haven't used the tools for aggregating pixels before, but it looks like\nr.resamp.stats will probably do what you need.\n\nHTH,\nTim \n-- \nView this message in context: http://n2.nabble.com/from-vector-to-raster-2nd-try-with-R-or-GRASS-GRASS-prefered-tp3674947p3729224.html\nSent from the Grass - Stats mailing list archive at Nabble.com.",
+      "body_snippet": "Alexandre VILLERS wrote:\n> \n> \n> On the one hand, I have a shape of lines representing roads\n> On the other, a GRASS region with a given resolution (250 x 250 meters \n> pixel)\n> \n> I would like to cre",
+      "thread_id": "thread-b95443dd6062",
+      "thread_depth": 1,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-fedf87770170",
+      "message_id": "<fbc3c81f0909280817y6dfc58f5rd9b7e1a3a3598e38@mail.gmail.com>",
+      "from_name": "Wolf Bergenheim",
+      "from_email_hash": "b79f9164b1d6b9a76c0f3b6de90dea14b76def1f2a6821e4d932f31f59b6e6f8",
+      "date": "2009-09-28T11:18:05Z",
+      "subject": "[GRASS-stats] Problem installing spdep",
+      "subject_clean": "[GRASS-stats] Problem installing spdep",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nI have a problem when I try to install spdep I get the following error:\n\nError: package 'Matrix' required by 'spdep' could not be found\nExecution halted\nERROR: lazy loading failed for package 'spdep'\n** Removing '/usr/local/lib/R/site-library/spdep'\n\nThe downloaded packages are in\n\t/tmp/RtmpO1y8gG/downloaded_packages\nWarning messages:\n1: In install.packages(\"spdep\", dep = T) :\n  dependency ?Matrix? is not available\n2: In install.packages(\"spdep\", dep = T) :\n  installation of package 'spdep' had non-zero exit status\n\n\nWhat am I doing wrong? I tried installing it with\ninstall.packages(\"spdep\", dep=T)\n\n--Wolf\n\n-- \n<8  )---- Wolf Bergenheim ----(  3>",
+      "body_snippet": "Hi,\n\nI have a problem when I try to install spdep I get the following error:\n\nError: package 'Matrix' required by 'spdep' could not be found\nExecution halted\nERROR: lazy loading failed for package 'sp",
+      "thread_id": "thread-fedf87770170",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-2d422b062844",
+      "message_id": "<alpine.LRH.2.00.0909282046180.19591@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2009-09-28T14:54:18Z",
+      "subject": "[GRASS-stats] problem installing spgrass6 in R",
+      "subject_clean": "[GRASS-stats] problem installing spgrass6 in R",
+      "in_reply_to": "<1254141611034-3729191.post@n2.nabble.com>",
+      "references": [
+        "<1254141611034-3729191.post@n2.nabble.com>"
+      ],
+      "body_plain": "On Mon, 28 Sep 2009, Tim Holland wrote:\n\n>\n> Dear all,\n>\n> I am trying to install spgrass6 in R, but am having trouble.  I have seen a\n> previous related post\n> (http://n2.nabble.com/GRASS-stats-Problems-installing-spgrass6-td1930684.html#a1930684),\n> but I believe this is a different issue as I get different error messages.\n>\n> I am installing using the command\n>> install.packages(\"spgrass6\", type=\"source\", dependencies=TRUE)\n>\n> On MacOSX 10.5.8, with sessionInfo() details as follows:\n>\n> R version 2.9.2 (2009-08-24)\n> i386-apple-darwin8.11.1\n> locale:\n> en_US.UTF-8/en_US.UTF-8/C/C/en_US.UTF-8/en_US.UTF-8\n> attached base packages:\n> [1] stats     graphics  grDevices utils     datasets  methods   base\n> loaded via a namespace (and not attached):\n> [1] tools_2.9.2\n>\n> I think I have the GDAL libraries installed, as I believe they are required\n> for GRASS, which I have and which is running fine (version 6.4).  It seems\n> like the most likely problem (based on error messages) is not having an\n> acceptable C compiler?  If that is the issue, any guidance on how to find\n> and install one would be very appreciated.\n\nCheck that you do have a visible GDAL install, as well as PROJ.4. Don't \nassume, it usually hurts. Until gdal-config is found, you will not make \nany progress. spgrass6 does not need a C/C++ compiler (but what reasonable \nUnix lacks a compiler?)\n\nYou need XML (but not bitops) and sp, which you can install as binaries, \nthen you need rgdal installed from source or from\n\nhttp://www.kyngchaos.com/software:frameworks\n\nCheck your GRASS installation for its GDAL/PROJ.4, you do not want \nclashing versions. Start from the beginning (PROJ.4, GDAL), and build from \nthere (rgdal, GRASS), to be sure that they match.\n\nHope this helps,\n\nRoger\n\n>\n> Thank you for any help on this.  The error messages I get are below (sorry\n> for so much text).\n>\n> Best,\n> Tim\n>\n>\n>\n> * Installing *source* package ?bitops? ...\n> ** libs\n> ** arch - i386\n> sh: make: command not found\n> ERROR: compilation failed for package ?bitops?\n> * Removing\n> ?/Library/Frameworks/R.framework/Versions/2.9/Resources/library/bitops?\n> * Installing *source* package ?sp? ...\n> ** libs\n> ** arch - i386\n> sh: make: command not found\n> ERROR: compilation failed for package ?sp?\n> * Removing\n> ?/Library/Frameworks/R.framework/Versions/2.9/Resources/library/sp?\n> * Installing *source* package ?XML? ...\n> checking for gcc... no\n> checking for cc... no\n> checking for cc... no\n> checking for cl... no\n> configure: error: no acceptable C compiler found in $PATH\n> See `config.log' for more details.\n> ERROR: configuration failed for package ?XML?\n> * Removing\n> ?/Library/Frameworks/R.framework/Versions/2.9/Resources/library/XML?\n> * Installing *source* package ?rgdal? ...\n> gdal-config: gdal-config\n> ./configure: line 1311: gdal-config: command not found\n> Error: gdal-config not found\n> The gdal-config script distributed with GDAL could not be found.\n> If you have not installed the GDAL libraries, you can\n> download the source from  http://www.gdal.org/\n> If you have installed the GDAL libraries, then make sure that\n> gdal-config is in your path. Try typing gdal-config at a\n> shell prompt and see if it runs. If not, use:\n> --configure-args='--with-gdal-config=/usr/local/bin/gdal-config' echo with\n> appropriate values for your installation.\n>\n> ERROR: configuration failed for package ?rgdal?\n> * Removing\n> ?/Library/Frameworks/R.framework/Versions/2.9/Resources/library/rgdal?\n> * Installing *source* package ?spgrass6? ...\n> ** R\n> ** inst\n> ** preparing package for lazy loading\n> Error : package 'sp' required by 'spgrass6' could not be found\n> ERROR: lazy loading failed for package ?spgrass6?\n> * Removing\n> ?/Library/Frameworks/R.framework/Versions/2.9/Resources/library/spgrass6?\n>\n> The downloaded packages are in\n>\n> ?/private/var/folders/nX/nX5WzHJNHoC9btpEipD-dU+++TM/-Tmp-/RtmplsIEHV/downloaded_packages?\n> Updating HTML index of packages in '.Library'\n> Warning messages:\n> 1: In install.packages(\"spgrass6\", type = \"source\", dependencies = TRUE) :\n>  installation of package 'bitops' had non-zero exit status\n> 2: In install.packages(\"spgrass6\", type = \"source\", dependencies = TRUE) :\n>  installation of package 'sp' had non-zero exit status\n> 3: In install.packages(\"spgrass6\", type = \"source\", dependencies = TRUE) :\n>  installation of package 'XML' had non-zero exit status\n> 4: In install.packages(\"spgrass6\", type = \"source\", dependencies = TRUE) :\n>  installation of package 'rgdal' had non-zero exit status\n> 5: In install.packages(\"spgrass6\", type = \"source\", dependencies = TRUE) :\n>  installation of package 'spgrass6' had non-zero exit status\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Mon, 28 Sep 2009, Tim Holland wrote:\n\n>\n> Dear all,\n>\n> I am trying to install spgrass6 in R, but am having trouble.  I have seen a\n> previous related post\n> (http://n2.nabble.com/GRASS-stats-Probl",
+      "thread_id": "thread-59548fcf18a7",
+      "thread_depth": 1,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-715fdd93eb94",
+      "message_id": "<618804.54210.qm@web110009.mail.gq1.yahoo.com>",
+      "from_name": "Hamish",
+      "from_email_hash": "7b5e1221f218605bee02ec5f1fa06d37177b328ee34797cb910a47d2fb07a14d",
+      "date": "2009-09-28T21:22:27Z",
+      "subject": "[GRASS-stats] problem installing spgrass6 in R",
+      "subject_clean": "[GRASS-stats] problem installing spgrass6 in R",
+      "in_reply_to": "<alpine.LRH.2.00.0909282046180.19591@reclus.nhh.no>",
+      "references": [],
+      "body_plain": "Tim:\n> > * Installing *source* package ?bitops? ...\n> > ** libs\n> > ** arch - i386\n> > sh: make: command not found\n\n\nyou need to install 'make' which comes with gcc etc. from the\nXcode(?) installer.\n\n\nHamish",
+      "body_snippet": "Tim:\n> > * Installing *source* package ?bitops? ...\n> > ** libs\n> > ** arch - i386\n> > sh: make: command not found\n\n\nyou need to install 'make' which comes with gcc etc. from the\nXcode(?) installer.\n\n",
+      "thread_id": "thread-59548fcf18a7",
+      "thread_depth": 2,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-fce2e66e1bd5",
+      "message_id": "<alpine.LRH.2.00.0909290941560.21950@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2009-09-29T03:44:55Z",
+      "subject": "[GRASS-stats] problem installing spgrass6 in R",
+      "subject_clean": "[GRASS-stats] problem installing spgrass6 in R",
+      "in_reply_to": "<618804.54210.qm@web110009.mail.gq1.yahoo.com>",
+      "references": [
+        "<618804.54210.qm@web110009.mail.gq1.yahoo.com>"
+      ],
+      "body_plain": "On Mon, 28 Sep 2009, Hamish wrote:\n\n> Tim:\n>>> * Installing *source* package ?bitops? ...\n>>> ** libs\n>>> ** arch - i386\n>>> sh: make: command not found\n>\n>\n> you need to install 'make' which comes with gcc etc. from the\n> Xcode(?) installer.\n\nI think Tim needs to read the available FAQs on CRAN, and read:\n\nhttp://r.research.att.com/tools/\n\ngiving the recipes for setting up an OSX system for building R packages. \nIt isn't hard, one just needs to folloow the instructions and *never* \nassume anything unless one knows more about OSX variants than the \nmaintainer. I think that the underlying GRASS install is broken too \n(probably PATH problems) wrt. GDAL.\n\nRoger\n\n>\n>\n> Hamish\n>\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Mon, 28 Sep 2009, Hamish wrote:\n\n> Tim:\n>>> * Installing *source* package ?bitops? ...\n>>> ** libs\n>>> ** arch - i386\n>>> sh: make: command not found\n>\n>\n> you need to install 'make' which comes wi",
+      "thread_id": "thread-59548fcf18a7",
+      "thread_depth": 3,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-5d3ffd483927",
+      "message_id": "<4AC1EA01.6040902@amu.edu.pl>",
+      "from_name": "Jarosław Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2009-09-29T07:05:43Z",
+      "subject": "[GRASS-stats] Problem installing spdep",
+      "subject_clean": "[GRASS-stats] Problem installing spdep",
+      "in_reply_to": "<fbc3c81f0909280817y6dfc58f5rd9b7e1a3a3598e38@mail.gmail.com>",
+      "references": [
+        "<fbc3c81f0909280817y6dfc58f5rd9b7e1a3a3598e38@mail.gmail.com>"
+      ],
+      "body_plain": "Wolf Bergenheim pisze:\n> Hi,\n>\n> I have a problem when I try to install spdep I get the following error:\n>\n> Error: package 'Matrix' required by 'spdep' could not be found\n> Execution halted\n> ERROR: lazy loading failed for package 'spdep'\n> ** Removing '/usr/local/lib/R/site-library/spdep'\n>\n> The downloaded packages are in\n> \t/tmp/RtmpO1y8gG/downloaded_packages\n> Warning messages:\n> 1: In install.packages(\"spdep\", dep = T) :\n>   dependency ?Matrix? is not available\n> 2: In install.packages(\"spdep\", dep = T) :\n>   installation of package 'spdep' had non-zero exit status\n>\n>\n> What am I doing wrong? I tried installing it with\n> install.packages(\"spdep\", dep=T)\n>\n> --Wolf\n>\n>   \n It looks like dependency issue...\nuse:\ninstall.packages(\"spdep\",dependencies=TRUE)\n\nor try to install Matrix manually\nJarek",
+      "body_snippet": "Wolf Bergenheim pisze:\n> Hi,\n>\n> I have a problem when I try to install spdep I get the following error:\n>\n> Error: package 'Matrix' required by 'spdep' could not be found\n> Execution halted\n> ERROR: ",
+      "thread_id": "thread-fedf87770170",
+      "thread_depth": 1,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-84b16e19d998",
+      "message_id": "<4AC1EB6D.6090903@amu.edu.pl>",
+      "from_name": "Jarosław Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2009-09-29T07:11:46Z",
+      "subject": "[GRASS-stats] plugin and multiple GRASS instalation",
+      "subject_clean": "[GRASS-stats] plugin and multiple GRASS instalation",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi\nI added and compiled GRASS7 for testing purposes but my main instalation \nis grass65.svn. From that moment I have unresolved problem with \ngrass-gdal plugin in R: Inspite I recomple grass-gdal plugin and \ngrass65.svn (with make distclean) I have error:\n\nr2=readRAST6(\"elev\", plugin=TRUE)\nB??D:Incompatible library version for module. You need to rebuild GRASS\n       or untangle multiple installations.\nGRASS 6.5.svn (nc_spm_08):~ >\n\nI think (untangle multiple instalation is new in that issue) that it is \nconflict between grass7 and 6 libraries\nregards to all\nJarek",
+      "body_snippet": "Hi\nI added and compiled GRASS7 for testing purposes but my main instalation \nis grass65.svn. From that moment I have unresolved problem with \ngrass-gdal plugin in R: Inspite I recomple grass-gdal plug",
+      "thread_id": "thread-84b16e19d998",
+      "thread_depth": 0,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-f07113f36f40",
+      "message_id": "<alpine.LRH.2.00.0909291451390.22582@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2009-09-29T08:55:49Z",
+      "subject": "[GRASS-stats] Problem installing spdep",
+      "subject_clean": "[GRASS-stats] Problem installing spdep",
+      "in_reply_to": "<4AC1EA01.6040902@amu.edu.pl>",
+      "references": [
+        "<fbc3c81f0909280817y6dfc58f5rd9b7e1a3a3598e38@mail.gmail.com>",
+        "<4AC1EA01.6040902@amu.edu.pl>"
+      ],
+      "body_plain": "On Tue, 29 Sep 2009, Jaros?aw Jasiewicz wrote:\n\n> Wolf Bergenheim pisze:\n>> Hi,\n>> \n>> I have a problem when I try to install spdep I get the following error:\n>> \n>> Error: package 'Matrix' required by 'spdep' could not be found\n>> Execution halted\n>> ERROR: lazy loading failed for package 'spdep'\n>> ** Removing '/usr/local/lib/R/site-library/spdep'\n>> \n>> The downloaded packages are in\n>> \t/tmp/RtmpO1y8gG/downloaded_packages\n>> Warning messages:\n>> 1: In install.packages(\"spdep\", dep = T) :\n>>   dependency ?Matrix? is not available\n>> 2: In install.packages(\"spdep\", dep = T) :\n>>   installation of package 'spdep' had non-zero exit status\n>> \n>> \n>> What am I doing wrong? I tried installing it with\n>> install.packages(\"spdep\", dep=T)\n>> \n>> --Wolf\n>>\n>> \n> It looks like dependency issue...\n> use:\n> install.packages(\"spdep\",dependencies=TRUE)\n>\n> or try to install Matrix manually\n\nHi,\n\nSince the last R release (2.9.0 I think), Matrix has become a recommended \npackage. I've seen this problem in installations that had Matrix installed \nin a user library before, so that after upgrading R, there are two \ncompeting installations. If this is the case, you'd need to find out from \nlibrary(), installed.packages() and .libPaths() where the errant Matrix \nis, and use remove.packages() on it, indicating the correct lib=.\n\nRoger\n\nPS. There are more spdep users on R-sig-geo.\n\n> Jarek\n> _______________________________________________\n> grass-stats mailing list\n> grass-stats@lists.osgeo.org\n> http://lists.osgeo.org/mailman/listinfo/grass-stats\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Tue, 29 Sep 2009, Jaros?aw Jasiewicz wrote:\n\n> Wolf Bergenheim pisze:\n>> Hi,\n>> \n>> I have a problem when I try to install spdep I get the following error:\n>> \n>> Error: package 'Matrix' required b",
+      "thread_id": "thread-fedf87770170",
+      "thread_depth": 2,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-3b83d3604b8d",
+      "message_id": "<alpine.LRH.2.00.0909291507150.22582@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2009-09-29T09:13:08Z",
+      "subject": "[GRASS-stats] plugin and multiple GRASS instalation",
+      "subject_clean": "[GRASS-stats] plugin and multiple GRASS instalation",
+      "in_reply_to": "<4AC1EB6D.6090903@amu.edu.pl>",
+      "references": [
+        "<4AC1EB6D.6090903@amu.edu.pl>"
+      ],
+      "body_plain": "On Tue, 29 Sep 2009, Jaros?aw Jasiewicz wrote:\n\n> Hi\n> I added and compiled GRASS7 for testing purposes but my main instalation is \n> grass65.svn. From that moment I have unresolved problem with grass-gdal \n> plugin in R: Inspite I recomple grass-gdal plugin and grass65.svn (with make \n> distclean) I have error:\n>\n> r2=readRAST6(\"elev\", plugin=TRUE)\n> B??D:Incompatible library version for module. You need to rebuild GRASS\n>      or untangle multiple installations.\n> GRASS 6.5.svn (nc_spm_08):~ >\n>\n> I think (untangle multiple instalation is new in that issue) that it is \n> conflict between grass7 and 6 libraries\n\nYes, if there is a plugin built against 5.7, or the 6.5-built plugin is \nseeing the 5.7 *.so shared objects, it will complain. I'm not sure that \nyou can work around this easily - you would need not to use GDAL at all, \nI'm afraid, to be sure. My practice would most likely be to have two \ndifferent users with local installs of everything and local LD path \nvariables. The plugin \"architecture\" is designed for a single environment, \none GDAL and one GRASS only in my experience.\n\nBest wishes,\n\nRoger\n\n> regards to all\n> Jarek\n> _______________________________________________\n> grass-stats mailing list\n> grass-stats@lists.osgeo.org\n> http://lists.osgeo.org/mailman/listinfo/grass-stats\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Tue, 29 Sep 2009, Jaros?aw Jasiewicz wrote:\n\n> Hi\n> I added and compiled GRASS7 for testing purposes but my main instalation is \n> grass65.svn. From that moment I have unresolved problem with grass",
+      "thread_id": "thread-84b16e19d998",
+      "thread_depth": 1,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-61b76a8236e1",
+      "message_id": "<4AC21FDD.9040007@amu.edu.pl>",
+      "from_name": "Jarek Jasiewicz",
+      "from_email_hash": "e22e5da24e98ebb2e2a6716db428ae6a7c37bdd3c85941253317fca55bdac5b2",
+      "date": "2009-09-29T10:55:33Z",
+      "subject": "[GRASS-stats] plugin and multiple GRASS instalation",
+      "subject_clean": "[GRASS-stats] plugin and multiple GRASS instalation",
+      "in_reply_to": "<alpine.LRH.2.00.0909291507150.22582@reclus.nhh.no>",
+      "references": [
+        "<4AC1EB6D.6090903@amu.edu.pl>",
+        "<alpine.LRH.2.00.0909291507150.22582@reclus.nhh.no>"
+      ],
+      "body_plain": ">>  \n>\n> Yes, if there is a plugin built against 5.7, or the 6.5-built plugin \n> is seeing the 5.7 *.so shared objects, it will complain. I'm not sure \n> that you can work around this easily - you would need not to use GDAL \n> at all, I'm afraid, to be sure. My practice would most likely be to \n> have two different users with local installs of everything and local \n> LD path variables. The plugin \"architecture\" is designed for a single \n> environment, one GDAL and one GRASS only in my experience.\n>\n>\nI found other temporary solution: export LD_LIBRARY_PATH before starting \ngrass65 or grass7 and it works but it is not good solution\nIt rather pity information\nbest wishes\nJarek",
+      "body_snippet": ">>  \n>\n> Yes, if there is a plugin built against 5.7, or the 6.5-built plugin \n> is seeing the 5.7 *.so shared objects, it will complain. I'm not sure \n> that you can work around this easily - you wou",
+      "thread_id": "thread-84b16e19d998",
+      "thread_depth": 2,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-777430b21d7e",
+      "message_id": "<1254283014413-3740547.post@n2.nabble.com>",
+      "from_name": "Tim Holland",
+      "from_email_hash": "6e88e4cc7976b0a8dfc63a14c3b3848512f1de987d10b91ff0fe28e14d38a2b0",
+      "date": "2009-09-29T23:56:56Z",
+      "subject": "[GRASS-stats] problem installing spgrass6 in R",
+      "subject_clean": "[GRASS-stats] problem installing spgrass6 in R",
+      "in_reply_to": "<alpine.LRH.2.00.0909290941560.21950@reclus.nhh.no>",
+      "references": [
+        "<1254141611034-3729191.post@n2.nabble.com>",
+        "<alpine.LRH.2.00.0909282046180.19591@reclus.nhh.no>",
+        "<618804.54210.qm@web110009.mail.gq1.yahoo.com>",
+        "<alpine.LRH.2.00.0909290941560.21950@reclus.nhh.no>"
+      ],
+      "body_plain": "Hamish wrote:\n> \n> \n>> you need to install 'make' which comes with gcc etc. from the\n>> Xcode(?) installer.\n> \n> \n\n\nRoger Bivand wrote:\n> \n> \n> I think Tim needs to read the available FAQs on CRAN, and read:\n> \n> http://r.research.att.com/tools/\n> \n> giving the recipes for setting up an OSX system for building R packages. \n> It isn't hard, one just needs to folloow the instructions and *never* \n> assume anything unless one knows more about OSX variants than the \n> maintainer. I think that the underlying GRASS install is broken too \n> (probably PATH problems) wrt. GDAL.\n> \n> \n\n\nDear all, \n\nThank you for the help, Hamish and Roger (on list and off).  I was missing\nXcode as you suggested Hamish, so now that is installed and I got marginally\nfurther on the install: rgdal and spgrass6 still failed, but bitops, XML,\nand sp worked.  \n\nI am still not sure how to test if my gdal install is broken or not, but I\nwill follow Roger's advice and assume that is is, and reinstall everything\nfrom the ground up.  I tried running gdal-config in GRASS, and got the\nfollowing output - so I think it is installed, put perhaps with PATH\nproblems.  \n\nGRASS 6.4.0RC4 (mapset):~ > gdal-config\nUsage: gdal-config [OPTIONS]\nOptions:\n\t[--prefix[=DIR]]\n\t[--libs]\n\t[--dep-libs]\n\t[--cflags]\n\t[--datadir]\n\t[--version]\n\t[--ogr-enabled]\n\t[--formats]\n\nThanks again for the help.  The error messages I'm getting now are below.  I\nam mainly just writing here as an update for the info of the list (and\nnewbies such as myself getting stuck on this in future), so unless it seems\nlike a bad idea (in which case please correct me) I will just do the\nstrategy of reinstalling everything.   \n\nBest, \nTim\n\n\n\n(part of) error transcript from R (having run install.packages(\"spgrass6\",\ntype=\"source\", dependencies=TRUE)): \n\nError: gdal-config not found\nThe gdal-config script distributed with GDAL could not be found.\nIf you have not installed the GDAL libraries, you can\ndownload the source from  http://www.gdal.org/\nIf you have installed the GDAL libraries, then make sure that\ngdal-config is in your path. Try typing gdal-config at a\nshell prompt and see if it runs. If not, use:\n --configure-args='--with-gdal-config=/usr/local/bin/gdal-config' echo with\nappropriate values for your installation.\n\nERROR: configuration failed for package ?rgdal?\n* Removing\n?/Library/Frameworks/R.framework/Versions/2.9/Resources/library/rgdal?\n* Installing *source* package ?spgrass6? ...\n** R\n** inst\n** preparing package for lazy loading\nError : package 'rgdal' required by 'spgrass6' could not be found\nERROR: lazy loading failed for package ?spgrass6?\n* Removing\n?/Library/Frameworks/R.framework/Versions/2.9/Resources/library/spgrass6?\n\nThe downloaded packages are in\n\n?/private/var/folders/nX/nX5WzHJNHoC9btpEipD-dU+++TM/-Tmp-/RtmplsIEHV/downloaded_packages?\nUpdating HTML index of packages in '.Library'\nWarning messages:\n1: In install.packages(\"spgrass6\", type = \"source\", dependencies = TRUE) :\n  installation of package 'rgdal' had non-zero exit status\n2: In install.packages(\"spgrass6\", type = \"source\", dependencies = TRUE) :\n  installation of package 'spgrass6' had non-zero exit status\n-- \nView this message in context: http://n2.nabble.com/problem-installing-spgrass6-in-R-tp3729191p3740547.html\nSent from the Grass - Stats mailing list archive at Nabble.com.",
+      "body_snippet": "Hamish wrote:\n> \n> \n>> you need to install 'make' which comes with gcc etc. from the\n>> Xcode(?) installer.\n> \n> \n\n\nRoger Bivand wrote:\n> \n> \n> I think Tim needs to read the available FAQs on CRAN, an",
+      "thread_id": "thread-59548fcf18a7",
+      "thread_depth": 4,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-6086ee5f9297",
+      "message_id": "<1254284336003-3740630.post@n2.nabble.com>",
+      "from_name": "Tim Holland",
+      "from_email_hash": "6e88e4cc7976b0a8dfc63a14c3b3848512f1de987d10b91ff0fe28e14d38a2b0",
+      "date": "2009-09-30T00:18:57Z",
+      "subject": "[GRASS-stats] problem installing spgrass6 in R",
+      "subject_clean": "[GRASS-stats] problem installing spgrass6 in R",
+      "in_reply_to": "<1254283014413-3740547.post@n2.nabble.com>",
+      "references": [
+        "<1254141611034-3729191.post@n2.nabble.com>",
+        "<alpine.LRH.2.00.0909282046180.19591@reclus.nhh.no>",
+        "<618804.54210.qm@web110009.mail.gq1.yahoo.com>",
+        "<alpine.LRH.2.00.0909290941560.21950@reclus.nhh.no>",
+        "<1254283014413-3740547.post@n2.nabble.com>"
+      ],
+      "body_plain": "I was just reading the R integration section of the KyngChaos page\n(http://www.kyngchaos.com/software:grass#r_integration) and it said the\nfollowing: \n\nR Integration\nGRASS can be used with R (Tiger only). You should get the latest R binaries\n(at least 2.3.0)...\n\nThat isn't true, is it?  That it is Tiger (MacOSX 10.4) only?  Should that\nread Tiger and up?  I am on Leopard (10.5), so if it only works on Tiger\nthat is a problem.  For the time being, I will assume that it can work on\nLeopard and will keep trying.  \n\nBest, \nTim\n\n-- \nView this message in context: http://n2.nabble.com/problem-installing-spgrass6-in-R-tp3729191p3740630.html\nSent from the Grass - Stats mailing list archive at Nabble.com.",
+      "body_snippet": "I was just reading the R integration section of the KyngChaos page\n(http://www.kyngchaos.com/software:grass#r_integration) and it said the\nfollowing: \n\nR Integration\nGRASS can be used with R (Tiger on",
+      "thread_id": "thread-59548fcf18a7",
+      "thread_depth": 5,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-e27cc1c5c9fc",
+      "message_id": "<alpine.LRH.2.00.0909301100190.25552@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2009-09-30T05:05:39Z",
+      "subject": "[GRASS-stats] problem installing spgrass6 in R",
+      "subject_clean": "[GRASS-stats] problem installing spgrass6 in R",
+      "in_reply_to": "<1254283014413-3740547.post@n2.nabble.com>",
+      "references": [
+        "<1254141611034-3729191.post@n2.nabble.com>",
+        "<alpine.LRH.2.00.0909282046180.19591@reclus.nhh.no>",
+        "<618804.54210.qm@web110009.mail.gq1.yahoo.com>",
+        "<alpine.LRH.2.00.0909290941560.21950@reclus.nhh.no>",
+        "<1254283014413-3740547.post@n2.nabble.com>"
+      ],
+      "body_plain": "On Tue, 29 Sep 2009, Tim Holland wrote:\n\n>\n>\n>\n> Hamish wrote:\n>>\n>>\n>>> you need to install 'make' which comes with gcc etc. from the\n>>> Xcode(?) installer.\n>>\n>>\n>\n>\n> Roger Bivand wrote:\n>>\n>>\n>> I think Tim needs to read the available FAQs on CRAN, and read:\n>>\n>> http://r.research.att.com/tools/\n>>\n>> giving the recipes for setting up an OSX system for building R packages.\n>> It isn't hard, one just needs to folloow the instructions and *never*\n>> assume anything unless one knows more about OSX variants than the\n>> maintainer. I think that the underlying GRASS install is broken too\n>> (probably PATH problems) wrt. GDAL.\n>>\n>>\n>\n>\n> Dear all,\n>\n> Thank you for the help, Hamish and Roger (on list and off).  I was missing\n> Xcode as you suggested Hamish, so now that is installed and I got marginally\n> further on the install: rgdal and spgrass6 still failed, but bitops, XML,\n> and sp worked.\n>\n> I am still not sure how to test if my gdal install is broken or not, but I\n> will follow Roger's advice and assume that is is, and reinstall everything\n> from the ground up.  I tried running gdal-config in GRASS, and got the\n> following output - so I think it is installed, put perhaps with PATH\n> problems.\n>\n> GRASS 6.4.0RC4 (mapset):~ > gdal-config\n> Usage: gdal-config [OPTIONS]\n> Options:\n> \t[--prefix[=DIR]]\n> \t[--libs]\n> \t[--dep-libs]\n> \t[--cflags]\n> \t[--datadir]\n> \t[--version]\n> \t[--ogr-enabled]\n> \t[--formats]\n>\n> Thanks again for the help.  The error messages I'm getting now are below.  I\n> am mainly just writing here as an update for the info of the list (and\n> newbies such as myself getting stuck on this in future), so unless it seems\n> like a bad idea (in which case please correct me) I will just do the\n> strategy of reinstalling everything.\n\nTim,\n\nOne way of handling this might be - if you will only use rgdal from \n\"within\" GRASS, is to run the install from the rgdal source package in \nthat environment. Alternatively, use gdal-config within GRASS to find the \nthe GDAL libs (--libs) and headers (--cflags) strings to pass to the \nconfigure arguments in install.packages() in R outside GRASS. Here rgdal \nwill fail after installation if the GDAL shared objects are not on the \nPATH R can see.\n\nHope this helps,\n\nRoger\n\n\n\n>\n> Best,\n> Tim\n>\n>\n>\n> (part of) error transcript from R (having run install.packages(\"spgrass6\",\n> type=\"source\", dependencies=TRUE)):\n>\n> Error: gdal-config not found\n> The gdal-config script distributed with GDAL could not be found.\n> If you have not installed the GDAL libraries, you can\n> download the source from  http://www.gdal.org/\n> If you have installed the GDAL libraries, then make sure that\n> gdal-config is in your path. Try typing gdal-config at a\n> shell prompt and see if it runs. If not, use:\n> --configure-args='--with-gdal-config=/usr/local/bin/gdal-config' echo with\n> appropriate values for your installation.\n>\n> ERROR: configuration failed for package ?rgdal?\n> * Removing\n> ?/Library/Frameworks/R.framework/Versions/2.9/Resources/library/rgdal?\n> * Installing *source* package ?spgrass6? ...\n> ** R\n> ** inst\n> ** preparing package for lazy loading\n> Error : package 'rgdal' required by 'spgrass6' could not be found\n> ERROR: lazy loading failed for package ?spgrass6?\n> * Removing\n> ?/Library/Frameworks/R.framework/Versions/2.9/Resources/library/spgrass6?\n>\n> The downloaded packages are in\n>\n> ?/private/var/folders/nX/nX5WzHJNHoC9btpEipD-dU+++TM/-Tmp-/RtmplsIEHV/downloaded_packages?\n> Updating HTML index of packages in '.Library'\n> Warning messages:\n> 1: In install.packages(\"spgrass6\", type = \"source\", dependencies = TRUE) :\n>  installation of package 'rgdal' had non-zero exit status\n> 2: In install.packages(\"spgrass6\", type = \"source\", dependencies = TRUE) :\n>  installation of package 'spgrass6' had non-zero exit status\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Tue, 29 Sep 2009, Tim Holland wrote:\n\n>\n>\n>\n> Hamish wrote:\n>>\n>>\n>>> you need to install 'make' which comes with gcc etc. from the\n>>> Xcode(?) installer.\n>>\n>>\n>\n>\n> Roger Bivand wrote:\n>>\n>>\n>> ",
+      "thread_id": "thread-59548fcf18a7",
+      "thread_depth": 5,
+      "month": "2009-09"
+    },
+    {
+      "id": "msg-83c701a87e86",
+      "message_id": "<alpine.LRH.2.00.0909301105450.25552@reclus.nhh.no>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2009-09-30T05:14:54Z",
+      "subject": "[GRASS-stats] problem installing spgrass6 in R",
+      "subject_clean": "[GRASS-stats] problem installing spgrass6 in R",
+      "in_reply_to": "<1254284336003-3740630.post@n2.nabble.com>",
+      "references": [
+        "<1254141611034-3729191.post@n2.nabble.com>",
+        "<alpine.LRH.2.00.0909282046180.19591@reclus.nhh.no>",
+        "<618804.54210.qm@web110009.mail.gq1.yahoo.com>",
+        "<alpine.LRH.2.00.0909290941560.21950@reclus.nhh.no>",
+        "<1254283014413-3740547.post@n2.nabble.com>",
+        "<1254284336003-3740630.post@n2.nabble.com>"
+      ],
+      "body_plain": "On Tue, 29 Sep 2009, Tim Holland wrote:\n\n>\n> I was just reading the R integration section of the KyngChaos page\n> (http://www.kyngchaos.com/software:grass#r_integration) and it said the\n> following:\n>\n> R Integration\n> GRASS can be used with R (Tiger only). You should get the latest R binaries\n> (at least 2.3.0)...\n>\n> That isn't true, is it?  That it is Tiger (MacOSX 10.4) only?  Should that\n> read Tiger and up?  I am on Leopard (10.5), so if it only works on Tiger\n> that is a problem.  For the time being, I will assume that it can work on\n> Leopard and will keep trying.\n\nI don't think so, as I read http://www.kyngchaos.com/software:frameworks, \nand higher up on the GRASS page, it should work. Installing rgdal within \nthe frameworks is also a possibility, especially if the GRASS install uses \nthe GDAL framework.\n\nRoger\n\n>\n> Best,\n> Tim\n>\n>\n\n-- \nRoger Bivand\nEconomic Geography Section, Department of Economics, Norwegian School of\nEconomics and Business Administration, Helleveien 30, N-5045 Bergen,\nNorway. voice: +47 55 95 93 55; fax +47 55 95 95 43\ne-mail: Roger.Bivand@nhh.no",
+      "body_snippet": "On Tue, 29 Sep 2009, Tim Holland wrote:\n\n>\n> I was just reading the R integration section of the KyngChaos page\n> (http://www.kyngchaos.com/software:grass#r_integration) and it said the\n> following:\n>",
+      "thread_id": "thread-59548fcf18a7",
+      "thread_depth": 6,
+      "month": "2009-09"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-2f1d7a12e6d8",
+      "subject": "[GRASS-stats] Re: [R-sig-Geo] GRASS commands (fwd)",
+      "message_count": 2,
+      "participants": [
+        "Markus Neteler",
+        "Roger Bivand"
+      ],
+      "started": "2009-09-01T08:44:55Z",
+      "last_reply": "2009-09-01T16:22:56Z",
+      "root_message_id": "msg-2f1d7a12e6d8"
+    },
+    {
+      "id": "thread-8722b69ae90b",
+      "subject": "[GRASS-stats] Re: [R-sig-Geo] GRASS commands (fwd)",
+      "message_count": 1,
+      "participants": [
+        "Roger Bivand"
+      ],
+      "started": "2009-09-02T10:09:16Z",
+      "last_reply": "2009-09-02T10:09:16Z",
+      "root_message_id": "msg-8722b69ae90b"
+    },
+    {
+      "id": "thread-8622ec277e98",
+      "subject": "[GRASS-stats] spgrass6 and winGRASS 6.4.0 RC5",
+      "message_count": 4,
+      "participants": [
+        "Hamish",
+        "Markus Neteler",
+        "Roger Bivand",
+        "alexandre villers"
+      ],
+      "started": "2009-09-03T12:37:49Z",
+      "last_reply": "2009-09-04T01:01:59Z",
+      "root_message_id": "msg-8622ec277e98"
+    },
+    {
+      "id": "thread-cc1ca164da11",
+      "subject": "[GRASS-stats] R and GRASS",
+      "message_count": 1,
+      "participants": [
+        "alexandre villers"
+      ],
+      "started": "2009-09-04T04:09:24Z",
+      "last_reply": "2009-09-04T04:09:24Z",
+      "root_message_id": "msg-cc1ca164da11"
+    },
+    {
+      "id": "thread-ca0d460852fd",
+      "subject": "[GRASS-stats] Sys.setlocale for GRASS6.4",
+      "message_count": 9,
+      "participants": [
+        "Glynn Clements",
+        "Markus Neteler",
+        "Roger Bivand",
+        "alexandre villers"
+      ],
+      "started": "2009-09-04T10:06:37Z",
+      "last_reply": "2009-09-13T04:00:19Z",
+      "root_message_id": "msg-ca0d460852fd"
+    },
+    {
+      "id": "thread-08c6dd655d06",
+      "subject": "[GRASS-stats] creating a grid from a contour vector shape",
+      "message_count": 3,
+      "participants": [
+        "Markus Neteler",
+        "Mauricio Zambrano",
+        "alexandre villers"
+      ],
+      "started": "2009-09-05T16:29:22Z",
+      "last_reply": "2009-09-09T03:45:53Z",
+      "root_message_id": "msg-08c6dd655d06"
+    },
+    {
+      "id": "thread-0d513cf3f981",
+      "subject": "[GRASS-stats] [Fwd: Re: [R-sig-Geo] Errror with gmeta6()]",
+      "message_count": 5,
+      "participants": [
+        "Agustin Lobo",
+        "Markus Neteler"
+      ],
+      "started": "2009-09-09T07:59:33Z",
+      "last_reply": "2009-09-13T16:16:13Z",
+      "root_message_id": "msg-0d513cf3f981"
+    },
+    {
+      "id": "thread-ed29f70a7376",
+      "subject": "[GRASS-stats] r.reclass by rules",
+      "message_count": 1,
+      "participants": [
+        "Agustin Lobo"
+      ],
+      "started": "2009-09-09T08:59:45Z",
+      "last_reply": "2009-09-09T08:59:45Z",
+      "root_message_id": "msg-ed29f70a7376"
+    },
+    {
+      "id": "thread-c107e740a660",
+      "subject": "R: [GRASS-stats] r.reclass by rules",
+      "message_count": 2,
+      "participants": [
+        "Agustin Lobo",
+        "Hamish"
+      ],
+      "started": "2009-09-15T06:13:23Z",
+      "last_reply": "2009-09-19T11:30:16Z",
+      "root_message_id": "msg-c107e740a660"
+    },
+    {
+      "id": "thread-0df791a5ac36",
+      "subject": "[GRASS-stats] v.reclass",
+      "message_count": 1,
+      "participants": [
+        "Agustin Lobo"
+      ],
+      "started": "2009-09-15T08:42:08Z",
+      "last_reply": "2009-09-15T08:42:08Z",
+      "root_message_id": "msg-0df791a5ac36"
+    },
+    {
+      "id": "thread-518fd629fe37",
+      "subject": "[GRASS-stats] from vector to raster",
+      "message_count": 1,
+      "participants": [
+        "Alexandre VILLERS"
+      ],
+      "started": "2009-09-18T09:05:42Z",
+      "last_reply": "2009-09-18T09:05:42Z",
+      "root_message_id": "msg-518fd629fe37"
+    },
+    {
+      "id": "thread-b95443dd6062",
+      "subject": "[GRASS-stats] from vector to raster (2nd try) with R or GRASS (GRASS prefered...)",
+      "message_count": 2,
+      "participants": [
+        "Alexandre VILLERS",
+        "Tim Holland"
+      ],
+      "started": "2009-09-19T07:01:23Z",
+      "last_reply": "2009-09-28T08:49:46Z",
+      "root_message_id": "msg-b95443dd6062"
+    },
+    {
+      "id": "thread-59548fcf18a7",
+      "subject": "[GRASS-stats] problem installing spgrass6 in R",
+      "message_count": 8,
+      "participants": [
+        "Hamish",
+        "Roger Bivand",
+        "Tim Holland"
+      ],
+      "started": "2009-09-28T08:40:13Z",
+      "last_reply": "2009-09-30T05:14:54Z",
+      "root_message_id": "msg-59548fcf18a7"
+    },
+    {
+      "id": "thread-fedf87770170",
+      "subject": "[GRASS-stats] Problem installing spdep",
+      "message_count": 3,
+      "participants": [
+        "Jarosław Jasiewicz",
+        "Roger Bivand",
+        "Wolf Bergenheim"
+      ],
+      "started": "2009-09-28T11:18:05Z",
+      "last_reply": "2009-09-29T08:55:49Z",
+      "root_message_id": "msg-fedf87770170"
+    },
+    {
+      "id": "thread-84b16e19d998",
+      "subject": "[GRASS-stats] plugin and multiple GRASS instalation",
+      "message_count": 3,
+      "participants": [
+        "Jarek Jasiewicz",
+        "Jarosław Jasiewicz",
+        "Roger Bivand"
+      ],
+      "started": "2009-09-29T07:11:46Z",
+      "last_reply": "2009-09-29T10:55:33Z",
+      "root_message_id": "msg-84b16e19d998"
+    }
+  ]
+}

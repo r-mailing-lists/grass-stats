@@ -1,0 +1,1486 @@
+From temiz at deprem.gov.tr  Wed Aug 10 03:46:43 2005
+From: temiz at deprem.gov.tr (orkun)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] visualize DEM error
+Message-ID: <42F9B0E3.4010006@deprem.gov.tr>
+
+hello
+
+how  can  I visualize DEM error ?
+how can I interpret whether DEM which I have created is correct ?
+
+
+could you give me hints ?
+
+regards
+
+Ahmet Temiz
+
+______________________________________
+XamimeLT - installed on mailserver for domain @deprem.gov.tr
+Queries to: postmaster@deprem.gov.tr
+______________________________________
+The views and opinions expressed in this e-mail message are the sender's own
+and do not necessarily represent the views and the opinions of Earthquake Research Dept.
+of General Directorate of Disaster Affairs.
+
+Bu e-postadaki fikir ve gorusler gonderenin sahsina ait olup, yasal olarak T.C.
+B.I.B. Afet Isleri Gn.Mud. Deprem Arastirma Dairesi'ni baglayici nitelikte degildir.
+
+
+From Thomas.Adams at noaa.gov  Sun Aug 21 18:35:16 2005
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Unable to read GRASS6 data using gstat 2.4.5
+Message-ID: <430901A4.3050508@noaa.gov>
+
+List:
+
+I have point temperature data in GRASS6 (as vectors); I'm using GSTAT 
+2.4.5 which I have compiled with GRASS support (and confirmed with gstat 
+-v). From the GRASS6 prompt, when I try to execute:
+
+gstat gstat.cmd.temps
+
+I get:
+
+gstat: read failed on file 'temp_20050101_08'
+
+
+where my GSTAT command file (gstat.cmd.temps) is:
+
+# file: gstat.cmd.temps
+#
+# gstat command file
+#
+data(temp_20050101_08): 'temp_20050101_08', x=1, y=2, v=1;
+variogram(temp_20050101_08): 0.2772 Nug(0) + 0.85 Sph(987521);
+
+Previously, using GRASS 5.4 and GSTAT, this procedure worked, where 
+'temp_20050101_08' would be my point data. Obviously, I'm missing 
+something; any ideas?
+
+Regards,
+Tom
+
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+
+From Thomas.Adams at noaa.gov  Sun Aug 21 19:22:57 2005
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Unable to read GRASS6 data using gstat 2.4.5
+In-Reply-To: <430901A4.3050508@noaa.gov>
+References: <430901A4.3050508@noaa.gov>
+Message-ID: <43090CD1.4070700@noaa.gov>
+
+List:
+
+I identified the problem with GSTAT not finding the file 
+'temp_20050101_08' ? should have been 'temp_20050801_08'.
+
+However, now I am getting:
+
+data(temp_20050801_08): WARNING: Vector used instead of sites
+WARNING: Invalid absolute datetime format
+Memory fault
+
+I understand "WARNING: Vector used instead of sites", but I am not sure 
+of the implication since in GRASS6 sites are vectors. The 2nd message 
+followed by the Memory Fault is very puzzling.
+
+Regards,
+Tom
+
+
+Thomas Adams wrote:
+
+> List:
+>
+> I have point temperature data in GRASS6 (as vectors); I'm using GSTAT 
+> 2.4.5 which I have compiled with GRASS support (and confirmed with 
+> gstat -v). From the GRASS6 prompt, when I try to execute:
+>
+> gstat gstat.cmd.temps
+>
+> I get:
+>
+> gstat: read failed on file 'temp_20050101_08'
+>
+>
+> where my GSTAT command file (gstat.cmd.temps) is:
+>
+> # file: gstat.cmd.temps
+> #
+> # gstat command file
+> #
+> data(temp_20050101_08): 'temp_20050101_08', x=1, y=2, v=1;
+> variogram(temp_20050101_08): 0.2772 Nug(0) + 0.85 Sph(987521);
+>
+> Previously, using GRASS 5.4 and GSTAT, this procedure worked, where 
+> 'temp_20050101_08' would be my point data. Obviously, I'm missing 
+> something; any ideas?
+>
+> Regards,
+> Tom
+>
+>
+
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+
+From neteler at itc.it  Wed Aug 24 10:08:58 2005
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: [R-sig-Geo] Unable to read GRASS6 data using gstat 2.4.5
+In-Reply-To: <430C780A.2020201@noaa.gov>
+References: <Pine.LNX.4.44.0508222001010.14027-100000@reclus.nhh.no> <430A3344.4050507@noaa.gov> <20050823120852.GK17401@thuille.itc.it> <430B15A6.1060802@noaa.gov> <20050824120138.GC11211@thuille.itc.it> <430C780A.2020201@noaa.gov>
+Message-ID: <20050824140857.GB26422@thuille.itc.it>
+
+Tom,
+
+I have generated the location and imported the file:
+
+cat temp_20050801_08 | v.in.ascii -z out=temp_20050801_08 x=3 y=2 z=4 col='id varchar(3), y double, x double, elevation double, temperature double' skip=1
+
+# file: gstat.cmd.temps
+#
+# gstat command file
+#
+data(temp_20050801_08): 'temp_20050801_08', x=1, y=2, v=1;
+variogram(temp_20050801_08): 0.2772 Nug(0) + 0.85 Sph(987521);
+
+Running that:
+
+gstat gstat.inp
+gstat: Linux version 2.4.5 (17 June 2005)
+Copyright (C) 1992, 2004 Edzer J. Pebesma
+using Marsaglia's random number generator
+data(temp_20050801_08): WARNING: Vector used instead of sites.
+WARNING: Illegal TimeStamp string
+GRASS site list temp_20050801_08: 0 cat, 3 dim, 1 str, 4 dbl.
+Warning: gstat/grass: specify z coordinate if you want to use it
+
+gstat/grass: 117 sites read successfully.
+temp_20050801_08     (GRASS site list)
+attribute:             col[1]     [x:] x_1        : [       -91,       -78]
+n:                        117     [y:] y_2        : [        35,        43]
+sample mean:          39.8882     sample std.:          1.84532
+[starting interactive mode]
+
+cat temp_20050801_08.est
+#gstat Linux 2.4.5 (17 June 2005) [gstat gstat.inp]
+#sample semivariogram
+#Wed Aug 24 15:45:39 2005
+#data(temp_20050801_08): 'temp_20050801_08', x=1, y=2, v=1;
+#[1] mean: 39.8882 variance: 3.4052
+#cutoff: 5.08806 interval width: 0.339204
+#direction: total
+#   from       to  n_pairs  av_dist semivariogram
+       0 0.339204       30 0.247674 0.0128483
+0.339204 0.678408       89 0.527931 0.0741331
+0.678408  1.01761      142 0.847027 0.174927
+ 1.01761  1.35682      175  1.18733 0.294193
+[...]
+
+
+No crash so far (I used 6.1 on Linux).
+
+Disussion of the warnings:
+
+data(temp_20050801_08): WARNING: Vector used instead of sites.
+ -> that's correct since sites are treated as vectors in GRASS 6
+
+WARNING: Illegal TimeStamp string
+   I have fixed that (bug in siteslib) in 6.1-CVS and
+   6.0-CVS (will appear in a potential 6.0.2)
+   This or similar messages no longer appear.
+
+GRASS site list temp_20050801_08: 0 cat, 3 dim, 1 str, 4 dbl.
+Warning: gstat/grass: specify z coordinate if you want to use it
+-> depends on you, the user.
+
+I suggest to update to 6.1-CVS.
+
+A new run with GRASS' siteslib recompiled leads to:
+
+Copyright (C) 1992, 2004 Edzer J. Pebesma
+using Marsaglia's random number generator
+data(temp_20050801_08): WARNING: Vector used instead of sites.
+GRASS site list temp_20050801_08: 0 cat, 3 dim, 1 str, 4 dbl.
+Warning: gstat/grass: specify z coordinate if you want to use it
+gstat/grass: 117 sites read successfully.
+
+which looks good (to me).
+
+
+Markus
+
+
+On Wed, Aug 24, 2005 at 09:37:14AM -0400, Thomas Adams wrote:
+> Markus,
+> 
+> Not the v.in.ascii command, but the columns are:
+> 
+> ID|latitude|longitude|elevation|temperature
+> 
+> elevation in feet MSL
+> temperature in deg F
+> 
+> Tom
+> 
+> 
+> Markus Neteler wrote:
+> 
+> >Tom,
+> >
+> >[location created]
+> >before guessing, please send the v.in.ascii command to me
+> >(or tell me what the columns represent)
+> >
+> >Markus
+> >
+> >On Tue, Aug 23, 2005 at 08:25:10AM -0400, Thomas Adams wrote:
+> > 
+> >
+> >>Markus,
+> >>
+> >>Attached are the files you requested. I have also attached the ascii 
+> >>vector file as well.
+> >>
+> >>Thanks so much for your help!
+> >>
+> >>Regards,
+> >>Tom
+> >>
+> >>
+> >>Markus Neteler wrote:
+> >>
+> >>   
+> >>
+> >>>On Mon, Aug 22, 2005 at 04:19:16PM -0400, Thomas Adams wrote:
+> >>>
+> >>>
+> >>>     
+> >>>
+> >>>>List:
+> >>>>
+> >>>>I have point temperature data in GRASS6 (as vectors); I'm using GSTAT 
+> >>>>2.4.5 which I have compiled with GRASS support (and confirmed with 
+> >>>>gstat -v). I have:
+> >>>>
+> >>>># file: gstat.cmd.temps
+> >>>>#
+> >>>># gstat command file
+> >>>>#
+> >>>>data(temp_20050101_08): 'temp_20050101_08', x=1, y=2, v=1;
+> >>>>variogram(temp_20050101_08): 0.2772 Nug(0) + 0.85 Sph(987521);
+> >>>>
+> >>>>       
+> >>>>
+> >>>>From the GRASS6 prompt, when I try to execute:
+> >>>     
+> >>>
+> >>>>gstat gstat.cmd.temps
+> >>>>
+> >>>>I get:
+> >>>>
+> >>>>data(temp_20050801_08): WARNING: Vector used instead of sites
+> >>>>WARNING: Invalid absolute datetime format
+> >>>>Memory fault
+> >>>>
+> >>>>I understand "WARNING: Vector used instead of sites", but I am not sure 
+> >>>>of the implication since in GRASS6 sites are vectors. The 2nd message 
+> >>>>followed by the Memory Fault is very puzzling.
+> >>>>
+> >>>>Regards,
+> >>>>Tom
+> >>>> 
+> >>>>
+> >>>>       
+> >>>>
+> >>>Tom,
+> >>>
+> >>>could you send the temp_20050101_08 files to me. Since it is
+> >>>vector, I would need the mapset/vector/temp_20050101_08/ directory
+> >>>and the output of 
+> >>>g.proj -wef > /tmp/temp_gstat.prj
+> >>>to recreate the location here.
+> >>>
+> >>>Markus
+> >>>
+> >>>
+> >>>
+> >>>     
+> >>>
+> >>-- 
+> >>Thomas E Adams
+> >>National Weather Service
+> >>Ohio River Forecast Center
+> >>1901 South State Route 134
+> >>Wilmington, OH 45177
+> >>
+> >>EMAIL:	thomas.adams@noaa.gov
+> >>
+> >>VOICE:	937-383-0528
+> >>FAX:	937-383-0033
+> >>
+> >>   
+> >>
+> >
+> >
+> > 
+> >
+> >>PROJCS["Lambert Conformal 
+> >>Conic",GEOGCS["wgs84",DATUM["D_WGS_1984",SPHEROID["wgs84",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Lambert_Conformal_Conic"],PARAMETER["standard_parallel_1",60],PARAMETER["standard_parallel_2",30],PARAMETER["latitude_of_origin",39],PARAMETER["central_meridian",-86],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["Meter",1]]
+> >>   
+> >>
+> >
+> > 
+> >
+> >>ALN|38.9|-90.05|545.|64.0
+> >>ARR|41.77|-88.47|705.|63.0
+> >>BLV|38.55|-89.95|460.|68.0
+> >>BMI|40.48|-88.92|880.|69.0
+> >>CMI|40.04|-88.27|750.|68.0
+> >>CPS|38.57|-90.15|415.|67.0
+> >>DEC|39.87|-88.92|670.|66.0
+> >>DPA|41.91|-88.24|760.|66.0
+> >>LWV|38.76|-87.61|430.|71.0
+> >>MDH|37.78|-89.25|410.|64.0
+> >>MDW|41.79|-87.75|615.|73.0
+> >>MLI|41.45|-90.51|590.|66.0
+> >>MTO|39.48|-88.28|720.|67.0
+> >>MVN|38.32|-88.87|480.|66.0
+> >>MWA|37.75|-89.01|470.|66.0
+> >>ORD|41.98|-87.9|665.|72.0
+> >>PIA|40.66|-89.69|660.|70.0
+> >>PWK|42.11|-87.9|645.|70.0
+> >>RFD|42.2|-89.09|735.|64.0
+> >>SPI|39.84|-89.68|600.|68.0
+> >>SQI|41.75|-89.67|645.|63.0
+> >>UGN|42.42|-87.87|730.|70.0
+> >>AID|40.1|-85.62|920.|64.0
+> >>BAK|39.27|-85.9|655.|70.0
+> >>BMG|39.14|-86.61|840.|67.0
+> >>EKM|41.72|-86.|780.|70.0
+> >>EVV|37.97|-87.57|384.|71.0
+> >>EYE|39.83|-86.3|820.|70.0
+> >>FWA|41.|-85.2|791.|66.0
+> >>GSH|41.52|-85.79|830.|72.0
+> >>GYY|41.62|-87.42|590.|70.0
+> >>HNB|38.25|-86.95|530.|68.0
+> >>HUF|39.45|-87.3|500.|67.0
+> >>IND|39.73|-86.28|792.|73.0
+> >>LAF|40.42|-86.9|600.|68.0
+> >>MIE|40.24|-85.4|935.|67.0
+> >>SBN|41.7|-86.32|773.|68.0
+> >>VPZ|41.45|-87.01|770.|67.0
+> >>BWG|37.|-86.43|535.|70.0
+> >>FFT|38.18|-84.9|800.|71.0
+> >>JKL|37.6|-83.32|1365.|70.0
+> >>LEX|38.03|-84.6|966.|70.0
+> >>LNP|36.98|-82.53|2680.|66.0
+> >>LOU|38.23|-85.66|545.|72.0
+> >>LOZ|37.08|-84.08|1211.|68.0
+> >>PAH|37.03|-88.58|325.|65.0
+> >>SDF|38.18|-85.73|477.|74.0
+> >>ARB|42.22|-83.75|835.|67.0
+> >>AZO|42.23|-85.55|870.|71.0
+> >>BEH|42.13|-86.42|645.|70.0
+> >>BTL|42.3|-85.25|950.|71.0
+> >>DET|42.42|-83.02|625.|74.0
+> >>DTW|42.23|-83.33|640.|71.0
+> >>IRS|41.81|-85.44|925.|64.0
+> >>JXN|42.27|-84.47|998.|69.0
+> >>OEB|41.93|-85.05|960.|66.0
+> >>RMY|42.25|-84.96|940.|70.0
+> >>TTF|41.94|-83.43|615.|68.0
+> >>YIP|42.24|-83.53|715.|71.0
+> >>DKK|42.49|-79.27|690.|71.0
+> >>JHW|42.15|-79.27|1720.|63.0
+> >>AOH|40.71|-84.03|975.|67.0
+> >>BJJ|40.87|-81.88|1135.|66.0
+> >>BKL|41.52|-81.68|585.|73.0
+> >>CAK|40.92|-81.43|1208.|69.0
+> >>CGF|41.57|-81.48|880.|72.0
+> >>CLE|41.4|-81.85|777.|69.0
+> >>CMH|40.05|-82.88|812.|68.0
+> >>CVG|39.07|-84.67|869.|74.0
+> >>DAY|39.75|-84.23|1002.|68.0
+> >>DFI|41.34|-84.43|705.|65.0
+> >>FDY|41.02|-83.67|797.|65.0
+> >>ILN|39.42|-83.82|1075.|67.0
+> >>LCK|39.82|-82.93|745.|66.0
+> >>LHQ|39.76|-82.66|865.|65.0
+> >>LUK|39.1|-84.43|480.|68.0
+> >>MFD|40.82|-82.52|1295.|68.0
+> >>MGY|39.59|-84.22|960.|72.0
+> >>MNN|40.62|-83.06|995.|66.0
+> >>OSU|40.08|-83.07|900.|69.0
+> >>PHD|40.47|-81.42|890.|66.0
+> >>TDZ|41.56|-83.48|620.|66.0
+> >>TOL|41.6|-83.82|669.|69.0
+> >>YNG|41.27|-80.67|1178.|67.0
+> >>ZZV|39.95|-81.9|881.|66.0
+> >>AGC|40.35|-79.92|1250.|68.0
+> >>AOO|40.3|-78.32|1469.|67.0
+> >>BFD|41.8|-78.63|2142.|60.0
+> >>BTP|40.78|-79.95|1250.|63.0
+> >>DUJ|41.18|-78.9|1824.|66.0
+> >>ERI|42.08|-80.17|732.|71.0
+> >>GKJ|41.63|-80.21|1400.|68.0
+> >>JST|40.32|-78.83|2285.|66.0
+> >>LBE|40.28|-79.4|1050.|70.0
+> >>PIT|40.5|-80.22|1137.|66.0
+> >>BNA|36.17|-86.7|590.|72.0
+> >>CSV|35.95|-85.08|1810.|70.0
+> >>MQY|36.02|-86.52|545.|73.0
+> >>TRI|36.48|-82.4|1525.|67.0
+> >>TYS|35.82|-83.98|980.|70.0
+> >>BCB|37.22|-80.42|2130.|64.0
+> >>HLX|36.77|-80.82|2740.|64.0
+> >>HSP|37.95|-79.82|3790.|63.0
+> >>MKJ|36.9|-81.35|2560.|68.0
+> >>PSK|37.13|-80.68|2110.|64.0
+> >>ROA|37.32|-79.97|1149.|68.0
+> >>SHD|38.27|-78.85|1200.|63.0
+> >>VJI|36.68|-82.03|2070.|68.0
+> >>BKW|37.78|-81.12|2504.|64.0
+> >>BLF|37.3|-81.2|2870.|67.0
+> >>CKB|39.29|-80.23|1200.|70.0
+> >>CRW|38.35|-81.63|939.|65.0
+> >>EKN|38.88|-79.85|1992.|63.0
+> >>HLG|40.17|-80.64|1190.|66.0
+> >>HTS|38.37|-82.55|827.|67.0
+> >>LWB|37.87|-80.4|2303.|61.0
+> >>MGW|39.65|-79.92|1240.|67.0
+> >>PKB|39.27|-81.57|615.|67.0
+> >>   
+> >>
+> >
+> >
+> > 
+> >
+> 
+> 
+> -- 
+> Thomas E Adams
+> National Weather Service
+> Ohio River Forecast Center
+> 1901 South State Route 134
+> Wilmington, OH 45177
+> 
+> EMAIL:	thomas.adams@noaa.gov
+> 
+> VOICE:	937-383-0528
+> FAX:	937-383-0033
+> 
+
+-- 
+Markus Neteler     <neteler itc it>       http://mpa.itc.it
+ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+
+From Thomas.Adams at noaa.gov  Wed Aug 24 11:05:42 2005
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: [R-sig-Geo] Unable to read GRASS6 data using
+ gstat 2.4.5
+In-Reply-To: <20050824140857.GB26422@thuille.itc.it>
+References: <Pine.LNX.4.44.0508222001010.14027-100000@reclus.nhh.no> <430A3344.4050507@noaa.gov> <20050823120852.GK17401@thuille.itc.it> <430B15A6.1060802@noaa.gov> <20050824120138.GC11211@thuille.itc.it> <430C780A.2020201@noaa.gov> <20050824140857.GB26422@thuille.itc.it>
+Message-ID: <430C8CC6.4060205@noaa.gov>
+
+Markus,
+
+I have a problem with ./configure with 6.1-CVS 
+(grass-6.1.cvs_src_snapshot_2005_08_20.tar.gz) ? I have not had previous 
+problems configuring & compiling. I get a configure error:
+
+Unable to locate nad2bin.
+
+I've been compiling against proj-4.4.9 previously for GRASS 6.0.1, etc. 
+just fine.
+
+Tom
+
+
+Markus Neteler wrote:
+
+>Tom,
+>
+>I have generated the location and imported the file:
+>
+>cat temp_20050801_08 | v.in.ascii -z out=temp_20050801_08 x=3 y=2 z=4 col='id varchar(3), y double, x double, elevation double, temperature double' skip=1
+>
+># file: gstat.cmd.temps
+>#
+># gstat command file
+>#
+>data(temp_20050801_08): 'temp_20050801_08', x=1, y=2, v=1;
+>variogram(temp_20050801_08): 0.2772 Nug(0) + 0.85 Sph(987521);
+>
+>Running that:
+>
+>gstat gstat.inp
+>gstat: Linux version 2.4.5 (17 June 2005)
+>Copyright (C) 1992, 2004 Edzer J. Pebesma
+>using Marsaglia's random number generator
+>data(temp_20050801_08): WARNING: Vector used instead of sites.
+>WARNING: Illegal TimeStamp string
+>GRASS site list temp_20050801_08: 0 cat, 3 dim, 1 str, 4 dbl.
+>Warning: gstat/grass: specify z coordinate if you want to use it
+>
+>gstat/grass: 117 sites read successfully.
+>temp_20050801_08     (GRASS site list)
+>attribute:             col[1]     [x:] x_1        : [       -91,       -78]
+>n:                        117     [y:] y_2        : [        35,        43]
+>sample mean:          39.8882     sample std.:          1.84532
+>[starting interactive mode]
+>
+>cat temp_20050801_08.est
+>#gstat Linux 2.4.5 (17 June 2005) [gstat gstat.inp]
+>#sample semivariogram
+>#Wed Aug 24 15:45:39 2005
+>#data(temp_20050801_08): 'temp_20050801_08', x=1, y=2, v=1;
+>#[1] mean: 39.8882 variance: 3.4052
+>#cutoff: 5.08806 interval width: 0.339204
+>#direction: total
+>#   from       to  n_pairs  av_dist semivariogram
+>       0 0.339204       30 0.247674 0.0128483
+>0.339204 0.678408       89 0.527931 0.0741331
+>0.678408  1.01761      142 0.847027 0.174927
+> 1.01761  1.35682      175  1.18733 0.294193
+>[...]
+>
+>
+>No crash so far (I used 6.1 on Linux).
+>
+>Disussion of the warnings:
+>
+>data(temp_20050801_08): WARNING: Vector used instead of sites.
+> -> that's correct since sites are treated as vectors in GRASS 6
+>
+>WARNING: Illegal TimeStamp string
+>   I have fixed that (bug in siteslib) in 6.1-CVS and
+>   6.0-CVS (will appear in a potential 6.0.2)
+>   This or similar messages no longer appear.
+>
+>GRASS site list temp_20050801_08: 0 cat, 3 dim, 1 str, 4 dbl.
+>Warning: gstat/grass: specify z coordinate if you want to use it
+>-> depends on you, the user.
+>
+>I suggest to update to 6.1-CVS.
+>
+>A new run with GRASS' siteslib recompiled leads to:
+>
+>Copyright (C) 1992, 2004 Edzer J. Pebesma
+>using Marsaglia's random number generator
+>data(temp_20050801_08): WARNING: Vector used instead of sites.
+>GRASS site list temp_20050801_08: 0 cat, 3 dim, 1 str, 4 dbl.
+>Warning: gstat/grass: specify z coordinate if you want to use it
+>gstat/grass: 117 sites read successfully.
+>
+>which looks good (to me).
+>
+>
+>Markus
+>
+>
+>On Wed, Aug 24, 2005 at 09:37:14AM -0400, Thomas Adams wrote:
+>  
+>
+>>Markus,
+>>
+>>Not the v.in.ascii command, but the columns are:
+>>
+>>ID|latitude|longitude|elevation|temperature
+>>
+>>elevation in feet MSL
+>>temperature in deg F
+>>
+>>Tom
+>>
+>>
+>>Markus Neteler wrote:
+>>
+>>    
+>>
+>>>Tom,
+>>>
+>>>[location created]
+>>>before guessing, please send the v.in.ascii command to me
+>>>(or tell me what the columns represent)
+>>>
+>>>Markus
+>>>
+>>>On Tue, Aug 23, 2005 at 08:25:10AM -0400, Thomas Adams wrote:
+>>>
+>>>
+>>>      
+>>>
+>>>>Markus,
+>>>>
+>>>>Attached are the files you requested. I have also attached the ascii 
+>>>>vector file as well.
+>>>>
+>>>>Thanks so much for your help!
+>>>>
+>>>>Regards,
+>>>>Tom
+>>>>
+>>>>
+>>>>Markus Neteler wrote:
+>>>>
+>>>>  
+>>>>
+>>>>        
+>>>>
+>>>>>On Mon, Aug 22, 2005 at 04:19:16PM -0400, Thomas Adams wrote:
+>>>>>
+>>>>>
+>>>>>    
+>>>>>
+>>>>>          
+>>>>>
+>>>>>>List:
+>>>>>>
+>>>>>>I have point temperature data in GRASS6 (as vectors); I'm using GSTAT 
+>>>>>>2.4.5 which I have compiled with GRASS support (and confirmed with 
+>>>>>>gstat -v). I have:
+>>>>>>
+>>>>>># file: gstat.cmd.temps
+>>>>>>#
+>>>>>># gstat command file
+>>>>>>#
+>>>>>>data(temp_20050101_08): 'temp_20050101_08', x=1, y=2, v=1;
+>>>>>>variogram(temp_20050101_08): 0.2772 Nug(0) + 0.85 Sph(987521);
+>>>>>>
+>>>>>>      
+>>>>>>
+>>>>>>            
+>>>>>>
+>>>>>>From the GRASS6 prompt, when I try to execute:
+>>>>>    
+>>>>>
+>>>>>          
+>>>>>
+>>>>>>gstat gstat.cmd.temps
+>>>>>>
+>>>>>>I get:
+>>>>>>
+>>>>>>data(temp_20050801_08): WARNING: Vector used instead of sites
+>>>>>>WARNING: Invalid absolute datetime format
+>>>>>>Memory fault
+>>>>>>
+>>>>>>I understand "WARNING: Vector used instead of sites", but I am not sure 
+>>>>>>of the implication since in GRASS6 sites are vectors. The 2nd message 
+>>>>>>followed by the Memory Fault is very puzzling.
+>>>>>>
+>>>>>>Regards,
+>>>>>>Tom
+>>>>>>
+>>>>>>
+>>>>>>      
+>>>>>>
+>>>>>>            
+>>>>>>
+>>>>>Tom,
+>>>>>
+>>>>>could you send the temp_20050101_08 files to me. Since it is
+>>>>>vector, I would need the mapset/vector/temp_20050101_08/ directory
+>>>>>and the output of 
+>>>>>g.proj -wef > /tmp/temp_gstat.prj
+>>>>>to recreate the location here.
+>>>>>
+>>>>>Markus
+>>>>>
+>>>>>
+>>>>>
+>>>>>    
+>>>>>
+>>>>>          
+>>>>>
+>>>>-- 
+>>>>Thomas E Adams
+>>>>National Weather Service
+>>>>Ohio River Forecast Center
+>>>>1901 South State Route 134
+>>>>Wilmington, OH 45177
+>>>>
+>>>>EMAIL:	thomas.adams@noaa.gov
+>>>>
+>>>>VOICE:	937-383-0528
+>>>>FAX:	937-383-0033
+>>>>
+>>>>  
+>>>>
+>>>>        
+>>>>
+>>>
+>>>
+>>>      
+>>>
+>>>>PROJCS["Lambert Conformal 
+>>>>Conic",GEOGCS["wgs84",DATUM["D_WGS_1984",SPHEROID["wgs84",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Lambert_Conformal_Conic"],PARAMETER["standard_parallel_1",60],PARAMETER["standard_parallel_2",30],PARAMETER["latitude_of_origin",39],PARAMETER["central_meridian",-86],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["Meter",1]]
+>>>>  
+>>>>
+>>>>        
+>>>>
+>>>
+>>>      
+>>>
+>>>>ALN|38.9|-90.05|545.|64.0
+>>>>ARR|41.77|-88.47|705.|63.0
+>>>>BLV|38.55|-89.95|460.|68.0
+>>>>BMI|40.48|-88.92|880.|69.0
+>>>>CMI|40.04|-88.27|750.|68.0
+>>>>CPS|38.57|-90.15|415.|67.0
+>>>>DEC|39.87|-88.92|670.|66.0
+>>>>DPA|41.91|-88.24|760.|66.0
+>>>>LWV|38.76|-87.61|430.|71.0
+>>>>MDH|37.78|-89.25|410.|64.0
+>>>>MDW|41.79|-87.75|615.|73.0
+>>>>MLI|41.45|-90.51|590.|66.0
+>>>>MTO|39.48|-88.28|720.|67.0
+>>>>MVN|38.32|-88.87|480.|66.0
+>>>>MWA|37.75|-89.01|470.|66.0
+>>>>ORD|41.98|-87.9|665.|72.0
+>>>>PIA|40.66|-89.69|660.|70.0
+>>>>PWK|42.11|-87.9|645.|70.0
+>>>>RFD|42.2|-89.09|735.|64.0
+>>>>SPI|39.84|-89.68|600.|68.0
+>>>>SQI|41.75|-89.67|645.|63.0
+>>>>UGN|42.42|-87.87|730.|70.0
+>>>>AID|40.1|-85.62|920.|64.0
+>>>>BAK|39.27|-85.9|655.|70.0
+>>>>BMG|39.14|-86.61|840.|67.0
+>>>>EKM|41.72|-86.|780.|70.0
+>>>>EVV|37.97|-87.57|384.|71.0
+>>>>EYE|39.83|-86.3|820.|70.0
+>>>>FWA|41.|-85.2|791.|66.0
+>>>>GSH|41.52|-85.79|830.|72.0
+>>>>GYY|41.62|-87.42|590.|70.0
+>>>>HNB|38.25|-86.95|530.|68.0
+>>>>HUF|39.45|-87.3|500.|67.0
+>>>>IND|39.73|-86.28|792.|73.0
+>>>>LAF|40.42|-86.9|600.|68.0
+>>>>MIE|40.24|-85.4|935.|67.0
+>>>>SBN|41.7|-86.32|773.|68.0
+>>>>VPZ|41.45|-87.01|770.|67.0
+>>>>BWG|37.|-86.43|535.|70.0
+>>>>FFT|38.18|-84.9|800.|71.0
+>>>>JKL|37.6|-83.32|1365.|70.0
+>>>>LEX|38.03|-84.6|966.|70.0
+>>>>LNP|36.98|-82.53|2680.|66.0
+>>>>LOU|38.23|-85.66|545.|72.0
+>>>>LOZ|37.08|-84.08|1211.|68.0
+>>>>PAH|37.03|-88.58|325.|65.0
+>>>>SDF|38.18|-85.73|477.|74.0
+>>>>ARB|42.22|-83.75|835.|67.0
+>>>>AZO|42.23|-85.55|870.|71.0
+>>>>BEH|42.13|-86.42|645.|70.0
+>>>>BTL|42.3|-85.25|950.|71.0
+>>>>DET|42.42|-83.02|625.|74.0
+>>>>DTW|42.23|-83.33|640.|71.0
+>>>>IRS|41.81|-85.44|925.|64.0
+>>>>JXN|42.27|-84.47|998.|69.0
+>>>>OEB|41.93|-85.05|960.|66.0
+>>>>RMY|42.25|-84.96|940.|70.0
+>>>>TTF|41.94|-83.43|615.|68.0
+>>>>YIP|42.24|-83.53|715.|71.0
+>>>>DKK|42.49|-79.27|690.|71.0
+>>>>JHW|42.15|-79.27|1720.|63.0
+>>>>AOH|40.71|-84.03|975.|67.0
+>>>>BJJ|40.87|-81.88|1135.|66.0
+>>>>BKL|41.52|-81.68|585.|73.0
+>>>>CAK|40.92|-81.43|1208.|69.0
+>>>>CGF|41.57|-81.48|880.|72.0
+>>>>CLE|41.4|-81.85|777.|69.0
+>>>>CMH|40.05|-82.88|812.|68.0
+>>>>CVG|39.07|-84.67|869.|74.0
+>>>>DAY|39.75|-84.23|1002.|68.0
+>>>>DFI|41.34|-84.43|705.|65.0
+>>>>FDY|41.02|-83.67|797.|65.0
+>>>>ILN|39.42|-83.82|1075.|67.0
+>>>>LCK|39.82|-82.93|745.|66.0
+>>>>LHQ|39.76|-82.66|865.|65.0
+>>>>LUK|39.1|-84.43|480.|68.0
+>>>>MFD|40.82|-82.52|1295.|68.0
+>>>>MGY|39.59|-84.22|960.|72.0
+>>>>MNN|40.62|-83.06|995.|66.0
+>>>>OSU|40.08|-83.07|900.|69.0
+>>>>PHD|40.47|-81.42|890.|66.0
+>>>>TDZ|41.56|-83.48|620.|66.0
+>>>>TOL|41.6|-83.82|669.|69.0
+>>>>YNG|41.27|-80.67|1178.|67.0
+>>>>ZZV|39.95|-81.9|881.|66.0
+>>>>AGC|40.35|-79.92|1250.|68.0
+>>>>AOO|40.3|-78.32|1469.|67.0
+>>>>BFD|41.8|-78.63|2142.|60.0
+>>>>BTP|40.78|-79.95|1250.|63.0
+>>>>DUJ|41.18|-78.9|1824.|66.0
+>>>>ERI|42.08|-80.17|732.|71.0
+>>>>GKJ|41.63|-80.21|1400.|68.0
+>>>>JST|40.32|-78.83|2285.|66.0
+>>>>LBE|40.28|-79.4|1050.|70.0
+>>>>PIT|40.5|-80.22|1137.|66.0
+>>>>BNA|36.17|-86.7|590.|72.0
+>>>>CSV|35.95|-85.08|1810.|70.0
+>>>>MQY|36.02|-86.52|545.|73.0
+>>>>TRI|36.48|-82.4|1525.|67.0
+>>>>TYS|35.82|-83.98|980.|70.0
+>>>>BCB|37.22|-80.42|2130.|64.0
+>>>>HLX|36.77|-80.82|2740.|64.0
+>>>>HSP|37.95|-79.82|3790.|63.0
+>>>>MKJ|36.9|-81.35|2560.|68.0
+>>>>PSK|37.13|-80.68|2110.|64.0
+>>>>ROA|37.32|-79.97|1149.|68.0
+>>>>SHD|38.27|-78.85|1200.|63.0
+>>>>VJI|36.68|-82.03|2070.|68.0
+>>>>BKW|37.78|-81.12|2504.|64.0
+>>>>BLF|37.3|-81.2|2870.|67.0
+>>>>CKB|39.29|-80.23|1200.|70.0
+>>>>CRW|38.35|-81.63|939.|65.0
+>>>>EKN|38.88|-79.85|1992.|63.0
+>>>>HLG|40.17|-80.64|1190.|66.0
+>>>>HTS|38.37|-82.55|827.|67.0
+>>>>LWB|37.87|-80.4|2303.|61.0
+>>>>MGW|39.65|-79.92|1240.|67.0
+>>>>PKB|39.27|-81.57|615.|67.0
+>>>>  
+>>>>
+>>>>        
+>>>>
+>>>
+>>>
+>>>      
+>>>
+>>-- 
+>>Thomas E Adams
+>>National Weather Service
+>>Ohio River Forecast Center
+>>1901 South State Route 134
+>>Wilmington, OH 45177
+>>
+>>EMAIL:	thomas.adams@noaa.gov
+>>
+>>VOICE:	937-383-0528
+>>FAX:	937-383-0033
+>>
+>>    
+>>
+>
+>  
+>
+
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+
+From neteler at itc.it  Wed Aug 24 11:19:08 2005
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: [R-sig-Geo] Unable to read GRASS6 data using gstat 2.4.5
+In-Reply-To: <430C8CC6.4060205@noaa.gov>
+References: <Pine.LNX.4.44.0508222001010.14027-100000@reclus.nhh.no> <430A3344.4050507@noaa.gov> <20050823120852.GK17401@thuille.itc.it> <430B15A6.1060802@noaa.gov> <20050824120138.GC11211@thuille.itc.it> <430C780A.2020201@noaa.gov> <20050824140857.GB26422@thuille.itc.it> <430C8CC6.4060205@noaa.gov>
+Message-ID: <20050824151908.GD30342@thuille.itc.it>
+
+[.,, maybe we should take
+ statsgrass@grass.itc.it, r-sig-geo@stat.math.ethz.ch
+ out of the loop as it is unrelated there.
+]
+
+http://grass.itc.it/pipermail/grass-commit/2005-May/017534.html
+ Check for nad2bin in configure script, so that if PROJ isn't installed
+ properly the user hears about it before compilation fails in lib/proj
+
+
+What does
+ which nad2bin
+say? Maybe 'nad2bin' is not in path.
+
+nad2bin needs to be in path for installing datum gridshift files.
+
+Markus
+
+On Wed, Aug 24, 2005 at 11:05:42AM -0400, Thomas Adams wrote:
+> Markus,
+> 
+> I have a problem with ./configure with 6.1-CVS 
+> (grass-6.1.cvs_src_snapshot_2005_08_20.tar.gz) ? I have not had previous 
+> problems configuring & compiling. I get a configure error:
+> 
+> Unable to locate nad2bin.
+> 
+> I've been compiling against proj-4.4.9 previously for GRASS 6.0.1, etc. 
+> just fine.
+> 
+> Tom
+> 
+> 
+> Markus Neteler wrote:
+> 
+> >Tom,
+> >
+> >I have generated the location and imported the file:
+> >
+> >cat temp_20050801_08 | v.in.ascii -z out=temp_20050801_08 x=3 y=2 z=4 
+> >col='id varchar(3), y double, x double, elevation double, temperature 
+> >double' skip=1
+> >
+> ># file: gstat.cmd.temps
+> >#
+> ># gstat command file
+> >#
+> >data(temp_20050801_08): 'temp_20050801_08', x=1, y=2, v=1;
+> >variogram(temp_20050801_08): 0.2772 Nug(0) + 0.85 Sph(987521);
+> >
+> >Running that:
+> >
+> >gstat gstat.inp
+> >gstat: Linux version 2.4.5 (17 June 2005)
+> >Copyright (C) 1992, 2004 Edzer J. Pebesma
+> >using Marsaglia's random number generator
+> >data(temp_20050801_08): WARNING: Vector used instead of sites.
+> >WARNING: Illegal TimeStamp string
+> >GRASS site list temp_20050801_08: 0 cat, 3 dim, 1 str, 4 dbl.
+> >Warning: gstat/grass: specify z coordinate if you want to use it
+> >
+> >gstat/grass: 117 sites read successfully.
+> >temp_20050801_08     (GRASS site list)
+> >attribute:             col[1]     [x:] x_1        : [       -91,       -78]
+> >n:                        117     [y:] y_2        : [        35,        43]
+> >sample mean:          39.8882     sample std.:          1.84532
+> >[starting interactive mode]
+> >
+> >cat temp_20050801_08.est
+> >#gstat Linux 2.4.5 (17 June 2005) [gstat gstat.inp]
+> >#sample semivariogram
+> >#Wed Aug 24 15:45:39 2005
+> >#data(temp_20050801_08): 'temp_20050801_08', x=1, y=2, v=1;
+> >#[1] mean: 39.8882 variance: 3.4052
+> >#cutoff: 5.08806 interval width: 0.339204
+> >#direction: total
+> >#   from       to  n_pairs  av_dist semivariogram
+> >      0 0.339204       30 0.247674 0.0128483
+> >0.339204 0.678408       89 0.527931 0.0741331
+> >0.678408  1.01761      142 0.847027 0.174927
+> >1.01761  1.35682      175  1.18733 0.294193
+> >[...]
+> >
+> >
+> >No crash so far (I used 6.1 on Linux).
+> >
+> >Disussion of the warnings:
+> >
+> >data(temp_20050801_08): WARNING: Vector used instead of sites.
+> >-> that's correct since sites are treated as vectors in GRASS 6
+> >
+> >WARNING: Illegal TimeStamp string
+> >  I have fixed that (bug in siteslib) in 6.1-CVS and
+> >  6.0-CVS (will appear in a potential 6.0.2)
+> >  This or similar messages no longer appear.
+> >
+> >GRASS site list temp_20050801_08: 0 cat, 3 dim, 1 str, 4 dbl.
+> >Warning: gstat/grass: specify z coordinate if you want to use it
+> >-> depends on you, the user.
+> >
+> >I suggest to update to 6.1-CVS.
+> >
+> >A new run with GRASS' siteslib recompiled leads to:
+> >
+> >Copyright (C) 1992, 2004 Edzer J. Pebesma
+> >using Marsaglia's random number generator
+> >data(temp_20050801_08): WARNING: Vector used instead of sites.
+> >GRASS site list temp_20050801_08: 0 cat, 3 dim, 1 str, 4 dbl.
+> >Warning: gstat/grass: specify z coordinate if you want to use it
+> >gstat/grass: 117 sites read successfully.
+> >
+> >which looks good (to me).
+> >
+> >
+> >Markus
+> >
+> >
+> >On Wed, Aug 24, 2005 at 09:37:14AM -0400, Thomas Adams wrote:
+> > 
+> >
+> >>Markus,
+> >>
+> >>Not the v.in.ascii command, but the columns are:
+> >>
+> >>ID|latitude|longitude|elevation|temperature
+> >>
+> >>elevation in feet MSL
+> >>temperature in deg F
+> >>
+> >>Tom
+> >>
+> >>
+> >>Markus Neteler wrote:
+> >>
+> >>   
+> >>
+> >>>Tom,
+> >>>
+> >>>[location created]
+> >>>before guessing, please send the v.in.ascii command to me
+> >>>(or tell me what the columns represent)
+> >>>
+> >>>Markus
+> >>>
+> >>>On Tue, Aug 23, 2005 at 08:25:10AM -0400, Thomas Adams wrote:
+> >>>
+> >>>
+> >>>     
+> >>>
+> >>>>Markus,
+> >>>>
+> >>>>Attached are the files you requested. I have also attached the ascii 
+> >>>>vector file as well.
+> >>>>
+> >>>>Thanks so much for your help!
+> >>>>
+> >>>>Regards,
+> >>>>Tom
+> >>>>
+> >>>>
+> >>>>Markus Neteler wrote:
+> >>>>
+> >>>> 
+> >>>>
+> >>>>       
+> >>>>
+> >>>>>On Mon, Aug 22, 2005 at 04:19:16PM -0400, Thomas Adams wrote:
+> >>>>>
+> >>>>>
+> >>>>>   
+> >>>>>
+> >>>>>         
+> >>>>>
+> >>>>>>List:
+> >>>>>>
+> >>>>>>I have point temperature data in GRASS6 (as vectors); I'm using GSTAT 
+> >>>>>>2.4.5 which I have compiled with GRASS support (and confirmed with 
+> >>>>>>gstat -v). I have:
+> >>>>>>
+> >>>>>># file: gstat.cmd.temps
+> >>>>>>#
+> >>>>>># gstat command file
+> >>>>>>#
+> >>>>>>data(temp_20050101_08): 'temp_20050101_08', x=1, y=2, v=1;
+> >>>>>>variogram(temp_20050101_08): 0.2772 Nug(0) + 0.85 Sph(987521);
+> >>>>>>
+> >>>>>>     
+> >>>>>>
+> >>>>>>           
+> >>>>>>
+> >>>>>>From the GRASS6 prompt, when I try to execute:
+> >>>>>   
+> >>>>>
+> >>>>>         
+> >>>>>
+> >>>>>>gstat gstat.cmd.temps
+> >>>>>>
+> >>>>>>I get:
+> >>>>>>
+> >>>>>>data(temp_20050801_08): WARNING: Vector used instead of sites
+> >>>>>>WARNING: Invalid absolute datetime format
+> >>>>>>Memory fault
+> >>>>>>
+> >>>>>>I understand "WARNING: Vector used instead of sites", but I am not 
+> >>>>>>sure of the implication since in GRASS6 sites are vectors. The 2nd 
+> >>>>>>message followed by the Memory Fault is very puzzling.
+> >>>>>>
+> >>>>>>Regards,
+> >>>>>>Tom
+> >>>>>>
+> >>>>>>
+> >>>>>>     
+> >>>>>>
+> >>>>>>           
+> >>>>>>
+> >>>>>Tom,
+> >>>>>
+> >>>>>could you send the temp_20050101_08 files to me. Since it is
+> >>>>>vector, I would need the mapset/vector/temp_20050101_08/ directory
+> >>>>>and the output of 
+> >>>>>g.proj -wef > /tmp/temp_gstat.prj
+> >>>>>to recreate the location here.
+> >>>>>
+> >>>>>Markus
+> >>>>>
+> >>>>>
+> >>>>>
+> >>>>>   
+> >>>>>
+> >>>>>         
+> >>>>>
+> >>>>-- 
+> >>>>Thomas E Adams
+> >>>>National Weather Service
+> >>>>Ohio River Forecast Center
+> >>>>1901 South State Route 134
+> >>>>Wilmington, OH 45177
+> >>>>
+> >>>>EMAIL:	thomas.adams@noaa.gov
+> >>>>
+> >>>>VOICE:	937-383-0528
+> >>>>FAX:	937-383-0033
+> >>>>
+> >>>> 
+> >>>>
+> >>>>       
+> >>>>
+> >>>
+> >>>
+> >>>     
+> >>>
+> >>>>PROJCS["Lambert Conformal 
+> >>>>Conic",GEOGCS["wgs84",DATUM["D_WGS_1984",SPHEROID["wgs84",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Lambert_Conformal_Conic"],PARAMETER["standard_parallel_1",60],PARAMETER["standard_parallel_2",30],PARAMETER["latitude_of_origin",39],PARAMETER["central_meridian",-86],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["Meter",1]]
+> >>>> 
+> >>>>
+> >>>>       
+> >>>>
+> >>>
+> >>>     
+> >>>
+> >>>>ALN|38.9|-90.05|545.|64.0
+> >>>>ARR|41.77|-88.47|705.|63.0
+> >>>>BLV|38.55|-89.95|460.|68.0
+> >>>>BMI|40.48|-88.92|880.|69.0
+> >>>>CMI|40.04|-88.27|750.|68.0
+> >>>>CPS|38.57|-90.15|415.|67.0
+> >>>>DEC|39.87|-88.92|670.|66.0
+> >>>>DPA|41.91|-88.24|760.|66.0
+> >>>>LWV|38.76|-87.61|430.|71.0
+> >>>>MDH|37.78|-89.25|410.|64.0
+> >>>>MDW|41.79|-87.75|615.|73.0
+> >>>>MLI|41.45|-90.51|590.|66.0
+> >>>>MTO|39.48|-88.28|720.|67.0
+> >>>>MVN|38.32|-88.87|480.|66.0
+> >>>>MWA|37.75|-89.01|470.|66.0
+> >>>>ORD|41.98|-87.9|665.|72.0
+> >>>>PIA|40.66|-89.69|660.|70.0
+> >>>>PWK|42.11|-87.9|645.|70.0
+> >>>>RFD|42.2|-89.09|735.|64.0
+> >>>>SPI|39.84|-89.68|600.|68.0
+> >>>>SQI|41.75|-89.67|645.|63.0
+> >>>>UGN|42.42|-87.87|730.|70.0
+> >>>>AID|40.1|-85.62|920.|64.0
+> >>>>BAK|39.27|-85.9|655.|70.0
+> >>>>BMG|39.14|-86.61|840.|67.0
+> >>>>EKM|41.72|-86.|780.|70.0
+> >>>>EVV|37.97|-87.57|384.|71.0
+> >>>>EYE|39.83|-86.3|820.|70.0
+> >>>>FWA|41.|-85.2|791.|66.0
+> >>>>GSH|41.52|-85.79|830.|72.0
+> >>>>GYY|41.62|-87.42|590.|70.0
+> >>>>HNB|38.25|-86.95|530.|68.0
+> >>>>HUF|39.45|-87.3|500.|67.0
+> >>>>IND|39.73|-86.28|792.|73.0
+> >>>>LAF|40.42|-86.9|600.|68.0
+> >>>>MIE|40.24|-85.4|935.|67.0
+> >>>>SBN|41.7|-86.32|773.|68.0
+> >>>>VPZ|41.45|-87.01|770.|67.0
+> >>>>BWG|37.|-86.43|535.|70.0
+> >>>>FFT|38.18|-84.9|800.|71.0
+> >>>>JKL|37.6|-83.32|1365.|70.0
+> >>>>LEX|38.03|-84.6|966.|70.0
+> >>>>LNP|36.98|-82.53|2680.|66.0
+> >>>>LOU|38.23|-85.66|545.|72.0
+> >>>>LOZ|37.08|-84.08|1211.|68.0
+> >>>>PAH|37.03|-88.58|325.|65.0
+> >>>>SDF|38.18|-85.73|477.|74.0
+> >>>>ARB|42.22|-83.75|835.|67.0
+> >>>>AZO|42.23|-85.55|870.|71.0
+> >>>>BEH|42.13|-86.42|645.|70.0
+> >>>>BTL|42.3|-85.25|950.|71.0
+> >>>>DET|42.42|-83.02|625.|74.0
+> >>>>DTW|42.23|-83.33|640.|71.0
+> >>>>IRS|41.81|-85.44|925.|64.0
+> >>>>JXN|42.27|-84.47|998.|69.0
+> >>>>OEB|41.93|-85.05|960.|66.0
+> >>>>RMY|42.25|-84.96|940.|70.0
+> >>>>TTF|41.94|-83.43|615.|68.0
+> >>>>YIP|42.24|-83.53|715.|71.0
+> >>>>DKK|42.49|-79.27|690.|71.0
+> >>>>JHW|42.15|-79.27|1720.|63.0
+> >>>>AOH|40.71|-84.03|975.|67.0
+> >>>>BJJ|40.87|-81.88|1135.|66.0
+> >>>>BKL|41.52|-81.68|585.|73.0
+> >>>>CAK|40.92|-81.43|1208.|69.0
+> >>>>CGF|41.57|-81.48|880.|72.0
+> >>>>CLE|41.4|-81.85|777.|69.0
+> >>>>CMH|40.05|-82.88|812.|68.0
+> >>>>CVG|39.07|-84.67|869.|74.0
+> >>>>DAY|39.75|-84.23|1002.|68.0
+> >>>>DFI|41.34|-84.43|705.|65.0
+> >>>>FDY|41.02|-83.67|797.|65.0
+> >>>>ILN|39.42|-83.82|1075.|67.0
+> >>>>LCK|39.82|-82.93|745.|66.0
+> >>>>LHQ|39.76|-82.66|865.|65.0
+> >>>>LUK|39.1|-84.43|480.|68.0
+> >>>>MFD|40.82|-82.52|1295.|68.0
+> >>>>MGY|39.59|-84.22|960.|72.0
+> >>>>MNN|40.62|-83.06|995.|66.0
+> >>>>OSU|40.08|-83.07|900.|69.0
+> >>>>PHD|40.47|-81.42|890.|66.0
+> >>>>TDZ|41.56|-83.48|620.|66.0
+> >>>>TOL|41.6|-83.82|669.|69.0
+> >>>>YNG|41.27|-80.67|1178.|67.0
+> >>>>ZZV|39.95|-81.9|881.|66.0
+> >>>>AGC|40.35|-79.92|1250.|68.0
+> >>>>AOO|40.3|-78.32|1469.|67.0
+> >>>>BFD|41.8|-78.63|2142.|60.0
+> >>>>BTP|40.78|-79.95|1250.|63.0
+> >>>>DUJ|41.18|-78.9|1824.|66.0
+> >>>>ERI|42.08|-80.17|732.|71.0
+> >>>>GKJ|41.63|-80.21|1400.|68.0
+> >>>>JST|40.32|-78.83|2285.|66.0
+> >>>>LBE|40.28|-79.4|1050.|70.0
+> >>>>PIT|40.5|-80.22|1137.|66.0
+> >>>>BNA|36.17|-86.7|590.|72.0
+> >>>>CSV|35.95|-85.08|1810.|70.0
+> >>>>MQY|36.02|-86.52|545.|73.0
+> >>>>TRI|36.48|-82.4|1525.|67.0
+> >>>>TYS|35.82|-83.98|980.|70.0
+> >>>>BCB|37.22|-80.42|2130.|64.0
+> >>>>HLX|36.77|-80.82|2740.|64.0
+> >>>>HSP|37.95|-79.82|3790.|63.0
+> >>>>MKJ|36.9|-81.35|2560.|68.0
+> >>>>PSK|37.13|-80.68|2110.|64.0
+> >>>>ROA|37.32|-79.97|1149.|68.0
+> >>>>SHD|38.27|-78.85|1200.|63.0
+> >>>>VJI|36.68|-82.03|2070.|68.0
+> >>>>BKW|37.78|-81.12|2504.|64.0
+> >>>>BLF|37.3|-81.2|2870.|67.0
+> >>>>CKB|39.29|-80.23|1200.|70.0
+> >>>>CRW|38.35|-81.63|939.|65.0
+> >>>>EKN|38.88|-79.85|1992.|63.0
+> >>>>HLG|40.17|-80.64|1190.|66.0
+> >>>>HTS|38.37|-82.55|827.|67.0
+> >>>>LWB|37.87|-80.4|2303.|61.0
+> >>>>MGW|39.65|-79.92|1240.|67.0
+> >>>>PKB|39.27|-81.57|615.|67.0
+> >>>> 
+> >>>>
+> >>>>       
+> >>>>
+> >>>
+> >>>
+> >>>     
+> >>>
+> >>-- 
+> >>Thomas E Adams
+> >>National Weather Service
+> >>Ohio River Forecast Center
+> >>1901 South State Route 134
+> >>Wilmington, OH 45177
+> >>
+> >>EMAIL:	thomas.adams@noaa.gov
+> >>
+> >>VOICE:	937-383-0528
+> >>FAX:	937-383-0033
+> >>
+> >>   
+> >>
+> >
+> > 
+> >
+> 
+> 
+> -- 
+> Thomas E Adams
+> National Weather Service
+> Ohio River Forecast Center
+> 1901 South State Route 134
+> Wilmington, OH 45177
+> 
+> EMAIL:	thomas.adams@noaa.gov
+> 
+> VOICE:	937-383-0528
+> FAX:	937-383-0033
+> 
+
+-- 
+Markus Neteler     <neteler itc it>       http://mpa.itc.it
+ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+
+From rsadler at cyllene.uwa.edu.au  Thu Aug 25 20:09:33 2005
+From: rsadler at cyllene.uwa.edu.au (Rohan Sadler)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] importing raster from R into GRASS6
+Message-ID: <001d01c5a9d2$6fef57b0$c64c5f82@agric.uwa.edu.au>
+
+Hello All,
+
+This may seem like a dumb question, and I've been trying to keep an eye on 
+the developments on statsgrass, but:
+
+Are the functions available in the spgrass6 package to export R matrices to 
+Grass6 raster files?
+
+I just want to say that I really appreciate all the work that has thus far 
+gone into the R-GRASS6 interface. I think amazing things are going to happen 
+with it.
+
+Regards
+Rohan Sadler
+
+PhD Candidate
+Ecosystems Research Group M090
+The University of Western Australia
+35 Stirling Hwy, Crawley, 6008
+ph:       +61 8 6488 7914
+fax:      +61 8 6488 7925
+mobile: +61 0433 192 600
+email:    rsadler@cyllene.uwa.edu.au
+
+Affiliations:
+Bushfire CRC
+School of Mathematics and Statistics, UWA 
+
+
+
+From Roger.Bivand at nhh.no  Fri Aug 26 05:16:22 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] importing raster from R into GRASS6
+In-Reply-To: <001d01c5a9d2$6fef57b0$c64c5f82@agric.uwa.edu.au>
+Message-ID: <Pine.LNX.4.44.0508261044490.18774-100000@reclus.nhh.no>
+
+On Fri, 26 Aug 2005, Rohan Sadler wrote:
+
+> Hello All,
+> 
+> This may seem like a dumb question, and I've been trying to keep an eye on 
+> the developments on statsgrass, but:
+> 
+> Are the functions available in the spgrass6 package to export R matrices to 
+> Grass6 raster files?
+
+Yes and no. Yes, you can move data from R to GRASS 6 - the function is 
+writeRast6sp() in spgrass6, but the argument it takes for the data must be 
+in a 2D SpatialGridDataFrame class object defined in the sp package. So an 
+arbitrary matrix will need to be converted to this form first. The 
+function at present writes an Arc ASCII grid to a temporary file, read 
+into GRASS with r.in.gdal. So you'll need a GridTopology object to suit 
+your matrix, and will need to flatten the matrix with the rows in the 
+right order, for matrix A:
+
+> A <- matrix(1:6, 2,3)
+> A
+     [,1] [,2] [,3]
+[1,]    1    3    5
+[2,]    2    4    6
+
+> GT <- GridTopology(c(1,1), c(1,1), c(3,2))
+> coordinates(GT)
+     s1 s2
+[1,]  1  2
+[2,]  2  2
+[3,]  3  2
+[4,]  1  1
+[5,]  2  1
+[6,]  3  1
+> cbind(coordinates(GT), c(t(A)[, nrow(A):1]))
+     s1 s2  
+[1,]  1  2 2
+[2,]  2  2 4
+[3,]  3  2 6
+[4,]  1  1 1
+[5,]  2  1 3
+[6,]  3  1 5
+
+looks about right. The steps would be to define the grid with
+GridTopology(), make it a SpatialGridDataFrame with
+SpatialGridiDataFrame(), adding in the data vector *in the right order* as
+the data= argument as for example with
+data=AttributeList(myvar=c(t(A)[,nrow(A):1])). From there, the function in
+spgrass6 should just work.
+
+I'd like to have support for projections too, this will happen sometime.
+
+> 
+> I just want to say that I really appreciate all the work that has thus far 
+> gone into the R-GRASS6 interface. I think amazing things are going to happen 
+> with it.
+
+It would be nice to move to binary. Category labels should also be 
+transferable both ways like they were for GRASS5.
+
+Best wishes,
+
+Roger
+
+> 
+> Regards
+> Rohan Sadler
+> 
+> PhD Candidate
+> Ecosystems Research Group M090
+> The University of Western Australia
+> 35 Stirling Hwy, Crawley, 6008
+> ph:       +61 8 6488 7914
+> fax:      +61 8 6488 7925
+> mobile: +61 0433 192 600
+> email:    rsadler@cyllene.uwa.edu.au
+> 
+> Affiliations:
+> Bushfire CRC
+> School of Mathematics and Statistics, UWA 
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+

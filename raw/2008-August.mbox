@@ -1,0 +1,1041 @@
+From r.m.krug at gmail.com  Fri Aug  1 12:17:47 2008
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Fri Aug  1 12:17:51 2008
+Subject: [GRASS-stats] Heuristic assignment of NODATA value in package
+	spgrass6
+Message-ID: <fb7c7e870808010917i79bddd7i58b8c6367133dfa2@mail.gmail.com>
+
+I am confronted with the situation where a raster in grass has only
+NULL values.
+As I am using grass and R to do simulations, this can happen under
+certain situations.
+I am doing calculations with these layers also in R ands consequently
+I am loading these layers with readRAST6(). But when all values are
+NULL in the raster, I get an error message:
+
+
+> readRAST6("HSericea_seedsDisperse_2007")
+ERROR: Invalid value for null (integers only)
+Error in readBinGrid(rtmpfl11, colname = vname[i], proj4string = p4,
+integer = to_int) :
+ no such file:
+/home/rkrug/Documents/Projects/AlienSpread/R/../grass/simulation/.tmp/ecolmod/HSericea_seedsDisperse_2007
+
+I would therefore suggest that in this case, an arbitrary value is
+assigned to the NODATA  argument to avoid this error.
+
+Thanks
+
+Rainer
+
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation
+Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Faculty of Science
+Natural Sciences Building
+Private Bag X1
+University of Stellenbosch
+Matieland 7602
+South Africa
+From Roger.Bivand at nhh.no  Fri Aug  1 12:50:50 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri Aug  1 12:50:54 2008
+Subject: [GRASS-stats] Heuristic assignment of NODATA value in package
+	spgrass6
+In-Reply-To: <fb7c7e870808010917i79bddd7i58b8c6367133dfa2@mail.gmail.com>
+References: <fb7c7e870808010917i79bddd7i58b8c6367133dfa2@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0808011849470.32202@reclus.nhh.no>
+
+On Fri, 1 Aug 2008, Rainer M Krug wrote:
+
+> I am confronted with the situation where a raster in grass has only
+> NULL values.
+> As I am using grass and R to do simulations, this can happen under
+> certain situations.
+> I am doing calculations with these layers also in R ands consequently
+> I am loading these layers with readRAST6(). But when all values are
+> NULL in the raster, I get an error message:
+>
+>
+>> readRAST6("HSericea_seedsDisperse_2007")
+> ERROR: Invalid value for null (integers only)
+> Error in readBinGrid(rtmpfl11, colname = vname[i], proj4string = p4,
+> integer = to_int) :
+> no such file:
+> /home/rkrug/Documents/Projects/AlienSpread/R/../grass/simulation/.tmp/ecolmod/HSericea_seedsDisperse_2007
+>
+> I would therefore suggest that in this case, an arbitrary value is
+> assigned to the NODATA  argument to avoid this error.
+
+Please try the draft on the sourceforge r-spatial site, module spgrass6, 
+file R/bin_link.R, and let me know if it works, it seems to for me.
+
+Roger
+
+>
+> Thanks
+>
+> Rainer
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From r.m.krug at gmail.com  Fri Aug  1 12:59:10 2008
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Fri Aug  1 12:59:15 2008
+Subject: [GRASS-stats] Heuristic assignment of NODATA value in package
+	spgrass6
+In-Reply-To: <Pine.LNX.4.64.0808011849470.32202@reclus.nhh.no>
+References: <fb7c7e870808010917i79bddd7i58b8c6367133dfa2@mail.gmail.com>
+	<Pine.LNX.4.64.0808011849470.32202@reclus.nhh.no>
+Message-ID: <fb7c7e870808010959r69e98b9w637f70e7568c276a@mail.gmail.com>
+
+On Fri, Aug 1, 2008 at 6:50 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Fri, 1 Aug 2008, Rainer M Krug wrote:
+>
+>> I am confronted with the situation where a raster in grass has only
+>> NULL values.
+>> As I am using grass and R to do simulations, this can happen under
+>> certain situations.
+>> I am doing calculations with these layers also in R ands consequently
+>> I am loading these layers with readRAST6(). But when all values are
+>> NULL in the raster, I get an error message:
+>>
+>>
+>>> readRAST6("HSericea_seedsDisperse_2007")
+>>
+>> ERROR: Invalid value for null (integers only)
+>> Error in readBinGrid(rtmpfl11, colname = vname[i], proj4string = p4,
+>> integer = to_int) :
+>> no such file:
+>>
+>> /home/rkrug/Documents/Projects/AlienSpread/R/../grass/simulation/.tmp/ecolmod/HSericea_seedsDisperse_2007
+>>
+>> I would therefore suggest that in this case, an arbitrary value is
+>> assigned to the NODATA  argument to avoid this error.
+>
+> Please try the draft on the sourceforge r-spatial site, module spgrass6,
+> file R/bin_link.R, and let me know if it works, it seems to for me.
+
+Thanks for the prompt reply.
+
+Sorry for being a little bit dumb today, but do you mean from the cvs?
+Otherwise I don't know where to look.
+
+>
+> Roger
+>
+>>
+>> Thanks
+>>
+>> Rainer
+>>
+>>
+>>
+>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+>
+
+
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation
+Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Faculty of Science
+Natural Sciences Building
+Private Bag X1
+University of Stellenbosch
+Matieland 7602
+South Africa
+From Roger.Bivand at nhh.no  Fri Aug  1 13:04:49 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri Aug  1 13:05:05 2008
+Subject: [GRASS-stats] Heuristic assignment of NODATA value in package
+	spgrass6
+In-Reply-To: <fb7c7e870808010959r69e98b9w637f70e7568c276a@mail.gmail.com>
+References: <fb7c7e870808010917i79bddd7i58b8c6367133dfa2@mail.gmail.com> 
+	<Pine.LNX.4.64.0808011849470.32202@reclus.nhh.no>
+	<fb7c7e870808010959r69e98b9w637f70e7568c276a@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0808011901460.32202@reclus.nhh.no>
+
+On Fri, 1 Aug 2008, Rainer M Krug wrote:
+
+> On Fri, Aug 1, 2008 at 6:50 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> On Fri, 1 Aug 2008, Rainer M Krug wrote:
+>>
+>>> I am confronted with the situation where a raster in grass has only
+>>> NULL values.
+>>> As I am using grass and R to do simulations, this can happen under
+>>> certain situations.
+>>> I am doing calculations with these layers also in R ands consequently
+>>> I am loading these layers with readRAST6(). But when all values are
+>>> NULL in the raster, I get an error message:
+>>>
+>>>
+>>>> readRAST6("HSericea_seedsDisperse_2007")
+>>>
+>>> ERROR: Invalid value for null (integers only)
+>>> Error in readBinGrid(rtmpfl11, colname = vname[i], proj4string = p4,
+>>> integer = to_int) :
+>>> no such file:
+>>>
+>>> /home/rkrug/Documents/Projects/AlienSpread/R/../grass/simulation/.tmp/ecolmod/HSericea_seedsDisperse_2007
+>>>
+>>> I would therefore suggest that in this case, an arbitrary value is
+>>> assigned to the NODATA  argument to avoid this error.
+>>
+>> Please try the draft on the sourceforge r-spatial site, module spgrass6,
+>> file R/bin_link.R, and let me know if it works, it seems to for me.
+>
+> Thanks for the prompt reply.
+>
+> Sorry for being a little bit dumb today, but do you mean from the cvs?
+> Otherwise I don't know where to look.
+
+Yes, best to check out the spgrass6 module and do R CMD INSTALL spgrass6 
+from the directory "above".
+
+cvs -d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial login
+
+cvs -z3 
+-d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial co 
+-P spgrass6
+
+R CMD INSTALL spgrass6
+
+should do it.
+
+Roger
+
+>
+>>
+>> Roger
+>>
+>>>
+>>> Thanks
+>>>
+>>> Rainer
+>>>
+>>>
+>>>
+>>
+>> --
+>> Roger Bivand
+>> Economic Geography Section, Department of Economics, Norwegian School of
+>> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+>> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+>> e-mail: Roger.Bivand@nhh.no
+>>
+>>
+>
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From r.m.krug at gmail.com  Wed Aug  6 05:24:38 2008
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Wed Aug  6 05:24:42 2008
+Subject: [GRASS-stats] Overlapping polygons in SpatialPolygonsDataFrame
+Message-ID: <fb7c7e870808060224r2b5a6ddmb658ec51abf8e98b@mail.gmail.com>
+
+Hi
+
+I have a SpatialPolygonsDataFrame with polygons which are overlapping
+(spdf in the example below), which is an imported shape file.
+
+I would like to get the maximum of ALL the polygons at given
+locations, defined as a SpatialPixelsDataFrame (grd in the example
+below).
+
+How can I achieve this (or apply a function to the values at a given
+location, e.g. calculate the mean or minimum)?
+
+I know about
+
+overlay(spdf, grd, fn=)
+
+but as far as I understand it, the function is applied to the values
+of different attribute columns, and I would need a function which is
+applied to the values of the same attribute column but from different
+polygons (at locations where the polygons are overlapping)
+
+Below an example which illustrate my problem.
+
+Thanks a lot,
+
+Rainer
+
+
+
+library(sp)
+
+p1 <- cbind( c(90, 50, 50, 90, 90), c(10, 50, 70, 70, 10) )
+p2 <- cbind( c(10, 10, 70, 10),     c(90, 10, 70, 90) )
+
+sp1 <- Polygons(list(Polygon(p1)),"p1")
+sp2 <- Polygons(list(Polygon(p2)),"p2")
+
+sp <- SpatialPolygons( list(sp1,sp2) )
+spdf <- SpatialPolygonsDataFrame(sp, data.frame(f=c(10, 20),
+row.names=c("p1","p2")))
+
+grd <- expand.grid(xc = 1:100, yc = 1:100)
+grd <- data.frame(grd, z1 = 1:100, z2 = 100:1)
+coordinates(grd) = ~xc + yc
+gridded(grd) <- TRUE
+
+image(grd)
+plot(spdf, add=TRUE, col=spdf[[1]])
+
+
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation
+Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Faculty of Science
+Natural Sciences Building
+Private Bag X1
+University of Stellenbosch
+Matieland 7602
+South Africa
+From r.m.krug at gmail.com  Wed Aug  6 10:27:38 2008
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Wed Aug  6 10:27:43 2008
+Subject: [GRASS-stats] difference in loading different grass layers in one
+	object compared to separate objects?
+Message-ID: <fb7c7e870808060727p6117e9p6a7b195c4e3d89e8@mail.gmail.com>
+
+Hi
+
+is there a performance difference in loading several grass raster
+layers into one SpatialPixelsDataFrame compared to separate?
+
+I am asking because I have to load several layers in a simulation
+repeatedly and a performance difference might show.
+
+Also:
+
+what is the best way of accessing the associated data in these objects? I use
+
+spsdf[[1]], sp[[2]], ...
+
+is that OK, or is there a preferred way?
+
+Thanks
+
+Rainer
+
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation
+Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Faculty of Science
+Natural Sciences Building
+Private Bag X1
+University of Stellenbosch
+Matieland 7602
+South Africa
+From Seppo.Kaitala at fimr.fi  Wed Aug  6 15:13:06 2008
+From: Seppo.Kaitala at fimr.fi (Seppo.Kaitala@fimr.fi)
+Date: Wed Aug  6 15:13:10 2008
+Subject: [GRASS-stats] Seppo Kaitala/FIMR/FI is out of the office.
+Message-ID: <OF0DAE8ABE.3A1755E0-ONC225749D.006991EF-C225749D.006991EF@fimr.fi>
+
+
+I will be out of the office starting  04.08.2008 and will not return until
+21.08.2008.
+
+I will respond to your message when I return.
+
+From r.m.krug at gmail.com  Sat Aug  9 08:24:02 2008
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Sat Aug  9 08:24:07 2008
+Subject: [GRASS-stats] Specify attribute column in SpatialPolygonsDataFrame
+	when using overlay(grd, polyg)
+Message-ID: <fb7c7e870808090524m45fd70bfl75eeee5049b897e1@mail.gmail.com>
+
+Hi
+
+
+I have a SpatialGridDataFrame-class (grd) and a
+SpatialPolygonsDataFrame (polyg) with more then one attribute columns,
+i.e.
+
+names(slot(polyg, "data"))
+
+results in
+
+"a", "b", "c", ... "z"
+
+I want to use overlay to convert polyg into a grid, by assigning the
+values of attribute column "d" to the grid.
+
+Is it possible to specify the column name in the following overlay statement:
+
+d <- overlay(grd, polyg)
+grd[[1]] <- d
+
+results in the values of the attribute column "d" in grd[[1]]?
+
+Thanks,
+
+Rainer
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation
+Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Faculty of Science
+Natural Sciences Building
+Private Bag X1
+University of Stellenbosch
+Matieland 7602
+South Africa
+From Roger.Bivand at nhh.no  Sat Aug  9 12:33:56 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sat Aug  9 12:34:00 2008
+Subject: [GRASS-stats] Specify attribute column in SpatialPolygonsDataFrame
+	when using overlay(grd, polyg)
+In-Reply-To: <fb7c7e870808090524m45fd70bfl75eeee5049b897e1@mail.gmail.com>
+References: <fb7c7e870808090524m45fd70bfl75eeee5049b897e1@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0808091828590.11567@reclus.nhh.no>
+
+On Sat, 9 Aug 2008, Rainer M Krug wrote:
+
+> Hi
+>
+>
+> I have a SpatialGridDataFrame-class (grd) and a
+> SpatialPolygonsDataFrame (polyg) with more then one attribute columns,
+> i.e.
+>
+> names(slot(polyg, "data"))
+>
+> results in
+>
+> "a", "b", "c", ... "z"
+>
+> I want to use overlay to convert polyg into a grid, by assigning the
+> values of attribute column "d" to the grid.
+>
+> Is it possible to specify the column name in the following overlay statement:
+>
+> d <- overlay(grd, polyg)
+> grd[[1]] <- d
+
+Not like that. Here with grd a SpatialGrid:
+
+library(sp)
+library(maptools)
+polyg <- readShapeSpatial(system.file("shapes/sids.shp",
+  package="maptools")[1],  IDvar="FIPSNO",
+  proj4string=CRS("+proj=longlat +ellps=clrk66"))
+grd <- Sobj_SpatialGrid(polyg)$SG
+d <- overlay(grd, polyg)
+# d contains the indices of the Polygons object into which each cell
+# centre falls, or NA
+summary(d)
+names(polyg)
+v <- polyg$SID74[d]
+# use d to index the variable of interest
+# if grd had been a SpatialGridDataFrame, just assign "$<-", or:
+grdd <- SpatialGridDataFrame(grid=slot(grd, "grid"),
+  data=data.frame(SID74=v), proj4string=CRS(proj4string(grd)))
+summary(grdd)
+image(grdd)
+spplot(polyg, "SID74")
+
+Roger
+
+>
+> results in the values of the attribute column "d" in grd[[1]]?
+>
+> Thanks,
+>
+> Rainer
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From r.m.krug at gmail.com  Sun Aug 10 10:15:05 2008
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Sun Aug 10 10:15:11 2008
+Subject: [GRASS-stats] Specify attribute column in
+	SpatialPolygonsDataFrame when using overlay(grd, polyg)
+In-Reply-To: <Pine.LNX.4.64.0808091828590.11567@reclus.nhh.no>
+References: <fb7c7e870808090524m45fd70bfl75eeee5049b897e1@mail.gmail.com>
+	<Pine.LNX.4.64.0808091828590.11567@reclus.nhh.no>
+Message-ID: <fb7c7e870808100715u74781fc5w421f1fc1305f46e8@mail.gmail.com>
+
+On Sat, Aug 9, 2008 at 6:33 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Sat, 9 Aug 2008, Rainer M Krug wrote:
+>
+>> Hi
+>>
+>>
+>> I have a SpatialGridDataFrame-class (grd) and a
+>> SpatialPolygonsDataFrame (polyg) with more then one attribute columns,
+>> i.e.
+>>
+>> names(slot(polyg, "data"))
+>>
+>> results in
+>>
+>> "a", "b", "c", ... "z"
+>>
+>> I want to use overlay to convert polyg into a grid, by assigning the
+>> values of attribute column "d" to the grid.
+>>
+>> Is it possible to specify the column name in the following overlay
+>> statement:
+>>
+>> d <- overlay(grd, polyg)
+>> grd[[1]] <- d
+>
+> Not like that. Here with grd a SpatialGrid:
+>
+> library(sp)
+> library(maptools)
+> polyg <- readShapeSpatial(system.file("shapes/sids.shp",
+>  package="maptools")[1],  IDvar="FIPSNO",
+>  proj4string=CRS("+proj=longlat +ellps=clrk66"))
+> grd <- Sobj_SpatialGrid(polyg)$SG
+> d <- overlay(grd, polyg)
+> # d contains the indices of the Polygons object into which each cell
+> # centre falls, or NA
+
+Thanks a lot Roger - no I understand how it works.
+
+Rainer
+
+
+
+> summary(d)
+> names(polyg)
+> v <- polyg$SID74[d]
+> # use d to index the variable of interest
+> # if grd had been a SpatialGridDataFrame, just assign "$<-", or:
+> grdd <- SpatialGridDataFrame(grid=slot(grd, "grid"),
+>  data=data.frame(SID74=v), proj4string=CRS(proj4string(grd)))
+> summary(grdd)
+> image(grdd)
+> spplot(polyg, "SID74")
+>
+> Roger
+>
+>>
+>> results in the values of the attribute column "d" in grd[[1]]?
+>>
+>> Thanks,
+>>
+>> Rainer
+>>
+>>
+>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+>
+
+
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation
+Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Faculty of Science
+Natural Sciences Building
+Private Bag X1
+University of Stellenbosch
+Matieland 7602
+South Africa
+From jumanbar at gmail.com  Tue Aug 19 17:31:00 2008
+From: jumanbar at gmail.com (Juan Manuel Barreneche)
+Date: Tue Aug 19 17:31:03 2008
+Subject: [GRASS-stats] address (nil), cause 'memory not mapped'
+Message-ID: <a61be2750808191431l13f4cd8dl56060e1dbeb1c1f2@mail.gmail.com>
+
+Dear users,
+I got this problem and i don't have a clue of what it could be happening...
+
+The context: i'm running a loop in which i extract information from a raster
+map (I work with GRASS and R, using spgrass6 package), and rearrange it to
+create a matrix. I've tried it with small maps and it works smoothly, but in
+large maps I have to resort to saving data in the hard disk regularly in
+order to avoid the "cannot allocate vector of size..." problem (builted in
+the loop itself).
+
+Even so, the message "address (nil), cause 'memory not mapped'" appeared,
+and i really don't have a clue of what it means.
+
+I run R 2.7.0 on openSUSE 10.2
+
+If anyone can be of any help, it'll be greatly appreciated... below I'm
+writing the output i got (and the R.Version() output...)
+
+thank you,
+
+Juan
+
+<grass output>
+Null cells excluded from cost evaluation.
+Source map is: Floating point (double) cell type
+189 rows, 178 cols
+Creating some temporary files
+Reading riosypondas3000
+ 100%
+Initializing output
+ 100%
+Finding cost path
+Writing nombre
+Double cell type.
+Writing...
+ 100%
+Peak cost value: 13.614127
+Creating BIL support files...
+Header File =
+/home/mastermind/GRASSDATA//yacare1/jmb/.tmp/SpongeBob/nombre.hdr
+World File =
+/home/mastermind/GRASSDATA//yacare1/jmb/.tmp/SpongeBob/nombre.wld
+Exporting raster as double values (bytes=8)
+Using the current region settings...
+north=6681799.617727
+south=6115500.667945
+east=756812.903880
+west=223200.856418
+r=189
+c=178
+ 100%
+<end of grass output>
+
+ *** caught segfault ***
+address (nil), cause 'memory not mapped'
+
+Traceback:
+ 1: system("g.proj -j -f", intern = TRUE, ignore.stderr = ignore.stderr)
+ 2: ifelse(.Platform$OS.type == "windows", projstr <- system("g.proj -j
+-f",     intern = TRUE), projstr <- system("g.proj -j -f", intern =
+TRUE,     ignore.stderr = ignore.stderr))
+ 3: getLocationProj()
+ 4: nchar(projargs)
+ 5: CRS(getLocationProj())
+ 6: readRAST6("nombre")
+ 7: dist.grass(matrizPaisaje.riosypondas3000, "riosypondas3000",     direct
+= "/home/mastermind/r/distancias", division = 17)
+ 8: eval(expr, envir, enclos)
+ 9: eval(parse(text = sprintf("dist.%s <<- dist.grass(matrizPaisaje.%s,
+'%s', direct='%s', division=%s)",     i, i, i, direct, division)))
+10: dist.grass.loop(c("riosypondas3000", "maxent3000", "alturas3000.2"),
+direct = "/home/mastermind/r/distancias", division = 17)
+11: eval(expr, envir, enclos)
+12: eval(expr, envir = loc.frame)
+13: system.time(dist.grass.loop(c("riosypondas3000", "maxent3000",
+"alturas3000.2"), direct = "/home/mastermind/r/distancias",     division =
+17))
+
+Possible actions:
+1: abort (with core dump, if enabled)
+2: normal R exit
+3: exit R without saving workspace
+4: exit R saving workspace
+
+> R.Version()
+$platform
+[1] "i686-pc-linux-gnu"
+
+$arch
+[1] "i686"
+
+$os
+[1] "linux-gnu"
+
+$system
+[1] "i686, linux-gnu"
+
+$status
+[1] ""
+
+$major
+[1] "2"
+
+$minor
+[1] "7.0"
+
+$year
+[1] "2008"
+
+$month
+[1] "04"
+
+$day
+[1] "22"
+
+$`svn rev`
+[1] "45424"
+
+$language
+[1] "R"
+
+$version.string
+[1] "R version 2.7.0 (2008-04-22)"
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20080819/7e02f494/attachment.html
+From jumanbar at gmail.com  Tue Aug 19 17:41:53 2008
+From: jumanbar at gmail.com (Juan Manuel Barreneche)
+Date: Tue Aug 19 17:41:57 2008
+Subject: [GRASS-stats] Re: address (nil), cause 'memory not mapped'
+In-Reply-To: <a61be2750808191431l13f4cd8dl56060e1dbeb1c1f2@mail.gmail.com>
+References: <a61be2750808191431l13f4cd8dl56060e1dbeb1c1f2@mail.gmail.com>
+Message-ID: <a61be2750808191441k54fab8bn711e3f1c3f43f6bd@mail.gmail.com>
+
+just to mention that the loop was already running for about 20 hours...
+
+Juan
+
+On Tue, Aug 19, 2008 at 6:31 PM, Juan Manuel Barreneche
+<jumanbar@gmail.com>wrote:
+
+> Dear users,
+> I got this problem and i don't have a clue of what it could be happening...
+>
+> The context: i'm running a loop in which i extract information from a
+> raster map (I work with GRASS and R, using spgrass6 package), and rearrange
+> it to create a matrix. I've tried it with small maps and it works smoothly,
+> but in large maps I have to resort to saving data in the hard disk regularly
+> in order to avoid the "cannot allocate vector of size..." problem (builted
+> in the loop itself).
+>
+> Even so, the message "address (nil), cause 'memory not mapped'" appeared,
+> and i really don't have a clue of what it means.
+>
+> I run R 2.7.0 on openSUSE 10.2
+>
+> If anyone can be of any help, it'll be greatly appreciated... below I'm
+> writing the output i got (and the R.Version() output...)
+>
+> thank you,
+>
+> Juan
+>
+> <grass output>
+> Null cells excluded from cost evaluation.
+> Source map is: Floating point (double) cell type
+> 189 rows, 178 cols
+> Creating some temporary files
+> Reading riosypondas3000
+>  100%
+> Initializing output
+>  100%
+> Finding cost path
+> Writing nombre
+> Double cell type.
+> Writing...
+>  100%
+> Peak cost value: 13.614127
+> Creating BIL support files...
+> Header File =
+> /home/mastermind/GRASSDATA//yacare1/jmb/.tmp/SpongeBob/nombre.hdr
+> World File =
+> /home/mastermind/GRASSDATA//yacare1/jmb/.tmp/SpongeBob/nombre.wld
+> Exporting raster as double values (bytes=8)
+> Using the current region settings...
+> north=6681799.617727
+> south=6115500.667945
+> east=756812.903880
+> west=223200.856418
+> r=189
+> c=178
+>  100%
+> <end of grass output>
+>
+>  *** caught segfault ***
+> address (nil), cause 'memory not mapped'
+>
+> Traceback:
+>  1: system("g.proj -j -f", intern = TRUE, ignore.stderr = ignore.stderr)
+>  2: ifelse(.Platform$OS.type == "windows", projstr <- system("g.proj -j
+> -f",     intern = TRUE), projstr <- system("g.proj -j -f", intern =
+> TRUE,     ignore.stderr = ignore.stderr))
+>  3: getLocationProj()
+>  4: nchar(projargs)
+>  5: CRS(getLocationProj())
+>  6: readRAST6("nombre")
+>  7: dist.grass(matrizPaisaje.riosypondas3000, "riosypondas3000",     direct
+> = "/home/mastermind/r/distancias", division = 17)
+>  8: eval(expr, envir, enclos)
+>  9: eval(parse(text = sprintf("dist.%s <<- dist.grass(matrizPaisaje.%s,
+> '%s', direct='%s', division=%s)",     i, i, i, direct, division)))
+> 10: dist.grass.loop(c("riosypondas3000", "maxent3000",
+> "alturas3000.2"),     direct = "/home/mastermind/r/distancias", division =
+> 17)
+> 11: eval(expr, envir, enclos)
+> 12: eval(expr, envir = loc.frame)
+> 13: system.time(dist.grass.loop(c("riosypondas3000", "maxent3000",
+> "alturas3000.2"), direct = "/home/mastermind/r/distancias",     division =
+> 17))
+>
+> Possible actions:
+> 1: abort (with core dump, if enabled)
+> 2: normal R exit
+> 3: exit R without saving workspace
+> 4: exit R saving workspace
+>
+> > R.Version()
+> $platform
+> [1] "i686-pc-linux-gnu"
+>
+> $arch
+> [1] "i686"
+>
+> $os
+> [1] "linux-gnu"
+>
+> $system
+> [1] "i686, linux-gnu"
+>
+> $status
+> [1] ""
+>
+> $major
+> [1] "2"
+>
+> $minor
+> [1] "7.0"
+>
+> $year
+> [1] "2008"
+>
+> $month
+> [1] "04"
+>
+> $day
+> [1] "22"
+>
+> $`svn rev`
+> [1] "45424"
+>
+> $language
+> [1] "R"
+>
+> $version.string
+> [1] "R version 2.7.0 (2008-04-22)"
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20080819/63d94188/attachment.html
+From Roger.Bivand at nhh.no  Wed Aug 20 07:23:26 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Aug 20 07:23:30 2008
+Subject: [GRASS-stats] Re: address (nil), cause 'memory not mapped'
+In-Reply-To: <a61be2750808191441k54fab8bn711e3f1c3f43f6bd@mail.gmail.com>
+References: <a61be2750808191431l13f4cd8dl56060e1dbeb1c1f2@mail.gmail.com>
+	<a61be2750808191441k54fab8bn711e3f1c3f43f6bd@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0808201315010.15143@reclus.nhh.no>
+
+On Tue, 19 Aug 2008, Juan Manuel Barreneche wrote:
+
+> just to mention that the loop was already running for about 20 hours...
+
+This question was also posted to the r-help list, where it does not 
+belong. The thread will continue here (cross-posting is not a good idea). 
+The messages so far do not contain information about what is happening, 
+other than that a system() call from the R side, provoking an issue in 
+running a GRASS module, should not bring R down.
+
+I feel that the general workflow is not adequate, and that very possibly 
+the same instance of R should not be left running (script the other way 
+round from the shell or similar). Think of a shell or Python script 
+issuing commands to GRASS and R in turn, accumulating intermediate results 
+in RData files.
+
+If you have to stay with your current workflow design, start R with -d gdb 
+to get a backtrack of the problem in the compiled code. Make sure that 
+ignore.stderror is FALSE so that error messages from GRASS modules are 
+visible.
+
+Roger
+
+>
+> Juan
+>
+> On Tue, Aug 19, 2008 at 6:31 PM, Juan Manuel Barreneche
+> <jumanbar@gmail.com>wrote:
+>
+>> Dear users,
+>> I got this problem and i don't have a clue of what it could be happening...
+>>
+>> The context: i'm running a loop in which i extract information from a
+>> raster map (I work with GRASS and R, using spgrass6 package), and rearrange
+>> it to create a matrix. I've tried it with small maps and it works smoothly,
+>> but in large maps I have to resort to saving data in the hard disk regularly
+>> in order to avoid the "cannot allocate vector of size..." problem (builted
+>> in the loop itself).
+>>
+>> Even so, the message "address (nil), cause 'memory not mapped'" appeared,
+>> and i really don't have a clue of what it means.
+>>
+>> I run R 2.7.0 on openSUSE 10.2
+>>
+>> If anyone can be of any help, it'll be greatly appreciated... below I'm
+>> writing the output i got (and the R.Version() output...)
+>>
+>> thank you,
+>>
+>> Juan
+>>
+>> <grass output>
+>> Null cells excluded from cost evaluation.
+>> Source map is: Floating point (double) cell type
+>> 189 rows, 178 cols
+>> Creating some temporary files
+>> Reading riosypondas3000
+>>  100%
+>> Initializing output
+>>  100%
+>> Finding cost path
+>> Writing nombre
+>> Double cell type.
+>> Writing...
+>>  100%
+>> Peak cost value: 13.614127
+>> Creating BIL support files...
+>> Header File =
+>> /home/mastermind/GRASSDATA//yacare1/jmb/.tmp/SpongeBob/nombre.hdr
+>> World File =
+>> /home/mastermind/GRASSDATA//yacare1/jmb/.tmp/SpongeBob/nombre.wld
+>> Exporting raster as double values (bytes=8)
+>> Using the current region settings...
+>> north=6681799.617727
+>> south=6115500.667945
+>> east=756812.903880
+>> west=223200.856418
+>> r=189
+>> c=178
+>>  100%
+>> <end of grass output>
+>>
+>>  *** caught segfault ***
+>> address (nil), cause 'memory not mapped'
+>>
+>> Traceback:
+>>  1: system("g.proj -j -f", intern = TRUE, ignore.stderr = ignore.stderr)
+>>  2: ifelse(.Platform$OS.type == "windows", projstr <- system("g.proj -j
+>> -f",     intern = TRUE), projstr <- system("g.proj -j -f", intern =
+>> TRUE,     ignore.stderr = ignore.stderr))
+>>  3: getLocationProj()
+>>  4: nchar(projargs)
+>>  5: CRS(getLocationProj())
+>>  6: readRAST6("nombre")
+>>  7: dist.grass(matrizPaisaje.riosypondas3000, "riosypondas3000",     direct
+>> = "/home/mastermind/r/distancias", division = 17)
+>>  8: eval(expr, envir, enclos)
+>>  9: eval(parse(text = sprintf("dist.%s <<- dist.grass(matrizPaisaje.%s,
+>> '%s', direct='%s', division=%s)",     i, i, i, direct, division)))
+>> 10: dist.grass.loop(c("riosypondas3000", "maxent3000",
+>> "alturas3000.2"),     direct = "/home/mastermind/r/distancias", division =
+>> 17)
+>> 11: eval(expr, envir, enclos)
+>> 12: eval(expr, envir = loc.frame)
+>> 13: system.time(dist.grass.loop(c("riosypondas3000", "maxent3000",
+>> "alturas3000.2"), direct = "/home/mastermind/r/distancias",     division =
+>> 17))
+>>
+>> Possible actions:
+>> 1: abort (with core dump, if enabled)
+>> 2: normal R exit
+>> 3: exit R without saving workspace
+>> 4: exit R saving workspace
+>>
+>>> R.Version()
+>> $platform
+>> [1] "i686-pc-linux-gnu"
+>>
+>> $arch
+>> [1] "i686"
+>>
+>> $os
+>> [1] "linux-gnu"
+>>
+>> $system
+>> [1] "i686, linux-gnu"
+>>
+>> $status
+>> [1] ""
+>>
+>> $major
+>> [1] "2"
+>>
+>> $minor
+>> [1] "7.0"
+>>
+>> $year
+>> [1] "2008"
+>>
+>> $month
+>> [1] "04"
+>>
+>> $day
+>> [1] "22"
+>>
+>> $`svn rev`
+>> [1] "45424"
+>>
+>> $language
+>> [1] "R"
+>>
+>> $version.string
+>> [1] "R version 2.7.0 (2008-04-22)"
+>>
+>>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+

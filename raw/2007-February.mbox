@@ -1,0 +1,2055 @@
+From sisma66 at tiscali.it  Thu Feb  8 10:18:19 2007
+From: sisma66 at tiscali.it (Pierluigi De Rosa)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] problem during importation of vector grass
+Message-ID: <200702081618.20341.sisma66@tiscali.it>
+
+Dear All,
+
+I have some problem during importation of grass vecto file in R
+if I type:
+
+pointdata <- getSites6sp("ascii_punti")
+
+I have this error:
+
+ERROR 4: Failed to open 
+shapefile /home/pierluigi/DATABASEGRASS/GB_EST/penchini/.tmp/uni/.shp.
+It may be corrupt.
+
+ERROR: Cannot open OGR data source
+       '/home/pierluigi/DATABASEGRASS/GB_EST/penchini/.tmp/uni'
+Errore in ogrInfo(dsn = dsn, layer = layer) :
+        Cannot open file
+
+
+Can anyone help me?
+it seems that R can't create the shapefile but until yesterday everythings 
+work fine!
+Thanks
+Pierluigi
+
+
+-- 
+
+Pierluigi De Rosa
+
+Department of Enviromental & Civil engineering 
+Faculty of Engineering 
+Perugia (Italy)
+
+
+From Roger.Bivand at nhh.no  Thu Feb  8 12:37:06 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] problem during importation of vector grass
+In-Reply-To: <200702081618.20341.sisma66@tiscali.it>
+Message-ID: <Pine.LNX.4.44.0702081829220.15143-100000@reclus.nhh.no>
+
+On Thu, 8 Feb 2007, Pierluigi De Rosa wrote:
+
+> Dear All,
+> 
+> I have some problem during importation of grass vecto file in R
+> if I type:
+> 
+> pointdata <- getSites6sp("ascii_punti")
+> 
+> I have this error:
+> 
+> ERROR 4: Failed to open 
+> shapefile /home/pierluigi/DATABASEGRASS/GB_EST/penchini/.tmp/uni/.shp.
+> It may be corrupt.
+> 
+> ERROR: Cannot open OGR data source
+>        '/home/pierluigi/DATABASEGRASS/GB_EST/penchini/.tmp/uni'
+> Errore in ogrInfo(dsn = dsn, layer = layer) :
+>         Cannot open file
+> 
+> 
+> Can anyone help me?
+> it seems that R can't create the shapefile but until yesterday everythings 
+> work fine!
+
+Did you do anything (update GRASS, spgrass6, GDAL/OGR, R) yesterday?
+
+What does sessionInfo() in R say?
+
+getSites6sp() is just a wrapper for the regular readVECT6() interface, by 
+the way. If you want to try to debug this, say debug(readVECT6), run the 
+command, and look at the contents of shname and the cmd string starting 
+with "v.out.ogr". That seems to be trying to write to a file with an empty 
+name - is this a character set issue (what locale are you using, were 
+there any non-ASCII characters in the name)?
+
+Roger
+
+> Thanks
+> Pierluigi
+> 
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From sisma66 at tiscali.it  Fri Feb  9 11:57:58 2007
+From: sisma66 at tiscali.it (Pierluigi De Rosa)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] problem during importation of vector grass
+In-Reply-To: <000801c74c1f$691eecc0$8a00a8c0@pierluigf2bcrp>
+References: <000801c74c1f$691eecc0$8a00a8c0@pierluigf2bcrp>
+Message-ID: <200702091757.59004.sisma66@tiscali.it>
+
+Dear Roger,
+
+This Is my sessioninfo:
+
+sessionInfo()
+R version 2.4.1 (2006-12-18)
+i686-pc-linux-gnu
+
+locale:
+LC_CTYPE=it_IT;LC_NUMERIC=C;LC_TIME=it_IT;LC_COLLATE=it_IT;LC_MONETARY=it_IT;LC_MESSAGES=it_IT;LC_PAPER=it_IT;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=it_IT;LC_IDENTIFICATION=C
+
+attached base packages:
+[1] "stats"     "graphics"  "grDevices" "utils"     "datasets"  "methods"
+[7] "base"
+
+other attached packages:
+spgrass6    rgdal maptools  foreign       sp
+ "0.3-6"  "0.5-6"  "0.6-8" "0.8-18"  "0.9-7"
+##########
+this below is the debug of :
+___________
+bugs <- readVECT6("luglio75", ignore.stderr=TRUE) 
+_______________
+it stops here:
+
+debug: res <- readOGR(dsn = rtmpfl1, layer = shname, verbose = !ignore.stderr)
+Browse[1]>
+Errore in ogrInfo(dsn = dsn, layer = layer) :
+        Cannot open file
+
+Can this help You?
+Thanks
+Pierluigi
+
+Alle 08:53, venerd? 9 febbraio 2007, hai scritto:
+> ----- Original Message -----
+> From: "Roger Bivand" <Roger.Bivand@nhh.no>
+> To: "Pierluigi De Rosa" <sisma66@tiscali.it>
+> Cc: <statsgrass@grass.itc.it>
+> Sent: Thursday, February 08, 2007 6:37 PM
+> Subject: Re: [STATSGRASS] problem during importation of vector grass
+>
+> >
+> > Did you do anything (update GRASS, spgrass6, GDAL/OGR, R) yesterday?
+> >
+> > What does sessionInfo() in R say?
+> >
+> > getSites6sp() is just a wrapper for the regular readVECT6() interface, by
+> > the way. If you want to try to debug this, say debug(readVECT6), run the
+> > command, and look at the contents of shname and the cmd string starting
+> > with "v.out.ogr". That seems to be trying to write to a file with an
+> > empty name - is this a character set issue (what locale are you using,
+> > were there any non-ASCII characters in the name)?
+> >
+> > Roger
+> >
+> >> Thanks
+> >> Pierluigi
+> >
+> > --
+> > Roger Bivand
+> > Economic Geography Section, Department of Economics, Norwegian School of
+> > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > e-mail: Roger.Bivand@nhh.no
+> >
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+
+-- 
+
+Pierluigi De Rosa
+
+Department of Enviromental & Civil engineering 
+Faculty of Engineering 
+Perugia (Italy)
+
+
+From sisma66 at tiscali.it  Fri Feb  9 12:13:17 2007
+From: sisma66 at tiscali.it (Pierluigi De Rosa)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] problem during importation of vector grass
+In-Reply-To: <000801c74c1f$691eecc0$8a00a8c0@pierluigf2bcrp>
+References: <000801c74c1f$691eecc0$8a00a8c0@pierluigf2bcrp>
+Message-ID: <200702091813.18352.sisma66@tiscali.it>
+
+Sorry the correct debug is:
+
+Browse[1]>
+debug: cmd <- paste("v.out.ogr", E, " input=", vname, " type=", type,
+    " dsn=", gtmpfl1, " olayer=", shname, " format=ESRI_Shapefile",
+    sep = "")
+Browse[1]>
+debug: tull <- ifelse(.Platform$OS.type == "windows", system(cmd), system(cmd,
+    ignore.stderr = ignore.stderr))
+Browse[1]>
+ERROR 4: Failed to open 
+shapefile /home/pierluigi/DATABASEGRASS/GB_EST/penchini/.tmp/uni/.shp.
+It may be corrupt.
+
+ERROR: Cannot open OGR data source
+       '/home/pierluigi/DATABASEGRASS/GB_EST/penchini/.tmp/uni'
+debug: res <- readOGR(dsn = rtmpfl1, layer = shname, verbose = !ignore.stderr)
+Browse[1]>
+Errore in ogrInfo(dsn = dsn, layer = layer) :
+        Cannot open file
+
+
+Any Ideas?
+Thanks
+Pierluigi
+
+
+From Roger.Bivand at nhh.no  Fri Feb  9 14:16:35 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] problem during importation of vector grass
+In-Reply-To: <200702091813.18352.sisma66@tiscali.it>
+Message-ID: <Pine.LNX.4.44.0702092013050.16775-100000@reclus.nhh.no>
+
+On Fri, 9 Feb 2007, Pierluigi De Rosa wrote:
+
+> Sorry the correct debug is:
+> 
+> Browse[1]>
+> debug: cmd <- paste("v.out.ogr", E, " input=", vname, " type=", type,
+>     " dsn=", gtmpfl1, " olayer=", shname, " format=ESRI_Shapefile",
+>     sep = "")
+> Browse[1]>
+> debug: tull <- ifelse(.Platform$OS.type == "windows", system(cmd), system(cmd,
+>     ignore.stderr = ignore.stderr))
+
+Please run this again, and *here* just type cmd to see what is in the 
+string - that is after cmd is assigned but before it gets passed to 
+system(). Please also check the values of gtmpfl1 and shname.
+
+It looks as though shname is empty.
+
+Roger
+
+> Browse[1]>
+> ERROR 4: Failed to open 
+> shapefile /home/pierluigi/DATABASEGRASS/GB_EST/penchini/.tmp/uni/.shp.
+> It may be corrupt.
+> 
+> ERROR: Cannot open OGR data source
+>        '/home/pierluigi/DATABASEGRASS/GB_EST/penchini/.tmp/uni'
+> debug: res <- readOGR(dsn = rtmpfl1, layer = shname, verbose = !ignore.stderr)
+> Browse[1]>
+> Errore in ogrInfo(dsn = dsn, layer = layer) :
+>         Cannot open file
+> 
+> 
+> Any Ideas?
+> Thanks
+> Pierluigi
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From Roger.Bivand at nhh.no  Sat Feb 10 14:28:11 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: Fw: [STATSGRASS] problem during importation of vector grass
+In-Reply-To: <200702101700.43478.pierluigi.dr@alice.it>
+Message-ID: <Pine.LNX.4.44.0702102025160.17504-100000@reclus.nhh.no>
+
+On Sat, 10 Feb 2007, Pierluigi De Rosa wrote:
+
+> Dear Roger,
+> these below are the lines of bebugging,
+> It seems that cmd, gtmpfl1 and shname aren't null...
+> What do you think about?
+> Thanks 
+> Pierluigi
+> 
+> Browse[1]>
+> debug: cmd <- paste("v.out.ogr", E, " input=", vname, " type=", type,
+>     " dsn=", gtmpfl1, " olayer=", shname, " format=ESRI_Shapefile",
+>     sep = "")
+> Browse[1]>
+> debug: tull <- ifelse(.Platform$OS.type == "windows", system(cmd), system(cmd,
+>     ignore.stderr = ignore.stderr))
+> Browse[1]> cmd
+> [1] "v.out.ogr -e input=ascii_punti type=point 
+> dsn=/home/pierluigi/DATABASEGRASS/GB_EST/penchini/.tmp/uni olayer=ascii_pu 
+> format=ESRI_Shapefile"
+> Browse[1]> gtmpfl1
+> [1] "/home/pierluigi/DATABASEGRASS/GB_EST/penchini/.tmp/uni"
+> Browse[1]> shname
+> [1] "ascii_pu"
+> 
+
+Puzzling. Can you try to run:
+
+system("v.out.ogr -e input=ascii_punti type=point dsn=. olayer=ascii_pu 
+format=ESRI_Shapefile") # without the line break
+tmp <- readOGR(".", "ascii_pu")
+
+inside GRASS in R in some suitable directory? Is there any reason why 
+v.out.ogr might fail on these data?
+
+Roger
+
+> 
+> >Please run this again, and *here* just type cmd to see what is in the
+> >tring - that is after cmd is assigned but before it gets passed to
+> >ystem(). Please also check the values of gtmpfl1 and shname.
+> >
+> >t looks as though shname is empty.
+> >
+> >Roger
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From Roger.Bivand at nhh.no  Mon Feb 12 06:14:54 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: Fw: [STATSGRASS] problem during importation of vector grass
+In-Reply-To: <200702120935.53840.pierluigi.dr@alice.it>
+Message-ID: <Pine.LNX.4.44.0702121206470.16082-100000@reclus.nhh.no>
+
+On Mon, 12 Feb 2007, Pierluigi De Rosa wrote:
+
+> Dear Roger,
+> 
+> Maybe I found the problem.
+> I saw that into the directory .tmp/uni the readVECT6 doesn't write alway the 
+> shapefile but sometimes it write a file nemad 941.0 or 610.0 ecc. everytime 
+> different...
+> It seems the pid of the command instead of the name of shapefile.
+> Why do you think it happen?
+
+It is only a trick to be able to read the name of the GRASS session 
+temporary directory - create a random empty file, and take the directory 
+name of the fully qualified file name returned. Under Linux/OSX this isn't 
+necessary, as the file systems are rooted in the same place, so GRASS can 
+write to R's temporary directory, but under Cygwin this doesn't work, 
+hence the "jumping through hoops".
+
+The output file should be written by v.out.ogr to the GRASS session
+temporary directory. Can you watch the contents of the directory as you 
+run readVECT6() under debug()? Do you see the:
+
+Exporting 90 points/lines...
+ 100%
+90 features written
+
+(or different number of points for you - this is bugsites in spearfish)
+
+at all? Could you please repeat sessionInfo()? Does v.out.ogr work on that 
+vector object when not run inside R? What does v.info of the object say?
+
+This is a puzzling case, I hope that we can solve it.
+
+Roger
+
+> Thanks 
+> Pierluigi
+> 
+> 
+> Alle 20:28, sabato 10 febbraio 2007, Roger Bivand ha scritto:
+> > Puzzling. Can you try to run:
+> >
+> > system("v.out.ogr -e input=ascii_punti type=point dsn=. olayer=ascii_pu
+> > format=ESRI_Shapefile") # without the line break
+> > tmp <- readOGR(".", "ascii_pu")
+> >
+> > inside GRASS in R in some suitable directory? Is there any reason why
+> > v.out.ogr might fail on these data?
+> >
+> > Roger
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From roger at spinn.net  Tue Feb 13 14:45:56 2007
+From: roger at spinn.net (roger@spinn.net)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] unfilled matrices with R and gstat in grass 6.2.0beta3
+Message-ID: <200702131945.l1DJjvSZ020197@smtp.spinn.net>
+
+
+Folks, 
+
+This is a user's question, rather than a developer's question. 
+
+I have R with the gstat library working with grass6.2.0beta3.  On Linux 
+2.6.13 x86_64 (SuSE 10.0).  The software generally works and I can confirm 
+its results at least approximately against other software.  The problem I'm 
+having is that the resulting map is sometimes not completely filled.  I get 
+calculated values on diagonal lines in the map and the intervening areas are 
+left unfilled -- they have null values.  The same pattern is visible whether 
+I look at the result from within R or export the result to a grass raster 
+file. 
+
+The pattern is not so simple as a limit to the size of the resulting map.  I 
+have a small set of data (about 60 locations) and need to construct a map of 
+an area of about 20x30 km, using a grid with spacing of 30mX30m.  The 
+resulting map should have 686736 values, but the the result only contains 
+171684 non-null values.  That is exactly 1/4 of the cells.  If I increase 
+the cell area to 60mX60m so that the grid only contains 171684 cells, then 
+the result contains 85842 non-null values.  That is 1/2 of the cells. 
+
+I can construct a map using 16 tiles across the same area and patch them 
+together to get a completely filled map, but for most purposes that is an 
+excessive amount of work. 
+
+With a different data set with about 250 points and trying to construct a 
+map over a larger area using a grid with 169576 cells, each 120mX120m I do 
+get a filled raster map in the result, though the result looks a little odd. 
+
+I don't understand what is happening and I've found no mention of this 
+problem elsewhere.  Any ideas? 
+
+
+Roger Miller
+
+
+From e.pebesma at geo.uu.nl  Tue Feb 13 14:58:00 2007
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] unfilled matrices with R and gstat in grass
+	6.2.0beta3
+In-Reply-To: <200702131945.l1DJjvSZ020197@smtp.spinn.net>
+References: <200702131945.l1DJjvSZ020197@smtp.spinn.net>
+Message-ID: <45D21848.40508@geo.uu.nl>
+
+Roger, we can't look over your shoulder. Please send the script you used 
+to create the right (but odd) and the wrong results, as complete as 
+possible.
+
+Thanks,
+--
+Edzer
+
+roger@spinn.net wrote:
+>
+> Folks,
+> This is a user's question, rather than a developer's question.
+> I have R with the gstat library working with grass6.2.0beta3.  On 
+> Linux 2.6.13 x86_64 (SuSE 10.0).  The software generally works and I 
+> can confirm its results at least approximately against other 
+> software.  The problem I'm having is that the resulting map is 
+> sometimes not completely filled.  I get calculated values on diagonal 
+> lines in the map and the intervening areas are left unfilled -- they 
+> have null values.  The same pattern is visible whether I look at the 
+> result from within R or export the result to a grass raster file.
+> The pattern is not so simple as a limit to the size of the resulting 
+> map.  I have a small set of data (about 60 locations) and need to 
+> construct a map of an area of about 20x30 km, using a grid with 
+> spacing of 30mX30m.  The resulting map should have 686736 values, but 
+> the the result only contains 171684 non-null values.  That is exactly 
+> 1/4 of the cells.  If I increase the cell area to 60mX60m so that the 
+> grid only contains 171684 cells, then the result contains 85842 
+> non-null values.  That is 1/2 of the cells.
+> I can construct a map using 16 tiles across the same area and patch 
+> them together to get a completely filled map, but for most purposes 
+> that is an excessive amount of work.
+> With a different data set with about 250 points and trying to 
+> construct a map over a larger area using a grid with 169576 cells, 
+> each 120mX120m I do get a filled raster map in the result, though the 
+> result looks a little odd.
+> I don't understand what is happening and I've found no mention of this 
+> problem elsewhere.  Any ideas?
+>
+> Roger Miller
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+From Roger.Bivand at nhh.no  Tue Feb 13 15:07:30 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] unfilled matrices with R and gstat in grass
+	6.2.0beta3
+In-Reply-To: <200702131945.l1DJjvSZ020197@smtp.spinn.net>
+Message-ID: <Pine.LNX.4.44.0702132103410.6240-100000@reclus.nhh.no>
+
+On Tue, 13 Feb 2007 roger@spinn.net wrote:
+
+> 
+> Folks, 
+> 
+> This is a user's question, rather than a developer's question. 
+> 
+> I have R with the gstat library working with grass6.2.0beta3.  On Linux 
+> 2.6.13 x86_64 (SuSE 10.0).  The software generally works and I can confirm 
+> its results at least approximately against other software.  The problem I'm 
+> having is that the resulting map is sometimes not completely filled.  I get 
+> calculated values on diagonal lines in the map and the intervening areas are 
+> left unfilled -- they have null values.  The same pattern is visible whether 
+> I look at the result from within R or export the result to a grass raster 
+> file. 
+> 
+> The pattern is not so simple as a limit to the size of the resulting map.  I 
+> have a small set of data (about 60 locations) and need to construct a map of 
+> an area of about 20x30 km, using a grid with spacing of 30mX30m.  The 
+> resulting map should have 686736 values, but the the result only contains 
+> 171684 non-null values.  That is exactly 1/4 of the cells.  If I increase 
+> the cell area to 60mX60m so that the grid only contains 171684 cells, then 
+> the result contains 85842 non-null values.  That is 1/2 of the cells. 
+> 
+> I can construct a map using 16 tiles across the same area and patch them 
+> together to get a completely filled map, but for most purposes that is an 
+> excessive amount of work. 
+> 
+> With a different data set with about 250 points and trying to construct a 
+> map over a larger area using a grid with 169576 cells, each 120mX120m I do 
+> get a filled raster map in the result, though the result looks a little odd. 
+> 
+> I don't understand what is happening and I've found no mention of this 
+> problem elsewhere.  Any ideas? 
+
+Without seeing your code, and perhaps save() of the input objects to the 
+kriging prediction function call, it's difficult to tell. It feels like 
+the newdata= argument for the prediction location being malformed. If you 
+can post code and put sample data for replicating the problem on a website 
+somewhere (the *.Rdata file from save), we can try to see what it is.
+
+Roger
+
+> 
+> Roger Miller
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From roger at spinn.net  Wed Feb 14 23:48:16 2007
+From: roger at spinn.net (Roger Miller)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] unfilled matrices with R and gstat in grass
+	6.2.0beta3
+Message-ID: <1171514896.12992.5.camel@linux.home>
+
+I realized just recently that my reply on this thread went to Edzer
+rather than back to the list.
+
+Thanks for your replies.  The scripts are attached.  Both the wrong and
+the right (but odd) results resulted from running the same script with
+different data sets and different Grass region settings.
+
+The scripts are run in sequence "startup" followed by "read" and finally
+"map".
+
+I also attached the script "tile" that I used to construct the 16 maps
+that I could patch together to get the correct result.
+
+The workspace is rather large, but it can be downloaded from
+
+http://members.spinn.net/~roger
+
+If that doesn't work then let me know and I'll try something else.
+
+
+Roger Miller
+
+-------------- next part --------------
+#map
+items<-names(rb)
+cat("\nAvailable variables:\n")
+for(n in 1:length(items)) {
+  cat(paste(items[n],"\n"))
+}
+cat("\nEnter the formula: ")
+f<-readLines(n=1)
+if(length(f)>0) form<-formula(f)
+rm(items,f)
+#
+var<-variogram(form,locations=rb)
+rng0<-(sum(var$dist*var$np)/sum(var$np))
+ngt0<-min(var$gamma)
+sll0<-mean(var$gamma)
+#
+mod<-character()
+while ( length(mod)==0 ) {
+  cat("\nEnter the model mnemonic or \"list\" to display the options: ")
+  mod<-readLines(n=1)
+#
+  if ( length(mod)==0 ) break
+  if ( mod=="list" ) {
+    items<-as.character(vgm()$long)
+    for (n in 1:length(items)) {
+      item<-items[n]
+      cat(paste(item,"\n"))
+    }    
+    rm(n,item,items)
+    mod<-character()
+  }
+}
+#
+if ( mod=="" ) {
+  cat("\nWorking...")
+  map<-krige(form,rb,g.grid)
+} else {
+  if ( mod=="Nug" ) {
+    mdl<-vgm(psill=sll0,model=mod,range=0)
+  } else {
+    cat("Enter \"1\" to include a nugget effect:  ")
+    if(readLines(n=1)=="1") {
+      mdl<-vgm(psill=sll0,model=mod,nugget=ngt0,range=rng0)
+    } else {
+      mdl<-vgm(psill=sll0,model=mod,range=rng0)
+    }
+  }    
+  cat("\nWorking...")
+  varfit<-fit.variogram(var,model=mdl)
+  map<-krige(form,rb,g.grid,model=varfit)
+  rm(mdl)
+}
+rm (n,sll0,rng0,ngt0)
+#rm (rb,var,varfit)
+-------------- next part --------------
+#read
+cat("Enter the name of the Grass vector file with data: ")
+fname<-readLines(n=1)
+rb<-readVECT6(fname)
+rbdf<-data.frame(rb)
+if(charmatch("east",names(rbdf),nomatch=0)==0) {
+  n<-charmatch("coords.x1",names(rbdf),nomatch=0)
+  if(n>0) names(rbdf)[n]<-"east"
+}
+if(charmatch("north",names(rbdf),nomatch=0)==0) {
+  n<-charmatch("coords.x2",names(rbdf),nomatch=0)
+  if(n>0) names(rbdf)[n]<-"north"
+}
+rb<-SpatialPointsDataFrame(coordinates(rb),rbdf,proj4str=CRS(G$proj4))
+rm(fname,rbdf)
+-------------- next part --------------
+#startup
+library(spgrass6)
+library(gstat)
+G<-gmeta6()
+x<-numeric()
+x[1:(G$cols*G$rows)]<-(seq(G$w+G$ewres/2,G$e-G$ewres/2,G$ewres))
+y<-numeric()
+y[1:(G$cols*G$rows)]<-(seq(G$s+G$nsres/2,G$n-G$nsres/2,G$nsres))
+#g.grid<-SpatialPoints(data.frame(east=x,north=y),
+#                      proj4string=CRS(G$proj4)
+#                      )
+g.grid<-SpatialPixelsDataFrame(data.frame(east=x,north=y),
+                               data.frame(rep(1,G$cols*G$rows)),
+                               proj4string=CRS(G$proj4)
+                               )
+rm(x,y)
+-------------- next part --------------
+#tile
+library(spgrass6)
+library(gstat)
+#
+system("g.region rast=courson_consensus_rb_surfer")
+G<-gmeta6()
+source("read")
+form<-formula("dbl_3~east+north")
+mdl<-vgm(model="Exp",range=1000,psill=10000)
+var<-variogram(form,rb)
+varfit<-fit.variogram(var,mdl)
+xv<-numeric()
+yv<-numeric()
+x0<-310295
+y0<-3975671
+cols<-251
+rows<-171
+inc<-30
+#
+y<-y0
+for( i in 1:4 ) { 
+  x<-x0
+  y1<-(y+rows*inc)
+  for (j in 1:4) {
+    x1<-(x+cols*inc)
+    system(sprintf("g.region w=%d s=%d e=%d n=%d",x,y,x1,y1))
+    G<-gmeta6()
+    xv[1:(G$cols*G$rows)]<-(seq(G$w+G$ewres/2,G$e-G$ewres/2,G$ewres))
+    yv[1:(G$cols*G$rows)]<-(seq(G$s+G$nsres/2,G$n-G$nsres/2,G$nsres))
+    g.grid<-SpatialPixelsDataFrame(data.frame(east=xv,north=yv),
+                                   data.frame(rep(1,G$cols*G$rows)),
+                                   proj4string=CRS(G$proj4)
+                                   )
+    map<-krige(form,rb,g.grid,model=varfit) 
+    writeRAST6(map,sprintf("testmap%d%d",i,j),zcol="var1.pred")
+    x<-x1
+  }
+  y<-y1
+}
+rm(x0,y0,cols,rows,inc,form,mdl,var,varfit,yv,xv,y,x,y1,x1,map)
+system("g.region rast=courson_consensus_rb_surfer")
+From Roger.Bivand at nhh.no  Thu Feb 15 12:27:55 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] unfilled matrices with R and gstat in grass
+	6.2.0beta3
+In-Reply-To: <1171514896.12992.5.camel@linux.home>
+Message-ID: <Pine.LNX.4.44.0702151812300.8357-100000@reclus.nhh.no>
+
+On Wed, 14 Feb 2007, Roger Miller wrote:
+
+> I realized just recently that my reply on this thread went to Edzer
+> rather than back to the list.
+> 
+> Thanks for your replies.  The scripts are attached.  Both the wrong and
+> the right (but odd) results resulted from running the same script with
+> different data sets and different Grass region settings.
+> 
+> The scripts are run in sequence "startup" followed by "read" and finally
+> "map".
+
+OK. Replace "startup" by calling gmeta2grd(), see the example on the 
+gmeta6 help page. That gets the SpatialGridDataFrame object, if you need a 
+SpatialPixelsDataFrame object, coerce using 
+
+as(obj, "SpatialPixelsDataFrame")
+
+I have no idea what you are doing in "read", all you need to do is call 
+readVECT6(), the rest is I think superfluous (with the possible exception 
+of overwriting the WKT-style CRS object with the GRASS-style). The CRS 
+issue can be handled as:
+
+proj4string(rb) <- CRS(G$proj4)
+
+I would not have written "map" anyway. If you show your users how to use 
+the command line directly, they'll be able to fish themselves from then 
+on, and variogram fitting does need interaction. 
+
+Please try to get this working _using the command line only_ until it 
+works, then simplify it until it cannot be reasonably simplified further. 
+Then you will have what you need to build a TUI/GUI (a tcltk one for Rcmdr 
+came past earlier this week ...) if it is worth the trouble (IMHO it 
+usually isn't).
+
+Roger
+
+> 
+> I also attached the script "tile" that I used to construct the 16 maps
+> that I could patch together to get the correct result.
+> 
+> The workspace is rather large, but it can be downloaded from
+> 
+> http://members.spinn.net/~roger
+> 
+> If that doesn't work then let me know and I'll try something else.
+> 
+> 
+> Roger Miller
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+
+
+
+From roger at spinn.net  Thu Feb 15 14:40:54 2007
+From: roger at spinn.net (roger@spinn.net)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] unfilled matrices with R and gstat in grass
+	6.2.0beta3
+In-Reply-To: <Pine.LNX.4.44.0702151812300.8357-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0702151812300.8357-100000@reclus.nhh.no>
+Message-ID: <200702151940.l1FJethY097156@smtp.spinn.net>
+
+
+Roger, 
+
+Thanks for your help.  Most of my applications use data with an external 
+trend, so I normally use universal kriging.  My belief from reading the help 
+for "krige" and experimenting with it a little is that in order to use 
+universal kriging the independent variables that appear in the formula must 
+also appear in the "locations" and "newdata" arguments to "krige". 
+
+We typically use "east" and "north" as the coordinate names.  Much of the 
+work in "read" is there to make sure the SpatialPointsDataFrame object used 
+as the "locations" argument for "krige" has data with those names.  I use a 
+SpatialPixelsDataFrame object as the "newdata" argument to "krige" because I 
+can name the independent variables in a SpatialPixelsDataFrame.  I have not 
+found a way to name the independent variables in a SpatialGridDataFrame. 
+
+If there is some way to use universal kriging without going through all 
+those manipulations it would simplify my work a lot. 
+
+
+Roger Miller 
+
+
+Roger Bivand writes: 
+
+> On Wed, 14 Feb 2007, Roger Miller wrote: 
+> 
+>> I realized just recently that my reply on this thread went to Edzer
+>> rather than back to the list. 
+>> 
+>> Thanks for your replies.  The scripts are attached.  Both the wrong and
+>> the right (but odd) results resulted from running the same script with
+>> different data sets and different Grass region settings. 
+>> 
+>> The scripts are run in sequence "startup" followed by "read" and finally
+>> "map".
+> 
+> OK. Replace "startup" by calling gmeta2grd(), see the example on the 
+> gmeta6 help page. That gets the SpatialGridDataFrame object, if you need a 
+> SpatialPixelsDataFrame object, coerce using  
+> 
+> as(obj, "SpatialPixelsDataFrame") 
+> 
+> I have no idea what you are doing in "read", all you need to do is call 
+> readVECT6(), the rest is I think superfluous (with the possible exception 
+> of overwriting the WKT-style CRS object with the GRASS-style). The CRS 
+> issue can be handled as: 
+> 
+> proj4string(rb) <- CRS(G$proj4) 
+> 
+> I would not have written "map" anyway. If you show your users how to use 
+> the command line directly, they'll be able to fish themselves from then 
+> on, and variogram fitting does need interaction.  
+> 
+> Please try to get this working _using the command line only_ until it 
+> works, then simplify it until it cannot be reasonably simplified further. 
+> Then you will have what you need to build a TUI/GUI (a tcltk one for Rcmdr 
+> came past earlier this week ...) if it is worth the trouble (IMHO it 
+> usually isn't). 
+> 
+> Roger 
+> 
+>> 
+>> I also attached the script "tile" that I used to construct the 16 maps
+>> that I could patch together to get the correct result. 
+>> 
+>> The workspace is rather large, but it can be downloaded from 
+>> 
+>> http://members.spinn.net/~roger 
+>> 
+>> If that doesn't work then let me know and I'll try something else. 
+>> 
+>> 
+>> Roger Miller 
+>> 
+>> 
+> 
+> -- 
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no 
+> 
+>  
+> 
+>  
+> 
+
+
+From Roger.Bivand at nhh.no  Thu Feb 15 15:24:35 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] unfilled matrices with R and gstat in grass 
+	6.2.0beta3
+In-Reply-To: <200702151940.l1FJethY097156@smtp.spinn.net>
+Message-ID: <Pine.LNX.4.44.0702152107430.8357-100000@reclus.nhh.no>
+
+On Thu, 15 Feb 2007 roger@spinn.net wrote:
+
+> 
+> Roger, 
+> 
+> Thanks for your help.  Most of my applications use data with an external 
+> trend, so I normally use universal kriging.  My belief from reading the help 
+> for "krige" and experimenting with it a little is that in order to use 
+> universal kriging the independent variables that appear in the formula must 
+> also appear in the "locations" and "newdata" arguments to "krige". 
+> 
+> We typically use "east" and "north" as the coordinate names.  Much of the 
+> work in "read" is there to make sure the SpatialPointsDataFrame object used 
+> as the "locations" argument for "krige" has data with those names.  I use a 
+> SpatialPixelsDataFrame object as the "newdata" argument to "krige" because I 
+> can name the independent variables in a SpatialPixelsDataFrame.  I have not 
+> found a way to name the independent variables in a SpatialGridDataFrame. 
+> 
+> If there is some way to use universal kriging without going through all 
+> those manipulations it would simplify my work a lot. 
+> 
+
+My understanding is that using the degree= argument to gstat(), then 
+predict() from the gstat object, will include the point coordinates. You 
+can check against surf.ls in the spatial package:
+
+Grb <- gstat(formula=rb_elevati ~ 1, data=rb, degree=2)
+predict(Grb, rb)
+
+library(spatial)
+x <- coordinates(rb)[, 1]
+y <- coordinates(rb)[, 2]
+print(predict(surf.ls(2, x, y, z=rb$rb_elevati), x, y))
+
+If I recall correctly, adding a model= argument to the gstat() object 
+definition will get you UK with your chosen trend.
+
+Hope this helps,
+
+Roger
+
+> 
+> Roger Miller 
+> 
+> 
+> Roger Bivand writes: 
+> 
+> > On Wed, 14 Feb 2007, Roger Miller wrote: 
+> > 
+> >> I realized just recently that my reply on this thread went to Edzer
+> >> rather than back to the list. 
+> >> 
+> >> Thanks for your replies.  The scripts are attached.  Both the wrong and
+> >> the right (but odd) results resulted from running the same script with
+> >> different data sets and different Grass region settings. 
+> >> 
+> >> The scripts are run in sequence "startup" followed by "read" and finally
+> >> "map".
+> > 
+> > OK. Replace "startup" by calling gmeta2grd(), see the example on the 
+> > gmeta6 help page. That gets the SpatialGridDataFrame object, if you need a 
+> > SpatialPixelsDataFrame object, coerce using  
+> > 
+> > as(obj, "SpatialPixelsDataFrame") 
+> > 
+> > I have no idea what you are doing in "read", all you need to do is call 
+> > readVECT6(), the rest is I think superfluous (with the possible exception 
+> > of overwriting the WKT-style CRS object with the GRASS-style). The CRS 
+> > issue can be handled as: 
+> > 
+> > proj4string(rb) <- CRS(G$proj4) 
+> > 
+> > I would not have written "map" anyway. If you show your users how to use 
+> > the command line directly, they'll be able to fish themselves from then 
+> > on, and variogram fitting does need interaction.  
+> > 
+> > Please try to get this working _using the command line only_ until it 
+> > works, then simplify it until it cannot be reasonably simplified further. 
+> > Then you will have what you need to build a TUI/GUI (a tcltk one for Rcmdr 
+> > came past earlier this week ...) if it is worth the trouble (IMHO it 
+> > usually isn't). 
+> > 
+> > Roger 
+> > 
+> >> 
+> >> I also attached the script "tile" that I used to construct the 16 maps
+> >> that I could patch together to get the correct result. 
+> >> 
+> >> The workspace is rather large, but it can be downloaded from 
+> >> 
+> >> http://members.spinn.net/~roger 
+> >> 
+> >> If that doesn't work then let me know and I'll try something else. 
+> >> 
+> >> 
+> >> Roger Miller 
+> >> 
+> >> 
+> > 
+> > -- 
+> > Roger Bivand
+> > Economic Geography Section, Department of Economics, Norwegian School of
+> > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > e-mail: Roger.Bivand@nhh.no 
+> > 
+> >  
+> > 
+> >  
+> > 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From roger at spinn.net  Sun Feb 18 13:42:26 2007
+From: roger at spinn.net (Roger Miller)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] unfilled matrices with R and gstat in grass 
+	6.2.0beta3
+In-Reply-To: <Pine.LNX.4.44.0702152107430.8357-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0702152107430.8357-100000@reclus.nhh.no>
+Message-ID: <1171824147.15843.0.camel@linux.home>
+
+Roger,
+
+I learned several things.  The scripts are working fine now.  Thanks.
+
+Roger Miller
+
+On Thu, 2007-02-15 at 21:24 +0100, Roger Bivand wrote:
+> On Thu, 15 Feb 2007 roger@spinn.net wrote:
+> 
+> > 
+> > Roger, 
+> > 
+> > Thanks for your help.  Most of my applications use data with an external 
+> > trend, so I normally use universal kriging.  My belief from reading the help 
+> > for "krige" and experimenting with it a little is that in order to use 
+> > universal kriging the independent variables that appear in the formula must 
+> > also appear in the "locations" and "newdata" arguments to "krige". 
+> > 
+> > We typically use "east" and "north" as the coordinate names.  Much of the 
+> > work in "read" is there to make sure the SpatialPointsDataFrame object used 
+> > as the "locations" argument for "krige" has data with those names.  I use a 
+> > SpatialPixelsDataFrame object as the "newdata" argument to "krige" because I 
+> > can name the independent variables in a SpatialPixelsDataFrame.  I have not 
+> > found a way to name the independent variables in a SpatialGridDataFrame. 
+> > 
+> > If there is some way to use universal kriging without going through all 
+> > those manipulations it would simplify my work a lot. 
+> > 
+> 
+> My understanding is that using the degree= argument to gstat(), then 
+> predict() from the gstat object, will include the point coordinates. You 
+> can check against surf.ls in the spatial package:
+> 
+> Grb <- gstat(formula=rb_elevati ~ 1, data=rb, degree=2)
+> predict(Grb, rb)
+> 
+> library(spatial)
+> x <- coordinates(rb)[, 1]
+> y <- coordinates(rb)[, 2]
+> print(predict(surf.ls(2, x, y, z=rb$rb_elevati), x, y))
+> 
+> If I recall correctly, adding a model= argument to the gstat() object 
+> definition will get you UK with your chosen trend.
+> 
+> Hope this helps,
+> 
+> Roger
+> 
+> > 
+> > Roger Miller 
+> > 
+> > 
+> > Roger Bivand writes: 
+> > 
+> > > On Wed, 14 Feb 2007, Roger Miller wrote: 
+> > > 
+> > >> I realized just recently that my reply on this thread went to Edzer
+> > >> rather than back to the list. 
+> > >> 
+> > >> Thanks for your replies.  The scripts are attached.  Both the wrong and
+> > >> the right (but odd) results resulted from running the same script with
+> > >> different data sets and different Grass region settings. 
+> > >> 
+> > >> The scripts are run in sequence "startup" followed by "read" and finally
+> > >> "map".
+> > > 
+> > > OK. Replace "startup" by calling gmeta2grd(), see the example on the 
+> > > gmeta6 help page. That gets the SpatialGridDataFrame object, if you need a 
+> > > SpatialPixelsDataFrame object, coerce using  
+> > > 
+> > > as(obj, "SpatialPixelsDataFrame") 
+> > > 
+> > > I have no idea what you are doing in "read", all you need to do is call 
+> > > readVECT6(), the rest is I think superfluous (with the possible exception 
+> > > of overwriting the WKT-style CRS object with the GRASS-style). The CRS 
+> > > issue can be handled as: 
+> > > 
+> > > proj4string(rb) <- CRS(G$proj4) 
+> > > 
+> > > I would not have written "map" anyway. If you show your users how to use 
+> > > the command line directly, they'll be able to fish themselves from then 
+> > > on, and variogram fitting does need interaction.  
+> > > 
+> > > Please try to get this working _using the command line only_ until it 
+> > > works, then simplify it until it cannot be reasonably simplified further. 
+> > > Then you will have what you need to build a TUI/GUI (a tcltk one for Rcmdr 
+> > > came past earlier this week ...) if it is worth the trouble (IMHO it 
+> > > usually isn't). 
+> > > 
+> > > Roger 
+> > > 
+> > >> 
+> > >> I also attached the script "tile" that I used to construct the 16 maps
+> > >> that I could patch together to get the correct result. 
+> > >> 
+> > >> The workspace is rather large, but it can be downloaded from 
+> > >> 
+> > >> http://members.spinn.net/~roger 
+> > >> 
+> > >> If that doesn't work then let me know and I'll try something else. 
+> > >> 
+> > >> 
+> > >> Roger Miller 
+> > >> 
+> > >> 
+> > > 
+> > > -- 
+> > > Roger Bivand
+> > > Economic Geography Section, Department of Economics, Norwegian School of
+> > > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> > > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > > e-mail: Roger.Bivand@nhh.no 
+> > > 
+> > >  
+> > > 
+> > >  
+> > > 
+> > 
+> 
+
+
+From tilmann.steinmetz at geo.uni-halle.de  Tue Feb 27 14:36:08 2007
+From: tilmann.steinmetz at geo.uni-halle.de (Tilmann Steinmetz)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] gmeta6() returns empty string
+Message-ID: <f9beef507acb.7acbf9beef50@uni-halle.de>
+
+Hi,
+
+I am having difficulties getting the region environment settings from grass 
+into R using gmeta6() (see output below).
+
+The installed packages are as follows:
+>
+> sessionInfo()
+R version 2.4.0 (2006-10-03)
+i386-portbld-freebsd5.4
+
+locale:
+C
+
+attached base packages:
+[1] "methods"   "stats"     "graphics"  "grDevices" "utils"     "datasets"
+[7] "base"
+
+other attached packages:
+spgrass6    rgdal maptools  foreign       sp
+ "0.3-6"  "0.5-6"  "0.6-8" "0.8-18"  "0.9-8"
+> 
+
+
+When I start R from within the Grass (6.2.1) shell (with spearfish6 
+location) 
+I encounter the following:
+
+> library(spgrass6)
+Loading required package: sp
+Loading required package: maptools
+Loading required package: foreign
+Loading required package: rgdal
+Geospatial Data Abstraction Library extensions to R successfully loaded
+> g.region -d
+Error: object "g.region" not found
+> gmeta6()
+ERROR: default region is invalid
+       line 11: <top: 1>
+/libexec/ld-elf.so.1: g.proj: Undefined symbol "G_gettext"
+Error in if (is.na(projstr)) uprojargs <- projstr else uprojargs <- 
+paste(unique(unlist(strsplit(projstr,  :
+        argument is of length zero
+> 
+                                  
+The problem seems to arise from an empty default region in GRASS:
+
+> system("g.region -d")
+ERROR: default region is invalid
+       line 11: <top: 1>
+
+> traceback()
+2: getLocationProj()
+1: gmeta6()
+
+          
+I can go back to GRASS and say g.region -p which shows me the region 
+settings 
+alright and when I call g.region -d it returns an empty string. This is most 
+peculiar since I double-checked DEFAULT_WIND is there and non-empty. This 
+behaviour is the same for my own location irrespective of projection or 
+whatever. (I just reinstalled Spearfish6 to make sure its not something with 
+access permissions or such). 
+
+I'd be most grateful for any help with this. I even tried to hardcode my 
+projection into spgrass6 in order to get this to work (unsuccessfully 
+though) 
+But I could live with that for the moment. Any hints? 
+
+Thanks,
+Tilmann
+
+
+From Roger.Bivand at nhh.no  Tue Feb 27 15:07:12 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] gmeta6() returns empty string
+In-Reply-To: <f9beef507acb.7acbf9beef50@uni-halle.de>
+Message-ID: <Pine.LNX.4.44.0702272059180.15125-100000@reclus.nhh.no>
+
+On Tue, 27 Feb 2007, Tilmann Steinmetz wrote:
+
+> Hi,
+> 
+> I am having difficulties getting the region environment settings from grass 
+> into R using gmeta6() (see output below).
+
+If your LOCATION is spearfish*, the examples should work. I am not aware 
+of any reason why FreeBSD should not work normally. Do you actually need 
+gmeta6(), it is pretty deprecated now? Do readVECT6() or readRAST6() work? 
+It looks like a PATH/GRASSRC issue of some kind, where debugging at a 
+distance is not an option. What does:
+
+Sys.getenv("GISRC")
+
+say?
+
+Can you try to run gmeta6() under debug: debug(gmeta6) first, then step 
+though checking values until you can see whether the LOCATION etc values 
+are sane?
+
+Roger
+
+> 
+> The installed packages are as follows:
+> >
+> > sessionInfo()
+> R version 2.4.0 (2006-10-03)
+> i386-portbld-freebsd5.4
+> 
+> locale:
+> C
+> 
+> attached base packages:
+> [1] "methods"   "stats"     "graphics"  "grDevices" "utils"     "datasets"
+> [7] "base"
+> 
+> other attached packages:
+> spgrass6    rgdal maptools  foreign       sp
+>  "0.3-6"  "0.5-6"  "0.6-8" "0.8-18"  "0.9-8"
+> > 
+> 
+> 
+> When I start R from within the Grass (6.2.1) shell (with spearfish6 
+> location) 
+> I encounter the following:
+> 
+> > library(spgrass6)
+> Loading required package: sp
+> Loading required package: maptools
+> Loading required package: foreign
+> Loading required package: rgdal
+> Geospatial Data Abstraction Library extensions to R successfully loaded
+> > g.region -d
+> Error: object "g.region" not found
+> > gmeta6()
+> ERROR: default region is invalid
+>        line 11: <top: 1>
+> /libexec/ld-elf.so.1: g.proj: Undefined symbol "G_gettext"
+> Error in if (is.na(projstr)) uprojargs <- projstr else uprojargs <- 
+> paste(unique(unlist(strsplit(projstr,  :
+>         argument is of length zero
+> > 
+>                                   
+> The problem seems to arise from an empty default region in GRASS:
+> 
+> > system("g.region -d")
+> ERROR: default region is invalid
+>        line 11: <top: 1>
+> 
+> > traceback()
+> 2: getLocationProj()
+> 1: gmeta6()
+> 
+>           
+> I can go back to GRASS and say g.region -p which shows me the region 
+> settings 
+> alright and when I call g.region -d it returns an empty string. This is most 
+> peculiar since I double-checked DEFAULT_WIND is there and non-empty. This 
+> behaviour is the same for my own location irrespective of projection or 
+> whatever. (I just reinstalled Spearfish6 to make sure its not something with 
+> access permissions or such). 
+> 
+> I'd be most grateful for any help with this. I even tried to hardcode my 
+> projection into spgrass6 in order to get this to work (unsuccessfully 
+> though) 
+> But I could live with that for the moment. Any hints? 
+> 
+> Thanks,
+> Tilmann
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From hamish_nospam at yahoo.com  Tue Feb 27 23:40:48 2007
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] gmeta6() returns empty string
+In-Reply-To: <f9beef507acb.7acbf9beef50@uni-halle.de>
+References: <f9beef507acb.7acbf9beef50@uni-halle.de>
+Message-ID: <20070228174048.77eae01f.hamish_nospam@yahoo.com>
+
+Tilmann Steinmetz wrote:
+> The problem seems to arise from an empty default region in GRASS:
+> 
+> > system("g.region -d")
+> ERROR: default region is invalid
+>        line 11: <top: 1>
+..
+> I can go back to GRASS and say g.region -p which shows me the region 
+> settings alright and when I call g.region -d it returns an empty
+> string. This is most peculiar since I double-checked DEFAULT_WIND is
+> there and non-empty. This behaviour is the same for my own location
+> irrespective of projection or whatever. (I just reinstalled
+> Spearfish6 to make sure its not something with access permissions or
+> such).
+
+
+In grass try looking at
+
+g.gisenv
+
+and
+
+eval `g.gisenv`
+cat "$GISDBASE/$LOCATION_NAME"/PERMANENT/DEFAULT_WIND
+
+
+anything there?
+
+
+Hamish
+
+
+From tilmann.steinmetz at geo.uni-halle.de  Wed Feb 28 04:50:55 2007
+From: tilmann.steinmetz at geo.uni-halle.de (Tilmann Steinmetz)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] gmeta6() returns empty string
+Message-ID: <fa4da29f5ef9.5ef9fa4da29f@uni-halle.de>
+
+Thanks Roger and Hamish,
+
+I tried g.gisenv (good) and made an attempt with debug(gmeta6()) 
+(unsuccessful)- output below. I am not aware of FreeBSD doing anything weird 
+in exporting paths or environment variables in general. My shell is sh but I 
+tried using bash too (same thing)
+
+However, these 2 things came to my mind:
+
+1.) using g.region -d from within Grass (be it grass62 -text or the tcl-gui) 
+I get an empty string- this is wrong if I understand right? should (and can) 
+that be remediated? is this the cause of all this trouble?
+
+2.) if LD_LIBRARY_PATH (or the lack thereof) is to be blamed, then is there 
+a way to force the R environment to "inherit" from its parent environment 
+using something like > system("source .bashrc") within  R? but then that 
+again could probably only get the "grass g.region -d" empty string. 
+
+(why is g.region -d used in the first place, if g.region -g could be used? - 
+that was my first try: replace gmeta6() with a function thats identical to 
+it, but calls "g.region -g3", which failed because somewhere in the process 
+some function call goes to g.region -d again..)
+
+g.gisenv seems Ok:
+**********************************************************************
+Welcome to GRASS 6.2.1 (2006)
+GRASS homepage:                          http://grass.itc.it/
+This version running thru:               Bourne Shell (/bin/sh)
+Help is available with the command:      g.manual -i
+See the licence terms with:              g.version -c
+Start the graphical user interface with: gis.m &
+When ready to quit enter:                exit
+
+Mapset <user1> in Location <spearfish60>
+GRASS-GRID > g.gisenv
+LOCATION_NAME=spearfish60
+MAPSET=user1
+DIGITIZER=none
+GISDBASE=/usr/home/tilmann/GIS_data
+MONITOR=x0
+GRASS_GUI=text
+
+Mapset <user1> in Location <spearfish60>
+GRASS-GRID > eval `g.gisenv`
+
+Mapset <user1> in Location <spearfish60>
+GRASS-GRID > cat "$GISDBASE/$LOCATION_NAME"/PERMANENT/DEFAULT_WIND
+proj:       1
+zone:       13
+north:      4928010
+south:      4913700
+east:       609000
+west:       589980
+cols:       634
+rows:       477
+e-w resol:  30
+n-s resol:  30
+top:        1
+bottom:     0
+cols3:      634
+rows3:      477
+depths:     1
+e-w resol3: 30
+n-s resol3: 30
+t-b resol:  1
+
+Mapset <user1> in Location <spearfish60>
+GRASS-GRID >     
+
+**********************************************************************
+whereas debugging shows that gmeta6() stops right away at the first 
+evaluation of the "g.region -g3" expression:
+**********************************************************************
+
+> debug(gmeta6())
+debugging in: gmeta6()
+debug: {
+    tull <- ifelse(.Platform$OS.type == "windows", tx <- 
+system("g.region -g3",
+        intern = TRUE), tx <- system("g.region -g3", intern = TRUE,
+        ignore.stderr = ignore.stderr))
+    tx <- gsub("=", ":", tx)
+    con <- textConnection(tx)
+    res <- read.dcf(con)
+    close(con)
+    lres <- as.list(res)
+    names(lres) <- colnames(res)
+    lres$n <- as.double(lres$n)
+    lres$s <- as.double(lres$s)
+    lres$w <- as.double(lres$w)
+    lres$e <- as.double(lres$e)
+    lres$t <- as.double(lres$t)
+    lres$b <- as.double(lres$b)
+    lres$nsres <- as.double(lres$nsres)
+    lres$nsres3 <- as.double(lres$nsres3)
+    lres$ewres <- as.double(lres$ewres)
+    lres$ewres3 <- as.double(lres$ewres3)
+    lres$tbres <- as.double(lres$tbres)
+    if (length(lres$rows) == 0)
+        lres$rows <- abs(as.integer((lres$n - lres$s)/lres$nsres))
+    else lres$rows <- as.integer(lres$rows)
+    if (length(lres$rows3) == 0)
+        lres$rows3 <- lres$rows
+    else lres$rows3 <- as.integer(lres$rows3)
+    if (length(lres$cols) == 0)
+        lres$cols <- abs(as.integer((lres$e - lres$w)/lres$ewres))
+    else lres$cols <- as.integer(lres$cols)
+    if (length(lres$cols3) == 0)
+        lres$cols3 <- lres$cols
+    else lres$cols3 <- as.integer(lres$cols3)
+    if (length(lres$depths) == 0)
+        lres$depths <- abs(as.integer((lres$t - lres$b)/lres$tbres))
+    else lres$depths <- as.integer(lres$depths)
+    lres$proj4 <- getLocationProj()
+    tull <- ifelse(.Platform$OS.type == "windows", gisenv <- 
+system("g.gisenv",
+        intern = TRUE), gisenv <- system("g.gisenv", intern = TRUE,
+        ignore.stderr = ignore.stderr))
+    gisenv <- gsub("[';]", "", gisenv)
+    gisenv <- strsplit(gisenv, "=")
+    glist <- as.list(sapply(gisenv, function(x) x[2]))
+    names(glist) <- sapply(gisenv, function(x) x[1])
+    lres <- c(glist, lres)
+    class(lres) <- "gmeta6"
+    lres
+}
+Browse[1]>
+debug: tull <- ifelse(.Platform$OS.type == "windows", tx <- 
+system("g.region -g3",
+    intern = TRUE), tx <- system("g.region -g3", intern = TRUE,
+    ignore.stderr = ignore.stderr))
+Browse[1]>
+ERROR: default region is invalid
+       line 11: <top: 1>
+debug: tx <- gsub("=", ":", tx)
+Browse[1]>
+debug: con <- textConnection(tx)
+Browse[1]>
+debug: res <- read.dcf(con)
+Browse[1]>
+debug: close(con)
+Browse[1]>
+debug: lres <- as.list(res)
+Browse[1]>
+debug: names(lres) <- colnames(res)
+Browse[1]>
+debug: lres$n <- as.double(lres$n)
+Browse[1]>
+debug: lres$s <- as.double(lres$s)
+Browse[1]>
+debug: lres$w <- as.double(lres$w)
+Browse[1]>
+debug: lres$e <- as.double(lres$e)
+Browse[1]>
+debug: lres$t <- as.double(lres$t)
+Browse[1]>
+debug: lres$b <- as.double(lres$b)
+Browse[1]>
+debug: lres$nsres <- as.double(lres$nsres)
+Browse[1]>
+debug: lres$nsres3 <- as.double(lres$nsres3)
+Browse[1]>
+debug: lres$ewres <- as.double(lres$ewres)
+Browse[1]>
+debug: lres$ewres3 <- as.double(lres$ewres3)
+Browse[1]>
+debug: lres$tbres <- as.double(lres$tbres)
+Browse[1]>
+debug: if (length(lres$rows) == 0) lres$rows <- abs(as.integer((lres$n -
+    lres$s)/lres$nsres)) else lres$rows <- as.integer(lres$rows)
+Browse[1]>
+debug: if (length(lres$rows3) == 0) lres$rows3 <- lres$rows else lres$rows3 
+<- as.integer(lres$rows3)
+Browse[1]>
+debug: if (length(lres$cols) == 0) lres$cols <- abs(as.integer((lres$e -
+    lres$w)/lres$ewres)) else lres$cols <- as.integer(lres$cols)
+Browse[1]>
+debug: if (length(lres$cols3) == 0) lres$cols3 <- lres$cols else lres$cols3 
+<- as.integer(lres$cols3)
+Browse[1]>
+debug: if (length(lres$depths) == 0) lres$depths <- abs(as.integer((lres$t -
+    lres$b)/lres$tbres)) else lres$depths <- as.integer(lres$depths)
+Browse[1]>
+debug: lres$proj4 <- getLocationProj()
+Browse[1]>
+/libexec/ld-elf.so.1: g.proj: Undefined symbol "G_gettext"
+Error in if (is.na(projstr)) uprojargs <- projstr else uprojargs <- 
+paste(unique(unlist(strsplit(projstr,  :
+        argument is of length zero
+>
+**********************************************************************
+I'm at a loss here. As I said I could live with "manually" assigning the 
+correct projection and/or environment from within R- just don't get it done. 
+I faintly remember seeing something like it being used at a time before 
+gmeta() was there- or am I wrong?
+
+Thanks,
+Tilmann
+
+**************************************************************************
+
+Am Dienstag 27 Februar 2007 22:26 schrieb Roger Bivand:
+> Yesterday 22:26:14
+>    
+>
+> On Tue, 27 Feb 2007, Tilmann Steinmetz wrote:
+> > Am Dienstag 27 Februar 2007 21:07 schrieb Roger Bivand:
+> > > On Tue, 27 Feb 2007, Tilmann Steinmetz wrote:
+> > > > Hi,
+> > > >
+> > > > I am having difficulties getting the region environment settings 
+from
+> > > > grass into R using gmeta6() (see output below).
+> > >
+> > > If your LOCATION is spearfish*, the examples should work. I am not
+> > > aware of any reason why FreeBSD should not work normally. Do you
+> > > actually need gmeta6(), it is pretty deprecated now? Do readVECT6() or
+> > > readRAST6() work?
+> >
+> > oh, I see!
+> >
+> > > It looks like a PATH/GRASSRC issue of some kind, where debugging at a
+> > > distance is not an option. What does:
+> > >
+> > > Sys.getenv("GISRC")
+> > >
+> > > say?
+> >
+> > it's just the same with those:
+> > > system("v.info bugsites")
+> >
+> >         /libexec/ld-elf.so.1: v.info: Undefined symbol "G_gettext"
+>
+> This is saying that when you try to run v.info, the underlying GRASS
+> module is failing. There is *no* compiled code in spgrass6, so anything
+> passed through system() should just work. Yours doesn't, you have a pretty
+> non-standard system, so you have to work out why the GRASS shared
+> libraries are not being seen by GRASS compiled modules when run from with
+> R, but can apparently be seen when you leave R in the same shell.
+>
+> So:
+>
+> you open a terminal; you start GRASS -text in the terminal in your
+> location; g.region -g works; you start R at the GRASS shell prompt
+> in that terminal; system("g.region -g") does not work; q(); and g.region
+> -g works again. This is FreeBSD shell layering of some kind, or
+> LD_LIBRARY_* not being exported across shell instances. Are you running
+> bash or sh or csh?
+>
+> To understand debug, ?debug
+>
+> Roger
+
+
+From Roger.Bivand at nhh.no  Wed Feb 28 06:47:54 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] Re: gmeta6() returns empty string
+In-Reply-To: <fa4da29f5ef9.5ef9fa4da29f@uni-halle.de>
+Message-ID: <Pine.LNX.4.44.0702281232430.15830-100000@reclus.nhh.no>
+
+On Wed, 28 Feb 2007, Tilmann Steinmetz wrote:
+
+> Thanks Roger and Hamish,
+> 
+> I tried g.gisenv (good) and made an attempt with debug(gmeta6()) 
+> (unsuccessful)- output below. I am not aware of FreeBSD doing anything weird 
+> in exporting paths or environment variables in general. My shell is sh but I 
+> tried using bash too (same thing)
+> 
+> However, these 2 things came to my mind:
+> 
+> 1.) using g.region -d from within Grass (be it grass62 -text or the tcl-gui) 
+> I get an empty string- this is wrong if I understand right? should (and can) 
+> that be remediated? is this the cause of all this trouble?
+
+Why g.region -d anyway? This just resets the current region to the 
+default, nothing more.
+
+> 
+> 2.) if LD_LIBRARY_PATH (or the lack thereof) is to be blamed, then is there 
+> a way to force the R environment to "inherit" from its parent environment 
+> using something like > system("source .bashrc") within  R? but then that 
+> again could probably only get the "grass g.region -d" empty string. 
+> 
+
+No. GRASS has its own, that is set up when GRASS initiates. That was the 
+one that was generating the:
+
+      /libexec/ld-elf.so.1: v.info: Undefined symbol "G_gettext"
+
+type of messages before. The correct one was being used in the GRASS 
+shell, but something was going wrong later on.
+
+Please start grass -text, say:
+
+echo $LD_LIBRARY_PATH
+echo $GISRC
+g.gisenv
+
+then start R from that prompt and say:
+
+Sys.getenv("LD_LIBRARY_PATH")
+Sys.getenv("GISRC")
+system("g.gisenv")
+
+Once we find out why your GRASS and R and shell and environment 
+variables installations are broken when working together on FreeBSD, the 
+rest will follow. system() inside R is simply not seeing the same 
+environment that the shell outside is seeing. My guess is that your R 
+installation is *overwriting* LD_LIBRARY_PATH rather than pre-pending the 
+R-specific libraries.
+
+Roger
+
+
+> (why is g.region -d used in the first place, if g.region -g could be used? - 
+> that was my first try: replace gmeta6() with a function thats identical to 
+> it, but calls "g.region -g3", which failed because somewhere in the process 
+> some function call goes to g.region -d again..)
+> 
+> g.gisenv seems Ok:
+> **********************************************************************
+> Welcome to GRASS 6.2.1 (2006)
+> GRASS homepage:                          http://grass.itc.it/
+> This version running thru:               Bourne Shell (/bin/sh)
+> Help is available with the command:      g.manual -i
+> See the licence terms with:              g.version -c
+> Start the graphical user interface with: gis.m &
+> When ready to quit enter:                exit
+> 
+> Mapset <user1> in Location <spearfish60>
+> GRASS-GRID > g.gisenv
+> LOCATION_NAME=spearfish60
+> MAPSET=user1
+> DIGITIZER=none
+> GISDBASE=/usr/home/tilmann/GIS_data
+> MONITOR=x0
+> GRASS_GUI=text
+> 
+> Mapset <user1> in Location <spearfish60>
+> GRASS-GRID > eval `g.gisenv`
+> 
+> Mapset <user1> in Location <spearfish60>
+> GRASS-GRID > cat "$GISDBASE/$LOCATION_NAME"/PERMANENT/DEFAULT_WIND
+> proj:       1
+> zone:       13
+> north:      4928010
+> south:      4913700
+> east:       609000
+> west:       589980
+> cols:       634
+> rows:       477
+> e-w resol:  30
+> n-s resol:  30
+> top:        1
+> bottom:     0
+> cols3:      634
+> rows3:      477
+> depths:     1
+> e-w resol3: 30
+> n-s resol3: 30
+> t-b resol:  1
+> 
+> Mapset <user1> in Location <spearfish60>
+> GRASS-GRID >     
+> 
+> **********************************************************************
+> whereas debugging shows that gmeta6() stops right away at the first 
+> evaluation of the "g.region -g3" expression:
+> **********************************************************************
+> 
+> > debug(gmeta6())
+> debugging in: gmeta6()
+> debug: {
+>     tull <- ifelse(.Platform$OS.type == "windows", tx <- 
+> system("g.region -g3",
+>         intern = TRUE), tx <- system("g.region -g3", intern = TRUE,
+>         ignore.stderr = ignore.stderr))
+>     tx <- gsub("=", ":", tx)
+>     con <- textConnection(tx)
+>     res <- read.dcf(con)
+>     close(con)
+>     lres <- as.list(res)
+>     names(lres) <- colnames(res)
+>     lres$n <- as.double(lres$n)
+>     lres$s <- as.double(lres$s)
+>     lres$w <- as.double(lres$w)
+>     lres$e <- as.double(lres$e)
+>     lres$t <- as.double(lres$t)
+>     lres$b <- as.double(lres$b)
+>     lres$nsres <- as.double(lres$nsres)
+>     lres$nsres3 <- as.double(lres$nsres3)
+>     lres$ewres <- as.double(lres$ewres)
+>     lres$ewres3 <- as.double(lres$ewres3)
+>     lres$tbres <- as.double(lres$tbres)
+>     if (length(lres$rows) == 0)
+>         lres$rows <- abs(as.integer((lres$n - lres$s)/lres$nsres))
+>     else lres$rows <- as.integer(lres$rows)
+>     if (length(lres$rows3) == 0)
+>         lres$rows3 <- lres$rows
+>     else lres$rows3 <- as.integer(lres$rows3)
+>     if (length(lres$cols) == 0)
+>         lres$cols <- abs(as.integer((lres$e - lres$w)/lres$ewres))
+>     else lres$cols <- as.integer(lres$cols)
+>     if (length(lres$cols3) == 0)
+>         lres$cols3 <- lres$cols
+>     else lres$cols3 <- as.integer(lres$cols3)
+>     if (length(lres$depths) == 0)
+>         lres$depths <- abs(as.integer((lres$t - lres$b)/lres$tbres))
+>     else lres$depths <- as.integer(lres$depths)
+>     lres$proj4 <- getLocationProj()
+>     tull <- ifelse(.Platform$OS.type == "windows", gisenv <- 
+> system("g.gisenv",
+>         intern = TRUE), gisenv <- system("g.gisenv", intern = TRUE,
+>         ignore.stderr = ignore.stderr))
+>     gisenv <- gsub("[';]", "", gisenv)
+>     gisenv <- strsplit(gisenv, "=")
+>     glist <- as.list(sapply(gisenv, function(x) x[2]))
+>     names(glist) <- sapply(gisenv, function(x) x[1])
+>     lres <- c(glist, lres)
+>     class(lres) <- "gmeta6"
+>     lres
+> }
+> Browse[1]>
+> debug: tull <- ifelse(.Platform$OS.type == "windows", tx <- 
+> system("g.region -g3",
+>     intern = TRUE), tx <- system("g.region -g3", intern = TRUE,
+>     ignore.stderr = ignore.stderr))
+> Browse[1]>
+> ERROR: default region is invalid
+>        line 11: <top: 1>
+> debug: tx <- gsub("=", ":", tx)
+> Browse[1]>
+> debug: con <- textConnection(tx)
+> Browse[1]>
+> debug: res <- read.dcf(con)
+> Browse[1]>
+> debug: close(con)
+> Browse[1]>
+> debug: lres <- as.list(res)
+> Browse[1]>
+> debug: names(lres) <- colnames(res)
+> Browse[1]>
+> debug: lres$n <- as.double(lres$n)
+> Browse[1]>
+> debug: lres$s <- as.double(lres$s)
+> Browse[1]>
+> debug: lres$w <- as.double(lres$w)
+> Browse[1]>
+> debug: lres$e <- as.double(lres$e)
+> Browse[1]>
+> debug: lres$t <- as.double(lres$t)
+> Browse[1]>
+> debug: lres$b <- as.double(lres$b)
+> Browse[1]>
+> debug: lres$nsres <- as.double(lres$nsres)
+> Browse[1]>
+> debug: lres$nsres3 <- as.double(lres$nsres3)
+> Browse[1]>
+> debug: lres$ewres <- as.double(lres$ewres)
+> Browse[1]>
+> debug: lres$ewres3 <- as.double(lres$ewres3)
+> Browse[1]>
+> debug: lres$tbres <- as.double(lres$tbres)
+> Browse[1]>
+> debug: if (length(lres$rows) == 0) lres$rows <- abs(as.integer((lres$n -
+>     lres$s)/lres$nsres)) else lres$rows <- as.integer(lres$rows)
+> Browse[1]>
+> debug: if (length(lres$rows3) == 0) lres$rows3 <- lres$rows else lres$rows3 
+> <- as.integer(lres$rows3)
+> Browse[1]>
+> debug: if (length(lres$cols) == 0) lres$cols <- abs(as.integer((lres$e -
+>     lres$w)/lres$ewres)) else lres$cols <- as.integer(lres$cols)
+> Browse[1]>
+> debug: if (length(lres$cols3) == 0) lres$cols3 <- lres$cols else lres$cols3 
+> <- as.integer(lres$cols3)
+> Browse[1]>
+> debug: if (length(lres$depths) == 0) lres$depths <- abs(as.integer((lres$t -
+>     lres$b)/lres$tbres)) else lres$depths <- as.integer(lres$depths)
+> Browse[1]>
+> debug: lres$proj4 <- getLocationProj()
+> Browse[1]>
+> /libexec/ld-elf.so.1: g.proj: Undefined symbol "G_gettext"
+> Error in if (is.na(projstr)) uprojargs <- projstr else uprojargs <- 
+> paste(unique(unlist(strsplit(projstr,  :
+>         argument is of length zero
+> >
+> **********************************************************************
+> I'm at a loss here. As I said I could live with "manually" assigning the 
+> correct projection and/or environment from within R- just don't get it done. 
+> I faintly remember seeing something like it being used at a time before 
+> gmeta() was there- or am I wrong?
+> 
+> Thanks,
+> Tilmann
+> 
+> **************************************************************************
+> 
+> Am Dienstag 27 Februar 2007 22:26 schrieb Roger Bivand:
+> > Yesterday 22:26:14
+> >    
+> >
+> > On Tue, 27 Feb 2007, Tilmann Steinmetz wrote:
+> > > Am Dienstag 27 Februar 2007 21:07 schrieb Roger Bivand:
+> > > > On Tue, 27 Feb 2007, Tilmann Steinmetz wrote:
+> > > > > Hi,
+> > > > >
+> > > > > I am having difficulties getting the region environment settings 
+> from
+> > > > > grass into R using gmeta6() (see output below).
+> > > >
+> > > > If your LOCATION is spearfish*, the examples should work. I am not
+> > > > aware of any reason why FreeBSD should not work normally. Do you
+> > > > actually need gmeta6(), it is pretty deprecated now? Do readVECT6() or
+> > > > readRAST6() work?
+> > >
+> > > oh, I see!
+> > >
+> > > > It looks like a PATH/GRASSRC issue of some kind, where debugging at a
+> > > > distance is not an option. What does:
+> > > >
+> > > > Sys.getenv("GISRC")
+> > > >
+> > > > say?
+> > >
+> > > it's just the same with those:
+> > > > system("v.info bugsites")
+> > >
+> > >         /libexec/ld-elf.so.1: v.info: Undefined symbol "G_gettext"
+> >
+> > This is saying that when you try to run v.info, the underlying GRASS
+> > module is failing. There is *no* compiled code in spgrass6, so anything
+> > passed through system() should just work. Yours doesn't, you have a pretty
+> > non-standard system, so you have to work out why the GRASS shared
+> > libraries are not being seen by GRASS compiled modules when run from with
+> > R, but can apparently be seen when you leave R in the same shell.
+> >
+> > So:
+> >
+> > you open a terminal; you start GRASS -text in the terminal in your
+> > location; g.region -g works; you start R at the GRASS shell prompt
+> > in that terminal; system("g.region -g") does not work; q(); and g.region
+> > -g works again. This is FreeBSD shell layering of some kind, or
+> > LD_LIBRARY_* not being exported across shell instances. Are you running
+> > bash or sh or csh?
+> >
+> > To understand debug, ?debug
+> >
+> > Roger
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From tilmann.steinmetz at geo.uni-halle.de  Wed Feb 28 11:36:53 2007
+From: tilmann.steinmetz at geo.uni-halle.de (Tilmann Steinmetz)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] WG: Re: WG: Re: WG: Re: gmeta6() returns empty string
+In-Reply-To: <Pine.LNX.4.44.0702281434590.15830-100000@reclus.nhh.no>
+References: <fe8ea0951122.1122fe8ea095@uni-halle.de>
+	<Pine.LNX.4.44.0702281434590.15830-100000@reclus.nhh.no>
+Message-ID: <f99aab2946a.46af99aab29@uni-halle.de>
+
+hi,
+
+thanks for the hints- but executing the commands from different shells 
+unfortunately doesn't make any difference.
+
+Speaking of locale settings I realized that this might be the reason and set 
+out to adjust mine properly from C to de_DE.ISO8859-15 (an itch I've long 
+planning to scratch) but the result is unchanged -- 
+
+Is there any way I can go from here without running Grass on, say, Linux?
+
+Tilmann
+
+----- Originalnachricht -----
+Von: Roger Bivand <Roger.Bivand@nhh.no>
+Datum: Mittwoch, Februar 28, 2007 14:46
+Betreff: Re: WG: Re: WG: Re: gmeta6() returns empty string
+An: Tilmann Steinmetz <tilmann.steinmetz@geo.uni-halle.de>
+
+> Does this usually correlate with activity on Stromboli?
+
+"g.list rast" rather points to rushmore or even better: bugsites :}
+
+
+
+From Roger.Bivand at nhh.no  Wed Feb 28 13:06:42 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] Re: WG: Re: WG: Re: WG: Re: gmeta6() returns empty
+	string
+In-Reply-To: <f99aab2946a.46af99aab29@uni-halle.de>
+Message-ID: <Pine.LNX.4.44.0702281855370.15830-100000@reclus.nhh.no>
+
+On Wed, 28 Feb 2007, Tilmann Steinmetz wrote:
+
+> hi,
+> 
+> thanks for the hints- but executing the commands from different shells 
+> unfortunately doesn't make any difference.
+> 
+> Speaking of locale settings I realized that this might be the reason and set 
+> out to adjust mine properly from C to de_DE.ISO8859-15 (an itch I've long 
+> planning to scratch) but the result is unchanged -- 
+
+Very strange, maybe when Stromboli calms down? 
+
+> 
+> Is there any way I can go from here without running Grass on, say, Linux?
+
+Yes, of course. Just run them side-by-side, with GRASS using r.in.gdal and 
+v.in.ogr to read files written from R by writeGDAL() and writeOGR() in 
+rgdal, and r.out.* and v.out.ogr wrt. readOGR() and readGDAL() in rgdal in 
+R. This is almost what the interface does anyway, but because the new 
+stand-alone r.out.gdal is in 6.3, you may need to choose your prefered 6.2 
+raster output format avoiding the older scripted r.out.gdal if you are not 
+running the GDAL GRASS plugin (best not to, IMO). All the interface gives 
+over and above this is handling the intermediate files as temporary files, 
+and adding GRASS categories as factor levels to R factors.
+
+How did you install R, I assume you built from source? Did you notice any 
+worrying messages?
+
+Roger
+
+> 
+> Tilmann
+> 
+> ----- Originalnachricht -----
+> Von: Roger Bivand <Roger.Bivand@nhh.no>
+> Datum: Mittwoch, Februar 28, 2007 14:46
+> Betreff: Re: WG: Re: WG: Re: gmeta6() returns empty string
+> An: Tilmann Steinmetz <tilmann.steinmetz@geo.uni-halle.de>
+> 
+> > Does this usually correlate with activity on Stromboli?
+> 
+> "g.list rast" rather points to rushmore or even better: bugsites :}
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+

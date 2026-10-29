@@ -1,0 +1,171 @@
+From romain.fer at hotmail.fr  Tue May  5 07:36:35 2020
+From: romain.fer at hotmail.fr (romain Fer.)
+Date: Tue, 5 May 2020 14:36:35 +0000
+Subject: [GRASS-stats] Package rgrass7 - g.extension function
+Message-ID: <PR3PR05MB7147D3E55731F0DE0ACB6FF6F3A70@PR3PR05MB7147.eurprd05.prod.outlook.com>
+
+Hello,
+
+I am a french student in master's degrees, in advence I'm sorry for my english.
+
+I using the package rgrass7 with R during my internship and I have a error on one function of this package. I use g.extension to import r.clip. I explain this error on this forum : https://gis.stackexchange.com/questions/360310/install-grass-extension-with-g-extension-and-rstudio
+
+Can you look my explications of this problem and do you give me your opinion on this error ?
+
+Thanks you in advance for your help,
+
+Regards,
+
+Romain Fernandez
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20200505/4f69200e/attachment.html>
+
+From hellik at web.de  Tue May  5 14:19:56 2020
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Tue, 5 May 2020 14:19:56 -0700 (MST)
+Subject: [GRASS-stats] Package rgrass7 - g.extension function
+In-Reply-To: <PR3PR05MB7147D3E55731F0DE0ACB6FF6F3A70@PR3PR05MB7147.eurprd05.prod.outlook.com>
+References: <PR3PR05MB7147D3E55731F0DE0ACB6FF6F3A70@PR3PR05MB7147.eurprd05.prod.outlook.com>
+Message-ID: <1588713596498-0.post@n6.nabble.com>
+
+romain Fer. wrote
+> Hello,
+> 
+> I am a french student in master's degrees, in advence I'm sorry for my
+> english.
+> 
+> I using the package rgrass7 with R during my internship and I have a error
+> on one function of this package. I use g.extension to import r.clip. I
+> explain this error on this forum :
+> https://gis.stackexchange.com/questions/360310/install-grass-extension-with-g-extension-and-rstudio
+> 
+> Can you look my explications of this problem and do you give me your
+> opinion on this error ?
+> 
+> Thanks you in advance for your help,
+
+there are maybe several issues here:
+
+>initGRASS("C:/Program Files/GRASS GIS 7.6"
+
+is it possible to upgrade to the 7.8.x-line?
+
+>    libgis_revison = grass.version()['libgis_revision']
+>KeyError: 'libgis_revision'
+
+AFAIR there have been some issues with libgis_revision in earlier versions;
+this should be addressed in 7.8.x-line.
+
+>ATTENTION: GRASS_ADDON_BASE is not defined
+
+this variable should be defined that the addon is installed in the correst
+place.
+
+when you use winGRASS out of RStudio, are there all needed variables
+defined?
+
+see 
+
+https://github.com/OSGeo/grass/blob/master/mswindows/env.bat 
+
+for hints which variables should be defined in minimum that standalone
+winGRASS is working.
+
+%GISBASE% is the installation path to standalone winGRASS.
+
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+
+From Roger.Bivand at nhh.no  Wed May  6 03:48:53 2020
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed, 6 May 2020 12:48:53 +0200
+Subject: [GRASS-stats] Package rgrass7 - g.extension function
+In-Reply-To: <1588713596498-0.post@n6.nabble.com>
+References: <PR3PR05MB7147D3E55731F0DE0ACB6FF6F3A70@PR3PR05MB7147.eurprd05.prod.outlook.com>
+ <1588713596498-0.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.21.2005061246110.138535@reclus.nhh.no>
+
+On Tue, 5 May 2020, Helmut Kudrnovsky wrote:
+
+> romain Fer. wrote
+>> Hello,
+>> 
+>> I am a french student in master's degrees, in advence I'm sorry for my
+>> english.
+>> 
+>> I using the package rgrass7 with R during my internship and I have a error
+>> on one function of this package. I use g.extension to import r.clip. I
+>> explain this error on this forum :
+>> https://gis.stackexchange.com/questions/360310/install-grass-extension-with-g-extension-and-rstudio
+>> 
+>> Can you look my explications of this problem and do you give me your
+>> opinion on this error ?
+>> 
+>> Thanks you in advance for your help,
+>
+> there are maybe several issues here:
+>
+>> initGRASS("C:/Program Files/GRASS GIS 7.6"
+>
+> is it possible to upgrade to the 7.8.x-line?
+>
+>>    libgis_revison = grass.version()['libgis_revision']
+>> KeyError: 'libgis_revision'
+>
+> AFAIR there have been some issues with libgis_revision in earlier versions;
+> this should be addressed in 7.8.x-line.
+>
+>> ATTENTION: GRASS_ADDON_BASE is not defined
+>
+> this variable should be defined that the addon is installed in the correst
+> place.
+>
+> when you use winGRASS out of RStudio, are there all needed variables
+> defined?
+
+Exactly, because RStudio uses multiple layers of processes, often the 
+processes do not inherit environments properly. Do use Rgui on Windows, 
+not Rstudio. If the error repeats with Rgui, then we know more.
+
+How was GRASS installed, via OSGeo4W or winGRASS?
+
+Roger
+
+>
+> see 
+>
+> https://github.com/OSGeo/grass/blob/master/mswindows/env.bat 
+>
+> for hints which variables should be defined in minimum that standalone
+> winGRASS is working.
+>
+> %GISBASE% is the installation path to standalone winGRASS.
+>
+>
+>
+>
+> -----
+> best regards
+> Helmut
+> --
+> Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> https://lists.osgeo.org/mailman/listinfo/grass-stats
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+https://orcid.org/0000-0003-2392-6140
+https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+

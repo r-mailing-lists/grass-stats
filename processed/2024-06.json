@@ -1,0 +1,101 @@
+{
+  "list": "grass-stats",
+  "description": "",
+  "month": "2024-06",
+  "messages": [
+    {
+      "id": "msg-a471f2d4bbe7",
+      "message_id": "<df394b9d-679c-41ef-b069-17fa37562fe2@agroparistech.fr>",
+      "from_name": "Améline Vallet",
+      "from_email_hash": "27d318376cf0df2835996784dfcae47fde3de910c3047637980a36fb867693ae",
+      "date": "2024-06-07T09:03:23Z",
+      "subject": "[GRASS-stats] Issue with grass initialization with rgrass 0.4-2",
+      "subject_clean": "[GRASS-stats] Issue with grass initialization with rgrass 0.4-2",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Dear all,\n\nSince I updated GRASS (8.2 -> 8.3.2) and rgrass (?-> 0.4-2), the \ninstallation seems broken and I can't start a GRASS session from R \nanymore. The error message I receive is the following:\n\nError in read_xml.raw(charToRaw(enc2utf8(x)), \"UTF-8\", ..., as_html = \nas_html,? :\n ? Premature end of data in tag guisection line 1 [77]\nDe plus : Message d'avis :\nDans readLines(outFile) :\n ? ligne finale incompl?te trouv?e dans '/tmp/Rtmp9qeL4f/file36b3e2cdcc8ad'\nErreur dans parseGRASS(cmd, legacyExec = legacyExec) : g.region not parsed\n\nHere below an example which I hope is reproducible:\n\nSys.setenv(\"GRASS_INSTALLATION\"=\"/usr/lib/grass83\")\nlibrary(rgrass)\nlibrary(unixtools)\nset.tempdir(\"/my_path/temporary_files\")\n\nGRASS_INSTALLATION <- Sys.getenv(\"GRASS_INSTALLATION\")\nloc <- initGRASS(gisBase=GRASS_INSTALLATION, home=tempdir(), SG=r, \noverride=TRUE, remove_GISRC = TRUE) #return error message\nloc2 <- initGRASS() #return error message\n\nI receive the same error message whether I use a custom path for temp \nfiles or not, and when I manually indicate within the initGRASS function \ncustom entry parameters.\n\nWe are using GRASS 8.3.2 and R version 4.4.0 in a linux environment \n(Ubuntu 22.04.4 LTS). GRASS works well (I can use all applications from \na GRASS session started in the terminal).\n\nprint(version)\n\nplatform?????? x86_64-pc-linux-gnu\narch?????????? x86_64\nos???????????? linux-gnu\nsystem???????? x86_64, linux-gnu\nstatus\nmajor????????? 4\nminor????????? 4.0\nyear?????????? 2024\nmonth????????? 04\nday??????????? 24\nsvn rev??????? 86474\nlanguage?????? R\nversion.string R version 4.4.0 (2024-04-24)\nnickname?????? Puppy Cup\n\nThe environment variables seem all correct:\n\n_R_CHECK_COMPILATION_FLAGS_KNOWN_\n ???????????????????????????????? -Wformat -Werror=format-security \n-Wdate-time\nBROWSER /usr/lib/rstudio-server/bin/postback/rpostback-browser\nCLICOLOR_FORCE?????????????????? 1\nDISPLAY????????????????????????? :0\nEDITOR?????????????????????????? vi\nGIS_LOCK???????????????????????? 817\nGISBASE????????????????????????? /usr/lib/grass83\nGISDBASE???????????????????????? /home/avallet/grassdata\nGISRC??????????????????????????? /home/avallet/.grassrc8\nGIT_ASKPASS????????????????????? rpostback-askpass\nGRASS_ADDON_BASE???????????????? /home/avallet/.grass8/addons\nGRASS_INSTALLATION?????????????? /usr/lib/grass83\nGRASS_MESSAGE_FORMAT???????????? text\nGRASS_PAGER????????????????????? cat\nGRASS_PYTHON???????????????????? python3\nHOME???????????????????????????? /home/avallet\nLANG???????????????????????????? fr_FR.UTF-8\nLD_LIBRARY_PATH \n/usr/lib/grass83/lib::/usr/lib/R/lib:/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/jvm/default-java/lib/server\nLN_S???????????????????????????? ln -s\nLOCATION_NAME??????????????????? file36b3e68712934\nLOGNAME????????????????????????? avallet\nMAKE???????????????????????????? make\nMAPSET?????????????????????????? file36b3e656a1ed9\nMPLENGINE??????????????????????? tkAgg\nPAGER??????????????????????????? /usr/bin/pager\nPATH \n/usr/lib/grass83/bin:/usr/lib/grass83/scripts:/home/avallet/.grass8/addons/bin:/home/avallet/.grass8/addons/scripts:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/lib/rstudio-server/bin/quarto/bin:/usr/lib/rstudio-server/bin/postback\nPYTHONPATH?????????????????????? /usr/lib/grass83/etc/python\nR_BROWSER??????????????????????? xdg-open\nR_BZIPCMD??????????????????????? /bin/bzip2\nR_CLI_HAS_HYPERLINK_IDE_HELP???? true\nR_CLI_HAS_HYPERLINK_IDE_RUN????? true\nR_CLI_HAS_HYPERLINK_IDE_VIGNETTE\n ???????????????????????????????? true\nR_DOC_DIR??????????????????????? /usr/share/R/doc\nR_GZIPCMD??????????????????????? /bin/gzip -n\nR_HOME?????????????????????????? /usr/lib/R\nR_INCLUDE_DIR??????????????????? /usr/share/R/include\nR_LIBS_SITE \n/usr/local/lib/R/site-library/:/usr/local/lib/R/site-library:/usr/lib/R/site-library:/usr/lib/R/library\nR_LIBS_USER /home/avallet/R/x86_64-pc-linux-gnu-library/4.4\nR_PAPERSIZE????????????????????? letter\nR_PAPERSIZE_USER???????????????? letter\nR_PDFVIEWER????????????????????? /usr/bin/xdg-open\nR_PLATFORM?????????????????????? x86_64-pc-linux-gnu\nR_PRINTCMD?????????????????????? /usr/bin/lpr\nR_RD4PDF???????????????????????? times,inconsolata,hyper\nR_SESSION_TMPDIR???????????????? /tmp/Rtmp9qeL4f\nR_SHARE_DIR????????????????????? /usr/share/R/share\nR_STRIP_SHARED_LIB?????????????? strip --strip-unneeded\nR_STRIP_STATIC_LIB?????????????? strip --strip-debug\nR_TEXI2DVICMD??????????????????? /usr/bin/texi2dvi\nR_UNZIPCMD?????????????????????? /usr/bin/unzip\nR_ZIPCMD???????????????????????? /usr/bin/zip\nRMARKDOWN_MATHJAX_PATH /usr/lib/rstudio-server/resources/mathjax-27\nRS_PORT_TOKEN??????????????????? 1be40ec3f539\nRS_RPOSTBACK_PATH /usr/lib/rstudio-server/bin/rpostback\nRS_SERVER_RPC_SOCKET_PATH \n/var/run/rstudio-server/rstudio-rserver/session-server-rpc.socket\nRS_SERVER_URL??????????????????? http://134.158.74.74:8080/\nRS_SESSION_TMP_DIR /var/run/rstudio-server/rstudio-rsession\nRS_SESSION_URL\nRSTUDIO????????????????????????? 1\nRSTUDIO_CLI_HYPERLINKS?????????? true\nRSTUDIO_CONSOLE_COLOR??????????? 256\nRSTUDIO_CONSOLE_WIDTH??????????? 112\nRSTUDIO_HTTP_REFERER???????????? http://134.158.74.74:8080/\nRSTUDIO_PANDOC /usr/lib/rstudio-server/bin/quarto/bin/tools/x86_64\nRSTUDIO_PROGRAM_MODE???????????? server\nRSTUDIO_R_MODULE\nRSTUDIO_R_PRELAUNCH_SCRIPT\nRSTUDIO_R_REPO\nRSTUDIO_R_VERSION_LABEL\nRSTUDIO_SESSION_PID????????????? 224062\nRSTUDIO_SESSION_STREAM?????????? avallet-d\nRSTUDIO_USER_IDENTITY??????????? avallet\nRSTUDIO_USER_IDENTITY_DISPLAY??? avallet\nSED????????????????????????????? /bin/sed\nSSH_ASKPASS????????????????????? rpostback-askpass\nTAR????????????????????????????? /bin/tar\nTERM???????????????????????????? xterm-256color\nUSER???????????????????????????? avallet\n```\nAnyone knows what might be the problem?\nBest regards,\nAm?line\n\n-- \nAm?line Vallet\n------------------\nResearcher at AgroParisTech\nLaboratoire Ecologie, Syst?matique et Evolution - UMR 8079\nCentre international de recherche sur l'environnement et le d?veloppement - UMR 8568\nwww.amelinevallet.com | @vallet_ameline",
+      "body_snippet": "Dear all,\n\nSince I updated GRASS (8.2 -> 8.3.2) and rgrass (?-> 0.4-2), the \ninstallation seems broken and I can't start a GRASS session from R \nanymore. The error message I receive is the following:\n",
+      "thread_id": "thread-a471f2d4bbe7",
+      "thread_depth": 0,
+      "month": "2024-06"
+    },
+    {
+      "id": "msg-67b8a1bb4391",
+      "message_id": "<SV0P279MB0475449D8F946D894F0D444BEEFB2@SV0P279MB0475.NORP279.PROD.OUTLOOK.COM>",
+      "from_name": "Roger Bivand",
+      "from_email_hash": "a0c87926e9477aa221755cc93bdef47227c3563fd707e66ae49044467663d168",
+      "date": "2024-06-07T10:55:32Z",
+      "subject": "[GRASS-stats] Issue with grass initialization with rgrass 0.4-2",
+      "subject_clean": "[GRASS-stats] Issue with grass initialization with rgrass 0.4-2",
+      "in_reply_to": "<df394b9d-679c-41ef-b069-17fa37562fe2@agroparistech.fr>",
+      "references": [
+        "<df394b9d-679c-41ef-b069-17fa37562fe2@agroparistech.fr>"
+      ],
+      "body_plain": "Am?line's message here is to solicit input from others, and may be followed up here and/or at https://github.com/rsbivand/rgrass/issues/88\n\nRoger\n\n--\nRoger Bivand\nEmeritus Professor\nNorwegian School of Economics\nPostboks 3490 Ytre Sandviken, 5045 Bergen, Norway\nRoger.Bivand at nhh.no\n\n________________________________________\nFrom: grass-stats <grass-stats-bounces at lists.osgeo.org> on behalf of Am?line Vallet via grass-stats <grass-stats at lists.osgeo.org>\nSent: 07 June 2024 11:03\nTo: grass-stats at lists.osgeo.org\nSubject: [GRASS-stats] Issue with grass initialization with rgrass 0.4-2\n\nDear all,\n\nSince I updated GRASS (8.2 -> 8.3.2) and rgrass (?-> 0.4-2), the\ninstallation seems broken and I can't start a GRASS session from R\nanymore. The error message I receive is the following:\n\nError in read_xml.raw(charToRaw(enc2utf8(x)), \"UTF-8\", ..., as_html =\nas_html,  :\n   Premature end of data in tag guisection line 1 [77]\nDe plus : Message d'avis :\nDans readLines(outFile) :\n   ligne finale incompl?te trouv?e dans '/tmp/Rtmp9qeL4f/file36b3e2cdcc8ad'\nErreur dans parseGRASS(cmd, legacyExec = legacyExec) : g.region not parsed\n\nHere below an example which I hope is reproducible:\n\nSys.setenv(\"GRASS_INSTALLATION\"=\"/usr/lib/grass83\")\nlibrary(rgrass)\nlibrary(unixtools)\nset.tempdir(\"/my_path/temporary_files\")\n\nGRASS_INSTALLATION <- Sys.getenv(\"GRASS_INSTALLATION\")\nloc <- initGRASS(gisBase=GRASS_INSTALLATION, home=tempdir(), SG=r,\noverride=TRUE, remove_GISRC = TRUE) #return error message\nloc2 <- initGRASS() #return error message\n\nI receive the same error message whether I use a custom path for temp\nfiles or not, and when I manually indicate within the initGRASS function\ncustom entry parameters.\n\nWe are using GRASS 8.3.2 and R version 4.4.0 in a linux environment\n(Ubuntu 22.04.4 LTS). GRASS works well (I can use all applications from\na GRASS session started in the terminal).\n\nprint(version)\n\nplatform       x86_64-pc-linux-gnu\narch           x86_64\nos             linux-gnu\nsystem         x86_64, linux-gnu\nstatus\nmajor          4\nminor          4.0\nyear           2024\nmonth          04\nday            24\nsvn rev        86474\nlanguage       R\nversion.string R version 4.4.0 (2024-04-24)\nnickname       Puppy Cup\n\nThe environment variables seem all correct:\n\n_R_CHECK_COMPILATION_FLAGS_KNOWN_\n                                  -Wformat -Werror=format-security\n-Wdate-time\nBROWSER /usr/lib/rstudio-server/bin/postback/rpostback-browser\nCLICOLOR_FORCE                   1\nDISPLAY                          :0\nEDITOR                           vi\nGIS_LOCK                         817\nGISBASE                          /usr/lib/grass83\nGISDBASE                         /home/avallet/grassdata\nGISRC                            /home/avallet/.grassrc8\nGIT_ASKPASS                      rpostback-askpass\nGRASS_ADDON_BASE                 /home/avallet/.grass8/addons\nGRASS_INSTALLATION               /usr/lib/grass83\nGRASS_MESSAGE_FORMAT             text\nGRASS_PAGER                      cat\nGRASS_PYTHON                     python3\nHOME                             /home/avallet\nLANG                             fr_FR.UTF-8\nLD_LIBRARY_PATH\n/usr/lib/grass83/lib::/usr/lib/R/lib:/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/jvm/default-java/lib/server\nLN_S                             ln -s\nLOCATION_NAME                    file36b3e68712934\nLOGNAME                          avallet\nMAKE                             make\nMAPSET                           file36b3e656a1ed9\nMPLENGINE                        tkAgg\nPAGER                            /usr/bin/pager\nPATH\n/usr/lib/grass83/bin:/usr/lib/grass83/scripts:/home/avallet/.grass8/addons/bin:/home/avallet/.grass8/addons/scripts:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/lib/rstudio-server/bin/quarto/bin:/usr/lib/rstudio-server/bin/postback\nPYTHONPATH                       /usr/lib/grass83/etc/python\nR_BROWSER                        xdg-open\nR_BZIPCMD                        /bin/bzip2\nR_CLI_HAS_HYPERLINK_IDE_HELP     true\nR_CLI_HAS_HYPERLINK_IDE_RUN      true\nR_CLI_HAS_HYPERLINK_IDE_VIGNETTE\n                                  true\nR_DOC_DIR                        /usr/share/R/doc\nR_GZIPCMD                        /bin/gzip -n\nR_HOME                           /usr/lib/R\nR_INCLUDE_DIR                    /usr/share/R/include\nR_LIBS_SITE\n/usr/local/lib/R/site-library/:/usr/local/lib/R/site-library:/usr/lib/R/site-library:/usr/lib/R/library\nR_LIBS_USER /home/avallet/R/x86_64-pc-linux-gnu-library/4.4\nR_PAPERSIZE                      letter\nR_PAPERSIZE_USER                 letter\nR_PDFVIEWER                      /usr/bin/xdg-open\nR_PLATFORM                       x86_64-pc-linux-gnu\nR_PRINTCMD                       /usr/bin/lpr\nR_RD4PDF                         times,inconsolata,hyper\nR_SESSION_TMPDIR                 /tmp/Rtmp9qeL4f\nR_SHARE_DIR                      /usr/share/R/share\nR_STRIP_SHARED_LIB               strip --strip-unneeded\nR_STRIP_STATIC_LIB               strip --strip-debug\nR_TEXI2DVICMD                    /usr/bin/texi2dvi\nR_UNZIPCMD                       /usr/bin/unzip\nR_ZIPCMD                         /usr/bin/zip\nRMARKDOWN_MATHJAX_PATH /usr/lib/rstudio-server/resources/mathjax-27\nRS_PORT_TOKEN                    1be40ec3f539\nRS_RPOSTBACK_PATH /usr/lib/rstudio-server/bin/rpostback\nRS_SERVER_RPC_SOCKET_PATH\n/var/run/rstudio-server/rstudio-rserver/session-server-rpc.socket\nRS_SERVER_URL                    http://134.158.74.74:8080/\nRS_SESSION_TMP_DIR /var/run/rstudio-server/rstudio-rsession\nRS_SESSION_URL\nRSTUDIO                          1\nRSTUDIO_CLI_HYPERLINKS           true\nRSTUDIO_CONSOLE_COLOR            256\nRSTUDIO_CONSOLE_WIDTH            112\nRSTUDIO_HTTP_REFERER             http://134.158.74.74:8080/\nRSTUDIO_PANDOC /usr/lib/rstudio-server/bin/quarto/bin/tools/x86_64\nRSTUDIO_PROGRAM_MODE             server\nRSTUDIO_R_MODULE\nRSTUDIO_R_PRELAUNCH_SCRIPT\nRSTUDIO_R_REPO\nRSTUDIO_R_VERSION_LABEL\nRSTUDIO_SESSION_PID              224062\nRSTUDIO_SESSION_STREAM           avallet-d\nRSTUDIO_USER_IDENTITY            avallet\nRSTUDIO_USER_IDENTITY_DISPLAY    avallet\nSED                              /bin/sed\nSSH_ASKPASS                      rpostback-askpass\nTAR                              /bin/tar\nTERM                             xterm-256color\nUSER                             avallet\n```\nAnyone knows what might be the problem?\nBest regards,\nAm?line\n\n--\nAm?line Vallet\n------------------\nResearcher at AgroParisTech\nLaboratoire Ecologie, Syst?matique et Evolution - UMR 8079\nCentre international de recherche sur l'environnement et le d?veloppement - UMR 8568\nhttp://www.amelinevallet.com/ | @vallet_ameline\n\n_______________________________________________\ngrass-stats mailing list\ngrass-stats at lists.osgeo.org\nhttps://lists.osgeo.org/mailman/listinfo/grass-stats",
+      "body_snippet": "Am?line's message here is to solicit input from others, and may be followed up here and/or at https://github.com/rsbivand/rgrass/issues/88\n\nRoger\n\n--\nRoger Bivand\nEmeritus Professor\nNorwegian School o",
+      "thread_id": "thread-a471f2d4bbe7",
+      "thread_depth": 1,
+      "month": "2024-06"
+    },
+    {
+      "id": "msg-95fa2040faad",
+      "message_id": "<trinity-d6d4a64a-5784-42e8-93cc-b658b363f3c7-1718526181992@3c-app-webde-bs11>",
+      "from_name": "Helmut Kudrnovsky",
+      "from_email_hash": "572812d30704ff85b790371a41b3834e34c2a977a9add7b1180122ccff9ef17a",
+      "date": "2024-06-16T08:23:02Z",
+      "subject": "[GRASS-stats] GRASS-R: which operating systems are used?",
+      "subject_clean": "[GRASS-stats] GRASS-R: which operating systems are used?",
+      "in_reply_to": null,
+      "references": [],
+      "body_plain": "Hi,\n\nhere at the GRASS GIS Community meeting 2024 [1] we're discussing a bit the R-GRASS GIS interface.\n\nA question raised up here: which operating systems (MS windows, MAC, linux, other) are mostly used.\n\njust drop a short note here for a quick survey.\n\nKind regards\nHelli\n\n----\n\n[1] https://grasswiki.osgeo.org/wiki/GRASS_Community_Meeting_Prague_2024",
+      "body_snippet": "Hi,\n\nhere at the GRASS GIS Community meeting 2024 [1] we're discussing a bit the R-GRASS GIS interface.\n\nA question raised up here: which operating systems (MS windows, MAC, linux, other) are mostly u",
+      "thread_id": "thread-95fa2040faad",
+      "thread_depth": 0,
+      "month": "2024-06"
+    },
+    {
+      "id": "msg-637464924d09",
+      "message_id": "<CAGrkfcKSrCw5Z7eZaDtTQuJPiTyb5rsguMaH=Qmwnt42M6K6BA@mail.gmail.com>",
+      "from_name": "Paulo van Breugel",
+      "from_email_hash": "b93015496d730abd72947d7b57657810d410627495602f8469846b24d0e45d09",
+      "date": "2024-06-16T08:44:09Z",
+      "subject": "[GRASS-stats] GRASS-R: which operating systems are used?",
+      "subject_clean": "[GRASS-stats] GRASS-R: which operating systems are used?",
+      "in_reply_to": "<trinity-d6d4a64a-5784-42e8-93cc-b658b363f3c7-1718526181992@3c-app-webde-bs11>",
+      "references": [
+        "<trinity-d6d4a64a-5784-42e8-93cc-b658b363f3c7-1718526181992@3c-app-webde-bs11>"
+      ],
+      "body_plain": "On Sun, Jun 16, 2024 at 10:28?AM Helmut Kudrnovsky via grass-stats <\ngrass-stats at lists.osgeo.org> wrote:\n\n> Hi,\n>\n> here at the GRASS GIS Community meeting 2024 [1] we're discussing a bit\n> the R-GRASS GIS interface.\n>\n> A question raised up here: which operating systems (MS windows, MAC,\n> linux, other) are mostly used.\n>\n> just drop a short note here for a quick survey.\n>\n>\nI am using it on both Linux and MS Windows.\nWhenever my students use it (not many yet), it is on Windows.\n\n\n> Kind regards\n> Helli\n>\n> ----\n>\n> [1] https://grasswiki.osgeo.org/wiki/GRASS_Community_Meeting_Prague_2024\n>\n> _______________________________________________\n> grass-stats mailing list\n> grass-stats at lists.osgeo.org\n> https://lists.osgeo.org/mailman/listinfo/grass-stats\n>\n-------------- next part --------------\nAn HTML attachment was scrubbed...\nURL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20240616/d50a0eed/attachment.htm>",
+      "body_snippet": "On Sun, Jun 16, 2024 at 10:28?AM Helmut Kudrnovsky via grass-stats <\ngrass-stats at lists.osgeo.org> wrote:\n\n> Hi,\n>\n> here at the GRASS GIS Community meeting 2024 [1] we're discussing a bit\n> the R-G",
+      "thread_id": "thread-95fa2040faad",
+      "thread_depth": 1,
+      "month": "2024-06"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-a471f2d4bbe7",
+      "subject": "[GRASS-stats] Issue with grass initialization with rgrass 0.4-2",
+      "message_count": 2,
+      "participants": [
+        "Améline Vallet",
+        "Roger Bivand"
+      ],
+      "started": "2024-06-07T09:03:23Z",
+      "last_reply": "2024-06-07T10:55:32Z",
+      "root_message_id": "msg-a471f2d4bbe7"
+    },
+    {
+      "id": "thread-95fa2040faad",
+      "subject": "[GRASS-stats] GRASS-R: which operating systems are used?",
+      "message_count": 2,
+      "participants": [
+        "Helmut Kudrnovsky",
+        "Paulo van Breugel"
+      ],
+      "started": "2024-06-16T08:23:02Z",
+      "last_reply": "2024-06-16T08:44:09Z",
+      "root_message_id": "msg-95fa2040faad"
+    }
+  ]
+}

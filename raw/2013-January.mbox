@@ -1,0 +1,470 @@
+From Roger.Bivand at nhh.no  Sat Jan 12 05:10:05 2013
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sat, 12 Jan 2013 14:10:05 +0100
+Subject: [GRASS-stats] Thread on R-sig-geo - PYTHONPATH in spgrass6
+Message-ID: <alpine.LRH.2.02.1301121406490.13650@reclus.nhh.no>
+
+Please try the R-forge spgrass6 revision as described by:
+
+http://r-sig-geo.2731867.n2.nabble.com/grass-script-not-found-in-R-grass7-session-tp7582292.html
+
+on Windows and OSX, please.
+
+Roger
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand at nhh.no
+
+
+From sotkouklistes at gmail.com  Mon Jan 21 11:36:53 2013
+From: sotkouklistes at gmail.com (S. Koukoulas (lists))
+Date: Mon, 21 Jan 2013 21:36:53 +0200
+Subject: [GRASS-stats] multiple grass installations and spgrass6()
+In-Reply-To: <alpine.LRH.2.02.1301121357590.13650@reclus.nhh.no>
+References: <1357925301566-7582292.post@n2.nabble.com>
+	<alpine.LRH.2.02.1301111833530.4785@reclus.nhh.no>
+	<alpine.LRH.2.02.1301121312490.13505@reclus.nhh.no>
+	<alpine.LRH.2.02.1301121357590.13650@reclus.nhh.no>
+Message-ID: <50FD98D5.3090009@gmail.com>
+
+How can I get around a possible error with multiple grass installations,
+when I use spgrass6?
+(preferably without uninstalling grass!)
+
+Here a description of the problem:
+when I try to import data  into R (running R within GRASS 7 (revision 
+54609) environment), I get the following error:
+
+> nomoi=readVECT6("nomoi_okxe")
+Loading required package: rgdal
+rgdal: version: 0.8-4, (SVN revision Unversioned directory)
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Loaded GDAL runtime: GDAL 1.9.2, released 2012/10/08
+Path to GDAL shared files: /usr/share/gdal
+Loaded PROJ.4 runtime: Rel. 4.8.0, 6 March 2012, [PJ_VERSION: 480]
+Path to PROJ.4 shared files: (autodetected)
+ERROR: Incompatible library version for module. You need to rebuild
+GRASS   <--------------------ERROR--------------
+       or untangle multiple installations.
+
+and then R crashes and I am out of its environment.
+
+"nomoi_okxe" data can be downloaded from
+ http://geodata.gov.gr/geodata/index.php?option=com_sobi2&sobi2Task=sobi2Details&catid=16&sobi2Id=21&Itemid= 
+
+and then choose SHP (EPSG:2100)
+
+In my PC I have grass6.4.3svn and grass 7 svn (revision  54609) on an
+OpenSuse 12.2 laptop
+
+My sessionInfo() output:
+> sessionInfo()
+R version 2.15.2 (2012-10-26)
+Platform: i586-suse-linux-gnu (32-bit)
+
+locale:
+[1] C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base    
+
+other attached packages:
+[1] spgrass6_0.7-14 XML_3.95-0.1    sp_1.0-5      
+
+loaded via a namespace (and not attached):
+[1] Matrix_1.0-9    grid_2.15.2     lattice_0.20-10 mgcv_1.7-22   
+[5] nlme_3.1-105  
+>
+
+> execGRASS("g.version")
+GRASS 7.0.svn (2012)
+
+I have installed spgrass6 using  install.packages("spgrass6",
+repos="http://R-Forge.R-project.org")
+
+many thanks,
+sotiris
+
+
+
+From Roger.Bivand at nhh.no  Mon Jan 21 11:56:51 2013
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon, 21 Jan 2013 20:56:51 +0100
+Subject: [GRASS-stats] multiple grass installations and spgrass6()
+In-Reply-To: <50FD98D5.3090009@gmail.com>
+References: <1357925301566-7582292.post@n2.nabble.com>
+	<alpine.LRH.2.02.1301111833530.4785@reclus.nhh.no>
+	<alpine.LRH.2.02.1301121312490.13505@reclus.nhh.no>
+	<alpine.LRH.2.02.1301121357590.13650@reclus.nhh.no>
+	<50FD98D5.3090009@gmail.com>
+Message-ID: <alpine.LRH.2.02.1301212043490.21471@reclus.nhh.no>
+
+The message is coming from GRASS, almost certainly from v.out.ogr, and 
+almost certainly because you have multiple versions of GDAL on your system 
+(or a GDAL component or plugin). I am not able to help with GRASS 7 
+problems, it is an unstable development version. Can you export the object 
+to a vector file in GRASS itself, not inside R? Does the same error occur? 
+Does the error rather (or also, if GDAL is broken) occur on reading a 
+shapefile into R with readOGR()? You'll have to separate the problems 
+yourself until you find out which software component is wrongly linked to 
+GDAL - best to remove all binary installs of GDAL which on Debian/Ubuntu 
+are notorious for causing trouble, and install GDAL from source, then 
+re-install GRASS from source, and rgdal from source.
+
+See also:
+
+http://lists.osgeo.org/pipermail/grass-user/2009-July/051737.html
+
+http://lists.osgeo.org/pipermail/grass-stats/2009-January/000897.html
+
+at the ends of the threads. In both cases the GDAL/OGR GRASS plugins were 
+the culprits, often caused by binary installs of GDAL.
+
+Roger
+
+
+On Mon, 21 Jan 2013, S. Koukoulas (lists) wrote:
+
+> How can I get around a possible error with multiple grass installations,
+> when I use spgrass6?
+> (preferably without uninstalling grass!)
+>
+> Here a description of the problem:
+> when I try to import data  into R (running R within GRASS 7 (revision
+> 54609) environment), I get the following error:
+>
+>> nomoi=readVECT6("nomoi_okxe")
+> Loading required package: rgdal
+> rgdal: version: 0.8-4, (SVN revision Unversioned directory)
+> Geospatial Data Abstraction Library extensions to R successfully loaded
+> Loaded GDAL runtime: GDAL 1.9.2, released 2012/10/08
+> Path to GDAL shared files: /usr/share/gdal
+> Loaded PROJ.4 runtime: Rel. 4.8.0, 6 March 2012, [PJ_VERSION: 480]
+> Path to PROJ.4 shared files: (autodetected)
+> ERROR: Incompatible library version for module. You need to rebuild
+> GRASS   <--------------------ERROR--------------
+>       or untangle multiple installations.
+>
+> and then R crashes and I am out of its environment.
+>
+> "nomoi_okxe" data can be downloaded from
+> http://geodata.gov.gr/geodata/index.php?option=com_sobi2&sobi2Task=sobi2Details&catid=16&sobi2Id=21&Itemid=
+>
+> and then choose SHP (EPSG:2100)
+>
+> In my PC I have grass6.4.3svn and grass 7 svn (revision  54609) on an
+> OpenSuse 12.2 laptop
+>
+> My sessionInfo() output:
+>> sessionInfo()
+> R version 2.15.2 (2012-10-26)
+> Platform: i586-suse-linux-gnu (32-bit)
+>
+> locale:
+> [1] C
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base
+>
+> other attached packages:
+> [1] spgrass6_0.7-14 XML_3.95-0.1    sp_1.0-5
+>
+> loaded via a namespace (and not attached):
+> [1] Matrix_1.0-9    grid_2.15.2     lattice_0.20-10 mgcv_1.7-22
+> [5] nlme_3.1-105
+>>
+>
+>> execGRASS("g.version")
+> GRASS 7.0.svn (2012)
+>
+> I have installed spgrass6 using  install.packages("spgrass6",
+> repos="http://R-Forge.R-project.org")
+>
+> many thanks,
+> sotiris
+>
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand at nhh.no
+
+
+From sotkouklistes at gmail.com  Tue Jan 22 11:06:59 2013
+From: sotkouklistes at gmail.com (S. Koukoulas (lists))
+Date: Tue, 22 Jan 2013 21:06:59 +0200
+Subject: [GRASS-stats] multiple grass installations and spgrass6()
+In-Reply-To: <alpine.LRH.2.02.1301212043490.21471@reclus.nhh.no>
+References: <1357925301566-7582292.post@n2.nabble.com>
+	<alpine.LRH.2.02.1301111833530.4785@reclus.nhh.no>
+	<alpine.LRH.2.02.1301121312490.13505@reclus.nhh.no>
+	<alpine.LRH.2.02.1301121357590.13650@reclus.nhh.no>
+	<50FD98D5.3090009@gmail.com>
+	<alpine.LRH.2.02.1301212043490.21471@reclus.nhh.no>
+Message-ID: <50FEE353.8030805@gmail.com>
+
+
+On 01/21/2013 09:56 PM, Roger Bivand wrote:
+> The message is coming from GRASS, almost certainly from v.out.ogr, and
+> almost certainly because you have multiple versions of GDAL on your
+> system (or a GDAL component or plugin). I am not able to help with
+> GRASS 7 problems, it is an unstable development version. Can you
+> export the object to a vector file in GRASS itself, not inside R? 
+yes (from R to grass is ok - I followed your example with meuse data
+just fine)
+> Does the same error occur? 
+no
+> Does the error rather (or also, if GDAL is broken) occur on reading a
+> shapefile into R with readOGR()? 
+no, readOGR() works fine (tried with shapefiles)
+> You'll have to separate the problems yourself until you find out which
+> software component is wrongly linked to GDAL - best to remove all
+> binary installs of GDAL which on Debian/Ubuntu are notorious for
+> causing trouble, and install GDAL from source, then re-install GRASS
+> from source, and rgdal from source.
+>
+> See also:
+>
+> http://lists.osgeo.org/pipermail/grass-user/2009-July/051737.html
+>
+> http://lists.osgeo.org/pipermail/grass-stats/2009-January/000897.html
+>  
+> at the ends of the threads. In both cases the GDAL/OGR GRASS plugins
+> were the culprits, often caused by binary installs of GDAL.
+>
+ok many thanks - I think that I understand the problem now (but I will
+not do anything about it for the moment, as I want to be able to work
+with grass6.4.3 as well).
+
+I can import my spatial data to R one way or another, I was just hoping
+that there would be a way for the grass package to recognise the right
+versions without making redundant one version in favor of another.
+best wishes,
+sotiris
+>  Roger
+>
+>
+> On Mon, 21 Jan 2013, S. Koukoulas (lists) wrote:
+>
+>> How can I get around a possible error with multiple grass installations,
+>> when I use spgrass6?
+>> (preferably without uninstalling grass!)
+>>
+>> Here a description of the problem:
+>> when I try to import data  into R (running R within GRASS 7 (revision
+>> 54609) environment), I get the following error:
+>>
+>>> nomoi=readVECT6("nomoi_okxe")
+>> Loading required package: rgdal
+>> rgdal: version: 0.8-4, (SVN revision Unversioned directory)
+>> Geospatial Data Abstraction Library extensions to R successfully loaded
+>> Loaded GDAL runtime: GDAL 1.9.2, released 2012/10/08
+>> Path to GDAL shared files: /usr/share/gdal
+>> Loaded PROJ.4 runtime: Rel. 4.8.0, 6 March 2012, [PJ_VERSION: 480]
+>> Path to PROJ.4 shared files: (autodetected)
+>> ERROR: Incompatible library version for module. You need to rebuild
+>> GRASS   <--------------------ERROR--------------
+>>       or untangle multiple installations.
+>>
+>> and then R crashes and I am out of its environment.
+>>
+>> "nomoi_okxe" data can be downloaded from
+>> http://geodata.gov.gr/geodata/index.php?option=com_sobi2&sobi2Task=sobi2Details&catid=16&sobi2Id=21&Itemid=
+>>
+>>
+>> and then choose SHP (EPSG:2100)
+>>
+>> In my PC I have grass6.4.3svn and grass 7 svn (revision  54609) on an
+>> OpenSuse 12.2 laptop
+>>
+>> My sessionInfo() output:
+>>> sessionInfo()
+>> R version 2.15.2 (2012-10-26)
+>> Platform: i586-suse-linux-gnu (32-bit)
+>>
+>> locale:
+>> [1] C
+>>
+>> attached base packages:
+>> [1] stats     graphics  grDevices utils     datasets  methods   base
+>>
+>> other attached packages:
+>> [1] spgrass6_0.7-14 XML_3.95-0.1    sp_1.0-5
+>>
+>> loaded via a namespace (and not attached):
+>> [1] Matrix_1.0-9    grid_2.15.2     lattice_0.20-10 mgcv_1.7-22
+>> [5] nlme_3.1-105
+>>>
+>>
+>>> execGRASS("g.version")
+>> GRASS 7.0.svn (2012)
+>>
+>> I have installed spgrass6 using  install.packages("spgrass6",
+>> repos="http://R-Forge.R-project.org")
+>>
+>> many thanks,
+>> sotiris
+>>
+>>
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats at lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>
+
+
+From Roger.Bivand at nhh.no  Tue Jan 22 11:13:53 2013
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue, 22 Jan 2013 20:13:53 +0100
+Subject: [GRASS-stats] multiple grass installations and spgrass6()
+In-Reply-To: <50FEE353.8030805@gmail.com>
+References: <1357925301566-7582292.post@n2.nabble.com>
+	<alpine.LRH.2.02.1301111833530.4785@reclus.nhh.no>
+	<alpine.LRH.2.02.1301121312490.13505@reclus.nhh.no>
+	<alpine.LRH.2.02.1301121357590.13650@reclus.nhh.no>
+	<50FD98D5.3090009@gmail.com>
+	<alpine.LRH.2.02.1301212043490.21471@reclus.nhh.no>
+	<50FEE353.8030805@gmail.com>
+Message-ID: <alpine.LRH.2.02.1301222012530.27590@reclus.nhh.no>
+
+On Tue, 22 Jan 2013, S. Koukoulas (lists) wrote:
+
+>
+> On 01/21/2013 09:56 PM, Roger Bivand wrote:
+>> The message is coming from GRASS, almost certainly from v.out.ogr, and
+>> almost certainly because you have multiple versions of GDAL on your
+>> system (or a GDAL component or plugin). I am not able to help with
+>> GRASS 7 problems, it is an unstable development version. Can you
+>> export the object to a vector file in GRASS itself, not inside R?
+> yes (from R to grass is ok - I followed your example with meuse data
+> just fine)
+>> Does the same error occur?
+> no
+>> Does the error rather (or also, if GDAL is broken) occur on reading a
+>> shapefile into R with readOGR()?
+> no, readOGR() works fine (tried with shapefiles)
+>> You'll have to separate the problems yourself until you find out which
+>> software component is wrongly linked to GDAL - best to remove all
+>> binary installs of GDAL which on Debian/Ubuntu are notorious for
+>> causing trouble, and install GDAL from source, then re-install GRASS
+>> from source, and rgdal from source.
+>>
+>> See also:
+>>
+>> http://lists.osgeo.org/pipermail/grass-user/2009-July/051737.html
+>>
+>> http://lists.osgeo.org/pipermail/grass-stats/2009-January/000897.html
+>>
+>> at the ends of the threads. In both cases the GDAL/OGR GRASS plugins
+>> were the culprits, often caused by binary installs of GDAL.
+>>
+> ok many thanks - I think that I understand the problem now (but I will
+> not do anything about it for the moment, as I want to be able to work
+> with grass6.4.3 as well).
+>
+> I can import my spatial data to R one way or another, I was just hoping
+> that there would be a way for the grass package to recognise the right
+> versions without making redundant one version in favor of another.
+> best wishes,
+
+It isn't R, it is GDAL which cannot manage different GRASS versions in the 
+plugin - it has to point to the same one, I think.
+
+Roger
+
+> sotiris
+>>  Roger
+>>
+>>
+>> On Mon, 21 Jan 2013, S. Koukoulas (lists) wrote:
+>>
+>>> How can I get around a possible error with multiple grass installations,
+>>> when I use spgrass6?
+>>> (preferably without uninstalling grass!)
+>>>
+>>> Here a description of the problem:
+>>> when I try to import data  into R (running R within GRASS 7 (revision
+>>> 54609) environment), I get the following error:
+>>>
+>>>> nomoi=readVECT6("nomoi_okxe")
+>>> Loading required package: rgdal
+>>> rgdal: version: 0.8-4, (SVN revision Unversioned directory)
+>>> Geospatial Data Abstraction Library extensions to R successfully loaded
+>>> Loaded GDAL runtime: GDAL 1.9.2, released 2012/10/08
+>>> Path to GDAL shared files: /usr/share/gdal
+>>> Loaded PROJ.4 runtime: Rel. 4.8.0, 6 March 2012, [PJ_VERSION: 480]
+>>> Path to PROJ.4 shared files: (autodetected)
+>>> ERROR: Incompatible library version for module. You need to rebuild
+>>> GRASS   <--------------------ERROR--------------
+>>>       or untangle multiple installations.
+>>>
+>>> and then R crashes and I am out of its environment.
+>>>
+>>> "nomoi_okxe" data can be downloaded from
+>>> http://geodata.gov.gr/geodata/index.php?option=com_sobi2&sobi2Task=sobi2Details&catid=16&sobi2Id=21&Itemid=
+>>>
+>>>
+>>> and then choose SHP (EPSG:2100)
+>>>
+>>> In my PC I have grass6.4.3svn and grass 7 svn (revision  54609) on an
+>>> OpenSuse 12.2 laptop
+>>>
+>>> My sessionInfo() output:
+>>>> sessionInfo()
+>>> R version 2.15.2 (2012-10-26)
+>>> Platform: i586-suse-linux-gnu (32-bit)
+>>>
+>>> locale:
+>>> [1] C
+>>>
+>>> attached base packages:
+>>> [1] stats     graphics  grDevices utils     datasets  methods   base
+>>>
+>>> other attached packages:
+>>> [1] spgrass6_0.7-14 XML_3.95-0.1    sp_1.0-5
+>>>
+>>> loaded via a namespace (and not attached):
+>>> [1] Matrix_1.0-9    grid_2.15.2     lattice_0.20-10 mgcv_1.7-22
+>>> [5] nlme_3.1-105
+>>>>
+>>>
+>>>> execGRASS("g.version")
+>>> GRASS 7.0.svn (2012)
+>>>
+>>> I have installed spgrass6 using  install.packages("spgrass6",
+>>> repos="http://R-Forge.R-project.org")
+>>>
+>>> many thanks,
+>>> sotiris
+>>>
+>>>
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats at lists.osgeo.org
+>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>
+>>
+>
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand at nhh.no
+
+

@@ -1,0 +1,2056 @@
+From nikos.alexandris at felis.uni-freiburg.de  Wed May 20 20:25:00 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed May 20 20:23:47 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+Message-ID: <1242865500.2730.4.camel@vertical>
+
+Hi R-statisticians :-)
+
+I am trying to load a BIG table (=466 columns, 875 rows) of a grass
+point-vector map in R. It takes too long to respond (as expected of
+course)...
+
+* Is there any "limitation" in spgrass6 regarding the column numbers?
+* Can I somehow know that the data are fed into R and I am not wasting
+my time?
+* Should I prefer to export as a csv the table and work in an
+out-of-GRASS R session?
+
+Kind regards, Nikos
+
+From nikos.alexandris at felis.uni-freiburg.de  Wed May 20 21:00:11 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed May 20 20:58:57 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <1242865500.2730.4.camel@vertical>
+References: <1242865500.2730.4.camel@vertical>
+Message-ID: <1242867611.3656.1.camel@vertical>
+
+
+Nikos:
+> Hi R-statisticians :-)
+> 
+> I am trying to load a BIG table (=466 columns, 875 rows) of a grass
+> point-vector map in R. It takes too long to respond (as expected of
+> course)...
+> 
+> * Is there any "limitation" in spgrass6 regarding the column numbers?
+> * Can I somehow know that the data are fed into R and I am not wasting
+> my time?
+
+###
+
+> * Should I prefer to export as a csv the table and work in an
+> out-of-GRASS R session?
+
+This works perfectly. So, why loading the grass attribute table takes so
+long (if it actually works)?
+
+Thanks, Nikos
+
+From dylan.beaudette at gmail.com  Wed May 20 21:06:50 2009
+From: dylan.beaudette at gmail.com (Dylan Beaudette)
+Date: Wed May 20 21:28:15 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <1242867611.3656.1.camel@vertical>
+References: <1242865500.2730.4.camel@vertical>
+	<1242867611.3656.1.camel@vertical>
+Message-ID: <3c5546140905201806n66f544b8g14f94f0bdd854a3c@mail.gmail.com>
+
+Could be a DBF-related problem.
+
+Cheers,
+Dylan
+
+On Wed, May 20, 2009 at 6:00 PM, Nikos Alexandris
+<nikos.alexandris@felis.uni-freiburg.de> wrote:
+>
+> Nikos:
+>> Hi R-statisticians :-)
+>>
+>> I am trying to load a BIG table (=466 columns, 875 rows) of a grass
+>> point-vector map in R. It takes too long to respond (as expected of
+>> course)...
+>>
+>> * Is there any "limitation" in spgrass6 regarding the column numbers?
+>> * Can I somehow know that the data are fed into R and I am not wasting
+>> my time?
+>
+> ###
+>
+>> * Should I prefer to export as a csv the table and work in an
+>> out-of-GRASS R session?
+>
+> This works perfectly. So, why loading the grass attribute table takes so
+> long (if it actually works)?
+>
+> Thanks, Nikos
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+From nikos.alexandris at felis.uni-freiburg.de  Fri May 22 07:02:48 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Fri May 22 07:01:31 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <3c5546140905201806n66f544b8g14f94f0bdd854a3c@mail.gmail.com>
+References: <1242865500.2730.4.camel@vertical>
+	<1242867611.3656.1.camel@vertical>
+	<3c5546140905201806n66f544b8g14f94f0bdd854a3c@mail.gmail.com>
+Message-ID: <1242990168.8385.1.camel@vertical>
+
+
+Dylan:
+> Could be a DBF-related problem.
+
+Dylan,
+
+I am using sqlite as DB backend. How does this affect the import via
+readVECT6?
+
+Nikos
+
+From nikos.alexandris at felis.uni-freiburg.de  Fri May 22 08:06:25 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Fri May 22 08:05:07 2009
+Subject: [GRASS-stats] Create new vectors within a (double) loop in R
+Message-ID: <1242993985.8385.63.camel@vertical>
+
+Hi list.
+
+(Apologies in advance since this is actually a non-spatial R-related
+question.)
+
+I use the following one-liner to create a new vector made out of 10
+values. Each value is _some_ sum of a column from a "Source" data frame.
+
+# code:
+for (i in 1:10) print ( sum ( !is.na (Source[ ,i]) ) ) -> TargetV[i]
+
+I want to construct a loop over a set of "Source" data frames ( say they
+are 10 ) and create, in total, 10 new vectors at once. All new vectors
+will be made out of 10 values as in the example above.
+
+Finally, I would like to have all this in a custom function (once it
+works line-per-line).
+
+I am stuck on the following "code" which gives me 10 new vectors but
+each of them has only 1 numeric value instead of the desired 10.
+
+# the data are:
+# "classifications" is _just_ a list with names
+# 10 vectors with a "_thresholds" suffix contain 10 columns with values
+I want to use
+# I want to create 10 vectors named with a "sums" suffix.
+
+
+# the code:
+# loop over Source data frames
+for (x in classifications) {
+
+ # loop over sequence 1 to 10
+ for (i in 1:10)
+
+  # store sum's per "source" column
+  assign ( (paste ( x, "_sums", sep = "" )[i],
+    sum ( !is.na (
+      get ( paste ( x, "_thresholds", sep = "" ) )[ ,i]
+      )
+    )
+  )
+}
+
+
+Question:
+
+What is the correct way to create new variable(s) within a (double)
+loop? The command "paste()" prints its results within quotes which, I
+think, is a problem here??
+
+Thanks, Nikos
+
+From dylan.beaudette at gmail.com  Fri May 22 11:15:55 2009
+From: dylan.beaudette at gmail.com (Dylan Beaudette)
+Date: Fri May 22 11:16:09 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <1242990168.8385.1.camel@vertical>
+References: <1242865500.2730.4.camel@vertical>
+	<1242867611.3656.1.camel@vertical>
+	<3c5546140905201806n66f544b8g14f94f0bdd854a3c@mail.gmail.com>
+	<1242990168.8385.1.camel@vertical>
+Message-ID: <3c5546140905220815u386ef48akf8c6af074336e1e8@mail.gmail.com>
+
+I use that back-end as well. I am not sure if readVECT6() still uses
+shapefiles as an intermediate file...
+
+Dylan
+
+On Fri, May 22, 2009 at 4:02 AM, Nikos Alexandris
+<nikos.alexandris@felis.uni-freiburg.de> wrote:
+>
+> Dylan:
+>> Could be a DBF-related problem.
+>
+> Dylan,
+>
+> I am using sqlite as DB backend. How does this affect the import via
+> readVECT6?
+>
+> Nikos
+>
+>
+From Roger.Bivand at nhh.no  Fri May 22 11:46:02 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri May 22 11:46:17 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <3c5546140905220815u386ef48akf8c6af074336e1e8@mail.gmail.com>
+References: <1242865500.2730.4.camel@vertical>
+	<1242867611.3656.1.camel@vertical>
+	<3c5546140905201806n66f544b8g14f94f0bdd854a3c@mail.gmail.com>
+	<1242990168.8385.1.camel@vertical>
+	<3c5546140905220815u386ef48akf8c6af074336e1e8@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.0905221739240.16383@reclus.nhh.no>
+
+On Fri, 22 May 2009, Dylan Beaudette wrote:
+
+> I use that back-end as well. I am not sure if readVECT6() still uses
+> shapefiles as an intermediate file...
+
+Yes, it does. If, however, you have a working GRASS/OGR plugin, it may be 
+that readOGR() (inside readVECT6()) will use it and transfer the data 
+directly. To diagnose, one would need to look at readVECT() and readOGR() 
+running step-by-step to see whether the problem is v.out.ogr or readOGR(), 
+or possibly some locale-dependent wrinkle in the DBF.
+
+Nikos - if you'd like to contribute well-proven patches, you are most 
+welcome, until then, I'm not motivated by your complaints to do anything 
+at all. Speed is a secondary issue - primary is just having things work, 
+and handling the myriad variants of GRASS on different platforms is hard 
+enough. OK?
+
+Roger
+
+>
+> Dylan
+>
+> On Fri, May 22, 2009 at 4:02 AM, Nikos Alexandris
+> <nikos.alexandris@felis.uni-freiburg.de> wrote:
+>>
+>> Dylan:
+>>> Could be a DBF-related problem.
+>>
+>> Dylan,
+>>
+>> I am using sqlite as DB backend. How does this affect the import via
+>> readVECT6?
+>>
+>> Nikos
+>>
+>>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From nikos.alexandris at felis.uni-freiburg.de  Fri May 22 12:57:45 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Fri May 22 12:56:28 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <alpine.LRH.2.00.0905221739240.16383@reclus.nhh.no>
+References: <1242865500.2730.4.camel@vertical>
+	<1242867611.3656.1.camel@vertical>
+	<3c5546140905201806n66f544b8g14f94f0bdd854a3c@mail.gmail.com>
+	<1242990168.8385.1.camel@vertical>
+	<3c5546140905220815u386ef48akf8c6af074336e1e8@mail.gmail.com>
+	<alpine.LRH.2.00.0905221739240.16383@reclus.nhh.no>
+Message-ID: <1243011465.20668.6.camel@vertical>
+
+
+Dylan:
+> > I use that back-end as well. I am not sure if readVECT6() still uses
+> > shapefiles as an intermediate file...
+
+Roger:
+> Yes, it does. If, however, you have a working GRASS/OGR plugin, it may be 
+> that readOGR() (inside readVECT6()) will use it and transfer the data 
+> directly. To diagnose, one would need to look at readVECT() and readOGR() 
+> running step-by-step to see whether the problem is v.out.ogr or readOGR(), 
+> or possibly some locale-dependent wrinkle in the DBF.
+
+> Nikos - if you'd like to contribute well-proven patches, you are most 
+> welcome, until then, I'm not motivated by your complaints to do anything 
+> at all. Speed is a secondary issue - primary is just having things work, 
+> and handling the myriad variants of GRASS on different platforms is hard 
+> enough. OK?
+
+I absolutely agree Roger. Of course, I am no programmer and I can only
+"complaint" whenever I find (or I think that I find) something not
+working. Please, if my complaints lie within your interests, I kindly
+ask for "pointers" how I could _at least_ provide better (more
+convincing?) "complaints" ;-)
+
+Thanks for the feedback in any case. Nikos
+
+From hamish_b at yahoo.com  Fri May 22 13:31:16 2009
+From: hamish_b at yahoo.com (Hamish)
+Date: Fri May 22 13:32:59 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+Message-ID: <420776.43124.qm@web110010.mail.gq1.yahoo.com>
+
+
+> Roger:
+> Speed is a secondary issue - primary is just having things work,
+> and handling the myriad variants of GRASS on different platforms
+> is hard enough.
+
+very true, and shapefile+DBF is probably (after the native vector format)
+the second best tested. But at the same time shapefiles/DBF is a somewhat
+lossy format and so no panacea.
+
+
+regards,
+Hamish
+
+
+
+      
+
+From nikos.alexandris at felis.uni-freiburg.de  Fri May 22 17:08:21 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Fri May 22 17:07:02 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <1242867611.3656.1.camel@vertical>
+References: <1242865500.2730.4.camel@vertical>
+	<1242867611.3656.1.camel@vertical>
+Message-ID: <1243026501.998.5.camel@vertical>
+
+
+Nikos:
+> > I am trying to load a BIG table (=466 columns, 875 rows) of a grass
+> > point-vector map in R. It takes too long to respond (as expected of
+> > course)...
+
+OK, I let it run and it worked. BUT, I forgot to use some kind of time
+measuring (I read somewhere that it's pretty easy to do so in R). 
+
+I only know that it took more than 30 mins which, comparing to some
+seconds of reading the .csv file is far away from "working ok". I can
+let it run again if I find that time-measuring function again.
+
+
+Cheers, Nikos
+---
+
+# the command and the response (just for the records)
+# running R from within a GRASS location
+
+# loading "spgrass6"
+library(spgrass6) ; G <- gmeta6()
+
+# read the attribute table
+sample_2 <- readVECT6("sample_2_grid_points")
+
+OGR data source with driver: GRASS 
+Source:
+"/geo/grassdb/peloponnese/evaluation_utm/nik/vector/sample_2_grid_points/head", layer: "1"
+with  875  rows and  466  columns
+Feature type: wkbPoint with 3 dimensions
+
+From nikos.alexandris at felis.uni-freiburg.de  Fri May 22 19:41:40 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Fri May 22 19:40:21 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <1243026501.998.5.camel@vertical>
+References: <1242865500.2730.4.camel@vertical>
+	<1242867611.3656.1.camel@vertical>  <1243026501.998.5.camel@vertical>
+Message-ID: <1243035700.2958.27.camel@vertical>
+
+Just FYI
+
+# almost an hour...
+Sys.time() ; sample_2 <- readVECT6("sample_2_grid_points") ; Sys.time()
+[1] "2009-05-22 23:25:02 CEST"
+OGR data source with driver: GRASS 
+Source:
+"/geo/grassdb/peloponnese/evaluation_utm/nik/vector/sample_2_grid_points/head", layer: "1"
+with  875  rows and  466  columns
+
+Feature type: wkbPoint with 3 dimensions
+[1] "2009-05-23 00:22:12 CEST"
+
+
+# while reading the csv...
+> Sys.time() ; sample_2 <-
+read.csv(file="sample_2_grid_points_table.csv") ; Sys.time()
+[1] "2009-05-23 01:39:51 CEST"
+[1] "2009-05-23 01:39:52 CEST"
+
+
+Kindest regards, Nikos
+
+From Roger.Bivand at nhh.no  Sat May 23 05:41:21 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sat May 23 05:41:24 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <1243035700.2958.27.camel@vertical>
+References: <1242865500.2730.4.camel@vertical>
+	<1242867611.3656.1.camel@vertical>
+	<1243026501.998.5.camel@vertical>
+	<1243035700.2958.27.camel@vertical>
+Message-ID: <alpine.LRH.2.00.0905231128230.19179@reclus.nhh.no>
+
+On Sat, 23 May 2009, Nikos Alexandris wrote:
+
+> Just FYI
+>
+> # almost an hour...
+> Sys.time() ; sample_2 <- readVECT6("sample_2_grid_points") ; Sys.time()
+> [1] "2009-05-22 23:25:02 CEST"
+> OGR data source with driver: GRASS
+> Source:
+> "/geo/grassdb/peloponnese/evaluation_utm/nik/vector/sample_2_grid_points/head", layer: "1"
+> with  875  rows and  466  columns
+>
+> Feature type: wkbPoint with 3 dimensions
+> [1] "2009-05-23 00:22:12 CEST"
+
+Thanks, this is helpful. As you can see, the work is being done by the OGR 
+GRASS driver, not by writing a shapefile with v.out.ogr and reading that 
+shapefile with the shapefile driver in OGR. Since these are just points, 
+the simplest geometry, something is making the driver run slowly.
+
+Does plugin=FALSE speed it up or slow it down (that would force the use of 
+a temporary shapefile)?
+
+Does anyone know of interactions between SQLite storage and the OGR GRASS 
+driver?
+
+By the way, just put the command inside system.time() to time it.
+
+>
+>
+> # while reading the csv...
+>> Sys.time() ; sample_2 <-
+> read.csv(file="sample_2_grid_points_table.csv") ; Sys.time()
+> [1] "2009-05-23 01:39:51 CEST"
+> [1] "2009-05-23 01:39:52 CEST"
+>
+
+This is not a fair comparison, because you have to dump the CSV file from 
+the GRASS database first, although it won't take long. What are you using 
+to do that? Have you considered connecting to the SQLite file directly 
+from R? Are the (2) coordinates present in the table? See:
+
+http://cran.r-project.org/web/packages/RSQLite/index.html
+
+for direct reading.
+
+Roger
+
+>
+> Kindest regards, Nikos
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From nikos.alexandris at felis.uni-freiburg.de  Sat May 23 06:57:39 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Sat May 23 06:56:18 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <alpine.LRH.2.00.0905231128230.19179@reclus.nhh.no>
+References: <1242865500.2730.4.camel@vertical>
+	<1242867611.3656.1.camel@vertical>  <1243026501.998.5.camel@vertical>
+	<1243035700.2958.27.camel@vertical>
+	<alpine.LRH.2.00.0905231128230.19179@reclus.nhh.no>
+Message-ID: <1243076259.4354.31.camel@vertical>
+
+
+Nikos:
+> > # almost an hour...
+> > Sys.time() ; sample_2 <- readVECT6("sample_2_grid_points") ; Sys.time()
+> > [1] "2009-05-22 23:25:02 CEST"
+> > OGR data source with driver: GRASS
+> > Source:
+> > "/geo/grassdb/peloponnese/evaluation_utm/nik/vector/sample_2_grid_points/head", layer: "1"
+> > with  875  rows and  466  columns
+
+> > Feature type: wkbPoint with 3 dimensions
+> > [1] "2009-05-23 00:22:12 CEST"
+
+Roger:
+--%<---
+> Does plugin=FALSE speed it up or slow it down (that would force the use of 
+> a temporary shapefile)?
+
+Yes, it speeds up.
+
+# with "plugin=FALSE"
+system.time(readVECT6("sample_2_grid_points", plugin=FALSE))
+Exporting 875 points/lines...
+ 100%
+875 features written
+OGR data source with driver: ESRI Shapefile 
+Source: "/geo/grassdb/peloponnese/evaluation_utm/nik/.tmp/vertical",
+layer: "sample_2"
+with  875  rows and  466  columns
+Feature type: wkbPoint with 2 dimensions
+   user  system elapsed 
+169.450  24.677 204.882
+
+
+## there is one difference: wkbPoint with "3" vs "2" dimensions ##
+## what does this mean (wkbPoint)? OK, I look for it in the book ##
+
+
+> > # while reading the csv...
+> > Sys.time() ; sample_2 <-
+> > read.csv(file="sample_2_grid_points_table.csv") ; Sys.time()
+> > [1] "2009-05-23 01:39:51 CEST"
+> > [1] "2009-05-23 01:39:52 CEST"
+
+--%<---
+> This is not a fair comparison, because you have to dump the CSV file from 
+> the GRASS database first, although it won't take long. What are you using 
+> to do that?
+
+# right, it takes some time (<1min)
+# running from within GRASS location
+time db.out.ogr in=sample_2_grid_points
+dsn=/geo/grassdb/peloponnese/R/R_files/sample_2_grid_points_table
+format=CSV
+Exported table
+</geo/grassdb/peloponnese/R/R_files/sample_2_grid_points_table.csv>
+
+real	0m46.845s
+user	0m22.065s
+sys	0m23.637s
+
+> Have you considered connecting to the SQLite file directly 
+> from R? Are the (2) coordinates present in the table? See:
+> 
+> http://cran.r-project.org/web/packages/RSQLite/index.html
+> 
+> for direct reading.
+
+I was not aware of RSQLite. If it's straight-forward I'll try it today.
+If you mean the x, y coordinates just as normal columns, no, I don't
+require them currently.
+
+
+Overview of loading grass attrubute table (875 rows, 466 colummns) via:
+
+* readVECT6() with plugin=TRUE                         : ~57min
+* readVECT6() with plugin=FALSE                        : ~3min+
+* export from grass as CSV (~46sec) + read.csv (1 sec) : ~47sec
+
+Nikos
+
+From Roger.Bivand at nhh.no  Sat May 23 10:23:21 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sat May 23 10:23:23 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <1243076259.4354.31.camel@vertical>
+References: <1242865500.2730.4.camel@vertical>
+	<1242867611.3656.1.camel@vertical>
+	<1243026501.998.5.camel@vertical>
+	<1243035700.2958.27.camel@vertical>
+	<alpine.LRH.2.00.0905231128230.19179@reclus.nhh.no>
+	<1243076259.4354.31.camel@vertical>
+Message-ID: <alpine.LRH.2.00.0905231613560.19629@reclus.nhh.no>
+
+On Sat, 23 May 2009, Nikos Alexandris wrote:
+
+>
+> Nikos:
+>>> # almost an hour...
+>>> Sys.time() ; sample_2 <- readVECT6("sample_2_grid_points") ; Sys.time()
+>>> [1] "2009-05-22 23:25:02 CEST"
+>>> OGR data source with driver: GRASS
+>>> Source:
+>>> "/geo/grassdb/peloponnese/evaluation_utm/nik/vector/sample_2_grid_points/head", layer: "1"
+>>> with  875  rows and  466  columns
+>
+>>> Feature type: wkbPoint with 3 dimensions
+>>> [1] "2009-05-23 00:22:12 CEST"
+>
+> Roger:
+> --%<---
+>> Does plugin=FALSE speed it up or slow it down (that would force the use of
+>> a temporary shapefile)?
+>
+> Yes, it speeds up.
+>
+> # with "plugin=FALSE"
+> system.time(readVECT6("sample_2_grid_points", plugin=FALSE))
+> Exporting 875 points/lines...
+> 100%
+> 875 features written
+> OGR data source with driver: ESRI Shapefile
+> Source: "/geo/grassdb/peloponnese/evaluation_utm/nik/.tmp/vertical",
+> layer: "sample_2"
+> with  875  rows and  466  columns
+> Feature type: wkbPoint with 2 dimensions
+>   user  system elapsed
+> 169.450  24.677 204.882
+>
+>
+> ## there is one difference: wkbPoint with "3" vs "2" dimensions ##
+> ## what does this mean (wkbPoint)? OK, I look for it in the book ##
+>
+
+Three minutes instead of thirty+ suggests that the OGR plugin has trouble 
+with SQLite as the DB format. So maybe the default for plugin= should be 
+FALSE, not NULL and automatic use if present?
+
+The plugin also creates a fictitious third dimension in (point at least) 
+data that has created havoc, and has led to readVECT6() getting a 
+pointDropZ= argument - that's why it says that wkbPoint is 3 with the 
+plugin and (correctly) 2 otherwise.
+
+>
+>>> # while reading the csv...
+>>> Sys.time() ; sample_2 <-
+>>> read.csv(file="sample_2_grid_points_table.csv") ; Sys.time()
+>>> [1] "2009-05-23 01:39:51 CEST"
+>>> [1] "2009-05-23 01:39:52 CEST"
+>
+> --%<---
+>> This is not a fair comparison, because you have to dump the CSV file from
+>> the GRASS database first, although it won't take long. What are you using
+>> to do that?
+>
+> # right, it takes some time (<1min)
+> # running from within GRASS location
+> time db.out.ogr in=sample_2_grid_points
+> dsn=/geo/grassdb/peloponnese/R/R_files/sample_2_grid_points_table
+> format=CSV
+> Exported table
+> </geo/grassdb/peloponnese/R/R_files/sample_2_grid_points_table.csv>
+>
+> real	0m46.845s
+> user	0m22.065s
+> sys	0m23.637s
+
+OK, thanks, this mirrors part of the v.out.ogr timing in the three 
+minutes.
+
+Roger
+
+
+>
+>> Have you considered connecting to the SQLite file directly
+>> from R? Are the (2) coordinates present in the table? See:
+>>
+>> http://cran.r-project.org/web/packages/RSQLite/index.html
+>>
+>> for direct reading.
+>
+> I was not aware of RSQLite. If it's straight-forward I'll try it today.
+> If you mean the x, y coordinates just as normal columns, no, I don't
+> require them currently.
+>
+>
+> Overview of loading grass attrubute table (875 rows, 466 colummns) via:
+>
+> * readVECT6() with plugin=TRUE                         : ~57min
+> * readVECT6() with plugin=FALSE                        : ~3min+
+> * export from grass as CSV (~46sec) + read.csv (1 sec) : ~47sec
+>
+> Nikos
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From hamish_b at yahoo.com  Sun May 24 01:36:16 2009
+From: hamish_b at yahoo.com (Hamish)
+Date: Sun May 24 01:38:28 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+Message-ID: <467849.11840.qm@web110003.mail.gq1.yahoo.com>
+
+
+Roger wrote:
+> Three minutes instead of thirty+ suggests that the OGR
+> plugin has trouble with SQLite as the DB format. So maybe
+> the default for plugin= should be FALSE, not NULL and automatic
+> use if present?
+
+better: if cause for slowdown is isolated (or at least
+reproducable) please file a bug report to get the plugin fixed.
+That way e.g. qgis and others who use the plugin also get the
+speedup.
+
+> The plugin also creates a fictitious third dimension in
+> (point at least) data that has created havoc, and has led
+> to readVECT6() getting a pointDropZ= argument - that's why it
+> says that wkbPoint is 3 with the plugin and (correctly) 2
+> otherwise.
+
+ditto.
+
+
+Hamish
+
+
+
+      
+
+From Roger.Bivand at nhh.no  Sun May 24 04:40:02 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun May 24 04:40:15 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <467849.11840.qm@web110003.mail.gq1.yahoo.com>
+References: <467849.11840.qm@web110003.mail.gq1.yahoo.com>
+Message-ID: <alpine.LRH.2.00.0905241008270.26600@reclus.nhh.no>
+
+On Sat, 23 May 2009, Hamish wrote:
+
+>
+> Roger wrote:
+>> Three minutes instead of thirty+ suggests that the OGR
+>> plugin has trouble with SQLite as the DB format. So maybe
+>> the default for plugin= should be FALSE, not NULL and automatic
+>> use if present?
+>
+> better: if cause for slowdown is isolated (or at least
+> reproducable) please file a bug report to get the plugin fixed.
+> That way e.g. qgis and others who use the plugin also get the
+> speedup.
+
+I'm not running SQLite, nor do I have a "wide" table. Could you, Nikos, 
+make a script generating a similar table in spearfish, and two small 
+scripts exercising the problem (export to R with the plugin, and with the 
+temporary shapefile.
+
+>
+>> The plugin also creates a fictitious third dimension in
+>> (point at least) data that has created havoc, and has led
+>> to readVECT6() getting a pointDropZ= argument - that's why it
+>> says that wkbPoint is 3 with the plugin and (correctly) 2
+>> otherwise.
+>
+> ditto.
+
+OK, looks like calls to Vect_is_3d(poMap) missing in 
+*OGRGRASSLayer::GetFeatureGeometry about lines after 851 in 
+ogf_frmts/grass/ogrgrasslayer.cpp; the problem exists for all geometry 
+types, just emitting a z value even if the vect is 2D. I can't see that 
+Vect_read_line returns z as NULL if not 3D - Vect_is_3d() is not used much 
+in lib/vector/*. I cannot get into the osgeo trac - could you, Hamish, 
+help and enter a bug in the GDAL/GRASS or whichever trac stream is 
+relevant?
+
+Roger
+
+>
+>
+> Hamish
+>
+>
+>
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From nikos.alexandris at felis.uni-freiburg.de  Sun May 24 07:33:36 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Sun May 24 07:32:11 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <alpine.LRH.2.00.0905241008270.26600@reclus.nhh.no>
+References: <467849.11840.qm@web110003.mail.gq1.yahoo.com>
+	<alpine.LRH.2.00.0905241008270.26600@reclus.nhh.no>
+Message-ID: <1243164816.4389.1.camel@vertical>
+
+
+--%<--
+Roger wrote:
+> I'm not running SQLite, nor do I have a "wide" table. Could you, Nikos, 
+> make a script generating a similar table in spearfish, and two small 
+> scripts exercising the problem (export to R with the plugin, and with the 
+> temporary shapefile.
+
+I'll try my best.
+
+Kind regards, Nikos
+
+
+From hamish_b at yahoo.com  Mon May 25 02:08:21 2009
+From: hamish_b at yahoo.com (Hamish)
+Date: Mon May 25 02:08:25 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+Message-ID: <137099.16646.qm@web110012.mail.gq1.yahoo.com>
+
+
+Roger wrote:
+> >> The plugin also creates a fictitious third dimension in
+> >> (point at least) data that has created havoc, and has led
+> >> to readVECT6() getting a pointDropZ= argument - that's why it
+> >> says that wkbPoint is 3 with the plugin and (correctly) 2
+> >> otherwise.
+...
+> OK, looks like calls to Vect_is_3d(poMap) missing in 
+> *OGRGRASSLayer::GetFeatureGeometry about lines after 851 in
+> ogf_frmts/grass/ogrgrasslayer.cpp; the problem exists for
+> all geometry types, just emitting a z value even if the vect is
+> 2D. I can't see that Vect_read_line returns z as NULL if not 3D -
+> Vect_is_3d() is not used much in lib/vector/*.
+
+filed as gdalbug #3009:  https://trac.osgeo.org/gdal/ticket/3009
+Roger I added you in cc there but suggest to change it to your osgeoid
+before the spam scanners find your email addr.
+
+
+> I cannot get into the osgeo trac -
+
+yeah, it has been having troubles lately, just give it 5 minutes and
+try again.  see http://thread.gmane.org/gmane.comp.gis.grass.devel/33404
+
+
+Hamish
+
+
+
+      
+
+From neteler at osgeo.org  Mon May 25 03:15:56 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Mon May 25 03:21:46 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <137099.16646.qm@web110012.mail.gq1.yahoo.com>
+References: <137099.16646.qm@web110012.mail.gq1.yahoo.com>
+Message-ID: <86782b610905250015v69dd8030i3936b886f56e5d27@mail.gmail.com>
+
+On Mon, May 25, 2009 at 8:08 AM, Hamish <hamish_b@yahoo.com> wrote:
+> Roger wrote:
+...
+> filed as gdalbug #3009: ?https://trac.osgeo.org/gdal/ticket/3009
+> Roger I added you in cc there but suggest to change it to your osgeoid
+> before the spam scanners find your email addr.
+
+This can be used to look up osgeo-IDs:
+ http://www.osgeo.org/cgi-bin/ldap_web_search.py
+
+ I have changed it already for Roger. Also added grass-dev in CC.
+
+Markus
+From neteler at osgeo.org  Mon May 25 17:06:29 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Mon May 25 17:06:32 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <137099.16646.qm@web110012.mail.gq1.yahoo.com>
+References: <137099.16646.qm@web110012.mail.gq1.yahoo.com>
+Message-ID: <86782b610905251406m2f44ab16p8b8279362a2b1145@mail.gmail.com>
+
+On Mon, May 25, 2009 at 8:08 AM, Hamish <hamish_b@yahoo.com> wrote:
+>
+> Roger wrote:
+>> >> The plugin also creates a fictitious third dimension in
+>> >> (point at least) data that has created havoc, and has led
+>> >> to readVECT6() getting a pointDropZ= argument - that's why it
+>> >> says that wkbPoint is 3 with the plugin and (correctly) 2
+>> >> otherwise.
+> ...
+>> OK, looks like calls to Vect_is_3d(poMap) missing in
+>> *OGRGRASSLayer::GetFeatureGeometry about lines after 851 in
+>> ogf_frmts/grass/ogrgrasslayer.cpp; the problem exists for
+>> all geometry types, just emitting a z value even if the vect is
+>> 2D. I can't see that Vect_read_line returns z as NULL if not 3D -
+>> Vect_is_3d() is not used much in lib/vector/*.
+>
+> filed as gdalbug #3009: ?https://trac.osgeo.org/gdal/ticket/3009
+
+According to GDAL-trac now fixed:
+
+On Mon, May 25, 2009 at 10:50 PM, GDAL <trac@osgeo.org> wrote:
+> #3009: GRASS OGR driver: 2D maps read as 3D
+> --------------------+-------------------------------------------------------
+>  Reporter:  hamish  |        Owner:  rouault
+>     Type:  defect  |       Status:  closed
+>  Priority:  normal  |    Milestone:  1.7.0
+> Component:  OGR_SF  |      Version:  unspecified
+>  Severity:  normal  |   Resolution:  fixed
+>  Keywords:  grass   |
+> --------------------+-------------------------------------------------------
+> Changes (by rouault):
+>
+>  * status:  assigned => closed
+>  * resolution:  => fixed
+>  * milestone:  => 1.7.0
+>
+> Comment:
+>
+>  For the 2D geometries reported as 3D, I've commited a fix in trunk in
+>  r17122.
+>
+> --
+> Ticket URL: <http://trac.osgeo.org/gdal/ticket/3009#comment:4>
+> GDAL <http://trac.osgeo.org/gdal/>
+> Geospatial Data Abstraction Library is a translator library for raster and vector geospatial data formats.
+
+
+Kudos to Even Rouault (and the bug hunters here of course),
+Markus
+From Roger.Bivand at nhh.no  Tue May 26 02:42:34 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue May 26 02:43:01 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <200905252356.45215.even.rouault@mines-paris.org>
+References: <200905252356.45215.even.rouault@mines-paris.org>
+Message-ID: <alpine.LRH.2.00.0905260827170.3751@reclus.nhh.no>
+
+On Mon, 25 May 2009, Even Rouault wrote:
+
+> (Sorry, I'm not subscribed to the GRASS-stats list, so I've emailed directly
+> to the people having taken part to the discussion)
+
+Hi Even,
+
+Thanks for tackling the 2D/3D issue in the GRASS read driver - the fixes 
+look appropriate.
+
+The SQLite issue is, I believe, on the GRASS side - GRASS can use a number 
+of databases for storing attribute data, but geometries are stored 
+natively. This means that GRASS is using its own SQLite handling, I think 
+shown in OGRGRASSLayer::SetAttributes() in the file you've seen in the 
+2D/3D fix for determining their types, and in OGRGRASSLayer::GetFeature() 
+for copying them from GRASS structures to OGR structures. I think that the 
+OGR driver is limited by GRASS's own driver, but since I don't use SQLite, 
+I cannot reproduce the problem.
+
+I'll add grass-stats to the CC for completeness.
+
+Roger
+
+>
+> About the OGR sqlite performance, I've not read all the posts of the thread,
+> but I couldn't reproduce any performance related problem.
+>
+> Here's a simple OGR python script that creates a 1000 row x 1000 column sqlite
+> db :
+>
+> #!/usr/bin/python
+> import ogr
+>
+> ds = ogr.GetDriverByName('SQLite').CreateDataSource('testhuge.db')
+> lyr = ds.CreateLayer('test')
+> for i in range(1000):
+>    ds.ExecuteSQL("ALTER TABLE test ADD COLUMN att%d VARCHAR" % i)
+> ds = None
+>
+> ds = ogr.Open('testhuge.db', update = 1)
+> lyr = ds.GetLayerByName('test')
+> for i in range(1000):
+>    feat = ogr.Feature(lyr.GetLayerDefn())
+>    for j in range(1000):
+>        feat.SetField(j, 'val%d' % j)
+>    lyr.CreateFeature(feat)
+>
+> ds = None
+>
+> (takes a few seconds to run)
+>
+>
+> Then "time ogrinfo -ro -al -q testhuge.db  > /dev/null"
+>
+> --> real	0m3.903s
+>
+> So 4 seconds, not 30 minutes... Maybe it's due to the fact how GRASS uses the
+> OGR output ?
+>
+> Actually, by reviewing the code, there might *maybe* a performance problem if
+> the FID or geometry columns of the table were at the end of the column list
+> (see lines 308-313 and 339-344 in ogr/ogrsf_frmts/sqlite/ogrsqlitelayer.cpp,
+> latest GDAL SVN head trunk), that could cause loop over each column name
+> before finding them. But I couldn't really evaluate the impact it could have.
+> (by default OGR creates these fields as the first ones)
+>
+> Even
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue May 26 06:48:33 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue May 26 06:47:02 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <alpine.LRH.2.00.0905241008270.26600@reclus.nhh.no>
+References: <467849.11840.qm@web110003.mail.gq1.yahoo.com>
+	<alpine.LRH.2.00.0905241008270.26600@reclus.nhh.no>
+Message-ID: <1243334913.6765.89.camel@vertical>
+
+(Cc to Even Roualt ; Apologies to Even since he is not subscribed in the
+list)
+
+Roger:
+> >> Three minutes instead of thirty+ suggests that the OGR
+> >> plugin has trouble with SQLite as the DB format. So maybe
+> >> the default for plugin= should be FALSE, not NULL and automatic
+> >> use if present?
+
+--%<--
+> Could you, Nikos, 
+> make a script generating a similar table in spearfish, and two small 
+> scripts exercising the problem (export to R with the plugin, and with
+> the temporary shapefile.
+
+* The "problem" exists also with the default DBF as a back-end. I
+created 1000 random points, filled less than half of the records with
+random numbers and readVECT6("x", plugin=TRUE) takes again too much. I
+broke the process since it was running for more than 20 mins.
+
+* A script is pasted on the bottom which has a small "bug" (details
+below) :-)
+
+
+First some results for 1000 rows by 500 columns:
+
+> system.time(random_points <- readVECT6("random_points_1000",
+plugin=TRUE))
+OGR data source with driver: GRASS 
+Source: "/geo/grassdb/spearfish60/user1/vector/random_points_1000/head",
+layer: "1"
+with  1000  rows and  501  columns
+^C
+### This was running for more than 10 hours !!! ###
+
+
+> system.time(random_points <- readVECT6("random_points_1000",
+plugin=FALSE))
+Exporting 1000 points/lines...
+ 100%
+1000 features written
+OGR data source with driver: ESRI Shapefile 
+Source: "/geo/grassdb/spearfish60/user1/.tmp/vertical", layer:
+"random_p"
+with  1000  rows and  501  columns
+Feature type: wkbPoint with 2 dimensions
+   user  system elapsed 
+ 62.515   9.256  74.013 
+
+
+> system.time(random_points <- read.csv("random_points_1000_table.csv"))
+   user  system elapsed 
+  0.192   0.000   0.192
+
+
+
+* A script to generate "some" random points, add columns and some R-code
+to load with readVECT6( plugin = TRUE ), readVECT6( plugin = FALSE ) and
+read.csv.
+
+* The "bug" is that while the variable NUMBER="$[ ( $RANDOM % 100 ) +
+1 ]" runs ok under the CLI, it doesn't work from within the bash
+script!? So I've commented the respective line and use a fixed number
+instead.
+
+--%<---%<---%<---%<---%<---%<---%<---%<---%<---%<---%<---%<-
+#!/bin/bash
+
+# example that  readVECT6 ( x , plugin = TRUE )  is too slow
+# (also) using the default DBF driver
+# first enter in spearfish60/user1
+
+# try with a different back-end?
+# db.connect driver=sqlite database=
+
+# set numbers here:
+RANDOM_POINTS=100 ; RANDOM_POINTS_CATS=100 ; NUMBER=111
+
+# create RANDOM_POINTS random points
+v.random --o output=random_points_`echo ${RANDOM_POINTS}` n=`echo
+${RANDOM_POINTS}`
+
+# add in database
+v.db.addtable random_points_`echo ${RANDOM_POINTS}`
+
+
+# add   $"{RANDOM_POINTS}"   columns
+echo "\n* Adding ${RANDOM_POINTS} columns"
+for x in `seq 1 ${RANDOM_POINTS}` ; do
+ v.db.addcol random_points_`echo ${RANDOM_POINTS}` column="col_"${x}"
+integer"
+done ; echo "\n* ${RANDOM_POINTS} columns added"
+
+
+# check if columns are added
+v.info -c random_points_${RANDOM_POINTS}
+
+
+
+## WARNING: double loop below takes too long!
+# --%<--
+# It is simpler and faster to use a single loop with a fixed value
+instead, e.g.:
+  #for COL in `seq 1 5 ${RANDOM_POINTS}` ; do
+  # v.db.update random_points_${RANDOM_POINTS} column="col_"${COL}""
+value=222
+  #done
+# --%<--
+
+
+# fill some columns/cats with random numbers between 1 and 100
+# alter sequence as desired ; more numbers = more time to load in R
+for COL in `seq 1 10 ${RANDOM_POINTS}` ; do
+ for CAT in `seq 1 10 ${RANDOM_POINTS_CATS}` ; do
+  # this is ok in the command line but NOT when running the script?
+  #NUMBER="$[ ( $RANDOM % 100 ) + 1 ]"
+  v.db.update random_points_${RANDOM_POINTS} column="col_"${COL}""
+value=${NUMBER} where="cat="${CAT}""
+ done
+done
+
+
+# [optional] fill in some "-999" values to use as NAs in R?
+#NAN=-999
+#for COL in `seq 1 5 $"{RANDOM_POINTS}"` ; do
+# for CAT in `seq 1 5 $"{RANDOM_POINTS_CATS}"` ; do
+#  v.db.update random_points_$"{RANDOM_POINTS}" column="col_"${COL}""
+value=$"{NAN}" where="cat="${CAT}""
+# done
+#done
+
+# check with v.db.select
+# v.db.select random_points_${RANDOM_POINTS} | head -25
+
+# export table as .csv file
+db.out.ogr in=random_points_${RANDOM_POINTS} format=CSV
+dsn=/geo/grassdb/spearfish60/random_points_csv_files
+db_table=random_points_${RANDOM_POINTS}.csv
+
+### end of bash script ###
+
+
+## launch R
+R
+### R code
+
+# load in R with:
+library(spgrass6) ; G <- gmeta6()
+
+ #a. readVECT6()
+ system.time ( random_points <- readVECT6 ( "random_points_100" , plugin
+= FALSE ) )
+
+ #b. plugin=TRUE
+ system.time ( random_points <- readVECT6 ( "random_points_100" , plugin
+= TRUE ) )
+
+ #c. as a csv table
+ # adjust as required 
+ setwd("/geo/grassdb/spearfish60/random_points_csv_files")
+ table_to_read <- dir ( pattern = "^random.*.csv$" )
+ system.time ( random_points <- read.csv ( table_to_read ) )
+ str(random_points)
+--%<---%<---%<---%<---%<---%<---%<---%<---%<---%<---%<---%<-
+
+From nikos.alexandris at felis.uni-freiburg.de  Tue May 26 06:54:48 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Tue May 26 06:53:15 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <1243334913.6765.89.camel@vertical>
+References: <467849.11840.qm@web110003.mail.gq1.yahoo.com>
+	<alpine.LRH.2.00.0905241008270.26600@reclus.nhh.no>
+	<1243334913.6765.89.camel@vertical>
+Message-ID: <1243335288.6765.95.camel@vertical>
+
+On Tue, 2009-05-26 at 12:48 +0200, Nikos Alexandris wrote:
+> First some results for 1000 rows by 500 columns:
+> 
+> > system.time(random_points <- readVECT6("random_points_1000",
+> plugin=TRUE))
+> OGR data source with driver: GRASS 
+> Source:
+> "/geo/grassdb/spearfish60/user1/vector/random_points_1000/head",
+> layer: "1"
+> with  1000  rows and  501  columns
+> ^C
+
+Correction:
+> ### This was running for more than 10 hours !!! ###
+This was NOT running for more than 10 hours!! It was the double loop
+that was running for more than 10 hours to generate 1000 by 500 random
+numbers.
+
+Anyway, the above readVECT6() was running for at least 20 minutes while
+the readVECT6(plugin=FALSE) and read.csv do the job within acceptable
+times.
+
+Apologies again,
+Nikos
+
+P.S. Script attached as a .sh file with lots of empty lines between code
+to make it easy to read.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: random_vector_points_for_spgrass6.sh
+Type: application/x-shellscript
+Size: 2720 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20090526/cf6dc6b9/random_vector_points_for_spgrass6.bin
+From stef_ob at gmx.at  Tue May 26 10:10:25 2009
+From: stef_ob at gmx.at (Stefanie Obmann)
+Date: Tue May 26 10:10:56 2009
+Subject: [GRASS-stats] WG: getting R, gstat and spgrass6
+Message-ID: <20090526141055.B5E52E0149F@lists.osgeo.org>
+
+ 
+
+Dear grass stats members,
+
+ 
+
+I usually work with GRASS in QGIS. Now I have to use R for statistical
+analysis. Do I have to download and install R and work with its interface?
+Do I need QGIS anymore? 
+
+Where could I find a stepwise guide to come from QGIS and GRASS to R and
+gstat? 
+
+ 
+
+Thanks for help!!!
+
+ 
+
+Regards,
+
+stef
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20090526/31c8af84/attachment.html
+From debeaudette at ucdavis.edu  Tue May 26 12:09:15 2009
+From: debeaudette at ucdavis.edu (Dylan Beaudette)
+Date: Tue May 26 12:04:07 2009
+Subject: [GRASS-stats] WG: getting R, gstat and spgrass6
+In-Reply-To: <20090526141055.B5E52E0149F@lists.osgeo.org>
+References: <20090526141055.B5E52E0149F@lists.osgeo.org>
+Message-ID: <200905260909.15762.dylan.beaudette@gmail.com>
+
+On Tuesday 26 May 2009, Stefanie Obmann wrote:
+> Dear grass stats members,
+>
+>
+>
+> I usually work with GRASS in QGIS. Now I have to use R for statistical
+> analysis. Do I have to download and install R and work with its interface?
+> Do I need QGIS anymore?
+>
+> Where could I find a stepwise guide to come from QGIS and GRASS to R and
+> gstat?
+>
+>
+>
+> Thanks for help!!!
+>
+>
+
+Hi,
+
+Are you on Windows, Mac, or Linux?
+
+Dylan
+
+
+
+-- 
+Dylan Beaudette
+Soil Resource Laboratory
+http://casoilresource.lawr.ucdavis.edu/
+University of California at Davis
+530.754.7341
+From Roger.Bivand at nhh.no  Wed May 27 04:14:23 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed May 27 04:14:27 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <1243334913.6765.89.camel@vertical>
+References: <467849.11840.qm@web110003.mail.gq1.yahoo.com>
+	<alpine.LRH.2.00.0905241008270.26600@reclus.nhh.no>
+	<1243334913.6765.89.camel@vertical>
+Message-ID: <alpine.LRH.2.00.0905271004100.9453@reclus.nhh.no>
+
+On Tue, 26 May 2009, Nikos Alexandris wrote:
+
+> (Cc to Even Roualt ; Apologies to Even since he is not subscribed in the
+> list)
+>
+> Roger:
+>>>> Three minutes instead of thirty+ suggests that the OGR
+>>>> plugin has trouble with SQLite as the DB format. So maybe
+>>>> the default for plugin= should be FALSE, not NULL and automatic
+>>>> use if present?
+>
+> --%<--
+>> Could you, Nikos,
+>> make a script generating a similar table in spearfish, and two small
+>> scripts exercising the problem (export to R with the plugin, and with
+>> the temporary shapefile.
+>
+> * The "problem" exists also with the default DBF as a back-end. I
+> created 1000 random points, filled less than half of the records with
+> random numbers and readVECT6("x", plugin=TRUE) takes again too much. I
+> broke the process since it was running for more than 20 mins.
+
+OK. With 250 rows and 250 columns, I see an order of magnitude saving with 
+plugin=FALSE. In plugin=FALSE, the times are split equally between writing 
+the temporary file from GRASS with v.out.ogr, and reading it into R with 
+readOGR(), as one might expect (that is all readVECT6(..., plugin=FALSE) 
+is doing). Even on a small vector (bugsites, 90 points, 2 attribute 
+columns), plugin=FALSE is faster than plugin=TRUE by about 0.75 : 1.35, 
+not quite twice. Which way does the problem scale, in numbers of features, 
+numbers of attribute columns, or both?
+
+Next script in R generating increasing NR and NC cases through 
+writeVECT6() to test plugin=FALSE/plugin=TRUE ratios?
+
+Roger
+
+>
+> * A script is pasted on the bottom which has a small "bug" (details
+> below) :-)
+>
+>
+> First some results for 1000 rows by 500 columns:
+>
+>> system.time(random_points <- readVECT6("random_points_1000",
+> plugin=TRUE))
+> OGR data source with driver: GRASS
+> Source: "/geo/grassdb/spearfish60/user1/vector/random_points_1000/head",
+> layer: "1"
+> with  1000  rows and  501  columns
+> ^C
+> ### This was running for more than 10 hours !!! ###
+>
+>
+>> system.time(random_points <- readVECT6("random_points_1000",
+> plugin=FALSE))
+> Exporting 1000 points/lines...
+> 100%
+> 1000 features written
+> OGR data source with driver: ESRI Shapefile
+> Source: "/geo/grassdb/spearfish60/user1/.tmp/vertical", layer:
+> "random_p"
+> with  1000  rows and  501  columns
+> Feature type: wkbPoint with 2 dimensions
+>   user  system elapsed
+> 62.515   9.256  74.013
+>
+>
+>> system.time(random_points <- read.csv("random_points_1000_table.csv"))
+>   user  system elapsed
+>  0.192   0.000   0.192
+>
+>
+>
+> * A script to generate "some" random points, add columns and some R-code
+> to load with readVECT6( plugin = TRUE ), readVECT6( plugin = FALSE ) and
+> read.csv.
+>
+> * The "bug" is that while the variable NUMBER="$[ ( $RANDOM % 100 ) +
+> 1 ]" runs ok under the CLI, it doesn't work from within the bash
+> script!? So I've commented the respective line and use a fixed number
+> instead.
+>
+> --%<---%<---%<---%<---%<---%<---%<---%<---%<---%<---%<---%<-
+> #!/bin/bash
+>
+> # example that  readVECT6 ( x , plugin = TRUE )  is too slow
+> # (also) using the default DBF driver
+> # first enter in spearfish60/user1
+>
+> # try with a different back-end?
+> # db.connect driver=sqlite database=
+>
+> # set numbers here:
+> RANDOM_POINTS=100 ; RANDOM_POINTS_CATS=100 ; NUMBER=111
+>
+> # create RANDOM_POINTS random points
+> v.random --o output=random_points_`echo ${RANDOM_POINTS}` n=`echo
+> ${RANDOM_POINTS}`
+>
+> # add in database
+> v.db.addtable random_points_`echo ${RANDOM_POINTS}`
+>
+>
+> # add   $"{RANDOM_POINTS}"   columns
+> echo "\n* Adding ${RANDOM_POINTS} columns"
+> for x in `seq 1 ${RANDOM_POINTS}` ; do
+> v.db.addcol random_points_`echo ${RANDOM_POINTS}` column="col_"${x}"
+> integer"
+> done ; echo "\n* ${RANDOM_POINTS} columns added"
+>
+>
+> # check if columns are added
+> v.info -c random_points_${RANDOM_POINTS}
+>
+>
+>
+> ## WARNING: double loop below takes too long!
+> # --%<--
+> # It is simpler and faster to use a single loop with a fixed value
+> instead, e.g.:
+>  #for COL in `seq 1 5 ${RANDOM_POINTS}` ; do
+>  # v.db.update random_points_${RANDOM_POINTS} column="col_"${COL}""
+> value=222
+>  #done
+> # --%<--
+>
+>
+> # fill some columns/cats with random numbers between 1 and 100
+> # alter sequence as desired ; more numbers = more time to load in R
+> for COL in `seq 1 10 ${RANDOM_POINTS}` ; do
+> for CAT in `seq 1 10 ${RANDOM_POINTS_CATS}` ; do
+>  # this is ok in the command line but NOT when running the script?
+>  #NUMBER="$[ ( $RANDOM % 100 ) + 1 ]"
+>  v.db.update random_points_${RANDOM_POINTS} column="col_"${COL}""
+> value=${NUMBER} where="cat="${CAT}""
+> done
+> done
+>
+>
+> # [optional] fill in some "-999" values to use as NAs in R?
+> #NAN=-999
+> #for COL in `seq 1 5 $"{RANDOM_POINTS}"` ; do
+> # for CAT in `seq 1 5 $"{RANDOM_POINTS_CATS}"` ; do
+> #  v.db.update random_points_$"{RANDOM_POINTS}" column="col_"${COL}""
+> value=$"{NAN}" where="cat="${CAT}""
+> # done
+> #done
+>
+> # check with v.db.select
+> # v.db.select random_points_${RANDOM_POINTS} | head -25
+>
+> # export table as .csv file
+> db.out.ogr in=random_points_${RANDOM_POINTS} format=CSV
+> dsn=/geo/grassdb/spearfish60/random_points_csv_files
+> db_table=random_points_${RANDOM_POINTS}.csv
+>
+> ### end of bash script ###
+>
+>
+> ## launch R
+> R
+> ### R code
+>
+> # load in R with:
+> library(spgrass6) ; G <- gmeta6()
+>
+> #a. readVECT6()
+> system.time ( random_points <- readVECT6 ( "random_points_100" , plugin
+> = FALSE ) )
+>
+> #b. plugin=TRUE
+> system.time ( random_points <- readVECT6 ( "random_points_100" , plugin
+> = TRUE ) )
+>
+> #c. as a csv table
+> # adjust as required
+> setwd("/geo/grassdb/spearfish60/random_points_csv_files")
+> table_to_read <- dir ( pattern = "^random.*.csv$" )
+> system.time ( random_points <- read.csv ( table_to_read ) )
+> str(random_points)
+> --%<---%<---%<---%<---%<---%<---%<---%<---%<---%<---%<---%<-
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From Roger.Bivand at nhh.no  Wed May 27 04:51:34 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed May 27 04:51:37 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <alpine.LRH.2.00.0905271004100.9453@reclus.nhh.no>
+References: <467849.11840.qm@web110003.mail.gq1.yahoo.com>
+	<alpine.LRH.2.00.0905241008270.26600@reclus.nhh.no>
+	<1243334913.6765.89.camel@vertical>
+	<alpine.LRH.2.00.0905271004100.9453@reclus.nhh.no>
+Message-ID: <alpine.LRH.2.00.0905271048101.9453@reclus.nhh.no>
+
+On Wed, 27 May 2009, Roger Bivand wrote:
+
+> On Tue, 26 May 2009, Nikos Alexandris wrote:
+>
+>> (Cc to Even Roualt ; Apologies to Even since he is not subscribed in the
+>> list)
+>> 
+>> Roger:
+>>>>> Three minutes instead of thirty+ suggests that the OGR
+>>>>> plugin has trouble with SQLite as the DB format. So maybe
+>>>>> the default for plugin= should be FALSE, not NULL and automatic
+>>>>> use if present?
+>> 
+>> --%<--
+>>> Could you, Nikos,
+>>> make a script generating a similar table in spearfish, and two small
+>>> scripts exercising the problem (export to R with the plugin, and with
+>>> the temporary shapefile.
+>> 
+>> * The "problem" exists also with the default DBF as a back-end. I
+>> created 1000 random points, filled less than half of the records with
+>> random numbers and readVECT6("x", plugin=TRUE) takes again too much. I
+>> broke the process since it was running for more than 20 mins.
+>
+> OK. With 250 rows and 250 columns, I see an order of magnitude saving with 
+> plugin=FALSE. In plugin=FALSE, the times are split equally between writing 
+> the temporary file from GRASS with v.out.ogr, and reading it into R with 
+> readOGR(), as one might expect (that is all readVECT6(..., plugin=FALSE) is 
+> doing). Even on a small vector (bugsites, 90 points, 2 attribute columns), 
+> plugin=FALSE is faster than plugin=TRUE by about 0.75 : 1.35, not quite 
+> twice. Which way does the problem scale, in numbers of features, numbers of 
+> attribute columns, or both?
+>
+> Next script in R generating increasing NR and NC cases through writeVECT6() 
+> to test plugin=FALSE/plugin=TRUE ratios?
+
+And we also need to check whether the same applies to use of the plugin in 
+other settings - I'm pretty certain this isn't just differential behaviour 
+in readOGR() between the OGR shapefile driver and the OGR GRASS vector 
+driver. Could someone test v.out.ogr against ogr2ogr using the plugin?
+
+Roger
+
+>
+> Roger
+>
+>> 
+>> * A script is pasted on the bottom which has a small "bug" (details
+>> below) :-)
+>> 
+>> 
+>> First some results for 1000 rows by 500 columns:
+>> 
+>>> system.time(random_points <- readVECT6("random_points_1000",
+>> plugin=TRUE))
+>> OGR data source with driver: GRASS
+>> Source: "/geo/grassdb/spearfish60/user1/vector/random_points_1000/head",
+>> layer: "1"
+>> with  1000  rows and  501  columns
+>> ^C
+>> ### This was running for more than 10 hours !!! ###
+>> 
+>> 
+>>> system.time(random_points <- readVECT6("random_points_1000",
+>> plugin=FALSE))
+>> Exporting 1000 points/lines...
+>> 100%
+>> 1000 features written
+>> OGR data source with driver: ESRI Shapefile
+>> Source: "/geo/grassdb/spearfish60/user1/.tmp/vertical", layer:
+>> "random_p"
+>> with  1000  rows and  501  columns
+>> Feature type: wkbPoint with 2 dimensions
+>>   user  system elapsed
+>> 62.515   9.256  74.013
+>> 
+>> 
+>>> system.time(random_points <- read.csv("random_points_1000_table.csv"))
+>>   user  system elapsed
+>>  0.192   0.000   0.192
+>> 
+>> 
+>> 
+>> * A script to generate "some" random points, add columns and some R-code
+>> to load with readVECT6( plugin = TRUE ), readVECT6( plugin = FALSE ) and
+>> read.csv.
+>> 
+>> * The "bug" is that while the variable NUMBER="$[ ( $RANDOM % 100 ) +
+>> 1 ]" runs ok under the CLI, it doesn't work from within the bash
+>> script!? So I've commented the respective line and use a fixed number
+>> instead.
+>> 
+>> --%<---%<---%<---%<---%<---%<---%<---%<---%<---%<---%<---%<-
+>> #!/bin/bash
+>> 
+>> # example that  readVECT6 ( x , plugin = TRUE )  is too slow
+>> # (also) using the default DBF driver
+>> # first enter in spearfish60/user1
+>> 
+>> # try with a different back-end?
+>> # db.connect driver=sqlite database=
+>> 
+>> # set numbers here:
+>> RANDOM_POINTS=100 ; RANDOM_POINTS_CATS=100 ; NUMBER=111
+>> 
+>> # create RANDOM_POINTS random points
+>> v.random --o output=random_points_`echo ${RANDOM_POINTS}` n=`echo
+>> ${RANDOM_POINTS}`
+>> 
+>> # add in database
+>> v.db.addtable random_points_`echo ${RANDOM_POINTS}`
+>> 
+>> 
+>> # add   $"{RANDOM_POINTS}"   columns
+>> echo "\n* Adding ${RANDOM_POINTS} columns"
+>> for x in `seq 1 ${RANDOM_POINTS}` ; do
+>> v.db.addcol random_points_`echo ${RANDOM_POINTS}` column="col_"${x}"
+>> integer"
+>> done ; echo "\n* ${RANDOM_POINTS} columns added"
+>> 
+>> 
+>> # check if columns are added
+>> v.info -c random_points_${RANDOM_POINTS}
+>> 
+>> 
+>> 
+>> ## WARNING: double loop below takes too long!
+>> # --%<--
+>> # It is simpler and faster to use a single loop with a fixed value
+>> instead, e.g.:
+>>  #for COL in `seq 1 5 ${RANDOM_POINTS}` ; do
+>>  # v.db.update random_points_${RANDOM_POINTS} column="col_"${COL}""
+>> value=222
+>>  #done
+>> # --%<--
+>> 
+>> 
+>> # fill some columns/cats with random numbers between 1 and 100
+>> # alter sequence as desired ; more numbers = more time to load in R
+>> for COL in `seq 1 10 ${RANDOM_POINTS}` ; do
+>> for CAT in `seq 1 10 ${RANDOM_POINTS_CATS}` ; do
+>>  # this is ok in the command line but NOT when running the script?
+>>  #NUMBER="$[ ( $RANDOM % 100 ) + 1 ]"
+>>  v.db.update random_points_${RANDOM_POINTS} column="col_"${COL}""
+>> value=${NUMBER} where="cat="${CAT}""
+>> done
+>> done
+>> 
+>> 
+>> # [optional] fill in some "-999" values to use as NAs in R?
+>> #NAN=-999
+>> #for COL in `seq 1 5 $"{RANDOM_POINTS}"` ; do
+>> # for CAT in `seq 1 5 $"{RANDOM_POINTS_CATS}"` ; do
+>> #  v.db.update random_points_$"{RANDOM_POINTS}" column="col_"${COL}""
+>> value=$"{NAN}" where="cat="${CAT}""
+>> # done
+>> #done
+>> 
+>> # check with v.db.select
+>> # v.db.select random_points_${RANDOM_POINTS} | head -25
+>> 
+>> # export table as .csv file
+>> db.out.ogr in=random_points_${RANDOM_POINTS} format=CSV
+>> dsn=/geo/grassdb/spearfish60/random_points_csv_files
+>> db_table=random_points_${RANDOM_POINTS}.csv
+>> 
+>> ### end of bash script ###
+>> 
+>> 
+>> ## launch R
+>> R
+>> ### R code
+>> 
+>> # load in R with:
+>> library(spgrass6) ; G <- gmeta6()
+>> 
+>> #a. readVECT6()
+>> system.time ( random_points <- readVECT6 ( "random_points_100" , plugin
+>> = FALSE ) )
+>> 
+>> #b. plugin=TRUE
+>> system.time ( random_points <- readVECT6 ( "random_points_100" , plugin
+>> = TRUE ) )
+>> 
+>> #c. as a csv table
+>> # adjust as required
+>> setwd("/geo/grassdb/spearfish60/random_points_csv_files")
+>> table_to_read <- dir ( pattern = "^random.*.csv$" )
+>> system.time ( random_points <- read.csv ( table_to_read ) )
+>> str(random_points)
+>> --%<---%<---%<---%<---%<---%<---%<---%<---%<---%<---%<---%<-
+>> 
+>> 
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From hamish_b at yahoo.com  Wed May 27 05:23:12 2009
+From: hamish_b at yahoo.com (Hamish)
+Date: Wed May 27 05:23:15 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+Message-ID: <335228.76244.qm@web110006.mail.gq1.yahoo.com>
+
+
+Roger wrote:
+> Next script in R generating increasing NR and NC cases through 
+> writeVECT6() to test plugin=FALSE/plugin=TRUE ratios?
+
+
+Does R have any built in profiling tools? as grass is just a collection
+of small C programs the normal ones work fine with it:
+
+  http://grass.osgeo.org/wiki/Bugs#Using_a_profiling_tool
+
+or use a profiling tool at the command line while running ogr2ogr with
+input=grass and output=shapefile?
+
+
+Nikos wrt your 10hr script:
+v.db.update must open and close the DB for every time you call it. That
+is very slow and inefficient. Better is to write all SQL update commands
+to a file (end each line with a ';') then use that file as input to
+db.execute so it opens the DB, updates all fields, closes DB again in
+a single step. see the db.execute man page and v.in.garmin script for an
+example (where it made a huge improvement).
+
+
+
+Hamish
+
+
+
+      
+
+From Roger.Bivand at nhh.no  Wed May 27 05:33:15 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed May 27 05:33:18 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <335228.76244.qm@web110006.mail.gq1.yahoo.com>
+References: <335228.76244.qm@web110006.mail.gq1.yahoo.com>
+Message-ID: <alpine.LRH.2.00.0905271125220.9453@reclus.nhh.no>
+
+On Wed, 27 May 2009, Hamish wrote:
+
+>
+> Roger wrote:
+>> Next script in R generating increasing NR and NC cases through
+>> writeVECT6() to test plugin=FALSE/plugin=TRUE ratios?
+>
+>
+> Does R have any built in profiling tools? as grass is just a collection
+> of small C programs the normal ones work fine with it:
+
+Yes, at the R level, so they won't help here. readVECT6() banches on 
+plugin - if TRUE, it just calls readOGR() on the GRASS driver, if FALSE, 
+it does (something like) v.out.ogr with shapefile driver to a temporary 
+file and readOGR() on the shapefile. The C/C++ level code is in the 
+(same) GDAL shared object for v.out.ogr and readOGR(), so I think the only 
+difference is in the use or not of the plugin.
+
+My second post (testing v.out.ogr to shapefile against ogr2ogr from GRASS 
+plugin to shapefile for a many-column vector) should reveal where the 
+problem is - my present feeling is that the plugin and v.out.ogr handle 
+access to the GRASS vector and its attribute data differently in one way 
+or another.
+
+Roger
+
+>
+>  http://grass.osgeo.org/wiki/Bugs#Using_a_profiling_tool
+>
+> or use a profiling tool at the command line while running ogr2ogr with
+> input=grass and output=shapefile?
+>
+>
+> Nikos wrt your 10hr script:
+> v.db.update must open and close the DB for every time you call it. That
+> is very slow and inefficient. Better is to write all SQL update commands
+> to a file (end each line with a ';') then use that file as input to
+> db.execute so it opens the DB, updates all fields, closes DB again in
+> a single step. see the db.execute man page and v.in.garmin script for an
+> example (where it made a huge improvement).
+>
+>
+>
+> Hamish
+>
+>
+>
+>
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From Roger.Bivand at nhh.no  Wed May 27 12:01:25 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed May 27 12:01:29 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <alpine.LRH.2.00.0905271125220.9453@reclus.nhh.no>
+References: <335228.76244.qm@web110006.mail.gq1.yahoo.com>
+	<alpine.LRH.2.00.0905271125220.9453@reclus.nhh.no>
+Message-ID: <alpine.LRH.2.00.0905271751190.24750@reclus.nhh.no>
+
+On Wed, 27 May 2009, Roger Bivand wrote:
+
+> On Wed, 27 May 2009, Hamish wrote:
+>
+>> 
+>> Roger wrote:
+>>> Next script in R generating increasing NR and NC cases through
+>>> writeVECT6() to test plugin=FALSE/plugin=TRUE ratios?
+>> 
+>> 
+>> Does R have any built in profiling tools? as grass is just a collection
+>> of small C programs the normal ones work fine with it:
+>
+> Yes, at the R level, so they won't help here. readVECT6() banches on plugin - 
+> if TRUE, it just calls readOGR() on the GRASS driver, if FALSE, it does 
+> (something like) v.out.ogr with shapefile driver to a temporary file and 
+> readOGR() on the shapefile. The C/C++ level code is in the (same) GDAL shared 
+> object for v.out.ogr and readOGR(), so I think the only difference is in the 
+> use or not of the plugin.
+>
+> My second post (testing v.out.ogr to shapefile against ogr2ogr from GRASS 
+> plugin to shapefile for a many-column vector) should reveal where the problem 
+> is - my present feeling is that the plugin and v.out.ogr handle access to the 
+> GRASS vector and its attribute data differently in one way or another.
+
+The outcome was that for the 250 by 250 case, v.out.ogr ran at about 1 
+sec, and ogr2ogr using the plugin at 0.2 secs. In readVECT6() - running at 
+20 secs on the same data, the culprit is the C/C++ ogrDataFrame() function 
+called by readOGR() in the rgdal package, which takes almost all of the 20 
+secs with the GRASS driver, but < 1 sec with the shapefile driver on the 
+same data. I'll try to investigate further - there is an interaction that 
+I don't understand. It is possible that ogrDataFrame() is inefficient in 
+that it reads by column, sending the driver out by feature for each field. 
+I'll look at alternatives.
+
+Roger
+
+>
+> Roger
+>
+>>
+>>  http://grass.osgeo.org/wiki/Bugs#Using_a_profiling_tool
+>> 
+>> or use a profiling tool at the command line while running ogr2ogr with
+>> input=grass and output=shapefile?
+>> 
+>> 
+>> Nikos wrt your 10hr script:
+>> v.db.update must open and close the DB for every time you call it. That
+>> is very slow and inefficient. Better is to write all SQL update commands
+>> to a file (end each line with a ';') then use that file as input to
+>> db.execute so it opens the DB, updates all fields, closes DB again in
+>> a single step. see the db.execute man page and v.in.garmin script for an
+>> example (where it made a huge improvement).
+>> 
+>> 
+>> 
+>> Hamish
+>> 
+>> 
+>> 
+>> 
+>> 
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>> 
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From nikos.alexandris at felis.uni-freiburg.de  Wed May 27 14:59:03 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed May 27 14:57:26 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <335228.76244.qm@web110006.mail.gq1.yahoo.com>
+References: <335228.76244.qm@web110006.mail.gq1.yahoo.com>
+Message-ID: <1243450743.3020.1.camel@vertical>
+
+
+Hamish:
+> Nikos wrt your 10hr script:
+> v.db.update must open and close the DB for every time you call it.
+> That is very slow and inefficient.
+
+> Better is to write all SQL update commands to a file (end each line
+> with a ';') then use that file as input to db.execute so it opens the
+> DB, updates all fields, closes DB again in a single step. see the
+> db.execute man page and v.in.garmin script for an example (where it
+> made a huge improvement).
+
+Thank a lot Hamish :-) I'll check-it out.
+
+From nikos.alexandris at felis.uni-freiburg.de  Wed May 27 15:09:16 2009
+From: nikos.alexandris at felis.uni-freiburg.de (Nikos Alexandris)
+Date: Wed May 27 15:07:39 2009
+Subject: [GRASS-stats] Loading a point-vector table with 466 columns
+In-Reply-To: <alpine.LRH.2.00.0905271125220.9453@reclus.nhh.no>
+References: <335228.76244.qm@web110006.mail.gq1.yahoo.com>
+	<alpine.LRH.2.00.0905271125220.9453@reclus.nhh.no>
+Message-ID: <1243451356.3020.11.camel@vertical>
+
+
+Roger:
+> >> Next script in R generating increasing NR and NC cases through
+> >> writeVECT6() to test plugin=FALSE/plugin=TRUE ratios?
+
+Hamish:
+> > Does R have any built in profiling tools? as grass is just a
+> collection
+> > of small C programs the normal ones work fine with it:
+
+Roger:
+> Yes, at the R level, so they won't help here. readVECT6() banches on 
+> plugin - if TRUE, it just calls readOGR() on the GRASS driver, if
+> FALSE, it does (something like) v.out.ogr with shapefile driver to a
+> temporary file and readOGR() on the shapefile. The C/C++ level code is
+> in the (same) GDAL shared object for v.out.ogr and readOGR(), so I
+> think the only difference is in the use or not of the plugin.
+
+> My second post (testing v.out.ogr to shapefile against ogr2ogr from
+> GRASS plugin to shapefile for a many-column vector) should reveal
+> where the problem is - my present feeling is that the plugin and
+> v.out.ogr handle access to the GRASS vector and its attribute data
+> differently in one way or another.
+
+Good (and bad :-p) to see that there is room for improvement. C/C++ code
+is unknown territory from end-user level ( =requires time to explore...
+within this short life-time ;-) ).
+
+Kindest regards, Nikos
+
+From stef_ob at gmx.at  Fri May 29 04:41:34 2009
+From: stef_ob at gmx.at (Stefanie Obmann)
+Date: Fri May 29 04:41:52 2009
+Subject: [GRASS-stats] start R from GRASS
+Message-ID: <20090529084151.283C8E00E37@lists.osgeo.org>
+
+Dear users,
+
+ 
+
+Do I have to have a special order for R and GRASS folders? I got GRASS
+inside the QGIS folder, R is located on the same level as the QGIS folder.
+
+ 
+
+Is it right to start the GRASS shell and then just type 'start R'? I receive
+'R not found' as WINDOWS alert message.
+
+Could you please tell me what's wrong?
+
+ 
+
+Thanks!
+
+ 
+
+stef
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20090529/2f76ec3a/attachment.html
+From Roger.Bivand at nhh.no  Fri May 29 05:20:01 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri May 29 05:20:04 2009
+Subject: [GRASS-stats] start R from GRASS
+In-Reply-To: <20090529084151.283C8E00E37@lists.osgeo.org>
+References: <20090529084151.283C8E00E37@lists.osgeo.org>
+Message-ID: <alpine.LRH.2.00.0905291114220.7802@reclus.nhh.no>
+
+On Fri, 29 May 2009, Stefanie Obmann wrote:
+
+> Dear users,
+>
+>
+>
+> Do I have to have a special order for R and GRASS folders? I got GRASS
+> inside the QGIS folder, R is located on the same level as the QGIS folder.
+>
+>
+>
+> Is it right to start the GRASS shell and then just type 'start R'? I receive
+> 'R not found' as WINDOWS alert message.
+
+There are different understandings of PATH in MSYS (the GRASS shell) and 
+Windows. To start R, it is safest to give its absolute path, unless you 
+know definitely that Rgui.exe is on your PATH. You may see a Flash film 
+at:
+
+http://spatial.nhh.no/wun09/wun_grass.swf
+
+for an example of starting Windows Native GRASS with an absolute path. 
+Note that the R_LIBS environment variable may also need setting.
+
+Hope this helps,
+
+Roger
+
+>
+> Could you please tell me what's wrong?
+>
+>
+>
+> Thanks!
+>
+>
+>
+> stef
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+

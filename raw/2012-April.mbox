@@ -1,0 +1,748 @@
+From eric.momsen at ndsu.edu  Fri Apr 20 10:47:42 2012
+From: eric.momsen at ndsu.edu (Eric Momsen)
+Date: Fri Apr 20 10:48:35 2012
+Subject: [GRASS-stats] readVECT6 - ogr fails to export some columns
+Message-ID: <CAO7hk-JVaJ_mCQEzBPxBYWQo+30hNFO6zph2-t_YU5Jwqw_D5g@mail.gmail.com>
+
+Hi,
+
+I've been using GRASS and R for a few months now, and just ran into a snag.
+ We added some new attribute columns to our vector file in GRASS, and now
+when I try to move the data into R the transfer fails.
+
+The original vector map in grass was imported from a shapefile.  I then
+used v.db.addcol and v.rast.stats to add more attributes to the vector map.
+
+I first thought it had to do with null values, so I tried adding a column
+filled with a constant value.  This didn't help.
+
+I tried to reproduce the error in SPEARFISH, columns added with
+v.rast.stats were fine, but v.db.addcol wouldn't execute.
+
+
+I don't know why the installation let me add columns in one location and
+not another, maybe this is the root cause or another issue all together?
+
+v.db.addcolumn --verbose map=landuse@PERMANENT layer=1 columns=test
+
+Adding column <test> to the table
+DBMI-DBF driver error:
+SQL parser error (syntax error, unexpected $end processing
+'') in statement:
+ALTER TABLE landuse ADD COLUMN test
+Unable to execute statement.
+ERROR: Error while executing: 'ALTER TABLE landuse ADD COLUMN test'
+ERROR: Unable to add column <test>.
+
+
+Any ideas for what I'm missing, or a workaround to get the data to R?  (I
+was supposed to get an R data file ready today for others to work with that
+aren't used to GRASS...I had previously done the GRASS->R transfer via a
+script a number of times, and didn't expect any problems!)
+
+Here are the R messages:
+
+> source("/home/emomsen/Documents/loaddata.R")
+
+first command in file:
+field2007<-readVECT6("ACSC_2007_Field_Boundary")
+
+Loading required package: rgdal
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Loaded GDAL runtime: GDAL 1.9.0, released 2011/12/29
+Path to GDAL shared files: /usr/local/share/gdal
+Loaded PROJ.4 runtime: Rel. 4.8.0, 6 March 2012, [PJ_VERSION: 480]
+Path to PROJ.4 shared files: (autodetected)
+Available OGR Drivers:
+Warning 1: Field COUNTY of width 1000 truncated to 255.
+....snip... these are OK
+ERROR 6: Failed to add field named 'HARVEST_DAY'
+ERROR 6: Failed to add field named 'NDVI_04_B_DAY'
+....snip...These were added with v.db.addcol
+ERROR 6: Failed to add field named 'NDVI_04_B_mean'
+...snip,... there are about 100 of these, extended statistics for 10
+rasters.
+
+
+The import does finish, all of the "original" columns for the shapefile are
+imported to R.  v.db.select shows most of the attribute columns together
+(the last ones are lost from the line length), and querying the map gives
+all the attributes.
+
+Thanks for any help!
+
+Eric
+
+> sessionInfo()
+R version 2.14.1 (2011-12-22)
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8
+ [7] LC_PAPER=C                 LC_NAME=C
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] rgdal_0.7-8     spgrass6_0.7-10 XML_3.9-4       sp_0.9-98
+
+loaded via a namespace (and not attached):
+[1] grid_2.14.1    lattice_0.20-0
+
+
+g.gisenv -n
+
+LANG=en_US.UTF-8
+GRASS_ADDON_PATH=/home/emomsen/v.krige
+GISDBASE=/home/shared/research/GRASSDATA
+LOCATION_NAME=transferField
+ADDON_PATH=/home/emomsen/v.krige
+GUI=wxpython
+MAPSET=PERMANENT
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20120420/a5016f08/attachment.html
+From markus.metz.giswork at googlemail.com  Fri Apr 20 11:12:38 2012
+From: markus.metz.giswork at googlemail.com (Markus Metz)
+Date: Fri Apr 20 11:13:00 2012
+Subject: [GRASS-stats] readVECT6 - ogr fails to export some columns
+In-Reply-To: <CAO7hk-JVaJ_mCQEzBPxBYWQo+30hNFO6zph2-t_YU5Jwqw_D5g@mail.gmail.com>
+References: <CAO7hk-JVaJ_mCQEzBPxBYWQo+30hNFO6zph2-t_YU5Jwqw_D5g@mail.gmail.com>
+Message-ID: <CAG+h=FEJabY9UoA8zaaLMj_4kCak2qWX2aTGKC15oO5EPBFnTg@mail.gmail.com>
+
+On Fri, Apr 20, 2012 at 4:47 PM, Eric Momsen <eric.momsen@ndsu.edu> wrote:
+> Hi,
+>
+> I've been using GRASS and R for a few months now, and just ran into a snag.
+> ?We added some new attribute columns to our vector file in GRASS, and now
+> when I try to move the data into R the transfer fails.
+>
+> The original vector map in grass was imported from a shapefile. ?I then used
+> v.db.addcol and v.rast.stats to add more attributes to the vector map.
+>
+> I first thought it had to do with null values, so I tried adding a column
+> filled with a constant value. ?This didn't help.
+>
+> I tried to reproduce the error in SPEARFISH, columns added with v.rast.stats
+> were fine, but v.db.addcol wouldn't execute.
+>
+>
+> I don't know why the installation let me add columns in one location and not
+> another, maybe this is the root cause or another issue all together?
+>
+> v.db.addcolumn --verbose map=landuse@PERMANENT layer=1 columns=test
+>
+> Adding column <test> to the table
+> DBMI-DBF driver error:
+> SQL parser error (syntax error, unexpected $end processing
+> '') in statement:
+> ALTER TABLE landuse ADD COLUMN test
+
+I think the column type is missing. Try e.g.
+v.db.addcolumn --verbose map=landuse@PERMANENT layer=1 columns='test
+double precision'
+
+> Unable to execute statement.
+> ERROR: Error while executing: 'ALTER TABLE landuse ADD COLUMN test'
+> ERROR: Unable to add column <test>.
+>
+>
+> Any ideas for what I'm missing, or a workaround to get the data to R? ?(I
+> was supposed to get an R data file ready today for others to work with that
+> aren't used to GRASS...I had previously done the GRASS->R transfer via a
+> script a number of times, and didn't expect any problems!)
+>
+> Here are the R messages:
+>
+>> source("/home/emomsen/Documents/loaddata.R")
+>
+> first command in file:
+> field2007<-readVECT6("ACSC_2007_Field_Boundary")
+>
+> Loading required package: rgdal
+> Geospatial Data Abstraction Library extensions to R successfully loaded
+> Loaded GDAL runtime: GDAL 1.9.0, released 2011/12/29
+> Path to GDAL shared files: /usr/local/share/gdal
+> Loaded PROJ.4 runtime: Rel. 4.8.0, 6 March 2012, [PJ_VERSION: 480]
+> Path to PROJ.4 shared files: (autodetected)
+> Available OGR Drivers:
+> Warning 1: Field COUNTY of width 1000 truncated to 255.
+> ....snip... these are OK
+> ERROR 6: Failed to add field named 'HARVEST_DAY'
+> ERROR 6: Failed to add field named 'NDVI_04_B_DAY'
+> ....snip...These were added with v.db.addcol
+> ERROR 6: Failed to add field named 'NDVI_04_B_mean'
+
+The column name is probably too long for the OGR dbf driver, the max
+length is 10 I think. That is, NDVI_04_B_DAY becomes truncated to
+NDVI_04_B_ and NDVI_04_B_mean also becomes truncated to NDVI_04_B_,
+resulting in duplicate column names. You could try a shorter column
+prefix with v.rast.stats.
+
+Markus M
+
+> ...snip,... there are about 100 of these, extended statistics for 10
+> rasters.
+>
+>
+> The import does finish, all of the "original" columns for the shapefile are
+> imported to R. ?v.db.select shows most of the attribute columns together
+> (the last ones are lost from the line length), and querying the map gives
+> all the attributes.
+>
+> Thanks for any help!
+>
+> Eric
+>
+>> sessionInfo()
+> R version 2.14.1 (2011-12-22)
+> Platform: x86_64-pc-linux-gnu (64-bit)
+>
+> locale:
+> ?[1] LC_CTYPE=en_US.UTF-8 ? ? ? LC_NUMERIC=C
+> ?[3] LC_TIME=en_US.UTF-8 ? ? ? ?LC_COLLATE=en_US.UTF-8
+> ?[5] LC_MONETARY=en_US.UTF-8 ? ?LC_MESSAGES=en_US.UTF-8
+> ?[7] LC_PAPER=C ? ? ? ? ? ? ? ? LC_NAME=C
+> ?[9] LC_ADDRESS=C ? ? ? ? ? ? ? LC_TELEPHONE=C
+> [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+>
+> attached base packages:
+> [1] stats ? ? graphics ?grDevices utils ? ? datasets ?methods ? base
+>
+> other attached packages:
+> [1] rgdal_0.7-8 ? ? spgrass6_0.7-10 XML_3.9-4 ? ? ? sp_0.9-98
+>
+> loaded via a namespace (and not attached):
+> [1] grid_2.14.1 ? ?lattice_0.20-0
+>
+>
+> g.gisenv -n
+>
+> LANG=en_US.UTF-8
+> GRASS_ADDON_PATH=/home/emomsen/v.krige
+> GISDBASE=/home/shared/research/GRASSDATA
+> LOCATION_NAME=transferField
+> ADDON_PATH=/home/emomsen/v.krige
+> GUI=wxpython
+> MAPSET=PERMANENT
+>
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+From eric.momsen at gmail.com  Fri Apr 20 13:16:28 2012
+From: eric.momsen at gmail.com (Eric Momsen)
+Date: Fri Apr 20 13:17:19 2012
+Subject: [GRASS-stats] readVECT6 - ogr fails to export some columns
+In-Reply-To: <CAG+h=FEJabY9UoA8zaaLMj_4kCak2qWX2aTGKC15oO5EPBFnTg@mail.gmail.com>
+References: <CAO7hk-JVaJ_mCQEzBPxBYWQo+30hNFO6zph2-t_YU5Jwqw_D5g@mail.gmail.com>
+	<CAG+h=FEJabY9UoA8zaaLMj_4kCak2qWX2aTGKC15oO5EPBFnTg@mail.gmail.com>
+Message-ID: <CAO7hk-LF8veZOrqvhvBZbdYmia+Gig1yLNtpNZO0aKLZrTin0A@mail.gmail.com>
+
+Thanks!  Follow up below.
+
+On Fri, Apr 20, 2012 at 10:12 AM, Markus Metz <
+markus.metz.giswork@googlemail.com> wrote:
+
+> On Fri, Apr 20, 2012 at 4:47 PM, Eric Momsen <eric.momsen@ndsu.edu> wrote:
+> > Hi,
+> >
+> > I've been using GRASS and R for a few months now, and just ran into a
+> snag.
+> >  We added some new attribute columns to our vector file in GRASS, and now
+> > when I try to move the data into R the transfer fails.
+> >
+> > The original vector map in grass was imported from a shapefile.  I then
+> used
+> > v.db.addcol and v.rast.stats to add more attributes to the vector map.
+> >
+> > I first thought it had to do with null values, so I tried adding a column
+> > filled with a constant value.  This didn't help.
+> >
+> > I tried to reproduce the error in SPEARFISH, columns added with
+> v.rast.stats
+> > were fine, but v.db.addcol wouldn't execute.
+> >
+> >
+> > I don't know why the installation let me add columns in one location and
+> not
+> > another, maybe this is the root cause or another issue all together?
+> >
+> > v.db.addcolumn --verbose map=landuse@PERMANENT layer=1 columns=test
+> >
+> > Adding column <test> to the table
+> > DBMI-DBF driver error:
+> > SQL parser error (syntax error, unexpected $end processing
+> > '') in statement:
+> > ALTER TABLE landuse ADD COLUMN test
+>
+> I think the column type is missing. Try e.g.
+> v.db.addcolumn --verbose map=landuse@PERMANENT layer=1 columns='test
+> double precision'
+>
+> OK, that worked today. Yesterday when I tried it I was getting columns
+named "test double precision".  Are those single quotes or back ticks?
+ From the GUI I put it in without any surrounding marks with column name
+and data type.
+
+
+> > Unable to execute statement.
+> > ERROR: Error while executing: 'ALTER TABLE landuse ADD COLUMN test'
+> > ERROR: Unable to add column <test>.
+> >
+> >
+> > Any ideas for what I'm missing, or a workaround to get the data to R?  (I
+> > was supposed to get an R data file ready today for others to work with
+> that
+> > aren't used to GRASS...I had previously done the GRASS->R transfer via a
+> > script a number of times, and didn't expect any problems!)
+> >
+> > Here are the R messages:
+> >
+> >> source("/home/emomsen/Documents/loaddata.R")
+> >
+> > first command in file:
+> > field2007<-readVECT6("ACSC_2007_Field_Boundary")
+> >
+> > Loading required package: rgdal
+> > Geospatial Data Abstraction Library extensions to R successfully loaded
+> > Loaded GDAL runtime: GDAL 1.9.0, released 2011/12/29
+> > Path to GDAL shared files: /usr/local/share/gdal
+> > Loaded PROJ.4 runtime: Rel. 4.8.0, 6 March 2012, [PJ_VERSION: 480]
+> > Path to PROJ.4 shared files: (autodetected)
+> > Available OGR Drivers:
+> > Warning 1: Field COUNTY of width 1000 truncated to 255.
+> > ....snip... these are OK
+> > ERROR 6: Failed to add field named 'HARVEST_DAY'
+> > ERROR 6: Failed to add field named 'NDVI_04_B_DAY'
+> > ....snip...These were added with v.db.addcol
+> > ERROR 6: Failed to add field named 'NDVI_04_B_mean'
+>
+> The column name is probably too long for the OGR dbf driver, the max
+> length is 10 I think. That is, NDVI_04_B_DAY becomes truncated to
+> NDVI_04_B_ and NDVI_04_B_mean also becomes truncated to NDVI_04_B_,
+> resulting in duplicate column names. You could try a shorter column
+> prefix with v.rast.stats.
+>
+>
+Ah ha!  OK, I did v.db.renamecol to test one of them, and that one
+transfered fine.  I assume I'm OK going with renaming the existing columns,
+some of the statistics results would be too long even with a short prefix.
+
+I'm both embarrassed and happy that this was an easy solution.
+
+Thanks for the quick response!
+-Eric
+
+
+
+> Markus M
+>
+> > ...snip,... there are about 100 of these, extended statistics for 10
+> > rasters.
+> >
+> >
+> > The import does finish, all of the "original" columns for the shapefile
+> are
+> > imported to R.  v.db.select shows most of the attribute columns together
+> > (the last ones are lost from the line length), and querying the map gives
+> > all the attributes.
+> >
+> > Thanks for any help!
+> >
+> > Eric
+> >
+> >> sessionInfo()
+> > R version 2.14.1 (2011-12-22)
+> > Platform: x86_64-pc-linux-gnu (64-bit)
+> >
+> > locale:
+> >  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+> >  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+> >  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8
+> >  [7] LC_PAPER=C                 LC_NAME=C
+> >  [9] LC_ADDRESS=C               LC_TELEPHONE=C
+> > [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+> >
+> > attached base packages:
+> > [1] stats     graphics  grDevices utils     datasets  methods   base
+> >
+> > other attached packages:
+> > [1] rgdal_0.7-8     spgrass6_0.7-10 XML_3.9-4       sp_0.9-98
+> >
+> > loaded via a namespace (and not attached):
+> > [1] grid_2.14.1    lattice_0.20-0
+> >
+> >
+> > g.gisenv -n
+> >
+> > LANG=en_US.UTF-8
+> > GRASS_ADDON_PATH=/home/emomsen/v.krige
+> > GISDBASE=/home/shared/research/GRASSDATA
+> > LOCATION_NAME=transferField
+> > ADDON_PATH=/home/emomsen/v.krige
+> > GUI=wxpython
+> > MAPSET=PERMANENT
+> >
+> >
+> > _______________________________________________
+> > grass-stats mailing list
+> > grass-stats@lists.osgeo.org
+> > http://lists.osgeo.org/mailman/listinfo/grass-stats
+> >
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20120420/7dc59465/attachment.html
+From markus.metz.giswork at googlemail.com  Sun Apr 22 11:39:53 2012
+From: markus.metz.giswork at googlemail.com (Markus Metz)
+Date: Sun Apr 22 11:40:20 2012
+Subject: [GRASS-stats] readVECT6 - ogr fails to export some columns
+In-Reply-To: <CAO7hk-LF8veZOrqvhvBZbdYmia+Gig1yLNtpNZO0aKLZrTin0A@mail.gmail.com>
+References: <CAO7hk-JVaJ_mCQEzBPxBYWQo+30hNFO6zph2-t_YU5Jwqw_D5g@mail.gmail.com>
+	<CAG+h=FEJabY9UoA8zaaLMj_4kCak2qWX2aTGKC15oO5EPBFnTg@mail.gmail.com>
+	<CAO7hk-LF8veZOrqvhvBZbdYmia+Gig1yLNtpNZO0aKLZrTin0A@mail.gmail.com>
+Message-ID: <CAG+h=FHLAJfw6hCTN_E3z+1d8RERZF6zhDx3iumMne0A+tYYXw@mail.gmail.com>
+
+Eric Momsen wrote:
+
+[snip]
+
+>> >
+>> > v.db.addcolumn --verbose map=landuse@PERMANENT layer=1 columns=test
+>> >
+>> > Adding column <test> to the table
+>> > DBMI-DBF driver error:
+>> > SQL parser error (syntax error, unexpected $end processing
+>> > '') in statement:
+>> > ALTER TABLE landuse ADD COLUMN test
+>>
+>> I think the column type is missing. Try e.g.
+>> v.db.addcolumn --verbose map=landuse@PERMANENT layer=1 columns='test
+>> double precision'
+>>
+> OK, that worked today. Yesterday when I tried it I was getting columns named
+> "test double precision". ?Are those single quotes or back ticks? ?From the
+> GUI I put it in without any surrounding marks with column name and data
+> type.
+
+Single quotes for the command line. When using the GUI, quoting is not
+necessary.
+
+>> > Here are the R messages:
+>> >
+>> >> source("/home/emomsen/Documents/loaddata.R")
+>> >
+>> > first command in file:
+>> > field2007<-readVECT6("ACSC_2007_Field_Boundary")
+>> >
+>> > Loading required package: rgdal
+>> > Geospatial Data Abstraction Library extensions to R successfully loaded
+>> > Loaded GDAL runtime: GDAL 1.9.0, released 2011/12/29
+>> > Path to GDAL shared files: /usr/local/share/gdal
+>> > Loaded PROJ.4 runtime: Rel. 4.8.0, 6 March 2012, [PJ_VERSION: 480]
+>> > Path to PROJ.4 shared files: (autodetected)
+>> > Available OGR Drivers:
+>> > Warning 1: Field COUNTY of width 1000 truncated to 255.
+>> > ....snip... these are OK
+>> > ERROR 6: Failed to add field named 'HARVEST_DAY'
+>> > ERROR 6: Failed to add field named 'NDVI_04_B_DAY'
+>> > ....snip...These were added with v.db.addcol
+>> > ERROR 6: Failed to add field named 'NDVI_04_B_mean'
+>>
+>> The column name is probably too long for the OGR dbf driver, the max
+>> length is 10 I think. That is, NDVI_04_B_DAY becomes truncated to
+>> NDVI_04_B_ and NDVI_04_B_mean also becomes truncated to NDVI_04_B_,
+>> resulting in duplicate column names. You could try a shorter column
+>> prefix with v.rast.stats.
+>>
+>
+> Ah ha! ?OK, I did v.db.renamecol to test one of them, and that one
+> transfered fine. ?I assume I'm OK going with renaming the existing columns,
+> some of the statistics results would be too long even with a short prefix.
+
+You could also try to use another OGR driver with the driver option of
+readVECT6 that does not use DBF attribute tables, e.g. SQLite or
+PostGIS if supported.
+
+Markus M
+
+>
+> I'm both?embarrassed?and happy that this was an easy solution.
+>
+> Thanks for the quick response!
+> -Eric
+>
+>
+>>
+>> Markus M
+>>
+>> > ...snip,... there are about 100 of these, extended statistics for 10
+>> > rasters.
+>> >
+>> >
+>> > The import does finish, all of the "original" columns for the shapefile
+>> > are
+>> > imported to R. ?v.db.select shows most of the attribute columns together
+>> > (the last ones are lost from the line length), and querying the map
+>> > gives
+>> > all the attributes.
+>> >
+>> > Thanks for any help!
+>> >
+>> > Eric
+>> >
+>> >> sessionInfo()
+>> > R version 2.14.1 (2011-12-22)
+>> > Platform: x86_64-pc-linux-gnu (64-bit)
+>> >
+>> > locale:
+>> > ?[1] LC_CTYPE=en_US.UTF-8 ? ? ? LC_NUMERIC=C
+>> > ?[3] LC_TIME=en_US.UTF-8 ? ? ? ?LC_COLLATE=en_US.UTF-8
+>> > ?[5] LC_MONETARY=en_US.UTF-8 ? ?LC_MESSAGES=en_US.UTF-8
+>> > ?[7] LC_PAPER=C ? ? ? ? ? ? ? ? LC_NAME=C
+>> > ?[9] LC_ADDRESS=C ? ? ? ? ? ? ? LC_TELEPHONE=C
+>> > [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+>> >
+>> > attached base packages:
+>> > [1] stats ? ? graphics ?grDevices utils ? ? datasets ?methods ? base
+>> >
+>> > other attached packages:
+>> > [1] rgdal_0.7-8 ? ? spgrass6_0.7-10 XML_3.9-4 ? ? ? sp_0.9-98
+>> >
+>> > loaded via a namespace (and not attached):
+>> > [1] grid_2.14.1 ? ?lattice_0.20-0
+>> >
+>> >
+>> > g.gisenv -n
+>> >
+>> > LANG=en_US.UTF-8
+>> > GRASS_ADDON_PATH=/home/emomsen/v.krige
+>> > GISDBASE=/home/shared/research/GRASSDATA
+>> > LOCATION_NAME=transferField
+>> > ADDON_PATH=/home/emomsen/v.krige
+>> > GUI=wxpython
+>> > MAPSET=PERMANENT
+>> >
+>> >
+>> > _______________________________________________
+>> > grass-stats mailing list
+>> > grass-stats@lists.osgeo.org
+>> > http://lists.osgeo.org/mailman/listinfo/grass-stats
+>> >
+>
+>
+From les_ecol at yahoo.com  Mon Apr 23 17:34:40 2012
+From: les_ecol at yahoo.com (Laura S)
+Date: Mon Apr 23 17:34:49 2012
+Subject: [GRASS-stats] GRASS with R interface issues - running R within
+	GRASS 6.4.2
+Message-ID: <1335216880.32667.YahooMailNeo@web140302.mail.bf1.yahoo.com>
+
+Dear all:
+
+Do you have any suggestions on this? Thank you.
+
+
+I cannot type in the GRASS GUI with MSYS window and execute commands. It is 
+frozen, and when I open up another GRASS console and type R the console 
+says: "R is not recognizable as an internal or external command, 
+operable program or batch file." 
+
+
+I provide examples below. Roger has been helpful, but I am still unsure if I am missing something, or there is a bug. 
+
+
+I have found bugs in other programs, e.g., WinRhizo, but I am assuming GRASS is working fine. I have been looking for screenshot instructions to better understand my issue, so anyone knows of these posted somewhere, this would be helpful. 
+
+
+Laura
+
+
+On Mon, 23 Apr 2012, Laura S wrote:
+
+> Dear Roger and others:
+> 
+> My apologies if I am not piecing everything together. I think I am almost there; I appreciate your patience.
+> 
+> 
+> This is my current point of confusion, and what I am able to do so far:
+> 
+>
+ I. My main point of confusion is that when I type the path into GRASS 
+MSYS, the R console window pops up, and I am unable to type more into 
+the GRASS console. I cannot type GRASS commands in R, so I am unsure 
+where I type the GRASS commands if GRASS console does not let me type 
+more, and the R console does not recognize R commands.
+
+Why should
+ it? Simply minimise the R GUI to work in GRASS directly, using the 
+GRASS GUI or from the prompt in MSYS. I doubt very much whether saying 
+d.ask makes sense anyway, as the GRASS display GUI covers that.
+
+It
+ is possible to write GRASS commands using execGRASS() from the R 
+console, but since you have had to ask, you will find it easier simply 
+to minimise R and use GRASS directly. Because R is within GRASS, it 
+"sees" the current status of the location.
+
+Hope this clarifies - please change to one of the GRASS lists for further help.
+
+Roger
+
+> 
+> 
+> II. What I can do so far in more detail:
+>
+ 1. Within the GRASS 6.4.2RC2 with MSYS, I typed using tab 
+autocompletion: "C:/Program Files/R/R-2.14/bin/i386/Rgui.exe" which 
+causes the RGui to pop up as a second R window. Thus, I am not in GRASS 
+directly anymore I assume, but rather in the RGui. In this GUI, it says 
+the following when I type library(spgrass6): "GRASS GIS Interface loaded
+ with GRASS version GRASS 6.4.2RC2exported (2011) and location: 
+demolocation" gmeta6() gisdbase C:/Documents etc.?
+> 
+> If I try a GRASS command such as "d.ask" in the RGUI after loading spgrass:
+> 
+> d.ask
+> Error: object 'd.ask' not found
+> 
+> 
+>
+ 2. I can also get this to work in R directly: loc <- 
+initGRASS("C:/Program Files/Grass 6.4",home=tempdir()) gmeta6() **prints
+ gisdbase, etc.**?
+> 
+> d.ask
+> Error: object 'd.ask' not found
+> 
+> 
+> Thank you for your help,
+> Laura 
+> 
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20120423/13b31b3d/attachment.html
+From les_ecol at yahoo.com  Fri Apr 27 18:59:38 2012
+From: les_ecol at yahoo.com (Laura S)
+Date: Fri Apr 27 19:01:53 2012
+Subject: [GRASS-stats] GRASS within R interface issues 
+In-Reply-To: <1335216880.32667.YahooMailNeo@web140302.mail.bf1.yahoo.com>
+References: <1335216880.32667.YahooMailNeo@web140302.mail.bf1.yahoo.com>
+Message-ID: <1335567578.8280.YahooMailNeo@web140304.mail.bf1.yahoo.com>
+
+Dear all:
+
+
+I emailed around and others have the same issue of the freezing GRASS console and not being able to run R within GRASS, and many resort to doing GRASS commands within R using execGRASS().?
+
+I am going to keep searching around for a fix, as I still cannot run R within GRASS on XP. I am trying to figure this out for myself and other collaborators. 
+
+
+Cheers,
+Laura
+
+
+
+________________________________
+ From: Laura S <les_ecol@yahoo.com>
+To: "grass-stats@lists.osgeo.org" <grass-stats@lists.osgeo.org> 
+Sent: Monday, April 23, 2012 2:34:40 PM
+Subject: [GRASS-stats] GRASS with R interface issues - running R within GRASS 6.4.2
+ 
+
+Dear all:
+
+Do you have any suggestions on this? Thank you.
+
+
+I cannot type in the GRASS GUI with MSYS window and execute commands. It is 
+frozen, and when I open up another GRASS console and type R the console 
+says: "R is not recognizable as an internal or external command, 
+operable program or batch file." 
+
+
+I provide examples below. Roger has been helpful, but I am still unsure if I am missing something, or there is a bug. 
+
+
+I have found bugs in other programs, e.g., WinRhizo, but I am assuming GRASS is working fine. I have been looking for screenshot instructions to better understand my issue, so anyone knows of these posted somewhere, this would be helpful. 
+
+
+Laura
+
+
+On Mon, 23 Apr 2012, Laura S wrote:
+
+> Dear Roger and others:
+> 
+> My apologies if I am not piecing everything together. I think I am almost there; I appreciate your patience.
+> 
+> 
+> This is my current point of confusion, and what I am able to do so far:
+> 
+>
+ I. My main point of confusion is that when I type the path into GRASS 
+MSYS, the R console window pops up, and I am unable to type more into 
+the GRASS console. I cannot type GRASS commands in R, so I am unsure 
+where I type the GRASS commands if GRASS console does not let me type 
+more, and the R console does not recognize R commands.
+
+Why should
+ it? Simply minimise the R GUI to work in GRASS directly, using the 
+GRASS GUI or from the prompt in MSYS. I doubt very much whether saying 
+d.ask makes sense anyway, as the GRASS display GUI covers that.
+
+It
+ is possible to write GRASS commands using execGRASS() from the R 
+console, but since you have had to ask, you will find it easier simply 
+to minimise R and use GRASS directly. Because R is within GRASS, it 
+"sees" the current status of the location.
+
+Hope this clarifies - please change to one of the GRASS lists for further help.
+
+Roger
+
+> 
+> 
+> II. What I can do so far in more detail:
+>
+ 1. Within the GRASS 6.4.2RC2 with MSYS, I typed using tab 
+autocompletion: "C:/Program Files/R/R-2.14/bin/i386/Rgui.exe" which 
+causes the RGui to pop up as a second R window. Thus, I am not in GRASS 
+directly anymore I assume, but rather in the RGui. In this GUI, it says 
+the following when I type library(spgrass6): "GRASS GIS Interface loaded
+ with GRASS version GRASS 6.4.2RC2exported (2011) and location: 
+demolocation" gmeta6() gisdbase C:/Documents etc.?
+> 
+> If I try a GRASS command such as "d.ask" in the RGUI after loading spgrass:
+> 
+> d.ask
+> Error: object 'd.ask' not found
+> 
+> 
+>
+ 2. I can also get this to work in R directly: loc <- 
+initGRASS("C:/Program Files/Grass 6.4",home=tempdir()) gmeta6() **prints
+ gisdbase, etc.**?
+> 
+> d.ask
+> Error: object 'd.ask' not found
+> 
+> 
+> Thank you for your help,
+> Laura 
+> 
+_______________________________________________
+grass-stats mailing list
+grass-stats@lists.osgeo.org
+http://lists.osgeo.org/mailman/listinfo/grass-stats
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20120427/d2b298e0/attachment.html

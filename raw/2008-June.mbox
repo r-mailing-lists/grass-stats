@@ -1,0 +1,1424 @@
+From Roger.Bivand at nhh.no  Sun Jun  1 14:47:22 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun Jun  1 14:47:24 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+In-Reply-To: <86782b610805310947u4dbb2ed0hf39a5cdeaf67f986@mail.gmail.com>
+References: <86782b610805310336x10a18188tc40c99adfaf480@mail.gmail.com> 
+	<Pine.LNX.4.64.0805311744010.7951@reclus.nhh.no> 
+	<86782b610805310928o523065e7ma3c8d7a490688fd5@mail.gmail.com> 
+	<Pine.LNX.4.64.0805311831230.7951@reclus.nhh.no>
+	<86782b610805310947u4dbb2ed0hf39a5cdeaf67f986@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0806012041310.894@reclus.nhh.no>
+
+On Sat, 31 May 2008, Markus Neteler wrote:
+
+> On Sat, May 31, 2008 at 6:35 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> On Sat, 31 May 2008, Markus Neteler wrote:
+>>> On Sat, May 31, 2008 at 5:51 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>>>> On Sat, 31 May 2008, Markus Neteler wrote:
+>>>>> I have to read in Lidar data from GRASS, so speed matters. I have
+>>>>> modified the readVECT6() function to not export to SHAPE but
+>>>>> read in directly via GRASS-GDAL/OGR plugin:
+>>>>
+>>>> Dear Markus,
+>>>>
+>>>> In theory maybe, but if I cannot make the plugin work (I use SELinux on
+>>>> F7 for trials, and I have not found out how to make it accept the *.so from
+>>>> GRASS), then I don't think that it is going to be very helpful.
+>>>
+>>> Sure. but I can help you if you like (got it running on various kinds of
+>>> machines). It's also documented:
+>>>
+>>> http://grass.osgeo.org/wiki/Compile_and_install_GRASS_and_QGIS_with_GDAL/OGR_Plugin
+>>
+>> Including machines with SELinux running? It is very picky with ldconfig.
+>
+> I have never tried SELinux.
+> But I simply use:
+
+The SELinux was a red herring, I simply hadn't understood the change in 
+plugin technology. The current CVS version works for me on F7 under 
+SELinux with the plugin built as described in the wiki.
+
+Please try the CVS version at:
+
+cvs -d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial 
+login
+
+cvs -z3 
+-d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial co 
+-P spgrass6
+
+or a variant that works. The vector version looks OK, the raster version 
+is basic (uses data resolution not window resolution, and only handles one 
+raster at a time without categories).
+
+Roger
+
+>
+> cat /etc/ld.so.conf.d/grass.conf
+> /home/neteler/grass64/dist.x86_64-unknown-linux-gnu/lib
+>
+> (so I don't even run "make install" but use GRASS from
+> my home)
+>
+>
+> ...
+>> Aha, I've been compiling with GRASS support, which was the old way. I'll try
+>> again.
+>
+> thanks and good luck,
+> Markus
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From neteler at osgeo.org  Sun Jun  1 16:40:09 2008
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sun Jun  1 16:40:12 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+In-Reply-To: <Pine.LNX.4.64.0806012041310.894@reclus.nhh.no>
+References: <86782b610805310336x10a18188tc40c99adfaf480@mail.gmail.com>
+	<Pine.LNX.4.64.0805311744010.7951@reclus.nhh.no>
+	<86782b610805310928o523065e7ma3c8d7a490688fd5@mail.gmail.com>
+	<Pine.LNX.4.64.0805311831230.7951@reclus.nhh.no>
+	<86782b610805310947u4dbb2ed0hf39a5cdeaf67f986@mail.gmail.com>
+	<Pine.LNX.4.64.0806012041310.894@reclus.nhh.no>
+Message-ID: <86782b610806011340r28806b5cqefc58fb3969c7659@mail.gmail.com>
+
+On Sun, Jun 1, 2008 at 8:47 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Sat, 31 May 2008, Markus Neteler wrote:
+>> On Sat, May 31, 2008 at 6:35 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>>> On Sat, 31 May 2008, Markus Neteler wrote:
+>>>> On Sat, May 31, 2008 at 5:51 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>>>>> On Sat, 31 May 2008, Markus Neteler wrote:
+>>>>>>
+>>>>>> I have to read in Lidar data from GRASS, so speed matters. I have
+>>>>>> modified the readVECT6() function to not export to SHAPE but
+>>>>>> read in directly via GRASS-GDAL/OGR plugin:
+...
+> The SELinux was a red herring, I simply hadn't understood the change in
+> plugin technology. The current CVS version works for me on F7 under SELinux
+> with the plugin built as described in the wiki.
+>
+> Please try the CVS version at:
+>
+> cvs -d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial login
+>
+> cvs -z3 -d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial co -P spgrass6
+
+
+Dear Roger,
+
+thanks for the high speed rewrite of the interface. Downloaded and installed
+successfully (I see the new message
+"GRASS GIS interface loaded with GRASS version: 6.4.svn"
+).
+
+> or a variant that works. The vector version looks OK,
+
+I have made the test again but cannot observe a speed improvement.
+I guess I have to debug it somehow.
+
+> the raster version is
+> basic (uses data resolution not window resolution, and only handles one
+> raster at a time without categories).
+
+AFAIK the plugin delivers only *original* raster resolution and extent (that's
+why r.out.gdal was written in C to replace a former plugin based shell script).
+So, unless the plugin is changed here it might not be that useful for raster
+data *if* the GRASS behaviour of respecting raster settings during export
+should be maintained.
+
+thanks,
+Markus
+From hamish_b at yahoo.com  Sun Jun  1 22:41:16 2008
+From: hamish_b at yahoo.com (Hamish)
+Date: Sun Jun  1 22:43:21 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+In-Reply-To: <86782b610806011340r28806b5cqefc58fb3969c7659@mail.gmail.com>
+Message-ID: <841923.22318.qm@web45804.mail.sp1.yahoo.com>
+
+Roger:
+> > the raster version is basic (uses data resolution not window
+> > resolution, and only handles one raster at a time without categories).
+
+Markus: 
+> AFAIK the plugin delivers only *original* raster resolution
+> and extent (that's why r.out.gdal was written in C to replace
+> a former plugin based shell script).
+> So, unless the plugin is changed here it might not be that
+> useful for raster data *if* the GRASS behaviour of respecting raster
+> settings during export should be maintained.
+
+maybe the solution is just adding another line somewhere that does like
+if( wind.region != map.region )
+  r.mapcalc "tmp.R.outputmap.$$ = $inputmap"
+else
+  g.copy "$inputmap,tmp.R.outputmap.$$"
+
+?
+
+Or do the commands have to come from the R side, so no GRASS module commands can be used? Or else teach the user to do that cropping/resampling first (which is not a very nice solution IMO).
+
+
+Hamish
+
+
+
+      
+
+From Roger.Bivand at nhh.no  Mon Jun  2 04:03:09 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon Jun  2 04:03:13 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+In-Reply-To: <86782b610806011340r28806b5cqefc58fb3969c7659@mail.gmail.com>
+References: <86782b610805310336x10a18188tc40c99adfaf480@mail.gmail.com> 
+	<Pine.LNX.4.64.0805311744010.7951@reclus.nhh.no> 
+	<86782b610805310928o523065e7ma3c8d7a490688fd5@mail.gmail.com> 
+	<Pine.LNX.4.64.0805311831230.7951@reclus.nhh.no> 
+	<86782b610805310947u4dbb2ed0hf39a5cdeaf67f986@mail.gmail.com> 
+	<Pine.LNX.4.64.0806012041310.894@reclus.nhh.no>
+	<86782b610806011340r28806b5cqefc58fb3969c7659@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0806020958390.17033@reclus.nhh.no>
+
+On Sun, 1 Jun 2008, Markus Neteler wrote:
+
+> On Sun, Jun 1, 2008 at 8:47 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> On Sat, 31 May 2008, Markus Neteler wrote:
+>>> On Sat, May 31, 2008 at 6:35 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>>>> On Sat, 31 May 2008, Markus Neteler wrote:
+>>>>> On Sat, May 31, 2008 at 5:51 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>>>>>> On Sat, 31 May 2008, Markus Neteler wrote:
+>>>>>>>
+>>>>>>> I have to read in Lidar data from GRASS, so speed matters. I have
+>>>>>>> modified the readVECT6() function to not export to SHAPE but
+>>>>>>> read in directly via GRASS-GDAL/OGR plugin:
+> ...
+>> The SELinux was a red herring, I simply hadn't understood the change in
+>> plugin technology. The current CVS version works for me on F7 under SELinux
+>> with the plugin built as described in the wiki.
+>>
+>> Please try the CVS version at:
+>>
+>> cvs -d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial login
+>>
+>> cvs -z3 -d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial co -P spgrass6
+>
+>
+> Dear Roger,
+>
+> thanks for the high speed rewrite of the interface. Downloaded and installed
+> successfully (I see the new message
+> "GRASS GIS interface loaded with GRASS version: 6.4.svn"
+> ).
+>
+>> or a variant that works. The vector version looks OK,
+>
+> I have made the test again but cannot observe a speed improvement.
+> I guess I have to debug it somehow.
+
+Markus,
+
+For now, the plugin= argument defaults to FALSE. If NULL, it will 
+autodetect, if TRUE, it will try to use the plugin or fail. To avoid 
+breaking things for users with a plugin but scripts that might break, I 
+set plugin=FALSE for now. Once we have some experience, I'll increment the 
+version number from 0.5-* to 0.6-1, and set plugin=NULL by default.
+
+Roger
+
+>
+>> the raster version is
+>> basic (uses data resolution not window resolution, and only handles one
+>> raster at a time without categories).
+>
+> AFAIK the plugin delivers only *original* raster resolution and extent (that's
+> why r.out.gdal was written in C to replace a former plugin based shell script).
+> So, unless the plugin is changed here it might not be that useful for raster
+> data *if* the GRASS behaviour of respecting raster settings during export
+> should be maintained.
+>
+> thanks,
+> Markus
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From Roger.Bivand at nhh.no  Mon Jun  2 04:16:14 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon Jun  2 04:16:17 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+In-Reply-To: <841923.22318.qm@web45804.mail.sp1.yahoo.com>
+References: <841923.22318.qm@web45804.mail.sp1.yahoo.com>
+Message-ID: <Pine.LNX.4.64.0806021003130.17033@reclus.nhh.no>
+
+On Sun, 1 Jun 2008, Hamish wrote:
+
+> Roger:
+>>> the raster version is basic (uses data resolution not window
+>>> resolution, and only handles one raster at a time without categories).
+>
+> Markus:
+>> AFAIK the plugin delivers only *original* raster resolution
+>> and extent (that's why r.out.gdal was written in C to replace
+>> a former plugin based shell script).
+>> So, unless the plugin is changed here it might not be that
+>> useful for raster data *if* the GRASS behaviour of respecting raster
+>> settings during export should be maintained.
+>
+> maybe the solution is just adding another line somewhere that does like
+> if( wind.region != map.region )
+>  r.mapcalc "tmp.R.outputmap.$$ = $inputmap"
+> else
+>  g.copy "$inputmap,tmp.R.outputmap.$$"
+>
+> ?
+>
+> Or do the commands have to come from the R side, so no GRASS module 
+> commands can be used? Or else teach the user to do that 
+> cropping/resampling first (which is not a very nice solution IMO).
+
+Hamish,
+
+The direct way (with R running inside but on top of GRASS, R CLI) is to 
+use GRASS modules in system(). However, I'm close to using the discussion 
+of earlier this year to parse the --interface-description output from XML 
+to R-usable strings, so that it would be feasible to have a generic 
+interface from R to GRASS modules. Would anyone be interested in my adding 
+the draft code to the CVS site? If anyone would like to join in, I can 
+move spgrass6 to svn on R-forge and invite developers - on the 
+sourceforge cvs, all the sp modules have write access for developers, so 
+it isn't so sensible.
+
+With this available, the resampling could either be done by the user under 
+better control than just using system() directly, or coded into the 
+interface functions (still using system but under control of things like 
+escaping). The code would be much cleaner than that currently used. I 
+think the variants for native Windows/Cygwin/others will still have to 
+co-exist, though.
+
+Roger
+
+>
+>
+> Hamish
+>
+>
+>
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From neteler at osgeo.org  Mon Jun  2 12:00:41 2008
+From: neteler at osgeo.org (Markus Neteler)
+Date: Mon Jun  2 12:00:45 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+In-Reply-To: <86782b610806011422r3fd9054av53e58e8d1ef382a9@mail.gmail.com>
+References: <86782b610805310336x10a18188tc40c99adfaf480@mail.gmail.com>
+	<Pine.LNX.4.64.0805311744010.7951@reclus.nhh.no>
+	<86782b610805310928o523065e7ma3c8d7a490688fd5@mail.gmail.com>
+	<Pine.LNX.4.64.0805311831230.7951@reclus.nhh.no>
+	<86782b610805310947u4dbb2ed0hf39a5cdeaf67f986@mail.gmail.com>
+	<Pine.LNX.4.64.0806012041310.894@reclus.nhh.no>
+	<86782b610806011340r28806b5cqefc58fb3969c7659@mail.gmail.com>
+	<86782b610806011422r3fd9054av53e58e8d1ef382a9@mail.gmail.com>
+Message-ID: <86782b610806020900v33073b24o41e782117a92aead@mail.gmail.com>
+
+Dear Roger,
+
+On Sun, Jun 1, 2008 at 11:22 PM, Markus Neteler <neteler@osgeo.org> wrote:
+...
+If I manually set plugin=TRUE, it fails:
+> lidar1 <- readVECT6("lidar1map3d", ignore.stderr=TRUE, plugin=TRUE)
+Error in ogrInfo(dsn = dsn, layer = layer) : Cannot open file
+
+With debugging I found that the map is only searched in the
+current mapset. In my case, however, the map is sitting in another mapset...
+Would it be possible to add g.findfile there to construct the full
+path to the map?
+
+g.findfile element=vector file=gauss_random
+name='gauss_random'
+mapset='sqlite'
+fullname='gauss_random@sqlite'
+file='/home/neteler/grassdata/nc_spm_07/sqlite/vector/gauss_random'
+
+The "file" line contains (almost) the dsn path (+ /head)
+
+Best wishes,
+Markus
+From Roger.Bivand at nhh.no  Mon Jun  2 12:07:53 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon Jun  2 12:07:57 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+In-Reply-To: <86782b610806020900v33073b24o41e782117a92aead@mail.gmail.com>
+References: <86782b610805310336x10a18188tc40c99adfaf480@mail.gmail.com> 
+	<Pine.LNX.4.64.0805311744010.7951@reclus.nhh.no> 
+	<86782b610805310928o523065e7ma3c8d7a490688fd5@mail.gmail.com> 
+	<Pine.LNX.4.64.0805311831230.7951@reclus.nhh.no> 
+	<86782b610805310947u4dbb2ed0hf39a5cdeaf67f986@mail.gmail.com> 
+	<Pine.LNX.4.64.0806012041310.894@reclus.nhh.no> 
+	<86782b610806011340r28806b5cqefc58fb3969c7659@mail.gmail.com> 
+	<86782b610806011422r3fd9054av53e58e8d1ef382a9@mail.gmail.com>
+	<86782b610806020900v33073b24o41e782117a92aead@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0806021805310.17033@reclus.nhh.no>
+
+On Mon, 2 Jun 2008, Markus Neteler wrote:
+
+> Dear Roger,
+>
+> On Sun, Jun 1, 2008 at 11:22 PM, Markus Neteler <neteler@osgeo.org> wrote:
+> ...
+> If I manually set plugin=TRUE, it fails:
+>> lidar1 <- readVECT6("lidar1map3d", ignore.stderr=TRUE, plugin=TRUE)
+> Error in ogrInfo(dsn = dsn, layer = layer) : Cannot open file
+>
+> With debugging I found that the map is only searched in the
+> current mapset. In my case, however, the map is sitting in another mapset...
+> Would it be possible to add g.findfile there to construct the full
+> path to the map?
+
+Please use the new mapset= argument in readVECT6() or readRAST6(). I 
+prefer this for the moment to trying to insert @ parsing or extra code. 
+The user can run system("g.findfile ...") to check.
+
+Roger
+
+>
+> g.findfile element=vector file=gauss_random
+> name='gauss_random'
+> mapset='sqlite'
+> fullname='gauss_random@sqlite'
+> file='/home/neteler/grassdata/nc_spm_07/sqlite/vector/gauss_random'
+>
+> The "file" line contains (almost) the dsn path (+ /head)
+>
+> Best wishes,
+> Markus
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From bks at centrum.cz  Mon Jun 16 11:19:56 2008
+From: bks at centrum.cz (bks@centrum.cz)
+Date: Mon Jun 16 11:25:11 2008
+Subject: [GRASS-stats] Rdbi Error in loadNamespace
+Message-ID: <200806161719.25529@centrum.cz>
+
+Hi,
+
+I have a problem to connect my Postgre with R.
+I did everything after Markus tutorial. It worked.
+But next time I used it, I cannot go over this error:
+
+"> library(Rdbi)
+Loading required package: Rdbi
+Error in loadNamespace(package, c(which.lib.loc, lib.loc), keep.source = keep.source) : 
+  cyclic name space dependencies are not supported
+Error : package 'Rdbi' could not be loaded
+Error : .onLoad failed in 'loadNamespace' for 'Rdbi'
+Error: package/namespace load failed for 'Rdbi' "
+
+I also tried to reinstall R, did not help.
+Could you help, me?
+
+Best regards,
+Stanislav 
+
+From daniel.mcinerney at ucd.ie  Mon Jun 16 12:38:51 2008
+From: daniel.mcinerney at ucd.ie (Daniel McInerney)
+Date: Mon Jun 16 13:36:51 2008
+Subject: [GRASS-stats] Rdbi Error in loadNamespace
+In-Reply-To: <200806161719.25529@centrum.cz>
+References: <200806161719.25529@centrum.cz>
+Message-ID: <4856971B.8020804@ucd.ie>
+
+Hi Stanislav,
+I'm not overly familiar with Rdbi and can't
+suggest a fix for the error message that you
+outline.
+
+However, you might consider using the RODBC
+library [1] as an alternative means of connecting
+R to PostgreSQL. Provided you edit /etc/odbc.ini
+and /etc/odbcinst.ini to suit your set-up, you can
+connect to your db with relative ease using obdcConnect()
+and query tables using  sqlQuery(). For additional
+information see [2].
+
+Regards,
+Daniel.
+
+
+[1] http://cran.r-project.org/web/packages/RODBC/index.html
+[2] http://cran.r-project.org/doc/manuals/R-data.html#RODBC
+
+
+bks@centrum.cz wrote:
+> Hi,
+>
+> I have a problem to connect my Postgre with R.
+> I did everything after Markus tutorial. It worked.
+> But next time I used it, I cannot go over this error:
+>
+> "> library(Rdbi)
+> Loading required package: Rdbi
+> Error in loadNamespace(package, c(which.lib.loc, lib.loc), keep.source = keep.source) : 
+>   cyclic name space dependencies are not supported
+> Error : package 'Rdbi' could not be loaded
+> Error : .onLoad failed in 'loadNamespace' for 'Rdbi'
+> Error: package/namespace load failed for 'Rdbi' "
+>
+> I also tried to reinstall R, did not help.
+> Could you help, me?
+>
+> Best regards,
+> Stanislav 
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>   
+From Seppo.Kaitala at fimr.fi  Mon Jun 16 15:11:14 2008
+From: Seppo.Kaitala at fimr.fi (Seppo.Kaitala@fimr.fi)
+Date: Mon Jun 16 15:11:22 2008
+Subject: [GRASS-stats] Seppo Kaitala/FIMR/FI is out of the office.
+Message-ID: <OF91D77566.C886F382-ONC225746A.00696656-C225746A.00696656@fimr.fi>
+
+
+I will be out of the office starting  16.06.2008 and will not return until
+21.07.2008.
+
+I will respond to your message when I return.
+
+From neteler at osgeo.org  Mon Jun 16 17:29:16 2008
+From: neteler at osgeo.org (Markus Neteler)
+Date: Mon Jun 16 17:29:18 2008
+Subject: [GRASS-stats] Rdbi Error in loadNamespace
+In-Reply-To: <4856971B.8020804@ucd.ie>
+References: <200806161719.25529@centrum.cz> <4856971B.8020804@ucd.ie>
+Message-ID: <86782b610806161429y642b59c9i84fa17f565b2bed5@mail.gmail.com>
+
+On Mon, Jun 16, 2008 at 6:38 PM, Daniel McInerney
+<daniel.mcinerney@ucd.ie> wrote:
+> However, you might consider using the RODBC
+> library [1] as an alternative means of connecting
+> R to PostgreSQL.
+
+If speed matters, better fix the RDBI installation:
+http://grass.osgeo.org/statsgrass/r_and_dbms.html
+(see second part)
+
+In my test: 5sec (RDbi) against 4min 30sec (RODBC)!
+
+Markus
+From hamish_b at yahoo.com  Mon Jun 16 22:07:16 2008
+From: hamish_b at yahoo.com (Hamish)
+Date: Mon Jun 16 22:07:19 2008
+Subject: [GRASS-stats] Rdbi Error in loadNamespace
+In-Reply-To: <200806161719.25529@centrum.cz>
+Message-ID: <288301.20748.qm@web45816.mail.sp1.yahoo.com>
+
+Stanislav wrote:
+> I have a problem to connect my Postgre with R.
+> I did everything after Markus tutorial. It worked.
+> But next time I used it, I cannot go over this error:
+> 
+> "> library(Rdbi)
+> Loading required package: Rdbi
+> Error in loadNamespace(package, c(which.lib.loc, lib.loc),
+> keep.source = keep.source) : 
+>   cyclic name space dependencies are not supported
+> Error : package 'Rdbi' could not be loaded
+> Error : .onLoad failed in 'loadNamespace' for
+> 'Rdbi'
+> Error: package/namespace load failed for 'Rdbi'
+> "
+> 
+> I also tried to reinstall R, did not help.
+
+maybe a silly question, but is the Rdbi package already loaded at that point?
+
+
+Hamish
+
+
+
+
+      
+
+From jarekj at amu.edu.pl  Tue Jun 17 01:21:12 2008
+From: jarekj at amu.edu.pl (Jarekj)
+Date: Tue Jun 17 01:31:23 2008
+Subject: [GRASS-stats] Rdbi Error in loadNamespace
+In-Reply-To: <200806161719.25529@centrum.cz>
+References: <200806161719.25529@centrum.cz>
+Message-ID: <485749C8.1020104@amu.edu.pl>
+
+bks@centrum.cz pisze:
+> Hi,
+>
+> I have a problem to connect my Postgre with R.
+> I did everything after Markus tutorial. It worked.
+> But next time I used it, I cannot go over this error:
+>
+> "> library(Rdbi)
+> Loading required package: Rdbi
+> Error in loadNamespace(package, c(which.lib.loc, lib.loc), keep.source = keep.source) : 
+>   cyclic name space dependencies are not supported
+> Error : package 'Rdbi' could not be loaded
+> Error : .onLoad failed in 'loadNamespace' for 'Rdbi'
+> Error: package/namespace load failed for 'Rdbi' "
+>
+> I also tried to reinstall R, did not help.
+> Could you help, me?
+>
+> Best regards,
+> Stanislav 
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>   
+the simpliest way it ot delete .Rdata from your home directory and start 
+R again
+Jarek
+From bks at centrum.cz  Tue Jun 17 03:21:57 2008
+From: bks at centrum.cz (bks@centrum.cz)
+Date: Tue Jun 17 03:22:11 2008
+Subject: [GRASS-stats] Rdbi Error in loadNamespace
+In-Reply-To: <288301.20748.qm@web45816.mail.sp1.yahoo.com>
+References: <200806161719.25529@centrum.cz>
+	<288301.20748.qm@web45816.mail.sp1.yahoo.com>
+Message-ID: <200806170921.10660@centrum.cz>
+
+Stanislav wrote:
+>> I have a problem to connect my Postgre with R.
+>> I did everything after Markus tutorial. It worked.
+>> But next time I used it, I cannot go over this error:
+>> 
+>> "> library(Rdbi)
+>> Loading required package: Rdbi
+>> Error in loadNamespace(package, c(which.lib.loc, lib.loc),
+>> keep.source = keep.source) : 
+>>   cyclic name space dependencies are not supported
+>> Error : package 'Rdbi' could not be loaded
+>> Error : .onLoad failed in 'loadNamespace' for
+>> 'Rdbi'
+>> Error: package/namespace load failed for 'Rdbi'
+>> "
+>> 
+>> I also tried to reinstall R, did not help.
+>
+>maybe a silly question, but is the Rdbi package already loaded at that
+point?
+
+Yes, it worked for the first time. Next time without success...
+Stanislav 
+
+From neteler at osgeo.org  Tue Jun 17 04:17:44 2008
+From: neteler at osgeo.org (Markus Neteler)
+Date: Tue Jun 17 04:17:47 2008
+Subject: [GRASS-stats] Rdbi Error in loadNamespace
+In-Reply-To: <288301.20748.qm@web45816.mail.sp1.yahoo.com>
+References: <200806161719.25529@centrum.cz>
+	<288301.20748.qm@web45816.mail.sp1.yahoo.com>
+Message-ID: <86782b610806170117j57ec26det88ce201b0104c821@mail.gmail.com>
+
+On Tue, Jun 17, 2008 at 4:07 AM, Hamish <hamish_b@yahoo.com> wrote:
+> Stanislav wrote:
+>> I have a problem to connect my Postgre with R.
+>> I did everything after Markus tutorial. It worked.
+>> But next time I used it, I cannot go over this error:
+>>
+>> "> library(Rdbi)
+>> Loading required package: Rdbi
+>> Error in loadNamespace(package, c(which.lib.loc, lib.loc),
+>> keep.source = keep.source) :
+>>   cyclic name space dependencies are not supported
+>> Error : package 'Rdbi' could not be loaded
+>> Error : .onLoad failed in 'loadNamespace' for
+>> 'Rdbi'
+>> Error: package/namespace load failed for 'Rdbi'
+>> "
+>>
+>> I also tried to reinstall R, did not help.
+>
+> maybe a silly question, but is the Rdbi package already loaded at that point?
+
+Loading is done like this (maybe silly suggestion again):
+
+library(Rdbi)
+library(RdbiPgSQL)
+
+(I discovered the hard way some months ago that the second
+command is also needed, it wasn't some years ago).
+
+Then, evil can creep in after version change through .RData in
+the current working directory.
+
+Markus
+From bks at centrum.cz  Tue Jun 17 04:18:14 2008
+From: bks at centrum.cz (bks@centrum.cz)
+Date: Tue Jun 17 04:18:25 2008
+Subject: [GRASS-stats] Rdbi Error in loadNamespace
+In-Reply-To: <485749C8.1020104@amu.edu.pl>
+References: 200806161719.25529@centrum.cz> <200806161719.25529@centrum.cz>
+	<485749C8.1020104@amu.edu.pl>
+Message-ID: <200806171018.10863@centrum.cz>
+
+>> Hi,
+>>
+>> I have a problem to connect my Postgre with R.
+>> I did everything after Markus tutorial. It worked.
+>> But next time I used it, I cannot go over this error:
+>>
+>> "> library(Rdbi)
+>> Loading required package: Rdbi
+>> Error in loadNamespace(package, c(which.lib.loc, lib.loc), keep.source
+= keep.source) : >   cyclic name space dependencies are not supported
+>> Error : package 'Rdbi' could not be loaded
+>> Error : .onLoad failed in 'loadNamespace' for 'Rdbi'
+>> Error: package/namespace load failed for 'Rdbi' "
+>>
+>> I also tried to reinstall R, did not help.
+>> Could you help, me?
+>>
+>> Best regards,
+>> Stanislav >
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>   the simpliest way it ot delete .Rdata from your home directory and
+start R again
+>Jarek
+   
+     When I delete "R"  folder from $HOME, all the installed packages
+are deleted. This library I do have to create by installing, again and the
+problem remains unsolved.
+Stanislav 
+
+From jarekj at amu.edu.pl  Tue Jun 17 05:04:43 2008
+From: jarekj at amu.edu.pl (=?UTF-8?B?SmFyb3PFgmF3IEphc2lld2ljeg==?=)
+Date: Tue Jun 17 05:04:51 2008
+Subject: [GRASS-stats] Rdbi Error in loadNamespace
+In-Reply-To: <200806171018.10863@centrum.cz>
+References: 200806161719.25529@centrum.cz> <200806161719.25529@centrum.cz>
+	<485749C8.1020104@amu.edu.pl> <200806171018.10863@centrum.cz>
+Message-ID: <48577E2B.7060308@amu.edu.pl>
+
+bks@centrum.cz pisze:
+>>> Hi,
+>>>
+>>> I have a problem to connect my Postgre with R.
+>>> I did everything after Markus tutorial. It worked.
+>>> But next time I used it, I cannot go over this error:
+>>>
+>>> "> library(Rdbi)
+>>> Loading required package: Rdbi
+>>> Error in loadNamespace(package, c(which.lib.loc, lib.loc), keep.source
+>>>       
+> = keep.source) : >   cyclic name space dependencies are not supported
+>   
+>>> Error : package 'Rdbi' could not be loaded
+>>> Error : .onLoad failed in 'loadNamespace' for 'Rdbi'
+>>> Error: package/namespace load failed for 'Rdbi' "
+>>>
+>>> I also tried to reinstall R, did not help.
+>>> Could you help, me?
+>>>
+>>> Best regards,
+>>> Stanislav >
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats@lists.osgeo.org
+>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>   the simpliest way it ot delete .Rdata from your home directory and
+>>>       
+> start R again
+>   
+>> Jarek
+>>     
+>    
+>      When I delete "R"  folder from $HOME, all the installed packages
+> are deleted. This library I do have to create by installing, again and the
+> problem remains unsolved.
+> Stanislav 
+>   
+You are not to deleate R folder with packages but hidden file .RData 
+(with "." o the begining):
+rm .Rdata
+try it, and let us known if help
+Jarek
+From bks at centrum.cz  Tue Jun 17 05:19:01 2008
+From: bks at centrum.cz (bks@centrum.cz)
+Date: Tue Jun 17 05:19:15 2008
+Subject: [GRASS-stats] Rdbi Error in loadNamespace
+In-Reply-To: <48577E2B.7060308@amu.edu.pl>
+References: 00806161719.25529@centrum.cz> <200806161719.25529@centrum.cz>
+	<485749C8.1020104@amu.edu.pl> <200806171018.10863@centrum.cz>
+	<48577E2B.7060308@amu.edu.pl>
+Message-ID: <200806171119.21406@centrum.cz>
+
+
+______________________________________________________________
+> Od: jarekj@amu.edu.pl
+> Komu: bks@centrum.cz
+> CC: grass-stats@lists.osgeo.org
+> Datum: 17.06.2008 11:04
+> P?edm?t: Re: [GRASS-stats] Rdbi Error in loadNamespace
+>
+>bks@centrum.cz pisze:
+>>>> Hi,
+>>>>
+>>>> I have a problem to connect my Postgre with R.
+>>>> I did everything after Markus tutorial. It worked.
+>>>> But next time I used it, I cannot go over this error:
+>>>>
+>>>> "> library(Rdbi)
+>>>> Loading required package: Rdbi
+>>>> Error in loadNamespace(package, c(which.lib.loc, lib.loc),
+keep.source
+>>>>       > = keep.source) : >   cyclic name space dependencies are not
+supported
+>>   >>> Error : package 'Rdbi' could not be loaded
+>>>> Error : .onLoad failed in 'loadNamespace' for 'Rdbi'
+>>>> Error: package/namespace load failed for 'Rdbi' "
+>>>>
+>>>> I also tried to reinstall R, did not help.
+>>>> Could you help, me?
+>>>>
+>>>> Best regards,
+>>>> Stanislav >
+>>>> _______________________________________________
+>>>> grass-stats mailing list
+>>>> grass-stats@lists.osgeo.org
+>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>   the simpliest way it ot delete .Rdata from your home directory and
+>>>>       > start R again
+>>   >> Jarek
+>>>     >    >      When I delete "R"  folder from $HOME, all the
+installed packages
+>> are deleted. This library I do have to create by installing, again and
+the
+>> problem remains unsolved.
+>> Stanislav >   You are not to deleate R folder with packages but hidden
+file .RData (with "." o the begining):
+>rm .Rdata
+>try it, and let us known if help
+>Jarek
+
+~$ rm ~/.Rdata
+rm: cannot remove `.Rdata': No such file or directory
+(Thank you for your patience with a beginner.)
+
+(I used both...
+library(Rdbi)
+library(RdbiPgSQL)
+)
+
+Stanislav
+
+	
+
+From giohappy at gmail.com  Tue Jun 17 05:44:16 2008
+From: giohappy at gmail.com (G. Allegri)
+Date: Tue Jun 17 05:44:18 2008
+Subject: [GRASS-stats] Rdbi Error in loadNamespace
+In-Reply-To: <200806171119.21406@centrum.cz>
+References: <200806161719.25529@centrum.cz> <485749C8.1020104@amu.edu.pl>
+	<200806171018.10863@centrum.cz> <48577E2B.7060308@amu.edu.pl>
+	<200806171119.21406@centrum.cz>
+Message-ID: <e12429640806170244s169bf989x548a849f9d300514@mail.gmail.com>
+
+> ~$ rm ~/.Rdata
+> rm: cannot remove `.Rdata': No such file or directory
+
+This is strange... you don't have the .RData in your home folder...
+Try:
+find / -name .Rdata
+From neteler at osgeo.org  Tue Jun 17 06:14:50 2008
+From: neteler at osgeo.org (Markus Neteler)
+Date: Tue Jun 17 06:14:52 2008
+Subject: [GRASS-stats] Rdbi Error in loadNamespace
+In-Reply-To: <200806171119.21406@centrum.cz>
+References: <200806161719.25529@centrum.cz> <485749C8.1020104@amu.edu.pl>
+	<200806171018.10863@centrum.cz> <48577E2B.7060308@amu.edu.pl>
+	<200806171119.21406@centrum.cz>
+Message-ID: <86782b610806170314q771a8f9cm4ce9047b88e06889@mail.gmail.com>
+
+2008/6/17  <bks@centrum.cz>:
+>>bks@centrum.cz pisze:
+
+> ~$ rm ~/.Rdata
+> rm: cannot remove `.Rdata': No such file or directory
+> (Thank you for your patience with a beginner.)
+
+you must search in the *current* directory where you
+launch R. There may be many .Rdata files.
+
+I just installed Rdbi and it worked for me...
+
+Trick: create a new directory, go inside and launch
+R inside. Then it will work :)
+
+Markus
+From bks at centrum.cz  Tue Jun 17 06:19:53 2008
+From: bks at centrum.cz (bks@centrum.cz)
+Date: Tue Jun 17 06:20:00 2008
+Subject: [GRASS-stats] Rdbi Error in loadNamespace
+In-Reply-To: <e12429640806170244s169bf989x548a849f9d300514@mail.gmail.com>
+References: 200806161719.25529@centrum.cz> <485749C8.1020104@amu.edu.pl>
+	<200806171119.21406@centrum.cz>
+	<e12429640806170244s169bf989x548a849f9d300514@mail.gmail.com>
+Message-ID: <200806171219.31104@centrum.cz>
+
+>> ~$ rm ~/.Rdata
+>> rm: cannot remove `.Rdata': No such file or directory
+>
+>This is strange... you don't have the .RData in your home folder...
+>Try:
+>find / -name .Rdata
+
+find / -name .Rdata
+find: /etc/ssl/private: Permission denied
+find: /etc/cups/ssl: Permission denied
+find: /sys/fs/fuse/connections/2: Permission denied
+find: /sys/fs/fuse/connections/1: Permission denied
+find: /var/lib/gdm: Permission denied
+find: /var/lib/PolicyKit: Permission denied
+find: /var/lib/postgresql/8.2/main: Permission denied
+find: /var/lib/postgresql/8.3/main: Permission denied
+find: /var/lib/postgresql/.config: Permission denied
+find: /var/lib/postgresql/.gnome2: Permission denied
+find: /var/run/cups/certs: Permission denied
+find: /var/cache/ldconfig: Permission denied
+find: /var/cache/system-tools-backends/backup: Permission denied
+find: /var/spool/cron/atjobs: Permission denied
+find: /var/spool/cron/atspool: Permission denied
+find: /var/spool/cron/crontabs: Permission denied
+find: /var/spool/cups: Permission denied
+find: /proc/tty/driver: Permission denied
+find: /proc/1/task/1/fd: Permission denied
+........ 
+find: /proc/5875/fdinfo: Permission denied
+find: /root/.gnome2_private: Permission denied
+find: /root/.gconfd: Permission denied
+find: /root/.gnome2: Permission denied
+find: /root/.gconf: Permission denied
+find: /root/.synaptic: Permission denied
+
+Stanislav
+
+From bks at centrum.cz  Tue Jun 17 06:27:56 2008
+From: bks at centrum.cz (bks@centrum.cz)
+Date: Tue Jun 17 06:28:00 2008
+Subject: [GRASS-stats] Rdbi Error in loadNamespace
+In-Reply-To: <86782b610806170314q771a8f9cm4ce9047b88e06889@mail.gmail.com>
+References: 200806161719.25529@centrum.cz> <485749C8.1020104@amu.edu.pl>
+	<200806171119.21406@centrum.cz>
+	<86782b610806170314q771a8f9cm4ce9047b88e06889@mail.gmail.com>
+Message-ID: <200806171227.1095@centrum.cz>
+
+>2008/6/17  <bks@centrum.cz>:
+>>>bks@centrum.cz pisze:
+>
+>> ~$ rm ~/.Rdata
+>> rm: cannot remove `.Rdata': No such file or directory
+>> (Thank you for your patience with a beginner.)
+>
+>you must search in the *current* directory where you
+>launch R. There may be many .Rdata files.
+>
+>I just installed Rdbi and it worked for me...
+>
+>Trick: create a new directory, go inside and launch
+>R inside. Then it will work :)
+>
+>Markus
+
+Sensation!! Works. :)
+Thank you!
+Stanislav
+
+>
+
+From neteler at osgeo.org  Sun Jun 22 16:43:36 2008
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sun Jun 22 16:43:39 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+In-Reply-To: <Pine.LNX.4.64.0806020958390.17033@reclus.nhh.no>
+References: <86782b610805310336x10a18188tc40c99adfaf480@mail.gmail.com>
+	<Pine.LNX.4.64.0805311744010.7951@reclus.nhh.no>
+	<86782b610805310928o523065e7ma3c8d7a490688fd5@mail.gmail.com>
+	<Pine.LNX.4.64.0805311831230.7951@reclus.nhh.no>
+	<86782b610805310947u4dbb2ed0hf39a5cdeaf67f986@mail.gmail.com>
+	<Pine.LNX.4.64.0806012041310.894@reclus.nhh.no>
+	<86782b610806011340r28806b5cqefc58fb3969c7659@mail.gmail.com>
+	<Pine.LNX.4.64.0806020958390.17033@reclus.nhh.no>
+Message-ID: <86782b610806221343v10cfb8eeo85f491a91a12ad45@mail.gmail.com>
+
+Dear Roger,
+
+On Mon, Jun 2, 2008 at 10:03 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Sun, 1 Jun 2008, Markus Neteler wrote:
+>>>>>>> On Sat, 31 May 2008, Markus Neteler wrote:
+>>>>>>>> I have to read in Lidar data from GRASS, so speed matters. I have
+>>>>>>>> modified the readVECT6() function to not export to SHAPE but
+>>>>>>>> read in directly via GRASS-GDAL/OGR plugin:
+...
+>> thanks for the high speed rewrite of the interface. Downloaded and
+>> installed
+>> successfully (I see the new message
+>> "GRASS GIS interface loaded with GRASS version: 6.4.svn"
+>> ).
+>>
+>>> or a variant that works. The vector version looks OK,
+>>
+
+> Markus,
+>
+> For now, the plugin= argument defaults to FALSE. If NULL, it will
+> autodetect, if TRUE, it will try to use the plugin or fail. To avoid
+> breaking things for users with a plugin but scripts that might break, I set
+> plugin=FALSE for now. Once we have some experience, I'll increment the
+> version number from 0.5-* to 0.6-1, and set plugin=NULL by default.
+>
+
+I have partially reinstalled R here. Should I continue to use the CVS
+version for this improvement? I feel that things won't be tested widely
+unless the code isn't easily available (i.e. CRAN).
+
+Best wishes
+Markus
+From Roger.Bivand at nhh.no  Mon Jun 23 16:36:01 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon Jun 23 16:36:07 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+In-Reply-To: <86782b610806221343v10cfb8eeo85f491a91a12ad45@mail.gmail.com>
+References: <86782b610805310336x10a18188tc40c99adfaf480@mail.gmail.com> 
+	<Pine.LNX.4.64.0805311744010.7951@reclus.nhh.no> 
+	<86782b610805310928o523065e7ma3c8d7a490688fd5@mail.gmail.com> 
+	<Pine.LNX.4.64.0805311831230.7951@reclus.nhh.no> 
+	<86782b610805310947u4dbb2ed0hf39a5cdeaf67f986@mail.gmail.com> 
+	<Pine.LNX.4.64.0806012041310.894@reclus.nhh.no> 
+	<86782b610806011340r28806b5cqefc58fb3969c7659@mail.gmail.com> 
+	<Pine.LNX.4.64.0806020958390.17033@reclus.nhh.no>
+	<86782b610806221343v10cfb8eeo85f491a91a12ad45@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0806232233000.31792@reclus.nhh.no>
+
+I've submitted spgrass6_0.5-9.tar.gz to CRAN, so barring accidents it 
+should be out soon. If you're using the raster or vector plugins and have 
+comments, please let me know - look for the new plugin= argument, which is 
+FALSE by default to avoid problems, but can be NULL for autodetection, or 
+TRUE to force use if the plugin is known to be available.
+
+Roger
+
+On Sun, 22 Jun 2008, Markus Neteler wrote:
+
+> Dear Roger,
+>
+> On Mon, Jun 2, 2008 at 10:03 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> On Sun, 1 Jun 2008, Markus Neteler wrote:
+>>>>>>>> On Sat, 31 May 2008, Markus Neteler wrote:
+>>>>>>>>> I have to read in Lidar data from GRASS, so speed matters. I have
+>>>>>>>>> modified the readVECT6() function to not export to SHAPE but
+>>>>>>>>> read in directly via GRASS-GDAL/OGR plugin:
+> ...
+>>> thanks for the high speed rewrite of the interface. Downloaded and
+>>> installed
+>>> successfully (I see the new message
+>>> "GRASS GIS interface loaded with GRASS version: 6.4.svn"
+>>> ).
+>>>
+>>>> or a variant that works. The vector version looks OK,
+>>>
+>
+>> Markus,
+>>
+>> For now, the plugin= argument defaults to FALSE. If NULL, it will
+>> autodetect, if TRUE, it will try to use the plugin or fail. To avoid
+>> breaking things for users with a plugin but scripts that might break, I set
+>> plugin=FALSE for now. Once we have some experience, I'll increment the
+>> version number from 0.5-* to 0.6-1, and set plugin=NULL by default.
+>>
+>
+> I have partially reinstalled R here. Should I continue to use the CVS
+> version for this improvement? I feel that things won't be tested widely
+> unless the code isn't easily available (i.e. CRAN).
+>
+> Best wishes
+> Markus
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From Roger.Bivand at nhh.no  Tue Jun 24 06:23:50 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Jun 24 06:23:53 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+In-Reply-To: <Pine.LNX.4.64.0806232233000.31792@reclus.nhh.no>
+References: <86782b610805310336x10a18188tc40c99adfaf480@mail.gmail.com> 
+	<Pine.LNX.4.64.0805311744010.7951@reclus.nhh.no> 
+	<86782b610805310928o523065e7ma3c8d7a490688fd5@mail.gmail.com> 
+	<Pine.LNX.4.64.0805311831230.7951@reclus.nhh.no> 
+	<86782b610805310947u4dbb2ed0hf39a5cdeaf67f986@mail.gmail.com> 
+	<Pine.LNX.4.64.0806012041310.894@reclus.nhh.no> 
+	<86782b610806011340r28806b5cqefc58fb3969c7659@mail.gmail.com> 
+	<Pine.LNX.4.64.0806020958390.17033@reclus.nhh.no>
+	<86782b610806221343v10cfb8eeo85f491a91a12ad45@mail.gmail.com>
+	<Pine.LNX.4.64.0806232233000.31792@reclus.nhh.no>
+Message-ID: <Pine.LNX.4.64.0806241218170.2865@reclus.nhh.no>
+
+On Mon, 23 Jun 2008, Roger Bivand wrote:
+
+> I've submitted spgrass6_0.5-9.tar.gz to CRAN, so barring accidents it should 
+> be out soon. If you're using the raster or vector plugins and have comments, 
+> please let me know - look for the new plugin= argument, which is FALSE by 
+> default to avoid problems, but can be NULL for autodetection, or TRUE to 
+> force use if the plugin is known to be available.
+
+My apologies, 0.5-9 was released on CRAN three weeks ago, so no change.
+
+What I do need is advice on whether to leave plugin=FALSE, or to set 
+plugin=NULL for autodetect, and risk foobars from existing user code 
+assuming the current region rather than the raster region seen by the 
+plugin if installed and autodetected.
+
+My preference remains for plugin=FALSE, that is, users have to change to 
+NULL or TRUE themselves, and accept the consequences of mixing up regions.
+
+Is there a shell-level utility in GRASS to check whether the region of a 
+raster is equal to the current working region - the function could call 
+that and create a copy of the required raster in current resolution if 
+they differ?
+
+Roger
+
+>
+> Roger
+>
+> On Sun, 22 Jun 2008, Markus Neteler wrote:
+>
+>>  Dear Roger,
+>>
+>>  On Mon, Jun 2, 2008 at 10:03 AM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> >  On Sun, 1 Jun 2008, Markus Neteler wrote:
+>> > > > > > > >  On Sat, 31 May 2008, Markus Neteler wrote:
+>> > > > > > > > >  I have to read in Lidar data from GRASS, so speed matters. 
+>> > > > > > > > >  I have
+>> > > > > > > > >  modified the readVECT6() function to not export to SHAPE 
+>> > > > > > > > >  but
+>> > > > > > > > >  read in directly via GRASS-GDAL/OGR plugin:
+>>  ...
+>> > >  thanks for the high speed rewrite of the interface. Downloaded and
+>> > >  installed
+>> > >  successfully (I see the new message
+>> > >  "GRASS GIS interface loaded with GRASS version: 6.4.svn"
+>> > > ) .
+>> > > 
+>> > > >  or a variant that works. The vector version looks OK,
+>> > > 
+>> 
+>> >  Markus,
+>> > 
+>> >  For now, the plugin= argument defaults to FALSE. If NULL, it will
+>> >  autodetect, if TRUE, it will try to use the plugin or fail. To avoid
+>> >  breaking things for users with a plugin but scripts that might break, I 
+>> >  set
+>> >  plugin=FALSE for now. Once we have some experience, I'll increment the
+>> >  version number from 0.5-* to 0.6-1, and set plugin=NULL by default.
+>> > 
+>>
+>>  I have partially reinstalled R here. Should I continue to use the CVS
+>>  version for this improvement? I feel that things won't be tested widely
+>>  unless the code isn't easily available (i.e. CRAN).
+>>
+>>  Best wishes
+>>  Markus
+>> 
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From neteler at osgeo.org  Tue Jun 24 06:29:18 2008
+From: neteler at osgeo.org (Markus Neteler)
+Date: Tue Jun 24 06:29:20 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+In-Reply-To: <Pine.LNX.4.64.0806241218170.2865@reclus.nhh.no>
+References: <86782b610805310336x10a18188tc40c99adfaf480@mail.gmail.com>
+	<86782b610805310928o523065e7ma3c8d7a490688fd5@mail.gmail.com>
+	<Pine.LNX.4.64.0805311831230.7951@reclus.nhh.no>
+	<86782b610805310947u4dbb2ed0hf39a5cdeaf67f986@mail.gmail.com>
+	<Pine.LNX.4.64.0806012041310.894@reclus.nhh.no>
+	<86782b610806011340r28806b5cqefc58fb3969c7659@mail.gmail.com>
+	<Pine.LNX.4.64.0806020958390.17033@reclus.nhh.no>
+	<86782b610806221343v10cfb8eeo85f491a91a12ad45@mail.gmail.com>
+	<Pine.LNX.4.64.0806232233000.31792@reclus.nhh.no>
+	<Pine.LNX.4.64.0806241218170.2865@reclus.nhh.no>
+Message-ID: <86782b610806240329v35b4e1dds522d74ef2004dde7@mail.gmail.com>
+
+On Tue, Jun 24, 2008 at 12:23 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Mon, 23 Jun 2008, Roger Bivand wrote:
+>
+>> I've submitted spgrass6_0.5-9.tar.gz to CRAN, so barring accidents it
+>> should be out soon. If you're using the raster or vector plugins and have
+>> comments, please let me know - look for the new plugin= argument, which is
+>> FALSE by default to avoid problems, but can be NULL for autodetection, or
+>> TRUE to force use if the plugin is known to be available.
+>
+> My apologies, 0.5-9 was released on CRAN three weeks ago, so no change.
+
+Dear Roger,
+
+not sure what that means: can you upload only periodically from time to time?
+
+> What I do need is advice on whether to leave plugin=FALSE, or to set
+> plugin=NULL for autodetect, and risk foobars from existing user code
+> assuming the current region rather than the raster region seen by the plugin
+> if installed and autodetected.
+
+Let me suggest:
+The raster plugin behavior will be a problem (we should really fix that in GDAL)
+while the vector plugin behaves well.
+How about having two parameters:
+
+rasterplugin = FALSE
+vectorplugin = NULL
+?
+
+> My preference remains for plugin=FALSE, that is, users have to change to
+> NULL or TRUE themselves, and accept the consequences of mixing up regions.
+
+Above might help.
+
+> Is there a shell-level utility in GRASS to check whether the region of a
+> raster is equal to the current working region - the function could call that
+> and create a copy of the required raster in current resolution if they
+> differ?
+
+The easiest way it to compare the output of
+
+r.info -g map127
+north=230000
+south=214000
+east=646000
+west=628000
+
+and
+g.region -g | grep '^n=\|^s=\|^e=\|^w='
+n=228513
+s=214975.5
+w=629992.5
+e=645012
+
+Markus
+From Roger.Bivand at nhh.no  Tue Jun 24 07:48:09 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Jun 24 07:48:12 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+In-Reply-To: <86782b610806240329v35b4e1dds522d74ef2004dde7@mail.gmail.com>
+References: <86782b610805310336x10a18188tc40c99adfaf480@mail.gmail.com>
+	<86782b610805310928o523065e7ma3c8d7a490688fd5@mail.gmail.com>
+	<Pine.LNX.4.64.0805311831230.7951@reclus.nhh.no>
+	<86782b610805310947u4dbb2ed0hf39a5cdeaf67f986@mail.gmail.com>
+	<Pine.LNX.4.64.0806012041310.894@reclus.nhh.no>
+	<86782b610806011340r28806b5cqefc58fb3969c7659@mail.gmail.com>
+	<Pine.LNX.4.64.0806020958390.17033@reclus.nhh.no>
+	<86782b610806221343v10cfb8eeo85f491a91a12ad45@mail.gmail.com>
+	<Pine.LNX.4.64.0806232233000.31792@reclus.nhh.no>
+	<Pine.LNX.4.64.0806241218170.2865@reclus.nhh.no>
+	<86782b610806240329v35b4e1dds522d74ef2004dde7@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0806241317010.2865@reclus.nhh.no>
+
+On Tue, 24 Jun 2008, Markus Neteler wrote:
+
+> On Tue, Jun 24, 2008 at 12:23 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> On Mon, 23 Jun 2008, Roger Bivand wrote:
+>>
+>>> I've submitted spgrass6_0.5-9.tar.gz to CRAN, so barring accidents it
+>>> should be out soon. If you're using the raster or vector plugins and have
+>>> comments, please let me know - look for the new plugin= argument, which is
+>>> FALSE by default to avoid problems, but can be NULL for autodetection, or
+>>> TRUE to force use if the plugin is known to be available.
+>>
+>> My apologies, 0.5-9 was released on CRAN three weeks ago, so no change.
+>
+> Dear Roger,
+>
+> not sure what that means: can you upload only periodically from time to 
+> time?
+
+No, I just forgot that I had released the package with the changes, and 
+tried to release an identical package, but the CRAN administrator asked if 
+I was aware of this!
+
+>
+>> What I do need is advice on whether to leave plugin=FALSE, or to set
+>> plugin=NULL for autodetect, and risk foobars from existing user code
+>> assuming the current region rather than the raster region seen by the plugin
+>> if installed and autodetected.
+>
+> Let me suggest:
+> The raster plugin behavior will be a problem (we should really fix that in GDAL)
+> while the vector plugin behaves well.
+> How about having two parameters:
+>
+> rasterplugin = FALSE
+> vectorplugin = NULL
+> ?
+
+OK, will do for next release.
+
+>
+>> My preference remains for plugin=FALSE, that is, users have to change to
+>> NULL or TRUE themselves, and accept the consequences of mixing up regions.
+>
+> Above might help.
+>
+>> Is there a shell-level utility in GRASS to check whether the region of a
+>> raster is equal to the current working region - the function could call that
+>> and create a copy of the required raster in current resolution if they
+>> differ?
+>
+> The easiest way it to compare the output of
+>
+> r.info -g map127
+> north=230000
+> south=214000
+> east=646000
+> west=628000
+>
+> and
+> g.region -g | grep '^n=\|^s=\|^e=\|^w='
+> n=228513
+> s=214975.5
+> w=629992.5
+> e=645012
+
+But the resolution may differ too - I need a one shot comparison. Isn't 
+anything exposed - I've looked in g.copy and r.resample without seeing 
+anything. Maybe:
+
+r.info -gs elevation.dem
+g.region -g | grep '^n=\|^s=\|^e=\|^w=\|^ewres=\|^nsres='
+
+but an internal match (where r.resample would be a no-op or not) would be 
+helpful.
+
+Roger
+
+>
+> Markus
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From hamish_b at yahoo.com  Tue Jun 24 08:25:27 2008
+From: hamish_b at yahoo.com (Hamish)
+Date: Tue Jun 24 08:25:29 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+In-Reply-To: <Pine.LNX.4.64.0806241218170.2865@reclus.nhh.no>
+Message-ID: <832496.82058.qm@web45808.mail.sp1.yahoo.com>
+
+Roger:
+> Is there a shell-level utility in GRASS to check whether
+> the region of a raster is equal to the current working
+> region - the function could call that and create a copy
+> of the required raster in current resolution if they differ?
+
+no, but:
+
+g.region -g
+r.info -g $MAPNAME
+
+and compare.
+
+
+see also WIND_OVERRIDE in the GRASS variables.html help page, and
+today's i.fusion.brovey script in SVN.
+It lets you change the region internal to your process/script.
+
+
+Hamish
+
+
+
+      
+
+From hamish_b at yahoo.com  Tue Jun 24 09:21:30 2008
+From: hamish_b at yahoo.com (Hamish)
+Date: Tue Jun 24 09:21:32 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+In-Reply-To: <Pine.LNX.4.64.0806241317010.2865@reclus.nhh.no>
+Message-ID: <984105.33367.qm@web45811.mail.sp1.yahoo.com>
+
+Roger 
+> >> Is there a shell-level utility in GRASS to check
+> >> whether the region of a
+> >> raster is equal to the current working region -
+
+[g.region -g, r.info -g]
+
+> But the resolution may differ too - I need a one shot
+> comparison.
+
+oh, 'r.info -g' just shows bounds. Try 'r.info -s' to get resolution.
+
+and 'g.region -g' for region res.
+
+
+Hamish
+
+
+
+
+      
+

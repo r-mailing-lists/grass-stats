@@ -1,0 +1,381 @@
+From Roger.Bivand at nhh.no  Sat Feb  8 05:40:47 2003
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Re: [GRASS5] CygWIN: compilation of current CVS HEAD?
+In-Reply-To: <Pine.LNX.4.44.0302070934430.2664-100000@reclus.nhh.no>
+Message-ID: <Pine.LNX.4.44.0302081130380.3791-100000@reclus.nhh.no>
+
+Further to my comments on compiling the R/GRASS interface under Windows, 
+and after trying various routes, I'm inclined to think that Glynn is 
+right. I think libgis.a and libdatetime.a really ought to be compiled 
+using the R build train (MinGW) - at present for a fresh CygWin install 
+there are version differences that raise errors when the DLL is being 
+created. When compilation works, it is probably more luck than design. I'm 
+going to look at trying to build an R binary package for Windows using 
+libgrass - has anyone tried this? I'm moving this thread to statgrass, as 
+it is more relevant there.
+
+Roger
+
+
+On Fri, 7 Feb 2003, Roger Bivand wrote:
+
+> On Fri, 7 Feb 2003, Glynn Clements wrote:
+> 
+> > 
+> > Roger Bivand wrote:
+> > 
+> > > > If there exists a choice between Unix and Windows versions of R,
+> > > > choosing the Unix version is likely to result in better compatibility
+> > > > with GRASS.
+> > > 
+> > > R on Windows will not build under CygWin. On the Windows platform, MinGW
+> > > is the chosen build train, following which R runs natively. One can
+> > > complain that it ought to be CygWin, but the reaction is to invite the
+> > > complainer to become R Windows maintainer.
+> > 
+> > I'm just pointing out that the only way to use GRASS on Windows is via
+> > Cygwin. If R can't use Cygwin, and GRASS can only use Cygwin, that
+> > suggests that the GRASS/R combination may be inherently problematic.
+> > 
+> If the CygWin gcc compiled lisgib.a makes other assumptions about its 
+> environment (compile train setup etc.) than the MinGW compiled grassR.dll 
+> to be dynamically loaded into R, yes, but experience (limited) so far 
+> suggests that it is not a major issue. If there were major differences 
+> between the two gcc header file trees, you would get unexpected and, yes, 
+> problematic, results. R and its dlls will also use the underlying C 
+> libraries of MinGW. But providing that the two gcc's present the same 
+> API's to R and GRASS, experience (again limited) indicates that - against 
+> my expectations - it does work. One advantage of the R package formalisms 
+> is that the functions need to be able to run their examples to completion, 
+> which they certainly wouldn't do if the two gcc's had diverged. 
+> 
+> Roger
+> 
+> > 
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From Roger.Bivand at nhh.no  Sun Feb  9 08:36:38 2003
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Re: [GRASS5] CygWIN: compilation of current CVS HEAD?
+In-Reply-To: <15940.60994.811611.430826@cerise.nosuchdomain.co.uk>
+Message-ID: <Pine.LNX.4.44.0302091406040.12638-100000@reclus.nhh.no>
+
+On Sat, 8 Feb 2003, Glynn Clements wrote:
+
+> 
+> Roger Bivand wrote:
+> 
+> > Further to my comments on compiling the R/GRASS interface under Windows, 
+> > and after trying various routes, I'm inclined to think that Glynn is 
+> > right. I think libgis.a and libdatetime.a really ought to be compiled 
+> > using the R build train (MinGW) - at present for a fresh CygWin install 
+> > there are version differences that raise errors when the DLL is being 
+> > created. When compilation works, it is probably more luck than design. I'm 
+> > going to look at trying to build an R binary package for Windows using 
+> > libgrass - has anyone tried this? I'm moving this thread to statgrass, as 
+> > it is more relevant there.
+> 
+> libgis uses the Unix API (open, read, write) for most of its file I/O,
+> as well as using several other Unix functions for other (mostly
+> peripheral) purposes. Presumably this means that the Cygwin DLL is
+> required.
+> 
+> Specifically, libgis imports the following non-ANSI functions from
+> libc:
+> 
+> 	accept access bind chmod close connect creat dup environ execl
+> 	fdopen fileno fork geteuid gethostname getlogin getpid
+> 	getpwuid gettimeofday getuid ioctl isatty kill link listen
+> 	lseek mkdir open pipe read setlocale setpgrp setpriority
+> 	setreuid setuid sleep socket system umask unlink wait write
+> 
+> Mike Thomas <miketh@brisbane.paradigmgeo.com> has recently started
+> work on getting GRASS to compile with MinGW; however, I don't know how
+> far advanced this work is.
+> 
+
+This is useful. In fact I have no idea how the GRASS package for R can be 
+compiled and installed - it contains a configure file, and the 
+installation scripts for R on Windows see it, issue a warning:
+
+	@if test -f ${SPKG}/configure; then \
+	  echo ; \
+	  echo "   **********************************************" ; \
+	  echo "   WARNING: this package has a configure script" ; \
+	  echo "         It probably needs manual configuration" ; \
+	  echo "   **********************************************" ; \
+	  echo ; \
+	fi
+
+and proceed not compiling anything. For the INSTALL configure arguments to 
+work, some other scripts than that in rw10*/bin and rw10*/src/gnuwin32 are 
+needed - my guess is that the Unix INSTALL script is being run. 
+Consequently, Markus' advice on the web page probably only applies to a 
+very special setup. For me with a recent CygWin, recent R, recent MinGW, 
+Glynn's remarks about the Unix API apply, with unfulfilled references to 
+lots of things in libgis.a, which could only be "met" by linking libc.a 
+from CygWin, and creating a fictive global variable _impure_ptr - and the 
+DLL still wouldn't load (this was after removing the configure process in 
+package installation, and hard-wiring -L and -l).
+
+Can I ask people who have got the R/GRASS interface installed with R for 
+Windows to report on their CygWin version, MinGW version, R version, 
+interface version, and what you did with PATH settings and any other 
+changes that were needed? This information is needed to find out how to 
+write a "configure.win" file, or how to modify the package in order to 
+have it compile cleanly with the current MinGW-based R package 
+installation system. Then the package may be moved from Devel to the 
+regular contrib package area, I hope.
+
+Since the interface only needs a subset of libgis.a and really doesn't 
+need libdatetime.a, it is possible that the files in src/libes/gis and 
+src/libes/datetime could be put within #ifndef RGRASS_INTERFACE #endif
+to use an #ELSE /* RGRASS_INTERFACE */ to choose just the functions and 
+variables needed - to permit a subset of the files and headers to be 
+distributed with the package. I think this should be updated manually - 
+there is no good reason why the main source should be altered. I would 
+welcome advice on whether the CygWin GRASS / R / R interface user 
+community is sufficiently large for it to be sensible to use time on this!
+
+Roger
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From mthomas at gil.com.au  Mon Feb 10 04:21:18 2003
+From: mthomas at gil.com.au (Mike Thomas)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Re: [GRASS5] CygWIN: compilation of current CVS HEAD?
+References: <Pine.LNX.4.44.0302091406040.12638-100000@reclus.nhh.no>
+Message-ID: <004a01c2d0e5$c5b72ec0$e6312fca@snowpea>
+
+Hi Roger, Glynn, Markus.
+
+> > Mike Thomas <miketh@brisbane.paradigmgeo.com> has recently started
+> > work on getting GRASS to compile with MinGW; however, I don't know how
+> > far advanced this work is.
+
+I compiled substantial portions of Grass using MinGW32 hosted under MSYS for
+the configuration and build tools, but in doing so skirted over a number of
+problems in libgis, most notably the socket communications stuff and the
+database locking.   My initial aim is to get libgis built with whatever
+parts are needed for external language/library bindings.
+
+The reason for that limited initial aim is that Grass is tightly bound to
+shell scripts which would all need to be supplied under Windows presumably
+by Cygwin or by a complete rewrite of the scripting glue as batch files or
+Tcl or whatever - a rather off-putting task.
+
+I am very tight for time at the moment due to the impending release of a
+Geolog beta at work and of Maxima and GCL at home, so I am not devoting the
+time that Grass deserves at present, I'm sorry to say.
+
+> Since the interface only needs a subset of libgis.a and really doesn't
+> need libdatetime.a, it is possible that the files in src/libes/gis and
+> src/libes/datetime could be put within #ifndef RGRASS_INTERFACE #endif
+> to use an #ELSE /* RGRASS_INTERFACE */ to choose just the functions and
+> variables needed - to permit a subset of the files and headers to be
+> distributed with the package. I think this should be updated manually -
+> there is no good reason why the main source should be altered. I would
+> welcome advice on whether the CygWin GRASS / R / R interface user
+> community is sufficiently large for it to be sensible to use time on this!
+
+If you couild tell me, Roger, which parts of libgis you need, I'll make sure
+they are prioritised as I think that the Grass/R interface is a very worthy
+cause.  I suspect that you might already be OK unless the above two problem
+areas are important.
+
+Cheers
+
+Mike Thomas.
+
+
+
+
+From temiz at deprem.gov.tr  Thu Feb 27 03:05:17 2003
+From: temiz at deprem.gov.tr (orkun)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] dependent variable
+Message-ID: <3E5DC6BD.8060902@deprem.gov.tr>
+
+Hello
+
+I try to create landslide hazard map using grass and R.
+Here are the commands I used:
+/"r.stats -nNCc input=landslide_binary_map,geology_cat_map,slope_cat_map 
+fs=":" output=land"/
+
+it outputs something like: 0:13:2:3556
+1:5:3:7086
+.
+.
+.
+
+I imported land text file to R.
+Now I want to use multiple regression model.
+The command I used:
+/"r<-lm(V4~as.factor(V2)+as.factor(V3),data=dt)"
+/
+you know V4 is landslide pixel count. I used it as
+dependent variable as you see. But I hesitate whether it is correct 
+approach. Is it true ? and What do you suggest ?
+
+
+kind regards
+
+-- 
+Ahmet Temiz
+Geological Engineer
+General Directorate
+of Disaster Affairs
+TURKEY
+
+
+
+______________________________________
+Scanned and protected by Inflex
+http://pldaniels.com/inflex
+
+______________________________________
+The views and opinions expressed in this e-mail message are the sender's own
+and do not necessarily represent the views and the opinions of Earthquake Research Dept.
+of General Directorate of Disaster Affairs.
+
+Bu e-postadaki fikir ve gorusler gonderenin sahsina ait olup, yasal olarak T.C.
+B.I.B. Afet Isleri Gn.Mud. Deprem Arastirma Dairesi'ni baglayici nitelikte degildir.
+
+
+
+From Roger.Bivand at nhh.no  Thu Feb 27 04:39:33 2003
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] dependent variable
+In-Reply-To: <3E5DC6BD.8060902@deprem.gov.tr>
+Message-ID: <Pine.LNX.4.44.0302271006540.1653-100000@reclus.nhh.no>
+
+Hi Ahmet,
+
+Sorry I didn't get back to you yesterday.
+
+On Thu, 27 Feb 2003, orkun wrote:
+
+> Hello
+> 
+> I try to create landslide hazard map using grass and R.
+> Here are the commands I used:
+> /"r.stats -nNCc input=landslide_binary_map,geology_cat_map,slope_cat_map 
+> fs=":" output=land"/
+> 
+> it outputs something like: 
+> 0:13:2:3556
+> 1:5:3:7086
+> .
+> .
+> .
+> 
+OK. This is an interesting question, which I'll try to develop. r.stats 
+gives you for each of the observed combinations of input map values, a 
+count of the number of cells with that combination, in fact a tabulation. 
+You can see this in spearfish:
+
+GRASS:~ > r.stats -nNCc input=landuse,vegcover,soils.ph
+r.stats:  100%
+1 1 0 91
+1 1 2 101
+1 1 3 331
+1 1 4 615
+1 1 5 16
+1 2 0 541
+1 2 1 44
+1 2 2 125
+1 2 3 557
+1 2 4 2564
+1 2 5 61
+1 3 0 10
+....
+
+
+In R:
+
+> G <- gmeta()
+> dt <- rast.get(G, c("landuse","vegcover","soils.ph"))
+> str(dt)
+List of 3
+ $ landuse : num [1:302418] NA NA NA NA NA NA NA NA NA NA ...
+ $ vegcover: num [1:302418] NA 2 2 2 6 6 6 6 6 6 ...
+ $ soils.ph: num [1:302418] NA NA NA NA NA NA NA NA NA NA ...
+> table(dt$landuse,dt$vegcover,dt$soils.ph)
+, ,  = 0
+
+   
+     1   2  3  4  5   6
+  1 91 541 10 15 11 107
+  2  0  61  0  0  0  66
+  3 10  89  0  0  0  65
+  4  1 155  0  0  0   0
+  5  0   0  0  0  0   0
+  6  0   0  0  0  0   0
+  7  0 145  0  0  6 260
+  8 14  99  0  0  0  50
+
+...
+
+You can read the first line in r.stats as [1,1,0] with a count of 91,
+[1,2.0] is 541, and so on. So, for each combination of factors, you have a
+count, but of coursr only one count. This looks to me much more like
+log-linear modelling than multiple regression, or possibly logit or probit
+in glm().
+
+A further issue is that the factor outcomes (landslip_binary) are likely 
+to be autocorrelated, with clusters of 1's on the map, possibly related to 
+the slope and geology categories which are also autocorrelated. In 
+log-linear models (or chi-squared on a simple table) this isn't settled 
+in the literature, because by using finer nsres and ewres - making more 
+cells, you can make a bigger "sample" and make your result significant. 
+There is a loglin() function in R, but I would think it sensible to look 
+around first to see whether this would be sensible for your table data. 
+Maybe just tabularising them will throw up something?
+
+Best wishes,
+
+Roger 
+
+> I imported land text file to R.
+> Now I want to use multiple regression model.
+> The command I used:
+> /"r<-lm(V4~as.factor(V2)+as.factor(V3),data=dt)"
+> /
+> you know V4 is landslide pixel count. I used it as
+> dependent variable as you see. But I hesitate whether it is correct 
+> approach. Is it true ? and What do you suggest ?
+> 
+> 
+> kind regards
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+

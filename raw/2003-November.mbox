@@ -1,0 +1,840 @@
+From neteler at itc.it  Sat Nov  1 06:12:50 2003
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Re: Building R GRASS interface for MacOS X 10.3 (Panther)
+In-Reply-To: <Pine.LNX.4.44.0310300914190.5683-100000@reclus.nhh.no>; from Roger.Bivand@nhh.no on Thu, Oct 30, 2003 at 09:18:31AM +0100
+References: <0B84A8B0-0A7A-11D8-BC51-003065D50204@cinci.rr.com> <Pine.LNX.4.44.0310300914190.5683-100000@reclus.nhh.no>
+Message-ID: <20031101121250.B29851@itc.it>
+
+Dear Roger,
+
+I just tried compilation on Mac OSX, it compiled.
+
+Markus
+
+On Thu, Oct 30, 2003 at 09:18:31AM +0100, Roger Bivand wrote:
+> Dear Thomas,
+> 
+> Unfortunately, I do not have access to Mac hardware/software, and am out 
+> of my depth here. I am forwarding this to the small list within GRASS that 
+> may have some experience - could anyone who has met such problems please 
+> respond on-list so that the answers go into the archive?
+> 
+> Sorry not to be more direct help, please try out various solutions and let 
+> us know about your progress, I'm sure more people will find your 
+> experience useful.
+> 
+> Roger
+> 
+> On Wed, 29 Oct 2003, Thomas Adams wrote:
+> 
+> > Roger,
+> > 
+> > I'm trying to build the R GRASS interface for MacOS X 10.3 (Panther). I 
+> > have built R Version 1.6.2  (2003-01-10) from CRAN sources - although, 
+> > I thought I was building ver. 1.8, at least that's what the tar file 
+> > indicated. When I try to use the command:
+> > 
+> > R CMD INSTALL GRASS
+> > 
+> > at the term prompt, I get the following error:
+> > 
+> > * Installing *source* package 'GRASS' ...
+> > ** libs
+> > gcc -no-cpp-precomp -I/usr/local/lib/R/include -DR_GRASS_INTERFACE 
+> > -I./include -I/usr/local/include   -fno-common  -g -O2 -c R_G_init.c -o 
+> > R_G_init.o
+> > dyld: gcc version mismatch for library: /usr/local/lib/libiconv.2.dylib 
+> > (compatibility version of user: 5.0.0 greater than library's version: 
+> > 4.0.0)
+> > make: *** [R_G_init.o] Trace/BPT trap
+> > ERROR: compilation failed for package 'GRASS'
+> > 
+> > Somehow I have a dylib mismatch, but it's unclear to me why it's a 
+> > problem. Is it because R is compiled with a different library that's 
+> > older or what? Since I JUST built R and I am now trying to build your R 
+> > GRASS library, I don't understand how there can be a problem with 
+> > library incompatibilities.
+> > 
+> > Any suggestions will be helpful.
+> > 
+> > Regards,
+> > Tom Adams
+> > 
+> > 
+> 
+> -- 
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+> e-mail: Roger.Bivand@nhh.no
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+-- 
+Markus Neteler     <neteler@itc.it>       http://mpa.itc.it
+ITC-irst, Istituto per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+
+From temiz at deprem.gov.tr  Tue Nov  4 05:18:20 2003
+From: temiz at deprem.gov.tr (temiz)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] A problem in using atan function
+Message-ID: <3FA77CEC.3060205@deprem.gov.tr>
+
+hello
+
+I encountered a problem in using r.mapcalc.
+I try to create a new map using atan function from two maps that
+comprise sin and cosine values in radian.
+
+I used this expression :
+r.mapcalc dene='atan(cosine_map*180/3.14,sine_map*180/3.14)'
+But it only gives 45 and 225 values.
+When I check this formula with known values. It gives correct
+values:
+for example r.mapcalc dene='atan(0.838670*180/3.14,0.544639*180/3.14)'
+it gives correct value: 33
+
+Does anyone have any idea ?
+
+-- 
+
+Ahmet Temiz
+General Directory of Disaster Affairs
+Ankara TURKEY
+
+
+
+______________________________________
+Inflex - installed on mailserver for domain @deprem.gov.tr
+Queries to: postmaster@deprem.gov.tr
+
+______________________________________
+The views and opinions expressed in this e-mail message are the sender's own
+and do not necessarily represent the views and the opinions of Earthquake Research Dept.
+of General Directorate of Disaster Affairs.
+
+Bu e-postadaki fikir ve gorusler gonderenin sahsina ait olup, yasal olarak T.C.
+B.I.B. Afet Isleri Gn.Mud. Deprem Arastirma Dairesi'ni baglayici nitelikte degildir.
+
+
+From rn001 at cebas.csic.es  Thu Nov  6 11:18:09 2003
+From: rn001 at cebas.csic.es (javier garcia - CEBAS)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] R and GRASS multiple maps generation
+Message-ID: <200311061558.hA6FwCR09605@natura.cebas.csic.es>
+
+Hello all;
+
+Perhaps this is more a R question than a Statistics or GRASS one. But perhaps 
+you can help:
+
+I'm trying to check the performance of R to do simple operations with GRASS 
+maps, and due to my lack of knowledge of R I'm finding the following problem:
+-------------------
+# Load a number of raster layers from GRASS.
+ RGRASS <- rast.get(G, rlist="alb.dem", catlabels=FALSE)
+# connect postgres
+library(Rdbi.PgSQL)
+conn <- dbConnect(PgSQL(), host="127.0.0.1", dbname="murciadb")
+# copies a table of time series form the database into a data frame
+series <- (dbReadTable(conn, 
+table.name="series",row.names=NULL,col.names=NULL,as.is=FALSE))
+# makes operations with the map and one of the series
+for (i in 1:length(series$pto1)){
+output <- RGRASS$alb.dem*series$pto1[i]
+--- here is my problem ---
+}
+
+?How could I say that for every data in the serie the output generated have a 
+diferent name. For example output1,output2...?
+Even better. ?Could I store the different generated maps in a object so I 
+could refer to them by an index. For example output[1]...?
+
+Thanks for your help and best wishes
+
+Javier
+
+
+
+From rn001 at cebas.csic.es  Thu Nov  6 11:43:45 2003
+From: rn001 at cebas.csic.es (javier garcia - CEBAS)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Fwd: R-GRASS question
+Message-ID: <200311061623.hA6GNlR10153@natura.cebas.csic.es>
+
+Hi all;
+
+I also asked this question directly to Roger Bivand, but perhaps anyone else 
+know the answer:
+
+Do you have an example, or know about someone who has, about how to generate
+maps in R and export them into GRASS?
+
+I mean: I would like to create GRASS maps in R, considering the actual region
+of GRASS, but in the source for these new maps is not any GRASS imported
+maps; it could be, for example, a random field, or whatever. And I would like
+that these maps could take the class of GRASS imported maps, so I could, for
+example, overlay them on the GRASS maps in R, or exported them to GRASS.
+
+I guess this could be done in someway. But how?
+
+Could you help me with this?
+
+Thanks all and best regards
+
+Javier
+
+
+--
+A. Javier Garcia
+Water and Soil Conservation Department
+CEBAS-CSIC
+Campus Universitario de Espinardo
+Apartado 4195
+30100 Murcia (Spain)
+Phone: +34 968 39 62 57
+Fax: +34 968 39 62 13
+email: rn001@cebas.csic.es
+
+-------------------------------------------------------
+
+
+From temiz at deprem.gov.tr  Fri Nov  7 08:10:51 2003
+From: temiz at deprem.gov.tr (temiz)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] reate DEM in
+ creating DEM in R ?
+Message-ID: <3FAB99DB.4090806@deprem.gov.tr>
+
+hello
+
+I wonder if there is a way that I can create DEM in
+R using Krig interpolation from topographic contour
+map (in grass) ?
+
+regards
+-- 
+
+Ahmet Temiz
+General Directory of Disaster Affairs
+Ankara TURKEY
+
+
+______________________________________
+Inflex - installed on mailserver for domain @deprem.gov.tr
+Queries to: postmaster@deprem.gov.tr
+
+______________________________________
+The views and opinions expressed in this e-mail message are the sender's own
+and do not necessarily represent the views and the opinions of Earthquake Research Dept.
+of General Directorate of Disaster Affairs.
+
+Bu e-postadaki fikir ve gorusler gonderenin sahsina ait olup, yasal olarak T.C.
+B.I.B. Afet Isleri Gn.Mud. Deprem Arastirma Dairesi'ni baglayici nitelikte degildir.
+
+
+From Roger.Bivand at nhh.no  Thu Nov  6 15:04:32 2003
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Fwd: R-GRASS question
+In-Reply-To: <200311061623.hA6GNlR10153@natura.cebas.csic.es>
+Message-ID: <Pine.LNX.4.44.0311062043400.25461-100000@reclus.nhh.no>
+
+On Thu, 6 Nov 2003, javier garcia - CEBAS wrote:
+
+> Hi all;
+> 
+> I also asked this question directly to Roger Bivand, but perhaps anyone else 
+> know the answer:
+> 
+> Do you have an example, or know about someone who has, about how to generate
+> maps in R and export them into GRASS?
+> 
+> I mean: I would like to create GRASS maps in R, considering the actual region
+> of GRASS, but in the source for these new maps is not any GRASS imported
+> maps; it could be, for example, a random field, or whatever. And I would like
+> that these maps could take the class of GRASS imported maps, so I could, for
+> example, overlay them on the GRASS maps in R, or exported them to GRASS.
+> 
+> I guess this could be done in someway. But how?
+
+Perhaps others could add examples, but many of the wrapper functions in 
+the interface package were put there to encourage people to use R 
+functions interpolating or predicting surfaces, and then move them to 
+GRASS. if you look at the list of functions, then interp.new.G(), 
+kde2d.G(), and trmat.G() are like this. I would not use krige.G() any 
+more, prefering predict.Krig() from the fields package or predict.gstat() 
+from gstat. It's worth looking at some of the others too, predict.loess() 
+in modreg(), or predict.gam() in mgcv, if the x,y coordinates were among 
+the RHS fitting variables, and you have newdata on a grid for the other 
+RHS variables if any. 
+
+The grasper package does this very nicely for GAMs, including writing the
+predicted values to GRASS through the interface (according to the
+documentation). So maybe the problem is too much choice than too little?
+Has anyone used predict.rpart() from rpart in this context? Essentially
+anything that has a generic predict() function, and where the newdata
+argument can be structured in the same order as the GRASS raster data is a
+candidate for making new layers.
+
+I haven't done this with the RandomFields package, but it looks as though 
+
+GaussRF(x=east(G), y=north(G), grid=FALSE, model= ..., n=1, ...
+
+would give you a simulated RF, but what you choose will depend on what you 
+need.
+
+(Sometimes, I'm not online, so asking the list first may get you a quicker 
+reply)
+
+Roger
+
+> 
+> Could you help me with this?
+> 
+> Thanks all and best regards
+> 
+> Javier
+> 
+> 
+> --
+> A. Javier Garcia
+> Water and Soil Conservation Department
+> CEBAS-CSIC
+> Campus Universitario de Espinardo
+> Apartado 4195
+> 30100 Murcia (Spain)
+> Phone: +34 968 39 62 57
+> Fax: +34 968 39 62 13
+> email: rn001@cebas.csic.es
+> 
+> -------------------------------------------------------
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From raghavan at media.osaka-cu.ac.jp  Sat Nov  8 00:19:56 2003
+From: raghavan at media.osaka-cu.ac.jp (raghavan)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] About GRASS Users Conference 2004
+Message-ID: <3FAC7CFC.50D92322@media.osaka-cu.ac.jp>
+
+Dear All,
+
+As decided during the GRASS Users Conference-2002
+held at Trento, Italy, the GRASS Users Conference is
+scheduled to be held in Bangkok, Thailand from 12-14
+September, 2004. The conference is officially sponsored
+by Chulalongkorn University Thailand and will be held
+at the university campus located in the heart of
+Bangkok.
+
+More information about the conference is available at
+http://gisws.media.osaka-cu.ac.jp/grass04/
+
+Looking forward to the active participation from the
+list members and hoping that the conference will be
+a big success.
+
+The organizers are also seeking support from sponsors and
+exhibitors. If any of you have some suggestions in this
+regard, please contact the conference coordinators.
+
+Thanks
+
+Raghavan
+
+------------
+Venkatesh Raghavan
+Osaka City Univ, Japan
+
+
+From rn001 at cebas.csic.es  Mon Nov 10 05:02:21 2003
+From: rn001 at cebas.csic.es (javier garcia - CEBAS)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] spatial interpolation of rain data with few points
+Message-ID: <200311100940.hAA9eDR23271@natura.cebas.csic.es>
+
+Hi all,
+
+First of all, thanks all for your answer to a previous question 
+(options(digits=n) is what I needed), and Roger B. for the description of 
+interpolation posibilities.
+
+But, about interpolation, I am having problems to get maps from a few data 
+points. 
+I've got just four points representing rain gauged in four stations.
+I've tried to interpolate the values with the wrapper function interp.new.G, 
+in library(GRASS) of R, but there is an error because it seem that the 
+minimum number of points should be 9.
+In the help I've found that the minimum is 4, not 9. (?):
+
+-----------------
+*** SDSF3P Error 1: NDP = 9 or less
+    MD =    1,  NDP =    4
+-----------------
+
+Could I change this minimum?
+
+In other way, I've tried to use another algorithm, to fit a trend surface by 
+least-squares, with library(spatial) and the function surf.ls.
+But there is also an errror (?):
+-------------------------
+> rainstations.s
+         east       north             id      str2                 
+1 664304.8935 4227048.780  1   est7237              
+2 666504.8166 4215899.535  2   est7238  
+3 667467.0677 4217707.843  3   est7239 
+4 671555.4027 4230683.611  4   est7250 
+> rain.tss
+Time Series:
+Start = 1
+End = 10
+Frequency = 1
+   est7237 est7238 est7239 est7250
+ 1       0       0       0       0
+ 2       0       0       0       0
+ 3       0       0      17       0
+ 4      47     103      78      73
+ 5       0       0       0       0
+ 6      35      40      34      82
+>library(spatial)
+>rain.kr <- as.list(x <- 0)
+>rain.maps <- as.list(x <- 0)
+> G$xlim
+[1] 651700 679700
+> G$ylim
+[1] 4214100 4242100
+> G$Nrow
+[1] 280
+>for (i in 1:end(rain.tss)[1]){
+rain.kr[[i]] <- 
+surf.ls(2,rainstations.s$east,rainstations.s$north,rain.tss[i,])
+rain.maps[[i]] <- 
+trmat(rain.kr[[i]],G$xlim[1],G$xlim[2],G$ylim[1],G$ylim[2],G$Nrow)
+}
+
+The answer to this is:
+Error in .trval(object, x, y) : NA/NaN/Inf in foreign function call (arg 5)
+----------------------------------
+I've also tried to find out the source of this error, but I can't find it. 
+Perhaps also the limited number of points?
+
+I guess you have realized I'm pretty new with R. In any case. I'm stuck here.
+I must say that I've been able to resolve this, at last, sending the points 
+to GRASS and making the interpolation with s.to.rast, and although there are 
+some warning, I think that the result is satisfactory:
+------------------------
+>sites.put2(G,data=rain.tss.temp,lname=paste("rain.map",i,sep=""),dims=c("east","north"),check=FALSE)
+>system(paste("s.surf.rst input=rain.map",i," maskmap=MASK npmin=4 segmax=8 
+elev=rain.map.temp",i,sep=""))
+>system(paste("r.mapcalc 'rain.map",i," = 
+if(rain.map.temp",i,"<0,0,rain.map.temp",i,")'",sep=""))
+system(paste("g.remove rast=rain.map.temp",i,sep=""))
+------------------------------------------------------------
+But as I haen't got much expertise in this field, I'm not sure if this is a 
+good method for this, nor can find out how to resolve the problems in R.
+ 
+Could any of you, please, advise me about what method, included in R, could I 
+use with these little amount of points,
+or give me any hint about the source of these errors?
+
+Perhaps you know any references about analysis of rain event ? (I have time 
+series in four rain stations and perhaps there is some method to analyse, not 
+only spatial interpolation for every timestep, but also the movement or the 
+rain event considering the position of rain stations and desplacement in time 
+series) 
+
+Any answer to any of the questions will be very good for me.
+
+Thanks all, and best wishes
+
+Javier Garcia
+
+
+From stroink at twcny.rr.com  Mon Nov 10 07:47:24 2003
+From: stroink at twcny.rr.com (D G Rossiter)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Re: spatial interpolation of rain data with few points
+In-Reply-To: <200311101101.hAAB1ng14364@grass.itc.it>
+Message-ID: <0895B4D0-137C-11D8-A35E-000393BE1F96@twcny.rr.com>
+
+Javier,
+
+Your software error is probably because you don't have enough points to  
+define the order of surface you want.  Remember, 3 points for a plane  
+etc.
+
+But on a more general note, I really wonder about interpolating from  
+only four points!  There is just not enough data to support it.  IMHO  
+the best you can do with 4 points is to use each one as the  
+"representative" station of some region which you define based on  
+physiography or other expert knowledge, delineating the region by hand.  
+  Or if you want a mechanical solution, just create Theissen polygons  
+(nearest neighbour). The resulting map in either case has a crisp  
+boundary which of course is not realistic, but based on your state of  
+knowledge, the most honest.
+
+D. G. Rossiter
+Department of Earth Systems Analysis
+International Institute for Geo-Information Science and Earth  
+Observation (ITC)
+Hengelosestraat 99
+PO Box 6, 7500 AA Enschede, The Netherlands
+Phone:	+31-(0)53 4874 499
+Fax:	+31-(0)53 4874 336
+Mobile:  +31-(0)6 27 510 591
+mailto:rossiter@itc.nl,  Internet: http://www.itc.nl/personal/rossiter
+
+
+On Monday, November 10, 2003, at 11:01 AM,  
+statsgrass-request@grass.itc.it wrote:
+
+> Send statsgrass mailing list submissions to
+> 	statsgrass@grass.itc.it
+>
+> To subscribe or unsubscribe via the World Wide Web, visit
+> 	http://grass.itc.it/mailman/listinfo/statsgrass
+> or, via email, send a message with subject or body 'help' to
+> 	statsgrass-request@grass.itc.it
+>
+> You can reach the person managing the list at
+> 	statsgrass-admin@grass.itc.it
+>
+> When replying, please edit your Subject line so it is more specific
+> than "Re: Contents of statsgrass digest..."
+>
+>
+> Today's Topics:
+>
+>    1. spatial interpolation of rain data with few points (javier  
+> garcia - CEBAS)
+>
+> --__--__--
+>
+> Message: 1
+> From: javier garcia - CEBAS <rn001@cebas.csic.es>
+> To: statsgrass@grass.itc.it
+> Date: Mon, 10 Nov 2003 11:02:21 +0100
+> Subject: [STATSGRASS] spatial interpolation of rain data with few  
+> points
+>
+> Hi all,
+>
+> First of all, thanks all for your answer to a previous question
+> (options(digits=n) is what I needed), and Roger B. for the description  
+> of
+> interpolation posibilities.
+>
+> But, about interpolation, I am having problems to get maps from a few  
+> data
+> points.
+> I've got just four points representing rain gauged in four stations.
+> I've tried to interpolate the values with the wrapper function  
+> interp.new.G,
+> in library(GRASS) of R, but there is an error because it seem that the
+> minimum number of points should be 9.
+> In the help I've found that the minimum is 4, not 9. (?):
+>
+> -----------------
+> *** SDSF3P Error 1: NDP = 9 or less
+>     MD =    1,  NDP =    4
+> -----------------
+>
+> Could I change this minimum?
+>
+> In other way, I've tried to use another algorithm, to fit a trend  
+> surface by
+> least-squares, with library(spatial) and the function surf.ls.
+> But there is also an errror (?):
+> -------------------------
+>> rainstations.s
+>          east       north             id      str2
+> 1 664304.8935 4227048.780  1   est7237
+> 2 666504.8166 4215899.535  2   est7238
+> 3 667467.0677 4217707.843  3   est7239
+> 4 671555.4027 4230683.611  4   est7250
+>> rain.tss
+> Time Series:
+> Start = 1
+> End = 10
+> Frequency = 1
+>    est7237 est7238 est7239 est7250
+>  1       0       0       0       0
+>  2       0       0       0       0
+>  3       0       0      17       0
+>  4      47     103      78      73
+>  5       0       0       0       0
+>  6      35      40      34      82
+>> library(spatial)
+>> rain.kr <- as.list(x <- 0)
+>> rain.maps <- as.list(x <- 0)
+>> G$xlim
+> [1] 651700 679700
+>> G$ylim
+> [1] 4214100 4242100
+>> G$Nrow
+> [1] 280
+>> for (i in 1:end(rain.tss)[1]){
+> rain.kr[[i]] <-
+> surf.ls(2,rainstations.s$east,rainstations.s$north,rain.tss[i,])
+> rain.maps[[i]] <-
+> trmat(rain.kr[[i]],G$xlim[1],G$xlim[2],G$ylim[1],G$ylim[2],G$Nrow)
+> }
+>
+> The answer to this is:
+> Error in .trval(object, x, y) : NA/NaN/Inf in foreign function call  
+> (arg 5)
+> ----------------------------------
+> I've also tried to find out the source of this error, but I can't find  
+> it.
+> Perhaps also the limited number of points?
+>
+> I guess you have realized I'm pretty new with R. In any case. I'm  
+> stuck here.
+> I must say that I've been able to resolve this, at last, sending the  
+> points
+> to GRASS and making the interpolation with s.to.rast, and although  
+> there are
+> some warning, I think that the result is satisfactory:
+> ------------------------
+>> sites.put2(G,data=rain.tss.temp,lname=paste("rain.map",i,sep=""),dims= 
+>> c("east","north"),check=FALSE)
+>> system(paste("s.surf.rst input=rain.map",i," maskmap=MASK npmin=4  
+>> segmax=8
+> elev=rain.map.temp",i,sep=""))
+>> system(paste("r.mapcalc 'rain.map",i," =
+> if(rain.map.temp",i,"<0,0,rain.map.temp",i,")'",sep=""))
+> system(paste("g.remove rast=rain.map.temp",i,sep=""))
+> ------------------------------------------------------------
+> But as I haen't got much expertise in this field, I'm not sure if this  
+> is a
+> good method for this, nor can find out how to resolve the problems in  
+> R.
+>
+> Could any of you, please, advise me about what method, included in R,  
+> could I
+> use with these little amount of points,
+> or give me any hint about the source of these errors?
+>
+> Perhaps you know any references about analysis of rain event ? (I have  
+> time
+> series in four rain stations and perhaps there is some method to  
+> analyse, not
+> only spatial interpolation for every timestep, but also the movement  
+> or the
+> rain event considering the position of rain stations and desplacement  
+> in time
+> series)
+>
+> Any answer to any of the questions will be very good for me.
+>
+> Thanks all, and best wishes
+>
+> Javier Garcia
+>
+>
+>
+> --__--__--
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+>
+> End of statsgrass Digest
+>
+>
+
+
+From temiz at deprem.gov.tr  Tue Nov 11 10:11:19 2003
+From: temiz at deprem.gov.tr (temiz)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Interpolation of grass's contour data ?
+Message-ID: <3FB0FC17.7010703@deprem.gov.tr>
+
+hello
+
+is there any way in R to interpolate grass's contour (vector) data with 
+Krig method ?
+
+cordially
+-- 
+Ahmet Temiz
+General Directory of Disaster Affairs
+Ankara TURKEY
+
+
+______________________________________
+Inflex - installed on mailserver for domain @deprem.gov.tr
+Queries to: postmaster@deprem.gov.tr
+
+______________________________________
+The views and opinions expressed in this e-mail message are the sender's own
+and do not necessarily represent the views and the opinions of Earthquake Research Dept.
+of General Directorate of Disaster Affairs.
+
+Bu e-postadaki fikir ve gorusler gonderenin sahsina ait olup, yasal olarak T.C.
+B.I.B. Afet Isleri Gn.Mud. Deprem Arastirma Dairesi'ni baglayici nitelikte degildir.
+
+
+From Roger.Bivand at nhh.no  Tue Nov 11 10:05:37 2003
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Interpolation of grass's contour data ?
+In-Reply-To: <3FB0FC17.7010703@deprem.gov.tr>
+Message-ID: <Pine.LNX.4.44.0311111559120.9932-100000@reclus.nhh.no>
+
+On Tue, 11 Nov 2003, temiz wrote:
+
+> hello
+> 
+> is there any way in R to interpolate grass's contour (vector) data with 
+> Krig method ?
+> 
+
+When I see contour data, I usually try out r.surf.contour on a raster 
+layer made from contours. It takes account of the fact that there are very 
+many observations with the contour level values better than other *.surf.* 
+choices. An alternative might be to sample the contours to reduce the 
+number of near points with the same z values, and use one of the s.surf.*, 
+maybe, depending on your data. In any case, the output will be terraced, 
+because most interpreters believe the input data, which are mostly at 
+levels. Adding fill-in points on summits and in depressions can help. I 
+think that r.surf.contour is still just integer and 0 is treated as NULL, 
+so you may need to use r.mapcalc on the input first to rescale it.
+
+Roger
+
+> cordially
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From kgleditsch at ucsd.edu  Thu Nov 20 19:36:01 2003
+From: kgleditsch at ucsd.edu (Kristian Skrede Gleditsch)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Questions on calculating minimum distance between polygons and map attributes after m.in.e00
+Message-ID: <HMEAKPEGMCEDLNICJDIHIEJJDDAA.kgleditsch@ucsd.edu>
+
+Dear all,
+
+I have a research project for which I would like to find the minimum
+distance between nation states. I have previously developed a data set on
+minimum distances for states within 1000 km based on manual coding (see
+http://weber.ucsd.edu/~kgledits/mindist.html).
+
+However, since manual coding may suffer from measurement error and I ideally
+would like to have data for pairs of state more than 1000 km apart I would
+like to generate a new version of the minimum distance data from GIS
+software and cartographic data.
+
+What I would like to do is to try to use an algorithm to determine the
+shortest distance between points on two states? outer boundaries, with each
+state defined either as a polygon or union of polygons. I would appreciate
+any suggestions comments from list members on whether the project is
+technically feasible in GRASS and R. I am running GRASS 5.0 under Redhat
+Linux 7.0, will upgrade to newer versions if need be.
+
+At this point I have ARC info coverages for boundary changes from 1945 to
+the present. I have tried to import this into GRASS with m.in.e00 with
+somewhat mixed results. Although I am able to display the vector map, it is
+not clear to me how I can identify attributes or polygons. As far as I
+understand these must be imported separately, but so far I have not been
+able to figure out how to do this. I tried to follow Netler and Mitasova
+book, but I was not able to get the procedure that they listed to work.
+
+I would be grateful if anyone could point me to practical introductions or
+examples in the use of m.in.e00 and how to retrieve the map attributes from
+the ArcInfo coverages in GRASS.
+
+Sincerely,
+Kristian Skrede Gleditsch
+Assistant Professor
+Department of Political Science
+University of California, San Diego
+La Jolla, CA 92093-0521, USA
+Tel: (858) 822 0535, Fax: (858) 534 7130
+Email: kgleditsch@ucsd.edu  http://weber.ucsd.edu/~kgledits/
+
+
+From kgleditsch at ucsd.edu  Thu Nov 20 20:31:00 2003
+From: kgleditsch at ucsd.edu (Kristian Skrede Gleditsch)
+Date: Wed Nov 14 16:58:11 2007
+Subject: FW: [STATSGRASS] Questions on calculating minimum distance between polygons and map attributes after m.in.e00
+Message-ID: <HMEAKPEGMCEDLNICJDIHAEJMDDAA.kgleditsch@ucsd.edu>
+
+Just to clarify my previous post: For contiguous countries the distance at
+the boundary will be 0, but this is not the case for non-contiguous
+countries.
+
+For example, I have estinated a minimum distance between Germany and Italy
+of about 175 km. For the UK and China it would clearly be more than 1000 km.
+Although this could be measured by hand, finding a good estimate of the
+shortest distance is increasingly more difficult the further appart the two
+states are.
+
+sincerely,
+
+Kristian Skrede Gleditsch
+Assistant Professor
+Department of Political Science
+University of California, San Diego
+La Jolla, CA 92093-0521, USA
+Tel: (858) 822 0535, Fax: (858) 534 7130
+Email: kgleditsch@ucsd.edu  http://weber.ucsd.edu/~kgledits/
+
+> -----Original Message-----
+> From: Rich Shepard [mailto:rshepard@appl-ecosys.com]
+> Sent: Thursday, November 20, 2003 16:58
+> To: Kristian Skrede Gleditsch
+> Subject: Re: [STATSGRASS] Questions on calculating minimum distance
+> between polygons and map attributes after m.in.e00
+>
+>
+> On Thu, 20 Nov 2003, Kristian Skrede Gleditsch wrote:
+>
+> > I have a research project for which I would like to find the minimum
+> > distance between nation states.
+>
+> Kristian,
+>
+>   Wouldn't this distance be 0 (zero) at the border between them?
+>
+> Rich
+>
+> --
+> Dr. Richard B. Shepard, President
+> Applied Ecosystem Services, Inc. (TM)
+> <http://www.appl-ecosys.com>
+>
+>
+
+

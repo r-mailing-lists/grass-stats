@@ -1,0 +1,433 @@
+From Roger.Bivand at nhh.no  Thu Oct 28 04:12:14 2004
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] Re: [R] Problems installing GRASS package
+In-Reply-To: <Pine.LNX.4.44.0410280728540.30877-100000@gannet.stats>
+Message-ID: <Pine.LNX.4.44.0410280958170.29688-100000@reclus.nhh.no>
+
+(Transferred from R-help: does anyone have a working R-GRASS interface on 
+Free-BSD? - see further down for Paul English's compile problem (replies 
+please also directly to Paul who is almost certainly not subscribed):)
+
+On Thu, 28 Oct 2004, Prof Brian Ripley wrote:
+
+> Please send such problems, with solution, to the package maintainers.
+> 
+> They do not occur generally and seem to be due to the system headers on 
+> your particular system.  Only users of `FreeBSd' will be able to 
+> troubleshoot, i.e. you.
+
+I am willing to try to help with this - it is an unusual case and the 
+first reported - there is a mailing list from the GRASS side where there 
+may be more experience:
+
+http://grass.itc.it/mailman/listinfo/statsgrass
+
+> 
+> In this particular case, I think the package needs to use its own headers
+> only if the system ones are not available (via a configure test), and
+> suggest you try deleting GRASS/src/include/rpc.  (Roger: the zlib.h and
+> zconf.h are also worrying, as they might mismatch the libz used.)
+> 
+
+This is a very valid concern, and one that the GRASS transition from 5.0.*
+stable to 5.4.* stable due in the near future will make relevant - the
+current included GRASS code is directly copied from 5.0.*. It is very
+likely that the GRASS package (the R-GRASS interface) will return to
+linking against external libraries rather than contain a local (aging)
+copy of the GRASS library source code, and it is this that links to zlib
+and the XDR headers. I am obliged to balance these concerns with what
+GRASS users with production systems find necessary; when the code looks
+ugly, I'm afraid there were practical reasons for the choices. I'll try to
+get things in better shape for GRASS 5.4.* and its successor GRASS 5.7.*.
+
+Roger
+
+
+> On Wed, 27 Oct 2004, Paul English wrote:
+> 
+> > 
+> > Hi,
+> > 	I'm running R 2.0 installed from the source port on FreeBSd 4.10
+> 
+> There is no R 2.0 and no `source port'.  There are sources of R 2.0.0.
+> 
+> > and I'm having trouble installing the GRASS package. Following is the
+> > procedure plus errors:
+> > 
+> > > options(CRAN="http://cran.us.r-project.org")
+> > > install.packages("GRASS")
+> > <download snipped>
+> > downloaded 186Kb
+> > 
+> > * Installing *source* package 'GRASS' ...
+> > ** libs
+> > cc -I/usr/local/lib/R/include -DR_GRASS_INTERFACE -I./include
+> > -I/usr/local/include -mieee-fp  -fPIC  -O -pipe -c R_G_init.c -o
+> > R_G_init.o
+> > cc -I/usr/local/lib/R/include -DR_GRASS_INTERFACE -I./include
+> > -I/usr/local/include -mieee-fp  -fPIC  -O -pipe -c adj_cellhd.c -o
+> > adj_cellhd.o
+> > cc -I/usr/local/lib/R/include -DR_GRASS_INTERFACE -I./include
+> > -I/usr/local/include -mieee-fp  -fPIC  -O -pipe -c alloc.c -o alloc.o
+> > cc -I/usr/local/lib/R/include -DR_GRASS_INTERFACE -I./include
+> > -I/usr/local/include -mieee-fp  -fPIC  -O -pipe -c alloc_cell.c -o
+> > alloc_cell.o
+> > cc -I/usr/local/lib/R/include -DR_GRASS_INTERFACE -I./include
+> > -I/usr/local/include -mieee-fp  -fPIC  -O -pipe -c ascii_chk.c -o
+> > ascii_chk.o
+> > cc -I/usr/local/lib/R/include -DR_GRASS_INTERFACE -I./include
+> > -I/usr/local/include -mieee-fp  -fPIC  -O -pipe -c auto_mask.c -o
+> > auto_mask.o
+> > In file included from include/G.h:3,
+> >                  from auto_mask.c:18:
+> > include/rpc/types.h:87: redefinition of `caddr_t'
+> > /usr/include/sys/types.h:69: `caddr_t' previously declared here
+> > include/rpc/types.h:89: redefinition of `u_int'
+> > /usr/include/sys/types.h:54: `u_int' previously declared here
+> > include/rpc/types.h:90: redefinition of `u_long'
+> > /usr/include/sys/types.h:55: `u_long' previously declared here
+> > include/rpc/types.h:91: redefinition of `u_short'
+> > /usr/include/sys/types.h:53: `u_short' previously declared here
+> > *** Error code 1
+> > 
+> > Stop in /tmp/R.INSTALL.35187/GRASS/src.
+> > ERROR: compilation failed for package 'GRASS'
+> > ** Removing '/usr/local/lib/R/library/GRASS'
+> > ** Restoring previous '/usr/local/lib/R/library/GRASS'
+> > 
+> > Delete downloaded files (y/N)?
+> > The packages are in /tmp/RtmpaUoyEh/Rinstdir446b9b3d
+> > Warning message:
+> > Installation of package GRASS had non-zero exit status in:
+> > install.packages("GRASS")
+> > 
+> > Thanks,
+> > Paul
+> > 
+> > ______________________________________________
+> > R-help@stat.math.ethz.ch mailing list
+> > https://stat.ethz.ch/mailman/listinfo/r-help
+> > PLEASE do read the posting guide! http://www.R-project.org/posting-guide.html
+> > 
+> > 
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From Roger.Bivand at nhh.no  Thu Oct 28 05:48:00 2004
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] Re: [R] Problems installing GRASS package
+In-Reply-To: <Pine.LNX.4.44.0410280932180.1092-100000@gannet.stats>
+Message-ID: <Pine.LNX.4.44.0410281125560.29738-100000@reclus.nhh.no>
+
+On Thu, 28 Oct 2004, Prof Brian Ripley wrote:
+
+> On Thu, 28 Oct 2004, Roger Bivand wrote:
+> 
+> > (Transferred from R-help: does anyone have a working R-GRASS interface on 
+> > Free-BSD? - see further down for Paul English's compile problem (replies 
+> > please also directly to Paul who is almost certainly not subscribed):)
+> > 
+> > On Thu, 28 Oct 2004, Prof Brian Ripley wrote:
+> > 
+> > > Please send such problems, with solution, to the package maintainers.
+> > > 
+> > > They do not occur generally and seem to be due to the system headers on 
+> > > your particular system.  Only users of `FreeBSd' will be able to 
+> > > troubleshoot, i.e. you.
+> > 
+> > I am willing to try to help with this - it is an unusual case and the 
+> > first reported - there is a mailing list from the GRASS side where there 
+> > may be more experience:
+> > 
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> > > 
+> > > In this particular case, I think the package needs to use its own headers
+> > > only if the system ones are not available (via a configure test), and
+> > > suggest you try deleting GRASS/src/include/rpc.  (Roger: the zlib.h and
+> > > zconf.h are also worrying, as they might mismatch the libz used.)
+> > > 
+> > 
+> > This is a very valid concern, and one that the GRASS transition from 5.0.*
+> > stable to 5.4.* stable due in the near future will make relevant - the
+> > current included GRASS code is directly copied from 5.0.*. It is very
+> > likely that the GRASS package (the R-GRASS interface) will return to
+> > linking against external libraries rather than contain a local (aging)
+> > copy of the GRASS library source code, and it is this that links to zlib
+> > and the XDR headers. I am obliged to balance these concerns with what
+> > GRASS users with production systems find necessary; when the code looks
+> > ugly, I'm afraid there were practical reasons for the choices. I'll try to
+> > get things in better shape for GRASS 5.4.* and its successor GRASS 5.7.*.
+> 
+> I'm sorry, but that is not what is happening here.  The GRASS package is
+> not linked against anything other than R and so the xdr functions used are
+> found from the OS library (usually libc), or from R.dll on Windows.  So
+> you do need the headers from the OS, if it has them, otherwise those from
+> the R sources.  In practice I suspect all platforms R runs on have xdr
+> other than Windows.  Concrete evidence:
+> 
+> gannet% nm -pg GRASS.so | grep xdr
+>          U xdrmem_create@@GLIBC_2.0
+>          U xdr_double@@GLIBC_2.0
+>          U xdr_float@@GLIBC_2.0
+> 
+> My suggestion to delete the rpc/xdr headers is likely to work everywhere 
+> but on Windows.
+> 
+> As for zlib, 
+> 
+> gannet% nm -pg GRASS.so | grep flate
+>          U deflate
+>          U inflate
+>          U inflateInit_
+>          U deflateInit_
+>          U inflateEnd
+>          U deflateEnd
+> 
+> so you are linking against the libz in R and you *do* have version
+> mismatch, of a 1.1.4 header used with libz 1.2.1 (which is what R
+> contains).  Fortunately that is unlikely to be a problem.
+
+Thank you for these specific points. I will look at providing a 
+Makevars.win with the additional includes in a place hidden from 
+non-Windows builds as a start. The package initially had a configure 
+script, but this was a cause of difficulty for Windows installs, and led 
+to the change from linking to GRASS libraries externally to having local 
+copies.
+
+> 
+> With an external GRASS library there is even more room for mismatches.
+> 
+This is also valid, because I'm not sure that GRASS builds leave a trail 
+of which libraries they have linked against themselves in a discoverable 
+form. I can take this up with GRASS developers - it will be in the GRASS 
+config.log, but may not be available when binaries are distributed.
+
+My main worry now is how to make things better without interrupting 
+on-going research - Markus, do you have any ideas? Can we extract in a 
+reliable way what a GRASS build depends on and list it portably do that 
+thr R-GRASS interface can use it when it builds? Have you seen any signs 
+of failure because of version mismatch (unfortunately, not seeing it 
+doesn't mean it hasn't happened)? The compression library is crucial for 
+raster layer storage.
+
+Roger
+
+> 
+> Brian
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+
+
+From ripley at stats.ox.ac.uk  Thu Oct 28 04:54:01 2004
+From: ripley at stats.ox.ac.uk (Prof Brian Ripley)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] Re: [R] Problems installing GRASS package
+In-Reply-To: <Pine.LNX.4.44.0410280958170.29688-100000@reclus.nhh.no>
+Message-ID: <Pine.LNX.4.44.0410280932180.1092-100000@gannet.stats>
+
+On Thu, 28 Oct 2004, Roger Bivand wrote:
+
+> (Transferred from R-help: does anyone have a working R-GRASS interface on 
+> Free-BSD? - see further down for Paul English's compile problem (replies 
+> please also directly to Paul who is almost certainly not subscribed):)
+> 
+> On Thu, 28 Oct 2004, Prof Brian Ripley wrote:
+> 
+> > Please send such problems, with solution, to the package maintainers.
+> > 
+> > They do not occur generally and seem to be due to the system headers on 
+> > your particular system.  Only users of `FreeBSd' will be able to 
+> > troubleshoot, i.e. you.
+> 
+> I am willing to try to help with this - it is an unusual case and the 
+> first reported - there is a mailing list from the GRASS side where there 
+> may be more experience:
+> 
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+> > 
+> > In this particular case, I think the package needs to use its own headers
+> > only if the system ones are not available (via a configure test), and
+> > suggest you try deleting GRASS/src/include/rpc.  (Roger: the zlib.h and
+> > zconf.h are also worrying, as they might mismatch the libz used.)
+> > 
+> 
+> This is a very valid concern, and one that the GRASS transition from 5.0.*
+> stable to 5.4.* stable due in the near future will make relevant - the
+> current included GRASS code is directly copied from 5.0.*. It is very
+> likely that the GRASS package (the R-GRASS interface) will return to
+> linking against external libraries rather than contain a local (aging)
+> copy of the GRASS library source code, and it is this that links to zlib
+> and the XDR headers. I am obliged to balance these concerns with what
+> GRASS users with production systems find necessary; when the code looks
+> ugly, I'm afraid there were practical reasons for the choices. I'll try to
+> get things in better shape for GRASS 5.4.* and its successor GRASS 5.7.*.
+
+I'm sorry, but that is not what is happening here.  The GRASS package is
+not linked against anything other than R and so the xdr functions used are
+found from the OS library (usually libc), or from R.dll on Windows.  So
+you do need the headers from the OS, if it has them, otherwise those from
+the R sources.  In practice I suspect all platforms R runs on have xdr
+other than Windows.  Concrete evidence:
+
+gannet% nm -pg GRASS.so | grep xdr
+         U xdrmem_create@@GLIBC_2.0
+         U xdr_double@@GLIBC_2.0
+         U xdr_float@@GLIBC_2.0
+
+My suggestion to delete the rpc/xdr headers is likely to work everywhere 
+but on Windows.
+
+As for zlib, 
+
+gannet% nm -pg GRASS.so | grep flate
+         U deflate
+         U inflate
+         U inflateInit_
+         U deflateInit_
+         U inflateEnd
+         U deflateEnd
+
+so you are linking against the libz in R and you *do* have version
+mismatch, of a 1.1.4 header used with libz 1.2.1 (which is what R
+contains).  Fortunately that is unlikely to be a problem.
+
+With an external GRASS library there is even more room for mismatches.
+
+
+Brian
+
+-- 
+Brian D. Ripley,                  ripley@stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+From Roger.Bivand at nhh.no  Fri Oct 29 14:09:12 2004
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:12 2007
+Subject: [STATSGRASS] Re: [R] Problems installing GRASS package
+In-Reply-To: <Pine.LNX.4.44.0410280932180.1092-100000@gannet.stats>
+Message-ID: <Pine.LNX.4.44.0410292006350.31179-100000@reclus.nhh.no>
+
+Paul,
+
+I have put a draft GRASS package on:
+
+http://spatial.nhh.no/R/GRASS/GRASS_0.2-21.tar.gz
+
+Could you please try it and see whether the immediate solution of only 
+including the XDR and zlib headers on Windows (versions matching the R 
+2.0.0 release) but not on other platforms addresses your problem?
+
+Roger
+
+
+On Thu, 28 Oct 2004, Prof Brian Ripley wrote:
+
+> On Thu, 28 Oct 2004, Roger Bivand wrote:
+> 
+> > (Transferred from R-help: does anyone have a working R-GRASS interface on 
+> > Free-BSD? - see further down for Paul English's compile problem (replies 
+> > please also directly to Paul who is almost certainly not subscribed):)
+> > 
+> > On Thu, 28 Oct 2004, Prof Brian Ripley wrote:
+> > 
+> > > Please send such problems, with solution, to the package maintainers.
+> > > 
+> > > They do not occur generally and seem to be due to the system headers on 
+> > > your particular system.  Only users of `FreeBSd' will be able to 
+> > > troubleshoot, i.e. you.
+> > 
+> > I am willing to try to help with this - it is an unusual case and the 
+> > first reported - there is a mailing list from the GRASS side where there 
+> > may be more experience:
+> > 
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> > > 
+> > > In this particular case, I think the package needs to use its own headers
+> > > only if the system ones are not available (via a configure test), and
+> > > suggest you try deleting GRASS/src/include/rpc.  (Roger: the zlib.h and
+> > > zconf.h are also worrying, as they might mismatch the libz used.)
+> > > 
+> > 
+> > This is a very valid concern, and one that the GRASS transition from 5.0.*
+> > stable to 5.4.* stable due in the near future will make relevant - the
+> > current included GRASS code is directly copied from 5.0.*. It is very
+> > likely that the GRASS package (the R-GRASS interface) will return to
+> > linking against external libraries rather than contain a local (aging)
+> > copy of the GRASS library source code, and it is this that links to zlib
+> > and the XDR headers. I am obliged to balance these concerns with what
+> > GRASS users with production systems find necessary; when the code looks
+> > ugly, I'm afraid there were practical reasons for the choices. I'll try to
+> > get things in better shape for GRASS 5.4.* and its successor GRASS 5.7.*.
+> 
+> I'm sorry, but that is not what is happening here.  The GRASS package is
+> not linked against anything other than R and so the xdr functions used are
+> found from the OS library (usually libc), or from R.dll on Windows.  So
+> you do need the headers from the OS, if it has them, otherwise those from
+> the R sources.  In practice I suspect all platforms R runs on have xdr
+> other than Windows.  Concrete evidence:
+> 
+> gannet% nm -pg GRASS.so | grep xdr
+>          U xdrmem_create@@GLIBC_2.0
+>          U xdr_double@@GLIBC_2.0
+>          U xdr_float@@GLIBC_2.0
+> 
+> My suggestion to delete the rpc/xdr headers is likely to work everywhere 
+> but on Windows.
+> 
+> As for zlib, 
+> 
+> gannet% nm -pg GRASS.so | grep flate
+>          U deflate
+>          U inflate
+>          U inflateInit_
+>          U deflateInit_
+>          U inflateEnd
+>          U deflateEnd
+> 
+> so you are linking against the libz in R and you *do* have version
+> mismatch, of a 1.1.4 header used with libz 1.2.1 (which is what R
+> contains).  Fortunately that is unlikely to be a problem.
+> 
+> With an external GRASS library there is even more room for mismatches.
+> 
+> 
+> Brian
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+

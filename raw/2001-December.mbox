@@ -1,0 +1,1461 @@
+From Roger.Bivand at nhh.no  Tue Dec 11 07:04:06 2001
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] Release of R interface GRASS_0.1-8
+Message-ID: <Pine.LNX.4.21.0112111256280.14294-100000@reclus.nhh.no>
+
+A revised interface between GRASS 5.0beta, including 5.0.0pre and the R
+data analysis and statistics programming environment has been released.
+
+It may be downloaded from ftp://reclus.nhh.no/pub/R/GRASS_0.1-8.tar.gz,
+and should be on CRAN before long:
+http://cran.r-project.org/src/contrib/Devel/GRASS_0.1-8.tar.gz
+
+All sites can now be moved with sites.get(), with argument all.sites=TRUE.
+
+From alobo at ija.csic.es  Thu Dec 13 05:51:13 2001
+From: alobo at ija.csic.es (Agustin Lobo)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] raster cross-stats
+Message-ID: <Pine.OSF.3.96.1011213114709.26924B-100000@ija.csic.es>
+
+Hi!
+
+One suggestion:
+
+r.statistics should have the option of having a table as output
+(similar to r.surface), where the categories would be the rows
+and the different statistics (men, ver, median, etc) would be
+the columns. This would be an alternative, more compact
+format than the current rasters. Also, this table would be
+easy to be read from R for ulterior analysis.
+
+
+Regards,
+
+Agus
+
+Dr. Agustin Lobo
+Instituto de Ciencias de la Tierra (CSIC)
+Lluis Sole Sabaris s/n
+08028 Barcelona SPAIN
+tel 34 93409 5410
+fax 34 93411 0012
+alobo@ija.csic.es
+
+
+
+From Roger.Bivand at nhh.no  Thu Dec 13 07:31:30 2001
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] raster cross-stats
+Message-ID: <Pine.LNX.4.21.0112131301030.16153-100000@reclus.nhh.no>
+
+Hi Agus!
+
+On 13 Dec 2001, Agustin Lobo wrote:
+
+> One suggestion:
+> 
+> r.statistics should have the option of having a table as output
+> (similar to r.surface), where the categories would be the rows
+> and the different statistics (men, ver, median, etc) would be
+> the columns. This would be an alternative, more compact
+> format than the current rasters. Also, this table would be
+> easy to be read from R for ulterior analysis.
+
+Great to see you "here" too! I'm enclosing below bits of correspondence
+between Markus, Helena and me of about two weeks ago, together with a
+draft shell script to use R functions for GRASS raster layers. My current
+feeling is that with R being easy to install and maintain, shell scripts
+using R (here for the leics dataset):
+
+> library(GRASS)
+> G <- gmeta()
+> work <- rast.get(G, c("landcov", "topo"), c(T,F))
+> res <- by(work$topo, work$landcov, summary)
+INDICES: Background
+NULL
+------------------------------------------------------------ 
+INDICES: Industry
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  40.00   42.00   59.00   83.61  120.00  220.00 
+------------------------------------------------------------ 
+INDICES: Residential
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   40.0    53.0    60.0    76.3    80.0   218.0 
+------------------------------------------------------------ 
+INDICES: Quarry
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   40.0    59.0   161.0   135.3   177.0   198.0 
+------------------------------------------------------------ 
+INDICES: Woodland
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   40.0   118.0   156.0   142.9   174.0   248.0 
+------------------------------------------------------------ 
+INDICES: Arable
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+     40      63      81     104     153     270 
+------------------------------------------------------------ 
+INDICES: Pasture
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   40.0    75.0   145.0   133.5   180.0   278.0 
+------------------------------------------------------------ 
+INDICES: Scrub
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   40.0   100.0   161.0   148.2   196.0   270.0 
+------------------------------------------------------------ 
+INDICES: Water
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  47.00   65.00   99.00   99.27  131.00  221.00 
+> matrix(unlist(res), ncol=6)
+       [,1]  [,2]  [,3] [,4]  [,5]   [,6]
+[1,]  40.00  60.0 177.0   40 145.0 196.00
+[2,]  42.00  76.3 198.0   63 133.5 270.00
+[3,]  59.00  80.0  40.0   81 180.0  47.00
+[4,]  83.61 218.0 118.0  104 278.0  65.00
+[5,] 120.00  40.0 156.0  153  40.0  99.00
+[6,] 220.00  59.0 142.9  270 100.0  99.27
+[7,]  40.00 161.0 174.0   40 161.0 131.00
+[8,]  53.00 135.3 248.0   75 148.2 221.00
+
+where summary could be a function that is written on the fly before
+submission to R.
+
+I'll be very pleased to hear your thinking - your input to other things -
+like the R pixmap package was helpful!
+
+Roger
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+and: Department of Geography and Regional Development, University of
+Gdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.
+
+---------- Forwarded message ----------
+Date: Thu, 29 Nov 2001 12:20:01 +0100 (CET)
+From: Roger Bivand <Roger.Bivand@nhh.no>
+To: neteler@itc.it
+Cc: hmitaso@unity.ncsu.edu
+Subject: Re: s.sv, s.normal, s.probplt and R
+
+Markus, Helena:
+
+
+
+
+Further to my message of Monday (below), here is what I sent Frank
+Warnerdam in September when he had asked "Also, how do I get information
+on the min, max, and mean of a raster?" - this is what I was thinking of
+by suggesting that even using R through shell scripts writing R code on
+the fly may be fast enough for some things that don't need R to be seen.
+The s.kcv code is an R function, but it wouldn't be difficult to put it in
+a script in a similar way. The same could be done for plenty of others.
+
+> G <- gmeta()
+> Zinc <- sites.get(G, "ex.Zn.in")
+>  names(Zinc)
+[1] "east"  "north" "var1"  "var2" 
+> system("s.univar ex.Zn.in")
+Reading sites list ...                   100%
+Calculating statistics (decfield: 1) ... 100%
+        number of points 98
+                    mean 481.031
+      standard deviation 398.808
+coefficient of variation 82.9069
+                skewness 1.44865
+                kurtosis 1.67661
+         mean of squares 388815
+ mean of absolute values 481.031
+                 minimum 113
+          first quartile 186
+                  median 307.5
+          third quartile 685
+                 maximum 1839
+> skewness(Zinc$var2)
+[1] 1.426529
+> kurtosis(Zinc$var2)
+[1] 1.581654
+> summary(Zinc$var2)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  113.0   186.3   307.5   481.0   698.5  1839.0 
+> mean(Zinc$var2)
+[1] 481.0306
+> sd(Zinc$var2)
+[1] 398.8077
+
+While mean and standard deviation agree between R and s.univar, as do min,
+max, median, skewness and kurtosis don't (quartiles depend on assumptions
+for ties, so aren't so difficult)
+
+> shapiro.test(Zinc$var2)
+
+        Shapiro-Wilk normality test
+
+data:  Zinc$var2 
+W = 0.8186, p-value = 1.259e-09 
+
+is a bit easier to read than s.normal! qqnorm(Zinc$var2) or
+ecdf(Zinc$var2) do nice plots too!
+
+As far as s.sv goes, several of the geostats packages in R do the same
+too.
+
+> system("s.sv sites=ex.Zn.in lag=50")
+Reading sites list ...                   100%
+98 sites found
+Computing sample semivariogram ...   100%
+50 67827.5 22
+100 67968.9 94
+150 69124.6 200
+200 97473.3 196
+250 78232.2 220
+300 124723 256
+350 102276 248
+400 166055 242
+450 140789 284
+500 137712 290
+
+> library(fields)
+> try2 <- vgram(cbind(Zinc$east, Zinc$north), Zinc$var2, dmax=1000,
+breaks=seq(50,1000,50))
+> try2$breaks[1:10]
+ [1]  50 100 150 200 250 300 350 400 450 500
+> try2$stats[1:3,1:10]
+                1         2        3         4        5         6        7
+N           31.00     78.00     98.0    104.00    117.0    119.00    130.0
+mean     52392.50  61888.99 101409.0  71277.74 127455.7  85657.06 149756.9
+Std.Dev. 91029.62 129359.38 168443.0 153194.52 204767.0 165459.43 280845.6
+                8        9       10
+N           137.0    132.0    149.0
+mean     122474.6 165412.9 163237.1
+Std.Dev. 225055.5 301939.9 279704.7
+
+> plot(try2$d, try2$vgram)
+> lines(try2$centers, try2$stats["mean",], col=4)
+
+just from Doug Nychka's fields package, which includes robust variograms
+too, and variograms from rasters.
+
+Maybe this is not really necessary at all, but working up these kinds of
+analytical things is just so much easier in R - and more people use them
+so that the chance of bugs not being found is much less - that at least
+for me it is what I choose.
+
+Yours,
+
+Roger
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+and: Department of Geography and Regional Development, University of
+Gdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.
+
+Message of Monday 26/11:
+
+I'm in Gdansk now, so can't try things until later in the week. My feeling 
+is that the key question here is how many GRASS users who use these kinds 
+of functionalities would benefit in the longer run from moving the
+analysis 
+bits to the R engine, over the interface at the moment. I've already 
+written a couple of scripts to do some of this from the GRASS prompt. My 
+preference would be to use R functionality where appropriate, because it
+is 
+used by more people and more likely for that reason to be cleaner. I 
+remember an exchange some months ago when Frank Warnerdam wanted a better 
+r.average, and that wasn't a problem to do as a script writing a short R 
+script to collect the raster or whatever, compute the result, and if 
+necessary push it back across the interface. But then R has to be 
+installed, as well as the interface library.
+
+An alternative is to use the interface to help prototype things, then code 
+them in C on the R side. Certainly what I saw of one s.* program (to
+choose 
+a training and a test set from sites) made me distinctly unhappy - it was 
+doing things that not only seemed unnecessary, and doing them rather 
+clumsily.
+
+
+in reply to:
+
+as you know we are working on the GRASS book. Helena is
+revising the sites chapter and asked about a few
+modules. As you may have tested them already, I would
+like to know if you have hints for us:
+
+On Sun, Nov 25, 2001 at 08:41:55AM -0600, Helena wrote:
+> Markus,
+> 
+> I am working on chapter7 (sites) and I would like to ask whether you
+have
+> any experience with s.sv, s.normal, s.probplt, s.medp. At least s.sv and
+> s.normal appear to be working but one needs g.gnuplot to get the
+graphics.
+> Also I do not know whether these tools are all designed properly. Did
+you
+> ever try to compare the results with those from R-stats?
+> Has Roger Bivand tried it - does he think that they are useful?
+
+Today I have exported the zinc data from Maas and put into
+s.sv. Well, it's looking a bit different.
+But I am not sure if both implementations are comparable. Did
+you ever try above mentioned GRASS modules?
+
+BTW: All only require gnuplot, not g.gnuplot (we had implemented the
+environment variable GRASS_GNUPLOT which is per default "gnuplot").
+If this doesn't work, you GRASS is too old... The change was done several
+weeks ago.
+
+The question for us is if to mention the modules or not (and refer to
+R, I just added QQ plots to the related section).
+---------- Forwarded message ----------
+Date: Thu, 6 Sep 2001 10:50:17 +0200 (CEST)
+From: Roger Bivand <Roger.Bivand@nhh.no>
+To: Frank Warmerdam <warmerdam@pobox.com>
+Subject: Re: [GRASS5] r.in.gdal and GCPs
+
+Frank:
+
+Here is a rough draft of a shell script to do what you want (I think):
+(there is a time downside to loading R first, but the time taken to read
+the raster layer should be comparable, since both the interface and say
+r.stats are using the same functions in libgis.a).
+
+-------------------
+#!/bin/sh
+# r.statistics.R: shell script to call simple summary functions from R
+# (needs installed R in path, and installed R GRASS package; for
+# skewness and kurtosis also e1071 package)
+#
+# usage: r.statistics.R layer method
+# where layer is a raster map layer and method is one of:
+# summary fivenum mean max min median length sum var sd kurtosis skewness
+#
+
+layer=$1
+
+r.info "$layer" 2>&1 > /dev/null
+if [ "$?" == 1 ] ; then
+echo "$layer: no such raster map layer"
+exit 1
+fi
+
+method=$2
+found=`grep "$method" << EOF
+summary fivenum mean max min median length sum var sd kurtosis skewness
+EOF`
+
+if [ "$?" == 1 ] ; then
+echo "$method: no such method"
+exit 1
+fi
+
+e1071="FALSE"
+
+if [ "$method" == "kurtosis" ] ; then e1071="TRUE" ; fi
+if [ "$method" == "skewness" ] ; then e1071="TRUE" ; fi
+
+if [ "$e1071" == "TRUE" ] ; then
+
+R --vanilla --quiet --slave << EOF
+library(e1071)
+library(GRASS)
+print($method(rast.get(gmeta(), "$layer")[[1]]))
+EOF
+
+else
+
+R --vanilla --quiet --slave << EOF
+library(GRASS)
+print($method(rast.get(gmeta(), "$layer")[[1]]))
+EOF
+
+fi
+
+------------
+
+Roger
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+and: Department of Geography and Regional Development, University of
+Gdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.
+
+
+
+
+
+
+
+
+
+
+
+From alobo at ija.csic.es  Thu Dec 13 08:09:23 2001
+From: alobo at ija.csic.es (Agustin Lobo)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] raster cross-stats
+In-Reply-To: <Pine.LNX.4.21.0112131301030.16153-100000@reclus.nhh.no>
+Message-ID: <Pine.OSF.3.96.1011213134938.26924C-100000@ija.csic.es>
+
+On Thu, 13 Dec 2001, Roger Bivand wrote:
+
+> Hi Agus!
+> 
+> Great to see you "here" too! 
+
+Well, I actually wrote some (probably primitive) scripts
+linking Splus and Grass ten years ago! I did pass the scripts
+to Markus, and maybe they were at least useful to initially fuel the
+current (and better) link with R.
+
+> I'm enclosing below bits of correspondence
+> between Markus, Helena and me of about two weeks ago, together with a
+> draft shell script to use R functions for GRASS raster layers. My current
+> feeling is that with R being easy to install and maintain, shell scripts
+> using R (here for the leics dataset):
+
+> > library(GRASS)
+> > G <- gmeta()
+> > work <- rast.get(G, c("landcov", "topo"), c(T,F))
+> > res <- by(work$topo, work$landcov, summary)
+
+etc.
+
+Yes, I was aware of this option, which is very similar to 
+my current solution: I import the necessary rasters to R
+(using more general tools for raw binary images, as I 
+use a number of different GIS and RS packages) and there
+I compute the statistics.
+
+But there are 2 problems with this approach:
+
+1. We duplicate the information, which is really bad in the
+case of images, as they can be huge (hyperspectral, multitemporal,
+high resolution ...).
+
+2. We import large objects to R, which is not precisely good and fast
+at dealing with large objects.
+
+In fact, an ideal link would let R work on the Grass files, but this
+is probably asking for too much.
+
+Therefore, a good solution would be performing this type of
+"low level" stats directely at the GIS level, get a table
+(of moderate size, my tables would have ~ 20000 rows) and
+port it to R. If we have, for each category, mean, size, var,
+median, mad ..., we can use R for further analysis. 
+
+I do something similar with contingency tables: I use grass
+r.stat to creat a 3 col table (categ.1_raster_1, categ.1_raster_2
+nb_of_cells) and then a simple R function to compute
+a contingency table. This is much faster and simpler than importing
+the 2 rasters to R.
+
+Opinions?
+
+
+Agus
+
+
+
+
+From neteler at itc.it  Thu Dec 13 09:10:03 2001
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] raster cross-stats
+In-Reply-To: <Pine.LNX.4.21.0112131301030.16153-100000@reclus.nhh.no>; from Roger.Bivand@nhh.no on Thu, Dec 13, 2001 at 01:31:30PM +0100
+References: <Pine.LNX.4.21.0112131301030.16153-100000@reclus.nhh.no>
+Message-ID: <20011213151003.D5660@itc.it>
+
+Dear Roger,
+
+thanks for the updated GRASS/R interface, I will install later
+today. I have played a bit with R BATCH mode to write
+pseudo-GRASS script, it's real fun!
+Sorry for a FAQ, but (due to my current traveling with temporal
+internet access) how can I specify a parameter such as
+$1 in shell scripts?
+I want to add parameters to the scripts which are visible within
+R BATCH. If you could point me to a online document
+I would be glad.
+
+Sorry for the basic question,
+
+ Markus
+
+On Thu, Dec 13, 2001 at 01:31:30PM +0100, Roger Bivand wrote:
+> Hi Agus!
+> 
+> On 13 Dec 2001, Agustin Lobo wrote:
+> 
+> > One suggestion:
+> > 
+> > r.statistics should have the option of having a table as output
+> > (similar to r.surface), where the categories would be the rows
+> > and the different statistics (men, ver, median, etc) would be
+> > the columns. This would be an alternative, more compact
+> > format than the current rasters. Also, this table would be
+> > easy to be read from R for ulterior analysis.
+> 
+> Great to see you "here" too! I'm enclosing below bits of correspondence
+> between Markus, Helena and me of about two weeks ago, together with a
+> draft shell script to use R functions for GRASS raster layers. My current
+> feeling is that with R being easy to install and maintain, shell scripts
+> using R (here for the leics dataset):
+> 
+> > library(GRASS)
+> > G <- gmeta()
+> > work <- rast.get(G, c("landcov", "topo"), c(T,F))
+> > res <- by(work$topo, work$landcov, summary)
+> INDICES: Background
+> NULL
+> ------------------------------------------------------------ 
+> INDICES: Industry
+>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+>   40.00   42.00   59.00   83.61  120.00  220.00 
+> ------------------------------------------------------------ 
+> INDICES: Residential
+>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+>    40.0    53.0    60.0    76.3    80.0   218.0 
+> ------------------------------------------------------------ 
+> INDICES: Quarry
+>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+>    40.0    59.0   161.0   135.3   177.0   198.0 
+> ------------------------------------------------------------ 
+> INDICES: Woodland
+>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+>    40.0   118.0   156.0   142.9   174.0   248.0 
+> ------------------------------------------------------------ 
+> INDICES: Arable
+>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+>      40      63      81     104     153     270 
+> ------------------------------------------------------------ 
+> INDICES: Pasture
+>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+>    40.0    75.0   145.0   133.5   180.0   278.0 
+> ------------------------------------------------------------ 
+> INDICES: Scrub
+>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+>    40.0   100.0   161.0   148.2   196.0   270.0 
+> ------------------------------------------------------------ 
+> INDICES: Water
+>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+>   47.00   65.00   99.00   99.27  131.00  221.00 
+> > matrix(unlist(res), ncol=6)
+>        [,1]  [,2]  [,3] [,4]  [,5]   [,6]
+> [1,]  40.00  60.0 177.0   40 145.0 196.00
+> [2,]  42.00  76.3 198.0   63 133.5 270.00
+> [3,]  59.00  80.0  40.0   81 180.0  47.00
+> [4,]  83.61 218.0 118.0  104 278.0  65.00
+> [5,] 120.00  40.0 156.0  153  40.0  99.00
+> [6,] 220.00  59.0 142.9  270 100.0  99.27
+> [7,]  40.00 161.0 174.0   40 161.0 131.00
+> [8,]  53.00 135.3 248.0   75 148.2 221.00
+> 
+> where summary could be a function that is written on the fly before
+> submission to R.
+> 
+> I'll be very pleased to hear your thinking - your input to other things -
+> like the R pixmap package was helpful!
+> 
+> Roger
+> 
+> -- 
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+> e-mail: Roger.Bivand@nhh.no
+> and: Department of Geography and Regional Development, University of
+> Gdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.
+> 
+> ---------- Forwarded message ----------
+> Date: Thu, 29 Nov 2001 12:20:01 +0100 (CET)
+> From: Roger Bivand <Roger.Bivand@nhh.no>
+> To: neteler@itc.it
+> Cc: hmitaso@unity.ncsu.edu
+> Subject: Re: s.sv, s.normal, s.probplt and R
+> 
+> Markus, Helena:
+> 
+> 
+> 
+> 
+> Further to my message of Monday (below), here is what I sent Frank
+> Warnerdam in September when he had asked "Also, how do I get information
+> on the min, max, and mean of a raster?" - this is what I was thinking of
+> by suggesting that even using R through shell scripts writing R code on
+> the fly may be fast enough for some things that don't need R to be seen.
+> The s.kcv code is an R function, but it wouldn't be difficult to put it in
+> a script in a similar way. The same could be done for plenty of others.
+> 
+> > G <- gmeta()
+> > Zinc <- sites.get(G, "ex.Zn.in")
+> >  names(Zinc)
+> [1] "east"  "north" "var1"  "var2" 
+> > system("s.univar ex.Zn.in")
+> Reading sites list ...                   100%
+> Calculating statistics (decfield: 1) ... 100%
+>         number of points 98
+>                     mean 481.031
+>       standard deviation 398.808
+> coefficient of variation 82.9069
+>                 skewness 1.44865
+>                 kurtosis 1.67661
+>          mean of squares 388815
+>  mean of absolute values 481.031
+>                  minimum 113
+>           first quartile 186
+>                   median 307.5
+>           third quartile 685
+>                  maximum 1839
+> > skewness(Zinc$var2)
+> [1] 1.426529
+> > kurtosis(Zinc$var2)
+> [1] 1.581654
+> > summary(Zinc$var2)
+>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+>   113.0   186.3   307.5   481.0   698.5  1839.0 
+> > mean(Zinc$var2)
+> [1] 481.0306
+> > sd(Zinc$var2)
+> [1] 398.8077
+> 
+> While mean and standard deviation agree between R and s.univar, as do min,
+> max, median, skewness and kurtosis don't (quartiles depend on assumptions
+> for ties, so aren't so difficult)
+> 
+> > shapiro.test(Zinc$var2)
+> 
+>         Shapiro-Wilk normality test
+> 
+> data:  Zinc$var2 
+> W = 0.8186, p-value = 1.259e-09 
+> 
+> is a bit easier to read than s.normal! qqnorm(Zinc$var2) or
+> ecdf(Zinc$var2) do nice plots too!
+> 
+> As far as s.sv goes, several of the geostats packages in R do the same
+> too.
+> 
+> > system("s.sv sites=ex.Zn.in lag=50")
+> Reading sites list ...                   100%
+> 98 sites found
+> Computing sample semivariogram ...   100%
+> 50 67827.5 22
+> 100 67968.9 94
+> 150 69124.6 200
+> 200 97473.3 196
+> 250 78232.2 220
+> 300 124723 256
+> 350 102276 248
+> 400 166055 242
+> 450 140789 284
+> 500 137712 290
+> 
+> > library(fields)
+> > try2 <- vgram(cbind(Zinc$east, Zinc$north), Zinc$var2, dmax=1000,
+> breaks=seq(50,1000,50))
+> > try2$breaks[1:10]
+>  [1]  50 100 150 200 250 300 350 400 450 500
+> > try2$stats[1:3,1:10]
+>                 1         2        3         4        5         6        7
+> N           31.00     78.00     98.0    104.00    117.0    119.00    130.0
+> mean     52392.50  61888.99 101409.0  71277.74 127455.7  85657.06 149756.9
+> Std.Dev. 91029.62 129359.38 168443.0 153194.52 204767.0 165459.43 280845.6
+>                 8        9       10
+> N           137.0    132.0    149.0
+> mean     122474.6 165412.9 163237.1
+> Std.Dev. 225055.5 301939.9 279704.7
+> 
+> > plot(try2$d, try2$vgram)
+> > lines(try2$centers, try2$stats["mean",], col=4)
+> 
+> just from Doug Nychka's fields package, which includes robust variograms
+> too, and variograms from rasters.
+> 
+> Maybe this is not really necessary at all, but working up these kinds of
+> analytical things is just so much easier in R - and more people use them
+> so that the chance of bugs not being found is much less - that at least
+> for me it is what I choose.
+> 
+> Yours,
+> 
+> Roger
+> 
+> -- 
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+> e-mail: Roger.Bivand@nhh.no
+> and: Department of Geography and Regional Development, University of
+> Gdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.
+> 
+> Message of Monday 26/11:
+> 
+> I'm in Gdansk now, so can't try things until later in the week. My feeling 
+> is that the key question here is how many GRASS users who use these kinds 
+> of functionalities would benefit in the longer run from moving the
+> analysis 
+> bits to the R engine, over the interface at the moment. I've already 
+> written a couple of scripts to do some of this from the GRASS prompt. My 
+> preference would be to use R functionality where appropriate, because it
+> is 
+> used by more people and more likely for that reason to be cleaner. I 
+> remember an exchange some months ago when Frank Warnerdam wanted a better 
+> r.average, and that wasn't a problem to do as a script writing a short R 
+> script to collect the raster or whatever, compute the result, and if 
+> necessary push it back across the interface. But then R has to be 
+> installed, as well as the interface library.
+> 
+> An alternative is to use the interface to help prototype things, then code 
+> them in C on the R side. Certainly what I saw of one s.* program (to
+> choose 
+> a training and a test set from sites) made me distinctly unhappy - it was 
+> doing things that not only seemed unnecessary, and doing them rather 
+> clumsily.
+> 
+> 
+> in reply to:
+> 
+> as you know we are working on the GRASS book. Helena is
+> revising the sites chapter and asked about a few
+> modules. As you may have tested them already, I would
+> like to know if you have hints for us:
+> 
+> On Sun, Nov 25, 2001 at 08:41:55AM -0600, Helena wrote:
+> > Markus,
+> > 
+> > I am working on chapter7 (sites) and I would like to ask whether you
+> have
+> > any experience with s.sv, s.normal, s.probplt, s.medp. At least s.sv and
+> > s.normal appear to be working but one needs g.gnuplot to get the
+> graphics.
+> > Also I do not know whether these tools are all designed properly. Did
+> you
+> > ever try to compare the results with those from R-stats?
+> > Has Roger Bivand tried it - does he think that they are useful?
+> 
+> Today I have exported the zinc data from Maas and put into
+> s.sv. Well, it's looking a bit different.
+> But I am not sure if both implementations are comparable. Did
+> you ever try above mentioned GRASS modules?
+> 
+> BTW: All only require gnuplot, not g.gnuplot (we had implemented the
+> environment variable GRASS_GNUPLOT which is per default "gnuplot").
+> If this doesn't work, you GRASS is too old... The change was done several
+> weeks ago.
+> 
+> The question for us is if to mention the modules or not (and refer to
+> R, I just added QQ plots to the related section).
+> ---------- Forwarded message ----------
+> Date: Thu, 6 Sep 2001 10:50:17 +0200 (CEST)
+> From: Roger Bivand <Roger.Bivand@nhh.no>
+> To: Frank Warmerdam <warmerdam@pobox.com>
+> Subject: Re: [GRASS5] r.in.gdal and GCPs
+> 
+> Frank:
+> 
+> Here is a rough draft of a shell script to do what you want (I think):
+> (there is a time downside to loading R first, but the time taken to read
+> the raster layer should be comparable, since both the interface and say
+> r.stats are using the same functions in libgis.a).
+> 
+> -------------------
+> #!/bin/sh
+> # r.statistics.R: shell script to call simple summary functions from R
+> # (needs installed R in path, and installed R GRASS package; for
+> # skewness and kurtosis also e1071 package)
+> #
+> # usage: r.statistics.R layer method
+> # where layer is a raster map layer and method is one of:
+> # summary fivenum mean max min median length sum var sd kurtosis skewness
+> #
+> 
+> layer=$1
+> 
+> r.info "$layer" 2>&1 > /dev/null
+> if [ "$?" == 1 ] ; then
+> echo "$layer: no such raster map layer"
+> exit 1
+> fi
+> 
+> method=$2
+> found=`grep "$method" << EOF
+> summary fivenum mean max min median length sum var sd kurtosis skewness
+> EOF`
+> 
+> if [ "$?" == 1 ] ; then
+> echo "$method: no such method"
+> exit 1
+> fi
+> 
+> e1071="FALSE"
+> 
+> if [ "$method" == "kurtosis" ] ; then e1071="TRUE" ; fi
+> if [ "$method" == "skewness" ] ; then e1071="TRUE" ; fi
+> 
+> if [ "$e1071" == "TRUE" ] ; then
+> 
+> R --vanilla --quiet --slave << EOF
+> library(e1071)
+> library(GRASS)
+> print($method(rast.get(gmeta(), "$layer")[[1]]))
+> EOF
+> 
+> else
+> 
+> R --vanilla --quiet --slave << EOF
+> library(GRASS)
+> print($method(rast.get(gmeta(), "$layer")[[1]]))
+> EOF
+> 
+> fi
+> 
+> ------------
+> 
+> Roger
+> 
+> -- 
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+> e-mail: Roger.Bivand@nhh.no
+> and: Department of Geography and Regional Development, University of
+> Gdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+-- 
+Markus Neteler
+
+ITC-irst, Istituto per la Ricerca Scientifica e Tecnologica
+     Project on Predictive Models for the Environment    
+Via Sommarive, 18        -      38050 Povo (Trento), Italia
+tel +39 0461 314 -520 (fax -591)          http://mpa.itc.it
+
+From neteler at itc.it  Thu Dec 13 09:40:55 2001
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] raster cross-stats
+In-Reply-To: <Pine.OSF.3.96.1011213134938.26924C-100000@ija.csic.es>; from alobo@ija.csic.es on Thu, Dec 13, 2001 at 02:09:23PM +0100
+References: <Pine.LNX.4.21.0112131301030.16153-100000@reclus.nhh.no> <Pine.OSF.3.96.1011213134938.26924C-100000@ija.csic.es>
+Message-ID: <20011213154055.G5660@itc.it>
+
+On Thu, Dec 13, 2001 at 02:09:23PM +0100, Agustin Lobo wrote:
+> 
+> On Thu, 13 Dec 2001, Roger Bivand wrote:
+> 
+> > Hi Agus!
+> > 
+> > Great to see you "here" too! 
+
+Hi Agus
+
+as Roger says: nice to see you again!
+ 
+> Well, I actually wrote some (probably primitive) scripts
+> linking Splus and Grass ten years ago! I did pass the scripts
+> to Markus, and maybe they were at least useful to initially fuel the
+> current (and better) link with R.
+
+Doh! They must be somewhere. I am sorry, but that time (maybe two
+years ago?) I wasn't aware that potential and my current interests.
+Unfortunately I can't find the, do you have a copy?
+ 
+> > I'm enclosing below bits of correspondence
+> > between Markus, Helena and me of about two weeks ago, together with a
+> > draft shell script to use R functions for GRASS raster layers. My current
+> > feeling is that with R being easy to install and maintain, shell scripts
+> > using R (here for the leics dataset):
+> 
+> > > library(GRASS)
+> > > G <- gmeta()
+> > > work <- rast.get(G, c("landcov", "topo"), c(T,F))
+> > > res <- by(work$topo, work$landcov, summary)
+> 
+> etc.
+> 
+> Yes, I was aware of this option, which is very similar to 
+> my current solution: I import the necessary rasters to R
+> (using more general tools for raw binary images, as I 
+> use a number of different GIS and RS packages) and there
+> I compute the statistics.
+> 
+> But there are 2 problems with this approach:
+> 
+> 1. We duplicate the information, which is really bad in the
+> case of images, as they can be huge (hyperspectral, multitemporal,
+> high resolution ...).
+> 
+> 2. We import large objects to R, which is not precisely good and fast
+> at dealing with large objects.
+> 
+> In fact, an ideal link would let R work on the Grass files, but this
+> is probably asking for too much.
+
+Roger, did you ever look at the "libgrass" library from
+Frank Warmerdam? We recently updated it to connect
+MapServer directly to GRASS (see it working here:
+http://grass.itc.it/start.html
+a primitive version only to proof that it is running).
+
+Using this library 
+http://grass.itc.it/related_projects.html
+-> libgrass: Standalone GRASS 5 I/O Library to directly read/write GRASS
+Databases. 
+
+you may exchange data directly. See 
+gdal/frmts/grass
+GDAL how to use the library if you are interested.
+
+> Therefore, a good solution would be performing this type of
+> "low level" stats directely at the GIS level, get a table
+> (of moderate size, my tables would have ~ 20000 rows) and
+> port it to R. If we have, for each category, mean, size, var,
+> median, mad ..., we can use R for further analysis. 
+> 
+> I do something similar with contingency tables: I use grass
+> r.stat to creat a 3 col table (categ.1_raster_1, categ.1_raster_2
+> nb_of_cells) and then a simple R function to compute
+> a contingency table. This is much faster and simpler than importing
+> the 2 rasters to R.
+> 
+> Opinions?
+> 
+> Agus
+
+Markus
+
+From Roger.Bivand at nhh.no  Fri Dec 14 04:00:33 2001
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] libgrass
+In-Reply-To: <20011213154055.G5660@itc.it>
+Message-ID: <Pine.LNX.4.21.0112140947530.17110-100000@reclus.nhh.no>
+
+On Thu, 13 Dec 2001, Markus Neteler wrote:
+
+> Roger, did you ever look at the "libgrass" library from
+> Frank Warmerdam? We recently updated it to connect
+> MapServer directly to GRASS (see it working here:
+> http://grass.itc.it/start.html
+> a primitive version only to proof that it is running).
+> 
+> Using this library 
+> http://grass.itc.it/related_projects.html
+> -> libgrass: Standalone GRASS 5 I/O Library to directly read/write GRASS
+> Databases. 
+> 
+> you may exchange data directly. See 
+> gdal/frmts/grass
+> GDAL how to use the library if you are interested.
+> 
+Yes but no. If GRASS database files were "standalone" - they could exist
+outside the $GISDBASE structure - there might be some good reason for
+going with libgrass (which for GDAL is fine). This would correspond to the
+logic of shapelib, say. However, the interface with R at the moment
+presupposes that GRASS is there too, because the data objects and programs
+are so closely meshed. It seems natural to be able to do:
+
+system("g.list rast")
+
+before doing
+
+rast.get()
+
+for instance. If the data were in arbitrary directories (like the output
+of r.out.bin) then a looser coupling to the other GRASS programs is
+sensible (like your MapServer example which is nice and surprisingly
+fast!). MapServer isn't going to want to do any regular GRASS - the GRASS
+DBASE is just a back-end - isn't it? The road queries are not being done
+in GRASS, are they?
+
+Of course the R/GRASS interface could equally well be compiled against
+libgrass, but my guess is that having the include and lib directories in
+GISBASE is an equally good route, especially because the interface and the
+GRASS programs will be using the same libgis.a.
+
+I'm also looking (not top priority) general GDAL support in R, but here
+the points made by Agus about data volumes are very relevant.
+
+Roger
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+and: Department of Geography and Regional Development, University of
+Gdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.
+
+
+From Roger.Bivand at nhh.no  Fri Dec 14 04:15:14 2001
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] raster cross-stats
+In-Reply-To: <20011213151003.D5660@itc.it>
+Message-ID: <Pine.LNX.4.21.0112141001070.17110-100000@reclus.nhh.no>
+
+On Thu, 13 Dec 2001, Markus Neteler wrote:
+
+> Sorry for a FAQ, but (due to my current traveling with temporal
+> internet access) how can I specify a parameter such as
+> $1 in shell scripts?
+> I want to add parameters to the scripts which are visible within
+> R BATCH. If you could point me to a online document
+> I would be glad.
+> 
+If $1 is a shell variable, then it is visible - here are some lines from
+the r.statistics.R shell script:
+
+> > layer=$1
+> > 
+> > method=$2
+
+> > R --vanilla --quiet --slave << EOF
+> > library(GRASS)
+> > print($method(rast.get(gmeta(), "$layer")[[1]]))
+> > EOF
+> > 
+
+If you need to use $ as an R symbol - maps$elev say - then normal shell
+script rules should apply? Escape with a backslash? map\$elev I guess?
+
+R CMD BATCH wants an input file, doesn't it (haven't used it
+myself) rather than redirection from stdin as above? Then you would echo
+and/or cat the created script to an infile.R, then run the batch. It's
+also possible to write a generic script for R using connections - which
+are pretty powerful. Reading r.out.bin files through connections is on my
+todo list to replace text transfer for interpreted mode.
+
+I don't think I've helped - I'm a bit unsure about your specific needs?
+
+Roger
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+and: Department of Geography and Regional Development, University of
+Gdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.
+
+
+From alobo at ija.csic.es  Fri Dec 14 06:29:09 2001
+From: alobo at ija.csic.es (Agustin Lobo)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] raster cross-stats
+In-Reply-To: <Pine.LNX.4.21.0112141001070.17110-100000@reclus.nhh.no>
+Message-ID: <Pine.OSF.3.96.1011214122054.26727C-100000@ija.csic.es>
+
+Roger, Markus et al.,
+
+Does anyone have the e-mail address of Martin Schroeder, the
+author of r.statistics ? It would be trivial for him
+to modify r.statisitcs and include the optional table output.
+
+(I'll look for the old scripts, although the current link seems
+better).
+
+Glad of meeting you again!
+
+
+
+Agus
+
+
+Dr. Agustin Lobo
+Instituto de Ciencias de la Tierra (CSIC)
+Lluis Sole Sabaris s/n
+08028 Barcelona SPAIN
+tel 34 93409 5410
+fax 34 93411 0012
+alobo@ija.csic.es
+
+
+
+From rod.chav at hsoft.es  Sun Dec 30 17:34:15 2001
+From: rod.chav at hsoft.es (antonio)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] postgressSQL
+Message-ID: <01123023341505.01184@Yerupaja>
+
+Hi All,
+
+I have recently downloaded Grass5 binaries for lInux and when I wanted to run 
+g.select.pg I didn't find the binary. I look at /usr/local/grass5/bin and I 
+couldn't find any of the binaries for the PsotgressSQL interface. What I'm 
+doing wrong?
+
+Thanks,
+
+Antonio
+
+
+From rod.chav at hsoft.es  Sun Dec 30 17:36:57 2001
+From: rod.chav at hsoft.es (antonio)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] postgressSQL(Sorry)
+Message-ID: <01123023365707.01184@Yerupaja>
+
+Oops I realized I've made I mistake.My apologies
+
+Antonio
+
+
+From neteler at itc.it  Sun Dec 30 17:43:36 2001
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] raster cross-stats
+In-Reply-To: <Pine.LNX.4.21.0112141001070.17110-100000@reclus.nhh.no>; from Roger.Bivand@nhh.no on Fri, Dec 14, 2001 at 10:15:14AM +0100
+References: <20011213151003.D5660@itc.it> <Pine.LNX.4.21.0112141001070.17110-100000@reclus.nhh.no>
+Message-ID: <20011230234336.A18690@itc.it>
+
+On Fri, Dec 14, 2001 at 10:15:14AM +0100, Roger Bivand wrote:
+> On Thu, 13 Dec 2001, Markus Neteler wrote:
+> 
+> > Sorry for a FAQ, but (due to my current traveling with temporal
+> > internet access) how can I specify a parameter such as
+> > $1 in shell scripts?
+> > I want to add parameters to the scripts which are visible within
+> > R BATCH. If you could point me to a online document
+> > I would be glad.
+> > 
+> If $1 is a shell variable, then it is visible - here are some lines from
+> the r.statistics.R shell script:
+> 
+> > > layer=$1
+> > > 
+> > > method=$2
+> 
+> > > R --vanilla --quiet --slave << EOF
+> > > library(GRASS)
+> > > print($method(rast.get(gmeta(), "$layer")[[1]]))
+> > > EOF
+> > > 
+> 
+> If you need to use $ as an R symbol - maps$elev say - then normal shell
+> script rules should apply? Escape with a backslash? map\$elev I guess?
+> 
+> R CMD BATCH wants an input file, doesn't it (haven't used it
+> myself) rather than redirection from stdin as above? Then you would echo
+
+Dear Roger,
+now I am back (unfortunately under pressure) with this question:
+
+In fact I want to run
+ R CMD BATCH 
+
+I have a small text file (Rbatchfile):
+library(GRASS)
+G <- gmeta()
+mapname <- "$1"
+map <- rast.get(G, mapname)
+map.frame <- data.frame(east(G), north(G), map$mapname)
+summary(map.frame)
+
+Then I run the batch job:
+
+R BATCH Rbatchfile aspect
+
+cat aspect   # for some reason stored into this filename
+[...]
+Running in /usr/local/share/grassdata/spearfish/user1 
+> G <- gmeta()
+> mapname <- "$1"
+> map <- rast.get(G, mapname)
+Error in rast.get(G, mapname) : raster map: $1 not found
+Execution halted
+
+When hard-coding the map name in the text file, everything runs
+well. But I don't get it flexible.
+
+Perhaps someone can help.
+
+Thanks!
+
+ Markus
+
+PS: I know, I shall ask on R mailing list :-)
+
+From Roger.Bivand at nhh.no  Mon Dec 31 05:29:57 2001
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] raster cross-stats
+In-Reply-To: <20011230234336.A18690@itc.it>
+Message-ID: <Pine.LNX.4.21.0112311118310.4317-100000@reclus.nhh.no>
+
+Markus!
+
+On Sun, 30 Dec 2001, Markus Neteler wrote:
+
+> In fact I want to run
+>  R CMD BATCH 
+> 
+> I have a small text file (Rbatchfile):
+> library(GRASS)
+> G <- gmeta()
+> mapname <- "$1"
+> map <- rast.get(G, mapname)
+> map.frame <- data.frame(east(G), north(G), map$mapname)
+> summary(map.frame)
+> 
+> Then I run the batch job:
+> 
+> R BATCH Rbatchfile aspect
+> 
+> cat aspect   # for some reason stored into this filename
+> [...]
+> Running in /usr/local/share/grassdata/spearfish/user1 
+> > G <- gmeta()
+> > mapname <- "$1"
+> > map <- rast.get(G, mapname)
+> Error in rast.get(G, mapname) : raster map: $1 not found
+> Execution halted
+> 
+> When hard-coding the map name in the text file, everything runs
+> well. But I don't get it flexible.
+> 
+
+The short answer is Sys.getenv().
+
+Here I started R, did:
+
+> data(cars)
+> write.table(cars, "cars.txt")
+> q()
+
+to generate a test file. The batch file then refers to environment
+variables which I assigned the file names to be used:
+
+$ cat Rbatchfile.in
+cars <- read.table(Sys.getenv("R_TABLE_IN"))
+sink(Sys.getenv("THIS_R_OUT"))
+cor(cars$dist, cars$speed)
+summary(lm(dist ~ speed, cars))
+sink()
+
+$ echo $R_TABLE_IN
+cars.txt
+$ echo $THIS_R_OUT
+R.out.1
+
+So the batch file found them, and wrote the results to the output file.
+
+$ R CMD BATCH Rbatchfile.in
+$ cat R.out.1
+[1] 0.8068949
+
+Call:
+lm(formula = dist ~ speed, data = cars)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-29.069  -9.525  -2.272   9.215  43.201 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -17.5791     6.7584  -2.601   0.0123 *  
+speed         3.9324     0.4155   9.464 1.49e-12 ***
+---
+Signif. codes:  0 `***' 0.001 `**' 0.01 `*' 0.05 `.' 0.1 ` ' 1 
+
+Residual standard error: 15.38 on 48 degrees of freedom
+Multiple R-Squared: 0.6511,     Adjusted R-squared: 0.6438 
+F-statistic: 89.57 on 1 and 48 DF,  p-value: 1.49e-12 
+
+Even works in a loop in a shell script, replacing the strings needed in R.
+
+For your case that would be:
+
+library(GRASS)
+G <- gmeta()
+mapname <- Sys.getenv("THIS_RASTER")
+map <- rast.get(G, mapname)
+map.frame <- data.frame(east(G), north(G), map$mapname)
+sink(Sys.getenv("THIS_OUTFILE"))
+summary(map.frame)
+sink()
+
+for shell variables $THIS_RASTER and $THIS_OUTFILE. I don't think it will
+fly for numbered arguments to the R CMD BATCH script.
+
+Very best wishes for the New Year to you and others on this list!
+
+Roger
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+and: Department of Geography and Regional Development, University of
+Gdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.
+
+
+From neteler at itc.it  Mon Dec 31 06:50:04 2001
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] raster cross-stats
+In-Reply-To: <Pine.LNX.4.21.0112311118310.4317-100000@reclus.nhh.no>; from Roger.Bivand@nhh.no on Mon, Dec 31, 2001 at 11:29:57AM +0100
+References: <20011230234336.A18690@itc.it> <Pine.LNX.4.21.0112311118310.4317-100000@reclus.nhh.no>
+Message-ID: <20011231125004.A19598@itc.it>
+
+Roger,
+
+
+excellent! Thanks for your quick help, the script is running
+well now.
+
+Happy new year to all,
+
+ Markus
+
+On Mon, Dec 31, 2001 at 11:29:57AM +0100, Roger Bivand wrote:
+> Markus!
+> 
+> On Sun, 30 Dec 2001, Markus Neteler wrote:
+> 
+> > In fact I want to run
+> >  R CMD BATCH 
+> > 
+> > I have a small text file (Rbatchfile):
+> > library(GRASS)
+> > G <- gmeta()
+> > mapname <- "$1"
+> > map <- rast.get(G, mapname)
+> > map.frame <- data.frame(east(G), north(G), map$mapname)
+> > summary(map.frame)
+> > 
+> > Then I run the batch job:
+> > 
+> > R BATCH Rbatchfile aspect
+> > 
+> > cat aspect   # for some reason stored into this filename
+> > [...]
+> > Running in /usr/local/share/grassdata/spearfish/user1 
+> > > G <- gmeta()
+> > > mapname <- "$1"
+> > > map <- rast.get(G, mapname)
+> > Error in rast.get(G, mapname) : raster map: $1 not found
+> > Execution halted
+> > 
+> > When hard-coding the map name in the text file, everything runs
+> > well. But I don't get it flexible.
+> > 
+> 
+> The short answer is Sys.getenv().
+> 
+> Here I started R, did:
+> 
+> > data(cars)
+> > write.table(cars, "cars.txt")
+> > q()
+> 
+> to generate a test file. The batch file then refers to environment
+> variables which I assigned the file names to be used:
+> 
+> $ cat Rbatchfile.in
+> cars <- read.table(Sys.getenv("R_TABLE_IN"))
+> sink(Sys.getenv("THIS_R_OUT"))
+> cor(cars$dist, cars$speed)
+> summary(lm(dist ~ speed, cars))
+> sink()
+> 
+> $ echo $R_TABLE_IN
+> cars.txt
+> $ echo $THIS_R_OUT
+> R.out.1
+> 
+> So the batch file found them, and wrote the results to the output file.
+> 
+> $ R CMD BATCH Rbatchfile.in
+> $ cat R.out.1
+> [1] 0.8068949
+> 
+> Call:
+> lm(formula = dist ~ speed, data = cars)
+> 
+> Residuals:
+>     Min      1Q  Median      3Q     Max 
+> -29.069  -9.525  -2.272   9.215  43.201 
+> 
+> Coefficients:
+>             Estimate Std. Error t value Pr(>|t|)    
+> (Intercept) -17.5791     6.7584  -2.601   0.0123 *  
+> speed         3.9324     0.4155   9.464 1.49e-12 ***
+> ---
+> Signif. codes:  0 `***' 0.001 `**' 0.01 `*' 0.05 `.' 0.1 ` ' 1 
+> 
+> Residual standard error: 15.38 on 48 degrees of freedom
+> Multiple R-Squared: 0.6511,     Adjusted R-squared: 0.6438 
+> F-statistic: 89.57 on 1 and 48 DF,  p-value: 1.49e-12 
+> 
+> Even works in a loop in a shell script, replacing the strings needed in R.
+> 
+> For your case that would be:
+> 
+> library(GRASS)
+> G <- gmeta()
+> mapname <- Sys.getenv("THIS_RASTER")
+> map <- rast.get(G, mapname)
+> map.frame <- data.frame(east(G), north(G), map$mapname)
+> sink(Sys.getenv("THIS_OUTFILE"))
+> summary(map.frame)
+> sink()
+> 
+> for shell variables $THIS_RASTER and $THIS_OUTFILE. I don't think it will
+> fly for numbered arguments to the R CMD BATCH script.
+> 
+> Very best wishes for the New Year to you and others on this list!
+> 
+> Roger
+> 
+> -- 
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+> e-mail: Roger.Bivand@nhh.no
+> and: Department of Geography and Regional Development, University of
+> Gdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.
+
+-- 
+Markus Neteler
+
+ITC-irst, Istituto per la Ricerca Scientifica e Tecnologica
+     Project on Predictive Models for the Environment    
+Via Sommarive, 18        -      38050 Povo (Trento), Italia
+tel +39 0461 314 -520 (fax -591)          http://mpa.itc.it
+

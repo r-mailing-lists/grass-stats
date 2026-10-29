@@ -1,0 +1,1779 @@
+From patrick.giraudoux at univ-fcomte.fr  Mon Dec  7 12:04:24 2009
+From: patrick.giraudoux at univ-fcomte.fr (Patrick Giraudoux)
+Date: Mon Dec  7 12:34:33 2009
+Subject: [GRASS-stats] spgrass6 and initGRASS
+In-Reply-To: <alpine.LRH.2.00.0912071350230.20959@reclus.nhh.no>
+References: <4B1B706B.505@univ-fcomte.fr>
+	<alpine.LRH.2.00.0912062034470.26836@reclus.nhh.no>
+	<4B1CF3B1.4040209@univ-fcomte.fr>
+	<alpine.LRH.2.00.0912071335330.20959@reclus.nhh.no>
+	<4B1CF9B0.8010003@univ-fcomte.fr>
+	<alpine.LRH.2.00.0912071350230.20959@reclus.nhh.no>
+Message-ID: <4B1D3598.8070609@univ-fcomte.fr>
+
+Dear Roger,
+
+I have moved the thread and the answer below from 
+qgis-user@lists.osgeo.org to this list as advised...
+>
+> That is because the GRASS environment variables have not been set at 
+> that point. Do you need to use GRASS in throw-away (initGRASS) mode, 
+> or with an existing location? If the latter, please use the interface 
+> in the regular way, starting R "within" GRASS. I'll try to reproduce 
+> the problem, but it is not easy to do, I'm afraid.
+
+I would like to be capable to read into GRASS locations from within R 
+(so not from R started withing GRASS) -what is supposedly done with 
+initGRASS; eg just to pick up a region definition into a "spgrass6" 
+object and compute on that. I though that initGRASS was design for this 
+task.
+
+> Have you tried the WinGRASS stand-alone (I haven't trusted either QGIS 
+> GRASS used this way or OSGeo4W - I follow the bug-tracker for OSGEO4W, 
+> so stay away)? 
+
+I am trying this essentially on teaching purposes. Students are working 
+under Windows XP and Vista. I have only a limited number of hours, and 
+to board GIS concepts from QGIS then to GRASS is somehow easier for them 
+than straight within GRASS (although it is just the reverse when you 
+know GRASS). The QGIS Metis standalone version was excellent for that. 
+You have seen that the updates to Kore and Mimas are done with no 
+standalone version available on the QGIS official site. There the use of 
+OSGeo4W is encouraged and I am trying to find out what could be best 
+advisable for the students.
+
+I did not tried WinGRASS yet, and I am interested in doing it, but have 
+installed the OSGeo4W  GRASS 6.4svn version (works well - but definitely 
+the unix/linux environment is more convenient for command lines), as 
+well as OSGeo4W QGIS Kore and Mimas, and try and compare them.
+
+> What is your sessionInfo()? 
+sessionInfo()
+R version 2.10.0 (2009-10-26)
+i386-pc-mingw32
+
+locale:
+[1] LC_COLLATE=French_France.1252  LC_CTYPE=French_France.1252  
+[3] LC_MONETARY=French_France.1252 LC_NUMERIC=C                 
+[5] LC_TIME=French_France.1252   
+
+attached base packages:
+[1] grDevices datasets  splines   graphics  stats     tcltk     utils   
+[8] methods   base    
+
+other attached packages:
+[1] spgrass6_0.6-12 XML_2.6-0       rgdal_0.6-22    sp_0.9-47     
+[5] svSocket_0.9-48 TinnR_1.0.3     R2HTML_1.59-1   Hmisc_3.7-0   
+[9] survival_2.35-7
+
+loaded via a namespace (and not attached):
+[1] cluster_1.12.1  grid_2.10.0     lattice_0.17-26 svMisc_0.9-56 
+[5] tools_2.10.0  
+
+
+Roger Bivand a ?crit :
+> On Mon, 7 Dec 2009, Patrick Giraudoux wrote:
+>
+>> Have tried the following:
+>>
+>> initGRASS("C:\\OSGeo4W\\bin",home="U:\\Documents and 
+>> Settings\\pgiraudo\\",override=T)
+>> initGRASS("C:\\Program Files\\Quantum GIS\\grass",home="U:\\Documents 
+>> and Settings\\pgiraudo",override=T)
+>> initGRASS("C:\\OSGeo4W\\bin",override=T)
+>>
+>> with the same results...
+>>
+>>> initGRASS("C:\\OSGeo4W\\bin",home="U:\\Documents and 
+>> Settings\\pgiraudo\\",override=T)
+>> Error in system(paste("g.dirseps.exe -g", 
+>> shQuote(Sys.getenv("WINGISRC"))), :
+>> g.dirseps.exe not found
+>>> initGRASS("C:\\Program Files\\Quantum 
+>>> GIS\\grass",home="U:\\Documents and 
+>> Settings\\pgiraudo",override=T)
+>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>> initGRASS("C:\\OSGeo4W\\bin",override=T)
+>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>
+>> Quite puzzling since g.dirseps does not give a message "unknown 
+>> command" when tried within grass (thus it is suppose to be in the 
+>> GRASS programme)
+>
+> That is because the GRASS environment variables have not been set at 
+> that point. Do you need to use GRASS in throw-away (initGRASS) mode, 
+> or with an existing location? If the latter, please use the interface 
+> in the regular way, starting R "within" GRASS. I'll try to reproduce 
+> the problem, but it is not easy to do, I'm afraid.
+>
+> What is your sessionInfo()? Have you tried the WinGRASS stand-alone (I 
+> haven't trusted either QGIS GRASS used this way or OSGeo4W - I follow 
+> the bug-tracker for OSGEO4W, so stay away)?
+>
+> Would you mind moving to the proper list - this is a GRASS question 
+> much more than an R one:
+>
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+> Roger
+>
+>>
+>> Patrick
+>>
+>>
+>>
+>> Roger Bivand a ?crit :
+>>> On Mon, 7 Dec 2009, Patrick Giraudoux wrote:
+>>>
+>>>> Here is the result:
+>>>>
+>>>> library(spgrass6)
+>>>>
+>>>> debug(initGRASS)
+>>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>> Settings/pgiraudo/",override=T)
+>>>>
+>>>> (...)
+>>>>
+>>>> Browse[2]>
+>>>> debug: gisrc <- system(paste("g.dirseps.exe -g", 
+>>>> shQuote(Sys.getenv("WINGISRC"))),
+>>>>   intern = TRUE)
+>>>> Browse[2]> Sys.getenv("WINGISRC")
+>>>>                                       WINGISRC
+>>>> "U:/Documents and Settings/pgiraudo/\\.grassrc6"
+>>>> Browse[2]> shQuote(Sys.getenv("WINGISRC"))
+>>>> [1] "\"U:/Documents and Settings/pgiraudo/\\.grassrc6\""
+>>>> Browse[2]> gisrc
+>>>> Error: object 'gisrc' not found
+>>>
+>>> Could you try both not setting home= (you get a temporary folder 
+>>> that is deleted when you exit R), or setting
+>>>
+>>> home="U:\\Documents and Settings\\pgiraudo"
+>>>
+>>> without the trailing forward slash?
+>>>
+>>> This a problem connected to protecting spaces on the one hand and 
+>>> system specific directory separators on the other, I think.
+>>>
+>>> Roger
+>>>
+>>>>
+>>>> Beforehand, the first time I run 
+>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>> Settings/pgiraudo/",override=T), I got:
+>>>>
+>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>> Settings/pgiraudo/",override=T)
+>>>> Error in system(paste("g.dirseps.exe -g", 
+>>>> shQuote(Sys.getenv("WINGISRC"))), :
+>>>> g.dirseps.exe not found
+>>>>
+>>>> Then, if I try the same commande on QGIS Metis, I got:
+>>>> initGRASS("C:/Program Files/Quantum GIS/grass",home="U:/Documents 
+>>>> and Settings/pgiraudo",override=T)
+>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>
+>>>>
+>>>> Best,
+>>>>
+>>>> Patrick
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+>>>> Roger Bivand a ?crit :
+>>>>> On Sun, 6 Dec 2009, Patrick Giraudoux wrote:
+>>>>>
+>>>>>> Dear all,
+>>>>>>
+>>>>>> I am trying to init a GRASS session from within R, using the 
+>>>>>> function initGRASS from the package spgrass6. GRASS is installed 
+>>>>>> in two ways on my computer (here, the OS is Windows XP): with 
+>>>>>> QGIS metis (precompiled version including grass 6.3 (2008)) and 
+>>>>>> grass 6.4.0svn, just freshly installed with the Osgeo4W installer.
+>>>>>>
+>>>>>> In both cases I get the same result:
+>>>>>>
+>>>>>>> initGRASS("C:/Program Files/Quantum 
+>>>>>>> GIS/grass",home="U:/Documents and 
+>>>>>> Settings/pgiraudo",override=T)
+>>>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>>>
+>>>>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>>>> Settings/pgiraudo",override=T)
+>>>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>>>
+>>>>>> Any idea about what happens ?
+>>>>>
+>>>>> No, without the output of traceback(), it isn't obvious, although 
+>>>>> here traceback() might not help. Run under debug(initGRASS) to the 
+>>>>> step before, that is:
+>>>>>
+>>>>>         gisrc <- system(paste("g.dirseps.exe -g",
+>>>>>             shQuote(Sys.getenv("WINGISRC"))), intern=TRUE)
+>>>>>
+>>>>> then run:
+>>>>>
+>>>>> Sys.getenv("WINGISRC")
+>>>>> shQuote(Sys.getenv("WINGISRC"))
+>>>>> gisrc
+>>>>>
+>>>>> and try to see what is going on. At this stage, 
+>>>>> Sys.getenv("GISRC") should be "junk", assigned a couple of lines 
+>>>>> earlier.
+>>>>>
+>>>>> Maybe the grass-stats list would have a higher proportion of users 
+>>>>> of both GRASS and R.
+>>>>>
+>>>>> Hope this helps,
+>>>>>
+>>>>> Roger
+>>>>>
+>>>>>>
+>>>>>> Patrick
+>>>>>>
+>>>>>
+>>>>
+>>>>
+>>>
+>>
+>>
+>
+
+From Roger.Bivand at nhh.no  Mon Dec  7 12:36:42 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon Dec  7 12:36:45 2009
+Subject: [GRASS-stats] Re: spgrass6 and initGRASS
+In-Reply-To: <4B1D3598.8070609@univ-fcomte.fr>
+References: <4B1B706B.505@univ-fcomte.fr>
+	<alpine.LRH.2.00.0912062034470.26836@reclus.nhh.no>
+	<4B1CF3B1.4040209@univ-fcomte.fr>
+	<alpine.LRH.2.00.0912071335330.20959@reclus.nhh.no>
+	<4B1CF9B0.8010003@univ-fcomte.fr>
+	<alpine.LRH.2.00.0912071350230.20959@reclus.nhh.no>
+	<4B1D3598.8070609@univ-fcomte.fr>
+Message-ID: <alpine.LRH.2.00.0912071825330.16807@reclus.nhh.no>
+
+On Mon, 7 Dec 2009, Patrick Giraudoux wrote:
+
+> Dear Roger,
+>
+> I have moved the thread and the answer below from qgis-user@lists.osgeo.org 
+> to this list as advised...
+>> 
+>> That is because the GRASS environment variables have not been set at that 
+>> point. Do you need to use GRASS in throw-away (initGRASS) mode, or with an 
+>> existing location? If the latter, please use the interface in the regular 
+>> way, starting R "within" GRASS. I'll try to reproduce the problem, but it 
+>> is not easy to do, I'm afraid.
+
+Dear Patrick,
+
+I've tried with Metis with no success. The first problem is addressed in 
+this draft release:
+
+http://spatial.nhh.no/R/Devel/spgrass6_0.6-13.zip
+
+but with Metis is simply falls over later. With WinGRASS (last but 
+latest), it just works. It even works in Metis once the basic GRASS 
+framework is set up using WinGRASS, but behaviour is erratic and 
+unpredictable. To track it with Metis (which I just uninstalled to try 
+OSGeo4W) seemed impossible, it wasn't clear where the GRASS modules were 
+looking for their environment variables and GISRC backstore.
+
+I would probably use file transfer and have QGIS do the desktop mapping 
+and WinGRASS the analytical stuff, but I can't say that I have favourites 
+here.
+
+>
+> I would like to be capable to read into GRASS locations from within R (so not 
+> from R started withing GRASS) -what is supposedly done with initGRASS; eg 
+> just to pick up a region definition into a "spgrass6" object and compute on 
+> that. I though that initGRASS was design for this task.
+>
+
+Right, initGRASS with home=tempdir() (not what I replied earlier - with no 
+home= given, it uses whatever Windows says "HOME" is) starts a new 
+location and mapset in the R temporary directory, which you move data to 
+for GRASS to analyse.
+
+>> Have you tried the WinGRASS stand-alone (I haven't trusted either QGIS 
+>> GRASS used this way or OSGeo4W - I follow the bug-tracker for OSGEO4W, so 
+>> stay away)? 
+>
+> I am trying this essentially on teaching purposes. Students are working under 
+> Windows XP and Vista. I have only a limited number of hours, and to board GIS 
+> concepts from QGIS then to GRASS is somehow easier for them than straight 
+> within GRASS (although it is just the reverse when you know GRASS). The QGIS 
+> Metis standalone version was excellent for that. You have seen that the 
+> updates to Kore and Mimas are done with no standalone version available on 
+> the QGIS official site. There the use of OSGeo4W is encouraged and I am 
+> trying to find out what could be best advisable for the students.
+>
+> I did not tried WinGRASS yet, and I am interested in doing it, but have 
+> installed the OSGeo4W  GRASS 6.4svn version (works well - but definitely the 
+> unix/linux environment is more convenient for command lines), as well as 
+> OSGeo4W QGIS Kore and Mimas, and try and compare them.
+>
+
+Roger
+
+>> What is your sessionInfo()? 
+> sessionInfo()
+> R version 2.10.0 (2009-10-26)
+> i386-pc-mingw32
+>
+> locale:
+> [1] LC_COLLATE=French_France.1252  LC_CTYPE=French_France.1252  [3] 
+> LC_MONETARY=French_France.1252 LC_NUMERIC=C                 [5] 
+> LC_TIME=French_France.1252 
+> attached base packages:
+> [1] grDevices datasets  splines   graphics  stats     tcltk     utils   [8] 
+> methods   base 
+> other attached packages:
+> [1] spgrass6_0.6-12 XML_2.6-0       rgdal_0.6-22    sp_0.9-47     [5] 
+> svSocket_0.9-48 TinnR_1.0.3     R2HTML_1.59-1   Hmisc_3.7-0   [9] 
+> survival_2.35-7
+>
+> loaded via a namespace (and not attached):
+> [1] cluster_1.12.1  grid_2.10.0     lattice_0.17-26 svMisc_0.9-56 [5] 
+> tools_2.10.0 
+>
+> Roger Bivand a ?crit :
+>> On Mon, 7 Dec 2009, Patrick Giraudoux wrote:
+>> 
+>>> Have tried the following:
+>>> 
+>>> initGRASS("C:\\OSGeo4W\\bin",home="U:\\Documents and 
+>>> Settings\\pgiraudo\\",override=T)
+>>> initGRASS("C:\\Program Files\\Quantum GIS\\grass",home="U:\\Documents and 
+>>> Settings\\pgiraudo",override=T)
+>>> initGRASS("C:\\OSGeo4W\\bin",override=T)
+>>> 
+>>> with the same results...
+>>> 
+>>>> initGRASS("C:\\OSGeo4W\\bin",home="U:\\Documents and 
+>>> Settings\\pgiraudo\\",override=T)
+>>> Error in system(paste("g.dirseps.exe -g", 
+>>> shQuote(Sys.getenv("WINGISRC"))), :
+>>> g.dirseps.exe not found
+>>>> initGRASS("C:\\Program Files\\Quantum GIS\\grass",home="U:\\Documents and 
+>>> Settings\\pgiraudo",override=T)
+>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>> initGRASS("C:\\OSGeo4W\\bin",override=T)
+>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>> 
+>>> Quite puzzling since g.dirseps does not give a message "unknown command" 
+>>> when tried within grass (thus it is suppose to be in the GRASS programme)
+>> 
+>> That is because the GRASS environment variables have not been set at that 
+>> point. Do you need to use GRASS in throw-away (initGRASS) mode, or with an 
+>> existing location? If the latter, please use the interface in the regular 
+>> way, starting R "within" GRASS. I'll try to reproduce the problem, but it 
+>> is not easy to do, I'm afraid.
+>> 
+>> What is your sessionInfo()? Have you tried the WinGRASS stand-alone (I 
+>> haven't trusted either QGIS GRASS used this way or OSGeo4W - I follow the 
+>> bug-tracker for OSGEO4W, so stay away)?
+>> 
+>> Would you mind moving to the proper list - this is a GRASS question much 
+>> more than an R one:
+>> 
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>> 
+>> Roger
+>> 
+>>> 
+>>> Patrick
+>>> 
+>>> 
+>>> 
+>>> Roger Bivand a ?crit :
+>>>> On Mon, 7 Dec 2009, Patrick Giraudoux wrote:
+>>>> 
+>>>>> Here is the result:
+>>>>> 
+>>>>> library(spgrass6)
+>>>>> 
+>>>>> debug(initGRASS)
+>>>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>>> Settings/pgiraudo/",override=T)
+>>>>> 
+>>>>> (...)
+>>>>> 
+>>>>> Browse[2]>
+>>>>> debug: gisrc <- system(paste("g.dirseps.exe -g", 
+>>>>> shQuote(Sys.getenv("WINGISRC"))),
+>>>>>   intern = TRUE)
+>>>>> Browse[2]> Sys.getenv("WINGISRC")
+>>>>>                                       WINGISRC
+>>>>> "U:/Documents and Settings/pgiraudo/\\.grassrc6"
+>>>>> Browse[2]> shQuote(Sys.getenv("WINGISRC"))
+>>>>> [1] "\"U:/Documents and Settings/pgiraudo/\\.grassrc6\""
+>>>>> Browse[2]> gisrc
+>>>>> Error: object 'gisrc' not found
+>>>> 
+>>>> Could you try both not setting home= (you get a temporary folder that is 
+>>>> deleted when you exit R), or setting
+>>>> 
+>>>> home="U:\\Documents and Settings\\pgiraudo"
+>>>> 
+>>>> without the trailing forward slash?
+>>>> 
+>>>> This a problem connected to protecting spaces on the one hand and system 
+>>>> specific directory separators on the other, I think.
+>>>> 
+>>>> Roger
+>>>> 
+>>>>> 
+>>>>> Beforehand, the first time I run 
+>>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>>> Settings/pgiraudo/",override=T), I got:
+>>>>> 
+>>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>>> Settings/pgiraudo/",override=T)
+>>>>> Error in system(paste("g.dirseps.exe -g", 
+>>>>> shQuote(Sys.getenv("WINGISRC"))), :
+>>>>> g.dirseps.exe not found
+>>>>> 
+>>>>> Then, if I try the same commande on QGIS Metis, I got:
+>>>>> initGRASS("C:/Program Files/Quantum GIS/grass",home="U:/Documents and 
+>>>>> Settings/pgiraudo",override=T)
+>>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>> 
+>>>>> 
+>>>>> Best,
+>>>>> 
+>>>>> Patrick
+>>>>> 
+>>>>> 
+>>>>> 
+>>>>> 
+>>>>> 
+>>>>> 
+>>>>> 
+>>>>> Roger Bivand a ?crit :
+>>>>>> On Sun, 6 Dec 2009, Patrick Giraudoux wrote:
+>>>>>> 
+>>>>>>> Dear all,
+>>>>>>> 
+>>>>>>> I am trying to init a GRASS session from within R, using the function 
+>>>>>>> initGRASS from the package spgrass6. GRASS is installed in two ways on 
+>>>>>>> my computer (here, the OS is Windows XP): with QGIS metis (precompiled 
+>>>>>>> version including grass 6.3 (2008)) and grass 6.4.0svn, just freshly 
+>>>>>>> installed with the Osgeo4W installer.
+>>>>>>> 
+>>>>>>> In both cases I get the same result:
+>>>>>>> 
+>>>>>>>> initGRASS("C:/Program Files/Quantum GIS/grass",home="U:/Documents and 
+>>>>>>> Settings/pgiraudo",override=T)
+>>>>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>>>> 
+>>>>>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>>>>> Settings/pgiraudo",override=T)
+>>>>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>>>> 
+>>>>>>> Any idea about what happens ?
+>>>>>> 
+>>>>>> No, without the output of traceback(), it isn't obvious, although here 
+>>>>>> traceback() might not help. Run under debug(initGRASS) to the step 
+>>>>>> before, that is:
+>>>>>>
+>>>>>>         gisrc <- system(paste("g.dirseps.exe -g",
+>>>>>>             shQuote(Sys.getenv("WINGISRC"))), intern=TRUE)
+>>>>>> 
+>>>>>> then run:
+>>>>>> 
+>>>>>> Sys.getenv("WINGISRC")
+>>>>>> shQuote(Sys.getenv("WINGISRC"))
+>>>>>> gisrc
+>>>>>> 
+>>>>>> and try to see what is going on. At this stage, Sys.getenv("GISRC") 
+>>>>>> should be "junk", assigned a couple of lines earlier.
+>>>>>> 
+>>>>>> Maybe the grass-stats list would have a higher proportion of users of 
+>>>>>> both GRASS and R.
+>>>>>> 
+>>>>>> Hope this helps,
+>>>>>> 
+>>>>>> Roger
+>>>>>> 
+>>>>>>> 
+>>>>>>> Patrick
+>>>>>>> 
+>>>>>> 
+>>>>> 
+>>>>> 
+>>>> 
+>>> 
+>>> 
+>> 
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From Roger.Bivand at nhh.no  Mon Dec  7 14:58:13 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon Dec  7 14:58:17 2009
+Subject: [GRASS-stats] Re: spgrass6 and initGRASS
+In-Reply-To: <alpine.LRH.2.00.0912071825330.16807@reclus.nhh.no>
+References: <4B1B706B.505@univ-fcomte.fr>
+	<alpine.LRH.2.00.0912062034470.26836@reclus.nhh.no>
+	<4B1CF3B1.4040209@univ-fcomte.fr>
+	<alpine.LRH.2.00.0912071335330.20959@reclus.nhh.no>
+	<4B1CF9B0.8010003@univ-fcomte.fr>
+	<alpine.LRH.2.00.0912071350230.20959@reclus.nhh.no>
+	<4B1D3598.8070609@univ-fcomte.fr>
+	<alpine.LRH.2.00.0912071825330.16807@reclus.nhh.no>
+Message-ID: <alpine.LRH.2.00.0912072043480.16807@reclus.nhh.no>
+
+On Mon, 7 Dec 2009, Roger Bivand wrote:
+
+> On Mon, 7 Dec 2009, Patrick Giraudoux wrote:
+>
+>> Dear Roger,
+>> 
+>> I have moved the thread and the answer below from qgis-user@lists.osgeo.org 
+>> to this list as advised...
+>>> 
+>>> That is because the GRASS environment variables have not been set at that 
+>>> point. Do you need to use GRASS in throw-away (initGRASS) mode, or with an 
+>>> existing location? If the latter, please use the interface in the regular 
+>>> way, starting R "within" GRASS. I'll try to reproduce the problem, but it 
+>>> is not easy to do, I'm afraid.
+>
+> Dear Patrick,
+>
+> I've tried with Metis with no success. The first problem is addressed in this 
+> draft release:
+>
+> http://spatial.nhh.no/R/Devel/spgrass6_0.6-13.zip
+>
+> but with Metis is simply falls over later. With WinGRASS (last but latest), 
+> it just works. It even works in Metis once the basic GRASS framework is set 
+> up using WinGRASS, but behaviour is erratic and unpredictable. To track it 
+> with Metis (which I just uninstalled to try OSGeo4W) seemed impossible, it 
+> wasn't clear where the GRASS modules were looking for their environment 
+> variables and GISRC backstore.
+>
+> I would probably use file transfer and have QGIS do the desktop mapping and 
+> WinGRASS the analytical stuff, but I can't say that I have favourites here.
+
+
+I've now installed QGIS 1.3.0 Mimas and GRASS 6.4.0 SVN from OSGeo4W. 
+Doing it their way (rather than my way), you then need Carson Farmer's 
+ManageR plugin and the rpy2 2.0.6 msi for python 2.5 (the one that OSGeo4W 
+ships). Next probably you need to put your R (mine is 2.10.0) on the PATH 
+which OSGeo4W and QGIS have manipulated - maybe through the control panel 
+- needs updating manually.
+
+Start QGIS, look for Carson's repository, install and enable manageR, open 
+a GRASS mapset in QGIS, enter library(spgrass6) in the manageR console, 
+and if you're lucky GRASS may be there. I've managed to move spearfish 
+roads to R and tabulate road length by class using SpatialLinesLength() on 
+the representation on the R side. Fairly horrible to install for students, 
+but maybe?
+
+Roger
+
+>
+>> 
+>> I would like to be capable to read into GRASS locations from within R (so 
+>> not from R started withing GRASS) -what is supposedly done with initGRASS; 
+>> eg just to pick up a region definition into a "spgrass6" object and compute 
+>> on that. I though that initGRASS was design for this task.
+>> 
+>
+> Right, initGRASS with home=tempdir() (not what I replied earlier - with no 
+> home= given, it uses whatever Windows says "HOME" is) starts a new location 
+> and mapset in the R temporary directory, which you move data to for GRASS to 
+> analyse.
+>
+>>> Have you tried the WinGRASS stand-alone (I haven't trusted either QGIS 
+>>> GRASS used this way or OSGeo4W - I follow the bug-tracker for OSGEO4W, so 
+>>> stay away)? 
+>> 
+>> I am trying this essentially on teaching purposes. Students are working 
+>> under Windows XP and Vista. I have only a limited number of hours, and to 
+>> board GIS concepts from QGIS then to GRASS is somehow easier for them than 
+>> straight within GRASS (although it is just the reverse when you know 
+>> GRASS). The QGIS Metis standalone version was excellent for that. You have 
+>> seen that the updates to Kore and Mimas are done with no standalone version 
+>> available on the QGIS official site. There the use of OSGeo4W is encouraged 
+>> and I am trying to find out what could be best advisable for the students.
+>> 
+>> I did not tried WinGRASS yet, and I am interested in doing it, but have 
+>> installed the OSGeo4W  GRASS 6.4svn version (works well - but definitely 
+>> the unix/linux environment is more convenient for command lines), as well 
+>> as OSGeo4W QGIS Kore and Mimas, and try and compare them.
+>> 
+>
+> Roger
+>
+>>> What is your sessionInfo()? 
+>> sessionInfo()
+>> R version 2.10.0 (2009-10-26)
+>> i386-pc-mingw32
+>> 
+>> locale:
+>> [1] LC_COLLATE=French_France.1252  LC_CTYPE=French_France.1252  [3] 
+>> LC_MONETARY=French_France.1252 LC_NUMERIC=C                 [5] 
+>> LC_TIME=French_France.1252 attached base packages:
+>> [1] grDevices datasets  splines   graphics  stats     tcltk     utils   [8] 
+>> methods   base other attached packages:
+>> [1] spgrass6_0.6-12 XML_2.6-0       rgdal_0.6-22    sp_0.9-47     [5] 
+>> svSocket_0.9-48 TinnR_1.0.3     R2HTML_1.59-1   Hmisc_3.7-0   [9] 
+>> survival_2.35-7
+>> 
+>> loaded via a namespace (and not attached):
+>> [1] cluster_1.12.1  grid_2.10.0     lattice_0.17-26 svMisc_0.9-56 [5] 
+>> tools_2.10.0 
+>> Roger Bivand a ?crit :
+>>> On Mon, 7 Dec 2009, Patrick Giraudoux wrote:
+>>> 
+>>>> Have tried the following:
+>>>> 
+>>>> initGRASS("C:\\OSGeo4W\\bin",home="U:\\Documents and 
+>>>> Settings\\pgiraudo\\",override=T)
+>>>> initGRASS("C:\\Program Files\\Quantum GIS\\grass",home="U:\\Documents and 
+>>>> Settings\\pgiraudo",override=T)
+>>>> initGRASS("C:\\OSGeo4W\\bin",override=T)
+>>>> 
+>>>> with the same results...
+>>>> 
+>>>>> initGRASS("C:\\OSGeo4W\\bin",home="U:\\Documents and 
+>>>> Settings\\pgiraudo\\",override=T)
+>>>> Error in system(paste("g.dirseps.exe -g", 
+>>>> shQuote(Sys.getenv("WINGISRC"))), :
+>>>> g.dirseps.exe not found
+>>>>> initGRASS("C:\\Program Files\\Quantum GIS\\grass",home="U:\\Documents 
+>>>>> and 
+>>>> Settings\\pgiraudo",override=T)
+>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>> initGRASS("C:\\OSGeo4W\\bin",override=T)
+>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>> 
+>>>> Quite puzzling since g.dirseps does not give a message "unknown command" 
+>>>> when tried within grass (thus it is suppose to be in the GRASS programme)
+>>> 
+>>> That is because the GRASS environment variables have not been set at that 
+>>> point. Do you need to use GRASS in throw-away (initGRASS) mode, or with an 
+>>> existing location? If the latter, please use the interface in the regular 
+>>> way, starting R "within" GRASS. I'll try to reproduce the problem, but it 
+>>> is not easy to do, I'm afraid.
+>>> 
+>>> What is your sessionInfo()? Have you tried the WinGRASS stand-alone (I 
+>>> haven't trusted either QGIS GRASS used this way or OSGeo4W - I follow the 
+>>> bug-tracker for OSGEO4W, so stay away)?
+>>> 
+>>> Would you mind moving to the proper list - this is a GRASS question much 
+>>> more than an R one:
+>>> 
+>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>> 
+>>> Roger
+>>> 
+>>>> 
+>>>> Patrick
+>>>> 
+>>>> 
+>>>> 
+>>>> Roger Bivand a ?crit :
+>>>>> On Mon, 7 Dec 2009, Patrick Giraudoux wrote:
+>>>>> 
+>>>>>> Here is the result:
+>>>>>> 
+>>>>>> library(spgrass6)
+>>>>>> 
+>>>>>> debug(initGRASS)
+>>>>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>>>> Settings/pgiraudo/",override=T)
+>>>>>> 
+>>>>>> (...)
+>>>>>> 
+>>>>>> Browse[2]>
+>>>>>> debug: gisrc <- system(paste("g.dirseps.exe -g", 
+>>>>>> shQuote(Sys.getenv("WINGISRC"))),
+>>>>>>   intern = TRUE)
+>>>>>> Browse[2]> Sys.getenv("WINGISRC")
+>>>>>>                                       WINGISRC
+>>>>>> "U:/Documents and Settings/pgiraudo/\\.grassrc6"
+>>>>>> Browse[2]> shQuote(Sys.getenv("WINGISRC"))
+>>>>>> [1] "\"U:/Documents and Settings/pgiraudo/\\.grassrc6\""
+>>>>>> Browse[2]> gisrc
+>>>>>> Error: object 'gisrc' not found
+>>>>> 
+>>>>> Could you try both not setting home= (you get a temporary folder that is 
+>>>>> deleted when you exit R), or setting
+>>>>> 
+>>>>> home="U:\\Documents and Settings\\pgiraudo"
+>>>>> 
+>>>>> without the trailing forward slash?
+>>>>> 
+>>>>> This a problem connected to protecting spaces on the one hand and system 
+>>>>> specific directory separators on the other, I think.
+>>>>> 
+>>>>> Roger
+>>>>> 
+>>>>>> 
+>>>>>> Beforehand, the first time I run 
+>>>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>>>> Settings/pgiraudo/",override=T), I got:
+>>>>>> 
+>>>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>>>> Settings/pgiraudo/",override=T)
+>>>>>> Error in system(paste("g.dirseps.exe -g", 
+>>>>>> shQuote(Sys.getenv("WINGISRC"))), :
+>>>>>> g.dirseps.exe not found
+>>>>>> 
+>>>>>> Then, if I try the same commande on QGIS Metis, I got:
+>>>>>> initGRASS("C:/Program Files/Quantum GIS/grass",home="U:/Documents and 
+>>>>>> Settings/pgiraudo",override=T)
+>>>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>>> 
+>>>>>> 
+>>>>>> Best,
+>>>>>> 
+>>>>>> Patrick
+>>>>>> 
+>>>>>> 
+>>>>>> 
+>>>>>> 
+>>>>>> 
+>>>>>> 
+>>>>>> 
+>>>>>> Roger Bivand a ?crit :
+>>>>>>> On Sun, 6 Dec 2009, Patrick Giraudoux wrote:
+>>>>>>> 
+>>>>>>>> Dear all,
+>>>>>>>> 
+>>>>>>>> I am trying to init a GRASS session from within R, using the function 
+>>>>>>>> initGRASS from the package spgrass6. GRASS is installed in two ways 
+>>>>>>>> on my computer (here, the OS is Windows XP): with QGIS metis 
+>>>>>>>> (precompiled version including grass 6.3 (2008)) and grass 6.4.0svn, 
+>>>>>>>> just freshly installed with the Osgeo4W installer.
+>>>>>>>> 
+>>>>>>>> In both cases I get the same result:
+>>>>>>>> 
+>>>>>>>>> initGRASS("C:/Program Files/Quantum GIS/grass",home="U:/Documents 
+>>>>>>>>> and 
+>>>>>>>> Settings/pgiraudo",override=T)
+>>>>>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>>>>> 
+>>>>>>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>>>>>> Settings/pgiraudo",override=T)
+>>>>>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>>>>> 
+>>>>>>>> Any idea about what happens ?
+>>>>>>> 
+>>>>>>> No, without the output of traceback(), it isn't obvious, although here 
+>>>>>>> traceback() might not help. Run under debug(initGRASS) to the step 
+>>>>>>> before, that is:
+>>>>>>>
+>>>>>>>         gisrc <- system(paste("g.dirseps.exe -g",
+>>>>>>>             shQuote(Sys.getenv("WINGISRC"))), intern=TRUE)
+>>>>>>> 
+>>>>>>> then run:
+>>>>>>> 
+>>>>>>> Sys.getenv("WINGISRC")
+>>>>>>> shQuote(Sys.getenv("WINGISRC"))
+>>>>>>> gisrc
+>>>>>>> 
+>>>>>>> and try to see what is going on. At this stage, Sys.getenv("GISRC") 
+>>>>>>> should be "junk", assigned a couple of lines earlier.
+>>>>>>> 
+>>>>>>> Maybe the grass-stats list would have a higher proportion of users of 
+>>>>>>> both GRASS and R.
+>>>>>>> 
+>>>>>>> Hope this helps,
+>>>>>>> 
+>>>>>>> Roger
+>>>>>>> 
+>>>>>>>> 
+>>>>>>>> Patrick
+>>>>>>>> 
+>>>>>>> 
+>>>>>> 
+>>>>>> 
+>>>>> 
+>>>> 
+>>>> 
+>>> 
+>> 
+>> 
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From patrick.giraudoux at univ-fcomte.fr  Tue Dec  8 02:17:43 2009
+From: patrick.giraudoux at univ-fcomte.fr (Patrick Giraudoux)
+Date: Tue Dec  8 02:18:06 2009
+Subject: [GRASS-stats] Re: spgrass6 and initGRASS
+In-Reply-To: <alpine.LRH.2.00.0912072043480.16807@reclus.nhh.no>
+References: <4B1B706B.505@univ-fcomte.fr>
+	<alpine.LRH.2.00.0912062034470.26836@reclus.nhh.no>
+	<4B1CF3B1.4040209@univ-fcomte.fr>
+	<alpine.LRH.2.00.0912071335330.20959@reclus.nhh.no>
+	<4B1CF9B0.8010003@univ-fcomte.fr>
+	<alpine.LRH.2.00.0912071350230.20959@reclus.nhh.no>
+	<4B1D3598.8070609@univ-fcomte.fr>
+	<alpine.LRH.2.00.0912071825330.16807@reclus.nhh.no>
+	<alpine.LRH.2.00.0912072043480.16807@reclus.nhh.no>
+Message-ID: <4B1DFD97.1060308@univ-fcomte.fr>
+
+Roger Bivand a ?crit :
+> On Mon, 7 Dec 2009, Roger Bivand wrote:
+>
+>> On Mon, 7 Dec 2009, Patrick Giraudoux wrote:
+>>
+>>> Dear Roger,
+>>>
+>>> I have moved the thread and the answer below from 
+>>> qgis-user@lists.osgeo.org to this list as advised...
+>>>>
+>>>> That is because the GRASS environment variables have not been set 
+>>>> at that point. Do you need to use GRASS in throw-away (initGRASS) 
+>>>> mode, or with an existing location? If the latter, please use the 
+>>>> interface in the regular way, starting R "within" GRASS. I'll try 
+>>>> to reproduce the problem, but it is not easy to do, I'm afraid.
+>>
+>> Dear Patrick,
+>>
+>> I've tried with Metis with no success. The first problem is addressed 
+>> in this draft release:
+>>
+>> http://spatial.nhh.no/R/Devel/spgrass6_0.6-13.zip
+>>
+>> but with Metis is simply falls over later. With WinGRASS (last but 
+>> latest), it just works. It even works in Metis once the basic GRASS 
+>> framework is set up using WinGRASS, but behaviour is erratic and 
+>> unpredictable. To track it with Metis (which I just uninstalled to 
+>> try OSGeo4W) seemed impossible, it wasn't clear where the GRASS 
+>> modules were looking for their environment variables and GISRC 
+>> backstore.
+>>
+>> I would probably use file transfer and have QGIS do the desktop 
+>> mapping and WinGRASS the analytical stuff, but I can't say that I 
+>> have favourites here.
+>
+>
+> I've now installed QGIS 1.3.0 Mimas and GRASS 6.4.0 SVN from OSGeo4W. 
+> Doing it their way (rather than my way), you then need Carson Farmer's 
+> ManageR plugin and the rpy2 2.0.6 msi for python 2.5 (the one that 
+> OSGeo4W ships). Next probably you need to put your R (mine is 2.10.0) 
+> on the PATH which OSGeo4W and QGIS have manipulated - maybe through 
+> the control panel - needs updating manually.
+>
+> Start QGIS, look for Carson's repository, install and enable manageR, 
+> open a GRASS mapset in QGIS, enter library(spgrass6) in the manageR 
+> console, and if you're lucky GRASS may be there. I've managed to move 
+> spearfish roads to R and tabulate road length by class using 
+> SpatialLinesLength() on the representation on the R side. Fairly 
+> horrible to install for students, but maybe?
+>
+> Roger
+>
+
+Yes indeed. That was a concern to me. The previous standalone versions 
+of QGIS metis was good enough and R could simply be started from within 
+a GRASS session (console) in QGIS...  and the OSGEO4W SVN Kore and Mimas 
+were the same. I am using R 2.10.0 too. Except that in all versions any 
+error in R led to quit and come back to the GRASS console... I have 
+already exported R objects (eg "gmeta6" files) that way. On the other 
+hand, GRASS commands were quite OK to manage with  the console (but no 
+copy and paste function available...).
+
+My hope with initGRASS was just to avoid opening a GRASS session and to 
+read files from R with gmeta6, and maybe readRAST6, readVECT6 without 
+having to start/working with GRASS or QGIS.... Looks like being out of 
+reach yet with QGIS/GRASS under Windows.
+
+Anyway thanks for having had a look and for all the work done with 
+spgrass6 (and others !)
+
+Best,
+
+Patrick
+
+
+
+
+
+
+
+
+>>
+>>>
+>>> I would like to be capable to read into GRASS locations from within 
+>>> R (so not from R started withing GRASS) -what is supposedly done 
+>>> with initGRASS; eg just to pick up a region definition into a 
+>>> "spgrass6" object and compute on that. I though that initGRASS was 
+>>> design for this task.
+>>>
+>>
+>> Right, initGRASS with home=tempdir() (not what I replied earlier - 
+>> with no home= given, it uses whatever Windows says "HOME" is) starts 
+>> a new location and mapset in the R temporary directory, which you 
+>> move data to for GRASS to analyse.
+>>
+>>>> Have you tried the WinGRASS stand-alone (I haven't trusted either 
+>>>> QGIS GRASS used this way or OSGeo4W - I follow the bug-tracker for 
+>>>> OSGEO4W, so stay away)? 
+>>>
+>>> I am trying this essentially on teaching purposes. Students are 
+>>> working under Windows XP and Vista. I have only a limited number of 
+>>> hours, and to board GIS concepts from QGIS then to GRASS is somehow 
+>>> easier for them than straight within GRASS (although it is just the 
+>>> reverse when you know GRASS). The QGIS Metis standalone version was 
+>>> excellent for that. You have seen that the updates to Kore and Mimas 
+>>> are done with no standalone version available on the QGIS official 
+>>> site. There the use of OSGeo4W is encouraged and I am trying to find 
+>>> out what could be best advisable for the students.
+>>>
+>>> I did not tried WinGRASS yet, and I am interested in doing it, but 
+>>> have installed the OSGeo4W  GRASS 6.4svn version (works well - but 
+>>> definitely the unix/linux environment is more convenient for command 
+>>> lines), as well as OSGeo4W QGIS Kore and Mimas, and try and compare 
+>>> them.
+>>>
+>>
+>> Roger
+>>
+>>>> What is your sessionInfo()? 
+>>> sessionInfo()
+>>> R version 2.10.0 (2009-10-26)
+>>> i386-pc-mingw32
+>>>
+>>> locale:
+>>> [1] LC_COLLATE=French_France.1252  LC_CTYPE=French_France.1252  [3] 
+>>> LC_MONETARY=French_France.1252 LC_NUMERIC=C                 [5] 
+>>> LC_TIME=French_France.1252 attached base packages:
+>>> [1] grDevices datasets  splines   graphics  stats     tcltk     
+>>> utils   [8] methods   base other attached packages:
+>>> [1] spgrass6_0.6-12 XML_2.6-0       rgdal_0.6-22    sp_0.9-47     
+>>> [5] svSocket_0.9-48 TinnR_1.0.3     R2HTML_1.59-1   Hmisc_3.7-0   
+>>> [9] survival_2.35-7
+>>>
+>>> loaded via a namespace (and not attached):
+>>> [1] cluster_1.12.1  grid_2.10.0     lattice_0.17-26 svMisc_0.9-56 
+>>> [5] tools_2.10.0 Roger Bivand a ?crit :
+>>>> On Mon, 7 Dec 2009, Patrick Giraudoux wrote:
+>>>>
+>>>>> Have tried the following:
+>>>>>
+>>>>> initGRASS("C:\\OSGeo4W\\bin",home="U:\\Documents and 
+>>>>> Settings\\pgiraudo\\",override=T)
+>>>>> initGRASS("C:\\Program Files\\Quantum 
+>>>>> GIS\\grass",home="U:\\Documents and Settings\\pgiraudo",override=T)
+>>>>> initGRASS("C:\\OSGeo4W\\bin",override=T)
+>>>>>
+>>>>> with the same results...
+>>>>>
+>>>>>> initGRASS("C:\\OSGeo4W\\bin",home="U:\\Documents and 
+>>>>> Settings\\pgiraudo\\",override=T)
+>>>>> Error in system(paste("g.dirseps.exe -g", 
+>>>>> shQuote(Sys.getenv("WINGISRC"))), :
+>>>>> g.dirseps.exe not found
+>>>>>> initGRASS("C:\\Program Files\\Quantum 
+>>>>>> GIS\\grass",home="U:\\Documents and 
+>>>>> Settings\\pgiraudo",override=T)
+>>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>>> initGRASS("C:\\OSGeo4W\\bin",override=T)
+>>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>>
+>>>>> Quite puzzling since g.dirseps does not give a message "unknown 
+>>>>> command" when tried within grass (thus it is suppose to be in the 
+>>>>> GRASS programme)
+>>>>
+>>>> That is because the GRASS environment variables have not been set 
+>>>> at that point. Do you need to use GRASS in throw-away (initGRASS) 
+>>>> mode, or with an existing location? If the latter, please use the 
+>>>> interface in the regular way, starting R "within" GRASS. I'll try 
+>>>> to reproduce the problem, but it is not easy to do, I'm afraid.
+>>>>
+>>>> What is your sessionInfo()? Have you tried the WinGRASS stand-alone 
+>>>> (I haven't trusted either QGIS GRASS used this way or OSGeo4W - I 
+>>>> follow the bug-tracker for OSGEO4W, so stay away)?
+>>>>
+>>>> Would you mind moving to the proper list - this is a GRASS question 
+>>>> much more than an R one:
+>>>>
+>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>
+>>>> Roger
+>>>>
+>>>>>
+>>>>> Patrick
+>>>>>
+>>>>>
+>>>>>
+>>>>> Roger Bivand a ?crit :
+>>>>>> On Mon, 7 Dec 2009, Patrick Giraudoux wrote:
+>>>>>>
+>>>>>>> Here is the result:
+>>>>>>>
+>>>>>>> library(spgrass6)
+>>>>>>>
+>>>>>>> debug(initGRASS)
+>>>>>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>>>>> Settings/pgiraudo/",override=T)
+>>>>>>>
+>>>>>>> (...)
+>>>>>>>
+>>>>>>> Browse[2]>
+>>>>>>> debug: gisrc <- system(paste("g.dirseps.exe -g", 
+>>>>>>> shQuote(Sys.getenv("WINGISRC"))),
+>>>>>>>   intern = TRUE)
+>>>>>>> Browse[2]> Sys.getenv("WINGISRC")
+>>>>>>>                                       WINGISRC
+>>>>>>> "U:/Documents and Settings/pgiraudo/\\.grassrc6"
+>>>>>>> Browse[2]> shQuote(Sys.getenv("WINGISRC"))
+>>>>>>> [1] "\"U:/Documents and Settings/pgiraudo/\\.grassrc6\""
+>>>>>>> Browse[2]> gisrc
+>>>>>>> Error: object 'gisrc' not found
+>>>>>>
+>>>>>> Could you try both not setting home= (you get a temporary folder 
+>>>>>> that is deleted when you exit R), or setting
+>>>>>>
+>>>>>> home="U:\\Documents and Settings\\pgiraudo"
+>>>>>>
+>>>>>> without the trailing forward slash?
+>>>>>>
+>>>>>> This a problem connected to protecting spaces on the one hand and 
+>>>>>> system specific directory separators on the other, I think.
+>>>>>>
+>>>>>> Roger
+>>>>>>
+>>>>>>>
+>>>>>>> Beforehand, the first time I run 
+>>>>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>>>>> Settings/pgiraudo/",override=T), I got:
+>>>>>>>
+>>>>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>>>>> Settings/pgiraudo/",override=T)
+>>>>>>> Error in system(paste("g.dirseps.exe -g", 
+>>>>>>> shQuote(Sys.getenv("WINGISRC"))), :
+>>>>>>> g.dirseps.exe not found
+>>>>>>>
+>>>>>>> Then, if I try the same commande on QGIS Metis, I got:
+>>>>>>> initGRASS("C:/Program Files/Quantum 
+>>>>>>> GIS/grass",home="U:/Documents and Settings/pgiraudo",override=T)
+>>>>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>>>>
+>>>>>>>
+>>>>>>> Best,
+>>>>>>>
+>>>>>>> Patrick
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> Roger Bivand a ?crit :
+>>>>>>>> On Sun, 6 Dec 2009, Patrick Giraudoux wrote:
+>>>>>>>>
+>>>>>>>>> Dear all,
+>>>>>>>>>
+>>>>>>>>> I am trying to init a GRASS session from within R, using the 
+>>>>>>>>> function initGRASS from the package spgrass6. GRASS is 
+>>>>>>>>> installed in two ways on my computer (here, the OS is Windows 
+>>>>>>>>> XP): with QGIS metis (precompiled version including grass 6.3 
+>>>>>>>>> (2008)) and grass 6.4.0svn, just freshly installed with the 
+>>>>>>>>> Osgeo4W installer.
+>>>>>>>>>
+>>>>>>>>> In both cases I get the same result:
+>>>>>>>>>
+>>>>>>>>>> initGRASS("C:/Program Files/Quantum 
+>>>>>>>>>> GIS/grass",home="U:/Documents and 
+>>>>>>>>> Settings/pgiraudo",override=T)
+>>>>>>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>>>>>>
+>>>>>>>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>>>>>>> Settings/pgiraudo",override=T)
+>>>>>>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>>>>>>
+>>>>>>>>> Any idea about what happens ?
+>>>>>>>>
+>>>>>>>> No, without the output of traceback(), it isn't obvious, 
+>>>>>>>> although here traceback() might not help. Run under 
+>>>>>>>> debug(initGRASS) to the step before, that is:
+>>>>>>>>
+>>>>>>>>         gisrc <- system(paste("g.dirseps.exe -g",
+>>>>>>>>             shQuote(Sys.getenv("WINGISRC"))), intern=TRUE)
+>>>>>>>>
+>>>>>>>> then run:
+>>>>>>>>
+>>>>>>>> Sys.getenv("WINGISRC")
+>>>>>>>> shQuote(Sys.getenv("WINGISRC"))
+>>>>>>>> gisrc
+>>>>>>>>
+>>>>>>>> and try to see what is going on. At this stage, 
+>>>>>>>> Sys.getenv("GISRC") should be "junk", assigned a couple of 
+>>>>>>>> lines earlier.
+>>>>>>>>
+>>>>>>>> Maybe the grass-stats list would have a higher proportion of 
+>>>>>>>> users of both GRASS and R.
+>>>>>>>>
+>>>>>>>> Hope this helps,
+>>>>>>>>
+>>>>>>>> Roger
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Patrick
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>
+>>>>>
+>>>>>
+>>>>
+>>>
+>>>
+>>
+>>
+>
+
+From Roger.Bivand at nhh.no  Tue Dec  8 04:57:57 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Dec  8 04:58:01 2009
+Subject: [GRASS-stats] Re: spgrass6 and initGRASS
+In-Reply-To: <4B1DFD97.1060308@univ-fcomte.fr>
+References: <4B1B706B.505@univ-fcomte.fr>
+	<alpine.LRH.2.00.0912062034470.26836@reclus.nhh.no>
+	<4B1CF3B1.4040209@univ-fcomte.fr>
+	<alpine.LRH.2.00.0912071335330.20959@reclus.nhh.no>
+	<4B1CF9B0.8010003@univ-fcomte.fr>
+	<alpine.LRH.2.00.0912071350230.20959@reclus.nhh.no>
+	<4B1D3598.8070609@univ-fcomte.fr>
+	<alpine.LRH.2.00.0912071825330.16807@reclus.nhh.no>
+	<alpine.LRH.2.00.0912072043480.16807@reclus.nhh.no>
+	<4B1DFD97.1060308@univ-fcomte.fr>
+Message-ID: <alpine.LRH.2.00.0912080846200.19896@reclus.nhh.no>
+
+On Tue, 8 Dec 2009, Patrick Giraudoux wrote:
+
+> Roger Bivand a ?crit :
+>> On Mon, 7 Dec 2009, Roger Bivand wrote:
+>> 
+>>> On Mon, 7 Dec 2009, Patrick Giraudoux wrote:
+>>> 
+>>>> Dear Roger,
+>>>> 
+>>>> I have moved the thread and the answer below from 
+>>>> qgis-user@lists.osgeo.org to this list as advised...
+>>>>> 
+>>>>> That is because the GRASS environment variables have not been set at 
+>>>>> that point. Do you need to use GRASS in throw-away (initGRASS) mode, or 
+>>>>> with an existing location? If the latter, please use the interface in 
+>>>>> the regular way, starting R "within" GRASS. I'll try to reproduce the 
+>>>>> problem, but it is not easy to do, I'm afraid.
+>>> 
+>>> Dear Patrick,
+>>> 
+>>> I've tried with Metis with no success. The first problem is addressed in 
+>>> this draft release:
+>>> 
+>>> http://spatial.nhh.no/R/Devel/spgrass6_0.6-13.zip
+>>> 
+>>> but with Metis is simply falls over later. With WinGRASS (last but 
+>>> latest), it just works. It even works in Metis once the basic GRASS 
+>>> framework is set up using WinGRASS, but behaviour is erratic and 
+>>> unpredictable. To track it with Metis (which I just uninstalled to try 
+>>> OSGeo4W) seemed impossible, it wasn't clear where the GRASS modules were 
+>>> looking for their environment variables and GISRC backstore.
+>>> 
+>>> I would probably use file transfer and have QGIS do the desktop mapping 
+>>> and WinGRASS the analytical stuff, but I can't say that I have favourites 
+>>> here.
+>> 
+>> 
+>> I've now installed QGIS 1.3.0 Mimas and GRASS 6.4.0 SVN from OSGeo4W. Doing 
+>> it their way (rather than my way), you then need Carson Farmer's ManageR 
+>> plugin and the rpy2 2.0.6 msi for python 2.5 (the one that OSGeo4W ships). 
+>> Next probably you need to put your R (mine is 2.10.0) on the PATH which 
+>> OSGeo4W and QGIS have manipulated - maybe through the control panel - needs 
+>> updating manually.
+>> 
+>> Start QGIS, look for Carson's repository, install and enable manageR, open 
+>> a GRASS mapset in QGIS, enter library(spgrass6) in the manageR console, and 
+>> if you're lucky GRASS may be there. I've managed to move spearfish roads to 
+>> R and tabulate road length by class using SpatialLinesLength() on the 
+>> representation on the R side. Fairly horrible to install for students, but 
+>> maybe?
+>> 
+>> Roger
+>> 
+>
+> Yes indeed. That was a concern to me. The previous standalone versions of 
+> QGIS metis was good enough and R could simply be started from within a GRASS 
+> session (console) in QGIS...  and the OSGEO4W SVN Kore and Mimas were the 
+> same. I am using R 2.10.0 too. Except that in all versions any error in R led 
+> to quit and come back to the GRASS console... I have already exported R 
+> objects (eg "gmeta6" files) that way. On the other hand, GRASS commands were 
+> quite OK to manage with  the console (but no copy and paste function 
+> available...).
+>
+> My hope with initGRASS was just to avoid opening a GRASS session and to read 
+> files from R with gmeta6, and maybe readRAST6, readVECT6 without having to 
+> start/working with GRASS or QGIS.... Looks like being out of reach yet with 
+> QGIS/GRASS under Windows.
+
+With QGIS/GRASS under Windows yes, but with WinGRASS native it works fine 
+for me - no need to start GRASS, and the vast majority of GRASS commands 
+avaliable from execGRASS. See maybe:
+
+http://spatial.nhh.no/R/Devel/WinGRASS_initGRASS.swf
+
+using
+
+http://spatial.nhh.no/R/Devel/spgrass6_0.6-14.zip
+
+that is using WinGRASS without starting GRASS on an existing location and 
+mapset.
+
+Hope this helps,
+
+Roger
+
+>
+> Anyway thanks for having had a look and for all the work done with spgrass6 
+> (and others !)
+>
+> Best,
+>
+> Patrick
+>
+>
+>
+>
+>
+>
+>
+>
+>>> 
+>>>> 
+>>>> I would like to be capable to read into GRASS locations from within R (so 
+>>>> not from R started withing GRASS) -what is supposedly done with 
+>>>> initGRASS; eg just to pick up a region definition into a "spgrass6" 
+>>>> object and compute on that. I though that initGRASS was design for this 
+>>>> task.
+>>>> 
+>>> 
+>>> Right, initGRASS with home=tempdir() (not what I replied earlier - with no 
+>>> home= given, it uses whatever Windows says "HOME" is) starts a new 
+>>> location and mapset in the R temporary directory, which you move data to 
+>>> for GRASS to analyse.
+>>> 
+>>>>> Have you tried the WinGRASS stand-alone (I haven't trusted either QGIS 
+>>>>> GRASS used this way or OSGeo4W - I follow the bug-tracker for OSGEO4W, 
+>>>>> so stay away)? 
+>>>> 
+>>>> I am trying this essentially on teaching purposes. Students are working 
+>>>> under Windows XP and Vista. I have only a limited number of hours, and to 
+>>>> board GIS concepts from QGIS then to GRASS is somehow easier for them 
+>>>> than straight within GRASS (although it is just the reverse when you know 
+>>>> GRASS). The QGIS Metis standalone version was excellent for that. You 
+>>>> have seen that the updates to Kore and Mimas are done with no standalone 
+>>>> version available on the QGIS official site. There the use of OSGeo4W is 
+>>>> encouraged and I am trying to find out what could be best advisable for 
+>>>> the students.
+>>>> 
+>>>> I did not tried WinGRASS yet, and I am interested in doing it, but have 
+>>>> installed the OSGeo4W  GRASS 6.4svn version (works well - but definitely 
+>>>> the unix/linux environment is more convenient for command lines), as well 
+>>>> as OSGeo4W QGIS Kore and Mimas, and try and compare them.
+>>>> 
+>>> 
+>>> Roger
+>>> 
+>>>>> What is your sessionInfo()? 
+>>>> sessionInfo()
+>>>> R version 2.10.0 (2009-10-26)
+>>>> i386-pc-mingw32
+>>>> 
+>>>> locale:
+>>>> [1] LC_COLLATE=French_France.1252  LC_CTYPE=French_France.1252  [3] 
+>>>> LC_MONETARY=French_France.1252 LC_NUMERIC=C                 [5] 
+>>>> LC_TIME=French_France.1252 attached base packages:
+>>>> [1] grDevices datasets  splines   graphics  stats     tcltk     utils 
+>>>> [8] methods   base other attached packages:
+>>>> [1] spgrass6_0.6-12 XML_2.6-0       rgdal_0.6-22    sp_0.9-47     [5] 
+>>>> svSocket_0.9-48 TinnR_1.0.3     R2HTML_1.59-1   Hmisc_3.7-0   [9] 
+>>>> survival_2.35-7
+>>>> 
+>>>> loaded via a namespace (and not attached):
+>>>> [1] cluster_1.12.1  grid_2.10.0     lattice_0.17-26 svMisc_0.9-56 [5] 
+>>>> tools_2.10.0 Roger Bivand a ?crit :
+>>>>> On Mon, 7 Dec 2009, Patrick Giraudoux wrote:
+>>>>> 
+>>>>>> Have tried the following:
+>>>>>> 
+>>>>>> initGRASS("C:\\OSGeo4W\\bin",home="U:\\Documents and 
+>>>>>> Settings\\pgiraudo\\",override=T)
+>>>>>> initGRASS("C:\\Program Files\\Quantum GIS\\grass",home="U:\\Documents 
+>>>>>> and Settings\\pgiraudo",override=T)
+>>>>>> initGRASS("C:\\OSGeo4W\\bin",override=T)
+>>>>>> 
+>>>>>> with the same results...
+>>>>>> 
+>>>>>>> initGRASS("C:\\OSGeo4W\\bin",home="U:\\Documents and 
+>>>>>> Settings\\pgiraudo\\",override=T)
+>>>>>> Error in system(paste("g.dirseps.exe -g", 
+>>>>>> shQuote(Sys.getenv("WINGISRC"))), :
+>>>>>> g.dirseps.exe not found
+>>>>>>> initGRASS("C:\\Program Files\\Quantum GIS\\grass",home="U:\\Documents 
+>>>>>>> and 
+>>>>>> Settings\\pgiraudo",override=T)
+>>>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>>>> initGRASS("C:\\OSGeo4W\\bin",override=T)
+>>>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>>> 
+>>>>>> Quite puzzling since g.dirseps does not give a message "unknown 
+>>>>>> command" when tried within grass (thus it is suppose to be in the GRASS 
+>>>>>> programme)
+>>>>> 
+>>>>> That is because the GRASS environment variables have not been set at 
+>>>>> that point. Do you need to use GRASS in throw-away (initGRASS) mode, or 
+>>>>> with an existing location? If the latter, please use the interface in 
+>>>>> the regular way, starting R "within" GRASS. I'll try to reproduce the 
+>>>>> problem, but it is not easy to do, I'm afraid.
+>>>>> 
+>>>>> What is your sessionInfo()? Have you tried the WinGRASS stand-alone (I 
+>>>>> haven't trusted either QGIS GRASS used this way or OSGeo4W - I follow 
+>>>>> the bug-tracker for OSGEO4W, so stay away)?
+>>>>> 
+>>>>> Would you mind moving to the proper list - this is a GRASS question much 
+>>>>> more than an R one:
+>>>>> 
+>>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>> 
+>>>>> Roger
+>>>>> 
+>>>>>> 
+>>>>>> Patrick
+>>>>>> 
+>>>>>> 
+>>>>>> 
+>>>>>> Roger Bivand a ?crit :
+>>>>>>> On Mon, 7 Dec 2009, Patrick Giraudoux wrote:
+>>>>>>> 
+>>>>>>>> Here is the result:
+>>>>>>>> 
+>>>>>>>> library(spgrass6)
+>>>>>>>> 
+>>>>>>>> debug(initGRASS)
+>>>>>>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>>>>>> Settings/pgiraudo/",override=T)
+>>>>>>>> 
+>>>>>>>> (...)
+>>>>>>>> 
+>>>>>>>> Browse[2]>
+>>>>>>>> debug: gisrc <- system(paste("g.dirseps.exe -g", 
+>>>>>>>> shQuote(Sys.getenv("WINGISRC"))),
+>>>>>>>>   intern = TRUE)
+>>>>>>>> Browse[2]> Sys.getenv("WINGISRC")
+>>>>>>>>                                       WINGISRC
+>>>>>>>> "U:/Documents and Settings/pgiraudo/\\.grassrc6"
+>>>>>>>> Browse[2]> shQuote(Sys.getenv("WINGISRC"))
+>>>>>>>> [1] "\"U:/Documents and Settings/pgiraudo/\\.grassrc6\""
+>>>>>>>> Browse[2]> gisrc
+>>>>>>>> Error: object 'gisrc' not found
+>>>>>>> 
+>>>>>>> Could you try both not setting home= (you get a temporary folder that 
+>>>>>>> is deleted when you exit R), or setting
+>>>>>>> 
+>>>>>>> home="U:\\Documents and Settings\\pgiraudo"
+>>>>>>> 
+>>>>>>> without the trailing forward slash?
+>>>>>>> 
+>>>>>>> This a problem connected to protecting spaces on the one hand and 
+>>>>>>> system specific directory separators on the other, I think.
+>>>>>>> 
+>>>>>>> Roger
+>>>>>>> 
+>>>>>>>> 
+>>>>>>>> Beforehand, the first time I run 
+>>>>>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>>>>>> Settings/pgiraudo/",override=T), I got:
+>>>>>>>> 
+>>>>>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>>>>>> Settings/pgiraudo/",override=T)
+>>>>>>>> Error in system(paste("g.dirseps.exe -g", 
+>>>>>>>> shQuote(Sys.getenv("WINGISRC"))), :
+>>>>>>>> g.dirseps.exe not found
+>>>>>>>> 
+>>>>>>>> Then, if I try the same commande on QGIS Metis, I got:
+>>>>>>>> initGRASS("C:/Program Files/Quantum GIS/grass",home="U:/Documents and 
+>>>>>>>> Settings/pgiraudo",override=T)
+>>>>>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>>>>> 
+>>>>>>>> 
+>>>>>>>> Best,
+>>>>>>>> 
+>>>>>>>> Patrick
+>>>>>>>> 
+>>>>>>>> 
+>>>>>>>> 
+>>>>>>>> 
+>>>>>>>> 
+>>>>>>>> 
+>>>>>>>> 
+>>>>>>>> Roger Bivand a ?crit :
+>>>>>>>>> On Sun, 6 Dec 2009, Patrick Giraudoux wrote:
+>>>>>>>>> 
+>>>>>>>>>> Dear all,
+>>>>>>>>>> 
+>>>>>>>>>> I am trying to init a GRASS session from within R, using the 
+>>>>>>>>>> function initGRASS from the package spgrass6. GRASS is installed in 
+>>>>>>>>>> two ways on my computer (here, the OS is Windows XP): with QGIS 
+>>>>>>>>>> metis (precompiled version including grass 6.3 (2008)) and grass 
+>>>>>>>>>> 6.4.0svn, just freshly installed with the Osgeo4W installer.
+>>>>>>>>>> 
+>>>>>>>>>> In both cases I get the same result:
+>>>>>>>>>> 
+>>>>>>>>>>> initGRASS("C:/Program Files/Quantum GIS/grass",home="U:/Documents 
+>>>>>>>>>>> and 
+>>>>>>>>>> Settings/pgiraudo",override=T)
+>>>>>>>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>>>>>>> 
+>>>>>>>>>>> initGRASS("C:/OSGeo4W/bin",home="U:/Documents and 
+>>>>>>>>>> Settings/pgiraudo",override=T)
+>>>>>>>>>> Error in Sys.setenv(GISRC = gisrc) : wrong length for argument
+>>>>>>>>>> 
+>>>>>>>>>> Any idea about what happens ?
+>>>>>>>>> 
+>>>>>>>>> No, without the output of traceback(), it isn't obvious, although 
+>>>>>>>>> here traceback() might not help. Run under debug(initGRASS) to the 
+>>>>>>>>> step before, that is:
+>>>>>>>>>
+>>>>>>>>>         gisrc <- system(paste("g.dirseps.exe -g",
+>>>>>>>>>             shQuote(Sys.getenv("WINGISRC"))), intern=TRUE)
+>>>>>>>>> 
+>>>>>>>>> then run:
+>>>>>>>>> 
+>>>>>>>>> Sys.getenv("WINGISRC")
+>>>>>>>>> shQuote(Sys.getenv("WINGISRC"))
+>>>>>>>>> gisrc
+>>>>>>>>> 
+>>>>>>>>> and try to see what is going on. At this stage, Sys.getenv("GISRC") 
+>>>>>>>>> should be "junk", assigned a couple of lines earlier.
+>>>>>>>>> 
+>>>>>>>>> Maybe the grass-stats list would have a higher proportion of users 
+>>>>>>>>> of both GRASS and R.
+>>>>>>>>> 
+>>>>>>>>> Hope this helps,
+>>>>>>>>> 
+>>>>>>>>> Roger
+>>>>>>>>> 
+>>>>>>>>>> 
+>>>>>>>>>> Patrick
+>>>>>>>>>> 
+>>>>>>>>> 
+>>>>>>>> 
+>>>>>>>> 
+>>>>>>> 
+>>>>>> 
+>>>>>> 
+>>>>> 
+>>>> 
+>>>> 
+>>> 
+>>> 
+>> 
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From AHINTERMEISTER at AMICA.com  Thu Dec 10 11:08:06 2009
+From: AHINTERMEISTER at AMICA.com (HINTERMEISTER, ARTHUR W. (Artie))
+Date: Thu Dec 10 11:23:36 2009
+Subject: [GRASS-stats] Spatial categories for risk data.
+Message-ID: <82AC92D8044F584AA54B76B8A3DBD2D20A877704@hoex02.AMICA.COM>
+
+Hello,
+
+ 
+
+I currently have a map that looks something like this:
+
+ 
+
+-----------------------------------------
+
+|   x           x    o   x    o     x   |
+
+|  x     x         x       x     a o  a |
+
+|      a       x       o      o    x    |
+
+|  x      x       o      o     o     a  |
+
+|  x  x      x      o       a   o   a  o|
+
+|  x     x     o   x  o   x   a  a    a |
+
+| x   x    o      o     a   a      a    |
+
+-----------------------------------------
+
+    
+
+x = low risk
+
+o = moderate risk
+
+a = high risk
+
+ 
+
+Each letter represents a person, and the entire map represents a state.
+Each person's "risk score" is a continuous numeric value, but I have
+categorized it into low, moderate, and high for visual simplicity. What
+I'm hoping to do is draw lines that will divide out the categories. The
+lines do not have to necessarily be straight, but I would like them to
+be simple enough. I figure that I would have to account for any
+overlapping or outlying persons. This is my initial idea of how the map
+would turn out:
+
+ 
+
+-----------------------------------------
+
+|                  /             /      |
+
+|                 /             /       |
+
+|      x         /     o       /    a   |
+
+|               /             /         |
+
+|              /             /          |
+
+|             /             /           |
+
+|            /             /            |
+
+-----------------------------------------    
+
+ 
+
+I have downloaded and installed GRASS and R, but I am not sure what type
+of spatial method or analysis to use. Could someone please offer me
+advice on how to get started with this project? Thanks so much!
+
+ 
+
+ 
+
+------------------------------------------------------
+
+Arthur Hintermeister
+
+ahintermeister@amica.com <mailto:ahintermeister@amica.com> 
+
+ 
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20091210/c714410c/attachment.html
+From giohappy at gmail.com  Thu Dec 10 11:38:46 2009
+From: giohappy at gmail.com (G. Allegri)
+Date: Thu Dec 10 11:38:50 2009
+Subject: [GRASS-stats] Spatial categories for risk data.
+In-Reply-To: <82AC92D8044F584AA54B76B8A3DBD2D20A877704@hoex02.AMICA.COM>
+References: <82AC92D8044F584AA54B76B8A3DBD2D20A877704@hoex02.AMICA.COM>
+Message-ID: <e12429640912100838x61e2f97dq612ff606bb9b1a41@mail.gmail.com>
+
+Hi Arthur, this is the classical task of clustering/classification
+algorithms (like SVM, k-means, etc.)
+
+For R take a look at the Cluster task page [1] for unsupervised
+classification, and Machine Learning [2] for some supervised methods.
+
+In Grass the classification/clustering methods are mostly directed to
+imagery data, and their objective is to classify spectral images [3]
+[4]. Anyway you could use it with other kind of imagery...
+
+You also could take a look to this Python/C project, quite easy to
+use, for supervised clasification: https://mlpy.fbk.eu/
+And LIBSVM, which has various interfaces (Python, R, etc.):
+http://www.csie.ntu.edu.tw/~cjlin/libsvm/
+
+Hope it helps,
+giovanni
+
+[1] http://cran.r-project.org/web/views/Cluster.html
+[2] http://cran.r-project.org/web/views/MachineLearning.html
+[3] http://grass.osgeo.org/grass64/manuals/html64_user/i.cluster.html
+[4] http://grass.osgeo.org/grass64/manuals/html64_user/i.maxlik.html
+
+Il 10 dicembre 2009 17.08, HINTERMEISTER, ARTHUR W. (Artie)
+<AHINTERMEISTER@amica.com> ha scritto:
+> Hello,
+>
+>
+>
+> I currently have a map that looks something like this:
+>
+>
+>
+> -----------------------------------------
+>
+> |?? x?????????? x ???o?? x??? o???? x?? |
+>
+> |? x???? x???????? x?????? x???? a o? a |
+>
+> |????? a?????? x?????? o????? o??? x??? |
+>
+> |? x????? x?????? o????? o???? o?? ??a? |
+>
+> |? x? x????? x????? o?????? a?? o?? a? o|
+>
+> |? x???? x???? o?? x? o?? x?? a? a??? a |
+>
+> | x?? x??? o?? ???o ????a?? a????? a??? |
+>
+> -----------------------------------------
+>
+>
+>
+> x = low risk
+>
+> o = moderate risk
+>
+> a = high risk
+>
+>
+>
+> Each letter represents a person, and the entire map represents a state. Each
+> person?s ?risk score? is a continuous numeric value, but I have categorized
+> it into low, moderate, and high for visual simplicity. What I?m hoping to do
+> is draw lines that will divide out the categories. The lines do not have to
+> necessarily be straight, but I would like them to be simple enough. I figure
+> that I would have to account for any overlapping or outlying persons. This
+> is my initial idea of how the map would turn out:
+>
+>
+>
+> -----------------------------------------
+>
+> |???????????????? ?/???????????? / ?????|
+>
+> |???????????????? /???????????? /? ?????|
+>
+> |????? x ????????/???? o?????? /??? a?? |
+>
+> |?????????????? /???????????? /???????? |
+>
+> |????????????? /???????????? /????????? |
+>
+> |???????????? /???????????? /?????????? |
+>
+> |?????????? ?/???????????? /??????????? |
+>
+> -----------------------------------------
+>
+>
+>
+> I have downloaded and installed GRASS and R, but I am not sure what type of
+> spatial method or analysis to use. Could someone please offer me advice on
+> how to get started with this project? Thanks so much!
+>
+>
+>
+>
+>
+> ------------------------------------------------------
+>
+> Arthur Hintermeister
+>
+> ahintermeister@amica.com
+>
+>
+>
+>
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+From hamish_b at yahoo.com  Thu Dec 10 17:32:09 2009
+From: hamish_b at yahoo.com (Hamish)
+Date: Thu Dec 10 17:38:53 2009
+Subject: [GRASS-stats] Spatial categories for risk data.
+In-Reply-To: <82AC92D8044F584AA54B76B8A3DBD2D20A877704@hoex02.AMICA.COM>
+Message-ID: <655960.3660.qm@web110012.mail.gq1.yahoo.com>
+
+
+> I currently have a map that looks something like this: 
+...
+> Each letter represents a
+> person, and the entire map represents a state. Each
+> person?s ?risk score? is a continuous numeric value, but I have
+> categorized it into low,
+> moderate, and high for visual simplicity. What I?m
+> hoping to do is draw
+> lines that will divide out the categories. The lines do not
+> have to necessarily
+> be straight, but I would like them to be simple enough. I
+> figure that I would
+> have to account for any overlapping or outlying persons.
+> This is my initial
+> idea of how the map would turn out: 
+...
+> I have downloaded and
+> installed GRASS and R, but I am not sure what type of
+> spatial method or
+> analysis to use. Could someone please offer me advice on
+> how to get started with this project? Thanks so much! 
+
+
+keeping within grass, a possible solution is to use v.surf.rst
+to make a spline fit to the data (adjust tension= and smooth= 
+parameters and region resolution to suit), then if more
+smoothing is needed use the r.neighbors module with a suitable
+search distance.
+
+finally use r.contour to set up your isolines at whatever
+thresholds you use for risk category.
+
+if you like you could use r.colors on the "elevation" map to
+show it as solid red/yellow/green bands; see also the
+r.colors.stddev module for setting the color table.
+
+
+there's a v.kernel module, but I don't know much about that.
+
+
+Hamish
+
+
+
+      

@@ -1,0 +1,217 @@
+From neteler at osgeo.org  Fri Jun 11 18:42:59 2010
+From: neteler at osgeo.org (Markus Neteler)
+Date: Fri Jun 11 18:43:20 2010
+Subject: [GRASS-stats] readRAST6() issue with NODATA
+Message-ID: <AANLkTim7eqYH-lceoqweAyE0BL1xIMXEa7A1kINHcVnz@mail.gmail.com>
+
+Dear Roger,
+
+hope all is well.
+
+I came across an issue with readRAST6():
+
+> library(spgrass6)
+Loading required package: sp
+Loading required package: rgdal
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Loaded GDAL runtime: GDAL 1.5.2, released 2008/05/29
+Path to GDAL shared files: /home/neteler/binaries/share/gdal
+Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+Path to PROJ.4 shared files: (autodetected)
+Loading required package: XML
+GRASS GIS interface loaded with GRASS version: 6.4.0svn
+and location: patUTM32
+> mydata_raw <-readRAST6(c("thresh_annual_over_11_celsius_2001_2008_avg", "italy_dem20_PHD_zone"), cat=c(FALSE, FALSE))
+/home/neteler/grassdata/patUTM32/zanzara_satellite/.tmp/fep/thresh_annual_over_11_celsius_2001_2008_avg
+has GDAL driver GTiff
+and has 601 rows and 1011 columns
+WARNING: The given nodata value is present in rasterband
+         <italy_dem20_PHD_zone> and would lead to data loss. Please specify
+         a different nodata value with the nodata parameter.
+ERROR: Raster export aborted.
+
+Debugging r.out.gdal, I found that the value 10 was used.
+
+
+GRASS 6.4.0svn (patUTM32): > r.info -r italy_dem20_PHD_zone
+min=0
+max=3890
+GRASS 6.4.0svn (patUTM32): > r.info -t italy_dem20_PHD_zone
+datatype=CELL
+
+I hacked in -99999 as NODATA value in the r.out.gdal calls
+(spgrass6/R/bin_link.R).
+
+I have no idea why 10 was used but from GRASS 6.4 onwards the r.out.gdal
+module has an intelligent NODATA selection thanks to Markus Metz. I can
+imagine what you don't want to clutter the code with conditions, but here it
+would be great to let the NODATA selection job to r.out.gdal rather than
+using the current r.info tricks.
+
+What do you think?
+
+Best,
+Markus
+
+PS: off for 2 weeks now
+From Roger.Bivand at nhh.no  Sat Jun 12 00:51:27 2010
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sat Jun 12 00:51:19 2010
+Subject: [GRASS-stats] readRAST6() issue with NODATA
+In-Reply-To: <AANLkTim7eqYH-lceoqweAyE0BL1xIMXEa7A1kINHcVnz@mail.gmail.com>
+References: <AANLkTim7eqYH-lceoqweAyE0BL1xIMXEa7A1kINHcVnz@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.1006120647320.22837@reclus.nhh.no>
+
+On Sat, 12 Jun 2010, Markus Neteler wrote:
+
+> Dear Roger,
+>
+> hope all is well.
+>
+> I came across an issue with readRAST6():
+>
+>> library(spgrass6)
+> Loading required package: sp
+> Loading required package: rgdal
+> Geospatial Data Abstraction Library extensions to R successfully loaded
+> Loaded GDAL runtime: GDAL 1.5.2, released 2008/05/29
+> Path to GDAL shared files: /home/neteler/binaries/share/gdal
+> Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+> Path to PROJ.4 shared files: (autodetected)
+> Loading required package: XML
+> GRASS GIS interface loaded with GRASS version: 6.4.0svn
+> and location: patUTM32
+>> mydata_raw <-readRAST6(c("thresh_annual_over_11_celsius_2001_2008_avg", "italy_dem20_PHD_zone"), cat=c(FALSE, FALSE))
+> /home/neteler/grassdata/patUTM32/zanzara_satellite/.tmp/fep/thresh_annual_over_11_celsius_2001_2008_avg
+> has GDAL driver GTiff
+> and has 601 rows and 1011 columns
+> WARNING: The given nodata value is present in rasterband
+>         <italy_dem20_PHD_zone> and would lead to data loss. Please specify
+>         a different nodata value with the nodata parameter.
+> ERROR: Raster export aborted.
+>
+> Debugging r.out.gdal, I found that the value 10 was used.
+>
+>
+> GRASS 6.4.0svn (patUTM32): > r.info -r italy_dem20_PHD_zone
+> min=0
+> max=3890
+> GRASS 6.4.0svn (patUTM32): > r.info -t italy_dem20_PHD_zone
+> datatype=CELL
+>
+> I hacked in -99999 as NODATA value in the r.out.gdal calls
+> (spgrass6/R/bin_link.R).
+>
+> I have no idea why 10 was used but from GRASS 6.4 onwards the r.out.gdal
+> module has an intelligent NODATA selection thanks to Markus Metz. I can
+> imagine what you don't want to clutter the code with conditions, but here it
+> would be great to let the NODATA selection job to r.out.gdal rather than
+> using the current r.info tricks.
+
+Dear Markus,
+
+The tricks were there for the time when r.out.gdal didn't find its own 
+value, and for the null parameter for r.out.bin. I've moved them down to 
+the r.out.bin branch only, and modified the execGRASS() call to r.out.gdal 
+to omit the nodata= argument by default when NODATA=NULL.
+
+Committed to sourceforge CVS, project r-spatial, module spgrass6. Could 
+you check this and let me know if the problem is resolved?
+
+Best wishes,
+
+Roger
+
+>
+> What do you think?
+>
+> Best,
+> Markus
+>
+> PS: off for 2 weeks now
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From leohardtke at gmail.com  Mon Jun 14 15:12:31 2010
+From: leohardtke at gmail.com (Leonardo Hardtke)
+Date: Mon Jun 14 15:12:56 2010
+Subject: [GRASS-stats] random subset in R
+Message-ID: <4C167F1F.1040300@gmail.com>
+
+Hi list,
+I'm tryng to do a simple random subset of spatial points in R and don't 
+know how....
+I tried:
+
+library(spgrass6)
+hs=readVECT6("HSd01@Hot_Spot") (3500 point) #SpatialPointDataFrame
+hs_smpl=spsample(hs, 200, "random")  #->SpatialPoints
+
+the question is... how do I attach the right data?
+Thanks!
+
+Leonardo Hardtke
+From Roger.Bivand at nhh.no  Mon Jun 14 15:22:30 2010
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon Jun 14 15:21:19 2010
+Subject: [GRASS-stats] random subset in R
+In-Reply-To: <4C167F1F.1040300@gmail.com>
+References: <4C167F1F.1040300@gmail.com>
+Message-ID: <alpine.LRH.2.00.1006142115540.1053@reclus.nhh.no>
+
+On Mon, 14 Jun 2010, Leonardo Hardtke wrote:
+
+> Hi list,
+> I'm tryng to do a simple random subset of spatial points in R and don't know 
+> how....
+> I tried:
+>
+> library(spgrass6)
+> hs=readVECT6("HSd01@Hot_Spot") (3500 point) #SpatialPointDataFrame
+> hs_smpl=spsample(hs, 200, "random")  #->SpatialPoints
+
+Why do you thing that this is a subsample of your points? It is a sample 
+of 200 points in the bounding box of your points, I think. To subsample, 
+generate a new object by subsetting on row indices in the sample:
+
+library(sp)
+data(meuse)
+coordinates(meuse) <- c("x", "y")
+nrow(meuse)
+plot(meuse, axes=TRUE)
+plot(spsample(meuse, n=50, type="random"), col="red", add=TRUE)
+plot(meuse[sample(x=nrow(meuse), size=50),], col="blue", pch=16, add=TRUE)
+
+
+Hope this helps,
+
+Roger
+
+>
+> the question is... how do I attach the right data?
+> Thanks!
+>
+> Leonardo Hardtke
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+

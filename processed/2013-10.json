@@ -1,0 +1,87 @@
+{
+  "list": "grass-stats",
+  "description": "",
+  "month": "2013-10",
+  "messages": [
+    {
+      "id": "msg-fb6752d9cfe5",
+      "message_id": "<1381132847853-5082132.post@n6.nabble.com>",
+      "from_name": "pvanbosgeo",
+      "from_email_hash": "b93015496d730abd72947d7b57657810d410627495602f8469846b24d0e45d09",
+      "date": "2013-10-07T08:00:47Z",
+      "subject": "[GRASS-stats] How to make histogram in R from raster of grass",
+      "subject_clean": "[GRASS-stats] How to make histogram in R from raster of grass",
+      "in_reply_to": "<1366913933092-5049699.post@n6.nabble.com>",
+      "references": [
+        "<1366913933092-5049699.post@n6.nabble.com>"
+      ],
+      "body_plain": "If you import a GRASS raster, you'll get a SpatialGridDataFrame object.\nSuppose your spatialgriddataframe is called 'myrast'. You can find out the\nstructure of that object using str(myrast). You'll find that the raster\nvalues are in myrast at data. You can extract the data as data frame \n\nmyrast.data <- myrast at data\n\nNow you can create histograms as you would normally do. \n\nEspecially when you are dealing with very large raster layers, a good\nalternative is to use the 'raster' package to import the raster layer. You\ncan then use the hist function to create a histogram of the values of a\nRasterLayer directly. For large datasets the hist function in the raster\npackage automatically uses a sample.\n\n\n\n\n\n-----\n---\nhttp://pvanb.wordpress.com/\n--\nView this message in context: http://osgeo-org.1560.x6.nabble.com/How-to-make-histogram-in-R-from-raster-of-grass-tp5049699p5082132.html\nSent from the Grass - Stats mailing list archive at Nabble.com.",
+      "body_snippet": "If you import a GRASS raster, you'll get a SpatialGridDataFrame object.\nSuppose your spatialgriddataframe is called 'myrast'. You can find out the\nstructure of that object using str(myrast). You'll fi",
+      "thread_id": "thread-fb6752d9cfe5",
+      "thread_depth": 0,
+      "month": "2013-10"
+    },
+    {
+      "id": "msg-e6764f77303f",
+      "message_id": "<m2mwmlihob.fsf@krugs.de>",
+      "from_name": "Rainer M Krug",
+      "from_email_hash": "157e56ae6c387b32c26749d4c5a2fa1f3d30fe259f3a41322190852de6c6c637",
+      "date": "2013-10-07T08:55:32Z",
+      "subject": "[GRASS-stats] How to make histogram in R from raster of grass",
+      "subject_clean": "[GRASS-stats] How to make histogram in R from raster of grass",
+      "in_reply_to": null,
+      "references": [
+        "<1366913933092-5049699.post@n6.nabble.com>",
+        "<1381132847853-5082132.post@n6.nabble.com>"
+      ],
+      "body_plain": "pvanbosgeo <p.vanbreugel at gmail.com>\nwrites:\n\n> If you import a GRASS raster, you'll get a SpatialGridDataFrame object.\n> Suppose your spatialgriddataframe is called 'myrast'. You can find out the\n> structure of that object using str(myrast). You'll find that the raster\n> values are in myrast at data. You can extract the data as data frame \n>\n> myrast.data <- myrast at data\n>\n> Now you can create histograms as you would normally do. \n>\n> Especially when you are dealing with very large raster layers, a good\n> alternative is to use the 'raster' package to import the raster layer. You\n> can then use the hist function to create a histogram of the values of a\n> RasterLayer directly. For large datasets the hist function in the raster\n> package automatically uses a sample.\n\nOr you can use the GRASS function r.stats via the package spgrass6 as\nfollow:\n\n,----\n|  cats <- c(\"*\", 1:7)\n|  his <- spgrass6::execGRASS(\n|         \"r.stats\",\n|         input = layer,\n|         flags = c(\"c\",\"i\"),\n|         intern = TRUE\n|         )\n`----\n\nfrom the GRASS help:\n\n,----\n| r.stats calculates the area present in each of the categories of\n| user-selected raster map layer(s). Area statistics are given in units of\n| square meters and/or cell counts. This analysis uses the current\n| geographic region and mask settings. Output can be sent to a file in the\n| user's current working directory. If a single map layer is specified on\n| the command line, a list of areas in square meters (assuming the map's\n| coordinate system is in meters) for each category in the raster map\n| layer will be printed. (If the -c option is chosen, areas will be stated\n| in number of cells.) If multiple raster map layers are specified on the\n| command line, a cross-tabulation table of areas for each combination of\n| categories in the map layers will be printed.\n`----\n\nHope this helps,\n\nRainer\n\n>\n>\n>\n>\n>\n> -----\n> ---\n> http://pvanb.wordpress.com/\n> --\n> View this message in context: http://osgeo-org.1560.x6.nabble.com/How-to-make-histogram-in-R-from-raster-of-grass-tp5049699p5082132.html\n> Sent from the Grass - Stats mailing list archive at Nabble.com.\n<#secure method=pgpmime mode=sign>\n\n-- \nRainer M. Krug\n\nemail: RMKrug<at>gmail<dot>com",
+      "body_snippet": "pvanbosgeo <p.vanbreugel at gmail.com>\nwrites:\n\n> If you import a GRASS raster, you'll get a SpatialGridDataFrame object.\n> Suppose your spatialgriddataframe is called 'myrast'. You can find out the\n>",
+      "thread_id": "thread-fb6752d9cfe5",
+      "thread_depth": 1,
+      "month": "2013-10"
+    },
+    {
+      "id": "msg-eade110b22d2",
+      "message_id": "<CAG-593wOBNGsfzunOsiv1zdn_6dpPmU7Pj-kFsDfP6-xxE4b9Q@mail.gmail.com>",
+      "from_name": "Duccio Rocchini",
+      "from_email_hash": "0200bc96b744cd01e477c6b9ad72fb6456a742006dc84c7bcace9f6ec4230998",
+      "date": "2013-10-10T07:57:43Z",
+      "subject": "[GRASS-stats] grass-stats Digest, Vol 70, Issue 1",
+      "subject_clean": "[GRASS-stats] grass-stats Digest, Vol 70, Issue 1",
+      "in_reply_to": "<mailman.55.1381172435.9663.grass-stats@lists.osgeo.org>",
+      "references": [
+        "<mailman.55.1381172435.9663.grass-stats@lists.osgeo.org>"
+      ],
+      "body_plain": "I also suggest to apply a kernel density function to estimate the\nprobability of frequency of a certain value.\n\nImport data by spgrass6 library\n\nAnd then rely on sm package by:\n\nrequire(sm)\n\nset.seed(100)\n\nsm.density(x, display=\"se\", rugplot = F)\n\n# display allows you to show the standard error...\n\nexample graph:\nhttp://gis.cri.fmach.it/uploads/ECOCOM_218.pdf\n\nfig. 1 in box 1\n\nBest!\nDuccio\n\n-- \nDuccio Rocchini, PhD\n\nhttp://gis.cri.fmach.it/rocchini/\n\nFondazione Edmund Mach\nResearch and Innovation Centre\nDepartment of Biodiversity and Molecular Ecology\nGIS and Remote Sensing Unit\nVia Mach 1, 38010 San Michele all'Adige (TN) - Italy\nPhone +39 0461 615 570\nducciorocchini at gmail.com\nduccio.rocchini at fmach.it\nskype: duccio.rocchini\n-------------- next part --------------\nAn HTML attachment was scrubbed...\nURL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20131010/c4add5a9/attachment.html>",
+      "body_snippet": "I also suggest to apply a kernel density function to estimate the\nprobability of frequency of a certain value.\n\nImport data by spgrass6 library\n\nAnd then rely on sm package by:\n\nrequire(sm)\n\nset.seed(",
+      "thread_id": "thread-eade110b22d2",
+      "thread_depth": 0,
+      "month": "2013-10"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-fb6752d9cfe5",
+      "subject": "[GRASS-stats] How to make histogram in R from raster of grass",
+      "message_count": 2,
+      "participants": [
+        "Rainer M Krug",
+        "pvanbosgeo"
+      ],
+      "started": "2013-10-07T08:00:47Z",
+      "last_reply": "2013-10-07T08:55:32Z",
+      "root_message_id": "msg-fb6752d9cfe5"
+    },
+    {
+      "id": "thread-eade110b22d2",
+      "subject": "[GRASS-stats] grass-stats Digest, Vol 70, Issue 1",
+      "message_count": 1,
+      "participants": [
+        "Duccio Rocchini"
+      ],
+      "started": "2013-10-10T07:57:43Z",
+      "last_reply": "2013-10-10T07:57:43Z",
+      "root_message_id": "msg-eade110b22d2"
+    }
+  ]
+}

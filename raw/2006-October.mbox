@@ -1,0 +1,3378 @@
+From lanczos at t-zones.sk  Sun Oct  1 15:34:39 2006
+From: lanczos at t-zones.sk (Tomas Lanczos)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] gstat - format of the MASK map
+Message-ID: <003301c6e590$a4017c90$2101a8c0@tomas>
+
+Hello,
+
+what kind of format should been as the MASK map? How can I use the grass
+grid map (if is it possible)? If not, for what is installed the grass
+interface in the gstat?
+
+Many thanks in advance
+
+Tomas
+
+
+From lanczos at t-zones.sk  Sat Oct  7 06:21:28 2006
+From: lanczos at t-zones.sk (Tomas Lanczos)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] v.variogram
+Message-ID: <001001c6e9fa$59dbca30$2101a8c0@tomas>
+
+Hello,
+
+"when running I get the following errormessage:
+
+v.variogram point=basement_surf layer=1 column=z resolution=70 maxdist=92330
+nlag=15 
+
+Loading required package: sp
+Loading required package: maptools
+Loading required package: foreign
+Loading required package: rgdal
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Error in validObject(.Object) : invalid class "GridTopology" object:
+cellsize has incorrect dimension
+Execution halted
+Done/usr/local/grass-6.3.cvs/scripts/v.variogram: line 135: xpdf: command
+not found"
+
+What can I do with it?
+
+Note: If I tried to do kriging by the R I recognized that there is no
+krige.G function for spgrass6.
+
+Thank for any advice in advance.
+
+Tomas
+
+p.s: running Grass 6.3 cvs and R 2.3.0 on Ubuntu 6.0.6,  the databaze is
+PostgreSQL 8.1.3
+
+
+From Roger.Bivand at nhh.no  Sat Oct  7 09:15:07 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] v.variogram
+In-Reply-To: <001001c6e9fa$59dbca30$2101a8c0@tomas>
+Message-ID: <Pine.LNX.4.44.0610071452160.18254-100000@reclus.nhh.no>
+
+On Sat, 7 Oct 2006, Tomas Lanczos wrote:
+
+> Hello,
+> 
+> "when running I get the following errormessage:
+> 
+> v.variogram point=basement_surf layer=1 column=z resolution=70 maxdist=92330
+> nlag=15 
+
+The script has not been updated to match changes in the spgrass6 package. 
+west and south in line 117 of the script need to be changed to w and s 
+from spgrass6 >= 0.3. The list in line 118 will need changing to 
+data.frame for sp >= 0.9 and R >= 2.4.0. The script would be more robust 
+if is used the mechanisms described in the GRASS book for argument 
+passing. It could also condition on package releases.
+
+Apart from that, the script depends on using xpdf to view pdf files, an 
+you don not have it installed or on your path.
+
+Roger
+
+> 
+> Loading required package: sp
+> Loading required package: maptools
+> Loading required package: foreign
+> Loading required package: rgdal
+> Geospatial Data Abstraction Library extensions to R successfully loaded
+> Error in validObject(.Object) : invalid class "GridTopology" object:
+> cellsize has incorrect dimension
+> Execution halted
+> Done/usr/local/grass-6.3.cvs/scripts/v.variogram: line 135: xpdf: command
+> not found"
+> 
+> What can I do with it?
+> 
+> Note: If I tried to do kriging by the R I recognized that there is no
+> krige.G function for spgrass6.
+> 
+> Thank for any advice in advance.
+> 
+> Tomas
+> 
+> p.s: running Grass 6.3 cvs and R 2.3.0 on Ubuntu 6.0.6,  the databaze is
+> PostgreSQL 8.1.3
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From Roger.Bivand at nhh.no  Sat Oct  7 15:36:39 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] v.variogram
+Message-ID: <Pine.LNX.4.44.0610072135210.18254-100000@reclus.nhh.no>
+
+On Sat, 7 Oct 2006, Tomas Lanczos wrote:
+
+> Hello,
+> 
+> > > v.variogram point=basement_surf layer=1 column=z resolution=70 
+> > > maxdist=92330
+> > > nlag=15
+> > 
+> > The script has not been updated to match changes in the 
+> > spgrass6 package. 
+> > west and south in line 117 of the script need to be changed 
+> > to w and s from spgrass6 >= 0.3. The list in line 118 will 
+> > need changing to data.frame for sp >= 0.9 and R >= 2.4.0. The 
+> > script would be more robust if is used the mechanisms 
+> > described in the GRASS book for argument passing. It could 
+> > also condition on package releases.
+> 
+> Thank You very much for Your answer, I performed the changes You suggested.
+> Now I got the following error message:
+> 
+> "GRASS_INFO_WARNING(12466,1): OGR can't parse PROJ.4-style parameter string:
+> GRASS_INFO_WARNING(12466,1):  +proj=krovak +a=6377397.155 +rf=299.1528128
+> +no_defs +to_meter=1.0000000000
+> GRASS_INFO_WARNING(12466,1): (OGR Error code was 5)
+
+This looks as though the modification stops v.out.ogr -e from working, and 
+results in no shapefile being written. Could you see what happens when you 
+run v.out.ogr -e for your point vector data? My guess is that it will 
+fail. It may also fail with just v.out.ogr, because v.out.ogr tries to 
+write a *.prj anyway for shapefiles, and that may just not work following 
+the patch. Could you let me know if other OGR drivers do any better?
+
+Roger
+
+> Error in ogrInfo(dsn = dsn, layer = layer) : 
+> 	Cannot open file
+> Execution halted"
+> 
+> I suppose that this error occures when grass, resp. ogr is reading the
+> computed data back. Is it problem with the proj.4 style itself (how is
+> written back) or that I am using the patched proj4 (the patch was prepared
+> by Jachym Cepicky - I guess, as the proj4 does not handle the krovak
+> projection correctly). Am I right? Do You have any idea how to solve this?
+> 
+> > Apart from that, the script depends on using xpdf to view pdf 
+> > files, an you don not have it installed or on your path.
+> 
+> Of course :-).
+> 
+> Thanks for any suggestion and/or advice in advance
+> 
+> Tomas
+> 
+> 
+> 
+> > Roger
+> > 
+> > > 
+> > > Loading required package: sp
+> > > Loading required package: maptools
+> > > Loading required package: foreign
+> > > Loading required package: rgdal
+> > > Geospatial Data Abstraction Library extensions to R successfully 
+> > > loaded Error in validObject(.Object) : invalid class 
+> > "GridTopology" object:
+> > > cellsize has incorrect dimension
+> > > Execution halted
+> > > Done/usr/local/grass-6.3.cvs/scripts/v.variogram: line 135: xpdf: 
+> > > command not found"
+> > > 
+> > > What can I do with it?
+> > > 
+> > > Note: If I tried to do kriging by the R I recognized that 
+> > there is no 
+> > > krige.G function for spgrass6.
+> > > 
+> > > Thank for any advice in advance.
+> > > 
+> > > Tomas
+> > > 
+> > > p.s: running Grass 6.3 cvs and R 2.3.0 on Ubuntu 6.0.6,  
+> > the databaze 
+> > > is PostgreSQL 8.1.3
+> > > 
+> > > _______________________________________________
+> > > statsgrass mailing list
+> > > statsgrass@grass.itc.it
+> > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > 
+> > 
+> > --
+> > Roger Bivand
+> > Economic Geography Section, Department of Economics, 
+> > Norwegian School of Economics and Business Administration, 
+> > Helleveien 30, N-5045 Bergen, Norway. voice: +47 55 95 93 55; 
+> > fax +47 55 95 95 43
+> > e-mail: Roger.Bivand@nhh.no
+> > 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From neteler at itc.it  Sat Oct  7 16:53:29 2006
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] v.variogram
+In-Reply-To: <Pine.LNX.4.44.0610072135210.18254-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0610072135210.18254-100000@reclus.nhh.no>
+Message-ID: <20061007205329.GA30022@bartok.itc.it>
+
+On Sat, Oct 07, 2006 at 09:36:39PM +0200, Roger Bivand wrote:
+> On Sat, 7 Oct 2006, Tomas Lanczos wrote:
+> 
+> > Hello,
+> > 
+> > > > v.variogram point=basement_surf layer=1 column=z resolution=70 
+> > > > maxdist=92330
+> > > > nlag=15
+> > > 
+> > > The script has not been updated to match changes in the 
+> > > spgrass6 package. 
+> > > west and south in line 117 of the script need to be changed 
+> > > to w and s from spgrass6 >= 0.3. The list in line 118 will 
+> > > need changing to data.frame for sp >= 0.9 and R >= 2.4.0. The 
+> > > script would be more robust if is used the mechanisms 
+> > > described in the GRASS book for argument passing. It could 
+> > > also condition on package releases.
+> > 
+> > Thank You very much for Your answer, I performed the changes You suggested.
+> > Now I got the following error message:
+> > 
+> > "GRASS_INFO_WARNING(12466,1): OGR can't parse PROJ.4-style parameter string:
+> > GRASS_INFO_WARNING(12466,1):  +proj=krovak +a=6377397.155 +rf=299.1528128
+> > +no_defs +to_meter=1.0000000000
+> > GRASS_INFO_WARNING(12466,1): (OGR Error code was 5)
+
+Hi,
+
+probably "krovak" is the problem here. It was recently added to
+PROJ (see that mailing list for details) and there were also suggestions
+to rename it. I didn't follow that in detail. On the GRASS user
+list should be some krovak users who may have an idea. Since OGR
+fails, it seems to be a more general problem. It could also be that
+GRASS needs krovak to be added, in GRASS 6.3 Glynn Clements recently
+rewrote the projection definition part and simplified it a lot.
+
+
+Markus
+
+ 
+> This looks as though the modification stops v.out.ogr -e from working, and 
+> results in no shapefile being written. Could you see what happens when you 
+> run v.out.ogr -e for your point vector data? My guess is that it will 
+> fail. It may also fail with just v.out.ogr, because v.out.ogr tries to 
+> write a *.prj anyway for shapefiles, and that may just not work following 
+> the patch. Could you let me know if other OGR drivers do any better?
+> 
+> Roger
+> 
+> > Error in ogrInfo(dsn = dsn, layer = layer) : 
+> > 	Cannot open file
+> > Execution halted"
+> > 
+> > I suppose that this error occures when grass, resp. ogr is reading the
+> > computed data back. Is it problem with the proj.4 style itself (how is
+> > written back) or that I am using the patched proj4 (the patch was prepared
+> > by Jachym Cepicky - I guess, as the proj4 does not handle the krovak
+> > projection correctly). Am I right? Do You have any idea how to solve this?
+> > 
+> > > Apart from that, the script depends on using xpdf to view pdf 
+> > > files, an you don not have it installed or on your path.
+> > 
+> > Of course :-).
+> > 
+> > Thanks for any suggestion and/or advice in advance
+> > 
+> > Tomas
+> > 
+> > 
+> > 
+> > > Roger
+> > > 
+> > > > 
+> > > > Loading required package: sp
+> > > > Loading required package: maptools
+> > > > Loading required package: foreign
+> > > > Loading required package: rgdal
+> > > > Geospatial Data Abstraction Library extensions to R successfully 
+> > > > loaded Error in validObject(.Object) : invalid class 
+> > > "GridTopology" object:
+> > > > cellsize has incorrect dimension
+> > > > Execution halted
+> > > > Done/usr/local/grass-6.3.cvs/scripts/v.variogram: line 135: xpdf: 
+> > > > command not found"
+> > > > 
+> > > > What can I do with it?
+> > > > 
+> > > > Note: If I tried to do kriging by the R I recognized that 
+> > > there is no 
+> > > > krige.G function for spgrass6.
+> > > > 
+> > > > Thank for any advice in advance.
+> > > > 
+> > > > Tomas
+> > > > 
+> > > > p.s: running Grass 6.3 cvs and R 2.3.0 on Ubuntu 6.0.6,  
+> > > the databaze 
+> > > > is PostgreSQL 8.1.3
+> > > > 
+> > > > _______________________________________________
+> > > > statsgrass mailing list
+> > > > statsgrass@grass.itc.it
+> > > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > > 
+> > > 
+> > > --
+> > > Roger Bivand
+> > > Economic Geography Section, Department of Economics, 
+> > > Norwegian School of Economics and Business Administration, 
+> > > Helleveien 30, N-5045 Bergen, Norway. voice: +47 55 95 93 55; 
+> > > fax +47 55 95 95 43
+> > > e-mail: Roger.Bivand@nhh.no
+> > > 
+> > 
+> 
+> -- 
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+-- 
+Markus Neteler  <neteler itc it>  http://mpa.itc.it/markus/
+ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+
+From lanczos at t-zones.sk  Sat Oct  7 20:03:14 2006
+From: lanczos at t-zones.sk (Tomas Lanczos)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] v.variogram
+In-Reply-To: <Pine.LNX.4.44.0610072135210.18254-100000@reclus.nhh.no>
+Message-ID: <002901c6ea6d$265dbc90$975dfe0a@tomas>
+
+> From: Roger Bivand [mailto:Roger.Bivand@nhh.no] 
+
+> This looks as though the modification stops v.out.ogr -e from 
+> working, and results in no shapefile being written. Could you 
+> see what happens when you run v.out.ogr -e for your point 
+> vector data? My guess is that it will fail. It may also fail
+
+Happens this, in fact the export performs:
+
+GRASS_INFO_WARNING(15398,1): OGR can't parse PROJ.4-style parameter string:
+GRASS_INFO_WARNING(15398,1):  +proj=krovak +a=6377397.155 +rf=299.1528128
++no_defs +to_meter=1.0000000000
+GRASS_INFO_WARNING(15398,1): (OGR Error code was 5)
+Exporting 89 points/lines...
+89 features written 
+
+
+> with just v.out.ogr, because v.out.ogr tries to write a *.prj 
+> anyway for shapefiles, and that may just not work following 
+> the patch. Could you let me know if other OGR drivers do any better?
+
+It's almost the same with the other drivers.
+
+Tomas
+
+> Roger
+> 
+> > Error in ogrInfo(dsn = dsn, layer = layer) : 
+> > 	Cannot open file
+> > Execution halted"
+> > 
+> > I suppose that this error occures when grass, resp. ogr is 
+> reading the 
+> > computed data back. Is it problem with the proj.4 style 
+> itself (how is 
+> > written back) or that I am using the patched proj4 (the patch was 
+> > prepared by Jachym Cepicky - I guess, as the proj4 does not 
+> handle the 
+> > krovak projection correctly). Am I right? Do You have any 
+> idea how to solve this?
+> > 
+> > > Apart from that, the script depends on using xpdf to view 
+> pdf files, 
+> > > an you don not have it installed or on your path.
+> > 
+> > Of course :-).
+> > 
+> > Thanks for any suggestion and/or advice in advance
+> > 
+> > Tomas
+> > 
+> > 
+> > 
+> > > Roger
+> > > 
+> > > > 
+> > > > Loading required package: sp
+> > > > Loading required package: maptools Loading required package: 
+> > > > foreign Loading required package: rgdal Geospatial Data 
+> > > > Abstraction Library extensions to R successfully loaded 
+> Error in 
+> > > > validObject(.Object) : invalid class
+> > > "GridTopology" object:
+> > > > cellsize has incorrect dimension
+> > > > Execution halted
+> > > > Done/usr/local/grass-6.3.cvs/scripts/v.variogram: line 
+> 135: xpdf: 
+> > > > command not found"
+> > > > 
+> > > > What can I do with it?
+> > > > 
+> > > > Note: If I tried to do kriging by the R I recognized that
+> > > there is no
+> > > > krige.G function for spgrass6.
+> > > > 
+> > > > Thank for any advice in advance.
+> > > > 
+> > > > Tomas
+> > > > 
+> > > > p.s: running Grass 6.3 cvs and R 2.3.0 on Ubuntu 6.0.6,
+> > > the databaze
+> > > > is PostgreSQL 8.1.3
+> > > > 
+> > > > _______________________________________________
+> > > > statsgrass mailing list
+> > > > statsgrass@grass.itc.it
+> > > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > > 
+> > > 
+> > > --
+> > > Roger Bivand
+> > > Economic Geography Section, Department of Economics, Norwegian 
+> > > School of Economics and Business Administration, Helleveien 30, 
+> > > N-5045 Bergen, Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > > e-mail: Roger.Bivand@nhh.no
+> > > 
+> > 
+> 
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, 
+> Norwegian School of Economics and Business Administration, 
+> Helleveien 30, N-5045 Bergen, Norway. voice: +47 55 95 93 55; 
+> fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+> 
+> 
+
+
+From Roger.Bivand at nhh.no  Sun Oct  8 16:18:54 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] v.variogram
+In-Reply-To: <002901c6ea6d$265dbc90$975dfe0a@tomas>
+Message-ID: <Pine.LNX.4.44.0610082214020.18885-100000@reclus.nhh.no>
+
+On Sun, 8 Oct 2006, Tomas Lanczos wrote:
+
+> > From: Roger Bivand [mailto:Roger.Bivand@nhh.no] 
+> 
+> > This looks as though the modification stops v.out.ogr -e from 
+> > working, and results in no shapefile being written. Could you 
+> > see what happens when you run v.out.ogr -e for your point 
+> > vector data? My guess is that it will fail. It may also fail
+> 
+> Happens this, in fact the export performs:
+> 
+> GRASS_INFO_WARNING(15398,1): OGR can't parse PROJ.4-style parameter string:
+> GRASS_INFO_WARNING(15398,1):  +proj=krovak +a=6377397.155 +rf=299.1528128
+> +no_defs +to_meter=1.0000000000
+> GRASS_INFO_WARNING(15398,1): (OGR Error code was 5)
+> Exporting 89 points/lines...
+> 89 features written 
+> 
+
+So the shapefile does get created? I do not think that we will get any 
+further with v.variogram - please just use the R/GRASS interface 
+interactively. Trying to encapsulate things that are changing on both 
+sides probably wastes more time than it saves.
+
+Roger
+
+> 
+> > with just v.out.ogr, because v.out.ogr tries to write a *.prj 
+> > anyway for shapefiles, and that may just not work following 
+> > the patch. Could you let me know if other OGR drivers do any better?
+> 
+> It's almost the same with the other drivers.
+> 
+> Tomas
+> 
+> > Roger
+> > 
+> > > Error in ogrInfo(dsn = dsn, layer = layer) : 
+> > > 	Cannot open file
+> > > Execution halted"
+> > > 
+> > > I suppose that this error occures when grass, resp. ogr is 
+> > reading the 
+> > > computed data back. Is it problem with the proj.4 style 
+> > itself (how is 
+> > > written back) or that I am using the patched proj4 (the patch was 
+> > > prepared by Jachym Cepicky - I guess, as the proj4 does not 
+> > handle the 
+> > > krovak projection correctly). Am I right? Do You have any 
+> > idea how to solve this?
+> > > 
+> > > > Apart from that, the script depends on using xpdf to view 
+> > pdf files, 
+> > > > an you don not have it installed or on your path.
+> > > 
+> > > Of course :-).
+> > > 
+> > > Thanks for any suggestion and/or advice in advance
+> > > 
+> > > Tomas
+> > > 
+> > > 
+> > > 
+> > > > Roger
+> > > > 
+> > > > > 
+> > > > > Loading required package: sp
+> > > > > Loading required package: maptools Loading required package: 
+> > > > > foreign Loading required package: rgdal Geospatial Data 
+> > > > > Abstraction Library extensions to R successfully loaded 
+> > Error in 
+> > > > > validObject(.Object) : invalid class
+> > > > "GridTopology" object:
+> > > > > cellsize has incorrect dimension
+> > > > > Execution halted
+> > > > > Done/usr/local/grass-6.3.cvs/scripts/v.variogram: line 
+> > 135: xpdf: 
+> > > > > command not found"
+> > > > > 
+> > > > > What can I do with it?
+> > > > > 
+> > > > > Note: If I tried to do kriging by the R I recognized that
+> > > > there is no
+> > > > > krige.G function for spgrass6.
+> > > > > 
+> > > > > Thank for any advice in advance.
+> > > > > 
+> > > > > Tomas
+> > > > > 
+> > > > > p.s: running Grass 6.3 cvs and R 2.3.0 on Ubuntu 6.0.6,
+> > > > the databaze
+> > > > > is PostgreSQL 8.1.3
+> > > > > 
+> > > > > _______________________________________________
+> > > > > statsgrass mailing list
+> > > > > statsgrass@grass.itc.it
+> > > > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > > > 
+> > > > 
+> > > > --
+> > > > Roger Bivand
+> > > > Economic Geography Section, Department of Economics, Norwegian 
+> > > > School of Economics and Business Administration, Helleveien 30, 
+> > > > N-5045 Bergen, Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > > > e-mail: Roger.Bivand@nhh.no
+> > > > 
+> > > 
+> > 
+> > --
+> > Roger Bivand
+> > Economic Geography Section, Department of Economics, 
+> > Norwegian School of Economics and Business Administration, 
+> > Helleveien 30, N-5045 Bergen, Norway. voice: +47 55 95 93 55; 
+> > fax +47 55 95 95 43
+> > e-mail: Roger.Bivand@nhh.no
+> > 
+> > 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From raffaele.morelli at gmail.com  Tue Oct 17 05:06:32 2006
+From: raffaele.morelli at gmail.com (Raffaele Morelli)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] Any suggestions?
+Message-ID: <f1357b430610170206j55e8c84di24bce0b76bf3a404@mail.gmail.com>
+
+Hi everybody.
+
+I am running Grass6 and R start doing some simple statistical analysis.
+I got my vectors connected to a database through a mysql driver.
+
+I would like to start plotting maps with graphs on it so I need to fetch
+attribute data of layers and represent them as histogram or boxplot.
+Can you suggest me some resources?
+
+Thanks
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20061017/14fafd8c/attachment.html
+From Roger.Bivand at nhh.no  Tue Oct 17 06:42:05 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] Any suggestions?
+In-Reply-To: <f1357b430610170206j55e8c84di24bce0b76bf3a404@mail.gmail.com>
+Message-ID: <Pine.LNX.4.44.0610171231510.20529-100000@reclus.nhh.no>
+
+On Tue, 17 Oct 2006, Raffaele Morelli wrote:
+
+> Hi everybody.
+> 
+> I am running Grass6 and R start doing some simple statistical analysis.
+> I got my vectors connected to a database through a mysql driver.
+
+So the point/polygon geometries are in GRASS and the attribute data is in 
+the database? R could also read the attribute tables directly, rather than 
+pulling them through GRASS, if you like, though maintaining integrity will 
+need watching.
+
+> 
+> I would like to start plotting maps with graphs on it so I need to fetch
+> attribute data of layers and represent them as histogram or boxplot.
+> Can you suggest me some resources?
+> 
+
+This isn't very clear - each geometry object has a single observation on 
+each attribute field, so the histograms (for each place - point/polygon) 
+are across multiple fields? To get boxplots, see symbols(), but a good 
+deal of massaging will need to be done to work across columns rather than 
+down them. For placing histograms, it may be you'll need to go to the 
+gridBase package, documented in Paul Murrell's R Graphics (CRC Press) and 
+in R News October 2003, Fig. 2 is suggestive of the flexibility.
+
+> Thanks
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From raffaele.morelli at gmail.com  Tue Oct 17 07:59:57 2006
+From: raffaele.morelli at gmail.com (Raffaele Morelli)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] Any suggestions?
+In-Reply-To: <Pine.LNX.4.44.0610171231510.20529-100000@reclus.nhh.no>
+References: <f1357b430610170206j55e8c84di24bce0b76bf3a404@mail.gmail.com>
+	<Pine.LNX.4.44.0610171231510.20529-100000@reclus.nhh.no>
+Message-ID: <f1357b430610170459m34ec989fhc7469b63550f1644@mail.gmail.com>
+
+2006/10/17, Roger Bivand <Roger.Bivand@nhh.no>:
+>
+> On Tue, 17 Oct 2006, Raffaele Morelli wrote:
+>
+> > Hi everybody.
+> >
+> > I am running Grass6 and R start doing some simple statistical analysis.
+> > I got my vectors connected to a database through a mysql driver.
+>
+> So the point/polygon geometries are in GRASS and the attribute data is in
+> the database? R could also read the attribute tables directly, rather than
+> pulling them through GRASS, if you like, though maintaining integrity will
+> need watching.
+
+
+Yes, attribute data are stored in a MySQL db.
+So I can read and plot those attributes without running R inside a GRASS
+session.
+Did I understand?
+Actually I am trying spgrass6 using readVECT6, but I obtain this error
+Error in "row.names<-.data.frame"('*tmp*', value = NULL):
+ invalid lenght in "row.names"
+
+>
+> > I would like to start plotting maps with graphs on it so I need to fetch
+> > attribute data of layers and represent them as histogram or boxplot.
+> > Can you suggest me some resources?
+> >
+>
+> This isn't very clear - each geometry object has a single observation on
+> each attribute field, so the histograms (for each place - point/polygon)
+> are across multiple fields? To get boxplots, see symbols(), but a good
+> deal of massaging will need to be done to work across columns rather than
+> down them. For placing histograms, it may be you'll need to go to the
+> gridBase package, documented in Paul Murrell's R Graphics (CRC Press) and
+> in R News October 2003, Fig. 2 is suggestive of the flexibility.
+
+
+Ok, it wasn't.
+I would like to plot data fetched from multiple fields or from different
+layers. I am going to try both anyway.
+
+Thanks for helping
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20061017/a5071ac3/attachment.html
+From Roger.Bivand at nhh.no  Tue Oct 17 09:12:31 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] Any suggestions?
+In-Reply-To: <f1357b430610170459m34ec989fhc7469b63550f1644@mail.gmail.com>
+Message-ID: <Pine.LNX.4.44.0610171508140.20529-100000@reclus.nhh.no>
+
+On Tue, 17 Oct 2006, Raffaele Morelli wrote:
+
+> 2006/10/17, Roger Bivand <Roger.Bivand@nhh.no>:
+> >
+> > On Tue, 17 Oct 2006, Raffaele Morelli wrote:
+> >
+> > > Hi everybody.
+> > >
+> > > I am running Grass6 and R start doing some simple statistical analysis.
+> > > I got my vectors connected to a database through a mysql driver.
+> >
+> > So the point/polygon geometries are in GRASS and the attribute data is in
+> > the database? R could also read the attribute tables directly, rather than
+> > pulling them through GRASS, if you like, though maintaining integrity will
+> > need watching.
+> 
+> 
+> Yes, attribute data are stored in a MySQL db.
+> So I can read and plot those attributes without running R inside a GRASS
+> session.
+> Did I understand?
+
+Yes, exactly. The geometries are stored in GRASS, is that correct?
+
+> Actually I am trying spgrass6 using readVECT6, but I obtain this error
+> Error in "row.names<-.data.frame"('*tmp*', value = NULL):
+>  invalid lenght in "row.names"
+
+For errors in R of any kind, please include the output of:
+
+traceback()
+
+issued immediately after the error.
+
+In fact readVECT6 is just running v.out.ogr, so traceback() should show in 
+which function and roughly where the problem occurs. So the first thing is 
+to get the data you need (or a subset for testing) into R first, then 
+handle the visualisation.
+
+Roger
+
+> 
+> >
+> > > I would like to start plotting maps with graphs on it so I need to fetch
+> > > attribute data of layers and represent them as histogram or boxplot.
+> > > Can you suggest me some resources?
+> > >
+> >
+> > This isn't very clear - each geometry object has a single observation on
+> > each attribute field, so the histograms (for each place - point/polygon)
+> > are across multiple fields? To get boxplots, see symbols(), but a good
+> > deal of massaging will need to be done to work across columns rather than
+> > down them. For placing histograms, it may be you'll need to go to the
+> > gridBase package, documented in Paul Murrell's R Graphics (CRC Press) and
+> > in R News October 2003, Fig. 2 is suggestive of the flexibility.
+> 
+> 
+> Ok, it wasn't.
+> I would like to plot data fetched from multiple fields or from different
+> layers. I am going to try both anyway.
+> 
+> Thanks for helping
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From raffaele.morelli at gmail.com  Tue Oct 17 09:41:02 2006
+From: raffaele.morelli at gmail.com (Raffaele Morelli)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] Any suggestions?
+In-Reply-To: <Pine.LNX.4.44.0610171508140.20529-100000@reclus.nhh.no>
+References: <f1357b430610170459m34ec989fhc7469b63550f1644@mail.gmail.com>
+	<Pine.LNX.4.44.0610171508140.20529-100000@reclus.nhh.no>
+Message-ID: <f1357b430610170641l6f2eac1cke89a4203019fe1cd@mail.gmail.com>
+
+> > So I can read and plot those attributes without running R inside a GRASS
+> > session.
+> > Did I understand?
+>
+> Yes, exactly. The geometries are stored in GRASS, is that correct?
+
+
+Yes.
+Should I store geometries too in MySQL for best performances?
+
+For errors in R of any kind, please include the output of:
+>
+> traceback()
+>
+> issued immediately after the error.
+
+
+I was too hurry, now everything it's ok, the error disappeared using
+remove.duplicates=TRUE when launching readVECT6, cause some areas "share"
+the same category in my vector.
+
+I will follow your precious suggestions and send you feedbacks about
+visualization and data handling.
+
+Again.
+Cheers
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20061017/8da366b2/attachment.html
+From Roger.Bivand at nhh.no  Tue Oct 17 10:02:01 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] Any suggestions?
+In-Reply-To: <f1357b430610170641l6f2eac1cke89a4203019fe1cd@mail.gmail.com>
+Message-ID: <Pine.LNX.4.44.0610171557240.20529-100000@reclus.nhh.no>
+
+On Tue, 17 Oct 2006, Raffaele Morelli wrote:
+
+> > > So I can read and plot those attributes without running R inside a GRASS
+> > > session.
+> > > Did I understand?
+> >
+> > Yes, exactly. The geometries are stored in GRASS, is that correct?
+> 
+> 
+> Yes.
+> Should I store geometries too in MySQL for best performances?
+
+I think that the slowness of the interface would remove any saving there - 
+leaving the geometries in GRASS is, I think, fine.
+
+> 
+> For errors in R of any kind, please include the output of:
+> >
+> > traceback()
+> >
+> > issued immediately after the error.
+> 
+> 
+> I was too hurry, now everything it's ok, the error disappeared using
+> remove.duplicates=TRUE when launching readVECT6, cause some areas "share"
+> the same category in my vector.
+> 
+
+Aha! I've been bitten by that too - it does need care, and it isn't 
+obvious how to automate it so that multiple polygons belong to the same 
+attribute table record (data frame row in R).
+
+Please do check that the data in the database and in R are the same (for a 
+small subset) when using remove.duplicates=TRUE - they should be, but it 
+doesn't do any harm to check.
+
+Roger
+
+
+> I will follow your precious suggestions and send you feedbacks about
+> visualization and data handling.
+> 
+> Again.
+> Cheers
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From lanczos at t-zones.sk  Tue Oct 17 19:16:05 2006
+From: lanczos at t-zones.sk (Tomas Lanczos)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] R/grass, numerical instability/kriging
+Message-ID: <002f01c6f242$38d256b0$975dfe0a@tomas>
+
+Hello,
+
+how can I prevent numerical instability in kriging? Using R with grass63,
+library gstat.
+
+Many thanks
+
+Tomas
+
+
+From e.pebesma at geo.uu.nl  Wed Oct 18 02:51:23 2006
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] R/grass, numerical instability/kriging
+In-Reply-To: <002f01c6f242$38d256b0$975dfe0a@tomas>
+References: <002f01c6f242$38d256b0$975dfe0a@tomas>
+Message-ID: <4535CEEB.8040709@geo.uu.nl>
+
+Tomas,
+
+There's a few possible of reasons; the most common ones are more than 
+one measurement sharing the same location, or insane variogram models in 
+kriging; anothers is perfectly correlated predictors, possibly in a 
+local search neighbourhood..
+
+We need to see more from your case to find out.
+
+Best regards,
+--
+Edzer
+
+Tomas Lanczos wrote:
+> Hello,
+>
+> how can I prevent numerical instability in kriging? Using R with grass63,
+> library gstat.
+>
+> Many thanks
+>
+> Tomas
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>   
+
+
+From lanczos at t-zones.sk  Wed Oct 18 10:55:01 2006
+From: lanczos at t-zones.sk (Tomas Lanczos)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] R/grass, numerical instability/kriging
+In-Reply-To: <4535CEEB.8040709@geo.uu.nl>
+Message-ID: <008001c6f2c5$63bb5ba0$975dfe0a@tomas>
+
+Hello,
+
+finally I solved it - one of the points were duplicated another two points
+were too close to each others, now it's perfect, thank You. However, is
+there a common rule for e.g. selecting resolution for the given smallest
+distance the measurments?
+
+regards
+
+Tomas
+
+> 
+> Tomas,
+> 
+> There's a few possible of reasons; the most common ones are 
+> more than one measurement sharing the same location, or 
+> insane variogram models in kriging; anothers is perfectly 
+> correlated predictors, possibly in a local search neighbourhood..
+> 
+> We need to see more from your case to find out.
+> 
+> Best regards,
+> --
+> Edzer
+> 
+> Tomas Lanczos wrote:
+> > Hello,
+> >
+> > how can I prevent numerical instability in kriging? Using R with 
+> > grass63, library gstat.
+> >
+> > Many thanks
+> >
+> > Tomas
+> >
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> >   
+> 
+
+
+From e.pebesma at geo.uu.nl  Wed Oct 18 12:13:00 2006
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] R/grass, numerical instability/kriging
+In-Reply-To: <008001c6f2c5$63bb5ba0$975dfe0a@tomas>
+References: <008001c6f2c5$63bb5ba0$975dfe0a@tomas>
+Message-ID: <4536528C.9000507@geo.uu.nl>
+
+Well, the duplicate observation cause is the most common cause; it would 
+be helpful if the software could find this out by itself. OTOH, checking 
+this for huge data sets may be pretty expensive.
+
+Once the error occurs, it's deep deep deep in the C code, and hard to 
+find out from there; gstat jumps back rather crudely (using longjmp()).
+--
+Edzer
+
+
+Tomas Lanczos wrote:
+> Hello,
+>
+> finally I solved it - one of the points were duplicated another two points
+> were too close to each others, now it's perfect, thank You. However, is
+> there a common rule for e.g. selecting resolution for the given smallest
+> distance the measurments?
+>
+> regards
+>
+> Tomas
+>
+>   
+>> Tomas,
+>>
+>> There's a few possible of reasons; the most common ones are 
+>> more than one measurement sharing the same location, or 
+>> insane variogram models in kriging; anothers is perfectly 
+>> correlated predictors, possibly in a local search neighbourhood..
+>>
+>> We need to see more from your case to find out.
+>>
+>> Best regards,
+>> --
+>> Edzer
+>>
+>> Tomas Lanczos wrote:
+>>     
+>>> Hello,
+>>>
+>>> how can I prevent numerical instability in kriging? Using R with 
+>>> grass63, library gstat.
+>>>
+>>> Many thanks
+>>>
+>>> Tomas
+>>>
+>>> _______________________________________________
+>>> statsgrass mailing list
+>>> statsgrass@grass.itc.it
+>>> http://grass.itc.it/mailman/listinfo/statsgrass
+>>>   
+>>>       
+>
+>   
+
+
+From raffaele.morelli at gmail.com  Fri Oct 20 10:56:13 2006
+From: raffaele.morelli at gmail.com (Raffaele Morelli)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] Problems when overlaying plots
+Message-ID: <f1357b430610200756p3da04f0am7dae69216c2a34f8@mail.gmail.com>
+
+Hello.
+
+I am running grass & R and want to overlay maps and graphs created using
+vector attributes stored in a MySQL database.
+
+This is the essential script I am working with
+
+...
+province<-readVECT6("M_Province",remove.duplicates=FALSE,ignore.stderr=TRUE)
+sites<-readVECT6("M_Province",type="centroid",remove.duplicates=FALSE,
+ignore.stderr=TRUE)
+
+par(fig=c(0, 1, 0, 1))
+plot(c(0,10), c(0,10), type="n", xlab="v", ylab="c",axes=T )
+box()
+
+par(new=T)
+plot(province)
+
+par(new=T,oma=c(0, 2, 0.5, 1.5))
+plot(sites)
+
+
+After execution the sites vector is wrongly displayed, meaning that
+centroids are sligthly translated from the original position.
+Neverthless they are right when using points(sites) instead of plot(sites).
+
+Am I missing something?
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20061020/bb9ce745/attachment.html
+From giohappy at gmail.com  Mon Oct 23 10:28:08 2006
+From: giohappy at gmail.com (G. Allegri)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+Message-ID: <e12429640610230728i1627d780gd6cf4f935aeb4ec0@mail.gmail.com>
+
+I need to use R and gstat functionalities inside a module I'm writing.
+To embed R in a C program libRmath should be used.
+First question:
+Is it possible to load gstat package from the R standalone library?
+Second question:
+Is there another way to do it when working inside a GRASS module? The
+question raises because, with regard to spgrass6, there's no way to
+use it from a module (except by making a shell process call from C)...
+am I wrong?
+Thanks,
+Giovanni
+
+
+From Roger.Bivand at nhh.no  Mon Oct 23 12:18:30 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <e12429640610230728i1627d780gd6cf4f935aeb4ec0@mail.gmail.com>
+Message-ID: <Pine.LNX.4.44.0610231753210.23376-100000@reclus.nhh.no>
+
+On Mon, 23 Oct 2006, G. Allegri wrote:
+
+> I need to use R and gstat functionalities inside a module I'm writing.
+
+Why? What OS/platform? Unless you are doing something very peculiar, you 
+will waste an inordinate amount of time, where a shell script will get you 
+there simply and be several orders of magnitude easier to debug. Be aware 
+that R functions are often best used interactively because user choices 
+and error conditions do matter.
+
+> To embed R in a C program libRmath should be used.
+
+No, that is just to use the math functions. See Section 8.1 in 
+
+http://cran.r-project.org/doc/manuals/R-exts.html
+
+for Unixalikes (building R as a shared library, most likely libR.so).
+
+> First question:
+> Is it possible to load gstat package from the R standalone library?
+
+Yes, like any package, but why?
+
+> Second question:
+> Is there another way to do it when working inside a GRASS module? The
+> question raises because, with regard to spgrass6, there's no way to
+> use it from a module (except by making a shell process call from C)...
+
+Well, you can use the GRASS API to populate the appropriate R object 
+structures in C (see the GRASS5 GRASS package C code).
+
+> am I wrong?
+
+Yes, because you will never (at least for a definition of never being 
+greater than the number of developer hours taken to write and maintain 
+gstat and the R/GRASS interface) be able to do this robustly, taking 
+account of all possible error conditions (identical points passed to gstat 
+for example), and track changes in the different software environments 
+(something that works only with GRASS version x.y.z, R version a.b.c, 
+gstat version d.e.f, sp version g.h.i, etc. There is simply too much being 
+patched for a welded-hood C solution to be worth the development and 
+maintenance cost.
+
+By the way, you didn't say what you want to do that needs this level of 
+automation; if you had, it might be easier to understand your very strange 
+design choices and resource commitments.
+
+> Thanks,
+> Giovanni
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From giohappy at gmail.com  Mon Oct 23 12:50:46 2006
+From: giohappy at gmail.com (G. Allegri)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <Pine.LNX.4.44.0610231753210.23376-100000@reclus.nhh.no>
+References: <e12429640610230728i1627d780gd6cf4f935aeb4ec0@mail.gmail.com>
+	<Pine.LNX.4.44.0610231753210.23376-100000@reclus.nhh.no>
+Message-ID: <e12429640610230950p6cfe48e7ma19403823b062a5a@mail.gmail.com>
+
+Thanks Roger for the complete answer!
+I know it sounds quite strange what I'm trying to do, and maybe it
+isn't the best way to do it.
+What I meant to do is an interactive (through a GUI interface to
+develop) tool to elaborate hydrogeochemical datas about acquifer
+pollution defense. It should be used by an end-user as a Decision
+Support System tool. It will use raster and vector input data to be
+treated with mapalgebra and geostatisitcal analysis. The worst problem
+is that it should be, somehow, platform independent.
+I'm not a professional programmer, I'm a geologist, and surely it
+would be easiar to work with scripting then C coding, but it gets
+harder to develop the "wizard" interface...
+In regard using R in an interactive way: I would like to "grep" simply
+the output (as standard output or ascii file) and  then use it for my
+purposes.
+Could you suggest me a way to implement this "stange" architecture?
+Giovanni
+
+P.S.: I'm considering the web interface way too...
+
+
+
+2006/10/23, Roger Bivand <Roger.Bivand@nhh.no>:
+> On Mon, 23 Oct 2006, G. Allegri wrote:
+>
+> > I need to use R and gstat functionalities inside a module I'm writing.
+>
+> Why? What OS/platform? Unless you are doing something very peculiar, you
+> will waste an inordinate amount of time, where a shell script will get you
+> there simply and be several orders of magnitude easier to debug. Be aware
+> that R functions are often best used interactively because user choices
+> and error conditions do matter.
+>
+> > To embed R in a C program libRmath should be used.
+>
+> No, that is just to use the math functions. See Section 8.1 in
+>
+> http://cran.r-project.org/doc/manuals/R-exts.html
+>
+> for Unixalikes (building R as a shared library, most likely libR.so).
+>
+> > First question:
+> > Is it possible to load gstat package from the R standalone library?
+>
+> Yes, like any package, but why?
+>
+> > Second question:
+> > Is there another way to do it when working inside a GRASS module? The
+> > question raises because, with regard to spgrass6, there's no way to
+> > use it from a module (except by making a shell process call from C)...
+>
+> Well, you can use the GRASS API to populate the appropriate R object
+> structures in C (see the GRASS5 GRASS package C code).
+>
+> > am I wrong?
+>
+> Yes, because you will never (at least for a definition of never being
+> greater than the number of developer hours taken to write and maintain
+> gstat and the R/GRASS interface) be able to do this robustly, taking
+> account of all possible error conditions (identical points passed to gstat
+> for example), and track changes in the different software environments
+> (something that works only with GRASS version x.y.z, R version a.b.c,
+> gstat version d.e.f, sp version g.h.i, etc. There is simply too much being
+> patched for a welded-hood C solution to be worth the development and
+> maintenance cost.
+>
+> By the way, you didn't say what you want to do that needs this level of
+> automation; if you had, it might be easier to understand your very strange
+> design choices and resource commitments.
+>
+> > Thanks,
+> > Giovanni
+> >
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> >
+>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+>
+
+
+From Roger.Bivand at nhh.no  Mon Oct 23 13:24:40 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <e12429640610230950p6cfe48e7ma19403823b062a5a@mail.gmail.com>
+Message-ID: <Pine.LNX.4.44.0610231902230.23376-100000@reclus.nhh.no>
+
+On Mon, 23 Oct 2006, G. Allegri wrote:
+
+> Thanks Roger for the complete answer!
+> I know it sounds quite strange what I'm trying to do, and maybe it
+> isn't the best way to do it.
+> What I meant to do is an interactive (through a GUI interface to
+> develop) tool to elaborate hydrogeochemical datas about acquifer
+> pollution defense. It should be used by an end-user as a Decision
+> Support System tool. It will use raster and vector input data to be
+> treated with mapalgebra and geostatisitcal analysis. The worst problem
+> is that it should be, somehow, platform independent.
+
+If platform-independent, then a client-server model with the client being 
+a web browser looks attractive. In that case, I would look seriously at 
+either MapServer (and Tyler Mitchell's book Web Mapping Illustrated) if 
+most of the user interaction is in map form, or at Rpad:
+
+http://www.rpad.org/Rpad/
+
+Look at http://www.rpad.org/Rpad/InterruptionMap.Rpad
+
+to see a very nice example. You'll need to look at load balancing 
+carefully, but here the web server and R are running on the server, 
+producing pages with Javascript for interaction for the user. A lot of the 
+hard work has already been done, and because of the split between client 
+and server, you can update the server-side compute engine without the user 
+needing to install anything. 
+
+I think this is as close as you can get - using embedded R will mean a lot 
+more work, especially with maintenance. Note the comments on the Rpad site 
+about security, you will need to run the server with care.
+
+R can also be embedded within Apache, but I guess that Rpad is better for 
+you. To be honest, it might well be worth paying someone with 
+Javascript/Perl/Apache etc. experience to help, none of these are suitable 
+for non-specialists if the server is to be kept secure, really, but the 
+same applies to any client-server model running across the Internet.
+
+Roger
+
+> I'm not a professional programmer, I'm a geologist, and surely it
+> would be easiar to work with scripting then C coding, but it gets
+> harder to develop the "wizard" interface...
+> In regard using R in an interactive way: I would like to "grep" simply
+> the output (as standard output or ascii file) and  then use it for my
+> purposes.
+> Could you suggest me a way to implement this "stange" architecture?
+> Giovanni
+> 
+> P.S.: I'm considering the web interface way too...
+> 
+> 
+> 
+> 2006/10/23, Roger Bivand <Roger.Bivand@nhh.no>:
+> > On Mon, 23 Oct 2006, G. Allegri wrote:
+> >
+> > > I need to use R and gstat functionalities inside a module I'm writing.
+> >
+> > Why? What OS/platform? Unless you are doing something very peculiar, you
+> > will waste an inordinate amount of time, where a shell script will get you
+> > there simply and be several orders of magnitude easier to debug. Be aware
+> > that R functions are often best used interactively because user choices
+> > and error conditions do matter.
+> >
+> > > To embed R in a C program libRmath should be used.
+> >
+> > No, that is just to use the math functions. See Section 8.1 in
+> >
+> > http://cran.r-project.org/doc/manuals/R-exts.html
+> >
+> > for Unixalikes (building R as a shared library, most likely libR.so).
+> >
+> > > First question:
+> > > Is it possible to load gstat package from the R standalone library?
+> >
+> > Yes, like any package, but why?
+> >
+> > > Second question:
+> > > Is there another way to do it when working inside a GRASS module? The
+> > > question raises because, with regard to spgrass6, there's no way to
+> > > use it from a module (except by making a shell process call from C)...
+> >
+> > Well, you can use the GRASS API to populate the appropriate R object
+> > structures in C (see the GRASS5 GRASS package C code).
+> >
+> > > am I wrong?
+> >
+> > Yes, because you will never (at least for a definition of never being
+> > greater than the number of developer hours taken to write and maintain
+> > gstat and the R/GRASS interface) be able to do this robustly, taking
+> > account of all possible error conditions (identical points passed to gstat
+> > for example), and track changes in the different software environments
+> > (something that works only with GRASS version x.y.z, R version a.b.c,
+> > gstat version d.e.f, sp version g.h.i, etc. There is simply too much being
+> > patched for a welded-hood C solution to be worth the development and
+> > maintenance cost.
+> >
+> > By the way, you didn't say what you want to do that needs this level of
+> > automation; if you had, it might be easier to understand your very strange
+> > design choices and resource commitments.
+> >
+> > > Thanks,
+> > > Giovanni
+> > >
+> > > _______________________________________________
+> > > statsgrass mailing list
+> > > statsgrass@grass.itc.it
+> > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > >
+> >
+> > --
+> > Roger Bivand
+> > Economic Geography Section, Department of Economics, Norwegian School of
+> > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > e-mail: Roger.Bivand@nhh.no
+> >
+> >
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From giohappy at gmail.com  Mon Oct 23 13:38:51 2006
+From: giohappy at gmail.com (G. Allegri)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <Pine.LNX.4.44.0610231902230.23376-100000@reclus.nhh.no>
+References: <e12429640610230950p6cfe48e7ma19403823b062a5a@mail.gmail.com>
+	<Pine.LNX.4.44.0610231902230.23376-100000@reclus.nhh.no>
+Message-ID: <e12429640610231038i4f0b95f1y9b204edc4ea6c487@mail.gmail.com>
+
+Rpad is a really nice tool, I didn't know it. But do you think it could be a
+way to solve my problem? I need to do gis analysis too, it's not just about
+dealing with R code... I know client/server isn't an easy subject but it
+seems to be the only way I can consider to interface the bash scripting code
+I will produce (I'm abandoning the idea to write a C modulea!!!) in a
+platform-independent way.
+Look at this http://les-ejk.cz/?cat=pywps
+Giovanni
+
+2006/10/23, Roger Bivand <Roger.Bivand@nhh.no>:
+> On Mon, 23 Oct 2006, G. Allegri wrote:
+>
+> > Thanks Roger for the complete answer!
+> > I know it sounds quite strange what I'm trying to do, and maybe it
+> > isn't the best way to do it.
+> > What I meant to do is an interactive (through a GUI interface to
+> > develop) tool to elaborate hydrogeochemical datas about acquifer
+> > pollution defense. It should be used by an end-user as a Decision
+> > Support System tool. It will use raster and vector input data to be
+> > treated with mapalgebra and geostatisitcal analysis. The worst problem
+> > is that it should be, somehow, platform independent.
+>
+> If platform-independent, then a client-server model with the client being
+> a web browser looks attractive. In that case, I would look seriously at
+> either MapServer (and Tyler Mitchell's book Web Mapping Illustrated) if
+> most of the user interaction is in map form, or at Rpad:
+>
+> http://www.rpad.org/Rpad/
+>
+> Look at http://www.rpad.org/Rpad/InterruptionMap.Rpad
+>
+> to see a very nice example. You'll need to look at load balancing
+> carefully, but here the web server and R are running on the server,
+> producing pages with Javascript for interaction for the user. A lot of the
+> hard work has already been done, and because of the split between client
+> and server, you can update the server-side compute engine without the user
+> needing to install anything.
+>
+> I think this is as close as you can get - using embedded R will mean a lot
+> more work, especially with maintenance. Note the comments on the Rpad site
+> about security, you will need to run the server with care.
+>
+> R can also be embedded within Apache, but I guess that Rpad is better for
+> you. To be honest, it might well be worth paying someone with
+> Javascript/Perl/Apache etc. experience to help, none of these are suitable
+> for non-specialists if the server is to be kept secure, really, but the
+> same applies to any client-server model running across the Internet.
+>
+> Roger
+>
+> > I'm not a professional programmer, I'm a geologist, and surely it
+> > would be easiar to work with scripting then C coding, but it gets
+> > harder to develop the "wizard" interface...
+> > In regard using R in an interactive way: I would like to "grep" simply
+> > the output (as standard output or ascii file) and  then use it for my
+> > purposes.
+> > Could you suggest me a way to implement this "stange" architecture?
+> > Giovanni
+> >
+> > P.S.: I'm considering the web interface way too...
+> >
+> >
+> >
+> > 2006/10/23, Roger Bivand <Roger.Bivand@nhh.no>:
+> > > On Mon, 23 Oct 2006, G. Allegri wrote:
+> > >
+> > > > I need to use R and gstat functionalities inside a module I'm
+writing.
+> > >
+> > > Why? What OS/platform? Unless you are doing something very peculiar,
+you
+> > > will waste an inordinate amount of time, where a shell script will get
+you
+> > > there simply and be several orders of magnitude easier to debug. Be
+aware
+> > > that R functions are often best used interactively because user
+choices
+> > > and error conditions do matter.
+> > >
+> > > > To embed R in a C program libRmath should be used.
+> > >
+> > > No, that is just to use the math functions. See Section 8.1 in
+> > >
+> > > http://cran.r-project.org/doc/manuals/R-exts.html
+> > >
+> > > for Unixalikes (building R as a shared library, most likely libR.so).
+> > >
+> > > > First question:
+> > > > Is it possible to load gstat package from the R standalone library?
+> > >
+> > > Yes, like any package, but why?
+> > >
+> > > > Second question:
+> > > > Is there another way to do it when working inside a GRASS module?
+The
+> > > > question raises because, with regard to spgrass6, there's no way to
+> > > > use it from a module (except by making a shell process call from
+C)...
+> > >
+> > > Well, you can use the GRASS API to populate the appropriate R object
+> > > structures in C (see the GRASS5 GRASS package C code).
+> > >
+> > > > am I wrong?
+> > >
+> > > Yes, because you will never (at least for a definition of never being
+> > > greater than the number of developer hours taken to write and maintain
+> > > gstat and the R/GRASS interface) be able to do this robustly, taking
+> > > account of all possible error conditions (identical points passed to
+gstat
+> > > for example), and track changes in the different software environments
+> > > (something that works only with GRASS version x.y.z, R version a.b.c,
+> > > gstat version d.e.f, sp version g.h.i, etc. There is simply too much
+being
+> > > patched for a welded-hood C solution to be worth the development and
+> > > maintenance cost.
+> > >
+> > > By the way, you didn't say what you want to do that needs this level
+of
+> > > automation; if you had, it might be easier to understand your very
+strange
+> > > design choices and resource commitments.
+> > >
+> > > > Thanks,
+> > > > Giovanni
+> > > >
+> > > > _______________________________________________
+> > > > statsgrass mailing list
+> > > > statsgrass@grass.itc.it
+> > > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > >
+> > >
+> > > --
+> > > Roger Bivand
+> > > Economic Geography Section, Department of Economics, Norwegian School
+of
+> > > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> > > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > > e-mail: Roger.Bivand@nhh.no
+> > >
+> > >
+> >
+>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20061023/a51a5e1d/attachment.html
+From Roger.Bivand at nhh.no  Mon Oct 23 14:06:32 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <e12429640610231038i4f0b95f1y9b204edc4ea6c487@mail.gmail.com>
+Message-ID: <Pine.LNX.4.44.0610232003300.23376-100000@reclus.nhh.no>
+
+On Mon, 23 Oct 2006, G. Allegri wrote:
+
+> Rpad is a really nice tool, I didn't know it. But do you think it could be a
+> way to solve my problem? I need to do gis analysis too, it's not just about
+> dealing with R code... I know client/server isn't an easy subject but it
+> seems to be the only way I can consider to interface the bash scripting code
+> I will produce (I'm abandoning the idea to write a C modulea!!!) in a
+> platform-independent way.
+
+That's a possibility, there are many choices you need to make, and in fact 
+it might be sensible to try to prototype the system using several 
+different ones, to see how they scale, and how easy it is to add 
+operations that you require. 
+
+> Look at this http://les-ejk.cz/?cat=pywps
+
+Anything in particular - there a quite a number of good ideas?
+
+Roger
+
+> Giovanni
+> 
+> 2006/10/23, Roger Bivand <Roger.Bivand@nhh.no>:
+> > On Mon, 23 Oct 2006, G. Allegri wrote:
+> >
+> > > Thanks Roger for the complete answer!
+> > > I know it sounds quite strange what I'm trying to do, and maybe it
+> > > isn't the best way to do it.
+> > > What I meant to do is an interactive (through a GUI interface to
+> > > develop) tool to elaborate hydrogeochemical datas about acquifer
+> > > pollution defense. It should be used by an end-user as a Decision
+> > > Support System tool. It will use raster and vector input data to be
+> > > treated with mapalgebra and geostatisitcal analysis. The worst problem
+> > > is that it should be, somehow, platform independent.
+> >
+> > If platform-independent, then a client-server model with the client being
+> > a web browser looks attractive. In that case, I would look seriously at
+> > either MapServer (and Tyler Mitchell's book Web Mapping Illustrated) if
+> > most of the user interaction is in map form, or at Rpad:
+> >
+> > http://www.rpad.org/Rpad/
+> >
+> > Look at http://www.rpad.org/Rpad/InterruptionMap.Rpad
+> >
+> > to see a very nice example. You'll need to look at load balancing
+> > carefully, but here the web server and R are running on the server,
+> > producing pages with Javascript for interaction for the user. A lot of the
+> > hard work has already been done, and because of the split between client
+> > and server, you can update the server-side compute engine without the user
+> > needing to install anything.
+> >
+> > I think this is as close as you can get - using embedded R will mean a lot
+> > more work, especially with maintenance. Note the comments on the Rpad site
+> > about security, you will need to run the server with care.
+> >
+> > R can also be embedded within Apache, but I guess that Rpad is better for
+> > you. To be honest, it might well be worth paying someone with
+> > Javascript/Perl/Apache etc. experience to help, none of these are suitable
+> > for non-specialists if the server is to be kept secure, really, but the
+> > same applies to any client-server model running across the Internet.
+> >
+> > Roger
+> >
+> > > I'm not a professional programmer, I'm a geologist, and surely it
+> > > would be easiar to work with scripting then C coding, but it gets
+> > > harder to develop the "wizard" interface...
+> > > In regard using R in an interactive way: I would like to "grep" simply
+> > > the output (as standard output or ascii file) and  then use it for my
+> > > purposes.
+> > > Could you suggest me a way to implement this "stange" architecture?
+> > > Giovanni
+> > >
+> > > P.S.: I'm considering the web interface way too...
+> > >
+> > >
+> > >
+> > > 2006/10/23, Roger Bivand <Roger.Bivand@nhh.no>:
+> > > > On Mon, 23 Oct 2006, G. Allegri wrote:
+> > > >
+> > > > > I need to use R and gstat functionalities inside a module I'm
+> writing.
+> > > >
+> > > > Why? What OS/platform? Unless you are doing something very peculiar,
+> you
+> > > > will waste an inordinate amount of time, where a shell script will get
+> you
+> > > > there simply and be several orders of magnitude easier to debug. Be
+> aware
+> > > > that R functions are often best used interactively because user
+> choices
+> > > > and error conditions do matter.
+> > > >
+> > > > > To embed R in a C program libRmath should be used.
+> > > >
+> > > > No, that is just to use the math functions. See Section 8.1 in
+> > > >
+> > > > http://cran.r-project.org/doc/manuals/R-exts.html
+> > > >
+> > > > for Unixalikes (building R as a shared library, most likely libR.so).
+> > > >
+> > > > > First question:
+> > > > > Is it possible to load gstat package from the R standalone library?
+> > > >
+> > > > Yes, like any package, but why?
+> > > >
+> > > > > Second question:
+> > > > > Is there another way to do it when working inside a GRASS module?
+> The
+> > > > > question raises because, with regard to spgrass6, there's no way to
+> > > > > use it from a module (except by making a shell process call from
+> C)...
+> > > >
+> > > > Well, you can use the GRASS API to populate the appropriate R object
+> > > > structures in C (see the GRASS5 GRASS package C code).
+> > > >
+> > > > > am I wrong?
+> > > >
+> > > > Yes, because you will never (at least for a definition of never being
+> > > > greater than the number of developer hours taken to write and maintain
+> > > > gstat and the R/GRASS interface) be able to do this robustly, taking
+> > > > account of all possible error conditions (identical points passed to
+> gstat
+> > > > for example), and track changes in the different software environments
+> > > > (something that works only with GRASS version x.y.z, R version a.b.c,
+> > > > gstat version d.e.f, sp version g.h.i, etc. There is simply too much
+> being
+> > > > patched for a welded-hood C solution to be worth the development and
+> > > > maintenance cost.
+> > > >
+> > > > By the way, you didn't say what you want to do that needs this level
+> of
+> > > > automation; if you had, it might be easier to understand your very
+> strange
+> > > > design choices and resource commitments.
+> > > >
+> > > > > Thanks,
+> > > > > Giovanni
+> > > > >
+> > > > > _______________________________________________
+> > > > > statsgrass mailing list
+> > > > > statsgrass@grass.itc.it
+> > > > > http://grass.itc.it/mailman/listinfo/statsgrass
+> > > > >
+> > > >
+> > > > --
+> > > > Roger Bivand
+> > > > Economic Geography Section, Department of Economics, Norwegian School
+> of
+> > > > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> > > > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > > > e-mail: Roger.Bivand@nhh.no
+> > > >
+> > > >
+> > >
+> >
+> > --
+> > Roger Bivand
+> > Economic Geography Section, Department of Economics, Norwegian School of
+> > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > e-mail: Roger.Bivand@nhh.no
+> >
+> >
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From neteler at itc.it  Mon Oct 23 14:35:18 2006
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <e12429640610231038i4f0b95f1y9b204edc4ea6c487@mail.gmail.com>
+References: <e12429640610230950p6cfe48e7ma19403823b062a5a@mail.gmail.com>
+	<Pine.LNX.4.44.0610231902230.23376-100000@reclus.nhh.no>
+	<e12429640610231038i4f0b95f1y9b204edc4ea6c487@mail.gmail.com>
+Message-ID: <20061023183518.GA24507@bartok.itc.it>
+
+On Mon, Oct 23, 2006 at 07:38:51PM +0200, G. Allegri wrote:
+>    Rpad is a really nice tool, I didn't know it. But do you think it could be
+>    a way to solve my problem? I need to do gis analysis too, it's not just
+>    about dealing with R code... I know client/server isn't an easy subject
+>    but it seems to be the only way I can consider to interface the bash
+>    scripting code I will produce (I'm abandoning the idea to write a C
+>    modulea!!!) in a platform-independent way.
+>    Look at this [1]http://les-ejk.cz/?cat=pywps
+
+As far as I know, pywps has been recently integrated with R.
+I cc the author (who may be offline for a week) to give
+further details.
+
+Markus
+
+
+>    Giovanni
+> 
+>    2006/10/23, Roger Bivand <[2]Roger.Bivand@nhh.no>:
+>    > On Mon, 23 Oct 2006, G. Allegri wrote:
+>    >
+>    > > Thanks Roger for the complete answer!
+>    > > I know it sounds quite strange what I'm trying to do, and maybe it
+>    > > isn't the best way to do it.
+>    > > What I meant to do is an interactive (through a GUI interface to
+>    > > develop) tool to elaborate hydrogeochemical datas about acquifer
+>    > > pollution defense. It should be used by an end-user as a Decision
+>    > > Support System tool. It will use raster and vector input data to be
+>    > > treated with mapalgebra and geostatisitcal analysis. The worst problem
+>    > > is that it should be, somehow, platform independent.
+>    >
+>    > If platform-independent, then a client-server model with the client
+>    being
+>    > a web browser looks attractive. In that case, I would look seriously at
+>    > either MapServer (and Tyler Mitchell's book Web Mapping Illustrated) if
+>    > most of the user interaction is in map form, or at Rpad:
+>    >
+>    > [3]http://www.rpad.org/Rpad/
+>    >
+>    > Look at [4]http://www.rpad.org/Rpad/InterruptionMap.Rpad
+>    >
+>    > to see a very nice example. You'll need to look at load balancing
+>    > carefully, but here the web server and R are running on the server,
+>    > producing pages with Javascript for interaction for the user. A lot of
+>    the
+>    > hard work has already been done, and because of the split between client
+>    > and server, you can update the server-side compute engine without the
+>    user
+>    > needing to install anything.
+>    >
+>    > I think this is as close as you can get - using embedded R will mean a
+>    lot
+>    > more work, especially with maintenance. Note the comments on the Rpad
+>    site
+>    > about security, you will need to run the server with care.
+>    >
+>    > R can also be embedded within Apache, but I guess that Rpad is better
+>    for
+>    > you. To be honest, it might well be worth paying someone with
+>    > Javascript/Perl/Apache etc. experience to help, none of these are
+>    suitable
+>    > for non-specialists if the server is to be kept secure, really, but the
+>    > same applies to any client-server model running across the Internet.
+>    >
+>    > Roger
+>    >
+>    > > I'm not a professional programmer, I'm a geologist, and surely it
+>    > > would be easiar to work with scripting then C coding, but it gets
+>    > > harder to develop the "wizard" interface...
+>    > > In regard using R in an interactive way: I would like to "grep" simply
+>    > > the output (as standard output or ascii file) and  then use it for my
+>    > > purposes.
+>    > > Could you suggest me a way to implement this "stange" architecture?
+>    > > Giovanni
+>    > >
+>    > > P.S.: I'm considering the web interface way too...
+>    > >
+>    > >
+>    > >
+>    > > 2006/10/23, Roger Bivand <[5]Roger.Bivand@nhh.no >:
+>    > > > On Mon, 23 Oct 2006, G. Allegri wrote:
+>    > > >
+>    > > > > I need to use R and gstat functionalities inside a module I'm
+>    writing.
+>    > > >
+>    > > > Why? What OS/platform? Unless you are doing something very peculiar,
+>    you
+>    > > > will waste an inordinate amount of time, where a shell script will
+>    get you
+>    > > > there simply and be several orders of magnitude easier to debug. Be
+>    aware
+>    > > > that R functions are often best used interactively because user
+>    choices
+>    > > > and error conditions do matter.
+>    > > >
+>    > > > > To embed R in a C program libRmath should be used.
+>    > > >
+>    > > > No, that is just to use the math functions. See Section 8.1 in
+>    > > >
+>    > > > [6]http://cran.r-project.org/doc/manuals/R-exts.html
+>    > > >
+>    > > > for Unixalikes (building R as a shared library, most likely
+>    libR.so).
+>    > > >
+>    > > > > First question:
+>    > > > > Is it possible to load gstat package from the R standalone
+>    library?
+>    > > >
+>    > > > Yes, like any package, but why?
+>    > > >
+>    > > > > Second question:
+>    > > > > Is there another way to do it when working inside a GRASS module?
+>    The
+>    > > > > question raises because, with regard to spgrass6, there's no way
+>    to
+>    > > > > use it from a module (except by making a shell process call from
+>    C)...
+>    > > >
+>    > > > Well, you can use the GRASS API to populate the appropriate R object
+>    > > > structures in C (see the GRASS5 GRASS package C code).
+>    > > >
+>    > > > > am I wrong?
+>    > > >
+>    > > > Yes, because you will never (at least for a definition of never
+>    being
+>    > > > greater than the number of developer hours taken to write and
+>    maintain
+>    > > > gstat and the R/GRASS interface) be able to do this robustly, taking
+>    > > > account of all possible error conditions (identical points passed to
+>    gstat
+>    > > > for example), and track changes in the different software
+>    environments
+>    > > > (something that works only with GRASS version x.y.z, R version
+>    a.b.c,
+>    > > > gstat version d.e.f, sp version g.h.i, etc. There is simply too much
+>    being
+>    > > > patched for a welded-hood C solution to be worth the development and
+>    > > > maintenance cost.
+>    > > >
+>    > > > By the way, you didn't say what you want to do that needs this level
+>    of
+>    > > > automation; if you had, it might be easier to understand your very
+>    strange
+>    > > > design choices and resource commitments.
+>    > > >
+>    > > > > Thanks,
+>    > > > > Giovanni
+>    > > > >
+>    > > > > _______________________________________________
+>    > > > > statsgrass mailing list
+>    > > > > [7]statsgrass@grass.itc.it
+>    > > > > [8]http://grass.itc.it/mailman/listinfo/statsgrass
+>    > > > >
+>    > > >
+>    > > > --
+>    > > > Roger Bivand
+>    > > > Economic Geography Section, Department of Economics, Norwegian
+>    School of
+>    > > > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+>    > > > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+>    > > > e-mail: [9]Roger.Bivand@nhh.no
+>    > > >
+>    > > >
+>    > >
+>    >
+>    > --
+>    > Roger Bivand
+>    > Economic Geography Section, Department of Economics, Norwegian School of
+>    > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+>    > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+>    > e-mail: [10]Roger.Bivand@nhh.no
+>    >
+>    >
+>    
+> 
+> References
+> 
+>    Visible links
+>    1. http://les-ejk.cz/?cat=pywps
+>    2. mailto:Roger.Bivand@nhh.no
+>    3. http://www.rpad.org/Rpad/
+>    4. http://www.rpad.org/Rpad/InterruptionMap.Rpad
+>    5. mailto:Roger.Bivand@nhh.no
+>    6. http://cran.r-project.org/doc/manuals/R-exts.html
+>    7. mailto:statsgrass@grass.itc.it
+>    8. http://grass.itc.it/mailman/listinfo/statsgrass
+>    9. mailto:Roger.Bivand@nhh.no
+>   10. mailto:Roger.Bivand@nhh.no
+
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+-- 
+Markus Neteler  <neteler itc it>  http://mpa.itc.it/markus/
+ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+
+From hamish_nospam at yahoo.com  Mon Oct 23 23:54:24 2006
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <e12429640610230950p6cfe48e7ma19403823b062a5a@mail.gmail.com>
+References: <e12429640610230728i1627d780gd6cf4f935aeb4ec0@mail.gmail.com>
+	<Pine.LNX.4.44.0610231753210.23376-100000@reclus.nhh.no>
+	<e12429640610230950p6cfe48e7ma19403823b062a5a@mail.gmail.com>
+Message-ID: <20061024165424.1d172daf.hamish_nospam@yahoo.com>
+
+G. Allegri wrote:
+> I know it sounds quite strange what I'm trying to do, and maybe it
+> isn't the best way to do it.
+> What I meant to do is an interactive (through a GUI interface to
+> develop) tool to elaborate hydrogeochemical datas about acquifer
+> pollution defense. It should be used by an end-user as a Decision
+> Support System tool. It will use raster and vector input data to be
+> treated with mapalgebra and geostatisitcal analysis. The worst problem
+> is that it should be, somehow, platform independent.
+> I'm not a professional programmer, I'm a geologist, and surely it
+> would be easiar to work with scripting then C coding, but it gets
+> harder to develop the "wizard" interface...
+> In regard using R in an interactive way: I would like to "grep" simply
+> the output (as standard output or ascii file) and  then use it for my
+> purposes.
+> Could you suggest me a way to implement this "stange" architecture?
+> Giovanni
+> 
+> P.S.: I'm considering the web interface way too...
+
+
+just a hint about what the next multi-platform GUI for GRASS will use.
+
+Currently grass uses tcl/tk as a multi-platform GUI frontend.
+
+You can use the g.parser module to create a (static) GUI frontend to a
+shell script. (see any of the grass 6 scripts and g.parser help page for
+an example)
+
+After some deliberation the next GRASS GUI will be based on WxPython, so
+that may be an obvious choice for you. Some initial infrastructure &
+examples have been added to the GRASS 6.3 source code, see
+gui/wxpython/.
+
+Also, perhaps the new SWIG interface is useful for you, that's in swig/
+in the grass source code. Right now it has some perl and python
+bindings, but that can be extended to Java, etc as well. Roger: could
+this be a better way to code the GRASS<->R interface? (or is it fine
+as-is?)
+
+I don't know enough about either to tell you what's the best or easiest
+path (or not), but fyi those are two available methods under active
+development (better support) and perhaps warrant some investigation.
+Note it's still early days for both SWIG and WxPython in GRASS.
+
+
+> Look at this http://les-ejk.cz/?cat=pywps
+
+another to check out is Markus's PHP earthquake map:
+  http://grass.itc.it/spearfish/php_grass_earthquakes.php
+
+
+good luck - it sounds like a neat project and I think all the
+ingredients to the recipe are here, just need the right glue.
+
+
+Hamish
+
+
+From hamish_nospam at yahoo.com  Tue Oct 24 00:51:12 2006
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <Pine.LNX.4.44.0610232003300.23376-100000@reclus.nhh.no>
+References: <e12429640610231038i4f0b95f1y9b204edc4ea6c487@mail.gmail.com>
+	<Pine.LNX.4.44.0610232003300.23376-100000@reclus.nhh.no>
+Message-ID: <20061024175112.1274591a.hamish_nospam@yahoo.com>
+
+ps- SWIG instructions here:
+
+http://grass.gdf-hannover.de/wiki/Development#Linking_GRASS_to_external_languages
+
+
+Hamish
+
+
+From Roger.Bivand at nhh.no  Tue Oct 24 03:01:28 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <20061024165424.1d172daf.hamish_nospam@yahoo.com>
+Message-ID: <Pine.LNX.4.44.0610240836220.23994-100000@reclus.nhh.no>
+
+On Tue, 24 Oct 2006, Hamish wrote:
+
+> G. Allegri wrote:
+> > I know it sounds quite strange what I'm trying to do, and maybe it
+> > isn't the best way to do it.
+> > What I meant to do is an interactive (through a GUI interface to
+> > develop) tool to elaborate hydrogeochemical datas about acquifer
+> > pollution defense. It should be used by an end-user as a Decision
+> > Support System tool. It will use raster and vector input data to be
+> > treated with mapalgebra and geostatisitcal analysis. The worst problem
+> > is that it should be, somehow, platform independent.
+> > I'm not a professional programmer, I'm a geologist, and surely it
+> > would be easiar to work with scripting then C coding, but it gets
+> > harder to develop the "wizard" interface...
+> > In regard using R in an interactive way: I would like to "grep" simply
+> > the output (as standard output or ascii file) and  then use it for my
+> > purposes.
+> > Could you suggest me a way to implement this "stange" architecture?
+> > Giovanni
+> > 
+> > P.S.: I'm considering the web interface way too...
+> 
+> 
+> just a hint about what the next multi-platform GUI for GRASS will use.
+> 
+> Currently grass uses tcl/tk as a multi-platform GUI frontend.
+> 
+> You can use the g.parser module to create a (static) GUI frontend to a
+> shell script. (see any of the grass 6 scripts and g.parser help page for
+> an example)
+> 
+> After some deliberation the next GRASS GUI will be based on WxPython, so
+> that may be an obvious choice for you. Some initial infrastructure &
+> examples have been added to the GRASS 6.3 source code, see
+> gui/wxpython/.
+> 
+> Also, perhaps the new SWIG interface is useful for you, that's in swig/
+> in the grass source code. Right now it has some perl and python
+> bindings, but that can be extended to Java, etc as well. Roger: could
+> this be a better way to code the GRASS<->R interface? (or is it fine
+> as-is?)
+
+
+The interface is "R-in-front-of-GRASS", using whatever UI R is using, with
+GRASS just being the database. R cannot assume the presence of any of
+these other components, but more complicated setups can be built with
+"R-in-the-middle" or "R-as-a-backend-compute-server", such as R embedded
+in PostgreSQL as a PL (which would be "GRASS-in-front-of-PostgreSQL"
+"-in-front-of-R"). But prototyping any actual data analysis in that 
+setting is bluesky^2, ie. not having the data analysis tool in front runs 
+the strong risk of garbage in, garbage out, unless there is very detailed 
+control of data entering the system and analyses are kept really simple. 
+
+Just things like missing values can trip things up so easily, that 
+anything beyond a shell script running R as a script engine is foolhardy. 
+Just in the last month there have been several reports of the GRASS wiki 
+v.krige failing (shell script of R running gstat on spgrass6), all caused 
+by data points at the same locations (which lead to singularity within 
+gstat). 
+
+Since the number of possible error conditions is largely unknown, and
+grows in proportion with the level of complication of the analysis (and
+one does use data analysis tools mainly to do more complicated things), I
+really don't think putting R behind a GIS GUI is a sensible step unless
+there is a lot of coding and maintenance support (UK vet services were
+doing something like this for point pattern analysis, but I think ran into
+software roll-out issues, needing local ArcGIS/R/splancs/glue, which
+became too heavy. A client-server setup would also have been better there,
+I believe.
+
+By the way, I don't use GRASS in anything other than -text anyway, except 
+for digitising and visualisation, though this is a minority view. Most of 
+the interfacing of R and SWIG is dormant. Rpy does run, as now does JRI 
+and rJava (but not SJava), Perl get used on development platforms but not 
+by regular users. For people needing GUI/GRASS-in-fornt-of-R, I guess Rpy 
+provides for using R from Python, but how this would handle larger data 
+volumes is open. 
+
+My personal preference is arT using Terralib, or myR (same place). My 
+guess is that many GRASS modules could be rewritten to use Terralib 
+instead of libgis etc., and that these interfaces are cleaner, but this is 
+aesthetic, I haven't used it in earnest.
+
+Roger
+
+> 
+> I don't know enough about either to tell you what's the best or easiest
+> path (or not), but fyi those are two available methods under active
+> development (better support) and perhaps warrant some investigation.
+> Note it's still early days for both SWIG and WxPython in GRASS.
+> 
+> 
+> > Look at this http://les-ejk.cz/?cat=pywps
+> 
+> another to check out is Markus's PHP earthquake map:
+>   http://grass.itc.it/spearfish/php_grass_earthquakes.php
+> 
+> 
+> good luck - it sounds like a neat project and I think all the
+> ingredients to the recipe are here, just need the right glue.
+> 
+> 
+> Hamish
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From giohappy at gmail.com  Tue Oct 24 04:32:24 2006
+From: giohappy at gmail.com (G. Allegri)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <Pine.LNX.4.44.0610240836220.23994-100000@reclus.nhh.no>
+References: <20061024165424.1d172daf.hamish_nospam@yahoo.com>
+	<Pine.LNX.4.44.0610240836220.23994-100000@reclus.nhh.no>
+Message-ID: <e12429640610240132w476bba93iedf38e7ec58fd83e@mail.gmail.com>
+
+Thanks everyone for this very interesting discussion. I think I will have a
+look to the swig interface and the wxpython solutions.
+I already looked to the "earthquake php" code, but I'm not sure it could be
+an "operative" solution, it's a nice thing but it becomes a heavy workload
+for the system having to run php system calls to bash scripting and then to
+R... and come back to php? It sounds that efficiency and memory issues would
+be the main problems, dont'you think?
+As a result:
+ - use R from shell scripitng
+ - call, eventually, external programs using R system() function
+ - make gis analysis through shell scripting
+ - create a GUI with these solutions to be studied: the web way: pywps (HOPE
+MARKUS CAN GIVE ME SOME NEWS about it, I can't find the page anymore!!!),
+java(swig), php; wxpythn.
+I think the web solutions are the only one suitable to run my tool from any
+platform... that's why I was trying to avoid using scripting!!!
+Anyway, Roger, I will keep into account your tips about the difficulties to
+automate R; I will find a way to break the whole elaboration into multiple
+small operations to keep control over each of theme.
+Giovanni
+
+
+2006/10/24, Roger Bivand <Roger.Bivand@nhh.no>:
+>
+> On Tue, 24 Oct 2006, Hamish wrote:
+>
+> > G. Allegri wrote:
+> > > I know it sounds quite strange what I'm trying to do, and maybe it
+> > > isn't the best way to do it.
+> > > What I meant to do is an interactive (through a GUI interface to
+> > > develop) tool to elaborate hydrogeochemical datas about acquifer
+> > > pollution defense. It should be used by an end-user as a Decision
+> > > Support System tool. It will use raster and vector input data to be
+> > > treated with mapalgebra and geostatisitcal analysis. The worst problem
+> > > is that it should be, somehow, platform independent.
+> > > I'm not a professional programmer, I'm a geologist, and surely it
+> > > would be easiar to work with scripting then C coding, but it gets
+> > > harder to develop the "wizard" interface...
+> > > In regard using R in an interactive way: I would like to "grep" simply
+> > > the output (as standard output or ascii file) and  then use it for my
+> > > purposes.
+> > > Could you suggest me a way to implement this "stange" architecture?
+> > > Giovanni
+> > >
+> > > P.S.: I'm considering the web interface way too...
+> >
+> >
+> > just a hint about what the next multi-platform GUI for GRASS will use.
+> >
+> > Currently grass uses tcl/tk as a multi-platform GUI frontend.
+> >
+> > You can use the g.parser module to create a (static) GUI frontend to a
+> > shell script. (see any of the grass 6 scripts and g.parser help page for
+> > an example)
+> >
+> > After some deliberation the next GRASS GUI will be based on WxPython, so
+> > that may be an obvious choice for you. Some initial infrastructure &
+> > examples have been added to the GRASS 6.3 source code, see
+> > gui/wxpython/.
+> >
+> > Also, perhaps the new SWIG interface is useful for you, that's in swig/
+> > in the grass source code. Right now it has some perl and python
+> > bindings, but that can be extended to Java, etc as well. Roger: could
+> > this be a better way to code the GRASS<->R interface? (or is it fine
+> > as-is?)
+>
+>
+> The interface is "R-in-front-of-GRASS", using whatever UI R is using, with
+> GRASS just being the database. R cannot assume the presence of any of
+> these other components, but more complicated setups can be built with
+> "R-in-the-middle" or "R-as-a-backend-compute-server", such as R embedded
+> in PostgreSQL as a PL (which would be "GRASS-in-front-of-PostgreSQL"
+> "-in-front-of-R"). But prototyping any actual data analysis in that
+> setting is bluesky^2, ie. not having the data analysis tool in front runs
+> the strong risk of garbage in, garbage out, unless there is very detailed
+> control of data entering the system and analyses are kept really simple.
+>
+> Just things like missing values can trip things up so easily, that
+> anything beyond a shell script running R as a script engine is foolhardy.
+> Just in the last month there have been several reports of the GRASS wiki
+> v.krige failing (shell script of R running gstat on spgrass6), all caused
+> by data points at the same locations (which lead to singularity within
+> gstat).
+>
+> Since the number of possible error conditions is largely unknown, and
+> grows in proportion with the level of complication of the analysis (and
+> one does use data analysis tools mainly to do more complicated things), I
+> really don't think putting R behind a GIS GUI is a sensible step unless
+> there is a lot of coding and maintenance support (UK vet services were
+> doing something like this for point pattern analysis, but I think ran into
+> software roll-out issues, needing local ArcGIS/R/splancs/glue, which
+> became too heavy. A client-server setup would also have been better there,
+> I believe.
+>
+> By the way, I don't use GRASS in anything other than -text anyway, except
+> for digitising and visualisation, though this is a minority view. Most of
+> the interfacing of R and SWIG is dormant. Rpy does run, as now does JRI
+> and rJava (but not SJava), Perl get used on development platforms but not
+> by regular users. For people needing GUI/GRASS-in-fornt-of-R, I guess Rpy
+> provides for using R from Python, but how this would handle larger data
+> volumes is open.
+>
+> My personal preference is arT using Terralib, or myR (same place). My
+> guess is that many GRASS modules could be rewritten to use Terralib
+> instead of libgis etc., and that these interfaces are cleaner, but this is
+> aesthetic, I haven't used it in earnest.
+>
+> Roger
+>
+> >
+> > I don't know enough about either to tell you what's the best or easiest
+> > path (or not), but fyi those are two available methods under active
+> > development (better support) and perhaps warrant some investigation.
+> > Note it's still early days for both SWIG and WxPython in GRASS.
+> >
+> >
+> > > Look at this http://les-ejk.cz/?cat=pywps
+> >
+> > another to check out is Markus's PHP earthquake map:
+> >   http://grass.itc.it/spearfish/php_grass_earthquakes.php
+> >
+> >
+> > good luck - it sounds like a neat project and I think all the
+> > ingredients to the recipe are here, just need the right glue.
+> >
+> >
+> > Hamish
+> >
+>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20061024/ff00d482/attachment.html
+From Roger.Bivand at nhh.no  Tue Oct 24 04:39:50 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <e12429640610240132w476bba93iedf38e7ec58fd83e@mail.gmail.com>
+Message-ID: <Pine.LNX.4.44.0610241035500.23994-100000@reclus.nhh.no>
+
+On Tue, 24 Oct 2006, G. Allegri wrote:
+
+> Thanks everyone for this very interesting discussion. I think I will have a
+> look to the swig interface and the wxpython solutions.
+> I already looked to the "earthquake php" code, but I'm not sure it could be
+> an "operative" solution, it's a nice thing but it becomes a heavy workload
+> for the system having to run php system calls to bash scripting and then to
+> R... and come back to php? It sounds that efficiency and memory issues would
+> be the main problems, dont'you think?
+> As a result:
+>  - use R from shell scripitng
+>  - call, eventually, external programs using R system() function
+>  - make gis analysis through shell scripting
+>  - create a GUI with these solutions to be studied: the web way: pywps (HOPE
+> MARKUS CAN GIVE ME SOME NEWS about it, I can't find the page anymore!!!),
+> java(swig), php; wxpythn.
+> I think the web solutions are the only one suitable to run my tool from any
+> platform... that's why I was trying to avoid using scripting!!!
+> Anyway, Roger, I will keep into account your tips about the difficulties to
+> automate R; I will find a way to break the whole elaboration into multiple
+> small operations to keep control over each of theme.
+
+Yes, data analysis can be automated, but then the insight of the analyst 
+has to be hard-coded into the interface, which is OK for very repetetive 
+tasks but less so for one-off analyses (the exceptions crowd out the 
+regular situations). Curiously, naive users are experts at generating 
+exceptions that the coder didn't anticipate!
+
+> Giovanni
+> 
+> 
+> 2006/10/24, Roger Bivand <Roger.Bivand@nhh.no>:
+> >
+> > On Tue, 24 Oct 2006, Hamish wrote:
+> >
+> > > G. Allegri wrote:
+> > > > I know it sounds quite strange what I'm trying to do, and maybe it
+> > > > isn't the best way to do it.
+> > > > What I meant to do is an interactive (through a GUI interface to
+> > > > develop) tool to elaborate hydrogeochemical datas about acquifer
+> > > > pollution defense. It should be used by an end-user as a Decision
+> > > > Support System tool. It will use raster and vector input data to be
+> > > > treated with mapalgebra and geostatisitcal analysis. The worst problem
+> > > > is that it should be, somehow, platform independent.
+> > > > I'm not a professional programmer, I'm a geologist, and surely it
+> > > > would be easiar to work with scripting then C coding, but it gets
+> > > > harder to develop the "wizard" interface...
+> > > > In regard using R in an interactive way: I would like to "grep" simply
+> > > > the output (as standard output or ascii file) and  then use it for my
+> > > > purposes.
+> > > > Could you suggest me a way to implement this "stange" architecture?
+> > > > Giovanni
+> > > >
+> > > > P.S.: I'm considering the web interface way too...
+> > >
+> > >
+> > > just a hint about what the next multi-platform GUI for GRASS will use.
+> > >
+> > > Currently grass uses tcl/tk as a multi-platform GUI frontend.
+> > >
+> > > You can use the g.parser module to create a (static) GUI frontend to a
+> > > shell script. (see any of the grass 6 scripts and g.parser help page for
+> > > an example)
+> > >
+> > > After some deliberation the next GRASS GUI will be based on WxPython, so
+> > > that may be an obvious choice for you. Some initial infrastructure &
+> > > examples have been added to the GRASS 6.3 source code, see
+> > > gui/wxpython/.
+> > >
+> > > Also, perhaps the new SWIG interface is useful for you, that's in swig/
+> > > in the grass source code. Right now it has some perl and python
+> > > bindings, but that can be extended to Java, etc as well. Roger: could
+> > > this be a better way to code the GRASS<->R interface? (or is it fine
+> > > as-is?)
+> >
+> >
+> > The interface is "R-in-front-of-GRASS", using whatever UI R is using, with
+> > GRASS just being the database. R cannot assume the presence of any of
+> > these other components, but more complicated setups can be built with
+> > "R-in-the-middle" or "R-as-a-backend-compute-server", such as R embedded
+> > in PostgreSQL as a PL (which would be "GRASS-in-front-of-PostgreSQL"
+> > "-in-front-of-R"). But prototyping any actual data analysis in that
+> > setting is bluesky^2, ie. not having the data analysis tool in front runs
+> > the strong risk of garbage in, garbage out, unless there is very detailed
+> > control of data entering the system and analyses are kept really simple.
+> >
+> > Just things like missing values can trip things up so easily, that
+> > anything beyond a shell script running R as a script engine is foolhardy.
+> > Just in the last month there have been several reports of the GRASS wiki
+> > v.krige failing (shell script of R running gstat on spgrass6), all caused
+> > by data points at the same locations (which lead to singularity within
+> > gstat).
+> >
+> > Since the number of possible error conditions is largely unknown, and
+> > grows in proportion with the level of complication of the analysis (and
+> > one does use data analysis tools mainly to do more complicated things), I
+> > really don't think putting R behind a GIS GUI is a sensible step unless
+> > there is a lot of coding and maintenance support (UK vet services were
+> > doing something like this for point pattern analysis, but I think ran into
+> > software roll-out issues, needing local ArcGIS/R/splancs/glue, which
+> > became too heavy. A client-server setup would also have been better there,
+> > I believe.
+> >
+> > By the way, I don't use GRASS in anything other than -text anyway, except
+> > for digitising and visualisation, though this is a minority view. Most of
+> > the interfacing of R and SWIG is dormant. Rpy does run, as now does JRI
+> > and rJava (but not SJava), Perl get used on development platforms but not
+> > by regular users. For people needing GUI/GRASS-in-fornt-of-R, I guess Rpy
+> > provides for using R from Python, but how this would handle larger data
+> > volumes is open.
+> >
+> > My personal preference is arT using Terralib, or myR (same place). My
+> > guess is that many GRASS modules could be rewritten to use Terralib
+> > instead of libgis etc., and that these interfaces are cleaner, but this is
+> > aesthetic, I haven't used it in earnest.
+> >
+> > Roger
+> >
+> > >
+> > > I don't know enough about either to tell you what's the best or easiest
+> > > path (or not), but fyi those are two available methods under active
+> > > development (better support) and perhaps warrant some investigation.
+> > > Note it's still early days for both SWIG and WxPython in GRASS.
+> > >
+> > >
+> > > > Look at this http://les-ejk.cz/?cat=pywps
+> > >
+> > > another to check out is Markus's PHP earthquake map:
+> > >   http://grass.itc.it/spearfish/php_grass_earthquakes.php
+> > >
+> > >
+> > > good luck - it sounds like a neat project and I think all the
+> > > ingredients to the recipe are here, just need the right glue.
+> > >
+> > >
+> > > Hamish
+> > >
+> >
+> > --
+> > Roger Bivand
+> > Economic Geography Section, Department of Economics, Norwegian School of
+> > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > e-mail: Roger.Bivand@nhh.no
+> >
+> >
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From tutey at o2.pl  Tue Oct 24 05:20:08 2006
+From: tutey at o2.pl (Maciej Sieczka)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <Pine.LNX.4.44.0610241035500.23994-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0610241035500.23994-100000@reclus.nhh.no>
+Message-ID: <453DDAC8.7090602@o2.pl>
+
+Roger Bivand wrote:
+
+> Curiously, naive users are experts at generating 
+> exceptions that the coder didn't anticipate!
+
+Which is the best testing support a developer can dream of :).
+
+Maciek
+
+
+From giohappy at gmail.com  Tue Oct 24 07:03:07 2006
+From: giohappy at gmail.com (G. Allegri)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <453DDAC8.7090602@o2.pl>
+References: <Pine.LNX.4.44.0610241035500.23994-100000@reclus.nhh.no>
+	<453DDAC8.7090602@o2.pl>
+Message-ID: <e12429640610240403k780e426cn621e069cd3c9711a@mail.gmail.com>
+
+I think I will consider RPy and wxPython. I need to evaluete the best
+between the last one and Python-SWIG interface... The first is the future,
+the second has some examples already running (I've seen Frigeri slides).
+Is it right to consider these solutions a closer step toward a crossplatform
+R and GIS analysis?
+Python could be a good choice considering the web capabilities of the
+language too. I'm a web programmer (php, mapscript, jsp) and it fascinates
+me considering the possibility to run computations on client-server
+architectures.
+I'll keep you informed about the goals I hope to have!
+
+Giovanni
+
+2006/10/24, Maciej Sieczka <tutey@o2.pl>:
+>
+> Roger Bivand wrote:
+>
+> > Curiously, naive users are experts at generating
+> > exceptions that the coder didn't anticipate!
+>
+> Which is the best testing support a developer can dream of :).
+>
+> Maciek
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20061024/5c27fabf/attachment.html
+From neteler at itc.it  Tue Oct 24 17:14:38 2006
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <e12429640610240132w476bba93iedf38e7ec58fd83e@mail.gmail.com>
+References: <20061024165424.1d172daf.hamish_nospam@yahoo.com>
+	<Pine.LNX.4.44.0610240836220.23994-100000@reclus.nhh.no>
+	<e12429640610240132w476bba93iedf38e7ec58fd83e@mail.gmail.com>
+Message-ID: <20061024211437.GB32287@bartok.itc.it>
+
+On Tue, Oct 24, 2006 at 10:32:24AM +0200, G. Allegri wrote:
+...
+>    As a result:
+>     - use R from shell scripitng
+>     - call, eventually, external programs using R system() function
+>     - make gis analysis through shell scripting
+>     - create a GUI with these solutions to be studied: the web way: pywps
+>    (HOPE MARKUS CAN GIVE ME SOME NEWS about it, I can't find the page
+>    anymore!!!), java(swig), php; wxpythn.
+
+Hi,
+
+which page can't you find? This one
+http://les-ejk.cz/?cat=pywps
+?
+
+cheers
+Markus
+
+
+From giohappy at gmail.com  Tue Oct 24 18:22:36 2006
+From: giohappy at gmail.com (G. Allegri)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <20061024211437.GB32287@bartok.itc.it>
+References: <20061024165424.1d172daf.hamish_nospam@yahoo.com>
+	<Pine.LNX.4.44.0610240836220.23994-100000@reclus.nhh.no>
+	<e12429640610240132w476bba93iedf38e7ec58fd83e@mail.gmail.com>
+	<20061024211437.GB32287@bartok.itc.it>
+Message-ID: <e12429640610241522r130a5fdcsf17229b059241a6c@mail.gmail.com>
+
+Well, I knew this link but a month ago it was in english and it contained a
+link to a demo too... Moreover it had a completely different layout. Was I
+dreaming?!!!
+
+2006/10/24, Markus Neteler <neteler@itc.it>:
+>
+> On Tue, Oct 24, 2006 at 10:32:24AM +0200, G. Allegri wrote:
+> ...
+> >    As a result:
+> >     - use R from shell scripitng
+> >     - call, eventually, external programs using R system() function
+> >     - make gis analysis through shell scripting
+> >     - create a GUI with these solutions to be studied: the web way:
+> pywps
+> >    (HOPE MARKUS CAN GIVE ME SOME NEWS about it, I can't find the page
+> >    anymore!!!), java(swig), php; wxpythn.
+>
+> Hi,
+>
+> which page can't you find? This one
+> http://les-ejk.cz/?cat=pywps
+> ?
+>
+> cheers
+> Markus
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20061025/55c55e7e/attachment.html
+From neteler at itc.it  Tue Oct 24 18:39:18 2006
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <e12429640610241522r130a5fdcsf17229b059241a6c@mail.gmail.com>
+References: <20061024165424.1d172daf.hamish_nospam@yahoo.com>
+	<Pine.LNX.4.44.0610240836220.23994-100000@reclus.nhh.no>
+	<e12429640610240132w476bba93iedf38e7ec58fd83e@mail.gmail.com>
+	<20061024211437.GB32287@bartok.itc.it>
+	<e12429640610241522r130a5fdcsf17229b059241a6c@mail.gmail.com>
+Message-ID: <20061024223918.GB32660@bartok.itc.it>
+
+Hi,
+
+demo to what...? Do you mean pywps or something else?
+If yes, why not leave a comment on that page?
+
+Do you mean this link:
+http://www.bnhelp.cz/mapserv/wpsdemo/
+
+Markus
+
+On Wed, Oct 25, 2006 at 12:22:36AM +0200, G. Allegri wrote:
+>    Well, I knew this link but a month ago it was in english and it contained
+>    a link to a demo too... Moreover it had a completely different layout. Was
+>    I dreaming?!!!
+> 
+>    2006/10/24, Markus Neteler < [1]neteler@itc.it>:
+> 
+>      On Tue, Oct 24, 2006 at 10:32:24AM +0200, G. Allegri wrote:
+>      ...
+>      >    As a result:
+>      >     - use R from shell scripitng
+>      >     - call, eventually, external programs using R system() function
+>      >     - make gis analysis through shell scripting
+>      >     - create a GUI with these solutions to be studied: the web way:
+>      pywps
+>      >    (HOPE MARKUS CAN GIVE ME SOME NEWS about it, I can't find the page
+>      >    anymore!!!), java(swig), php; wxpythn.
+> 
+>      Hi,
+> 
+>      which page can't you find? This one
+>      [2]http://les-ejk.cz/?cat=pywps
+>      ?
+> 
+>      cheers
+>      Markus
+> 
+>      _______________________________________________
+>      statsgrass mailing list
+>      [3]statsgrass@grass.itc.it
+>      [4]http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+> References
+> 
+>    Visible links
+>    1. mailto:neteler@itc.it
+>    2. http://les-ejk.cz/?cat=pywps
+>    3. mailto:statsgrass@grass.itc.it
+>    4. http://grass.itc.it/mailman/listinfo/statsgrass
+
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+-- 
+Markus Neteler  <neteler itc it>  http://mpa.itc.it/markus/
+ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+
+From giohappy at gmail.com  Tue Oct 24 21:15:19 2006
+From: giohappy at gmail.com (G. Allegri)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <20061024223918.GB32660@bartok.itc.it>
+References: <20061024165424.1d172daf.hamish_nospam@yahoo.com>
+	<Pine.LNX.4.44.0610240836220.23994-100000@reclus.nhh.no>
+	<e12429640610240132w476bba93iedf38e7ec58fd83e@mail.gmail.com>
+	<20061024211437.GB32287@bartok.itc.it>
+	<e12429640610241522r130a5fdcsf17229b059241a6c@mail.gmail.com>
+	<20061024223918.GB32660@bartok.itc.it>
+Message-ID: <e12429640610241815w5daba69bvf1a5b1cf58675f23@mail.gmail.com>
+
+Exactly that demo!
+And this is the old page I was referring to:
+http://193.84.38.2/~jachym/index.py?cat=pywps<http://193.84.38.2/%7Ejachym/index.py?cat=pywps>
+.
+The site is changing...
+
+2006/10/25, Markus Neteler <neteler@itc.it>:
+>
+> Hi,
+>
+> demo to what...? Do you mean pywps or something else?
+> If yes, why not leave a comment on that page?
+>
+> Do you mean this link:
+> http://www.bnhelp.cz/mapserv/wpsdemo/
+>
+> Markus
+>
+> On Wed, Oct 25, 2006 at 12:22:36AM +0200, G. Allegri wrote:
+> >    Well, I knew this link but a month ago it was in english and it
+> contained
+> >    a link to a demo too... Moreover it had a completely different
+> layout. Was
+> >    I dreaming?!!!
+> >
+> >    2006/10/24, Markus Neteler < [1]neteler@itc.it>:
+> >
+> >      On Tue, Oct 24, 2006 at 10:32:24AM +0200, G. Allegri wrote:
+> >      ...
+> >      >    As a result:
+> >      >     - use R from shell scripitng
+> >      >     - call, eventually, external programs using R system()
+> function
+> >      >     - make gis analysis through shell scripting
+> >      >     - create a GUI with these solutions to be studied: the web
+> way:
+> >      pywps
+> >      >    (HOPE MARKUS CAN GIVE ME SOME NEWS about it, I can't find the
+> page
+> >      >    anymore!!!), java(swig), php; wxpythn.
+> >
+> >      Hi,
+> >
+> >      which page can't you find? This one
+> >      [2]http://les-ejk.cz/?cat=pywps
+> >      ?
+> >
+> >      cheers
+> >      Markus
+> >
+> >      _______________________________________________
+> >      statsgrass mailing list
+> >      [3]statsgrass@grass.itc.it
+> >      [4]http://grass.itc.it/mailman/listinfo/statsgrass
+> >
+> > References
+> >
+> >    Visible links
+> >    1. mailto:neteler@itc.it
+> >    2. http://les-ejk.cz/?cat=pywps
+> >    3. mailto:statsgrass@grass.itc.it
+> >    4. http://grass.itc.it/mailman/listinfo/statsgrass
+>
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+>
+>
+> --
+> Markus Neteler  <neteler itc it>  http://mpa.itc.it/markus/
+> ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+> MPBA - Predictive Models for Biol. & Environ. Data Analysis
+> Via Sommarive, 18        -       38050 Povo (Trento), Italy
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20061025/374b586f/attachment.html
+From hamish_nospam at yahoo.com  Tue Oct 24 23:26:39 2006
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <e12429640610240132w476bba93iedf38e7ec58fd83e@mail.gmail.com>
+References: <20061024165424.1d172daf.hamish_nospam@yahoo.com>
+	<Pine.LNX.4.44.0610240836220.23994-100000@reclus.nhh.no>
+	<e12429640610240132w476bba93iedf38e7ec58fd83e@mail.gmail.com>
+Message-ID: <20061025162639.3213d3d3.hamish_nospam@yahoo.com>
+
+G. Allegri wrote:
+> I know it sounds quite strange what I'm trying to do, and maybe it
+> isn't the best way to do it.
+> What I meant to do is an interactive (through a GUI interface to
+> develop) tool to elaborate hydrogeochemical datas about acquifer
+> pollution defense.
+..
+> P.S.: I'm considering the web interface way too...
+
+
+Hi,
+
+
+fyi, on the DebianGIS mailing list someone just posted a link to the
+Debian Web Apps policy manual. If doing a web interface you'll probably
+find some good general-purpose suggestions within.
+
+http://people.debian.org/~neilm/webapps-policy/
+
+
+
+Hamish
+
+
+From giohappy at gmail.com  Wed Oct 25 03:46:49 2006
+From: giohappy at gmail.com (G. Allegri)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <20061025162639.3213d3d3.hamish_nospam@yahoo.com>
+References: <20061024165424.1d172daf.hamish_nospam@yahoo.com>
+	<Pine.LNX.4.44.0610240836220.23994-100000@reclus.nhh.no>
+	<e12429640610240132w476bba93iedf38e7ec58fd83e@mail.gmail.com>
+	<20061025162639.3213d3d3.hamish_nospam@yahoo.com>
+Message-ID: <e12429640610250046l2edede86q6be9571f0faf196a@mail.gmail.com>
+
+Thanks Hamish for the hint!
+I've configured my Apache+PHP in a completely different way respect the one
+suggested, so it's a good start indeed!!!  ;-)
+I know that this isn't the right ml to ask such a question but to continue
+this discussion: do you think that using php in the manner proposed in the
+sample app of "Earthquakes" could be a real way (operative, no just "an
+example") to run grass via web? I'm considering Python, wps, etc. but php is
+nice too! :-)
+
+Giovanni
+
+2006/10/25, Hamish <hamish_nospam@yahoo.com>:
+>
+> G. Allegri wrote:
+> > I know it sounds quite strange what I'm trying to do, and maybe it
+> > isn't the best way to do it.
+> > What I meant to do is an interactive (through a GUI interface to
+> > develop) tool to elaborate hydrogeochemical datas about acquifer
+> > pollution defense.
+> ..
+> > P.S.: I'm considering the web interface way too...
+>
+>
+> Hi,
+>
+>
+> fyi, on the DebianGIS mailing list someone just posted a link to the
+> Debian Web Apps policy manual. If doing a web interface you'll probably
+> find some good general-purpose suggestions within.
+>
+> http://people.debian.org/~neilm/webapps-policy/
+>
+>
+>
+> Hamish
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20061025/827db12a/attachment.html
+From giohappy at gmail.com  Sat Oct 28 06:08:43 2006
+From: giohappy at gmail.com (G. Allegri)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <4542DBDA.20508@gmail.com>
+References: <e12429640610230950p6cfe48e7ma19403823b062a5a@mail.gmail.com>
+	<Pine.LNX.4.44.0610231902230.23376-100000@reclus.nhh.no>
+	<e12429640610231038i4f0b95f1y9b204edc4ea6c487@mail.gmail.com>
+	<20061023183518.GA24507@bartok.itc.it> <4542DBDA.20508@gmail.com>
+Message-ID: <e12429640610280308o160d04afmbb709a0f9e25b08f@mail.gmail.com>
+
+Thanks Song!
+This is exactly what I was thinking in these days... I will try to develop
+my own system during november. Keep in contact and tell me, if you want,
+your improvements.
+A question: where is it possible to download pywps? The old page has broken
+links to the package, and the one beeing built on gforge isn't ready yet...
+Maybe cvs?
+Kind regards,
+Giovanni A.
+
+P.S.: I've just subscribed pywps-devel mailing-list.
+
+2006/10/28, xianfeng song <song.osgeo@gmail.com>:
+>
+> Dear Allegri,
+>
+> The integration of R and PyWPS is a Python solution. The RPy package
+> play an important role!
+> 1)Writing your analysis-function scripts using R, and then those
+> functions could be called RPy.
+> 2)then making a PyWPS process that deliveries your R functions over web
+> by importing RPy module.
+> This is a solution using standard web service, see my demo at
+> http://zihuan.gucas.ac.cn/webgis/PyWPS_GNUR_Example.html
+>
+> Python is a easy-to-use script language, you may just program your CGI
+> using Python + RPy + R.
+> Later I will post pywps-devel@wald.intevation.de a brief summery about
+> my testing work. you may have a look if you are interested.
+>
+> Kind regards,
+> Song
+>
+> On 2006-10-24 2:35, Markus Neteler wrote:
+> > On Mon, Oct 23, 2006 at 07:38:51PM +0200, G. Allegri wrote:
+> > >    Rpad is a really nice tool, I didn't know it. But do you think it
+> could be
+> > >    a way to solve my problem? I need to do gis analysis too, it's not
+> just
+> > >    about dealing with R code... I know client/server isn't an easy
+> subject
+> > >    but it seems to be the only way I can consider to interface the
+> bash
+> > >    scripting code I will produce (I'm abandoning the idea to write a C
+> > >    modulea!!!) in a platform-independent way.
+> > >    Look at this [1]http://les-ejk.cz/?cat=pywps
+> >
+> > As far as I know, pywps has been recently integrated with R.
+> > I cc the author (who may be offline for a week) to give
+> > further details.
+> >
+> > Markus
+> >
+> >
+> > >    Giovanni
+> > >
+> > >    2006/10/23, Roger Bivand <[2]Roger.Bivand@nhh.no>:
+> > >    > On Mon, 23 Oct 2006, G. Allegri wrote:
+> > >    >
+> > >    > > Thanks Roger for the complete answer!
+> > >    > > I know it sounds quite strange what I'm trying to do, and maybe
+> it
+> > >    > > isn't the best way to do it.
+> > >    > > What I meant to do is an interactive (through a GUI interface
+> to
+> > >    > > develop) tool to elaborate hydrogeochemical datas about
+> acquifer
+> > >    > > pollution defense. It should be used by an end-user as a
+> Decision
+> > >    > > Support System tool. It will use raster and vector input data
+> to be
+> > >    > > treated with mapalgebra and geostatisitcal analysis. The worst
+> problem
+> > >    > > is that it should be, somehow, platform independent.
+> > >    >
+> > >    > If platform-independent, then a client-server model with the
+> client
+> > >    being
+> > >    > a web browser looks attractive. In that case, I would look
+> seriously at
+> > >    > either MapServer (and Tyler Mitchell's book Web Mapping
+> Illustrated) if
+> > >    > most of the user interaction is in map form, or at Rpad:
+> > >    >
+> > >    > [3]http://www.rpad.org/Rpad/
+> > >    >
+> > >    > Look at [4]http://www.rpad.org/Rpad/InterruptionMap.Rpad
+> > >    >
+> > >    > to see a very nice example. You'll need to look at load balancing
+> > >    > carefully, but here the web server and R are running on the
+> server,
+> > >    > producing pages with Javascript for interaction for the user. A
+> lot of
+> > >    the
+> > >    > hard work has already been done, and because of the split between
+> client
+> > >    > and server, you can update the server-side compute engine without
+> the
+> > >    user
+> > >    > needing to install anything.
+> > >    >
+> > >    > I think this is as close as you can get - using embedded R will
+> mean a
+> > >    lot
+> > >    > more work, especially with maintenance. Note the comments on the
+> Rpad
+> > >    site
+> > >    > about security, you will need to run the server with care.
+> > >    >
+> > >    > R can also be embedded within Apache, but I guess that Rpad is
+> better
+> > >    for
+> > >    > you. To be honest, it might well be worth paying someone with
+> > >    > Javascript/Perl/Apache etc. experience to help, none of these are
+> > >    suitable
+> > >    > for non-specialists if the server is to be kept secure, really,
+> but the
+> > >    > same applies to any client-server model running across the
+> Internet.
+> > >    >
+> > >    > Roger
+> > >    >
+> > >    > > I'm not a professional programmer, I'm a geologist, and surely
+> it
+> > >    > > would be easiar to work with scripting then C coding, but it
+> gets
+> > >    > > harder to develop the "wizard" interface...
+> > >    > > In regard using R in an interactive way: I would like to "grep"
+> simply
+> > >    > > the output (as standard output or ascii file) and  then use it
+> for my
+> > >    > > purposes.
+> > >    > > Could you suggest me a way to implement this "stange"
+> architecture?
+> > >    > > Giovanni
+> > >    > >
+> > >    > > P.S.: I'm considering the web interface way too...
+> > >    > >
+> > >    > >
+> > >    > >
+> > >    > > 2006/10/23, Roger Bivand <[5]Roger.Bivand@nhh.no >:
+> > >    > > > On Mon, 23 Oct 2006, G. Allegri wrote:
+> > >    > > >
+> > >    > > > > I need to use R and gstat functionalities inside a module
+> I'm
+> > >    writing.
+> > >    > > >
+> > >    > > > Why? What OS/platform? Unless you are doing something very
+> peculiar,
+> > >    you
+> > >    > > > will waste an inordinate amount of time, where a shell script
+> will
+> > >    get you
+> > >    > > > there simply and be several orders of magnitude easier to
+> debug. Be
+> > >    aware
+> > >    > > > that R functions are often best used interactively because
+> user
+> > >    choices
+> > >    > > > and error conditions do matter.
+> > >    > > >
+> > >    > > > > To embed R in a C program libRmath should be used.
+> > >    > > >
+> > >    > > > No, that is just to use the math functions. See Section 8.1in
+> > >    > > >
+> > >    > > > [6]http://cran.r-project.org/doc/manuals/R-exts.html
+> > >    > > >
+> > >    > > > for Unixalikes (building R as a shared library, most likely
+> > >    libR.so).
+> > >    > > >
+> > >    > > > > First question:
+> > >    > > > > Is it possible to load gstat package from the R standalone
+> > >    library?
+> > >    > > >
+> > >    > > > Yes, like any package, but why?
+> > >    > > >
+> > >    > > > > Second question:
+> > >    > > > > Is there another way to do it when working inside a GRASS
+> module?
+> > >    The
+> > >    > > > > question raises because, with regard to spgrass6, there's
+> no way
+> > >    to
+> > >    > > > > use it from a module (except by making a shell process call
+> from
+> > >    C)...
+> > >    > > >
+> > >    > > > Well, you can use the GRASS API to populate the appropriate R
+> object
+> > >    > > > structures in C (see the GRASS5 GRASS package C code).
+> > >    > > >
+> > >    > > > > am I wrong?
+> > >    > > >
+> > >    > > > Yes, because you will never (at least for a definition of
+> never
+> > >    being
+> > >    > > > greater than the number of developer hours taken to write and
+> > >    maintain
+> > >    > > > gstat and the R/GRASS interface) be able to do this robustly,
+> taking
+> > >    > > > account of all possible error conditions (identical points
+> passed to
+> > >    gstat
+> > >    > > > for example), and track changes in the different software
+> > >    environments
+> > >    > > > (something that works only with GRASS version x.y.z, R
+> version
+> > >    a.b.c,
+> > >    > > > gstat version d.e.f, sp version g.h.i, etc. There is simply
+> too much
+> > >    being
+> > >    > > > patched for a welded-hood C solution to be worth the
+> development and
+> > >    > > > maintenance cost.
+> > >    > > >
+> > >    > > > By the way, you didn't say what you want to do that needs
+> this level
+> > >    of
+> > >    > > > automation; if you had, it might be easier to understand your
+> very
+> > >    strange
+> > >    > > > design choices and resource commitments.
+> > >    > > >
+> > >    > > > > Thanks,
+> > >    > > > > Giovanni
+> > >    > > > >
+> > >    > > > > _______________________________________________
+> > >    > > > > statsgrass mailing list
+> > >    > > > > [7]statsgrass@grass.itc.it
+> > >    > > > > [8]http://grass.itc.it/mailman/listinfo/statsgrass
+> > >    > > > >
+> > >    > > >
+> > >    > > > --
+> > >    > > > Roger Bivand
+> > >    > > > Economic Geography Section, Department of Economics,
+> Norwegian
+> > >    School of
+> > >    > > > Economics and Business Administration, Helleveien 30, N-5045
+> Bergen,
+> > >    > > > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > >    > > > e-mail: [9]Roger.Bivand@nhh.no
+> > >    > > >
+> > >    > > >
+> > >    > >
+> > >    >
+> > >    > --
+> > >    > Roger Bivand
+> > >    > Economic Geography Section, Department of Economics, Norwegian
+> School of
+> > >    > Economics and Business Administration, Helleveien 30, N-5045
+> Bergen,
+> > >    > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > >    > e-mail: [10]Roger.Bivand@nhh.no
+> > >    >
+> > >    >
+> > >
+> > >
+> > > References
+> > >
+> > >    Visible links
+> > >    1. http://les-ejk.cz/?cat=pywps
+> > >    2. mailto:Roger.Bivand@nhh.no
+> > >    3. http://www.rpad.org/Rpad/
+> > >    4. http://www.rpad.org/Rpad/InterruptionMap.Rpad
+> > >    5. mailto:Roger.Bivand@nhh.no
+> > >    6. http://cran.r-project.org/doc/manuals/R-exts.html
+> > >    7. mailto:statsgrass@grass.itc.it
+> > >    8. http://grass.itc.it/mailman/listinfo/statsgrass
+> > >    9. mailto:Roger.Bivand@nhh.no
+> > >   10. mailto:Roger.Bivand@nhh.no
+> >
+> > > _______________________________________________
+> > > statsgrass mailing list
+> > > statsgrass@grass.itc.it
+> > > http://grass.itc.it/mailman/listinfo/statsgrass
+> >
+> >
+> >
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20061028/b9de02cf/attachment.html
+From song.osgeo at gmail.com  Sat Oct 28 07:05:08 2006
+From: song.osgeo at gmail.com (xianfeng song)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] using R and gstat inside a C module
+In-Reply-To: <e12429640610280308o160d04afmbb709a0f9e25b08f@mail.gmail.com>
+References: <e12429640610230950p6cfe48e7ma19403823b062a5a@mail.gmail.com>	
+	<Pine.LNX.4.44.0610231902230.23376-100000@reclus.nhh.no>	
+	<e12429640610231038i4f0b95f1y9b204edc4ea6c487@mail.gmail.com>	
+	<20061023183518.GA24507@bartok.itc.it> <4542DBDA.20508@gmail.com>
+	<e12429640610280308o160d04afmbb709a0f9e25b08f@mail.gmail.com>
+Message-ID: <45433964.5090701@gmail.com>
+
+Yeah, cvs. Jachym said there will be a stable release 1.0 soon.
+
+I had an old release at
+http://zihuan.gucas.ac.cn/webgis/pywps/pywps-1.0rc1.tar.gz
+Following its install information, you can set up pywps.
+You may download my r-to-pywps examples at
+http://zihuan.gucas.ac.cn/webgis/pywps/annex-1.0rc1.tar
+Simply uncompressing this tarball to pywps tree is ok. Before it works,
+rpy, r and add-ons should be installed!
+
+I will write a readme file mentioning keypoints about installing/using
+Rpy with pywps etc.
+Hope it can help you.
+
+Song
+
+
+On 2006-10-28 18:08, G. Allegri wrote:
+> Thanks Song!
+> This is exactly what I was thinking in these days... I will try to
+> develop
+> my own system during november. Keep in contact and tell me, if you want,
+> your improvements.
+> A question: where is it possible to download pywps? The old page has
+> broken
+> links to the package, and the one beeing built on gforge isn't ready
+> yet...
+> Maybe cvs?
+> Kind regards,
+> Giovanni A.
+>
+> P.S.: I've just subscribed pywps-devel mailing-list.
+>
+> 2006/10/28, xianfeng song <song.osgeo@gmail.com>:
+>>
+>> Dear Allegri,
+>>
+>> The integration of R and PyWPS is a Python solution. The RPy package
+>> play an important role!
+>> 1)Writing your analysis-function scripts using R, and then those
+>> functions could be called RPy.
+>> 2)then making a PyWPS process that deliveries your R functions over web
+>> by importing RPy module.
+>> This is a solution using standard web service, see my demo at
+>> http://zihuan.gucas.ac.cn/webgis/PyWPS_GNUR_Example.html
+>>
+>> Python is a easy-to-use script language, you may just program your CGI
+>> using Python + RPy + R.
+>> Later I will post pywps-devel@wald.intevation.de a brief summery about
+>> my testing work. you may have a look if you are interested.
+>>
+>> Kind regards,
+>> Song
+>
+
+
+From carlos.grohmann at gmail.com  Tue Oct 31 15:27:37 2006
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] kriging results not within range of original data
+Message-ID: <bd07447b0610311227p3f80c1abuc780f28c274c783d@mail.gmail.com>
+
+Hello,
+
+I'm dong some kriging of SRTM data, and noted that the kriged results
+don't lie within the range of the original data. It is not too far
+from the original, but there is a difference.
+
+original dem:
+
+Data attributes:
+     band1
+ Min.   : 634.0
+ 1st Qu.: 759.0
+ Median : 814.0
+ Mean   : 856.5
+ 3rd Qu.: 923.0
+ Max.   :1312.0
+
+resampled dem:
+   var1.pred
+ Min.   : 633.2
+ 1st Qu.: 759.2
+ Median : 814.3
+ Mean   : 856.4
+ 3rd Qu.: 923.5
+ Max.   :1307.4
+
+
+I konw thatt small deviations from the values range can occur, but I
+was looking for some deeper explanation on this. If someone could
+point me out any literature I can refer to, I will be thankful.
+
+Carlos
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+
+From e.pebesma at geo.uu.nl  Tue Oct 31 15:47:09 2006
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:15 2007
+Subject: [STATSGRASS] kriging results not within range of original data
+In-Reply-To: <bd07447b0610311227p3f80c1abuc780f28c274c783d@mail.gmail.com>
+References: <bd07447b0610311227p3f80c1abuc780f28c274c783d@mail.gmail.com>
+Message-ID: <4547B64D.8040909@geo.uu.nl>
+
+Hi Carlos,
+
+that is correct, and due to the fact that kriging weights are not 
+constrained to be in [0,1]. In fact, they do become negative and may be 
+larger than 1. Consider as alternatives either inverse distance weighted 
+interpolation, or some form of constrained kriging (although I wouldn't 
+know where to get the latter).
+--
+Edzer
+
+Carlos "Gu?no" Grohmann wrote:
+
+> Hello,
+>
+> I'm dong some kriging of SRTM data, and noted that the kriged results
+> don't lie within the range of the original data. It is not too far
+> from the original, but there is a difference.
+>
+> original dem:
+>
+> Data attributes:
+>     band1
+> Min.   : 634.0
+> 1st Qu.: 759.0
+> Median : 814.0
+> Mean   : 856.5
+> 3rd Qu.: 923.0
+> Max.   :1312.0
+>
+> resampled dem:
+>   var1.pred
+> Min.   : 633.2
+> 1st Qu.: 759.2
+> Median : 814.3
+> Mean   : 856.4
+> 3rd Qu.: 923.5
+> Max.   :1307.4
+>
+>
+> I konw thatt small deviations from the values range can occur, but I
+> was looking for some deeper explanation on this. If someone could
+> point me out any literature I can refer to, I will be thankful.
+>
+> Carlos
+>
+
+

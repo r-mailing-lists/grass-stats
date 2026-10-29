@@ -1,0 +1,596 @@
+From sdveloz at ucdavis.edu  Tue Nov 18 00:19:59 2008
+From: sdveloz at ucdavis.edu (Sam Veloz)
+Date: Tue Nov 18 00:26:49 2008
+Subject: [GRASS-stats] GRASS/R interface Vista 64
+Message-ID: <4922507F.1010105@ucdavis.edu>
+
+I am trying to run R from within GRASS. I am running GRASS 6.3.0 with R 
+2.8.0 on a Vista 64 platform. I am able to start R within GRASS and load 
+the spgrass6 library fine. However when I try:
+  G <- gmeta6()
+I get the following error:
+Error in system(paste(paste("g.region", .addexe(), sep = ""), "-g3"),  :
+   g.region not found
+
+If I run g.region -p in GRASS I get:
+
+projection: 99 (Albers Equal Area)
+zone:       0
+datum:      nad27
+ellipsoid:  clark66
+north:      450300
+south:      -604700
+west:       -373900
+east:       540100
+nsres:      1000
+ewres:      1000
+rows:       1055
+cols:       914
+cells:      964270
+
+I am new to GRASS but have been working with R for a couple of years. Is 
+there something simple I am missing?
+Thanks,
+Sam
+
+-- 
+****************************************************
+Sam Veloz
+Postdoctoral Researcher
+Department of Environmental Science and Policy
+University of California, Davis
+sdveloz@ucdavis.edu
+From Roger.Bivand at nhh.no  Tue Nov 18 07:22:32 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Nov 18 07:22:35 2008
+Subject: [GRASS-stats] GRASS/R interface Vista 64
+In-Reply-To: <4922507F.1010105@ucdavis.edu>
+References: <4922507F.1010105@ucdavis.edu>
+Message-ID: <alpine.LRH.2.00.0811181315410.13013@reclus.nhh.no>
+
+On Mon, 17 Nov 2008, Sam Veloz wrote:
+
+> I am trying to run R from within GRASS. I am running GRASS 6.3.0 with R 2.8.0 
+> on a Vista 64 platform. I am able to start R within GRASS and load the 
+> spgrass6 library fine. However when I try:
+> G <- gmeta6()
+> I get the following error:
+> Error in system(paste(paste("g.region", .addexe(), sep = ""), "-g3"),  :
+>  g.region not found
+
+Thanks. The most likely cause is that the system is not being identified 
+as a "windows" system. Could you copy the output from your running R 
+within GRASS of .sessionInfo() and of Sys.getenv() into an RData file 
+(save()) and pass it to me off-list? The specific test expects 
+.Platform$OS.type == "windows", and if it isn't, there may be issues. The 
+other possibility is that Sys.getenv("OSTYPE") isn't known.
+
+Roger
+
+>
+> If I run g.region -p in GRASS I get:
+>
+> projection: 99 (Albers Equal Area)
+> zone:       0
+> datum:      nad27
+> ellipsoid:  clark66
+> north:      450300
+> south:      -604700
+> west:       -373900
+> east:       540100
+> nsres:      1000
+> ewres:      1000
+> rows:       1055
+> cols:       914
+> cells:      964270
+>
+> I am new to GRASS but have been working with R for a couple of years. Is 
+> there something simple I am missing?
+> Thanks,
+> Sam
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From sdveloz at ucdavis.edu  Tue Nov 18 13:35:32 2008
+From: sdveloz at ucdavis.edu (Sam Veloz)
+Date: Tue Nov 18 13:35:36 2008
+Subject: [GRASS-stats] GRASS/R interface Vista 64
+In-Reply-To: <alpine.LRH.2.00.0811181315410.13013@reclus.nhh.no>
+References: <4922507F.1010105@ucdavis.edu>
+	<alpine.LRH.2.00.0811181315410.13013@reclus.nhh.no>
+Message-ID: <49230AF4.5050703@ucdavis.edu>
+
+Updating the spgrass6 and rgdal packages fixed the problem.
+Thanks,
+Sam
+
+
+Roger Bivand wrote:
+> On Mon, 17 Nov 2008, Sam Veloz wrote:
+> 
+>> I am trying to run R from within GRASS. I am running GRASS 6.3.0 with 
+>> R 2.8.0 on a Vista 64 platform. I am able to start R within GRASS and 
+>> load the spgrass6 library fine. However when I try:
+>> G <- gmeta6()
+>> I get the following error:
+>> Error in system(paste(paste("g.region", .addexe(), sep = ""), "-g3"),  :
+>>  g.region not found
+> 
+> Thanks. The most likely cause is that the system is not being identified 
+> as a "windows" system. Could you copy the output from your running R 
+> within GRASS of .sessionInfo() and of Sys.getenv() into an RData file 
+> (save()) and pass it to me off-list? The specific test expects 
+> .Platform$OS.type == "windows", and if it isn't, there may be issues. 
+> The other possibility is that Sys.getenv("OSTYPE") isn't known.
+> 
+> Roger
+> 
+>>
+>> If I run g.region -p in GRASS I get:
+>>
+>> projection: 99 (Albers Equal Area)
+>> zone:       0
+>> datum:      nad27
+>> ellipsoid:  clark66
+>> north:      450300
+>> south:      -604700
+>> west:       -373900
+>> east:       540100
+>> nsres:      1000
+>> ewres:      1000
+>> rows:       1055
+>> cols:       914
+>> cells:      964270
+>>
+>> I am new to GRASS but have been working with R for a couple of years. 
+>> Is there something simple I am missing?
+>> Thanks,
+>> Sam
+>>
+>>
+> 
+
+-- 
+****************************************************
+Sam Veloz
+Postdoctoral Researcher
+Department of Environmental Science and Policy
+University of California, Davis
+sdveloz@ucdavis.edu
+From sdveloz at ucdavis.edu  Thu Nov 20 23:56:39 2008
+From: sdveloz at ucdavis.edu (Sam Veloz)
+Date: Thu Nov 20 23:56:42 2008
+Subject: [GRASS-stats] help coding an anova using raster data
+Message-ID: <49263F87.2030409@ucdavis.edu>
+
+I would like to run an anova on a set of raster variables imported from 
+GRASS into R but am confused about how R handles the raster data. So if 
+I have a model with a treatment with 2 levels, each raster is a binary 
+file with cells coded for each level of the treatment. I have 1 response 
+raster layer that corresponds spatially with the treatment layers. So 
+let's say I have 5 rasters representing a different rep of the treatment 
+how would I code this in R? I started out trying this:
+
+treatment<-readRAST6(c("rep1","rep2","rep3","rep4","rep5"),cat=TRUE)
+response<-readRAST6("response",cat=FALSE)
+test.aov<-aov(response~treatment)
+
+but I don't think this is right. Is it possible to do what I am trying? 
+My data is actually a bit more complicated than this but if I can clear 
+this up than I think I can do the rest on my own.
+Thanks for your help,
+Sam
+
+-- 
+****************************************************
+Sam Veloz
+Postdoctoral Researcher
+Department of Environmental Science and Policy
+University of California, Davis
+sdveloz@ucdavis.edu
+From Roger.Bivand at nhh.no  Fri Nov 21 07:54:17 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri Nov 21 07:54:21 2008
+Subject: [GRASS-stats] help coding an anova using raster data
+In-Reply-To: <49263F87.2030409@ucdavis.edu>
+References: <49263F87.2030409@ucdavis.edu>
+Message-ID: <alpine.LRH.2.00.0811211347380.32665@reclus.nhh.no>
+
+On Thu, 20 Nov 2008, Sam Veloz wrote:
+
+> I would like to run an anova on a set of raster variables imported from GRASS 
+> into R but am confused about how R handles the raster data. So if I have a 
+> model with a treatment with 2 levels, each raster is a binary file with cells 
+> coded for each level of the treatment. I have 1 response raster layer that 
+> corresponds spatially with the treatment layers. So let's say I have 5 
+> rasters representing a different rep of the treatment how would I code this 
+> in R? I started out trying this:
+>
+> treatment<-readRAST6(c("rep1","rep2","rep3","rep4","rep5"),cat=TRUE)
+> response<-readRAST6("response",cat=FALSE)
+> test.aov<-aov(response~treatment)
+
+The objects returned by readRAST6 are SpatialGridDataFrames. I think that 
+you may find that:
+
+SGDF <- readRAST6(c("rep1", "rep2", "rep3", "rep4", "rep5", "response"),
+   cat=c(TRUE, TRUE, TRUE, TRUE, TRUE, FALSE))
+test.aov <- aov(response ~ ., data=SGDF)
+
+does the trick (the . inserts the remaining variables) - or safer:
+
+test.aov <- aov(response ~ rep1 + rep2 + rep3 + rep4 + rep5, data=SGDF)
+
+Untried.
+
+By the way, do you need aov(), or would anova(lm()) do the same? I guess 
+the richer setting needs facilities in aov() that aren't visible here.
+
+Hope this helps,
+
+Roger
+
+>
+> but I don't think this is right. Is it possible to do what I am trying? My 
+> data is actually a bit more complicated than this but if I can clear this up 
+> than I think I can do the rest on my own.
+> Thanks for your help,
+> Sam
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From sdveloz at ucdavis.edu  Fri Nov 21 17:27:06 2008
+From: sdveloz at ucdavis.edu (Sam Veloz)
+Date: Fri Nov 21 17:27:08 2008
+Subject: [GRASS-stats] help coding an anova using raster data
+In-Reply-To: <alpine.LRH.2.00.0811211347380.32665@reclus.nhh.no>
+References: <49263F87.2030409@ucdavis.edu>
+	<alpine.LRH.2.00.0811211347380.32665@reclus.nhh.no>
+Message-ID: <492735B9.1000105@ucdavis.edu>
+
+When I tried this:
+test.aov <- aov(response ~ ., data=SGDF)
+It only gives the next variable in the resulting ANOVA table.
+
+The other option you gave:
+test.aov <- aov(response ~ rep1 + rep2 + rep3 + rep4 + rep5, data=SGDF)
+
+doesn't work because it treats each "rep" as a factor, I would like each 
+of these rasters to be a repetition. In other words I would have an n of 
+  5. Does this make sense?
+Thanks,
+Sam
+
+
+Roger Bivand wrote:
+> On Thu, 20 Nov 2008, Sam Veloz wrote:
+> 
+>> I would like to run an anova on a set of raster variables imported 
+>> from GRASS into R but am confused about how R handles the raster data. 
+>> So if I have a model with a treatment with 2 levels, each raster is a 
+>> binary file with cells coded for each level of the treatment. I have 1 
+>> response raster layer that corresponds spatially with the treatment 
+>> layers. So let's say I have 5 rasters representing a different rep of 
+>> the treatment how would I code this in R? I started out trying this:
+>>
+>> treatment<-readRAST6(c("rep1","rep2","rep3","rep4","rep5"),cat=TRUE)
+>> response<-readRAST6("response",cat=FALSE)
+>> test.aov<-aov(response~treatment)
+> 
+> The objects returned by readRAST6 are SpatialGridDataFrames. I think 
+> that you may find that:
+> 
+> SGDF <- readRAST6(c("rep1", "rep2", "rep3", "rep4", "rep5", "response"),
+>   cat=c(TRUE, TRUE, TRUE, TRUE, TRUE, FALSE))
+> test.aov <- aov(response ~ ., data=SGDF)
+> 
+> does the trick (the . inserts the remaining variables) - or safer:
+> 
+> test.aov <- aov(response ~ rep1 + rep2 + rep3 + rep4 + rep5, data=SGDF)
+> 
+> Untried.
+> 
+> By the way, do you need aov(), or would anova(lm()) do the same? I guess 
+> the richer setting needs facilities in aov() that aren't visible here.
+> 
+> Hope this helps,
+> 
+> Roger
+> 
+>>
+>> but I don't think this is right. Is it possible to do what I am 
+>> trying? My data is actually a bit more complicated than this but if I 
+>> can clear this up than I think I can do the rest on my own.
+>> Thanks for your help,
+>> Sam
+>>
+>>
+> 
+
+-- 
+****************************************************
+Sam Veloz
+Postdoctoral Researcher
+Department of Environmental Science and Policy
+University of California, Davis
+sdveloz@ucdavis.edu
+From debeaudette at ucdavis.edu  Fri Nov 21 17:52:18 2008
+From: debeaudette at ucdavis.edu (Dylan Beaudette)
+Date: Fri Nov 21 17:50:33 2008
+Subject: [GRASS-stats] help coding an anova using raster data
+In-Reply-To: <492735B9.1000105@ucdavis.edu>
+References: <49263F87.2030409@ucdavis.edu>
+	<alpine.LRH.2.00.0811211347380.32665@reclus.nhh.no>
+	<492735B9.1000105@ucdavis.edu>
+Message-ID: <200811211452.18335.dylan.beaudette@gmail.com>
+
+On Friday 21 November 2008, Sam Veloz wrote:
+> When I tried this:
+> test.aov <- aov(response ~ ., data=SGDF)
+> It only gives the next variable in the resulting ANOVA table.
+>
+> The other option you gave:
+> test.aov <- aov(response ~ rep1 + rep2 + rep3 + rep4 + rep5, data=SGDF)
+>
+> doesn't work because it treats each "rep" as a factor, I would like each
+> of these rasters to be a repetition. In other words I would have an n of
+>   5. Does this make sense?
+> Thanks,
+> Sam
+
+In that case you need to 'stack' your data into long format. check the mailing 
+list for ideas. Functions of interest:
+
+stack()
+reshape()
+
+and the 'reshape' package
+
+Cheers,
+
+Dylan
+
+
+> Roger Bivand wrote:
+> > On Thu, 20 Nov 2008, Sam Veloz wrote:
+> >> I would like to run an anova on a set of raster variables imported
+> >> from GRASS into R but am confused about how R handles the raster data.
+> >> So if I have a model with a treatment with 2 levels, each raster is a
+> >> binary file with cells coded for each level of the treatment. I have 1
+> >> response raster layer that corresponds spatially with the treatment
+> >> layers. So let's say I have 5 rasters representing a different rep of
+> >> the treatment how would I code this in R? I started out trying this:
+> >>
+> >> treatment<-readRAST6(c("rep1","rep2","rep3","rep4","rep5"),cat=TRUE)
+> >> response<-readRAST6("response",cat=FALSE)
+> >> test.aov<-aov(response~treatment)
+> >
+> > The objects returned by readRAST6 are SpatialGridDataFrames. I think
+> > that you may find that:
+> >
+> > SGDF <- readRAST6(c("rep1", "rep2", "rep3", "rep4", "rep5", "response"),
+> >   cat=c(TRUE, TRUE, TRUE, TRUE, TRUE, FALSE))
+> > test.aov <- aov(response ~ ., data=SGDF)
+> >
+> > does the trick (the . inserts the remaining variables) - or safer:
+> >
+> > test.aov <- aov(response ~ rep1 + rep2 + rep3 + rep4 + rep5, data=SGDF)
+> >
+> > Untried.
+> >
+> > By the way, do you need aov(), or would anova(lm()) do the same? I guess
+> > the richer setting needs facilities in aov() that aren't visible here.
+> >
+> > Hope this helps,
+> >
+> > Roger
+> >
+> >> but I don't think this is right. Is it possible to do what I am
+> >> trying? My data is actually a bit more complicated than this but if I
+> >> can clear this up than I think I can do the rest on my own.
+> >> Thanks for your help,
+> >> Sam
+
+
+
+-- 
+Dylan Beaudette
+Soil Resource Laboratory
+http://casoilresource.lawr.ucdavis.edu/
+University of California at Davis
+530.754.7341
+From Roger.Bivand at nhh.no  Fri Nov 21 18:36:36 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri Nov 21 18:36:51 2008
+Subject: [GRASS-stats] help coding an anova using raster data
+In-Reply-To: <492735B9.1000105@ucdavis.edu>
+References: <49263F87.2030409@ucdavis.edu>
+	<alpine.LRH.2.00.0811211347380.32665@reclus.nhh.no>
+	<492735B9.1000105@ucdavis.edu>
+Message-ID: <alpine.LRH.2.00.0811220029380.2015@reclus.nhh.no>
+
+On Fri, 21 Nov 2008, Sam Veloz wrote:
+
+> When I tried this:
+> test.aov <- aov(response ~ ., data=SGDF)
+> It only gives the next variable in the resulting ANOVA table.
+>
+> The other option you gave:
+> test.aov <- aov(response ~ rep1 + rep2 + rep3 + rep4 + rep5, data=SGDF)
+>
+> doesn't work because it treats each "rep" as a factor, I would like each of 
+> these rasters to be a repetition. In other words I would have an n of  5. 
+> Does this make sense?
+
+No, it doesn't. Each raster given the current region in GRASS has an equal 
+number of cells, so all of the rasters you move to R have the same size 
+and resolution. You asked the rep* to be treated as factors - did you do 
+summary(SGDF) to see what is inside? The term "a repetition" isn' clear at 
+all - are these plot masks or what?
+
+Roger
+
+> Thanks,
+> Sam
+>
+>
+> Roger Bivand wrote:
+>> On Thu, 20 Nov 2008, Sam Veloz wrote:
+>> 
+>>> I would like to run an anova on a set of raster variables imported from 
+>>> GRASS into R but am confused about how R handles the raster data. So if I 
+>>> have a model with a treatment with 2 levels, each raster is a binary file 
+>>> with cells coded for each level of the treatment. I have 1 response raster 
+>>> layer that corresponds spatially with the treatment layers. So let's say I 
+>>> have 5 rasters representing a different rep of the treatment how would I 
+>>> code this in R? I started out trying this:
+>>> 
+>>> treatment<-readRAST6(c("rep1","rep2","rep3","rep4","rep5"),cat=TRUE)
+>>> response<-readRAST6("response",cat=FALSE)
+>>> test.aov<-aov(response~treatment)
+>> 
+>> The objects returned by readRAST6 are SpatialGridDataFrames. I think that 
+>> you may find that:
+>> 
+>> SGDF <- readRAST6(c("rep1", "rep2", "rep3", "rep4", "rep5", "response"),
+>>   cat=c(TRUE, TRUE, TRUE, TRUE, TRUE, FALSE))
+>> test.aov <- aov(response ~ ., data=SGDF)
+>> 
+>> does the trick (the . inserts the remaining variables) - or safer:
+>> 
+>> test.aov <- aov(response ~ rep1 + rep2 + rep3 + rep4 + rep5, data=SGDF)
+>> 
+>> Untried.
+>> 
+>> By the way, do you need aov(), or would anova(lm()) do the same? I guess 
+>> the richer setting needs facilities in aov() that aren't visible here.
+>> 
+>> Hope this helps,
+>> 
+>> Roger
+>> 
+>>> 
+>>> but I don't think this is right. Is it possible to do what I am trying? My 
+>>> data is actually a bit more complicated than this but if I can clear this 
+>>> up than I think I can do the rest on my own.
+>>> Thanks for your help,
+>>> Sam
+>>> 
+>>> 
+>> 
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From sdveloz at ucdavis.edu  Sun Nov 23 14:33:00 2008
+From: sdveloz at ucdavis.edu (Sam Veloz)
+Date: Sun Nov 23 14:39:50 2008
+Subject: [GRASS-stats] help coding an anova using raster data
+In-Reply-To: <200811211452.18335.dylan.beaudette@gmail.com>
+References: <49263F87.2030409@ucdavis.edu>
+	<alpine.LRH.2.00.0811211347380.32665@reclus.nhh.no>
+	<492735B9.1000105@ucdavis.edu>
+	<200811211452.18335.dylan.beaudette@gmail.com>
+Message-ID: <4929AFEB.2010509@ucdavis.edu>
+
+Thanks, stack and reshape are what I needed.
+Sam
+
+
+Dylan Beaudette wrote:
+> On Friday 21 November 2008, Sam Veloz wrote:
+>> When I tried this:
+>> test.aov <- aov(response ~ ., data=SGDF)
+>> It only gives the next variable in the resulting ANOVA table.
+>>
+>> The other option you gave:
+>> test.aov <- aov(response ~ rep1 + rep2 + rep3 + rep4 + rep5, data=SGDF)
+>>
+>> doesn't work because it treats each "rep" as a factor, I would like each
+>> of these rasters to be a repetition. In other words I would have an n of
+>>   5. Does this make sense?
+>> Thanks,
+>> Sam
+> 
+> In that case you need to 'stack' your data into long format. check the mailing 
+> list for ideas. Functions of interest:
+> 
+> stack()
+> reshape()
+> 
+> and the 'reshape' package
+> 
+> Cheers,
+> 
+> Dylan
+> 
+> 
+>> Roger Bivand wrote:
+>>> On Thu, 20 Nov 2008, Sam Veloz wrote:
+>>>> I would like to run an anova on a set of raster variables imported
+>>>> from GRASS into R but am confused about how R handles the raster data.
+>>>> So if I have a model with a treatment with 2 levels, each raster is a
+>>>> binary file with cells coded for each level of the treatment. I have 1
+>>>> response raster layer that corresponds spatially with the treatment
+>>>> layers. So let's say I have 5 rasters representing a different rep of
+>>>> the treatment how would I code this in R? I started out trying this:
+>>>>
+>>>> treatment<-readRAST6(c("rep1","rep2","rep3","rep4","rep5"),cat=TRUE)
+>>>> response<-readRAST6("response",cat=FALSE)
+>>>> test.aov<-aov(response~treatment)
+>>> The objects returned by readRAST6 are SpatialGridDataFrames. I think
+>>> that you may find that:
+>>>
+>>> SGDF <- readRAST6(c("rep1", "rep2", "rep3", "rep4", "rep5", "response"),
+>>>   cat=c(TRUE, TRUE, TRUE, TRUE, TRUE, FALSE))
+>>> test.aov <- aov(response ~ ., data=SGDF)
+>>>
+>>> does the trick (the . inserts the remaining variables) - or safer:
+>>>
+>>> test.aov <- aov(response ~ rep1 + rep2 + rep3 + rep4 + rep5, data=SGDF)
+>>>
+>>> Untried.
+>>>
+>>> By the way, do you need aov(), or would anova(lm()) do the same? I guess
+>>> the richer setting needs facilities in aov() that aren't visible here.
+>>>
+>>> Hope this helps,
+>>>
+>>> Roger
+>>>
+>>>> but I don't think this is right. Is it possible to do what I am
+>>>> trying? My data is actually a bit more complicated than this but if I
+>>>> can clear this up than I think I can do the rest on my own.
+>>>> Thanks for your help,
+>>>> Sam
+> 
+> 
+> 
+
+-- 
+****************************************************
+Sam Veloz
+Postdoctoral Researcher
+Department of Environmental Science and Policy
+University of California, Davis
+sdveloz@ucdavis.edu

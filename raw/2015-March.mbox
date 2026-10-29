@@ -1,0 +1,831 @@
+From wenzeslaus at gmail.com  Wed Mar  4 07:33:20 2015
+From: wenzeslaus at gmail.com (Vaclav Petras)
+Date: Wed, 4 Mar 2015 10:33:20 -0500
+Subject: [GRASS-stats] What is the status of R package GRASS GIS
+Message-ID: <CABo5uVvjsNdp8GEF0CiEx2OaLsOPf--n4HRQMaHWHaAF3v_c9g@mail.gmail.com>
+
+Hi,
+
+can somebody summarize for me what is the status of spgrass*/rgrass*
+packages? I remember that the package for 7 should be `rgrass7` but now I
+see `spgrass` for G7 in the `spgrass` project description but I guess it is
+just a typo because R packages page says `rgrass7`. So just the project is
+`spgrass`? Then there is also the package which will use Rcpp and GRASS GIS
+C library, right?
+
+Thanks,
+Vaclav
+
+[1] http://lists.osgeo.org/pipermail/grass-stats/2015-February/001514.html
+[2]
+http://osgeo-org.1560.x6.nabble.com/spgrass7-support-for-strds-td5186797.html
+[3] http://r-forge.r-project.org/projects/spgrass/
+[4] http://r-forge.r-project.org/R/?group_id=2020
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150304/c07e4516/attachment.html>
+
+From Roger.Bivand at nhh.no  Wed Mar  4 09:19:21 2015
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed, 4 Mar 2015 18:19:21 +0100
+Subject: [GRASS-stats] What is the status of R package GRASS GIS
+In-Reply-To: <CABo5uVvjsNdp8GEF0CiEx2OaLsOPf--n4HRQMaHWHaAF3v_c9g@mail.gmail.com>
+References: <CABo5uVvjsNdp8GEF0CiEx2OaLsOPf--n4HRQMaHWHaAF3v_c9g@mail.gmail.com>
+Message-ID: <alpine.LFD.2.11.1503041811090.30511@reclus.nhh.no>
+
+On Wed, 4 Mar 2015, Vaclav Petras wrote:
+
+> Hi,
+>
+> can somebody summarize for me what is the status of spgrass*/rgrass*
+> packages? I remember that the package for 7 should be `rgrass7` but now I
+> see `spgrass` for G7 in the `spgrass` project description but I guess it is
+> just a typo because R packages page says `rgrass7`. So just the project is
+> `spgrass`? Then there is also the package which will use Rcpp and GRASS GIS
+> C library, right?
+
+Right with regard to the choice of rgrass7 as the name of the forthcoming 
+package, currently I'm waiting for the PROJ 4.9.1 release before 
+installing GRASS 7.0 locally before releasing. For the source package and 
+the Windows binary, installation from R-Forge is by:
+
+install.packages("rgrass7", repos="http://R-Forge.R-project.org")
+
+OSX users would have to install from source until a CRAN submission is 
+made (after R 3.1.3 is released shortly, but before R 3.2.0 in April).
+
+I do not believe that an R package linking to the libgis library has any 
+merit. It would be almost impossible to support cross-platform, and would 
+offer very little that isn't already available.
+
+Roger
+
+>
+> Thanks,
+> Vaclav
+>
+> [1] http://lists.osgeo.org/pipermail/grass-stats/2015-February/001514.html
+> [2]
+> http://osgeo-org.1560.x6.nabble.com/spgrass7-support-for-strds-td5186797.html
+> [3] http://r-forge.r-project.org/projects/spgrass/
+> [4] http://r-forge.r-project.org/R/?group_id=2020
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+
+
+From ben.holland at gmail.com  Thu Mar  5 10:39:24 2015
+From: ben.holland at gmail.com (Benjamin Holland)
+Date: Thu, 5 Mar 2015 11:39:24 -0700
+Subject: [GRASS-stats] Initiation Error: "dyld: Library not loaded" (rgrass7)
+Message-ID: <CACszS400VVg8Y3w5WLc8FAQvJ8n2wW+EQ8nDyOWfGRmd-25vww@mail.gmail.com>
+
+Hi, all. After some research, I've seen that the dyld error is quite
+common. After successfully installing rgrass7 from source, I tried to
+initiate GRASS in R. This is my first time trying this, so I could be doing
+some things incorrectly. I'm running on OSX Yosemite.
+
+I tried the troubleshooting suggestion on the grass wiki, but after
+establishing the link to /user/local/lib I'm still getting the same error.
+Does anyone have any suggestions?
+
+Thanks,
+
+Ben Holland
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150305/b9bb117c/attachment.html>
+
+From ben.holland at gmail.com  Thu Mar  5 11:57:21 2015
+From: ben.holland at gmail.com (Benjamin Holland)
+Date: Thu, 5 Mar 2015 12:57:21 -0700
+Subject: [GRASS-stats] Initiation Error: "dyld: Library not loaded"
+	(rgrass7)
+In-Reply-To: <A920F856-C267-4FAE-B346-D4745782CC13@gmail.com>
+References: <CACszS400VVg8Y3w5WLc8FAQvJ8n2wW+EQ8nDyOWfGRmd-25vww@mail.gmail.com>
+	<A920F856-C267-4FAE-B346-D4745782CC13@gmail.com>
+Message-ID: <CACszS42DJ-hWBc19jLj0BdS2kV-4vwa80gkgpG7fBk+Nb6qQJA@mail.gmail.com>
+
+Hi, Rainer,
+
+I downloaded and installed Grass 7.0 (stable) from here:
+http://grassmac.wikidot.com/downloads
+
+Up until now, I've been using the Grass 7.0 GUI.
+
+I'm using R version 3.1.2Installed rgrass7 with this
+command: install.packages("rgrass7", repos="http://R-Forge.R-project.org",
+type="source")
+
+Here is the command I ran to initiate:
+
+initGRASS(gisBase ='/Applications/GRASS-7.0.app/Contents/MacOS',
+
+          location = 'test', mapset = 'test',
+
+          gisDbase = '/Users/benholland/grassdata', override = TRUE)
+
+The complete error message I received a few minutes ago:
+
+dyld: Library not loaded:
+/Applications/GRASS/GRASS-7.0.app/Contents/MacOS/lib/libgrass_gis.7.0.0.dylib
+
+  Referenced from: /Applications/GRASS-7.0.app/Contents/MacOS/bin/g.gisenv
+
+  Reason: no suitable image found.  Did find:
+
+/Applications/GRASS/GRASS-7.0.app/Contents/MacOS/lib/libgrass_gis.7.0.0.dylib:
+stat() failed with errno=13
+
+
+When I open the Grass 7 GUI, there is a new location, so part of this code
+is working. However, there is no mapset.
+
+
+Thanks,
+
+Ben
+
+On Thu, Mar 5, 2015 at 12:46 PM, Rainer M Krug <r.m.krug at gmail.com> wrote:
+
+>
+>
+> Envoy? de mon iPhone
+>
+> Le 5 mars 2015 ? 19:39, Benjamin Holland <ben.holland at gmail.com> a ?crit :
+>
+> Hi, all. After some research, I've seen that the dyld error is quite
+> common. After successfully installing rgrass7 from source, I tried to
+> initiate GRASS in R. This is my first time trying this, so I could be doing
+> some things incorrectly. I'm running on OSX Yosemite.
+>
+>
+> What is the exact error message?
+> When do you get it?
+> Which commands did you execute?
+> How did you install grass, R, gdal, ... ?
+> Which versions?
+>
+> More information is needed to provide any help.
+>
+> Cheers,
+>
+> Rainer
+>
+> I tried the troubleshooting suggestion on the grass wiki, but after
+> establishing the link to /user/local/lib I'm still getting the same error.
+> Does anyone have any suggestions?
+>
+> Thanks,
+>
+> Ben Holland
+>
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150305/794a5fa8/attachment.html>
+
+From Rainer at krugs.de  Fri Mar  6 00:22:27 2015
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Fri, 06 Mar 2015 09:22:27 +0100
+Subject: [GRASS-stats] Initiation Error: "dyld: Library not loaded"
+	(rgrass7)
+In-Reply-To: <CACszS40LwoZ60z+S09AgPgu9mG+SJY6wBYj37fgN4utzTmg6aQ@mail.gmail.com>
+	(Benjamin Holland's message of "Thu, 5 Mar 2015 15:39:58 -0700")
+References: <CACszS400VVg8Y3w5WLc8FAQvJ8n2wW+EQ8nDyOWfGRmd-25vww@mail.gmail.com>
+	<A920F856-C267-4FAE-B346-D4745782CC13@gmail.com>
+	<CACszS42DJ-hWBc19jLj0BdS2kV-4vwa80gkgpG7fBk+Nb6qQJA@mail.gmail.com>
+	<BAC17051-FB08-4378-A27B-D8B5FD5DD709@gmail.com>
+	<CACszS40LwoZ60z+S09AgPgu9mG+SJY6wBYj37fgN4utzTmg6aQ@mail.gmail.com>
+Message-ID: <m2pp8milh8.fsf@krugs.de>
+
+Benjamin Holland <ben.holland at gmail.com> writes:
+
+Hi Benjamin,
+
+Please keep the discussion on the mailing list as others might benefit
+From it.
+
+> Thanks, Rainer. Did you install Grass 7 with homebrew. Or are you using
+> 6.4?
+
+Grass70, grass 64, R gdal, proj - everything via homebrew.
+
+See https://github.com/OSGeo/homebrew-osgeo4mac tap for the formulas -
+very useful tap!
+
+>
+> Just to clarify, you're saying that a command needs to be run within R that
+> sets the library path? I ran the command line code mentioned earlier. Is
+> there something additional to do in R?
+
+The code I used in R is as follow:
+
+--8<---------------cut here---------------start------------->8---
+switch(
+    Sys.info()[['sysname']],
+    Windows = { print("I'm a Windows PC.") },
+    Linux   = { print("I'm a Penguin.") },
+    Darwin  = { print("I'm a Mac.");
+                Sys.setenv( DYLD_LIBRARY_PATH = paste(
+                                "/Applications/GRASS-7.0.app/Contents/MacOS/lib",
+                                "/Users/rainerkrug/Library/GRASS/7.0/Modules/lib",
+                                "/Library/GRASS/7.0/Modules/lib",
+                                "/Applications/GRASS-7.0.app/Contents/MacOS/lib/FFTW3.framework/Versions/3",
+                                ":DYLD_LIBRARY_PATH",
+                                sep = ":"
+                                )
+                           )
+            }
+    )
+--8<---------------cut here---------------end--------------->8---
+
+This should be done before you start using grass from R. 
+
+Please be aware that you might have to change some paths. 
+Also, if you start R in grass, you don't need this as it is done by
+GRASS GIS. It also depends which commands you are using in GRASS -
+different some commands require additional paths.
+
+The reason is that the frameworks are kind of isolated containers which
+contain everything, including libraries. To avoid conflicts between
+different installation (Frameworks or .app folders - they are in these
+respect similar), they are not in the universal paths - which is also
+the reason that they are not available easily as in Linux from the
+terminal. SO programs have to set the paths so that they can find the
+libraries in the frameworks.
+
+Homebrew kind of avoids this and has a linux approach with all libraries
+which are installed via homebrew are available globally as they are in
+the path.
+
+So as I see it, homebrew provides a more consistent environment for the
+kind of work one is doing with R and grass.
+
+Hope this helps,
+
+Rainer
+
+>
+> Thanks,
+>
+> Ben
+>
+> On Thu, Mar 5, 2015 at 3:37 PM, Rainer M Krug <r.m.krug at gmail.com> wrote:
+>
+>>
+>>
+>> Envoy? de mon iPhone
+>>
+>> Le 5 mars 2015 ? 20:57, Benjamin Holland <ben.holland at gmail.com> a ?crit :
+>>
+>> Hi, Rainer,
+>>
+>> I downloaded and installed Grass 7.0 (stable) from here:
+>> http://grassmac.wikidot.com/downloads
+>>
+>> Up until now, I've been using the Grass 7.0 GUI.
+>>
+>> I'm using R version 3.1.2Installed rgrass7 with this
+>> command: install.packages("rgrass7", repos="http://R-Forge.R-project.org",
+>> type="source")
+>>
+>> Here is the command I ran to initiate:
+>>
+>> initGRASS(gisBase ='/Applications/GRASS-7.0.app/Contents/MacOS',
+>>
+>>           location = 'test', mapset = 'test',
+>>
+>>           gisDbase = '/Users/benholland/grassdata', override = TRUE)
+>>
+>> The complete error message I received a few minutes ago:
+>>
+>> dyld: Library not loaded:
+>> /Applications/GRASS/GRASS-7.0.app/Contents/MacOS/lib/libgrass_gis.7.0.0.dylib
+>>
+>>   Referenced from: /Applications/GRASS-7.0.app/Contents/MacOS/bin/g.gisenv
+>>
+>>   Reason: no suitable image found.  Did find:
+>>
+>> /Applications/GRASS/GRASS-7.0.app/Contents/MacOS/lib/libgrass_gis.7.0.0.dylib:
+>> stat() failed with errno=13
+>>
+>>
+>> When I open the Grass 7 GUI, there is a new location, so part of this code
+>> is working. However, there is no mapset.
+>>
+>>
+>> Thanks for the info.
+>>
+>> I remember having the same problem when using grass installed from the dmg
+>> file. (I am now using homebrew). You have to set a library path from R so
+>> that the libraries can be found. I can see if I can find the code tomorrow
+>> afternoon.
+>>
+>> Cheers,
+>>
+>> Rainer
+>>
+>>
+>>
+>> Thanks,
+>>
+>> Ben
+>>
+>> On Thu, Mar 5, 2015 at 12:46 PM, Rainer M Krug <r.m.krug at gmail.com> wrote:
+>>
+>>>
+>>>
+>>> Envoy? de mon iPhone
+>>>
+>>> Le 5 mars 2015 ? 19:39, Benjamin Holland <ben.holland at gmail.com> a
+>>> ?crit :
+>>>
+>>> Hi, all. After some research, I've seen that the dyld error is quite
+>>> common. After successfully installing rgrass7 from source, I tried to
+>>> initiate GRASS in R. This is my first time trying this, so I could be doing
+>>> some things incorrectly. I'm running on OSX Yosemite.
+>>>
+>>>
+>>> What is the exact error message?
+>>> When do you get it?
+>>> Which commands did you execute?
+>>> How did you install grass, R, gdal, ... ?
+>>> Which versions?
+>>>
+>>> More information is needed to provide any help.
+>>>
+>>> Cheers,
+>>>
+>>> Rainer
+>>>
+>>> I tried the troubleshooting suggestion on the grass wiki, but after
+>>> establishing the link to /user/local/lib I'm still getting the same error.
+>>> Does anyone have any suggestions?
+>>>
+>>> Thanks,
+>>>
+>>> Ben Holland
+>>>
+>>>
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats at lists.osgeo.org
+>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>
+>>>
+>>
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+PGP: 0x0F52F982
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 494 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150306/52df6dfe/attachment.pgp>
+
+From Roger.Bivand at nhh.no  Wed Mar 11 03:19:18 2015
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed, 11 Mar 2015 11:19:18 +0100
+Subject: [GRASS-stats] rgrass7 on CRAN
+Message-ID: <alpine.LFD.2.11.1503111115290.12827@reclus.nhh.no>
+
+The rgrass7 package interfacing R and GRASS 7 is now on CRAN:
+
+http://cran.r-project.org/web/packages/rgrass7/index.html
+
+The examples use the smaller subset North Carolina location.
+
+Thanks for lots of helpful input in the lead-up to release!
+
+Roger
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+
+
+From Rainer at krugs.de  Thu Mar 12 01:26:51 2015
+From: Rainer at krugs.de (Rainer M Krug)
+Date: Thu, 12 Mar 2015 09:26:51 +0100
+Subject: [GRASS-stats] rgrass7 on CRAN
+In-Reply-To: <alpine.LFD.2.11.1503111115290.12827@reclus.nhh.no> (Roger
+	Bivand's message of "Wed, 11 Mar 2015 11:19:18 +0100")
+References: <alpine.LFD.2.11.1503111115290.12827@reclus.nhh.no>
+Message-ID: <m2sidamxis.fsf@krugs.de>
+
+Thanks Roger.
+
+Rainer
+
+Roger Bivand <Roger.Bivand at nhh.no> writes:
+
+> The rgrass7 package interfacing R and GRASS 7 is now on CRAN:
+>
+> http://cran.r-project.org/web/packages/rgrass7/index.html
+>
+> The examples use the smaller subset North Carolina location.
+>
+> Thanks for lots of helpful input in the lead-up to release!
+>
+> Roger
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer at krugs.de
+
+Skype:      RMkrug
+
+PGP: 0x0F52F982
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 494 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150312/48b239b1/attachment.pgp>
+
+From nik at nikosalexandris.net  Thu Mar 12 02:51:22 2015
+From: nik at nikosalexandris.net (Nikos Alexandris)
+Date: Thu, 12 Mar 2015 11:51:22 +0200
+Subject: [GRASS-stats] rgrass7 on CRAN
+In-Reply-To: <alpine.LFD.2.11.1503111115290.12827@reclus.nhh.no>
+References: <alpine.LFD.2.11.1503111115290.12827@reclus.nhh.no>
+Message-ID: <6b9d9ade242528b0df9393065914f324@nikosalexandris.net>
+
+On 11.03.2015 12:19, Roger Bivand wrote:
+> The rgrass7 package interfacing R and GRASS 7 is now on CRAN:
+>
+> http://cran.r-project.org/web/packages/rgrass7/index.html
+>
+> The examples use the smaller subset North Carolina location.
+>
+> Thanks for lots of helpful input in the lead-up to release!
+>
+> Roger
+
+That is so cool!  A million thanks.
+
+Nikos
+
+From mryogeshbansal at live.com  Sun Mar 15 08:34:32 2015
+From: mryogeshbansal at live.com (yogeshbansal)
+Date: Sun, 15 Mar 2015 08:34:32 -0700 (PDT)
+Subject: [GRASS-stats] v.isochrones in spgrass7
+Message-ID: <1426433672074-5193445.post@n6.nabble.com>
+
+Hi everyone,
+
+I am able to use the v.isochrones addon in GRASS7. But if i try to use the
+v.isochrones command by wrapping it in execGRASS() it says the
+v.iochrones.exe doesn't exist. I checked the issue and what i could
+understand is the v.isochrones addon is run directly using it's python
+scritp and a .exe file for same is not stored when i install this addon.
+
+So is there any way i can use the v.isochrones from inside R using spgrass7
+package?
+
+Thanks in advance.
+
+Regards
+Yogesh Bansal
+
+
+
+--
+View this message in context: http://osgeo-org.1560.x6.nabble.com/v-isochrones-in-spgrass7-tp5193445.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+
+From Roger.Bivand at nhh.no  Sun Mar 15 11:09:41 2015
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun, 15 Mar 2015 19:09:41 +0100
+Subject: [GRASS-stats] v.isochrones in spgrass7
+In-Reply-To: <1426433672074-5193445.post@n6.nabble.com>
+References: <1426433672074-5193445.post@n6.nabble.com>
+Message-ID: <alpine.LFD.2.11.1503151855530.16868@reclus.nhh.no>
+
+On Sun, 15 Mar 2015, yogeshbansal wrote:
+
+> Hi everyone,
+>
+> I am able to use the v.isochrones addon in GRASS7. But if i try to use the
+> v.isochrones command by wrapping it in execGRASS() it says the
+> v.iochrones.exe doesn't exist. I checked the issue and what i could
+> understand is the v.isochrones addon is run directly using it's python
+> scritp and a .exe file for same is not stored when i install this addon.
+>
+> So is there any way i can use the v.isochrones from inside R using spgrass7
+> package?
+
+Yes, use system() or system2() as this should "see" the same things as 
+GRASS "sees".
+
+I have no access to a Windows system running GRASS 7 with extensions and 
+rgrass7. You can try running parseGRASS() yourself under debug() to see 
+what happens when pyScripts is read. Or look at:
+
+get("pyScripts", envir=rgrass7:::.GRASS_CACHE)
+
+in Windows to see which values are present. As rgrass7 loads, the files in
+
+basename(list.files(paste(Sys.getenv("WINGISBASE"),
+       "scripts", sep="/"), pattern="py$"))
+
+should be placed in this character vector, removing the file extension.
+
+If they are not in this list and are not in the exclusion list, the 
+assumption is that they are regular *.exe modules.
+
+What we do not know, is whether addons are handled properly. I cannot 
+check this, so need input from users who can check it.
+
+Roger
+
+>
+> Thanks in advance.
+>
+> Regards
+> Yogesh Bansal
+>
+>
+>
+> --
+> View this message in context: http://osgeo-org.1560.x6.nabble.com/v-isochrones-in-spgrass7-tp5193445.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+
+
+From ftonini84 at gmail.com  Wed Mar 18 08:18:20 2015
+From: ftonini84 at gmail.com (Francesco Tonini)
+Date: Wed, 18 Mar 2015 11:18:20 -0400
+Subject: [GRASS-stats] Error rgrass7 using readRAST()
+Message-ID: <5509973C.2040700@gmail.com>
+
+Dear all,
+
+I am testing rgrass7 and trying to read a single raster file calling R 
+from GRASS. I am using the function readRAST(). Currently, this return a 
+SpatialGridDataFrame R object but it seems to have a bug when reading 
+the correct number of observations. In my case the input raster is 100 x 
+100 so it should have 10,000 observations (ncell). Instead, readRAST() 
+read 100 x 101 with 10,100 observations. Did anybody encounter this 
+issue or know what it could be caused by?
+I can send over my input raster if that helps to test on your machines.
+
+Any help is much appreciated.
+
+Thank you.
+Francesco
+
+From Roger.Bivand at nhh.no  Wed Mar 18 08:32:39 2015
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed, 18 Mar 2015 16:32:39 +0100
+Subject: [GRASS-stats] Error rgrass7 using readRAST()
+In-Reply-To: <5509973C.2040700@gmail.com>
+References: <5509973C.2040700@gmail.com>
+Message-ID: <alpine.LFD.2.11.1503181625450.25797@reclus.nhh.no>
+
+On Wed, 18 Mar 2015, Francesco Tonini wrote:
+
+> Dear all,
+>
+> I am testing rgrass7 and trying to read a single raster file calling R from 
+> GRASS. I am using the function readRAST(). Currently, this return a 
+> SpatialGridDataFrame R object but it seems to have a bug when reading the 
+> correct number of observations. In my case the input raster is 100 x 100 so 
+> it should have 10,000 observations (ncell). Instead, readRAST() read 100 x 
+> 101 with 10,100 observations. Did anybody encounter this issue or know what 
+> it could be caused by?
+> I can send over my input raster if that helps to test on your machines.
+
+Please make an archive file of (parts of) your location, including all the 
+upper-level files, but maybe excluding other data than the raster file in 
+question. In the packaged location, the same problem should occur. Put the 
+archive file somewhere from which it can be downloaded. I'll take a look.
+
+Roger
+
+>
+> Any help is much appreciated.
+>
+> Thank you.
+> Francesco
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats at lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+
+
+From ftonini84 at gmail.com  Wed Mar 18 08:42:06 2015
+From: ftonini84 at gmail.com (Francesco Tonini)
+Date: Wed, 18 Mar 2015 11:42:06 -0400
+Subject: [GRASS-stats] Error rgrass7 using readRAST()
+In-Reply-To: <alpine.LFD.2.11.1503181625450.25797@reclus.nhh.no>
+References: <5509973C.2040700@gmail.com>
+	<alpine.LFD.2.11.1503181625450.25797@reclus.nhh.no>
+Message-ID: <55099CCE.8010207@gmail.com>
+
+Roger,
+
+Apparently the error was due to a mismatch with the default g.region. 
+After checking in GRASS for g.region -p I found that it was set to 100 x 
+101 columns. If any of you ever encounter the same problem, just make 
+sure to set the g.region using the same input raster of interest, i.e. 
+using g.region raster=/your_raster_name/.
+
+Are there any plans to make use of the 'raster' package so that 
+readRAST() reads a 'raster' R obj instead of a sp griddataframe? Same 
+for writeRAST().
+
+Thank you,
+Francesco
+
+
+
+
+On 3/18/2015 11:32 AM, Roger Bivand wrote:
+> On Wed, 18 Mar 2015, Francesco Tonini wrote:
+>
+>> Dear all,
+>>
+>> I am testing rgrass7 and trying to read a single raster file calling 
+>> R from GRASS. I am using the function readRAST(). Currently, this 
+>> return a SpatialGridDataFrame R object but it seems to have a bug 
+>> when reading the correct number of observations. In my case the input 
+>> raster is 100 x 100 so it should have 10,000 observations (ncell). 
+>> Instead, readRAST() read 100 x 101 with 10,100 observations. Did 
+>> anybody encounter this issue or know what it could be caused by?
+>> I can send over my input raster if that helps to test on your machines.
+>
+> Please make an archive file of (parts of) your location, including all 
+> the upper-level files, but maybe excluding other data than the raster 
+> file in question. In the packaged location, the same problem should 
+> occur. Put the archive file somewhere from which it can be downloaded. 
+> I'll take a look.
+>
+> Roger
+>
+>>
+>> Any help is much appreciated.
+>>
+>> Thank you.
+>> Francesco
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats at lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20150318/880991cd/attachment.html>
+
+From Roger.Bivand at nhh.no  Wed Mar 18 08:48:28 2015
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed, 18 Mar 2015 16:48:28 +0100
+Subject: [GRASS-stats] Error rgrass7 using readRAST()
+In-Reply-To: <55099CCE.8010207@gmail.com>
+References: <5509973C.2040700@gmail.com>
+	<alpine.LFD.2.11.1503181625450.25797@reclus.nhh.no>
+	<55099CCE.8010207@gmail.com>
+Message-ID: <alpine.LFD.2.11.1503181645430.25797@reclus.nhh.no>
+
+On Wed, 18 Mar 2015, Francesco Tonini wrote:
+
+> Roger,
+>
+> Apparently the error was due to a mismatch with the default g.region. After 
+> checking in GRASS for g.region -p I found that it was set to 100 x 101 
+> columns. If any of you ever encounter the same problem, just make sure to set 
+> the g.region using the same input raster of interest, i.e. using g.region 
+> raster=/your_raster_name/.
+
+OK, thanks for reporting the resolution. readRAST() does use the current 
+region, as does r.out.bin internally.
+
+>
+> Are there any plans to make use of the 'raster' package so that readRAST() 
+> reads a 'raster' R obj instead of a sp griddataframe? Same for writeRAST().
+>
+
+It has been mentioned, but nobody has contributed anything. Maybe the 
+temporal functions from the "spacetime" package will move, again, no 
+contributions received yet.
+
+Best wishes,
+
+Roger
+
+> Thank you,
+> Francesco
+>
+>
+>
+>
+> On 3/18/2015 11:32 AM, Roger Bivand wrote:
+>>  On Wed, 18 Mar 2015, Francesco Tonini wrote:
+>> 
+>> >  Dear all,
+>> > 
+>> >  I am testing rgrass7 and trying to read a single raster file calling R 
+>> >  from GRASS. I am using the function readRAST(). Currently, this return a 
+>> >  SpatialGridDataFrame R object but it seems to have a bug when reading 
+>> >  the correct number of observations. In my case the input raster is 100 x 
+>> >  100 so it should have 10,000 observations (ncell). Instead, readRAST() 
+>> >  read 100 x 101 with 10,100 observations. Did anybody encounter this 
+>> >  issue or know what it could be caused by?
+>> >  I can send over my input raster if that helps to test on your machines.
+>>
+>>  Please make an archive file of (parts of) your location, including all the
+>>  upper-level files, but maybe excluding other data than the raster file in
+>>  question. In the packaged location, the same problem should occur. Put the
+>>  archive file somewhere from which it can be downloaded. I'll take a look.
+>>
+>>  Roger
+>> 
+>> > 
+>> >  Any help is much appreciated.
+>> > 
+>> >  Thank you.
+>> >  Francesco
+>> >  _______________________________________________
+>> >  grass-stats mailing list
+>> >  grass-stats at lists.osgeo.org
+>> >  http://lists.osgeo.org/mailman/listinfo/grass-stats
+>> > 
+>> 
+>
+>
+>
+
+-- 
+Roger Bivand
+Department of Economics, Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 91 00
+e-mail: Roger.Bivand at nhh.no
+
+

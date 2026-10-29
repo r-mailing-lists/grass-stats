@@ -1,0 +1,242 @@
+From jarekj at amu.edu.pl  Thu May 10 13:52:01 2007
+From: jarekj at amu.edu.pl (Jarekj Jasiewicz)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] spatstat: trend to spatialgriddataframe - help needed
+Message-ID: <46435BC1.4030700@amu.edu.pl>
+
+Hi
+
+It seems very simple but I cannot pass throuh one step:
+
+I computed trend (ppm) in spatstat package:
+
+    ppm_2=ppm(unmark(pp), ~polynom(x,y,2))
+
+next I found, that I can convert that  object to  "something almost 
+like  <<im>> object" :
+
+    k=plot(ppm_2, ngrid=c(gmeta6()$cols, gmeta6()$rows), 
+superimpose=FALSE, how="image", pause=FALSE, plot.it=FALSE)
+
+but: it is not im object. It is object which only contains im inside. 
+Here is its structure:
+
+str(k)
+List of 1
+ $ trend:List of 1
+  ..$ :List of 11     ##here is something like "unnamed atribute" I 
+cannot pass this
+  .. ..$ v     : num [1:986, 1:1051] 1.06e-09 1.07e-09 1.08e-09 1.10e-09 
+1.11e-09 ...
+  .. ..$ dim   : int [1:2] 986 1051
+  .. ..$ xrange: num [1:2] 3684409 3713995
+  .. ..$ yrange: num [1:2] 5649780 5681325
+  .. ..$ xstep : num 28.2
+  .. ..$ ystep : num 32
+  .. ..$ xcol  : num [1:1051] 3684423 3684451 3684479 3684507 3684535 ...
+  .. ..$ yrow  : num [1:986] 5649796 5649828 5649860 5649892 5649924 ...
+  .. ..$ lev   : NULL
+  .. ..$ type  : chr "real"
+  .. ..$ units :List of 3
+  .. .. ..$ singular  : chr "unit"
+  .. .. ..$ plural    : chr "units"
+  .. .. ..$ multiplier: num 1
+  .. .. ..- attr(*, "class")= chr "units"
+  .. ..- attr(*, "class")= chr "im"
+ - attr(*, "class")= chr "plotppm"
+ - attr(*, "mrkvals")= num 1
+
+
+I simply don't know how extract that part which is im object (to convert 
+it next to spatialgriddataframe) or even only v (v I can insert to any 
+im object and next to convert it)
+
+I hope that problem is trivial to more advanced R users
+
+Jarek
+
+
+
+
+
+From Roger.Bivand at nhh.no  Thu May 10 15:00:18 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] spatstat: trend to spatialgriddataframe - help needed
+In-Reply-To: <46435BC1.4030700@amu.edu.pl>
+Message-ID: <Pine.LNX.4.44.0705102054070.13067-100000@reclus.nhh.no>
+
+On Thu, 10 May 2007, Jarekj Jasiewicz wrote:
+
+> Hi
+> 
+> It seems very simple but I cannot pass throuh one step:
+> 
+> I computed trend (ppm) in spatstat package:
+> 
+>     ppm_2=ppm(unmark(pp), ~polynom(x,y,2))
+> 
+> next I found, that I can convert that  object to  "something almost 
+> like  <<im>> object" :
+> 
+>     k=plot(ppm_2, ngrid=c(gmeta6()$cols, gmeta6()$rows), 
+> superimpose=FALSE, how="image", pause=FALSE, plot.it=FALSE)
+> 
+> but: it is not im object. It is object which only contains im inside. 
+> Here is its structure:
+> 
+> str(k)
+> List of 1
+>  $ trend:List of 1
+>   ..$ :List of 11     ##here is something like "unnamed atribute" I 
+> cannot pass this
+
+Try str(k$trend[[1]]$v) - if this accesses the matrix with the [[ operator
+(first unnamed component of trend), then the other bits ought to follow.
+Please note that polynom() does not protect the powered coordinates from
+numerical overflow, so I'd be cautious unless you know that x and y are
+only small numbers.
+
+Roger
+
+>   .. ..$ v     : num [1:986, 1:1051] 1.06e-09 1.07e-09 1.08e-09 1.10e-09 
+> 1.11e-09 ...
+>   .. ..$ dim   : int [1:2] 986 1051
+>   .. ..$ xrange: num [1:2] 3684409 3713995
+>   .. ..$ yrange: num [1:2] 5649780 5681325
+>   .. ..$ xstep : num 28.2
+>   .. ..$ ystep : num 32
+>   .. ..$ xcol  : num [1:1051] 3684423 3684451 3684479 3684507 3684535 ...
+>   .. ..$ yrow  : num [1:986] 5649796 5649828 5649860 5649892 5649924 ...
+>   .. ..$ lev   : NULL
+>   .. ..$ type  : chr "real"
+>   .. ..$ units :List of 3
+>   .. .. ..$ singular  : chr "unit"
+>   .. .. ..$ plural    : chr "units"
+>   .. .. ..$ multiplier: num 1
+>   .. .. ..- attr(*, "class")= chr "units"
+>   .. ..- attr(*, "class")= chr "im"
+>  - attr(*, "class")= chr "plotppm"
+>  - attr(*, "mrkvals")= num 1
+> 
+> 
+> I simply don't know how extract that part which is im object (to convert 
+> it next to spatialgriddataframe) or even only v (v I can insert to any 
+> im object and next to convert it)
+> 
+> I hope that problem is trivial to more advanced R users
+> 
+> Jarek
+> 
+> 
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From jarekj at amu.edu.pl  Thu May 10 15:39:49 2007
+From: jarekj at amu.edu.pl (Jarekj Jasiewicz)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] spatstat: trend to spatialgriddataframe - help needed
+In-Reply-To: <Pine.LNX.4.44.0705102054070.13067-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0705102054070.13067-100000@reclus.nhh.no>
+Message-ID: <46437505.2000600@amu.edu.pl>
+
+Roger Bivand napisa?(a):
+> On Thu, 10 May 2007, Jarekj Jasiewicz wrote:
+>
+>   
+>> Hi
+>>
+>> It seems very simple but I cannot pass throuh one step:
+>>
+>> I computed trend (ppm) in spatstat package:
+>>
+>>     ppm_2=ppm(unmark(pp), ~polynom(x,y,2))
+>>
+>> next I found, that I can convert that  object to  "something almost 
+>> like  <<im>> object" :
+>>
+>>     k=plot(ppm_2, ngrid=c(gmeta6()$cols, gmeta6()$rows), 
+>> superimpose=FALSE, how="image", pause=FALSE, plot.it=FALSE)
+>>
+>> but: it is not im object. It is object which only contains im inside. 
+>> Here is its structure:
+>>
+>> str(k)
+>> List of 1
+>>  $ trend:List of 1
+>>   ..$ :List of 11     ##here is something like "unnamed atribute" I 
+>> cannot pass this
+>>     
+>
+> Try str(k$trend[[1]]$v) - if this accesses the matrix with the [[ operator
+> (first unnamed component of trend), then the other bits ought to follow.
+> Please note that polynom() does not protect the powered coordinates from
+> numerical overflow, so I'd be cautious unless you know that x and y are
+> only small numbers.
+>
+> Roger
+>
+>   
+>>   .. ..$ v     : num [1:986, 1:1051] 1.06e-09 1.07e-09 1.08e-09 1.10e-09 
+>> 1.11e-09 ...
+>>   .. ..$ dim   : int [1:2] 986 1051
+>>   .. ..$ xrange: num [1:2] 3684409 3713995
+>>   .. ..$ yrange: num [1:2] 5649780 5681325
+>>   .. ..$ xstep : num 28.2
+>>   .. ..$ ystep : num 32
+>>   .. ..$ xcol  : num [1:1051] 3684423 3684451 3684479 3684507 3684535 ...
+>>   .. ..$ yrow  : num [1:986] 5649796 5649828 5649860 5649892 5649924 ...
+>>   .. ..$ lev   : NULL
+>>   .. ..$ type  : chr "real"
+>>   .. ..$ units :List of 3
+>>   .. .. ..$ singular  : chr "unit"
+>>   .. .. ..$ plural    : chr "units"
+>>   .. .. ..$ multiplier: num 1
+>>   .. .. ..- attr(*, "class")= chr "units"
+>>   .. ..- attr(*, "class")= chr "im"
+>>  - attr(*, "class")= chr "plotppm"
+>>  - attr(*, "mrkvals")= num 1
+>>
+>>
+>> I simply don't know how extract that part which is im object (to convert 
+>> it next to spatialgriddataframe) or even only v (v I can insert to any 
+>> im object and next to convert it)
+>>
+>> I hope that problem is trivial to more advanced R users
+>>
+>> Jarek
+>>
+>>
+>>
+>>
+>> _______________________________________________
+>> statsgrass mailing list
+>> statsgrass@grass.itc.it
+>> http://grass.itc.it/mailman/listinfo/statsgrass
+>>
+>>     
+>
+>   
+thanks, it works. As I thought It was trivial :)
+
+thanks also for informations of overflow. as you see x and y are rather 
+huge, I tested trend up to fourth polynominal, without overflow, the 
+numbers rather are in double number range
+
+
+Jarek
+
+

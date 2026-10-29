@@ -1,0 +1,745 @@
+From bessertim at gmx.de  Wed Jul 20 12:00:16 2011
+From: bessertim at gmx.de (Tim Besser)
+Date: Wed Jul 20 13:45:29 2011
+Subject: [GRASS-stats] Error using GRASS from R
+Message-ID: <4E26FB90.4050809@gmx.de>
+
+Dear GRASS-community,
+
+I have a very strange problem. I wrote a script in R (2.10.1) for the 
+preparation of my datasets which works fine on my laptop (winxp). I do 
+not start my R session from GRASS but use GRASS through the initGRASS 
+and execGRASS commands. I use the "spgrass6" package and GRASS 6.4.1. As 
+the script would run for days on my old laptop I now got a remote 
+desktop connection to a much faster computer at the university (win7). 
+However, while cmds like r.reclass or r.in.gdal (execGRASS) work on that 
+computer the r.patch (execGRASS) cmd produces following error:
+
+execGRASS("r.patch", flags=c("z"), 
+parameters=list(input="mangroves_1989_138_044_LR_recl,mangroves_1989_138_045_UL_recl,mangroves_1989_138_045_UR_recl", 
+output="testomat"), intern=T)
+
+Error in system(cmd0, intern = TRUE) :
+   Createprocess konnte 'C:\GRASS6~1.1\bin\RPATCH~1.EXE 
+--interface-description' nicht ausf?hren
+Fehler in parseGRASS(cmd) : r.patch not found
+
+I checked the GRASS directory and it is set right in the initGRASS command.
+
+I hope you can help me with one. I have no clue what to do!
+
+Thanks in advance,
+
+Tim
+
+From Roger.Bivand at nhh.no  Wed Jul 20 14:32:00 2011
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Jul 20 16:26:05 2011
+Subject: [GRASS-stats] Error using GRASS from R
+In-Reply-To: <4E26FB90.4050809@gmx.de>
+References: <4E26FB90.4050809@gmx.de>
+Message-ID: <alpine.LRH.2.00.1107201949180.11580@reclus.nhh.no>
+
+On Wed, 20 Jul 2011, Tim Besser wrote:
+
+> Dear GRASS-community,
+>
+> I have a very strange problem. I wrote a script in R (2.10.1) for the 
+> preparation of my datasets which works fine on my laptop (winxp). I do not 
+> start my R session from GRASS but use GRASS through the initGRASS and 
+> execGRASS commands. I use the "spgrass6" package and GRASS 6.4.1. As the 
+> script would run for days on my old laptop I now got a remote desktop 
+> connection to a much faster computer at the university (win7). However, while 
+> cmds like r.reclass or r.in.gdal (execGRASS) work on that computer the 
+> r.patch (execGRASS) cmd produces following error:
+
+Do not start R in GRASS using initGRASS when you are using an exiting 
+location - I will most likely remove this possibility at the next release 
+as it confuses users. Start in the usual way by starting GRASS in a 
+terminal - text interface - and then start R from the GRASS prompt, or 
+use the MSYS console within GRASS (the second of the two GRASS icons).
+
+In your case, I cannot even see why you need R - why not just write a 
+shell script, or in GRASS 7 a Python script?
+
+Can you run parseGRASS("r.patch")? What does parseGRASS("r.reclass") 
+return? For some reason, your remote Windows GRASS installation appears to 
+be treating programs differently. Make sure that you expose the extensions 
+when you observe the names of files under Windows - by default it displays 
+names without extensions, and a missing extension may be the problem. 
+There may also be an issue in the way that Win7 handles DOS-style path 
+formats - I have no access to such an OS, so have no idea. I cannot see 
+any differences with the Windows native GRASS 6.4.1 on XP.
+
+Createprocess is what starts a new process, and may possibly have 
+permissions issues. You'd need to run the same thing locally on an 
+identical Win7 system with the same permissions to check. Using a shell 
+script would avoid this, I believe.
+
+Roger
+
+>
+> execGRASS("r.patch", flags=c("z"), 
+> parameters=list(input="mangroves_1989_138_044_LR_recl,mangroves_1989_138_045_UL_recl,mangroves_1989_138_045_UR_recl", 
+> output="testomat"), intern=T)
+>
+> Error in system(cmd0, intern = TRUE) :
+>  Createprocess konnte 'C:\GRASS6~1.1\bin\RPATCH~1.EXE 
+> --interface-description' nicht ausf?hren
+> Fehler in parseGRASS(cmd) : r.patch not found
+>
+> I checked the GRASS directory and it is set right in the initGRASS command.
+>
+> I hope you can help me with one. I have no clue what to do!
+>
+> Thanks in advance,
+>
+> Tim
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From bessertim at gmx.de  Thu Jul 21 04:28:22 2011
+From: bessertim at gmx.de (Tim Besser)
+Date: Thu Jul 21 07:07:54 2011
+Subject: [GRASS-stats] Error using GRASS from R
+In-Reply-To: <alpine.LRH.2.00.1107201949180.11580@reclus.nhh.no>
+References: <4E26FB90.4050809@gmx.de>
+	<alpine.LRH.2.00.1107201949180.11580@reclus.nhh.no>
+Message-ID: <4E27E326.6010906@gmx.de>
+
+Ok, now I tried it in the GRASS terminal. Used parseGRASS("r.reclass") 
+and it showed me the GRASS output as desired. With parseGRASS("r.patch") 
+I had the same error as before: "r.patch not found"
+
+I am a programming beginner and I am very happy that I managed writing a 
+R script which does everything I need step by step. I begin to 
+understand that doing this from R to GRASS is not too straight-forward. 
+But I got quiet familiar in R coding.
+
+When I start R from GRASS (I managed) how do I use the GRASS-commands 
+then. No initGRASS and no execGRASS, but what else?
+
+And the last thing. The file extensions in Win you meant? Enabled them 
+but still the same error.
+
+Cheers,
+
+Tim
+
+Am 20.07.2011 20:32, schrieb Roger Bivand:
+> On Wed, 20 Jul 2011, Tim Besser wrote:
+>
+>> Dear GRASS-community,
+>>
+>> I have a very strange problem. I wrote a script in R (2.10.1) for the 
+>> preparation of my datasets which works fine on my laptop (winxp). I 
+>> do not start my R session from GRASS but use GRASS through the 
+>> initGRASS and execGRASS commands. I use the "spgrass6" package and 
+>> GRASS 6.4.1. As the script would run for days on my old laptop I now 
+>> got a remote desktop connection to a much faster computer at the 
+>> university (win7). However, while cmds like r.reclass or r.in.gdal 
+>> (execGRASS) work on that computer the r.patch (execGRASS) cmd 
+>> produces following error:
+>
+> Do not start R in GRASS using initGRASS when you are using an exiting 
+> location - I will most likely remove this possibility at the next 
+> release as it confuses users. Start in the usual way by starting GRASS 
+> in a terminal - text interface - and then start R from the GRASS 
+> prompt, or use the MSYS console within GRASS (the second of the two 
+> GRASS icons).
+>
+> In your case, I cannot even see why you need R - why not just write a 
+> shell script, or in GRASS 7 a Python script?
+>
+> Can you run parseGRASS("r.patch")? What does parseGRASS("r.reclass") 
+> return? For some reason, your remote Windows GRASS installation 
+> appears to be treating programs differently. Make sure that you expose 
+> the extensions when you observe the names of files under Windows - by 
+> default it displays names without extensions, and a missing extension 
+> may be the problem. There may also be an issue in the way that Win7 
+> handles DOS-style path formats - I have no access to such an OS, so 
+> have no idea. I cannot see any differences with the Windows native 
+> GRASS 6.4.1 on XP.
+>
+> Createprocess is what starts a new process, and may possibly have 
+> permissions issues. You'd need to run the same thing locally on an 
+> identical Win7 system with the same permissions to check. Using a 
+> shell script would avoid this, I believe.
+>
+> Roger
+>
+>>
+>> execGRASS("r.patch", flags=c("z"), 
+>> parameters=list(input="mangroves_1989_138_044_LR_recl,mangroves_1989_138_045_UL_recl,mangroves_1989_138_045_UR_recl", 
+>> output="testomat"), intern=T)
+>>
+>> Error in system(cmd0, intern = TRUE) :
+>>  Createprocess konnte 'C:\GRASS6~1.1\bin\RPATCH~1.EXE 
+>> --interface-description' nicht ausf?hren
+>> Fehler in parseGRASS(cmd) : r.patch not found
+>>
+>> I checked the GRASS directory and it is set right in the initGRASS 
+>> command.
+>>
+>> I hope you can help me with one. I have no clue what to do!
+>>
+>> Thanks in advance,
+>>
+>> Tim
+>>
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>
+
+
+From r.m.krug at gmail.com  Thu Jul 21 04:52:31 2011
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Thu Jul 21 07:33:11 2011
+Subject: initGRASS versus R in grass - WAS: [GRASS-stats] Error using GRASS
+	from R
+Message-ID: <CAGhLh6HCQDOqYFxcT2e+EXuY+DwLeQbi0m9a5LSq7=BJw_nBvQ@mail.gmail.com>
+
+2011/7/20 Roger Bivand <Roger.Bivand@nhh.no>
+
+> On Wed, 20 Jul 2011, Tim Besser wrote:
+>
+>  Dear GRASS-community,
+>>
+>> I have a very strange problem. I wrote a script in R (2.10.1) for the
+>> preparation of my datasets which works fine on my laptop (winxp). I do not
+>> start my R session from GRASS but use GRASS through the initGRASS and
+>> execGRASS commands. I use the "spgrass6" package and GRASS 6.4.1. As the
+>> script would run for days on my old laptop I now got a remote desktop
+>> connection to a much faster computer at the university (win7). However,
+>> while cmds like r.reclass or r.in.gdal (execGRASS) work on that computer the
+>> r.patch (execGRASS) cmd produces following error:
+>>
+>
+> Do not start R in GRASS using initGRASS when you are using an exiting
+> location - I will most likely remove this possibility at the next release as
+> it confuses users
+
+
+No - please don't. I am using it a lot, and it works very nicely (at least
+(and only?) for me?). And it makes live so much easier for me - I am running
+the simulations non-interactive on a cluster, and starting grass, which then
+starts R was always a hassle.
+
+What about adding a new option (errorOnExistingLocation=TRUE), which raises
+an error when the location exists?
+
+I assume that quite a few users are using R as a scripting language, and in
+this case, and consequently is more logical to me to have R as the base,
+which then initializes the grass environment when I need it, and not that I
+have to decide before I start R, if I have to start R in grass.
+
+I must admit, I am not to clear why it can be a problem when using initGRASS
+for an existing location (I know you explained it already, but I must have
+missed something).
+
+I remember reading that somebody was putting all the gras environmental
+variable initialization into .bash so that he/she can use grass from any
+terminal - so just setting the variables should be enough, if one is careful
+not to work in the same location from two different shells (i.e. grass
+sessions).
+
+So there are effectively two aspects of interfacing GRASS with R:
+
+1) analysing spatial data which *is in R* with GRASS
+2) analysing spatial data which *is in a GRASS database* with R
+
+I am using a mix of 1 and 2: my data comes from R and (mainly) a GRASS
+database, is processed in R and GRASS, and results are stored in the GRASS
+database.
+
+As the name of the location is determined in the parameter file (which is
+loaded into the R session), to go back to R inside grass would make things
+considerably more complex.
+
+By the way - how is python handling the link to GRASS? As I never used
+python, I have no idea how this works.
+
+Hope I will be able to convince you to leave the possibility in spgrass6,
+
+Cheers,
+
+Rainer
+
+ ...SNIP...
+
+> Roger
+>
+>
+>
+>> execGRASS("r.patch", flags=c("z"), parameters=list(input="**
+>> mangroves_1989_138_044_LR_**recl,mangroves_1989_138_045_**
+>> UL_recl,mangroves_1989_138_**045_UR_recl", output="testomat"), intern=T)
+>>
+>> Error in system(cmd0, intern = TRUE) :
+>>  Createprocess konnte 'C:\GRASS6~1.1\bin\RPATCH~1.**EXE
+>> --interface-description' nicht ausf?hren
+>> Fehler in parseGRASS(cmd) : r.patch not found
+>>
+>> I checked the GRASS directory and it is set right in the initGRASS
+>> command.
+>>
+>> I hope you can help me with one. I have no clue what to do!
+>>
+>> Thanks in advance,
+>>
+>> Tim
+>>
+>> ______________________________**_________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/**mailman/listinfo/grass-stats<http://lists.osgeo.org/mailman/listinfo/grass-stats>
+>>
+>>
+> --
+> Roger Bivand
+> Department of Economics, NHH Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology,
+UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax (F):       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer@krugs.de
+
+Skype:      RMkrug
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20110721/efe22059/attachment.html
+From r.m.krug at gmail.com  Thu Jul 21 04:56:53 2011
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Thu Jul 21 07:37:46 2011
+Subject: initGRASS versus R in grass - WAS: [GRASS-stats] Error using
+	GRASS from R
+In-Reply-To: <CAGhLh6HCQDOqYFxcT2e+EXuY+DwLeQbi0m9a5LSq7=BJw_nBvQ@mail.gmail.com>
+References: <CAGhLh6HCQDOqYFxcT2e+EXuY+DwLeQbi0m9a5LSq7=BJw_nBvQ@mail.gmail.com>
+Message-ID: <CAGhLh6Goi3zuewOvFPE9Hvj6ax0oJqwCyGJuA-mxni_+daJfQQ@mail.gmail.com>
+
+On Thu, Jul 21, 2011 at 10:52 AM, Rainer M Krug <r.m.krug@gmail.com> wrote:
+
+>
+>
+> 2011/7/20 Roger Bivand <Roger.Bivand@nhh.no>
+>
+>> On Wed, 20 Jul 2011, Tim Besser wrote:
+>>
+>>  Dear GRASS-community,
+>>>
+>>> I have a very strange problem. I wrote a script in R (2.10.1) for the
+>>> preparation of my datasets which works fine on my laptop (winxp). I do not
+>>> start my R session from GRASS but use GRASS through the initGRASS and
+>>> execGRASS commands. I use the "spgrass6" package and GRASS 6.4.1. As the
+>>> script would run for days on my old laptop I now got a remote desktop
+>>> connection to a much faster computer at the university (win7). However,
+>>> while cmds like r.reclass or r.in.gdal (execGRASS) work on that computer the
+>>> r.patch (execGRASS) cmd produces following error:
+>>>
+>>
+>> Do not start R in GRASS using initGRASS when you are using an exiting
+>> location - I will most likely remove this possibility at the next release as
+>> it confuses users
+>
+>
+> No - please don't. I am using it a lot, and it works very nicely (at least
+> (and only?) for me?). And it makes live so much easier for me - I am running
+> the simulations non-interactive on a cluster, and starting grass, which then
+> starts R was always a hassle.
+>
+> What about adding a new option (errorOnExistingLocation=TRUE), which raises
+> an error when the location exists?
+>
+> I assume that quite a few users are using R as a scripting language, and in
+> this case, and consequently is more logical to me to have R as the base,
+> which then initializes the grass environment when I need it, and not that I
+> have to decide before I start R, if I have to start R in grass.
+>
+> I must admit, I am not to clear why it can be a problem when using
+> initGRASS for an existing location (I know you explained it already, but I
+> must have missed something).
+>
+> I remember reading that somebody was putting all the gras environmental
+> variable initialization into .bash so that he/she can use grass from any
+> terminal - so just setting the variables should be enough, if one is careful
+> not to work in the same location from two different shells (i.e. grass
+> sessions).
+>
+
+Found the link:
+http://www.mail-archive.com/grass-user@lists.osgeo.org/msg06117.html
+
+
+> So there are effectively two aspects of interfacing GRASS with R:
+>
+> 1) analysing spatial data which *is in R* with GRASS
+> 2) analysing spatial data which *is in a GRASS database* with R
+>
+> I am using a mix of 1 and 2: my data comes from R and (mainly) a GRASS
+> database, is processed in R and GRASS, and results are stored in the GRASS
+> database.
+>
+> As the name of the location is determined in the parameter file (which is
+> loaded into the R session), to go back to R inside grass would make things
+> considerably more complex.
+>
+> By the way - how is python handling the link to GRASS? As I never used
+> python, I have no idea how this works.
+>
+> Hope I will be able to convince you to leave the possibility in spgrass6,
+>
+> Cheers,
+>
+> Rainer
+>
+>  ...SNIP...
+>
+>> Roger
+>>
+>>
+>>
+>>> execGRASS("r.patch", flags=c("z"), parameters=list(input="**
+>>> mangroves_1989_138_044_LR_**recl,mangroves_1989_138_045_**
+>>> UL_recl,mangroves_1989_138_**045_UR_recl", output="testomat"), intern=T)
+>>>
+>>> Error in system(cmd0, intern = TRUE) :
+>>>  Createprocess konnte 'C:\GRASS6~1.1\bin\RPATCH~1.**EXE
+>>> --interface-description' nicht ausf?hren
+>>> Fehler in parseGRASS(cmd) : r.patch not found
+>>>
+>>> I checked the GRASS directory and it is set right in the initGRASS
+>>> command.
+>>>
+>>> I hope you can help me with one. I have no clue what to do!
+>>>
+>>> Thanks in advance,
+>>>
+>>> Tim
+>>>
+>>> ______________________________**_________________
+>>> grass-stats mailing list
+>>> grass-stats@lists.osgeo.org
+>>> http://lists.osgeo.org/**mailman/listinfo/grass-stats<http://lists.osgeo.org/mailman/listinfo/grass-stats>
+>>>
+>>>
+>> --
+>> Roger Bivand
+>> Department of Economics, NHH Norwegian School of Economics,
+>> Helleveien 30, N-5045 Bergen, Norway.
+>> voice: +47 55 95 93 55; fax +47 55 95 95 43
+>> e-mail: Roger.Bivand@nhh.no
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>>
+>
+>
+> --
+> Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology,
+> UCT), Dipl. Phys. (Germany)
+>
+> Centre of Excellence for Invasion Biology
+> Stellenbosch University
+> South Africa
+>
+> Tel :       +33 - (0)9 53 10 27 44
+> Cell:       +33 - (0)6 85 62 59 98
+> Fax (F):       +33 - (0)9 58 10 27 44
+>
+> Fax (D):    +49 - (0)3 21 21 25 22 44
+>
+> email:      Rainer@krugs.de
+>
+> Skype:      RMkrug
+>
+>
+
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology,
+UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax (F):       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer@krugs.de
+
+Skype:      RMkrug
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20110721/3e861621/attachment-0001.html
+From Roger.Bivand at nhh.no  Thu Jul 21 07:38:50 2011
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Jul 21 10:28:00 2011
+Subject: [GRASS-stats] Error using GRASS from R
+In-Reply-To: <4E27E326.6010906@gmx.de>
+References: <4E26FB90.4050809@gmx.de>
+	<alpine.LRH.2.00.1107201949180.11580@reclus.nhh.no>
+	<4E27E326.6010906@gmx.de>
+Message-ID: <alpine.LRH.2.00.1107211337220.15907@reclus.nhh.no>
+
+On Thu, 21 Jul 2011, Tim Besser wrote:
+
+> Ok, now I tried it in the GRASS terminal. Used parseGRASS("r.reclass") and it 
+> showed me the GRASS output as desired. With parseGRASS("r.patch") I had the 
+> same error as before: "r.patch not found"
+>
+> I am a programming beginner and I am very happy that I managed writing a R 
+> script which does everything I need step by step. I begin to understand that 
+> doing this from R to GRASS is not too straight-forward. But I got quiet 
+> familiar in R coding.
+>
+> When I start R from GRASS (I managed) how do I use the GRASS-commands then. 
+> No initGRASS and no execGRASS, but what else?
+
+You do not need initGRASS(), because all the environment variables GRASS 
+needs are already provided. Use execGRASS() without initGRASS(). It is 
+more worrying that r.patch is still not seen.
+
+Roger
+
+>
+> And the last thing. The file extensions in Win you meant? Enabled them but 
+> still the same error.
+>
+> Cheers,
+>
+> Tim
+>
+> Am 20.07.2011 20:32, schrieb Roger Bivand:
+>> On Wed, 20 Jul 2011, Tim Besser wrote:
+>> 
+>>> Dear GRASS-community,
+>>> 
+>>> I have a very strange problem. I wrote a script in R (2.10.1) for the 
+>>> preparation of my datasets which works fine on my laptop (winxp). I do not 
+>>> start my R session from GRASS but use GRASS through the initGRASS and 
+>>> execGRASS commands. I use the "spgrass6" package and GRASS 6.4.1. As the 
+>>> script would run for days on my old laptop I now got a remote desktop 
+>>> connection to a much faster computer at the university (win7). However, 
+>>> while cmds like r.reclass or r.in.gdal (execGRASS) work on that computer 
+>>> the r.patch (execGRASS) cmd produces following error:
+>> 
+>> Do not start R in GRASS using initGRASS when you are using an exiting 
+>> location - I will most likely remove this possibility at the next release 
+>> as it confuses users. Start in the usual way by starting GRASS in a 
+>> terminal - text interface - and then start R from the GRASS prompt, or use 
+>> the MSYS console within GRASS (the second of the two GRASS icons).
+>> 
+>> In your case, I cannot even see why you need R - why not just write a shell 
+>> script, or in GRASS 7 a Python script?
+>> 
+>> Can you run parseGRASS("r.patch")? What does parseGRASS("r.reclass") 
+>> return? For some reason, your remote Windows GRASS installation appears to 
+>> be treating programs differently. Make sure that you expose the extensions 
+>> when you observe the names of files under Windows - by default it displays 
+>> names without extensions, and a missing extension may be the problem. There 
+>> may also be an issue in the way that Win7 handles DOS-style path formats - 
+>> I have no access to such an OS, so have no idea. I cannot see any 
+>> differences with the Windows native GRASS 6.4.1 on XP.
+>> 
+>> Createprocess is what starts a new process, and may possibly have 
+>> permissions issues. You'd need to run the same thing locally on an 
+>> identical Win7 system with the same permissions to check. Using a shell 
+>> script would avoid this, I believe.
+>> 
+>> Roger
+>> 
+>>> 
+>>> execGRASS("r.patch", flags=c("z"), 
+>>> parameters=list(input="mangroves_1989_138_044_LR_recl,mangroves_1989_138_045_UL_recl,mangroves_1989_138_045_UR_recl", 
+>>> output="testomat"), intern=T)
+>>> 
+>>> Error in system(cmd0, intern = TRUE) :
+>>>  Createprocess konnte 'C:\GRASS6~1.1\bin\RPATCH~1.EXE 
+>>> --interface-description' nicht ausf?hren
+>>> Fehler in parseGRASS(cmd) : r.patch not found
+>>> 
+>>> I checked the GRASS directory and it is set right in the initGRASS 
+>>> command.
+>>> 
+>>> I hope you can help me with one. I have no clue what to do!
+>>> 
+>>> Thanks in advance,
+>>> 
+>>> Tim
+>>> 
+>>> _______________________________________________
+>>> grass-stats mailing list
+>>> grass-stats@lists.osgeo.org
+>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>> 
+>> 
+>
+>
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From bessertim at gmx.de  Fri Jul 22 02:25:02 2011
+From: bessertim at gmx.de (Tim Besser)
+Date: Fri Jul 22 06:17:06 2011
+Subject: [GRASS-stats] Error using GRASS from R
+In-Reply-To: <alpine.LRH.2.00.1107211337220.15907@reclus.nhh.no>
+References: <4E26FB90.4050809@gmx.de>
+	<alpine.LRH.2.00.1107201949180.11580@reclus.nhh.no>
+	<4E27E326.6010906@gmx.de>
+	<alpine.LRH.2.00.1107211337220.15907@reclus.nhh.no>
+Message-ID: <4E2917BE.2070607@gmx.de>
+
+Yes thats really strange. But thanks anyway good hint to work from 
+GRASS, yet, the spgrass6 so far worked pretty good and without problems 
+(like Rainer wrote) for me too. I'll work around the problem now. Hope 
+to find the solution anyway....
+
+Tim
+
+Am 21.07.2011 13:38, schrieb Roger Bivand:
+> On Thu, 21 Jul 2011, Tim Besser wrote:
+>
+>> Ok, now I tried it in the GRASS terminal. Used 
+>> parseGRASS("r.reclass") and it showed me the GRASS output as desired. 
+>> With parseGRASS("r.patch") I had the same error as before: "r.patch 
+>> not found"
+>>
+>> I am a programming beginner and I am very happy that I managed 
+>> writing a R script which does everything I need step by step. I begin 
+>> to understand that doing this from R to GRASS is not too 
+>> straight-forward. But I got quiet familiar in R coding.
+>>
+>> When I start R from GRASS (I managed) how do I use the GRASS-commands 
+>> then. No initGRASS and no execGRASS, but what else?
+>
+> You do not need initGRASS(), because all the environment variables 
+> GRASS needs are already provided. Use execGRASS() without initGRASS(). 
+> It is more worrying that r.patch is still not seen.
+>
+> Roger
+>
+>>
+>> And the last thing. The file extensions in Win you meant? Enabled 
+>> them but still the same error.
+>>
+>> Cheers,
+>>
+>> Tim
+>>
+>> Am 20.07.2011 20:32, schrieb Roger Bivand:
+>>> On Wed, 20 Jul 2011, Tim Besser wrote:
+>>>
+>>>> Dear GRASS-community,
+>>>>
+>>>> I have a very strange problem. I wrote a script in R (2.10.1) for 
+>>>> the preparation of my datasets which works fine on my laptop 
+>>>> (winxp). I do not start my R session from GRASS but use GRASS 
+>>>> through the initGRASS and execGRASS commands. I use the "spgrass6" 
+>>>> package and GRASS 6.4.1. As the script would run for days on my old 
+>>>> laptop I now got a remote desktop connection to a much faster 
+>>>> computer at the university (win7). However, while cmds like 
+>>>> r.reclass or r.in.gdal (execGRASS) work on that computer the 
+>>>> r.patch (execGRASS) cmd produces following error:
+>>>
+>>> Do not start R in GRASS using initGRASS when you are using an 
+>>> exiting location - I will most likely remove this possibility at the 
+>>> next release as it confuses users. Start in the usual way by 
+>>> starting GRASS in a terminal - text interface - and then start R 
+>>> from the GRASS prompt, or use the MSYS console within GRASS (the 
+>>> second of the two GRASS icons).
+>>>
+>>> In your case, I cannot even see why you need R - why not just write 
+>>> a shell script, or in GRASS 7 a Python script?
+>>>
+>>> Can you run parseGRASS("r.patch")? What does parseGRASS("r.reclass") 
+>>> return? For some reason, your remote Windows GRASS installation 
+>>> appears to be treating programs differently. Make sure that you 
+>>> expose the extensions when you observe the names of files under 
+>>> Windows - by default it displays names without extensions, and a 
+>>> missing extension may be the problem. There may also be an issue in 
+>>> the way that Win7 handles DOS-style path formats - I have no access 
+>>> to such an OS, so have no idea. I cannot see any differences with 
+>>> the Windows native GRASS 6.4.1 on XP.
+>>>
+>>> Createprocess is what starts a new process, and may possibly have 
+>>> permissions issues. You'd need to run the same thing locally on an 
+>>> identical Win7 system with the same permissions to check. Using a 
+>>> shell script would avoid this, I believe.
+>>>
+>>> Roger
+>>>
+>>>>
+>>>> execGRASS("r.patch", flags=c("z"), 
+>>>> parameters=list(input="mangroves_1989_138_044_LR_recl,mangroves_1989_138_045_UL_recl,mangroves_1989_138_045_UR_recl", 
+>>>> output="testomat"), intern=T)
+>>>>
+>>>> Error in system(cmd0, intern = TRUE) :
+>>>>  Createprocess konnte 'C:\GRASS6~1.1\bin\RPATCH~1.EXE 
+>>>> --interface-description' nicht ausf?hren
+>>>> Fehler in parseGRASS(cmd) : r.patch not found
+>>>>
+>>>> I checked the GRASS directory and it is set right in the initGRASS 
+>>>> command.
+>>>>
+>>>> I hope you can help me with one. I have no clue what to do!
+>>>>
+>>>> Thanks in advance,
+>>>>
+>>>> Tim
+>>>>
+>>>> _______________________________________________
+>>>> grass-stats mailing list
+>>>> grass-stats@lists.osgeo.org
+>>>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>>>
+>>>
+>>
+>>
+>>
+>
+

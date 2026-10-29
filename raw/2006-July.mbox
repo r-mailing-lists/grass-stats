@@ -1,0 +1,557 @@
+From carlos.grohmann at gmail.com  Tue Jul 25 16:20:18 2006
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] fitting multiple variogram models
+Message-ID: <bd07447b0607251320x2767efb9kd93acb6a4e342d8e@mail.gmail.com>
+
+Hello all
+I'm with a problem here with gstat. I can calculate variograms in
+mutiple directions, say with alpha=c(0,45), but I don't know how to
+create different variogram models for each direction. Can I do this
+with gstat? Can I fit one model for 0 and another for 45?
+
+thanks
+
+
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+
+From sisma66 at tiscali.it  Wed Jul 26 03:32:37 2006
+From: sisma66 at tiscali.it (Pierluigi De Rosa)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] fitting multiple variogram models
+In-Reply-To: <bd07447b0607251320x2767efb9kd93acb6a4e342d8e@mail.gmail.com>
+References: <bd07447b0607251320x2767efb9kd93acb6a4e342d8e@mail.gmail.com>
+Message-ID: <200607260932.38162.sisma66@tiscali.it>
+
+Hy
+
+You can create a variogram model for different direction using the anis option 
+in vgm command.
+for example...
+If 0 is the main direction you can use:
+
+vgm(model="Exp",nugget=XX,psill=XX,range=XX,anis=c(0,0.5))
+
+where 0.5 is the ratio between the 2 range model for the 2 model.
+
+Pierluigi 
+Alle 22:20, marted? 25 luglio 2006, Carlos "Gu?no" Grohmann ha scritto:
+> Hello all
+> I'm with a problem here with gstat. I can calculate variograms in
+> mutiple directions, say with alpha=c(0,45), but I don't know how to
+> create different variogram models for each direction. Can I do this
+> with gstat? Can I fit one model for 0 and another for 45?
+>
+> thanks
+
+-- 
+
+Pierluigi De Rosa
+
+Department of Enviromental & Civil engineering 
+Faculty of Engineering 
+Perugia (Italy)
+
+
+From Thomas.Adams at noaa.gov  Thu Jul 27 13:20:16 2006
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] R/GRASS/Gaussian simulation issue
+Message-ID: <44C8F5D0.3000501@noaa.gov>
+
+List:
+
+I am attempting Gaussian simulation of modeled precipitation fields 
+which are, of course, like all precipitation data decidedly non-normal. 
+In order to do the simulations, the data must be transformed using a 
+normal score transform. I can do this in R using:
+
+z<-qnorm(ppoints(x)), where x is the precipitation field data.
+
+This works and I can transform the data back to precipitation values. 
+The problem I have is how do I do this maintaining the spatial patterns. 
+That is, I read the data into R from GRASS:
+
+precip<-readFLOAT6sp("data")
+
+After I perform the Gaussian simulation of modeled *transformed* 
+precipitation fields, I need to transform the data back to precipitation 
+values maintaining geographic/spatial patterns. How do I do this?
+
+Help is appreciated.
+
+Regards,
+Tom
+
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+
+From carlos.grohmann at gmail.com  Thu Jul 27 15:41:19 2006
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] gstat limitation?
+Message-ID: <bd07447b0607271241g5ddd3898v7eeca041dd86d5e3@mail.gmail.com>
+
+Hello
+I was wondering if gstat has any limitation about file size it can
+process. I want to resample a DEM of a large area (about 50x50 km, 30m
+res.) with kriging, but it get killed.
+
+Carlos
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+
+From jarekj at amu.edu.pl  Thu Jul 27 15:51:20 2006
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] gstat limitation?
+In-Reply-To: <bd07447b0607271241g5ddd3898v7eeca041dd86d5e3@mail.gmail.com>
+References: <bd07447b0607271241g5ddd3898v7eeca041dd86d5e3@mail.gmail.com>
+Message-ID: <44C91938.6080709@amu.edu.pl>
+
+Carlos "Gu?no" Grohmann napisa?(a):
+> Hello
+> I was wondering if gstat has any limitation about file size it can
+> process. I want to resample a DEM of a large area (about 50x50 km, 30m
+> res.) with kriging, but it get killed.
+>
+> Carlos
+>
+I don't know exaclty but it seems as an limitation of system memory - I 
+also had a problem with similar maps (5 m dem 16 x 16 km) - I tested it 
+with system monitor and I found resorces go to 0
+
+
+From Roger.Bivand at nhh.no  Thu Jul 27 15:58:16 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] gstat limitation?
+In-Reply-To: <bd07447b0607271241g5ddd3898v7eeca041dd86d5e3@mail.gmail.com>
+Message-ID: <Pine.LNX.4.44.0607272155261.6086-100000@reclus.nhh.no>
+
+On Thu, 27 Jul 2006, Carlos "Gu?no" Grohmann wrote:
+
+> Hello
+> I was wondering if gstat has any limitation about file size it can
+> process. I want to resample a DEM of a large area (about 50x50 km, 30m
+> res.) with kriging, but it get killed.
+
+That sounds painful, but it doesn't tell much. Without your verbatim 
+commands, it is difficult to tell - are you running gstat standalone, or 
+in R? At what step in the modelling process does the problem arise? 
+
+Roger
+
+> 
+> Carlos
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From carlos.grohmann at gmail.com  Thu Jul 27 16:38:32 2006
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] gstat limitation?
+In-Reply-To: <Pine.LNX.4.44.0607272155261.6086-100000@reclus.nhh.no>
+References: <bd07447b0607271241g5ddd3898v7eeca041dd86d5e3@mail.gmail.com>
+	<Pine.LNX.4.44.0607272155261.6086-100000@reclus.nhh.no>
+Message-ID: <bd07447b0607271338g661f00d7lf55177ffa5fa3b30@mail.gmail.com>
+
+I am running it in R. it get killed in the kriging step. I guess its
+abot system memory.
+
+Carlos
+
+
+On 7/27/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Thu, 27 Jul 2006, Carlos "Gu?no" Grohmann wrote:
+>
+> > Hello
+> > I was wondering if gstat has any limitation about file size it can
+> > process. I want to resample a DEM of a large area (about 50x50 km, 30m
+> > res.) with kriging, but it get killed.
+>
+> That sounds painful, but it doesn't tell much. Without your verbatim
+> commands, it is difficult to tell - are you running gstat standalone, or
+> in R? At what step in the modelling process does the problem arise?
+>
+> Roger
+>
+> >
+> > Carlos
+> >
+> >
+>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+>
+
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+
+From Seppo.Kaitala at fimr.fi  Thu Jul 27 21:01:01 2006
+From: Seppo.Kaitala at fimr.fi (Seppo.Kaitala@fimr.fi)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] Seppo Kaitala/FIMR/FI is out of the office.
+Message-ID: <OF45E685D5.C76BDF7C-ONC22571B9.00059668-C22571B9.00059668@fimr.fi>
+
+
+I will be out of the office starting  16.07.2006 and will not return until
+06.08.2006.
+
+I will respond to your message when I return.
+
+
+From Roger.Bivand at nhh.no  Fri Jul 28 07:15:15 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] gstat limitation?
+In-Reply-To: <bd07447b0607271338g661f00d7lf55177ffa5fa3b30@mail.gmail.com>
+Message-ID: <Pine.LNX.4.44.0607280946290.15447-100000@reclus.nhh.no>
+
+On Thu, 27 Jul 2006, Carlos "Gu?no" Grohmann wrote:
+
+> I am running it in R. it get killed in the kriging step. I guess its
+> abot system memory.
+
+What does "killed" mean? Specifically, what is the error message? Is it a 
+malfunction?
+
+If I understand, you have about 300000 data points and want to predict to 
+about 2.5 million, using a very small maximum distance. I would have 
+looked at subsetting, if there is no other way round.
+
+Roger
+
+> 
+> Carlos
+> 
+> 
+> On 7/27/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> > On Thu, 27 Jul 2006, Carlos "Gu?no" Grohmann wrote:
+> >
+> > > Hello
+> > > I was wondering if gstat has any limitation about file size it can
+> > > process. I want to resample a DEM of a large area (about 50x50 km, 30m
+> > > res.) with kriging, but it get killed.
+> >
+> > That sounds painful, but it doesn't tell much. Without your verbatim
+> > commands, it is difficult to tell - are you running gstat standalone, or
+> > in R? At what step in the modelling process does the problem arise?
+> >
+> > Roger
+> >
+> > >
+> > > Carlos
+> > >
+> > >
+> >
+> > --
+> > Roger Bivand
+> > Economic Geography Section, Department of Economics, Norwegian School of
+> > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > e-mail: Roger.Bivand@nhh.no
+> >
+> >
+> 
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+
+From Thomas.Adams at noaa.gov  Fri Jul 28 12:29:22 2006
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] R/GRASS Gaussian simulation issue
+Message-ID: <44CA3B62.5060500@noaa.gov>
+
+List:
+
+I am attempting Gaussian simulation of modeled precipitation fields 
+which are, of course, like all precipitation data decidedly non-normal. 
+In order to do the simulations, the data must be transformed using a 
+normal score transform. I can do this in R using:
+
+z<-qnorm(ppoints(x)), where x is the precipitation field data.
+
+This works and I can transform the data back to precipitation values. 
+The problem I have is how do I do this maintaining the spatial patterns. 
+That is, I read the data into R from GRASS:
+
+precip<-readFLOAT6sp("data")
+
+After I perform the Gaussian simulation of modeled *transformed* 
+precipitation fields, I need to transform the data back to precipitation 
+values maintaining geographic/spatial patterns. How do I do this?
+
+Help is appreciated.
+
+Regards,
+Tom
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+
+From carlos.grohmann at gmail.com  Fri Jul 28 16:04:51 2006
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] gstat limitation?
+In-Reply-To: <Pine.LNX.4.44.0607280946290.15447-100000@reclus.nhh.no>
+References: <bd07447b0607271338g661f00d7lf55177ffa5fa3b30@mail.gmail.com>
+	<Pine.LNX.4.44.0607280946290.15447-100000@reclus.nhh.no>
+Message-ID: <bd07447b0607281304j11b4c57eve9460da8e8b29e25@mail.gmail.com>
+
+"Killed" is the only message I get. It starts running the kriging and
+then quits R and say "killed".
+
+Carlos
+
+
+On 7/28/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Thu, 27 Jul 2006, Carlos "Gu?no" Grohmann wrote:
+>
+> > I am running it in R. it get killed in the kriging step. I guess its
+> > abot system memory.
+>
+> What does "killed" mean? Specifically, what is the error message? Is it a
+> malfunction?
+>
+> If I understand, you have about 300000 data points and want to predict to
+> about 2.5 million, using a very small maximum distance. I would have
+> looked at subsetting, if there is no other way round.
+>
+> Roger
+>
+> >
+> > Carlos
+> >
+> >
+> > On 7/27/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> > > On Thu, 27 Jul 2006, Carlos "Gu?no" Grohmann wrote:
+> > >
+> > > > Hello
+> > > > I was wondering if gstat has any limitation about file size it can
+> > > > process. I want to resample a DEM of a large area (about 50x50 km, 30m
+> > > > res.) with kriging, but it get killed.
+> > >
+> > > That sounds painful, but it doesn't tell much. Without your verbatim
+> > > commands, it is difficult to tell - are you running gstat standalone, or
+> > > in R? At what step in the modelling process does the problem arise?
+> > >
+> > > Roger
+> > >
+> > > >
+> > > > Carlos
+> > > >
+> > > >
+> > >
+> > > --
+> > > Roger Bivand
+> > > Economic Geography Section, Department of Economics, Norwegian School of
+> > > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> > > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > > e-mail: Roger.Bivand@nhh.no
+> > >
+> > >
+> >
+> >
+> >
+>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+>
+>
+
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+
+From Roger.Bivand at nhh.no  Fri Jul 28 16:28:43 2006
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:14 2007
+Subject: [STATSGRASS] gstat limitation?
+In-Reply-To: <bd07447b0607281304j11b4c57eve9460da8e8b29e25@mail.gmail.com>
+Message-ID: <Pine.LNX.4.44.0607282225300.15447-100000@reclus.nhh.no>
+
+On Fri, 28 Jul 2006, Carlos "Gu?no" Grohmann wrote:
+
+> "Killed" is the only message I get. It starts running the kriging and
+> then quits R and say "killed".
+
+Is it possible to establish what is generating the message? Can you run R 
+-d gdb for example to backtrack? 
+
+Since the max. distance is restricted, can you tile the input data and 
+output data with overlaps to try to find out a maximum acceptable region? 
+Probably we need Edzer's input, and I think he is offline now?
+
+Roger
+
+> 
+> Carlos
+> 
+> 
+> On 7/28/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> > On Thu, 27 Jul 2006, Carlos "Gu?no" Grohmann wrote:
+> >
+> > > I am running it in R. it get killed in the kriging step. I guess its
+> > > abot system memory.
+> >
+> > What does "killed" mean? Specifically, what is the error message? Is it a
+> > malfunction?
+> >
+> > If I understand, you have about 300000 data points and want to predict to
+> > about 2.5 million, using a very small maximum distance. I would have
+> > looked at subsetting, if there is no other way round.
+> >
+> > Roger
+> >
+> > >
+> > > Carlos
+> > >
+> > >
+> > > On 7/27/06, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> > > > On Thu, 27 Jul 2006, Carlos "Gu?no" Grohmann wrote:
+> > > >
+> > > > > Hello
+> > > > > I was wondering if gstat has any limitation about file size it can
+> > > > > process. I want to resample a DEM of a large area (about 50x50 km, 30m
+> > > > > res.) with kriging, but it get killed.
+> > > >
+> > > > That sounds painful, but it doesn't tell much. Without your verbatim
+> > > > commands, it is difficult to tell - are you running gstat standalone, or
+> > > > in R? At what step in the modelling process does the problem arise?
+> > > >
+> > > > Roger
+> > > >
+> > > > >
+> > > > > Carlos
+> > > > >
+> > > > >
+> > > >
+> > > > --
+> > > > Roger Bivand
+> > > > Economic Geography Section, Department of Economics, Norwegian School of
+> > > > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> > > > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > > > e-mail: Roger.Bivand@nhh.no
+> > > >
+> > > >
+> > >
+> > >
+> > >
+> >
+> > --
+> > Roger Bivand
+> > Economic Geography Section, Department of Economics, Norwegian School of
+> > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > e-mail: Roger.Bivand@nhh.no
+> >
+> >
+> >
+> 
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+

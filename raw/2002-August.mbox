@@ -1,0 +1,397 @@
+From andresjavier.garcia at wanadoo.es  Fri Aug  2 06:11:27 2002
+From: andresjavier.garcia at wanadoo.es (andres javier garcia garcia)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] R & GRASS inicialization.
+Message-ID: <200208021011.g72ABvx23736@natura.cebas.csic.es>
+
+Hello all;
+I've just installed the R interface to GRASS. (I'm new to R), and I'm not 
+sure if it is properly installed.
+From alobo at ija.csic.es  Fri Aug  2 06:36:17 2002
+From: alobo at ija.csic.es (Agustin Lobo)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] R & GRASS inicialization.
+In-Reply-To: <200208021011.g72ABvx23736@natura.cebas.csic.es>
+Message-ID: <Pine.OSF.3.96.1020802123054.27123D-100000@paleo>
+
+Javier,
+
+No way to skip the R tutorials. 
+R is a great environment for statistics,
+provided that you use it regularly. It is
+not for an occasional use.
+
+Learning R basics will take you a short time,
+but you really must devote it that time. 
+
+Go to http://cran.r-project.org/other-docs.html and
+download one or more of the tutorials.
+
+Good luck,
+
+Agus
+
+
+Dr. Agustin Lobo
+Instituto de Ciencias de la Tierra (CSIC)
+Lluis Sole Sabaris s/n
+08028 Barcelona SPAIN
+tel 34 93409 5410
+fax 34 93411 0012
+alobo@ija.csic.es
+
+
+On Fri, 2 Aug 2002, andres javier garcia garcia wrote:
+
+> Hello all;
+> I've just installed the R interface to GRASS. (I'm new to R), and I'm not 
+> sure if it is properly installed.
+> >From GRASS y type R, and
+> >system("g.list rast") shows my raster maps properly.
+> Then I've tried to follow the steps indicated in Bivand, (2000). And typed
+> >tapply(dem, cover,summary)
+> (where dem is a Digital Elevation Model, and cover is a map of different 
+> clases of vegetal cover)
+> and the following message appears:
+>  Object "cover" not found.
+>   
+> I've tried the same with different location and mapsets and none works.
+> 
+> 
+> Am I missing something?
+> Any previous step is necessary?
+> 
+> Javier Garcia
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+
+From Roger.Bivand at nhh.no  Fri Aug  2 06:56:40 2002
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] R & GRASS inicialization.
+In-Reply-To: <200208021011.g72ABvx23736@natura.cebas.csic.es>
+Message-ID: <Pine.LNX.4.44.0208021248090.11549-100000@reclus.nhh.no>
+
+On Fri, 2 Aug 2002, andres javier garcia garcia wrote:
+
+> Hello all;
+> I've just installed the R interface to GRASS. (I'm new to R), and I'm not 
+> sure if it is properly installed.
+> From GRASS y type R, and
+> >system("g.list rast") shows my raster maps properly.
+> Then I've tried to follow the steps indicated in Bivand, (2000). And typed
+> >tapply(dem, cover,summary)
+> (where dem is a Digital Elevation Model, and cover is a map of different 
+> clases of vegetal cover)
+> and the following message appears:
+>  Object "cover" not found.
+>   
+
+The interface expects you first to collect the grass metadata (current 
+region):
+
+G <- gmeta()
+
+You can then do
+
+summary(G)
+
+to check that it is OK.
+
+I'm now assuming that you have a number of raster layers in GRASS, among 
+them dem and cover. I think you did:
+
+dem <- rast.get(G, rlist=c("dem", "cover"), catlabels=c(FALSE, TRUE))
+
+and tried to work on dem. If you do
+
+str(dem)
+
+you will see that it is a list with two members, dem and cover. To get at 
+the actual data, you need say:
+
+myrasts <- rast.get(G, rlist=c("dem", "cover"), catlabels=c(FALSE, TRUE))
+
+then
+
+tapply(myrasts$dem, myrasts$cover,summary)
+
+NB: for tapply() to work, cover needs to be a "factor" in R terminology. 
+To get some insight into the meaning of lists, factors, etc in R, Agus' 
+advice is the best way to go.
+
+> I've tried the same with different location and mapsets and none works.
+
+Please let us know how you get on!
+
+Roger
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+and: Department of Geography and Regional Development, University of
+Gdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.
+
+
+From andresjavier.garcia at wanadoo.es  Fri Aug  2 08:21:32 2002
+From: andresjavier.garcia at wanadoo.es (andres javier garcia garcia)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] R & GRASS inicialization.
+In-Reply-To: <Pine.LNX.4.44.0208021248090.11549-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0208021248090.11549-100000@reclus.nhh.no>
+Message-ID: <200208021222.g72CM5x24507@natura.cebas.csic.es>
+
+Hi Roger, hi Agustin;
+
+Thanks, I'll follow (just now) your advices about the tutorials.
+
+Anyway (because; first of all I'm impatient to check that this works in my 
+computer):
+The gmeta() function in not found by R. 
+I'm installed the GRASS-R interface and it hasn't complained in the 
+compilation. The dir /usr/lib/R/library/GRASS/ has been created with the 
+corresponding library. And I run R from GRASS.
+
+Any suggestion?
+Javier
+
+
+
+
+From Roger.Bivand at nhh.no  Fri Aug  2 08:42:33 2002
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] R & GRASS inicialization.
+In-Reply-To: <200208021222.g72CM5x24507@natura.cebas.csic.es>
+Message-ID: <Pine.LNX.4.44.0208021440170.11755-100000@reclus.nhh.no>
+
+On Fri, 2 Aug 2002, andres javier garcia garcia wrote:
+
+> Hi Roger, hi Agustin;
+> 
+> Thanks, I'll follow (just now) your advices about the tutorials.
+> 
+> Anyway (because; first of all I'm impatient to check that this works in my 
+> computer):
+> The gmeta() function in not found by R. 
+> I'm installed the GRASS-R interface and it hasn't complained in the 
+> compilation. The dir /usr/lib/R/library/GRASS/ has been created with the 
+> corresponding library. And I run R from GRASS.
+> 
+> Any suggestion?
+
+library(GRASS)
+
+Even though a package is physically installed, it still needs to be loaded 
+into the R program (only the most standard functions are available by 
+default).
+
+Roger
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+and: Department of Geography and Regional Development, University of
+Gdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.
+
+
+From andresjavier.garcia at wanadoo.es  Fri Aug  2 09:05:03 2002
+From: andresjavier.garcia at wanadoo.es (andres javier garcia garcia)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] R & GRASS inicialization.
+In-Reply-To: <1028298674.3065.2.camel@caribou.u-bourgogne.fr>
+References: <Pine.LNX.4.44.0208021248090.11549-100000@reclus.nhh.no> <200208021222.g72CM5x24507@natura.cebas.csic.es> <1028298674.3065.2.camel@caribou.u-bourgogne.fr>
+Message-ID: <200208021305.g72D5Vx24663@natura.cebas.csic.es>
+
+Hi all;
+
+Now it works (needed to run library(GRASS) first).
+
+All the steps in Roger's mail works right.
+(Just a comment: I know what a factor is, but not how the map that I've used 
+as a factor has become a one through the steps followed in Roger's)
+
+Thanks all, and regards
+
+Javier
+
+
+-------------------------------------------------------------
+El Vie 02 Ago 2002 16:31, escribi?:
+> You need to load the Grass-R library in R.
+>
+> Library(GRASS) if I remember well.
+>
+> Laurent
+>
+> On Fri, 2002-08-02 at 12:21, andres javier garcia garcia wrote:
+> > Hi Roger, hi Agustin;
+> >
+> > Thanks, I'll follow (just now) your advices about the tutorials.
+> >
+> > Anyway (because; first of all I'm impatient to check that this works in
+> > my computer):
+> > The gmeta() function in not found by R.
+> > I'm installed the GRASS-R interface and it hasn't complained in the
+> > compilation. The dir /usr/lib/R/library/GRASS/ has been created with the
+> > corresponding library. And I run R from GRASS.
+> >
+> > Any suggestion?
+> > Javier
+> >
+> >
+> >
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+
+From Roger.Bivand at nhh.no  Fri Aug  2 09:22:03 2002
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] R & GRASS inicialization.
+In-Reply-To: <200208021305.g72D5Vx24663@natura.cebas.csic.es>
+Message-ID: <Pine.LNX.4.44.0208021519260.11755-100000@reclus.nhh.no>
+
+On Fri, 2 Aug 2002, andres javier garcia garcia wrote:
+
+> Hi all;
+> 
+> Now it works (needed to run library(GRASS) first).
+> 
+> All the steps in Roger's mail works right.
+> (Just a comment: I know what a factor is, but not how the map that I've used 
+> as a factor has become a one through the steps followed in Roger's)
+
+myrasts <- rast.get(G, rlist=c("dem", "cover"), catlabels=c(FALSE, TRUE))
+                                                ^^^^^^^^^^^^^^^^^^^^^^^
+
+The catlabels argument tells rast.get() whether to make the raster an R 
+factor or numeric vector, using the GRASS category labels.
+
+Roger
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+and: Department of Geography and Regional Development, University of
+Gdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.
+
+
+From ivankautter at hotmail.com  Thu Aug 29 23:02:49 2002
+From: ivankautter at hotmail.com (Ivan Kautter)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] accessing the AI-Geostats.org server
+Message-ID: <F168nwpGR881Np7vXee000036d2@hotmail.com>
+
+List subscribers,
+
+The link to AI-Geostats.org server yields a pop-up window requiring the 
+input of a user and password.  Have others experienced this and would do I 
+gain access to the site?  I have been on the site before, so I can't 
+understand why I can't access it now.  Thanks.
+
+Ivan
+
+
+
+_________________________________________________________________
+Chat with friends online, try MSN Messenger: http://messenger.msn.com
+
+
+From uleopold at science.uva.nl  Fri Aug 30 04:49:46 2002
+From: uleopold at science.uva.nl (Ulrich Leopold)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] accessing the AI-Geostats.org server
+References: <F168nwpGR881Np7vXee000036d2@hotmail.com>
+Message-ID: <3D6F31AA.3020802@science.uva.nl>
+
+It's due to a bad managed server. Gregoire Dubois sent already an email to 
+the ai-geostats list to announce that there are some problems like you 
+mentioned. He will soon move the server to another place and will manage it 
+himself to avoid these kind of errors.
+
+Ulrich
+
+Ivan Kautter wrote:
+> List subscribers,
+> 
+> The link to AI-Geostats.org server yields a pop-up window requiring the 
+> input of a user and password.  Have others experienced this and would do 
+> I gain access to the site?  I have been on the site before, so I can't 
+> understand why I can't access it now.  Thanks.
+> 
+> Ivan
+> 
+> 
+> 
+> _________________________________________________________________
+> Chat with friends online, try MSN Messenger: http://messenger.msn.com
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+-- 
+__________________________________________________
+
+Ulrich Leopold MSc.
+
+Department of Physical Geography
+Institute for Biodiversity and Ecosystem Dynamics
+Faculty of Science
+University of Amsterdam
+Nieuwe Achtergracht 166
+NL-1018WV Amsterdam
+
+Phone: +31-(0)20-525-7456 (7451 Secretary)
+Fax:   +31-(0)20-525-7431
+Email: uleopold@science.uva.nl
+http://www.frw.uva.nl/soil/Welcome.html
+
+Check us also out at:
+Netherlands Centre for Geo-ecological Research
+http://www.frw.uva.nl/icg
+
+
+
+
+From gregoire.dubois at usa.net  Fri Aug 30 04:32:41 2002
+From: gregoire.dubois at usa.net (Gregoire Dubois)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] RE: Accessing AI-GEOSTATS
+Message-ID: <20020830083241.3628.qmail@uwdvg020.cms.usa.net>
+
+Dear all,
+
+the AI-GEOSTATS web site became recently randomly accessible due
+to problems with the network there. Since the web server is 
+located around 800 miles away from my current working place, 
+maintenance is minimal not to say null.
+
+I'm very sorry for this problem.
+
+The good news is that I will start another job in November
+and will have the web server on my desk. This should solve
+all the current problems.
+
+Best regards,
+
+Gregoire (owner/moderator of AI-GEOSTATS)
+
+

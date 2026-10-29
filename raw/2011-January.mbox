@@ -1,0 +1,735 @@
+From nik at nikosalexandris.net  Thu Jan  6 09:56:36 2011
+From: nik at nikosalexandris.net (Nikos Alexandris)
+Date: Thu Jan  6 09:56:42 2011
+Subject: [GRASS-stats] Spatial autocorrelation of multi-spectral,
+	uni- and mutli-temporal data sets
+In-Reply-To: <201012261900.34694.nik@nikosalexandris.net>
+References: <1286448815316-5610836.post@n2.nabble.com>
+	<1286895246138-5627018.post@n2.nabble.com>
+	<201012261900.34694.nik@nikosalexandris.net>
+Message-ID: <201101061656.38683.nik@nikosalexandris.net>
+
+On Sunday 26 of December 2010 19:00:32 Nikos Alexandris wrote:
+> Greets to the statists,
+> 
+> I want to "describe" my multispectral (Landsat5_TM) composite datasets with
+> respect to their between vs. within heterogeneity.
+
+(Replying to myself and for the potential interest of anybody reading the 
+list... )
+
+Finally I went for MRPP test(s) implemented in the R-package "vegan"[1][2]. I 
+did a sampling of major land cover classes after all (such as Urban areas, 
+vegetation, bare ground, water bodies, etc)., put the data in data.frames and 
+ran the tests.
+
+The data.frames look like:
+
+str ( samples_postfire_modis )
+'data.frame':   1040 obs. of  6 variables:
+ $ Band 1: int  1354 1458 1458 1458 1550 1145 1428 1573 1573 1657 ...
+ $ Band 2: int  3088 2971 2971 2971 2902 2990 2942 2824 2824 2917 ...
+ $ Band 5: int  3533 3506 3506 3506 3323 3535 3337 3239 3239 3552 ...
+ $ Band 6: int  2778 2803 2803 2803 2974 2646 2674 2883 2883 3071 ...
+ $ Band 7: int  2019 2146 2146 2146 2042 1719 2045 2114 2114 2373 ...
+ $ Class : Factor w/ 5 levels "Urban","Vegetation",..: 1 1 1 1 1 1 1 1 1 1 ...
+> str ( samples_bite )
+samples_bitemporal_modis.colnames  samples_bitemporal_modis
+> str ( samples_bitemporal_modis )
+'data.frame':   1040 obs. of  7 variables:
+ $ Prefire B2 : int  3377 3425 3304 3179 3247 3247 3235 3043 3043 3197 ...
+ $ Prefire B6 : int  2726 2683 2737 2991 2934 2934 2928 2984 2984 3199 ...
+ $ Prefire B7 : int  1864 1932 2005 2185 2068 2068 2223 2331 2331 2314 ...
+ $ Postfire B2: int  3088 2971 2971 2971 2902 2990 2942 2824 2824 2917 ...
+ $ Postfire B6: int  2778 2803 2803 2803 2974 2646 2674 2883 2883 3071 ...
+ $ Postfire B7: int  2019 2146 2146 2146 2042 1719 2045 2114 2114 2373 ...
+ $ Class      : Factor w/ 5 levels "Urban","Vegetation",..: 1 1 1 1 1 1 1 1 1 
+1 ...
+
+Some of the results look like this:
+
+--%<---
+Call:
+mrpp(dat = samples_postfire_modis.smallsample.300[, 1:5], grouping = 
+samples_postfire_modis.smallsample.300[["Class"]]) 
+
+Dissimilarity index: euclidean 
+Weights for groups:  n 
+
+Class means and counts:
+
+      Urban Vegetation Bare ground Burned Water
+delta  1241  1029       1550        1228  855.2
+n     97    81         63          53     6    
+
+Chance corrected within-group agreement A: 0.3956 
+Based on observed delta 1239 and expected delta 2050 
+
+Significance of delta: 0.001 
+Based on  999  permutations
+-->%---
+
+and
+
+--%<---
++ samples_postfire_modis.smallsample.300.vegdist <- vegdist ( 
+samples_postfire_modis.smallsample.300[,1:5] )
+
++ samples_postfire_modis.smallsample.300.md <- meandist ( 
+samples_postfire_modis.smallsample.300.vegdist , 
+samples_postfire_modis.smallsample.300[["Class"]] )
+
++ summary(samples_postfire_modis.smallsample.300.md)
+
+Mean distances:
+                 Average
+within groups  0.0950253
+between groups 0.2023877
+overall        0.1754765
+
+Summary statistics:
+                        Statistic
+MRPP A weights n        0.4224480
+MRPP A weights n-1      0.4263591
+MRPP A weights n(n-1)   0.4584728
+Classification strength 0.1010409
+--%<---
+
+
+Running the above test on samples with observations > 3000 is a high load for 
+a home-machine (working here on Core2 Duo @2.53GHz and 6GB RAM). In fact, 
+running the process for 18K observations times 6 variables (the number of 
+permutations increases like crazy...) took 2+1/2 days (double that for another 
+data.frame of the same size).
+
+Wish I had access to some OSGeo super-computer for 30 mins to get this job 
+done.
+
+Greets, Nikos
+From ducciorocchini at gmail.com  Thu Jan  6 15:09:49 2011
+From: ducciorocchini at gmail.com (Duccio Rocchini)
+Date: Thu Jan  6 15:10:12 2011
+Subject: [GRASS-stats] Re: grass-stats Digest, Vol 49, Issue 1
+In-Reply-To: <20110106170011.E8C61E02064@lists.osgeo.org>
+References: <20110106170011.E8C61E02064@lists.osgeo.org>
+Message-ID: <AANLkTinuVZQccLjuGxvkPtRh6bgBnXWqKuKvQ7uAQRdP@mail.gmail.com>
+
+Dear Nikos
+many compliments for this elegant solution.
+
+At a first glance, I would suggest using ANOSIM which is implemented
+into vegan too but it seems that MRPP worked in a great way and that
+you have seen the sunny part of the road in few time!
+
+Duccio
+
+-- 
+Duccio Rocchini, PhD
+
+Edmund Mach Foundation
+IASMA Research and Innovation Centre
+Department of Biodiversity and Molecular Ecology
+GIS and Remote Sensing Unit
+Via Mach 1, 38010 San Michele all'Adige (TN) - Italy
+Phone +39 0461 615 570
+ducciorocchini@gmail.com
+duccio.rocchini@iasma.it
+skype: duccio.rocchini
+web page: http://gis.fem-environment.eu/rocchini/
+
+
+
+2011/1/6  <grass-stats-request@lists.osgeo.org>:
+> Send grass-stats mailing list submissions to
+> ? ? ? ?grass-stats@lists.osgeo.org
+>
+> To subscribe or unsubscribe via the World Wide Web, visit
+> ? ? ? ?http://lists.osgeo.org/mailman/listinfo/grass-stats
+> or, via email, send a message with subject or body 'help' to
+> ? ? ? ?grass-stats-request@lists.osgeo.org
+>
+> You can reach the person managing the list at
+> ? ? ? ?grass-stats-owner@lists.osgeo.org
+>
+> When replying, please edit your Subject line so it is more specific
+> than "Re: Contents of grass-stats digest..."
+>
+>
+> Today's Topics:
+>
+> ? 1. Re: Spatial autocorrelation of multi-spectral, ? ?uni- and
+> ? ? ?mutli-temporal data sets (Nikos Alexandris)
+>
+>
+> ----------------------------------------------------------------------
+>
+> Message: 1
+> Date: Thu, 6 Jan 2011 16:56:36 +0200
+> From: Nikos Alexandris <nik@nikosalexandris.net>
+> Subject: Re: [GRASS-stats] Spatial autocorrelation of multi-spectral,
+> ? ? ? ?uni- and mutli-temporal data sets
+> To: grass-stats@lists.osgeo.org
+> Message-ID: <201101061656.38683.nik@nikosalexandris.net>
+> Content-Type: Text/Plain; ?charset="utf-8"
+>
+> On Sunday 26 of December 2010 19:00:32 Nikos Alexandris wrote:
+>> Greets to the statists,
+>>
+>> I want to "describe" my multispectral (Landsat5_TM) composite datasets with
+>> respect to their between vs. within heterogeneity.
+>
+> (Replying to myself and for the potential interest of anybody reading the
+> list... )
+>
+> Finally I went for MRPP test(s) implemented in the R-package "vegan"[1][2]. I
+> did a sampling of major land cover classes after all (such as Urban areas,
+> vegetation, bare ground, water bodies, etc)., put the data in data.frames and
+> ran the tests.
+>
+> The data.frames look like:
+>
+> str ( samples_postfire_modis )
+> 'data.frame': ? 1040 obs. of ?6 variables:
+> ?$ Band 1: int ?1354 1458 1458 1458 1550 1145 1428 1573 1573 1657 ...
+> ?$ Band 2: int ?3088 2971 2971 2971 2902 2990 2942 2824 2824 2917 ...
+> ?$ Band 5: int ?3533 3506 3506 3506 3323 3535 3337 3239 3239 3552 ...
+> ?$ Band 6: int ?2778 2803 2803 2803 2974 2646 2674 2883 2883 3071 ...
+> ?$ Band 7: int ?2019 2146 2146 2146 2042 1719 2045 2114 2114 2373 ...
+> ?$ Class : Factor w/ 5 levels "Urban","Vegetation",..: 1 1 1 1 1 1 1 1 1 1 ...
+>> str ( samples_bite )
+> samples_bitemporal_modis.colnames ?samples_bitemporal_modis
+>> str ( samples_bitemporal_modis )
+> 'data.frame': ? 1040 obs. of ?7 variables:
+> ?$ Prefire B2 : int ?3377 3425 3304 3179 3247 3247 3235 3043 3043 3197 ...
+> ?$ Prefire B6 : int ?2726 2683 2737 2991 2934 2934 2928 2984 2984 3199 ...
+> ?$ Prefire B7 : int ?1864 1932 2005 2185 2068 2068 2223 2331 2331 2314 ...
+> ?$ Postfire B2: int ?3088 2971 2971 2971 2902 2990 2942 2824 2824 2917 ...
+> ?$ Postfire B6: int ?2778 2803 2803 2803 2974 2646 2674 2883 2883 3071 ...
+> ?$ Postfire B7: int ?2019 2146 2146 2146 2042 1719 2045 2114 2114 2373 ...
+> ?$ Class ? ? ?: Factor w/ 5 levels "Urban","Vegetation",..: 1 1 1 1 1 1 1 1 1
+> 1 ...
+>
+> Some of the results look like this:
+>
+> --%<---
+> Call:
+> mrpp(dat = samples_postfire_modis.smallsample.300[, 1:5], grouping =
+> samples_postfire_modis.smallsample.300[["Class"]])
+>
+> Dissimilarity index: euclidean
+> Weights for groups: ?n
+>
+> Class means and counts:
+>
+> ? ? ?Urban Vegetation Bare ground Burned Water
+> delta ?1241 ?1029 ? ? ? 1550 ? ? ? ?1228 ?855.2
+> n ? ? 97 ? ?81 ? ? ? ? 63 ? ? ? ? ?53 ? ? 6
+>
+> Chance corrected within-group agreement A: 0.3956
+> Based on observed delta 1239 and expected delta 2050
+>
+> Significance of delta: 0.001
+> Based on ?999 ?permutations
+> -->%---
+>
+> and
+>
+> --%<---
+> + samples_postfire_modis.smallsample.300.vegdist <- vegdist (
+> samples_postfire_modis.smallsample.300[,1:5] )
+>
+> + samples_postfire_modis.smallsample.300.md <- meandist (
+> samples_postfire_modis.smallsample.300.vegdist ,
+> samples_postfire_modis.smallsample.300[["Class"]] )
+>
+> + summary(samples_postfire_modis.smallsample.300.md)
+>
+> Mean distances:
+> ? ? ? ? ? ? ? ? Average
+> within groups ?0.0950253
+> between groups 0.2023877
+> overall ? ? ? ?0.1754765
+>
+> Summary statistics:
+> ? ? ? ? ? ? ? ? ? ? ? ?Statistic
+> MRPP A weights n ? ? ? ?0.4224480
+> MRPP A weights n-1 ? ? ?0.4263591
+> MRPP A weights n(n-1) ? 0.4584728
+> Classification strength 0.1010409
+> --%<---
+>
+>
+> Running the above test on samples with observations > 3000 is a high load for
+> a home-machine (working here on Core2 Duo @2.53GHz and 6GB RAM). In fact,
+> running the process for 18K observations times 6 variables (the number of
+> permutations increases like crazy...) took 2+1/2 days (double that for another
+> data.frame of the same size).
+>
+> Wish I had access to some OSGeo super-computer for 30 mins to get this job
+> done.
+>
+> Greets, Nikos
+>
+>
+> ------------------------------
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+> End of grass-stats Digest, Vol 49, Issue 1
+> ******************************************
+>
+From nik at nikosalexandris.net  Thu Jan  6 22:41:55 2011
+From: nik at nikosalexandris.net (Nikos Alexandris)
+Date: Thu Jan  6 22:42:01 2011
+Subject: [GRASS-stats] Spatial autocorrelation of multi-spectral,
+	uni- and mutli-temporal data sets
+In-Reply-To: <201101061656.38683.nik@nikosalexandris.net>
+References: <1286448815316-5610836.post@n2.nabble.com>
+	<201012261900.34694.nik@nikosalexandris.net>
+	<201101061656.38683.nik@nikosalexandris.net>
+Message-ID: <201101070541.56998.nik@nikosalexandris.net>
+
+Nikos:
+...
+> Running the above test on samples with observations > 3000 is a high load
+> for a home-machine (working here on Core2 Duo @2.53GHz and 6GB RAM). In
+> fact, running the process for 18K observations times 6 variables (the
+> number of permutations increases like crazy...) took 2+1/2 days (double
+> that for another data.frame of the same size).
+...
+
+Correction: the ~60 hours process ran on a friends machince with quad core 
+@3GHz and 8GB RAM.
+
+Nikos
+From nik at nikosalexandris.net  Fri Jan  7 18:15:32 2011
+From: nik at nikosalexandris.net (Nikos Alexandris)
+Date: Fri Jan  7 18:15:39 2011
+Subject: [GRASS-stats] Re: grass-stats Digest, Vol 49, Issue 1
+In-Reply-To: <AANLkTinuVZQccLjuGxvkPtRh6bgBnXWqKuKvQ7uAQRdP@mail.gmail.com>
+References: <20110106170011.E8C61E02064@lists.osgeo.org>
+	<AANLkTinuVZQccLjuGxvkPtRh6bgBnXWqKuKvQ7uAQRdP@mail.gmail.com>
+Message-ID: <201101080115.34205.nik@nikosalexandris.net>
+
+On Thursday 06 of January 2011 22:09:49 Duccio Rocchini wrote:
+> Dear Nikos
+> many compliments for this elegant solution.
+> 
+> At a first glance, I would suggest using ANOSIM which is implemented
+> into vegan too but it seems that MRPP worked in a great way and that
+> you have seen the sunny part of the road in few time!
+> 
+> Duccio
+
+Within all of my stress and mistakes I just read this post now.
+(working non-stop the last months here - I need to force myself to have a 
+break)
+
+I have to admit that I was pointed to MRPP by an ecologist :-). She is a 
+brilliant scientist, working in the Silviculture Institute in the university 
+of Freiburg.
+
+I just explained her what I am trying to get out of the data and that I could 
+not think of anything that would "compare" the within- with the between- 
+heterogeneity at the same time.
+
+So compliments to her ( also for being in trouble now with the crazy large 
+number of permutations ;-) ).
+
+Cheers, Nikos
+From nik at nikosalexandris.net  Sat Jan  8 06:48:50 2011
+From: nik at nikosalexandris.net (Nikos Alexandris)
+Date: Sat Jan  8 06:48:59 2011
+Subject: [GRASS-stats] Example code for MRPP on a multivariate data set
+Message-ID: <201101081348.52516.nik@nikosalexandris.net>
+
+Dear all,
+
+after many trial-n-error attempts, re-reading basic R-stuff (like "?load"), 
+I've finally ended up with several single scripts to run, each time, on one 
+data.frame. I don't have the time currently to make this more automatic.
+
+
+So, for ignorant and beginners like me, here is an example code on how to 
+perform MRPP
+
+  - on a single data.frame composed by 6 variables (in this example Landsat5 
+bands)
+  - with several observations (in this example 18865 obs. = sampled pixels)
+  - grouped according to a factor column (in this example 7 major land cover 
+classes)
+
+Of course, the data.frame needs to be prepared (lot of fun with this :-)). I 
+have 10 data.frames and a script for each data.frame. They are all available 
+at any time for anybody interested (at a personal ftp-space).
+
+If asked, I can also provide the vector/raster file of the samples (extracted 
+from a postfire Landsat5 TM 2007 imagery in a small region northern of Athens 
+in Greece).
+
+The test could be useful to descrive the within- and between-groups 
+heterogeneity. And why not to check how the statistics change after some 
+transformations of the original data?
+
+First, you need to have the "vegan" package installed. So, for (K)Ubuntu 
+user's this will be:
+
+--%<---
+# superuser
+sudo R
+
+# get the package
+install.packges ( "vegan" , dependencies = TRUE )
+
+# quit and run a normal R-session
+q()
+R #or pick your favourite gui
+--->%--
+
+Then move to the test:
+(ATTENTION: this 18865 observations is an overkill for home-machines)
+
+--%<---
+# load data.frame
+load ( "samples_postfire_lsat5.RData" )
+
+# check structure
+str ( samples_postfire_lsat5 )
+
+'data.frame':   18865 obs. of  7 variables:
+ $ Band 1: int  199 119 175 170 110 109 102 129 138 122 ...
+ $ Band 2: int  120 63 104 88 57 60 53 68 75 66 ...
+ $ Band 3: int  132 77 118 109 70 78 68 82 89 76 ...
+ $ Band 4: int  109 76 96 90 71 79 72 70 70 62 ...
+ $ Band 5: int  151 126 140 142 118 123 127 125 120 120 ...
+ $ Band 7: int  90 75 91 90 72 77 76 89 86 92 ...
+ $ Class : Factor w/ 7 levels "Urban","Mineral extr. sites",..: 1 1 1 1 1 1 1 
+1 1 1 ...
+
+# mrpp() function is in:
+library ( vegan )
+
+# mrpp on 6 variables, grouped according to column named "Class"
+samples_postfire_lsat5.mrpp <- mrpp (
+  samples_postfire_lsat5[,1:6] ,
+  grouping = samples_postfire_lsat5[["Class"]]
+)
+
+# see the result!
+#samples_postfire_lsat5.mrpp
+
+# save it
+save (samples_postfire_lsat5.mrpp , file = "samples_postfire_lsat5.mrpp.RData" 
+)
+
+# euclidean (veg)distance - ATTENTION: default distance to estimate is "Bray"
+samples_postfire_lsat5.vegdist <- vegdist (
+  samples_postfire_lsat5[,1:6] ,
+  method="euclidean"
+)
+
+# meandist
+samples_postfire_lsat5.md <- meandist (
+  samples_postfire_lsat5.vegdist ,
+  samples_postfire_lsat5[["Class"]]
+)
+
+# check
+summary ( samples_postfire_lsat5.md ) 
+
+# save results
+save ( samples_postfire_lsat5.md ,
+  file = "samples_bitemporal_lsat5.md.RData"
+)
+--->%--
+
+To have some results for my work, I also run the procedures on smaller subsets 
+(say 3000 observations instead of 18865) which takes some time but is feasible 
+@home.
+
+Currently there is a process running on a big cluster (thanks to a very kind 
+person who's always there). Hopefully we'll know soon enough how much time 
+this will take.
+
+Maybe this piece of info could go in the wiki at some point if it is of any 
+value.
+
+Kind regards, Nikos
+From neteler at osgeo.org  Sun Jan  9 02:43:50 2011
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sun Jan  9 02:44:14 2011
+Subject: [GRASS-stats] Example code for MRPP on a multivariate data set
+In-Reply-To: <201101081348.52516.nik@nikosalexandris.net>
+References: <201101081348.52516.nik@nikosalexandris.net>
+Message-ID: <AANLkTikqs8ParPs88+1pbtrxrW3ZGnhvC1tvm8W8qYM4@mail.gmail.com>
+
+On Sat, Jan 8, 2011 at 12:48 PM, Nikos Alexandris
+<nik@nikosalexandris.net> wrote:
+...
+> To have some results for my work, I also run the procedures on smaller subsets
+> (say 3000 observations instead of 18865) which takes some time but is feasible
+> @home.
+>
+> Currently there is a process running on a big cluster (thanks to a very kind
+> person who's always there). Hopefully we'll know soon enough how much time
+> this will take.
+
+The job is still running on "my" blade :) Using 68GB of RAM.
+
+Does anyone in the list have experience in running R on a multicore
+system? This list is rather overwhelming for me:
+
+ http://cran.r-project.org/web/views/HighPerformanceComputing.html
+
+An openMP approach or likewise with implicit parallelism would be great
+since I cannot rewrite R...
+
+thanks
+Markus
+
+-- 
+http://gis.ambiente.fmach.it/
+From nik at nikosalexandris.net  Sun Jan  9 07:46:39 2011
+From: nik at nikosalexandris.net (Nikos Alexandris)
+Date: Sun Jan  9 07:46:43 2011
+Subject: [GRASS-stats] Example code for MRPP on a multivariate data set
+In-Reply-To: <AANLkTikqs8ParPs88+1pbtrxrW3ZGnhvC1tvm8W8qYM4@mail.gmail.com>
+References: <201101081348.52516.nik@nikosalexandris.net>
+	<AANLkTikqs8ParPs88+1pbtrxrW3ZGnhvC1tvm8W8qYM4@mail.gmail.com>
+Message-ID: <201101091446.40637.nik@nikosalexandris.net>
+
+Nikos A:
+...
+> > To have some results for my work, I also run the procedures on smaller
+> > subsets (say 3000 observations instead of 18865) which takes some time
+> > but is feasible @home.
+
+Some timings:
+
+I've completed the procedures on smaller subsets (in total 10). The subsets 
+(data.frames) contain 3000 random observations with 6 variables and 1 factor 
+of 7 levels.
+
+  - Each data.frame took about 41 minutes on quad-core@3GHz/8GB-RAM.
+
+  - Also, data.frames with 1040 observations, 6 variables, 1 factor with 5 
+levels took about 10 minutes each on core-duo@2.53GHz/6GB-RAM.
+
+> > Currently there is a process running on a big cluster (thanks to a very
+> > kind person who's always there). Hopefully we'll know soon enough how
+> > much time this will take.
+
+Markus N:
+ 
+> The job is still running on "my" blade :) Using 68GB of RAM.
+
+> Does anyone in the list have experience in running R on a multicore
+> system? This list is rather overwhelming for me:
+> 
+>  http://cran.r-project.org/web/views/HighPerformanceComputing.html
+> 
+> An openMP approach or likewise with implicit parallelism would be great
+> since I cannot rewrite R...
+
+I would certainly try to work on this if pointed to the right direction (no 
+previous experience on this though) although my time is running away...
+
+Thanks for all, Nikos
+From Roger.Bivand at nhh.no  Sun Jan  9 15:18:31 2011
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun Jan  9 15:17:42 2011
+Subject: [GRASS-stats] Example code for MRPP on a multivariate data set
+In-Reply-To: <AANLkTikqs8ParPs88+1pbtrxrW3ZGnhvC1tvm8W8qYM4@mail.gmail.com>
+References: <201101081348.52516.nik@nikosalexandris.net>
+	<AANLkTikqs8ParPs88+1pbtrxrW3ZGnhvC1tvm8W8qYM4@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.1101092050160.18697@reclus.nhh.no>
+
+On Sun, 9 Jan 2011, Markus Neteler wrote:
+
+> On Sat, Jan 8, 2011 at 12:48 PM, Nikos Alexandris
+> <nik@nikosalexandris.net> wrote:
+> ...
+>> To have some results for my work, I also run the procedures on smaller subsets
+>> (say 3000 observations instead of 18865) which takes some time but is feasible
+>> @home.
+>>
+>> Currently there is a process running on a big cluster (thanks to a very kind
+>> person who's always there). Hopefully we'll know soon enough how much time
+>> this will take.
+>
+> The job is still running on "my" blade :) Using 68GB of RAM.
+>
+> Does anyone in the list have experience in running R on a multicore
+> system? This list is rather overwhelming for me:
+>
+> http://cran.r-project.org/web/views/HighPerformanceComputing.html
+>
+> An openMP approach or likewise with implicit parallelism would be great
+> since I cannot rewrite R...
+
+Markus,
+
+No implicit - one needs to use mechanisms in the snow package (using 
+sockets is easiest and faster than PVM or MPI, but isn't fault tolerant) 
+or similar to start R on the worker nodes, and to divide up the tiles or 
+whatever that can be parallelised into a list for execution. Depending on 
+the data configuration, this can help or not (if all the nodes need memory 
+for large objects, then they crowd out the machine). It all depends on 
+what is being done. If a task is embarassingly parallelisable (like 
+bootstrapping, or kriging from few points to many tiles), it can be 
+effective, but one needs to think through all the implications and plan 
+the work to suit the problem at hand and the available hardware. I don't 
+think that openMP can schedule arbitrary job junks by itself either?
+
+References in:
+
+http://www.nhh.no/Admin/Public/DWSDownload.aspx?File=%2fFiles%2fFiler%2finstitutter%2fsam%2fDiscussion+papers%2f2010%2f25.pdf
+
+I can send the example script from the paper if it would be useful, as a 
+rough template for simplistic use of snow.
+
+But I've no idea whether this application is embarassingly parallelisable, 
+I suspect not, and that it is using dense matrix methods where sparse 
+methods might be possible - vegdist() returns a dist object, which is 
+(n*(n-1))/2 in size. It will then copy these and use them as matrices. To 
+reduce memory usage with big N, mrpp() should be rewritten to make dmat 
+sparse over a distance threshold. Internally, dmat is promoted to full 
+dense representation (n*n) here quite big. Why it is bloating in your 
+case, I don't know. Looking at mrpp(), it could be parallelised in:
+
+     perms <- sapply(1:permutations, function(x) grouping[permuted.index(N,
+         strata = strata)])
+     m.ds <- numeric(permutations)
+     m.ds <- apply(perms, 2, function(x) mrpp.perms(x, dmat, indls,
+         w))
+
+by spreading permutation burden across nodes if (and only if) one cout 
+avoid copying dmat out to each node. It would need careful analysis.
+
+Hope this helps,
+
+Roger
+
+>
+> thanks
+> Markus
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From neteler at osgeo.org  Mon Jan 10 15:07:39 2011
+From: neteler at osgeo.org (Markus Neteler)
+Date: Mon Jan 10 15:08:01 2011
+Subject: [GRASS-stats] Example code for MRPP on a multivariate data set
+In-Reply-To: <alpine.LRH.2.00.1101092050160.18697@reclus.nhh.no>
+References: <201101081348.52516.nik@nikosalexandris.net>
+	<AANLkTikqs8ParPs88+1pbtrxrW3ZGnhvC1tvm8W8qYM4@mail.gmail.com>
+	<alpine.LRH.2.00.1101092050160.18697@reclus.nhh.no>
+Message-ID: <AANLkTikr5uD7YJA4Nb+du43nPQ-_UA_1O7euXyCqQ1_8@mail.gmail.com>
+
+On Sun, Jan 9, 2011 at 9:18 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Sun, 9 Jan 2011, Markus Neteler wrote:
+...
+>> http://cran.r-project.org/web/views/HighPerformanceComputing.html
+>>
+>> An openMP approach or likewise with implicit parallelism would be great
+>> since I cannot rewrite R...
+>
+> Markus,
+>
+> No implicit - one needs to use mechanisms in the snow package (using sockets
+> is easiest and faster than PVM or MPI, but isn't fault tolerant) or similar
+> to start R on the worker nodes, and to divide up the tiles or whatever that
+> can be parallelised into a list for execution.
+
+Roger,
+
+thanks for your help. However, for above suggestion one needs to know data and
+algorithms (somewhat at least) - in this case I was "blindly" executing some
+calculations for Nikos.
+
+> Depending on the data
+> configuration, this can help or not (if all the nodes need memory for large
+> objects, then they crowd out the machine). It all depends on what is being
+> done. If a task is embarassingly parallelisable (like bootstrapping, or
+> kriging from few points to many tiles), it can be effective, but one needs
+> to think through all the implications and plan the work to suit the problem
+> at hand and the available hardware. I don't think that openMP can schedule
+> arbitrary job junks by itself either?
+
+I was thinking about the low level functions in R which are regularly called,
+less about individual extensions. For sure, openMP requires good code
+knowledge, I tried a bit together with Yann Chemin to parallelize i.atcorr
+some time ago.
+
+> References in:
+>
+> http://www.nhh.no/Admin/Public/DWSDownload.aspx?File=%2fFiles%2fFiler%2finstitutter%2fsam%2fDiscussion+papers%2f2010%2f25.pdf
+
+Thanks for this nice paper, I wasn't aware of it.
+
+> I can send the example script from the paper if it would be useful, as a
+> rough template for simplistic use of snow.
+>
+> But I've no idea whether this application is embarassingly parallelisable, I
+> suspect not, and that it is using dense matrix methods where sparse methods
+> might be possible - vegdist() returns a dist object, which is (n*(n-1))/2 in
+> size. It will then copy these and use them as matrices. To reduce memory
+> usage with big N, mrpp() should be rewritten to make dmat sparse over a
+> distance threshold. Internally, dmat is promoted to full dense
+> representation (n*n) here quite big. Why it is bloating in your case, I
+> don't know. Looking at mrpp(), it could be parallelised in:
+>
+> ? ?perms <- sapply(1:permutations, function(x) grouping[permuted.index(N,
+> ? ? ? ?strata = strata)])
+> ? ?m.ds <- numeric(permutations)
+> ? ?m.ds <- apply(perms, 2, function(x) mrpp.perms(x, dmat, indls,
+> ? ? ? ?w))
+>
+> by spreading permutation burden across nodes if (and only if) one cout avoid
+> copying dmat out to each node. It would need careful analysis.
+
+I guess that I have to leave that to the experts... Thanks for your
+advice, though,
+I hope it will be picked up from this list.
+
+thanks
+Markus
+
+-- 
+Markus Neteler, PhD
+Fondazione Edmund Mach (FEM) - IASMA Research and Innovation Centre
+Department of Biodiversity and Molecular Ecology
+Head of GIS and Remote Sensing Unit
+Via E. Mach, 1 - 38010 S. Michele all'Adige (TN), Italy
+Web:   http://gis.cri.fmach.it  -   http://grass.osgeo.org
+
+
+> Hope this helps,
+>
+> Roger
+>
+>>
+>> thanks
+>> Markus
+>>
+>>
+>
+> --
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+>

@@ -1,0 +1,853 @@
+From temiz at deprem.gov.tr  Tue Oct 14 04:31:21 2003
+From: temiz at deprem.gov.tr (temiz)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Grass/R - without env. variable ?
+Message-ID: <3F8BB459.5090809@deprem.gov.tr>
+
+hello
+
+I would like to know whether I can transfer a filled contour which has 
+been created without env. variable in R to grass.
+
+something like :
+
+1-Zn.grid <- interp.new(utm.maas$east, utm.maas$north, utm.maas$Zn)
+then 2- rast.put (surely with G) to port to grass.
+
+interpolation with env. variable consumes my computer resource (memory) 
+to zero, whereas without env. variable I can have relible interpolation 
+result.
+
+Any idea ?
+
+Ahmet Temiz
+General Directory of Disaster Affairs
+Ankara TURKEY
+
+
+______________________________________
+Inflex - installed on mailserver for domain @deprem.gov.tr
+Queries to: postmaster@deprem.gov.tr
+
+______________________________________
+The views and opinions expressed in this e-mail message are the sender's own
+and do not necessarily represent the views and the opinions of Earthquake Research Dept.
+of General Directorate of Disaster Affairs.
+
+Bu e-postadaki fikir ve gorusler gonderenin sahsina ait olup, yasal olarak T.C.
+B.I.B. Afet Isleri Gn.Mud. Deprem Arastirma Dairesi'ni baglayici nitelikte degildir.
+
+
+From temiz at deprem.gov.tr  Thu Oct 16 03:18:14 2003
+From: temiz at deprem.gov.tr (temiz)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Interpolation of azimuth values
+Message-ID: <3F8E4636.9060007@deprem.gov.tr>
+
+Hello
+
+I will make an interpolation of data which represents azimuth direction
+( angle from north in clockwise direction) values.
+But there is a problem.
+Say, for instance, while 1 and 359 indicate somewhat same direction, 
+interpolation puts  values
+in the range from 1 to 359.  What can I do to solve the problem ?
+
+Anything you offer ?
+
+
+thanks in advance
+
+
+Ahmet Temiz
+General Directory of Disaster Affairs
+Ankara TURKEY
+
+
+
+______________________________________
+Inflex - installed on mailserver for domain @deprem.gov.tr
+Queries to: postmaster@deprem.gov.tr
+
+______________________________________
+The views and opinions expressed in this e-mail message are the sender's own
+and do not necessarily represent the views and the opinions of Earthquake Research Dept.
+of General Directorate of Disaster Affairs.
+
+Bu e-postadaki fikir ve gorusler gonderenin sahsina ait olup, yasal olarak T.C.
+B.I.B. Afet Isleri Gn.Mud. Deprem Arastirma Dairesi'ni baglayici nitelikte degildir.
+
+
+From ripley at stats.ox.ac.uk  Thu Oct 16 03:34:55 2003
+From: ripley at stats.ox.ac.uk (Prof Brian Ripley)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Re: [R] Interpolation of azimuth values
+In-Reply-To: <3F8E4636.9060007@deprem.gov.tr>
+Message-ID: <Pine.LNX.4.44.0310160833570.4263-100000@gannet.stats>
+
+On Thu, 16 Oct 2003, temiz wrote:
+
+> I will make an interpolation of data which represents azimuth direction
+> ( angle from north in clockwise direction) values.
+> But there is a problem.
+> Say, for instance, while 1 and 359 indicate somewhat same direction, 
+> interpolation puts  values
+> in the range from 1 to 359.  What can I do to solve the problem ?
+> 
+> Anything you offer ?
+
+The usual solution is to extend the data periodically, that is to put 
+copies shifted by one rotation on each side.
+
+-- 
+Brian D. Ripley,                  ripley@stats.ox.ac.uk
+Professor of Applied Statistics,  http://www.stats.ox.ac.uk/~ripley/
+University of Oxford,             Tel:  +44 1865 272861 (self)
+1 South Parks Road,                     +44 1865 272866 (PA)
+Oxford OX1 3TG, UK                Fax:  +44 1865 272595
+
+
+From Roger.Bivand at nhh.no  Fri Oct 17 07:29:25 2003
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Re: [GRASSLIST:1512] system() & R
+In-Reply-To: <web-1389551@ti-edu.ch>
+Message-ID: <Pine.LNX.4.44.0310171310340.18844-100000@reclus.nhh.no>
+
+On Fri, 17 Oct 2003, Cannata, Massimiliano wrote:
+
+> Hello users,
+> i write an R script that execute temperature interpolation 
+> inside a GRASS environmental.
+> Now all i want to do is write a GRASS command that send 
+> some variable and command to my system.....
+> 
+> After having started my GRASS section i have to run my 
+> command, set my variable and then trogth the C system() 
+> command start my R section, execute my script.R and quit 
+> R.
+> 
+> My problem is that after starting R section my system do 
+> not go on..... is waiting for command input.....
+> Have you the solution?
+> 
+> Follows my code:
+> 
+> //variable setted
+> timestamp = input->answer;
+> 	dtm=elevation->answer;
+> 
+> //start R
+> 	system("R;");
+
+I think this is where things are falling apart. My guess would be that 
+this is starting an *interactive* R. You need rather to write the whole R 
+command file first, then set appropriate environment variables, then call 
+R as a batch job, saving the output as appropriate. There is a good 
+section on this in Neteler/Mitasova (2002) in the chapter on interfacing 
+with other software. Have a look at:
+
+http://grass.itc.it/statsgrass/grass_geostats.html
+
+and some of the resources there too. Running R as a batch job is also 
+covered in R, R --help shows some, R BATCH --help some more. By the way, 
+sending R code through system() to your regular shell is not likely to 
+work, but if you want to use sockets, R can read from and write to them 
+too. Then you could perhaps "interact" with an R instance started by 
+
+system("R --vanilla < give_me_a_socket.R > output_to_log.txt"); 
+or whatever, where the input file gets R ready to read from your socket 
+connection. But in general people write batch files ahead of time, and 
+pass variable strings into R using environment variables in the batch 
+script (see Sys.getenv()). 
+
+> 
+> //delete all variable	
+> 	system("rm(list = ls());");
+> 
+> //set the R variable Ttime & dem	
+> 	command = strcat("Ttime<-'",(const char*)timestamp);
+> 	command = strcat(command,"' > /home/tmp.txt");
+> 	system(command);
+> 	printf(command);
+> 	
+> 	command = strcat("dem<-'",(const char*)dtm);
+> 	command = strcat(command,"' > /home/tmp.txt");
+> 	system(command);
+> 	printf(command);
+> 	
+> //run my R script
+> 	system("source(/home/mcannata/Rscript/temper.R)>tmp.txt");
+> 	printf("eleboration running...");
+> 	
+> //write my Raster to GRASS
+> 	command = "rast.put(G,lname=";
+> 	strcat(command,(const char*)timestamp);
+> 	strcat(command,",Temperatura$t)");
+> 	printf(command);
+> 	
+> //delete redirected output
+> 	system("rm /home/tmp.txt");
+> 
+> //stop R session
+>          system("q()");
+> 	
+> --------------------------------------
+> Eng. Massimiliano Cannata
+> Phd student
+> www.supsi.ch
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From temiz at deprem.gov.tr  Mon Oct 20 08:48:44 2003
+From: temiz at deprem.gov.tr (temiz)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] interpolation of the vector
+Message-ID: <3F93D9AC.60806@deprem.gov.tr>
+
+Hello
+
+library(fields)
+ x<-cbind(dt1$V1,dt1$V2)  # V1:east , V2=north coordinates of points
+ Y<-cbind(dt1$V4,dt1$V5)  # V4,V5  cos and sines components
+ fit2 <- Krig(x,Y,cov.function=exp.cov, scale.type="range") : this gives 
+"Error in if (abs(f2 - f1) < tol) { : missing value where TRUE/FALSE needed"
+
+what should I have done ?
+
+is interpolation of x,y components as a vector ok ?
+or
+what would you suggest for interpolation of the vector Y ?
+
+I will appreciate , if you tell me what I have to do
+
+Ahmet Temiz
+General Directory of Disaster Affairs
+Ankara TURKEY
+
+
+
+______________________________________
+Inflex - installed on mailserver for domain @deprem.gov.tr
+Queries to: postmaster@deprem.gov.tr
+
+______________________________________
+The views and opinions expressed in this e-mail message are the sender's own
+and do not necessarily represent the views and the opinions of Earthquake Research Dept.
+of General Directorate of Disaster Affairs.
+
+Bu e-postadaki fikir ve gorusler gonderenin sahsina ait olup, yasal olarak T.C.
+B.I.B. Afet Isleri Gn.Mud. Deprem Arastirma Dairesi'ni baglayici nitelikte degildir.
+
+
+From hamish_nospam at yahoo.com  Mon Oct 20 21:57:54 2003
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Interpolation of azimuth values
+In-Reply-To: <3F8E4636.9060007@deprem.gov.tr>
+References: <3F8E4636.9060007@deprem.gov.tr>
+Message-ID: <20031021145754.74a3d9f8.hamish_nospam@yahoo.com>
+
+> I will make an interpolation of data which represents azimuth
+> direction( angle from north in clockwise direction) values.
+> But there is a problem.
+> Say, for instance, while 1 and 359 indicate somewhat same direction, 
+> interpolation puts  values
+> in the range from 1 to 359.  What can I do to solve the problem ?
+
+
+You might try breaking it down to x,y components on a circle of radius
+1, or take the real and imaginary parts. Bin/average the results and
+then convert back to polar angles.
+
+Note if you are comparing vectors it is important to include magnitude
+in the calculation and otherwise think about the reality of the answer.
+e.g. A strong east-west dominant wind flow through a valley, which may
+be 15 km/hr east half the time and 15 km/hr west the other half may
+average to a weak north-south net, which tells you nothing about the
+'usual' conditions. Sorry, that example isn't very illustrative of my
+point.
+
+
+R CircStats's circ.mean.R does this:
+http://cran.r-project.org/src/contrib/PACKAGES.html#CircStats
+
+circ.mean <- function(x) {
+        sinr <- sum(sin(x))
+        cosr <- sum(cos(x))
+        circmean <- atan(sinr, cosr)
+        circmean
+
+
+
+or a Matlab example:
+
+TH=wind.dirns;
+R=wind.velos;
+[X,Y] = pol2cart(TH,R);
+[TH1,R1] = cart2pol(mean(X),mean(Y));
+wind_mean.dirn = TH1 * (180/pi)
+wind_mean.velo = mean(wind.velos);
+
+
+
+Hamish
+
+
+From massimiliano.cannata at supsi.ch  Wed Oct 22 09:33:52 2003
+From: massimiliano.cannata at supsi.ch (Massimiliano Cannata)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] sites.put2 ERROR!!!
+Message-ID: <3F968740.72D43244@supsi.ch>
+
+Hi users,
+I'm new of this list and I will appreciate any
+help.
+Here it is what I've done:
+
+>library(GRASS);
+>G<-gmeta();
+>mod<-lm(.....................)
+>dataSite<-data.frame(x=matrix(1:11),y=matrix(1:11),z=as.vector(mod$coefficient));
+
+>sites.put2(G,data=dataSite,id=NULL,dims=c("x","y","z"),lname="parametri",all.sites=TRUE,check=FALSE)
+
+Error in
+which(unlist(lapply(data.attr,is.numeric))):
+    argument to "which" is not logical
+>
+
+But if I type:
+
+>lapply(unlist(dataS,is.numeric))
+    x        y        z
+TRUE    TRUE    TRUE
+
+So, what I'm doing wrong?
+Of course I can use sites.put() but just for
+knowledge.......
+
+Thanks you all.
+
+
+--
+-------------
+note: change my e-mail reference to
+massimiliano.cannata@supsi.ch
+      because the old one will be deleted soon.
+-------------
+Ing.  Massimiliano Cannata
+Istituto di Scienze della Terra - SUPSI
+C.P. 72 - CH-6952 Canobbio (Ticino, Switzerland)
+Tel +41 91 /935 12 25 - Fax +41 91 /935 12 09
+eMail: massimiliano.cannata@supsi.ch
+Internet: http://www.ist.supsi.ch
+
+
+
+From torben.bach at geo.au.dk  Thu Oct 23 06:23:04 2003
+From: torben.bach at geo.au.dk (Torben Bach)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Proj4
+Message-ID: <000001c3994f$a523aa70$1b96000a@hgg.geo.au.dk>
+
+Hi
+
+Completely new to the subject I have been roaming the internet trying to
+find a "golden" command line to proj4 for converting lat-lon coordinates
+to DANISH ED50 UTM zone 32N. Apparently the internal ED50 is not the
+same as the Danish (or german or french...) ED50 - im am confused - does
+anybody know the "golden" command line I so badly long for ? 
+
+Another question - how accurate is the ouput from Proj4 ? I have
+compared results converting to EUREF89 with output from programs from
+the national Ministry of the Environment (KMS) handling this stuf and
+MapInfo, and they gave the same result within a meter or so. But using
+ED50 and Proj4 gave coordinates lying hundreds of meters from MapInfo
+and "official" KMS  results (this was how I discoverd I needed the
+"golden" command line).
+
+Thanks in advance !!
+
+Best regards,
+
+-Torben Bach
+
+
+
+From Roger.Bivand at nhh.no  Fri Oct 24 15:09:38 2003
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Proj4
+In-Reply-To: <000001c3994f$a523aa70$1b96000a@hgg.geo.au.dk>
+Message-ID: <Pine.LNX.4.44.0310242108360.14002-100000@reclus.nhh.no>
+
+On Thu, 23 Oct 2003, Torben Bach wrote:
+
+> Hi
+> 
+> Completely new to the subject I have been roaming the internet trying to
+> find a "golden" command line to proj4 for converting lat-lon coordinates
+> to DANISH ED50 UTM zone 32N. Apparently the internal ED50 is not the
+> same as the Danish (or german or french...) ED50 - im am confused - does
+> anybody know the "golden" command line I so badly long for ? 
+
+Maybe ask on the proj list? Does the inverse transformation on 
+http://www.kms.dk/research/geodesy/reference/cotrans1_en.html
+help?
+
+> 
+> Another question - how accurate is the ouput from Proj4 ? I have
+> compared results converting to EUREF89 with output from programs from
+> the national Ministry of the Environment (KMS) handling this stuf and
+> MapInfo, and they gave the same result within a meter or so. But using
+> ED50 and Proj4 gave coordinates lying hundreds of meters from MapInfo
+> and "official" KMS  results (this was how I discoverd I needed the
+> "golden" command line).
+> 
+> Thanks in advance !!
+> 
+> Best regards,
+> 
+> -Torben Bach
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From torben.bach at geo.au.dk  Mon Oct 27 08:19:56 2003
+From: torben.bach at geo.au.dk (Torben Bach)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Proj4 -  Answer
+Message-ID: <000101c39c8d$03d30a30$1b96000a@hgg.geo.au.dk>
+
+Hi
+
+I posted a question to this group a couple of days ago and were pointed
+to another mail list which dealt with these mattes. I have got an answer
+from this group and I post it here for the sake of completeness. Here is
+the solution provided by Paul Kelly(paul-grass@stjohnspoint.co.uk):
+
+From Roger.Bivand at nhh.no  Wed Oct 29 16:59:46 2003
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] sites.put2 ERROR!!!
+In-Reply-To: <3F968740.72D43244@supsi.ch>
+Message-ID: <Pine.LNX.4.44.0310292238350.4903-100000@reclus.nhh.no>
+
+On Wed, 22 Oct 2003, Massimiliano Cannata wrote:
+
+> Hi users,
+> I'm new of this list and I will appreciate any
+> help.
+
+Sorry not to have replied earlier, but I couldn't see what was going on.
+
+> Here it is what I've done:
+> 
+> >library(GRASS); G<-gmeta(); mod<-lm(.....................)
+> >dataSite<-data.frame(x=matrix(1:11),y=matrix(1:11),
+> >  z=as.vector(mod$coefficient));
+> 
+
+Your data frame has three columns, named x, y and z.
+
+> >sites.put2(G,data=dataSite,id=NULL,dims=c("x","y","z"),lname="parametri",all.sites=TRUE,check=FALSE)
+> 
+> Error in
+> which(unlist(lapply(data.attr,is.numeric))):
+>     argument to "which" is not logical
+> >
+
+The sites.put2() function drops the id if given, and the dimensions, from 
+the data attributes. Here x, y, and z are specified as dimensions, so 
+there are no data attributes left. Consequently, is.numeric is looking at 
+a NULL data frame with no columns. This is a bug, because either an error 
+or a warning should be given, a warning if we permit sites without 
+attributes (and the test put in an if() loop), an error otherwise. So for 
+the time being use sites.put() with east=x, north=y, and var=z - but this 
+will make z an attribute and you want it to be a dimension - is this 
+correct? I'll make the modification to the code for the next release.
+
+Thanks for reporting this.
+
+Roger Bivand  
+
+> 
+> But if I type:
+> 
+> >lapply(unlist(dataS,is.numeric))
+>     x        y        z
+> TRUE    TRUE    TRUE
+> 
+> So, what I'm doing wrong?
+> Of course I can use sites.put() but just for
+> knowledge.......
+> 
+> Thanks you all.
+> 
+> 
+> --
+> -------------
+> note: change my e-mail reference to
+> massimiliano.cannata@supsi.ch
+>       because the old one will be deleted soon.
+
+I think you can edit your subscription details on the mailing list website 
+using the password sent each month.
+
+> -------------
+> Ing.  Massimiliano Cannata
+> Istituto di Scienze della Terra - SUPSI
+> C.P. 72 - CH-6952 Canobbio (Ticino, Switzerland)
+> Tel +41 91 /935 12 25 - Fax +41 91 /935 12 09
+> eMail: massimiliano.cannata@supsi.ch
+> Internet: http://www.ist.supsi.ch
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From Roger.Bivand at nhh.no  Thu Oct 30 03:18:31 2003
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Re: Building R GRASS interface for MacOS X 10.3 (Panther)
+In-Reply-To: <0B84A8B0-0A7A-11D8-BC51-003065D50204@cinci.rr.com>
+Message-ID: <Pine.LNX.4.44.0310300914190.5683-100000@reclus.nhh.no>
+
+Dear Thomas,
+
+Unfortunately, I do not have access to Mac hardware/software, and am out 
+of my depth here. I am forwarding this to the small list within GRASS that 
+may have some experience - could anyone who has met such problems please 
+respond on-list so that the answers go into the archive?
+
+Sorry not to be more direct help, please try out various solutions and let 
+us know about your progress, I'm sure more people will find your 
+experience useful.
+
+Roger
+
+On Wed, 29 Oct 2003, Thomas Adams wrote:
+
+> Roger,
+> 
+> I'm trying to build the R GRASS interface for MacOS X 10.3 (Panther). I 
+> have built R Version 1.6.2  (2003-01-10) from CRAN sources - although, 
+> I thought I was building ver. 1.8, at least that's what the tar file 
+> indicated. When I try to use the command:
+> 
+> R CMD INSTALL GRASS
+> 
+> at the term prompt, I get the following error:
+> 
+> * Installing *source* package 'GRASS' ...
+> ** libs
+> gcc -no-cpp-precomp -I/usr/local/lib/R/include -DR_GRASS_INTERFACE 
+> -I./include -I/usr/local/include   -fno-common  -g -O2 -c R_G_init.c -o 
+> R_G_init.o
+> dyld: gcc version mismatch for library: /usr/local/lib/libiconv.2.dylib 
+> (compatibility version of user: 5.0.0 greater than library's version: 
+> 4.0.0)
+> make: *** [R_G_init.o] Trace/BPT trap
+> ERROR: compilation failed for package 'GRASS'
+> 
+> Somehow I have a dylib mismatch, but it's unclear to me why it's a 
+> problem. Is it because R is compiled with a different library that's 
+> older or what? Since I JUST built R and I am now trying to build your R 
+> GRASS library, I don't understand how there can be a problem with 
+> library incompatibilities.
+> 
+> Any suggestions will be helpful.
+> 
+> Regards,
+> Tom Adams
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From temiz at deprem.gov.tr  Fri Oct 31 03:11:16 2003
+From: temiz at deprem.gov.tr (temiz)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Therotical basis of Kriging
+Message-ID: <3FA21924.801@deprem.gov.tr>
+
+hello
+
+I want to know about therotical basis of Kriging in elemantary level.
+I will appreciate if anyone sends me address,link,e-documents, etc..
+
+kind regards
+-- 
+
+
+Ahmet Temiz
+General Directory of Disaster Affairs
+Ankara TURKEY
+
+
+______________________________________
+Inflex - installed on mailserver for domain @deprem.gov.tr
+Queries to: postmaster@deprem.gov.tr
+
+______________________________________
+The views and opinions expressed in this e-mail message are the sender's own
+and do not necessarily represent the views and the opinions of Earthquake Research Dept.
+of General Directorate of Disaster Affairs.
+
+Bu e-postadaki fikir ve gorusler gonderenin sahsina ait olup, yasal olarak T.C.
+B.I.B. Afet Isleri Gn.Mud. Deprem Arastirma Dairesi'ni baglayici nitelikte degildir.
+
+
+From torben.bach at geo.au.dk  Fri Oct 31 02:49:56 2003
+From: torben.bach at geo.au.dk (Torben Bach)
+Date: Wed Nov 14 16:58:11 2007
+Subject: SV: [STATSGRASS] Therotical basis of Kriging
+In-Reply-To: <3FA21924.801@deprem.gov.tr>
+Message-ID: <000001c39f83$93af7eb0$1b96000a@hgg.geo.au.dk>
+
+Hi Ahmet,
+
+I don't know if this is too elementary, but on this site:
+http://petro.kigam.re.kr/~phw/geostat/ you can download an article in
+two parts called "Petroleum Geostatistics for nongeostatisticians" which
+appeared in "Leading Edge" in 2000. The first part handles the very
+basic concepts in an informal way. Otherwise Edzer J. Pebesma's
+excellent PhD thesis on the subject is available at
+http://www.gstat.org.
+
+Regards,
+
+-Torben
+
+
+
+-----Oprindelig meddelelse-----
+Fra: statsgrass-admin@grass.itc.it
+[mailto:statsgrass-admin@grass.itc.it] P? vegne af temiz
+Sendt: 31 October 2003 09:11
+Til: ai-geostats@unil.ch; R-help; statsgrass@grass.itc.it
+Emne: [STATSGRASS] Therotical basis of Kriging
+
+
+hello
+
+I want to know about therotical basis of Kriging in elemantary level. I
+will appreciate if anyone sends me address,link,e-documents, etc..
+
+kind regards
+-- 
+
+
+Ahmet Temiz
+General Directory of Disaster Affairs
+Ankara TURKEY
+
+
+______________________________________
+Inflex - installed on mailserver for domain @deprem.gov.tr Queries to:
+postmaster@deprem.gov.tr
+
+______________________________________
+The views and opinions expressed in this e-mail message are the sender's
+own and do not necessarily represent the views and the opinions of
+Earthquake Research Dept. of General Directorate of Disaster Affairs.
+
+Bu e-postadaki fikir ve gorusler gonderenin sahsina ait olup, yasal
+olarak T.C. B.I.B. Afet Isleri Gn.Mud. Deprem Arastirma Dairesi'ni
+baglayici nitelikte degildir.
+
+_______________________________________________
+statsgrass mailing list
+statsgrass@grass.itc.it http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+From massimiliano.cannata at supsi.ch  Fri Oct 31 02:57:02 2003
+From: massimiliano.cannata at supsi.ch (Massimiliano Cannata)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Therotical basis of Kriging
+References: <3FA21924.801@deprem.gov.tr>
+Message-ID: <3FA215CE.CA0AE6A1@supsi.ch>
+
+Hello,
+here is a link about kriging, I think is clear enough to understand it.....
+
+http://www.geomatics.ucalgary.ca/~nel-shei/DTMLectureNotes/ENGO%20573%20-%20Chapter%203%20Kriging%20and%20variograms.doc
+
+Bye
+
+temiz wrote:
+
+> hello
+>
+> I want to know about therotical basis of Kriging in elemantary level.
+> I will appreciate if anyone sends me address,link,e-documents, etc..
+>
+> kind regards
+> --
+>
+> Ahmet Temiz
+> General Directory of Disaster Affairs
+> Ankara TURKEY
+>
+> ______________________________________
+> Inflex - installed on mailserver for domain @deprem.gov.tr
+> Queries to: postmaster@deprem.gov.tr
+>
+> ______________________________________
+> The views and opinions expressed in this e-mail message are the sender's own
+> and do not necessarily represent the views and the opinions of Earthquake Research Dept.
+> of General Directorate of Disaster Affairs.
+>
+> Bu e-postadaki fikir ve gorusler gonderenin sahsina ait olup, yasal olarak T.C.
+> B.I.B. Afet Isleri Gn.Mud. Deprem Arastirma Dairesi'ni baglayici nitelikte degildir.
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+--
+-------------
+note: change my e-mail reference to massimiliano.cannata@supsi.ch
+      because the old one will be deleted soon.
+-------------
+Ing.  Massimiliano Cannata
+Istituto di Scienze della Terra - SUPSI
+C.P. 72 - CH-6952 Canobbio (Ticino, Switzerland)
+Tel +41 91 /935 12 25 - Fax +41 91 /935 12 09
+eMail: massimiliano.cannata@supsi.ch
+Internet: http://www.ist.supsi.ch
+
+
+
+From tadams1 at cinci.rr.com  Thu Oct 30 20:07:10 2003
+From: tadams1 at cinci.rr.com (Thomas Adams)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Re: Building R GRASS interface for MacOS X 10.3 (Panther)
+In-Reply-To: <Pine.LNX.4.44.0310300914190.5683-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0310300914190.5683-100000@reclus.nhh.no>
+Message-ID: <8DB58DA1-0B3E-11D8-9BCD-003065D50204@cinci.rr.com>
+
+Roger,
+
+I do have a fix, thanks to David orme in the UK. Users experiencing the 
+same problem should go to http://www.gnu.org/software/libiconv/ 
+download libiconv  and build from sources. I installed libiconv in my 
+Fink /sw directory. The R GRASS interface built just fine after doing 
+this.
+
+Thanks for your help!
+
+Cheers,
+Tom
+
+On Oct 30, 2003, at 3:18 AM, Roger Bivand wrote:
+
+> Dear Thomas,
+>
+> Unfortunately, I do not have access to Mac hardware/software, and am 
+> out
+> of my depth here. I am forwarding this to the small list within GRASS 
+> that
+> may have some experience - could anyone who has met such problems 
+> please
+> respond on-list so that the answers go into the archive?
+>
+> Sorry not to be more direct help, please try out various solutions and 
+> let
+> us know about your progress, I'm sure more people will find your
+> experience useful.
+>
+> Roger
+>
+> On Wed, 29 Oct 2003, Thomas Adams wrote:
+>
+>> Roger,
+>>
+>> I'm trying to build the R GRASS interface for MacOS X 10.3 (Panther). 
+>> I
+>> have built R Version 1.6.2  (2003-01-10) from CRAN sources - although,
+>> I thought I was building ver. 1.8, at least that's what the tar file
+>> indicated. When I try to use the command:
+>>
+>> R CMD INSTALL GRASS
+>>
+>> at the term prompt, I get the following error:
+>>
+>> * Installing *source* package 'GRASS' ...
+>> ** libs
+>> gcc -no-cpp-precomp -I/usr/local/lib/R/include -DR_GRASS_INTERFACE
+>> -I./include -I/usr/local/include   -fno-common  -g -O2 -c R_G_init.c 
+>> -o
+>> R_G_init.o
+>> dyld: gcc version mismatch for library: 
+>> /usr/local/lib/libiconv.2.dylib
+>> (compatibility version of user: 5.0.0 greater than library's version:
+>> 4.0.0)
+>> make: *** [R_G_init.o] Trace/BPT trap
+>> ERROR: compilation failed for package 'GRASS'
+>>
+>> Somehow I have a dylib mismatch, but it's unclear to me why it's a
+>> problem. Is it because R is compiled with a different library that's
+>> older or what? Since I JUST built R and I am now trying to build your 
+>> R
+>> GRASS library, I don't understand how there can be a problem with
+>> library incompatibilities.
+>>
+>> Any suggestions will be helpful.
+>>
+>> Regards,
+>> Tom Adams
+>>
+>>
+>
+> -- 
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian School 
+> of
+> Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+> e-mail: Roger.Bivand@nhh.no
+>
+>
+
+

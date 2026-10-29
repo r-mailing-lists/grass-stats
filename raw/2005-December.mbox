@@ -1,0 +1,638 @@
+From Thomas.Adams at noaa.gov  Thu Dec 15 13:00:16 2005
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] kriging, gstat, GRASS
+In-Reply-To: <41EBB183.7080103@geog.uu.nl>
+References: <Pine.LNX.4.61.0501161751300.17576@egor.unm.edu>
+ <41EB9FD6.5000907@noaa.gov> <41EBB183.7080103@geog.uu.nl>
+Message-ID: <43A1AF30.9030107@noaa.gov>
+
+Edzer,
+
+I'm re-visiting an old issue. Previously, using GRASS 5.3 & 5.4, I had 
+no problems with using gstat & GRASS together. Now, I've gone to GRASS 
+6.1 and gstat 2.4.5 (compiled with GRASS support) and I get errors. I 
+apologize that I may have contacted you before about this, but I can not 
+find any old emails. Attached is my gstat input file and a file with the 
+gstat error I get from within my GRASS6.1 session. I'm getting:
+
+WARNING: Vector used instead of sites.
+
+I know that the R sp package will read GRASS vector location data and I 
+could go that route if need be, but then there is the issue of getting 
+the grids generated through kriging back into GRASS, which (I think) is 
+more tedious.
+
+Regards,
+Tom
+
+
+
+Edzer J. Pebesma wrote:
+
+> Thomas Adams wrote:
+>
+>> Horacio,
+>>
+>> The best way to do this is to use gstat. Go to: 
+>> http://grass.itc.it/statsgrass/index.html. Scroll to near the bottom 
+>> of the page and follow the "gstat offers GRASS support" link 
+>> (http://www.gstat.org/grass.html). I have used gstat with GRASS for a 
+>> number of projects and it works wonderfully.
+>>
+>> Regards,
+>> Tom
+>
+>
+> Tom, thanks for the good news. There's two ways to get gstat's
+> functionality in GRASS: either through the gstat binary reading
+> and writing GRASS data, or through Grass-R, using the
+> gstat R package. The latter will be easier if you're used to R.
+> -- 
+> Edzer
+>
+
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+-------------- next part --------------
+# file: gstat.cmd.temps
+#
+# gstat command file
+#
+data(temp_20050801_08): 'temp_20050801_08', x=1, y=2, v=1;
+variogram(temp_20050801_08): 0.2772 Nug(0) + 0.85 Sph(987521);
+-------------- next part --------------
+GRASS-GRID > gstat gstat.cmd.temps
+gstat: Linux version 2.4.5 (17 June 2005)
+Copyright (C) 1992, 2004 Edzer J. Pebesma
+using Marsaglia's random number generator
+data(temp_20050801_08): WARNING: Vector used instead of sites.
+WARNING: Invalid absolute datetime format
+Memory fault 
+
+From perrygeo at gmail.com  Thu Dec 15 17:25:33 2005
+From: perrygeo at gmail.com (Matthew Perry)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] kriging, gstat, GRASS
+In-Reply-To: <43A1AF30.9030107@noaa.gov>
+References: <Pine.LNX.4.61.0501161751300.17576@egor.unm.edu>
+	 <41EB9FD6.5000907@noaa.gov> <41EBB183.7080103@geog.uu.nl>
+	 <43A1AF30.9030107@noaa.gov>
+Message-ID: <5383fa5e0512151425w304aa286u1f8fd854137df12a@mail.gmail.com>
+
+Thomas,
+
+ On 12/15/05, Thomas Adams <Thomas.Adams@noaa.gov> wrote:
+> I'm re-visiting an old issue. Previously, using GRASS 5.3 & 5.4, I had
+> no problems with using gstat & GRASS together. Now, I've gone to GRASS
+> 6.1 and gstat 2.4.5 (compiled with GRASS support) and I get errors. I
+> apologize that I may have contacted you before about this, but I can not
+> find any old emails. Attached is my gstat input file and a file with the
+> gstat error I get from within my GRASS6.1 session. I'm getting:
+>
+> WARNING: Vector used instead of sites.
+>
+
+
+I get that warning using the same software versions. However it does
+not seem to effect the results as I'm able to generate a kriged GRASS
+raster in spite of the warning.
+
+--
+Matt Perry
+perrygeo@gmail.com
+http://www.perrygeo.net
+
+
+From neteler at itc.it  Thu Dec 15 18:05:31 2005
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] kriging, gstat, GRASS
+In-Reply-To: <5383fa5e0512151425w304aa286u1f8fd854137df12a@mail.gmail.com>
+References: <Pine.LNX.4.61.0501161751300.17576@egor.unm.edu> <41EB9FD6.5000907@noaa.gov> <41EBB183.7080103@geog.uu.nl> <43A1AF30.9030107@noaa.gov> <5383fa5e0512151425w304aa286u1f8fd854137df12a@mail.gmail.com>
+Message-ID: <20051215230530.GB15802@thuille.itc.it>
+
+Thomas,
+
+On Thu, Dec 15, 2005 at 02:25:33PM -0800, Matthew Perry wrote:
+> Thomas,
+> 
+>  On 12/15/05, Thomas Adams <Thomas.Adams@noaa.gov> wrote:
+> > I'm re-visiting an old issue. Previously, using GRASS 5.3 & 5.4, I had
+> > no problems with using gstat & GRASS together. Now, I've gone to GRASS
+> > 6.1 and gstat 2.4.5 (compiled with GRASS support) and I get errors. I
+> > apologize that I may have contacted you before about this, but I can not
+> > find any old emails. Attached is my gstat input file and a file with the
+> > gstat error I get from within my GRASS6.1 session. I'm getting:
+> >
+> > WARNING: Vector used instead of sites.
+> >
+> 
+> 
+> I get that warning using the same software versions. However it does
+> not seem to effect the results as I'm able to generate a kriged GRASS
+> raster in spite of the warning.
+
+This warning is harmless. I just changed the text to
+"Adapted sites library used for vector points (module should be updated to GRASS 6 vector library)."
+
+which is hopefully more explanative. It is intended to the programmer.
+
+Concerning memory faults: I found this in the ChangeLog
+
+2005-08-24 16:06  markus
+        * lib/sites/sites.c: Brad's updates merged ;crash fixed (gstat
+          related)
+
+
+To replicate the problem I would need a (small) location, the
+gstat script etc, preferably off-list. I can try to check although
+I am pretty busy right now.
+
+Markus
+
+-- 
+Markus Neteler     <neteler itc it>       http://mpa.itc.it
+ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+
+From Thomas.Adams at noaa.gov  Fri Dec 16 15:15:43 2005
+From: Thomas.Adams at noaa.gov (Thomas.Adams@noaa.gov)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] kriging, gstat, GRASS
+Message-ID: <1720d6172b70.172b701720d6@noaa.gov>
+
+Markus,
+
+Very likely the GRASS version I'm working with is older than:
+
+"2005-08-24 16:06  markus * lib/sites/sites.c: Brad's updates merged ;crash fixed (gstat related)"
+
+So, should I get the latest GRASS6.1CVS?
+
+Tom
+
+----- Original Message -----
+From: Markus Neteler <neteler@itc.it>
+Date: Thursday, December 15, 2005 6:05 pm
+Subject: Re: [STATSGRASS] kriging, gstat, GRASS
+
+> Thomas,
+> 
+> On Thu, Dec 15, 2005 at 02:25:33PM -0800, Matthew Perry wrote:
+> > Thomas,
+> > 
+> >  On 12/15/05, Thomas Adams <Thomas.Adams@noaa.gov> wrote:
+> > > I'm re-visiting an old issue. Previously, using GRASS 5.3 & 
+> 5.4, I had
+> > > no problems with using gstat & GRASS together. Now, I've gone 
+> to GRASS
+> > > 6.1 and gstat 2.4.5 (compiled with GRASS support) and I get 
+> errors. I
+> > > apologize that I may have contacted you before about this, but 
+> I can not
+> > > find any old emails. Attached is my gstat input file and a file 
+> with the
+> > > gstat error I get from within my GRASS6.1 session. I'm getting:
+> > >
+> > > WARNING: Vector used instead of sites.
+> > >
+> > 
+> > 
+> > I get that warning using the same software versions. However it does
+> > not seem to effect the results as I'm able to generate a kriged 
+> GRASS> raster in spite of the warning.
+> 
+> This warning is harmless. I just changed the text to
+> "Adapted sites library used for vector points (module should be 
+> updated to GRASS 6 vector library)."
+> 
+> which is hopefully more explanative. It is intended to the programmer.
+> 
+> Concerning memory faults: I found this in the ChangeLog
+> 
+> 2005-08-24 16:06  markus
+>        * lib/sites/sites.c: Brad's updates merged ;crash fixed (gstat
+>          related)
+> 
+> 
+> To replicate the problem I would need a (small) location, the
+> gstat script etc, preferably off-list. I can try to check although
+> I am pretty busy right now.
+> 
+> Markus
+> 
+> -- 
+> Markus Neteler     <neteler itc it>       http://mpa.itc.it
+> ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+> MPBA - Predictive Models for Biol. & Environ. Data Analysis
+> Via Sommarive, 18        -       38050 Povo (Trento), Italy
+> 
+
+
+From neteler at itc.it  Fri Dec 16 15:19:49 2005
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] kriging, gstat, GRASS
+In-Reply-To: <1720d6172b70.172b701720d6@noaa.gov>
+References: <1720d6172b70.172b701720d6@noaa.gov>
+Message-ID: <20051216201949.GH16982@thuille.itc.it>
+
+On Fri, Dec 16, 2005 at 03:15:43PM -0500, Thomas.Adams@noaa.gov wrote:
+> Markus,
+> 
+> Very likely the GRASS version I'm working with is older than:
+> 
+> "2005-08-24 16:06  markus * lib/sites/sites.c: Brad's updates merged ;crash fixed (gstat related)"
+> 
+> So, should I get the latest GRASS6.1CVS?
+
+Yes, please - and you will enjoy tons of other improvements!
+
+Markus
+
+ 
+> Tom
+> 
+> ----- Original Message -----
+> From: Markus Neteler <neteler@itc.it>
+> Date: Thursday, December 15, 2005 6:05 pm
+> Subject: Re: [STATSGRASS] kriging, gstat, GRASS
+> 
+> > Thomas,
+> > 
+> > On Thu, Dec 15, 2005 at 02:25:33PM -0800, Matthew Perry wrote:
+> > > Thomas,
+> > > 
+> > >  On 12/15/05, Thomas Adams <Thomas.Adams@noaa.gov> wrote:
+> > > > I'm re-visiting an old issue. Previously, using GRASS 5.3 & 
+> > 5.4, I had
+> > > > no problems with using gstat & GRASS together. Now, I've gone 
+> > to GRASS
+> > > > 6.1 and gstat 2.4.5 (compiled with GRASS support) and I get 
+> > errors. I
+> > > > apologize that I may have contacted you before about this, but 
+> > I can not
+> > > > find any old emails. Attached is my gstat input file and a file 
+> > with the
+> > > > gstat error I get from within my GRASS6.1 session. I'm getting:
+> > > >
+> > > > WARNING: Vector used instead of sites.
+> > > >
+> > > 
+> > > 
+> > > I get that warning using the same software versions. However it does
+> > > not seem to effect the results as I'm able to generate a kriged 
+> > GRASS> raster in spite of the warning.
+> > 
+> > This warning is harmless. I just changed the text to
+> > "Adapted sites library used for vector points (module should be 
+> > updated to GRASS 6 vector library)."
+> > 
+> > which is hopefully more explanative. It is intended to the programmer.
+> > 
+> > Concerning memory faults: I found this in the ChangeLog
+> > 
+> > 2005-08-24 16:06  markus
+> >        * lib/sites/sites.c: Brad's updates merged ;crash fixed (gstat
+> >          related)
+> > 
+> > 
+> > To replicate the problem I would need a (small) location, the
+> > gstat script etc, preferably off-list. I can try to check although
+> > I am pretty busy right now.
+> > 
+> > Markus
+> > 
+> > -- 
+> > Markus Neteler     <neteler itc it>       http://mpa.itc.it
+> > ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+> > MPBA - Predictive Models for Biol. & Environ. Data Analysis
+> > Via Sommarive, 18        -       38050 Povo (Trento), Italy
+> > 
+
+-- 
+Markus Neteler     <neteler itc it>       http://mpa.itc.it
+ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+
+From Thomas.Adams at noaa.gov  Mon Dec 19 16:59:42 2005
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] kriging, gstat, GRASS
+In-Reply-To: <20051216201949.GH16982@thuille.itc.it>
+References: <1720d6172b70.172b701720d6@noaa.gov>
+ <20051216201949.GH16982@thuille.itc.it>
+Message-ID: <43A72D4E.2000601@noaa.gov>
+
+Markus,
+
+I was just able to check the GRASS version I am using; it is the CVS 
+version dated 2005-08-20.
+
+--Tom
+
+
+Markus Neteler wrote:
+
+>On Fri, Dec 16, 2005 at 03:15:43PM -0500, Thomas.Adams@noaa.gov wrote:
+>  
+>
+>>Markus,
+>>
+>>Very likely the GRASS version I'm working with is older than:
+>>
+>>"2005-08-24 16:06  markus * lib/sites/sites.c: Brad's updates merged ;crash fixed (gstat related)"
+>>
+>>So, should I get the latest GRASS6.1CVS?
+>>    
+>>
+>
+>Yes, please - and you will enjoy tons of other improvements!
+>
+>Markus
+>
+> 
+>  
+>
+>>Tom
+>>
+>>----- Original Message -----
+>>From: Markus Neteler <neteler@itc.it>
+>>Date: Thursday, December 15, 2005 6:05 pm
+>>Subject: Re: [STATSGRASS] kriging, gstat, GRASS
+>>
+>>    
+>>
+>>>Thomas,
+>>>
+>>>On Thu, Dec 15, 2005 at 02:25:33PM -0800, Matthew Perry wrote:
+>>>      
+>>>
+>>>>Thomas,
+>>>>
+>>>> On 12/15/05, Thomas Adams <Thomas.Adams@noaa.gov> wrote:
+>>>>        
+>>>>
+>>>>>I'm re-visiting an old issue. Previously, using GRASS 5.3 & 
+>>>>>          
+>>>>>
+>>>5.4, I had
+>>>      
+>>>
+>>>>>no problems with using gstat & GRASS together. Now, I've gone 
+>>>>>          
+>>>>>
+>>>to GRASS
+>>>      
+>>>
+>>>>>6.1 and gstat 2.4.5 (compiled with GRASS support) and I get 
+>>>>>          
+>>>>>
+>>>errors. I
+>>>      
+>>>
+>>>>>apologize that I may have contacted you before about this, but 
+>>>>>          
+>>>>>
+>>>I can not
+>>>      
+>>>
+>>>>>find any old emails. Attached is my gstat input file and a file 
+>>>>>          
+>>>>>
+>>>with the
+>>>      
+>>>
+>>>>>gstat error I get from within my GRASS6.1 session. I'm getting:
+>>>>>
+>>>>>WARNING: Vector used instead of sites.
+>>>>>
+>>>>>          
+>>>>>
+>>>>I get that warning using the same software versions. However it does
+>>>>not seem to effect the results as I'm able to generate a kriged 
+>>>>        
+>>>>
+>>>GRASS> raster in spite of the warning.
+>>>
+>>>This warning is harmless. I just changed the text to
+>>>"Adapted sites library used for vector points (module should be 
+>>>updated to GRASS 6 vector library)."
+>>>
+>>>which is hopefully more explanative. It is intended to the programmer.
+>>>
+>>>Concerning memory faults: I found this in the ChangeLog
+>>>
+>>>2005-08-24 16:06  markus
+>>>       * lib/sites/sites.c: Brad's updates merged ;crash fixed (gstat
+>>>         related)
+>>>
+>>>
+>>>To replicate the problem I would need a (small) location, the
+>>>gstat script etc, preferably off-list. I can try to check although
+>>>I am pretty busy right now.
+>>>
+>>>Markus
+>>>
+>>>-- 
+>>>Markus Neteler     <neteler itc it>       http://mpa.itc.it
+>>>ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+>>>MPBA - Predictive Models for Biol. & Environ. Data Analysis
+>>>Via Sommarive, 18        -       38050 Povo (Trento), Italy
+>>>
+>>>      
+>>>
+>
+>  
+>
+
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+
+From neteler at itc.it  Tue Dec 20 07:20:15 2005
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] kriging, gstat, GRASS
+In-Reply-To: <43A72D4E.2000601@noaa.gov>
+References: <1720d6172b70.172b701720d6@noaa.gov> <20051216201949.GH16982@thuille.itc.it> <43A72D4E.2000601@noaa.gov>
+Message-ID: <20051220122015.GB27166@thuille.itc.it>
+
+Tom,
+
+as you see, it's lagging behind by 4 days. So an update
+seems to be needed.
+
+Markus
+
+On Mon, Dec 19, 2005 at 04:59:42PM -0500, Thomas Adams wrote:
+> Markus,
+> 
+> I was just able to check the GRASS version I am using; it is the CVS 
+> version dated 2005-08-20.
+> 
+> --Tom
+> 
+> 
+> Markus Neteler wrote:
+> 
+> >On Fri, Dec 16, 2005 at 03:15:43PM -0500, Thomas.Adams@noaa.gov wrote:
+> > 
+> >
+> >>Markus,
+> >>
+> >>Very likely the GRASS version I'm working with is older than:
+> >>
+> >>"2005-08-24 16:06  markus * lib/sites/sites.c: Brad's updates merged 
+> >>;crash fixed (gstat related)"
+> >>
+> >>So, should I get the latest GRASS6.1CVS?
+> >>   
+> >>
+> >
+> >Yes, please - and you will enjoy tons of other improvements!
+> >
+> >Markus
+> >
+> >
+> > 
+> >
+> >>Tom
+> >>
+> >>----- Original Message -----
+> >>From: Markus Neteler <neteler@itc.it>
+> >>Date: Thursday, December 15, 2005 6:05 pm
+> >>Subject: Re: [STATSGRASS] kriging, gstat, GRASS
+> >>
+> >>   
+> >>
+> >>>Thomas,
+> >>>
+> >>>On Thu, Dec 15, 2005 at 02:25:33PM -0800, Matthew Perry wrote:
+> >>>     
+> >>>
+> >>>>Thomas,
+> >>>>
+> >>>>On 12/15/05, Thomas Adams <Thomas.Adams@noaa.gov> wrote:
+> >>>>       
+> >>>>
+> >>>>>I'm re-visiting an old issue. Previously, using GRASS 5.3 & 
+> >>>>>         
+> >>>>>
+> >>>5.4, I had
+> >>>     
+> >>>
+> >>>>>no problems with using gstat & GRASS together. Now, I've gone 
+> >>>>>         
+> >>>>>
+> >>>to GRASS
+> >>>     
+> >>>
+> >>>>>6.1 and gstat 2.4.5 (compiled with GRASS support) and I get 
+> >>>>>         
+> >>>>>
+> >>>errors. I
+> >>>     
+> >>>
+> >>>>>apologize that I may have contacted you before about this, but 
+> >>>>>         
+> >>>>>
+> >>>I can not
+> >>>     
+> >>>
+> >>>>>find any old emails. Attached is my gstat input file and a file 
+> >>>>>         
+> >>>>>
+> >>>with the
+> >>>     
+> >>>
+> >>>>>gstat error I get from within my GRASS6.1 session. I'm getting:
+> >>>>>
+> >>>>>WARNING: Vector used instead of sites.
+> >>>>>
+> >>>>>         
+> >>>>>
+> >>>>I get that warning using the same software versions. However it does
+> >>>>not seem to effect the results as I'm able to generate a kriged 
+> >>>>       
+> >>>>
+> >>>GRASS> raster in spite of the warning.
+> >>>
+> >>>This warning is harmless. I just changed the text to
+> >>>"Adapted sites library used for vector points (module should be 
+> >>>updated to GRASS 6 vector library)."
+> >>>
+> >>>which is hopefully more explanative. It is intended to the programmer.
+> >>>
+> >>>Concerning memory faults: I found this in the ChangeLog
+> >>>
+> >>>2005-08-24 16:06  markus
+> >>>      * lib/sites/sites.c: Brad's updates merged ;crash fixed (gstat
+> >>>        related)
+> >>>
+> >>>
+> >>>To replicate the problem I would need a (small) location, the
+> >>>gstat script etc, preferably off-list. I can try to check although
+> >>>I am pretty busy right now.
+> >>>
+> >>>Markus
+> >>>
+> >>>-- 
+> >>>Markus Neteler     <neteler itc it>       http://mpa.itc.it
+> >>>ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+> >>>MPBA - Predictive Models for Biol. & Environ. Data Analysis
+> >>>Via Sommarive, 18        -       38050 Povo (Trento), Italy
+> >>>
+> >>>     
+> >>>
+> >
+> > 
+> >
+> 
+> 
+> -- 
+> Thomas E Adams
+> National Weather Service
+> Ohio River Forecast Center
+> 1901 South State Route 134
+> Wilmington, OH 45177
+> 
+> EMAIL:	thomas.adams@noaa.gov
+> 
+> VOICE:	937-383-0528
+> FAX:	937-383-0033
+> 
+
+-- 
+Markus Neteler     <neteler itc it>       http://mpa.itc.it
+ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+

@@ -1,0 +1,517 @@
+From massimiliano.cannata at supsi.ch  Tue Dec  2 05:43:22 2003
+From: massimiliano.cannata at supsi.ch (Massimiliano Cannata)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] numeric(0) ?????
+In-Reply-To: <HMEAKPEGMCEDLNICJDIHAEJMDDAA.kgleditsch@ucsd.edu>
+References: <HMEAKPEGMCEDLNICJDIHAEJMDDAA.kgleditsch@ucsd.edu>
+Message-ID: <3FCC6CCA.909@supsi.ch>
+
+hello,
+I have a little problem with my script:
+
+I select a subset from a data frame
+ 
+for (i in 1:20){
+T$pippo[T$pluto==i]
+}
+
+but sometime it is void because T$pluto==5 does not exists, the R answer is:
+
+T$pippo[T$pluto==5]
+> numeric(0)
+
+how to exclude this null subset? 
+and what is numeric(0), similar to NA?
+I try an if statement, but how to write if T$pippo[T$pluto==i] is numeric(0)???
+
+Thanks a lot.
+Maxi
+
+
+-------------
+Ing.  Massimiliano Cannata
+Istituto di Scienze della Terra - SUPSI
+C.P. 72 - CH-6952 Canobbio (Ticino, Switzerland)
+Tel +41 91 /935 12 25 - Fax +41 91 /935 12 09
+eMail: massimiliano.cannata@supsi.ch
+Internet: http://www.ist.supsi.ch
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20031202/973a3c99/attachment.html
+From olefc at daimi.au.dk  Tue Dec  2 06:04:06 2003
+From: olefc at daimi.au.dk (Ole F. Christensen)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] Re: [R-sig-Geo] numeric(0) ?????
+In-Reply-To: <3FCC6CCA.909@supsi.ch>
+References: <HMEAKPEGMCEDLNICJDIHAEJMDDAA.kgleditsch@ucsd.edu> <3FCC6CCA.909@supsi.ch>
+Message-ID: <3FCC71A6.40100@daimi.au.dk>
+
+Dear Massimiliano
+
+
+How about
+
+for (i in 1:20){
+if(any(T$pluto==i)) T$pippo[T$pluto==i]
+}
+
+??
+
+Depending on what you want to do with these subsets of the data.frame, 
+you might want to consider using
+``tapply'' or ``by'' [se the help-files for these functions] instead of 
+the for loop.
+
+For example :
+
+tapply(T$pluto,T$pippo, sum)
+
+Cheers
+
+Ole
+
+
+Massimiliano Cannata wrote:
+
+>hello,
+>I have a little problem with my script:
+>
+>I select a subset from a data frame
+> 
+>for (i in 1:20){
+>T$pippo[T$pluto==i]
+>}
+>
+>but sometime it is void because T$pluto==5 does not exists, the R answer is:
+>
+>T$pippo[T$pluto==5]
+>  
+>
+>>numeric(0)
+>>    
+>>
+>
+>how to exclude this null subset? 
+>and what is numeric(0), similar to NA?
+>I try an if statement, but how to write if T$pippo[T$pluto==i] is numeric(0)???
+>
+>Thanks a lot.
+>Maxi
+>
+>
+>-------------
+>Ing.  Massimiliano Cannata
+>Istituto di Scienze della Terra - SUPSI
+>C.P. 72 - CH-6952 Canobbio (Ticino, Switzerland)
+>Tel +41 91 /935 12 25 - Fax +41 91 /935 12 09
+>eMail: massimiliano.cannata@supsi.ch
+>Internet: http://www.ist.supsi.ch
+>
+>
+>	[[alternative HTML version deleted]]
+>
+>_______________________________________________
+>R-sig-Geo mailing list
+>R-sig-Geo@stat.math.ethz.ch
+>https://www.stat.math.ethz.ch/mailman/listinfo/r-sig-geo
+>
+>
+>  
+>
+
+-- 
+Ole F. Christensen
+Center for Bioinformatik
+Datalogisk Institut
+Aarhus Universitet
+Ny Munkegade, Bygning 540
+8000 Aarhus C
+Denmark
+
+
+
+From hamish_nospam at yahoo.com  Thu Dec  4 01:06:55 2003
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] IDW when d=0?
+Message-ID: <20031204190655.6015a0a9.hamish_nospam@yahoo.com>
+
+Hi,
+
+Using an Inverse Distance Weighting formula, such as this one ..
+
+http://gis.nrcan.gc.ca/~viljoen/gis/interp/idw.ht1.jpg
+
+.. what happens when d=0? You want weighting to be huge when you are
+right on top of the interpolation spot, but not DIV0!
+
+I can change all 0's to 1's as my distances extend to 1000, but that's just a cheap hack and doesn't solve the general case.
+
+
+
+thanks for any ideas,
+Hamish
+
+
+From Roger.Bivand at nhh.no  Thu Dec  4 03:30:00 2003
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] IDW when d=0?
+In-Reply-To: <20031204190655.6015a0a9.hamish_nospam@yahoo.com>
+Message-ID: <Pine.LNX.4.44.0312040902100.3220-100000@reclus.nhh.no>
+
+On Thu, 4 Dec 2003, Hamish wrote:
+
+> Hi,
+> 
+> Using an Inverse Distance Weighting formula, such as this one ..
+> 
+> http://gis.nrcan.gc.ca/~viljoen/gis/interp/idw.ht1.jpg
+> 
+> .. what happens when d=0? You want weighting to be huge when you are
+> right on top of the interpolation spot, but not DIV0!
+> 
+> I can change all 0's to 1's as my distances extend to 1000, but that's
+> just a cheap hack and doesn't solve the general case.
+
+Burrough & McDonnell (1998, p. 117) say: "Because in equation 5.16, f(d) 
+-> Inf as d -> 0, the value for an interpolation point that coincides with 
+a data point must be simply copied over." (Eq. 5.16 is:
+
+\hat{z}(x_0) = \frac{\sum_{i=1}^n z(x_i) d_{i0}^{-r}} {\sum_{i=1}^n d_{i0}^{-r}}
+
+where close-to-zero d_{i0}^{-r] becomes Inf, and so the sums blow up)
+
+So a test would be: if d_{i0} < tol, then copy z(x_i) to z(x_0), and 
+forget all the other points. 
+
+I can't see any such test for small d_{i0} in sites/s.surf.idw/cmd/main.c 
+(5.0.3 release) - is that what you were wondering? 
+
+Sorry, too quick (l. 205):
+
+if(dist = list[n].dist)
+
+tests zero, then z(i) is copied through, but I think the test is fragile,
+wouldn't it be better to test against machine precision? 
+
+It also seems to set r to 2 without saying, and I don't know that it
+checks to make sure that we are on the plane (I can't see a trap for
+non-projected locations).
+
+Roger
+
+> 
+> 
+> 
+> thanks for any ideas,
+> Hamish
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From rn001 at cebas.csic.es  Wed Dec 17 15:40:49 2003
+From: rn001 at cebas.csic.es (javier garcia - CEBAS)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] R - GRASS and r.reclass
+Message-ID: <200312172040.hBHKeFr06449@natura.cebas.csic.es>
+
+Hi all;
+I'm trying to do a thing related to the link between R and GRASS. Although 
+not directly related with statistics , perhaps this is a good place to pose 
+the doubt.
+
+I've done some very simple scripts to execute repeated operations on 25 GRASS 
+maps. The problem is to pass values of reclassification rules to r.reclass.
+I've tried:
+  
+for (i in 1:25) {
+string <- paste("r.reclass input=imagen",i,"end output=imarec",i,sep="")
+cat(string,"\n")
+system(string)
+system("253 = 192")
+system("252 = 96")
+system("251 = 48")
+system("250 = 24")
+system("249 = 12")
+system("221 = 8")
+system("193 = 7")
+system("165 = 6")
+system("133 = 4")
+system("102 = 3")
+system("70 = 2")
+system("39 = 1")
+system("* = NULL")
+system("end")
+}
+
+
+But this doesn't work. I think that this could be also with a bash script, 
+but I don't know anything about bash. Could this operation be done in some 
+way from R, or in a easy way launched from the R script? Perhaps something as 
+to pass the classification rules from a file? (I don't know how to do this, 
+either)
+
+Could you give me a hand with this?
+
+Thanks and best regards,
+
+Javier
+
+
+
+From hamish_nospam at yahoo.com  Wed Dec 17 18:28:57 2003
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] R - GRASS and r.reclass
+In-Reply-To: <200312172040.hBHKeFr06449@natura.cebas.csic.es>
+References: <200312172040.hBHKeFr06449@natura.cebas.csic.es>
+Message-ID: <20031218122857.5a4ab3f2.hamish_nospam@yahoo.com>
+
+> I've done some very simple scripts to execute repeated operations on
+> 25 GRASS maps. The problem is to pass values of reclassification rules
+> to r.reclass. I've tried:
+
+[...]
+
+> But this doesn't work. I think that this could be also with a bash
+> script, but I don't know anything about bash.
+
+
+It is actually pretty clean with Bash, try the attached.
+
+
+regards,
+Hamish
+
+
+
+#!/bin/bash
+#  reclass script
+
+i=1
+while [ $i -le 25 ] ; do
+
+    r.reclass input=imagen$i output=imarec$i << EOF
+       253 = 192
+       252 = 96
+       251 = 48
+       250 = 24
+       249 = 12
+       221 = 8
+       193 = 7
+       165 = 6
+       133 = 4
+       102 = 3
+       70 = 2
+       39 = 1
+       * = NULL
+       end
+EOF
+
+    i=`expr $i + 1`
+done
+
+
+
+
+# if you want the maps to be 01,02,03,..,09,10,11 add this line:
+# MAP=`echo $i | awk '{printf "%02i", $1}'`
+# echo $MAP
+
+
+From Roger.Bivand at nhh.no  Thu Dec 18 03:46:42 2003
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] R - GRASS and r.reclass
+In-Reply-To: <20031218122857.5a4ab3f2.hamish_nospam@yahoo.com>
+Message-ID: <Pine.LNX.4.44.0312180942420.3417-100000@reclus.nhh.no>
+
+On Thu, 18 Dec 2003, Hamish wrote:
+
+> > I've done some very simple scripts to execute repeated operations on
+> > 25 GRASS maps. The problem is to pass values of reclassification rules
+> > to r.reclass. I've tried:
+> 
+> [...]
+> 
+> > But this doesn't work. I think that this could be also with a bash
+> > script, but I don't know anything about bash.
+> 
+> 
+> It is actually pretty clean with Bash, try the attached.
+
+Yes, this does it, and could be written to a file from within R too. My 
+guess is that writing to a pipe to the shell could do it too, I'll have a 
+look. It's difficult to include in the examples, because they now run 
+without GRASS in their own temporary location. I'll post again when I've 
+found a route from within R.
+
+Best wishes,
+
+Roger
+
+> 
+> 
+> regards,
+> Hamish
+> 
+> 
+> 
+> #!/bin/bash
+> #  reclass script
+> 
+> i=1
+> while [ $i -le 25 ] ; do
+> 
+>     r.reclass input=imagen$i output=imarec$i << EOF
+>        253 = 192
+>        252 = 96
+>        251 = 48
+>        250 = 24
+>        249 = 12
+>        221 = 8
+>        193 = 7
+>        165 = 6
+>        133 = 4
+>        102 = 3
+>        70 = 2
+>        39 = 1
+>        * = NULL
+>        end
+> EOF
+> 
+>     i=`expr $i + 1`
+> done
+> 
+> 
+> 
+> 
+> # if you want the maps to be 01,02,03,..,09,10,11 add this line:
+> # MAP=`echo $i | awk '{printf "%02i", $1}'`
+> # echo $MAP
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+From Roger.Bivand at nhh.no  Thu Dec 18 14:38:04 2003
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] R - GRASS and r.reclass
+In-Reply-To: <Pine.LNX.4.44.0312180942420.3417-100000@reclus.nhh.no>
+Message-ID: <Pine.LNX.4.44.0312182035060.3828-100000@reclus.nhh.no>
+
+On Thu, 18 Dec 2003, Roger Bivand wrote:
+
+> On Thu, 18 Dec 2003, Hamish wrote:
+> 
+> > > I've done some very simple scripts to execute repeated operations on
+> > > 25 GRASS maps. The problem is to pass values of reclassification rules
+> > > to r.reclass. I've tried:
+> > 
+> > [...]
+> > 
+> > > But this doesn't work. I think that this could be also with a bash
+> > > script, but I don't know anything about bash.
+> > 
+> > 
+> > It is actually pretty clean with Bash, try the attached.
+> 
+> Yes, this does it, and could be written to a file from within R too. My 
+> guess is that writing to a pipe to the shell could do it too, I'll have a 
+> look. It's difficult to include in the examples, because they now run 
+> without GRASS in their own temporary location. I'll post again when I've 
+> found a route from within R.
+
+On reflection, there is no need to do this from R - even the example of 
+looping over raster cell indices in the Computers & Geosciences paper 
+doesn't have to be done in R. r.reclass is also a better solution than 
+reclassing in R, because it just stores changes in the classes of the 
+original raster, and is thus much more economic.
+
+Roger
+
+> 
+> Best wishes,
+> 
+> Roger
+> 
+> > 
+> > 
+> > regards,
+> > Hamish
+> > 
+> > 
+> > 
+> > #!/bin/bash
+> > #  reclass script
+> > 
+> > i=1
+> > while [ $i -le 25 ] ; do
+> > 
+> >     r.reclass input=imagen$i output=imarec$i << EOF
+> >        253 = 192
+> >        252 = 96
+> >        251 = 48
+> >        250 = 24
+> >        249 = 12
+> >        221 = 8
+> >        193 = 7
+> >        165 = 6
+> >        133 = 4
+> >        102 = 3
+> >        70 = 2
+> >        39 = 1
+> >        * = NULL
+> >        end
+> > EOF
+> > 
+> >     i=`expr $i + 1`
+> > done
+> > 
+> > 
+> > 
+> > 
+> > # if you want the maps to be 01,02,03,..,09,10,11 add this line:
+> > # MAP=`echo $i | awk '{printf "%02i", $1}'`
+> > # echo $MAP
+> > 
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+

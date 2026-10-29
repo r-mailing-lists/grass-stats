@@ -1,0 +1,300 @@
+From neteler at osgeo.org  Sat May 31 06:36:29 2008
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sat May 31 06:36:32 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+Message-ID: <86782b610805310336x10a18188tc40c99adfaf480@mail.gmail.com>
+
+Dear Roger, all,
+
+I have to read in Lidar data from GRASS, so speed matters. I have
+modified the readVECT6() function to not export to SHAPE but
+read in directly via GRASS-GDAL/OGR plugin:
+
+# original, via SHAPE:
+> system("date")
+Sat May 31 12:17:05 CEST 2008
+> lidar1 <- readVECT6("lidar1map3d", ignore.stderr=TRUE)
+> system("date")
+Sat May 31 12:28:33 CEST 2008
+
+
+# simplified version using plugin:
+> system("date")
+Sat May 31 12:28:33 CEST 2008
+> lidar1 <- myreadVECT6("lidar1map3d", ignore.stderr=TRUE)
+> system("date")
+Sat May 31 12:29:26 CEST 2008
+
+I used directly readOGR():
+
+# hack:
+    res <- readOGR(dsn =
+"/home/neteler/grassdata/eth_utm32/PERMANENT/vector/lidar1map3d/head",
+layer = "1", verbose = !ignore.stderr)
+
+Would it be possible to use this approach if the plugin
+is present, otherwise fallback to SHAPE export as before?
+
+Thanks
+Markus
+From Roger.Bivand at nhh.no  Sat May 31 11:51:55 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sat May 31 11:51:58 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+In-Reply-To: <86782b610805310336x10a18188tc40c99adfaf480@mail.gmail.com>
+References: <86782b610805310336x10a18188tc40c99adfaf480@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0805311744010.7951@reclus.nhh.no>
+
+On Sat, 31 May 2008, Markus Neteler wrote:
+
+> Dear Roger, all,
+>
+> I have to read in Lidar data from GRASS, so speed matters. I have
+> modified the readVECT6() function to not export to SHAPE but
+> read in directly via GRASS-GDAL/OGR plugin:
+
+Dear Markus,
+
+In theory maybe, but if I cannot make the plugin work (I use SELinux on F7 
+for trials, and I have not found out how to make it accept the *.so from 
+GRASS), then I don't think that it is going to be very helpful. In 
+addition, there is only a read driver, I believe.
+
+However, using readOGR() directly is fine, and as you show, is far 
+superior to intermediate files if available.
+
+The plugin circular dependencies are a common reason for GDAL and rgdal 
+not working, I'm afraid.
+
+Best wishes,
+
+Roger
+
+>
+> # original, via SHAPE:
+>> system("date")
+> Sat May 31 12:17:05 CEST 2008
+>> lidar1 <- readVECT6("lidar1map3d", ignore.stderr=TRUE)
+>> system("date")
+> Sat May 31 12:28:33 CEST 2008
+>
+>
+> # simplified version using plugin:
+>> system("date")
+> Sat May 31 12:28:33 CEST 2008
+>> lidar1 <- myreadVECT6("lidar1map3d", ignore.stderr=TRUE)
+>> system("date")
+> Sat May 31 12:29:26 CEST 2008
+>
+> I used directly readOGR():
+>
+> # hack:
+>    res <- readOGR(dsn =
+> "/home/neteler/grassdata/eth_utm32/PERMANENT/vector/lidar1map3d/head",
+> layer = "1", verbose = !ignore.stderr)
+>
+> Would it be possible to use this approach if the plugin
+> is present, otherwise fallback to SHAPE export as before?
+>
+> Thanks
+> Markus
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From neteler at osgeo.org  Sat May 31 12:28:31 2008
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sat May 31 12:28:35 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+In-Reply-To: <Pine.LNX.4.64.0805311744010.7951@reclus.nhh.no>
+References: <86782b610805310336x10a18188tc40c99adfaf480@mail.gmail.com>
+	<Pine.LNX.4.64.0805311744010.7951@reclus.nhh.no>
+Message-ID: <86782b610805310928o523065e7ma3c8d7a490688fd5@mail.gmail.com>
+
+Dear Roger,
+
+On Sat, May 31, 2008 at 5:51 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Sat, 31 May 2008, Markus Neteler wrote:
+>
+>> Dear Roger, all,
+>>
+>> I have to read in Lidar data from GRASS, so speed matters. I have
+>> modified the readVECT6() function to not export to SHAPE but
+>> read in directly via GRASS-GDAL/OGR plugin:
+>
+> Dear Markus,
+>
+> In theory maybe, but if I cannot make the plugin work (I use SELinux on F7
+> for trials, and I have not found out how to make it accept the *.so from
+> GRASS), then I don't think that it is going to be very helpful.
+
+Sure. but I can help you if you like (got it running on various kinds of
+machines). It's also documented:
+http://grass.osgeo.org/wiki/Compile_and_install_GRASS_and_QGIS_with_GDAL/OGR_Plugin
+
+My idea was: use it then it is present. That's just an additional
+if condition in the code. I'll figure out how to test that (I guess that
+readOGR() may know which drivers it has).
+
+> In addition, there is only a read driver, I believe.
+
+Right. But accelerating read in would be quite welcome.
+
+> However, using readOGR() directly is fine, and as you show, is far superior
+> to intermediate files if available.
+>
+> The plugin circular dependencies are a common reason for GDAL and rgdal not
+> working, I'm afraid.
+
+I am not sure about this: I have all working here, just fetching things from
+CRAN. GDAL should *not* be compiled with GRASS support. Then the
+GDAL-GRASS plugin doesn't interfere and is only loaded on demand
+internally from GRASS when the GRASS driver is called.
+
+Best wishes,
+Markus
+From Roger.Bivand at nhh.no  Sat May 31 12:35:18 2008
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sat May 31 12:35:20 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+In-Reply-To: <86782b610805310928o523065e7ma3c8d7a490688fd5@mail.gmail.com>
+References: <86782b610805310336x10a18188tc40c99adfaf480@mail.gmail.com> 
+	<Pine.LNX.4.64.0805311744010.7951@reclus.nhh.no>
+	<86782b610805310928o523065e7ma3c8d7a490688fd5@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0805311831230.7951@reclus.nhh.no>
+
+On Sat, 31 May 2008, Markus Neteler wrote:
+
+> Dear Roger,
+>
+> On Sat, May 31, 2008 at 5:51 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>> On Sat, 31 May 2008, Markus Neteler wrote:
+>>
+>>> Dear Roger, all,
+>>>
+>>> I have to read in Lidar data from GRASS, so speed matters. I have
+>>> modified the readVECT6() function to not export to SHAPE but
+>>> read in directly via GRASS-GDAL/OGR plugin:
+>>
+>> Dear Markus,
+>>
+>> In theory maybe, but if I cannot make the plugin work (I use SELinux on F7
+>> for trials, and I have not found out how to make it accept the *.so from
+>> GRASS), then I don't think that it is going to be very helpful.
+>
+> Sure. but I can help you if you like (got it running on various kinds of
+> machines). It's also documented:
+> http://grass.osgeo.org/wiki/Compile_and_install_GRASS_and_QGIS_with_GDAL/OGR_Plugin
+
+Including machines with SELinux running? It is very picky with ldconfig.
+
+>
+> My idea was: use it then it is present. That's just an additional
+> if condition in the code. I'll figure out how to test that (I guess that
+> readOGR() may know which drivers it has).
+
+ogrDrivers() gives the installed drivers, but there would be more to do to 
+check the arguments to readOGR().
+
+>
+>> In addition, there is only a read driver, I believe.
+>
+> Right. But accelerating read in would be quite welcome.
+>
+>> However, using readOGR() directly is fine, and as you show, is far superior
+>> to intermediate files if available.
+>>
+>> The plugin circular dependencies are a common reason for GDAL and rgdal not
+>> working, I'm afraid.
+>
+> I am not sure about this: I have all working here, just fetching things from
+> CRAN. GDAL should *not* be compiled with GRASS support. Then the
+> GDAL-GRASS plugin doesn't interfere and is only loaded on demand
+> internally from GRASS when the GRASS driver is called.
+
+Aha, I've been compiling with GRASS support, which was the old way. I'll 
+try again.
+
+Roger
+
+>
+> Best wishes,
+> Markus
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From neteler at osgeo.org  Sat May 31 12:47:10 2008
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sat May 31 12:47:13 2008
+Subject: [GRASS-stats] Speedup of readVECT6() with plugin
+In-Reply-To: <Pine.LNX.4.64.0805311831230.7951@reclus.nhh.no>
+References: <86782b610805310336x10a18188tc40c99adfaf480@mail.gmail.com>
+	<Pine.LNX.4.64.0805311744010.7951@reclus.nhh.no>
+	<86782b610805310928o523065e7ma3c8d7a490688fd5@mail.gmail.com>
+	<Pine.LNX.4.64.0805311831230.7951@reclus.nhh.no>
+Message-ID: <86782b610805310947u4dbb2ed0hf39a5cdeaf67f986@mail.gmail.com>
+
+On Sat, May 31, 2008 at 6:35 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+> On Sat, 31 May 2008, Markus Neteler wrote:
+>> On Sat, May 31, 2008 at 5:51 PM, Roger Bivand <Roger.Bivand@nhh.no> wrote:
+>>> On Sat, 31 May 2008, Markus Neteler wrote:
+>>>> I have to read in Lidar data from GRASS, so speed matters. I have
+>>>> modified the readVECT6() function to not export to SHAPE but
+>>>> read in directly via GRASS-GDAL/OGR plugin:
+>>>
+>>> Dear Markus,
+>>>
+>>> In theory maybe, but if I cannot make the plugin work (I use SELinux on
+>>> F7 for trials, and I have not found out how to make it accept the *.so from
+>>> GRASS), then I don't think that it is going to be very helpful.
+>>
+>> Sure. but I can help you if you like (got it running on various kinds of
+>> machines). It's also documented:
+>>
+>> http://grass.osgeo.org/wiki/Compile_and_install_GRASS_and_QGIS_with_GDAL/OGR_Plugin
+>
+> Including machines with SELinux running? It is very picky with ldconfig.
+
+I have never tried SELinux.
+But I simply use:
+
+cat /etc/ld.so.conf.d/grass.conf
+/home/neteler/grass64/dist.x86_64-unknown-linux-gnu/lib
+
+(so I don't even run "make install" but use GRASS from
+my home)
+
+
+...
+> Aha, I've been compiling with GRASS support, which was the old way. I'll try
+> again.
+
+thanks and good luck,
+Markus
+From Seppo.Kaitala at fimr.fi  Sat May 31 15:11:34 2008
+From: Seppo.Kaitala at fimr.fi (Seppo.Kaitala@fimr.fi)
+Date: Sat May 31 15:11:41 2008
+Subject: [GRASS-stats] Seppo Kaitala/FIMR/FI is out of the office.
+Message-ID: <OFE93F7A60.2ADEF305-ONC225745A.00696E0C-C225745A.00696E0C@fimr.fi>
+
+
+I will be out of the office starting  26.05.2008 and will not return until
+01.06.2008.
+
+I will respond to your message when I return.
+

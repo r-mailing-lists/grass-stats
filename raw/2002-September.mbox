@@ -1,0 +1,296 @@
+From Bodo.Ahrens at univie.ac.at  Thu Sep 12 08:06:25 2002
+From: Bodo.Ahrens at univie.ac.at (Bodo Ahrens)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] rast.put & colors
+Message-ID: <200209121406.25192.Bodo.Ahrens@univie.ac.at>
+
+hallo helpers,
+
+I try to use rast.put. I am able to put the raster file (floating precission 
+with NA values) into grass.
+
+The problem is the color scheme: How can I define breaks and colors?
+
+I tried variations of
+
+rast.put(G,lname=paste("9",month.fname,day.fname,hour.fname,minute.fname,".",imgtype,sep=""), 
+layer=aust$rimage.3d, 
+title="2dRadarimage",breaks=c(-0.5,0.5,13.5),col=c("red","black"))
+
+but grass always applies its default colors.
+
+I am trying on 
+LINUX SUSE 8.0
+GRASS/R 0.1-11
+R 1.5.1
+GRASS 5.0.0pre5
+
+What is the trick?
+I am relatively unexperienced with R/GRASS, GRASS, thus I appreciate help on 
+stupid question very much!
+
+Thanks
+
+Bodo
+-- 
+Dr. Bodo Ahrens
+Institut fuer Meteorologie und Geophysik, Universitaet Wien
+A-1090 Wien, Althanstrasse 14, AUSTRIA
+Tel.: ++43-1-4277-51917 
+Fax:  ++43-1-4277-9519
+E-mail: Bodo.Ahrens@univie.ac.at
+
+
+From Roger.Bivand at nhh.no  Fri Sep 13 13:43:44 2002
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] rast.put & colors
+In-Reply-To: <200209121406.25192.Bodo.Ahrens@univie.ac.at>
+Message-ID: <Pine.LNX.4.44.0209131933440.21404-100000@reclus.nhh.no>
+
+On Thu, 12 Sep 2002, Bodo Ahrens wrote:
+
+> hallo helpers,
+> 
+> I try to use rast.put. I am able to put the raster file (floating precission 
+> with NA values) into grass.
+> 
+> The problem is the color scheme: How can I define breaks and colors?
+> 
+> I tried variations of
+> 
+> rast.put(G,lname=paste("9",month.fname,day.fname,hour.fname,minute.fname,".",imgtype,sep=""), 
+> layer=aust$rimage.3d, 
+> title="2dRadarimage",breaks=c(-0.5,0.5,13.5),col=c("red","black"))
+> 
+> but grass always applies its default colors.
+> 
+> I am trying on 
+> LINUX SUSE 8.0
+> GRASS/R 0.1-11
+> R 1.5.1
+> GRASS 5.0.0pre5
+> 
+> What is the trick?
+
+This is quite complicated - thanks for pointing out the difficulty. I'll 
+be able to respond more fully after the weekend, because I'm at the Grass 
+Users' meeting in Trento, which is great, and will lead to improvements in 
+the interface.
+
+I think you are getting caught in the conditions which are rather odd. If 
+aust$rimage.3d is a numeric vector (what does is.numeric(aust$rimage.3d) 
+say?) then I think you would get the behaviour you observe - I think you 
+would need to make aust$rimage.3d a factor first with cut(), using the 
+same breaks, then not give rast.put() the breaks. I certainly need to give 
+examples of how this is meant to happen on the help page, but at a 
+distance I'm not sure that this is the right explanation. Please let me 
+know if this helps or not, and I'll certainly upgrade the help page.
+
+Roger 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+and: Department of Geography and Regional Development, University of
+Gdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.
+
+
+From Bodo.Ahrens at univie.ac.at  Mon Sep 16 03:45:40 2002
+From: Bodo.Ahrens at univie.ac.at (Bodo Ahrens)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] rast.put & colors
+In-Reply-To: <200209141001.g8EA1F803257@grass.itc.it>
+References: <200209141001.g8EA1F803257@grass.itc.it>
+Message-ID: <200209160945.41255.Bodo.Ahrens@univie.ac.at>
+
+
+> > hallo helpers,
+> >
+> > I try to use rast.put. I am able to put the raster file (floating
+> > precission with NA values) into grass.
+> >
+> > The problem is the color scheme: How can I define breaks and colors?
+> >
+> > I tried variations of
+> >
+> > rast.put(G,lname=paste("9",month.fname,day.fname,hour.fname,minute.fname,
+> >".",imgtype,sep=""), layer=aust$rimage.3d,
+> > title="2dRadarimage",breaks=c(-0.5,0.5,13.5),col=c("red","black"))
+> >
+> > but grass always applies its default colors.
+> >
+> > I am trying on
+> > LINUX SUSE 8.0
+> > GRASS/R 0.1-11
+> > R 1.5.1
+> > GRASS 5.0.0pre5
+> >
+> > What is the trick?
+>
+> This is quite complicated - thanks for pointing out the difficulty. I'll
+> be able to respond more fully after the weekend, because I'm at the Grass
+> Users' meeting in Trento, which is great, and will lead to improvements in
+> the interface.
+>
+> I think you are getting caught in the conditions which are rather odd. If
+> aust$rimage.3d is a numeric vector (what does is.numeric(aust$rimage.3d)
+> say?) then I think you would get the behaviour you observe - I think you
+> would need to make aust$rimage.3d a factor first with cut(), using the
+> same breaks, then not give rast.put() the breaks. I certainly need to give
+> examples of how this is meant to happen on the help page, but at a
+> distance I'm not sure that this is the right explanation. Please let me
+> know if this helps or not, and I'll certainly upgrade the help page.
+>
+> Roger
+
+Yes: is.numeric(aust$rimage.3d) is TRUE. It is a vector of integers (in my 
+test case) with values 0,1, ..13 and NA.
+
+I tried
+  
+f<-cut(aust$rimage.3d,breaks=c(-0.5,0.5,13.5))
+  
+rast.put(G,lname=paste("9",month.fname,day.fname,hour.fname,minute.fname,".",imgtype,sep=""), 
+layer=f, title="2dRadarimage",col=c("red","black"))
+
+and variations. No real change: grass applies standard color scheme. The 
+output of d.what.rast is now
+Buttons
+ Left:  what's here
+ Right: quit
+
+-39077.99083333(E) 307902.65416667(N)
+909262105.max in bodo, quant   (1)
+909262105.max in bodo, actual  (1.000000)
+
+172364.2425(E) 226346.36416667(N)
+909262105.max in bodo, quant   (2)
+909262105.max in bodo, actual  (2.000000)
+
+-276195.3525(E) 351701.4025(N)
+909262105.max in bodo, quant   (Null)
+909262105.max in bodo, actual  (Null)no data
+
+for example. Obviously, I have imported now some "factors" (similar to 
+"categories" in grass?). Honestly, I have not understood the color (and 
+category) game in grass and actually want to import floatings. Is it possible 
+to import floatings with R/GRASS and it is when the only possibility to 
+generate an appropriate color table within grass?
+
+Thanks again,
+
+Bodo
+
+-- 
+Dr. Bodo Ahrens
+Institut fuer Meteorologie und Geophysik, Universitaet Wien
+A-1090 Wien, Althanstrasse 14, AUSTRIA
+Tel.: ++43-1-4277-51917 
+Fax:  ++43-1-4277-9519
+E-mail: Bodo.Ahrens@univie.ac.at
+
+
+From Roger.Bivand at nhh.no  Mon Sep 16 04:43:58 2002
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:10 2007
+Subject: [STATSGRASS] rast.put & colors
+In-Reply-To: <200209160945.41255.Bodo.Ahrens@univie.ac.at>
+Message-ID: <Pine.LNX.4.44.0209161031530.30550-100000@reclus.nhh.no>
+
+On Mon, 16 Sep 2002, Bodo Ahrens wrote:
+
+> 
+> 
+> > > hallo helpers,
+> > >
+> > > I try to use rast.put. I am able to put the raster file (floating
+> > > precission with NA values) into grass.
+> > >
+> > > The problem is the color scheme: How can I define breaks and colors?
+> > >
+> > > I tried variations of
+> > >
+> > > rast.put(G,lname=paste("9",month.fname,day.fname,hour.fname,minute.fname,
+> > >".",imgtype,sep=""), layer=aust$rimage.3d,
+> > > title="2dRadarimage",breaks=c(-0.5,0.5,13.5),col=c("red","black"))
+> > >
+> > > but grass always applies its default colors.
+> > >
+> > > I am trying on
+> > > LINUX SUSE 8.0
+> > > GRASS/R 0.1-11
+> > > R 1.5.1
+> > > GRASS 5.0.0pre5
+> > >
+> > > What is the trick?
+> >
+> > I think you are getting caught in the conditions which are rather odd. If
+> > aust$rimage.3d is a numeric vector (what does is.numeric(aust$rimage.3d)
+> > say?) then I think you would get the behaviour you observe - I think you
+> > would need to make aust$rimage.3d a factor first with cut(), using the
+> > same breaks, then not give rast.put() the breaks. I certainly need to give
+> > examples of how this is meant to happen on the help page, but at a
+> > distance I'm not sure that this is the right explanation. Please let me
+> > know if this helps or not, and I'll certainly upgrade the help page.
+> >
+> > Roger
+> 
+> Yes: is.numeric(aust$rimage.3d) is TRUE. It is a vector of integers (in my 
+> test case) with values 0,1, ..13 and NA.
+> 
+> I tried
+>   
+> f<-cut(aust$rimage.3d,breaks=c(-0.5,0.5,13.5))
+>   
+> rast.put(G,lname=paste("9",month.fname,day.fname,hour.fname,minute.fname,".",imgtype,sep=""), 
+> layer=f, title="2dRadarimage",col=c("red","black"))
+> 
+> and variations. No real change: grass applies standard color scheme. The 
+> output of d.what.rast is now
+> Buttons
+>  Left:  what's here
+>  Right: quit
+> 
+> -39077.99083333(E) 307902.65416667(N)
+> 909262105.max in bodo, quant   (1)
+> 909262105.max in bodo, actual  (1.000000)
+> 
+> 172364.2425(E) 226346.36416667(N)
+> 909262105.max in bodo, quant   (2)
+> 909262105.max in bodo, actual  (2.000000)
+> 
+> -276195.3525(E) 351701.4025(N)
+> 909262105.max in bodo, quant   (Null)
+> 909262105.max in bodo, actual  (Null)no data
+> 
+> for example. Obviously, I have imported now some "factors" (similar to 
+> "categories" in grass?). Honestly, I have not understood the color (and 
+> category) game in grass and actually want to import floatings. Is it possible 
+> to import floatings with R/GRASS and it is when the only possibility to 
+> generate an appropriate color table within grass?
+> 
+In the simplest case, when the layer is a numeric vector, and the 
+quantization and colours are not important, then changing the colours 
+within GRASS maybe a solution. I'll look at this - do you have a 
+possibility to do save(G, aust, file="col.quant.ex.rda", compress=TRUE) 
+and put the saved file somewhere I can download it to try out - is it very 
+large? Could you create an example in a small region of your map for me to 
+chew on - I think the main problem is documentation, which should be 
+clearer.
+
+Roger
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+and: Department of Geography and Regional Development, University of
+Gdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.
+
+

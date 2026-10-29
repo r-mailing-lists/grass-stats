@@ -1,0 +1,540 @@
+From odantonio at aol.com  Thu Sep  1 14:09:00 2011
+From: odantonio at aol.com (Olavo Borges D'Antonio)
+Date: Thu Sep  1 14:31:59 2011
+Subject: [GRASS-stats] gstat.cv error
+Message-ID: <4E5FCA3C.6070309@aol.com>
+
+Hello,
+
+I was following the sample in the grass book and I'm getting a error 
+message using gstat.cv.
+message is:
+
+ > pe1 <- gstat.cv(t2, debug.leve=0, random=FALSE)$residual
+Error in unique(fold) : object 'fold' not found
+
+I appreciate if anyone could show me where is the error.
+
+thanks.
+
+-- 
+http://www.monsterhuntercommunity.com/license/nynxs
+
+
+From Roger.Bivand at nhh.no  Thu Sep  1 14:25:03 2011
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Sep  1 14:42:20 2011
+Subject: [GRASS-stats] gstat.cv error
+In-Reply-To: <4E5FCA3C.6070309@aol.com>
+References: <4E5FCA3C.6070309@aol.com>
+Message-ID: <alpine.LRH.2.00.1109012023140.6846@reclus.nhh.no>
+
+On Thu, 1 Sep 2011, Olavo Borges D'Antonio wrote:
+
+> Hello,
+>
+> I was following the sample in the grass book and I'm getting a error message 
+> using gstat.cv.
+> message is:
+>
+>> pe1 <- gstat.cv(t2, debug.leve=0, random=FALSE)$residual
+> Error in unique(fold) : object 'fold' not found
+>
+> I appreciate if anyone could show me where is the error.
+
+You should include more information, at least the command creating t2, 
+sessionInfo() output, and the output of traceback() run immediately after 
+the error. If you can create a reproducible example, that would also help.
+
+Roger
+
+>
+> thanks.
+>
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From edzer.pebesma at uni-muenster.de  Thu Sep  1 14:22:20 2011
+From: edzer.pebesma at uni-muenster.de (Edzer Pebesma)
+Date: Thu Sep  1 15:06:45 2011
+Subject: [GRASS-stats] gstat.cv error
+In-Reply-To: <4E5FCA3C.6070309@aol.com>
+References: <4E5FCA3C.6070309@aol.com>
+Message-ID: <4E5FCD5C.9030106@uni-muenster.de>
+
+
+
+On 09/01/2011 08:09 PM, Olavo Borges D'Antonio wrote:
+> Hello,
+> 
+> I was following the sample in the grass book and I'm getting a error
+> message using gstat.cv.
+> message is:
+> 
+>> pe1 <- gstat.cv(t2, debug.leve=0, random=FALSE)$residual
+> Error in unique(fold) : object 'fold' not found
+
+This is a programming error. You can resolve it with
+
+pe1 <- gstat.cv(t2, debug.level=0, random=FALSE, nfold=nrow(x))
+
+where you replace x with the data set used to create t2 (or,
+alternatively, t2$data[[1]]$data )
+
+Hth,
+> 
+> I appreciate if anyone could show me where is the error.
+> 
+> thanks.
+> 
+
+-- 
+Edzer Pebesma
+Institute for Geoinformatics (ifgi), University of M?nster
+Weseler Stra?e 253, 48151 M?nster, Germany. Phone: +49 251
+8333081, Fax: +49 251 8339763  http://ifgi.uni-muenster.de
+http://www.52north.org/geostatistics      e.pebesma@wwu.de
+From neteler at osgeo.org  Sun Sep 11 16:34:04 2011
+From: neteler at osgeo.org (Markus Neteler)
+Date: Sun Sep 11 23:54:41 2011
+Subject: [GRASS-stats] Identifying
+In-Reply-To: <BANLkTimdYryxYStrx+ut0zK+-MVxYZ80h8URPXv1C1JM3JP=Pg@mail.gmail.com>
+References: <BANLkTimdYryxYStrx+ut0zK+-MVxYZ80h8URPXv1C1JM3JP=Pg@mail.gmail.com>
+Message-ID: <CALFmHhuQUAHUW2fLsZdftNnR6TDUtO4fL-yfWv1O=7pUVXg-sg@mail.gmail.com>
+
+2011/6/29 Rainer M Krug <r.m.krug@gmail.com>:
+> Hi
+> I have created flowpaths for a grid in GRASS, and have to do some analysis
+> per grid cell, i.e. per flowline.
+> Is there a way of identifying a line by its starting point?
+
+You mean that you have the starting point and want to find the line?
+v.distance should do that.
+
+> I would like to provide the cell / centre of a cell and get the flowline
+> from this point?
+> A grass solution would be as fine as an R solution.
+
+Yes, v.distance.
+
+Best
+Markus
+
+-- 
+http://gis.cri.fmach.it/neteler/
+From levent.burggraef at gwdg.de  Wed Sep 21 10:22:03 2011
+From: levent.burggraef at gwdg.de (Levent Burggraef)
+Date: Thu Sep 22 06:25:29 2011
+Subject: [GRASS-stats] Spgrass6 syscmd error
+Message-ID: <1316614923.1906.5.camel@iwj-dokt4>
+
+Hi list, 
+i posted this message in the GRASS user mailing list first and was asked
+to post again here.
+I'm running GRASS 6.4.0 and R 2.9.1 with the package Spgrass6.
+I work on SUSE Linux Enterprise Server 10.
+
+I also tried the same packages (with GRASS version 6.4.0+42329 (2010) ) and  
+commands on my Ubuntu 10.10. laptop and got exactly the same error message.
+
+After starting an R session in GRASS, loading Spgrass6 and running a
+command, i get an error somehow related to the R command ?syscmd?,
+reporting unused arguments. 
+The example below relates to gmeta6(), but it happens with any command from
+Spgrass6.
+
+---------------
+> library(spgrass6)
+Lade n?tiges Paket: sp
+Lade n?tiges Paket: rgdal
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Loaded GDAL runtime: GDAL 1.6.3, released 2009/11/19
+Path to GDAL shared files: /usr/share/gdal
+Loaded PROJ.4 runtime: Rel. 4.7.1, 23 September 2009
+Path to PROJ.4 shared files: (autodetected)
+Lade n?tiges Paket: XML
+GRASS GIS interface loaded with GRASS version: GRASS 6.4.0svn (2009) 
+and location: projekt_sued
+
+> gmeta6()
+Fehler in system(syscmd, intern = intern, ignore.stderr =
+ignore.stderr,  : 
+  unbenutzte(s) Argument(e) (ignore.stdout = Sys_ignore.stdout)
+--------------
+
+Thanks for your help, 
+Levent
+
+
+
+
+-- 
+Levent Burggraef
+Buesgen Institute 
+Dept. for Forest Zoology and Forest Conservation
+Buesgenweg 3 
+37077 Goettingen
+
+
+From r.m.krug at gmail.com  Wed Sep 21 10:28:36 2011
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Thu Sep 22 06:42:07 2011
+Subject: [GRASS-stats] Spgrass6 syscmd error
+In-Reply-To: <1316614923.1906.5.camel@iwj-dokt4>
+References: <1316614923.1906.5.camel@iwj-dokt4>
+Message-ID: <4E79F494.10107@gmail.com>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 21/09/11 16:22, Levent Burggraef wrote:
+> Hi list,
+
+Hi
+
+Your version of R is very old, and I guess that is the problem. The
+actual version of R is 2.13.1 and the actual version of spgrass6 is 0.7-4.
+
+Could you please update (or ask you system admin) to update, as I
+guess that the problem is an incompatiility between spgrass6 and R.
+
+Please compare: the command system() takes in the actuial version the
+following parameter, and I assume that it did not include
+ignore.stdout in your version - so updating is the only version.
+
+ system(command, intern = FALSE,
+            ignore.stdout = FALSE, ignore.stderr = FALSE,
+            wait = TRUE, input = NULL, show.output.on.console = TRUE,
+            minimized = FALSE, invisible = TRUE)
+
+
+Cheers,
+
+Rainer
+
+
+> i posted this message in the GRASS user mailing list first and was
+> asked to post again here. I'm running GRASS 6.4.0 and R 2.9.1 with
+> the package Spgrass6. I work on SUSE Linux Enterprise Server 10.
+> 
+> I also tried the same packages (with GRASS version 6.4.0+42329
+> (2010) ) and commands on my Ubuntu 10.10. laptop and got exactly
+> the same error message.
+> 
+> After starting an R session in GRASS, loading Spgrass6 and running
+> a command, i get an error somehow related to the R command
+> ?syscmd?, reporting unused arguments. The example below relates to
+> gmeta6(), but it happens with any command from Spgrass6.
+> 
+> ---------------
+>> library(spgrass6)
+> Lade n?tiges Paket: sp Lade n?tiges Paket: rgdal Geospatial Data
+> Abstraction Library extensions to R successfully loaded Loaded GDAL
+> runtime: GDAL 1.6.3, released 2009/11/19 Path to GDAL shared files:
+> /usr/share/gdal Loaded PROJ.4 runtime: Rel. 4.7.1, 23 September
+> 2009 Path to PROJ.4 shared files: (autodetected) Lade n?tiges
+> Paket: XML GRASS GIS interface loaded with GRASS version: GRASS
+> 6.4.0svn (2009) and location: projekt_sued
+> 
+>> gmeta6()
+> Fehler in system(syscmd, intern = intern, ignore.stderr = 
+> ignore.stderr,  : unbenutzte(s) Argument(e) (ignore.stdout =
+> Sys_ignore.stdout) --------------
+> 
+> Thanks for your help, Levent
+> 
+> 
+> 
+> 
+
+
+- -- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation
+Biology, UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax :       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer@krugs.de
+
+Skype:      RMkrug
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk559JQACgkQoYgNqgF2egp3NgCfVmp3CPLzRHbc2pAHddMxoJBt
+4s4AnRMJl7yL6YkdDOQrKP5F37X0rOW1
+=VWiX
+-----END PGP SIGNATURE-----
+From levent.burggraef at gwdg.de  Sat Sep 24 02:26:50 2011
+From: levent.burggraef at gwdg.de (Levent Burggraef)
+Date: Sun Sep 25 02:11:58 2011
+Subject: [GRASS-stats] Spgrass6 syscmd error
+In-Reply-To: <4E79F494.10107@gmail.com>
+References: <1316614923.1906.5.camel@iwj-dokt4> <4E79F494.10107@gmail.com>
+Message-ID: <4E7D782A.8000508@gwdg.de>
+
+Thanks Rainer,
+i also thought that my problems occured as a result of our server being 
+out of date, but as i got the same error with R 2.11 on my laptop i 
+didn't really believe it. I upgraded to R 2.13.1 now and everything 
+works just fine.
+
+Bye,
+Levent
+
+Am 21.09.2011 16:28, schrieb Rainer M Krug:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>
+> On 21/09/11 16:22, Levent Burggraef wrote:
+>> Hi list,
+> Hi
+>
+> Your version of R is very old, and I guess that is the problem. The
+> actual version of R is 2.13.1 and the actual version of spgrass6 is 0.7-4.
+>
+> Could you please update (or ask you system admin) to update, as I
+> guess that the problem is an incompatiility between spgrass6 and R.
+>
+> Please compare: the command system() takes in the actuial version the
+> following parameter, and I assume that it did not include
+> ignore.stdout in your version - so updating is the only version.
+>
+>   system(command, intern = FALSE,
+>              ignore.stdout = FALSE, ignore.stderr = FALSE,
+>              wait = TRUE, input = NULL, show.output.on.console = TRUE,
+>              minimized = FALSE, invisible = TRUE)
+>
+>
+> Cheers,
+>
+> Rainer
+>
+>
+>> i posted this message in the GRASS user mailing list first and was
+>> asked to post again here. I'm running GRASS 6.4.0 and R 2.9.1 with
+>> the package Spgrass6. I work on SUSE Linux Enterprise Server 10.
+>>
+>> I also tried the same packages (with GRASS version 6.4.0+42329
+>> (2010) ) and commands on my Ubuntu 10.10. laptop and got exactly
+>> the same error message.
+>>
+>> After starting an R session in GRASS, loading Spgrass6 and running
+>> a command, i get an error somehow related to the R command
+>> ?syscmd?, reporting unused arguments. The example below relates to
+>> gmeta6(), but it happens with any command from Spgrass6.
+>>
+>> ---------------
+>>> library(spgrass6)
+>> Lade n?tiges Paket: sp Lade n?tiges Paket: rgdal Geospatial Data
+>> Abstraction Library extensions to R successfully loaded Loaded GDAL
+>> runtime: GDAL 1.6.3, released 2009/11/19 Path to GDAL shared files:
+>> /usr/share/gdal Loaded PROJ.4 runtime: Rel. 4.7.1, 23 September
+>> 2009 Path to PROJ.4 shared files: (autodetected) Lade n?tiges
+>> Paket: XML GRASS GIS interface loaded with GRASS version: GRASS
+>> 6.4.0svn (2009) and location: projekt_sued
+>>
+>>> gmeta6()
+>> Fehler in system(syscmd, intern = intern, ignore.stderr =
+>> ignore.stderr,  : unbenutzte(s) Argument(e) (ignore.stdout =
+>> Sys_ignore.stdout) --------------
+>>
+>> Thanks for your help, Levent
+>>
+>>
+>>
+>>
+>
+> - -- 
+> Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation
+> Biology, UCT), Dipl. Phys. (Germany)
+>
+> Centre of Excellence for Invasion Biology
+> Stellenbosch University
+> South Africa
+>
+> Tel :       +33 - (0)9 53 10 27 44
+> Cell:       +33 - (0)6 85 62 59 98
+> Fax :       +33 - (0)9 58 10 27 44
+>
+> Fax (D):    +49 - (0)3 21 21 25 22 44
+>
+> email:      Rainer@krugs.de
+>
+> Skype:      RMkrug
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.11 (GNU/Linux)
+> Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+>
+> iEYEARECAAYFAk559JQACgkQoYgNqgF2egp3NgCfVmp3CPLzRHbc2pAHddMxoJBt
+> 4s4AnRMJl7yL6YkdDOQrKP5F37X0rOW1
+> =VWiX
+> -----END PGP SIGNATURE-----
+
+From r.m.krug at gmail.com  Sat Sep 24 03:57:37 2011
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Sun Sep 25 03:47:44 2011
+Subject: [GRASS-stats] Spgrass6 syscmd error
+In-Reply-To: <4E7D782A.8000508@gwdg.de>
+References: <1316614923.1906.5.camel@iwj-dokt4> <4E79F494.10107@gmail.com>
+	<4E7D782A.8000508@gwdg.de>
+Message-ID: <CAGhLh6FV0Rv+7gtjbFkva0D0NaNOU361EnK+vQce_KW_tbBi2w@mail.gmail.com>
+
+On Sat, Sep 24, 2011 at 8:26 AM, Levent Burggraef
+<levent.burggraef@gwdg.de>wrote:
+
+> Thanks Rainer,
+> i also thought that my problems occured as a result of our server being out
+> of date, but as i got the same error with R 2.11 on my laptop i didn't
+> really believe it. I upgraded to R 2.13.1 now and everything works just
+> fine.
+>
+
+Great to hear that.
+
+Cheers,
+
+Rainer
+
+
+>
+> Bye,
+> Levent
+>
+> Am 21.09.2011 16:28, schrieb Rainer M Krug:
+>
+>  -----BEGIN PGP SIGNED MESSAGE-----
+>> Hash: SHA1
+>>
+>> On 21/09/11 16:22, Levent Burggraef wrote:
+>>
+>>> Hi list,
+>>>
+>> Hi
+>>
+>> Your version of R is very old, and I guess that is the problem. The
+>> actual version of R is 2.13.1 and the actual version of spgrass6 is 0.7-4.
+>>
+>> Could you please update (or ask you system admin) to update, as I
+>> guess that the problem is an incompatiility between spgrass6 and R.
+>>
+>> Please compare: the command system() takes in the actuial version the
+>> following parameter, and I assume that it did not include
+>> ignore.stdout in your version - so updating is the only version.
+>>
+>>  system(command, intern = FALSE,
+>>             ignore.stdout = FALSE, ignore.stderr = FALSE,
+>>             wait = TRUE, input = NULL, show.output.on.console = TRUE,
+>>             minimized = FALSE, invisible = TRUE)
+>>
+>>
+>> Cheers,
+>>
+>> Rainer
+>>
+>>
+>>  i posted this message in the GRASS user mailing list first and was
+>>> asked to post again here. I'm running GRASS 6.4.0 and R 2.9.1 with
+>>> the package Spgrass6. I work on SUSE Linux Enterprise Server 10.
+>>>
+>>> I also tried the same packages (with GRASS version 6.4.0+42329
+>>> (2010) ) and commands on my Ubuntu 10.10. laptop and got exactly
+>>> the same error message.
+>>>
+>>> After starting an R session in GRASS, loading Spgrass6 and running
+>>> a command, i get an error somehow related to the R command
+>>> ?syscmd?, reporting unused arguments. The example below relates to
+>>> gmeta6(), but it happens with any command from Spgrass6.
+>>>
+>>> ---------------
+>>>
+>>>> library(spgrass6)
+>>>>
+>>> Lade n?tiges Paket: sp Lade n?tiges Paket: rgdal Geospatial Data
+>>> Abstraction Library extensions to R successfully loaded Loaded GDAL
+>>> runtime: GDAL 1.6.3, released 2009/11/19 Path to GDAL shared files:
+>>> /usr/share/gdal Loaded PROJ.4 runtime: Rel. 4.7.1, 23 September
+>>> 2009 Path to PROJ.4 shared files: (autodetected) Lade n?tiges
+>>> Paket: XML GRASS GIS interface loaded with GRASS version: GRASS
+>>> 6.4.0svn (2009) and location: projekt_sued
+>>>
+>>>  gmeta6()
+>>>>
+>>> Fehler in system(syscmd, intern = intern, ignore.stderr =
+>>> ignore.stderr,  : unbenutzte(s) Argument(e) (ignore.stdout =
+>>> Sys_ignore.stdout) --------------
+>>>
+>>> Thanks for your help, Levent
+>>>
+>>>
+>>>
+>>>
+>>>
+>> - -- Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation
+>> Biology, UCT), Dipl. Phys. (Germany)
+>>
+>> Centre of Excellence for Invasion Biology
+>> Stellenbosch University
+>> South Africa
+>>
+>> Tel :       +33 - (0)9 53 10 27 44
+>> Cell:       +33 - (0)6 85 62 59 98
+>> Fax :       +33 - (0)9 58 10 27 44
+>>
+>> Fax (D):    +49 - (0)3 21 21 25 22 44
+>>
+>> email:      Rainer@krugs.de
+>>
+>> Skype:      RMkrug
+>> -----BEGIN PGP SIGNATURE-----
+>> Version: GnuPG v1.4.11 (GNU/Linux)
+>> Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+>>
+>> iEYEARECAAYFAk559JQACgkQoYgNqg**F2egp3NgCfVmp3CPLzRHbc2pAHddMx**oJBt
+>> 4s4AnRMJl7yL6YkdDOQrKP5F37X0rO**W1
+>> =VWiX
+>> -----END PGP SIGNATURE-----
+>>
+>
+> ______________________________**_________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/**mailman/listinfo/grass-stats<http://lists.osgeo.org/mailman/listinfo/grass-stats>
+>
+
+
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology,
+UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax (F):       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer@krugs.de
+
+Skype:      RMkrug
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20110924/b0586706/attachment.html

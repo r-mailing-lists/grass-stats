@@ -1,0 +1,1648 @@
+From bogus@does.not.exist.com  Wed Nov 14 16:58:11 2007
+From: bogus@does.not.exist.com ()
+Date: Wed Nov 14 16:58:10 2007
+Subject: No subject
+Message-ID: <mailman.0.1195077490.13292.grass-stats@lists.osgeo.org>
+
+	Releases 7/8 add quantization and colours support to the raster
+	interface from R to GRASS (rast.put()).
+
+	Earlier remarks about the use of "R CMD check" should be ignored -
+	the "check" script is now only intended for package writers and
+	maintainers - not users.
+
+	Installing continues to be done with R INSTALL GRASS_0.1-8.tar.gz.
+	There are a number of configure flags that may be used to help
+	the R install script find the GRASS libraries: they are
+
+	--configure-args=--grass5= (full path to your grass5 script)
+	--configure-args=--gmake5= (full path to your gmake5 script)
+	--configure-args=--zinclude= (full path to directory with zlib.h)
+	--configure-args=--zlib= (full path to directory with libz.a)
+	--configure-args=--interp (don't build compiled interface)
+
+Roger
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+and: Department of Geography and Regional Development, University of
+Gdansk, al. Mar. J. Pilsudskiego 46, PL-81 378 Gdynia, Poland.
+
+
+
+
+
+From bogus@does.not.exist.com  Wed Nov 14 16:58:11 2007
+From: bogus@does.not.exist.com ()
+Date: Wed Nov 14 16:58:10 2007
+Subject: No subject
+Message-ID: <mailman.1.1195077490.13292.grass-stats@lists.osgeo.org>
+
+>system("g.list rast") shows my raster maps properly.
+Then I've tried to follow the steps indicated in Bivand, (2000). And typed
+>tapply(dem, cover,summary)
+(where dem is a Digital Elevation Model, and cover is a map of different 
+clases of vegetal cover)
+and the following message appears:
+ Object "cover" not found.
+  
+I've tried the same with different location and mapsets and none works.
+
+
+Am I missing something?
+Any previous step is necessary?
+
+Javier Garcia
+
+
+From bogus@does.not.exist.com  Wed Nov 14 16:58:11 2007
+From: bogus@does.not.exist.com ()
+Date: Wed Nov 14 16:58:11 2007
+Subject: No subject
+Message-ID: <mailman.2.1195077491.13292.grass-stats@lists.osgeo.org>
+
+//----------------------------------------------------------------
+//Pauls reply to me
+You don't say which ellipsoid your latitude/longitude co-ordinates refer
+to. Seeing you mention EUREF89 in the next paragraph I will assume it is
+the GRS80... according to
+http://crs.ifag.de/country_select.php?country=DK
+then your command line with datum transformation parameters would be
+something a bit like
+
+cs2cs +proj=latlong +ellps=GRS80 +towgs84=0,0,0 +to +proj=utm +zone=32 \
++ellps=intl +towgs84=-81.1,-89.4,-115.8,0.485,0.024,0.413,-0.54
+
+//----------------------------------------------------------------
+// My reply to Paul
+Hi Paul
+
+THANKS !!! I was using proj4 directly, not the cs2cs program. The
+ellipsoid used is actually WGS84, but entering this into your golden
+command line fixes my problem. If your currious heres what I get from my
+comparison:
+
+
+In-put coordinate:  10.138618  56.342032
+
+Outputs:
+
+MapInfo  : 570466.57247057 6244935.6590597    (According to MapInfo they
+have an error)
+KMS Trans: 570464.297      6244936.971        (Official Danish program
+Thingy :-) )
+cs2cs    : 570464.18       6244937.01	    (Pauls Golden Line)
+
+PERFECT !
+
+Thanks a lot !!
+
+Best regards,
+
+-Torben
+
+The commandline used:
+cs2cs +proj=latlong +ellps=WGS84 +towgs84=0,0,0 +to +proj=utm +zone=32
++ellps=intl +towgs84=-81.1,-89.4,-115.8,0.485,0.024,0.413,-0.54
+
+//END
+
+
+
+
+
+
+-----Oprindelig meddelelse-----
+Fra: statsgrass-admin@grass.itc.it
+[mailto:statsgrass-admin@grass.itc.it] På vegne af Roger Bivand
+Sendt: 24 October 2003 21:10
+Til: Torben Bach
+Cc: statsgrass@grass.itc.it
+Emne: Re: [STATSGRASS] Proj4
+
+
+On Thu, 23 Oct 2003, Torben Bach wrote:
+
+> Hi
+> 
+> Completely new to the subject I have been roaming the internet trying
+> to find a "golden" command line to proj4 for converting lat-lon 
+> coordinates to DANISH ED50 UTM zone 32N. Apparently the internal ED50 
+> is not the same as the Danish (or german or french...) ED50 - im am 
+> confused - does anybody know the "golden" command line I so badly long
+
+> for ?
+
+Maybe ask on the proj list? Does the inverse transformation on 
+http://www.kms.dk/research/geodesy/reference/cotrans1_en.html
+help?
+
+> 
+> Another question - how accurate is the ouput from Proj4 ? I have
+> compared results converting to EUREF89 with output from programs from 
+> the national Ministry of the Environment (KMS) handling this stuf and 
+> MapInfo, and they gave the same result within a meter or so. But using
+
+> ED50 and Proj4 gave coordinates lying hundreds of meters from MapInfo 
+> and "official" KMS  results (this was how I discoverd I needed the 
+> "golden" command line).
+> 
+> Thanks in advance !!
+> 
+> Best regards,
+> 
+> -Torben Bach
+> 
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+_______________________________________________
+statsgrass mailing list
+statsgrass@grass.itc.it http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+From bogus@does.not.exist.com  Wed Nov 14 16:58:11 2007
+From: bogus@does.not.exist.com ()
+Date: Wed Nov 14 16:58:12 2007
+Subject: No subject
+Message-ID: <mailman.3.1195077492.13292.grass-stats@lists.osgeo.org>
+
+normally go into a separate -devel package, along with the headers,
+while shared libraries would go into the main package."
+
+The configure seems to fail because it is looking for libgis.a or 
+libgrass_gis.a at:
+
+ AC_CHECK_LIB(grass_gis, G_gisinit, GISLIB="-lgrass_gis -lgrass_datetime",
+  AC_CHECK_LIB(gis, G_gisinit, GISLIB="-lgis -ldatetime"))
+
+isn't it? Should it see a *.so as an *.a, they are different animals, 
+aren't they?
+
+> 
+> This is what is located in the lib & include directories:
+> 
+> lx7-tir:adams> cd lib;ls
+> libgrass_bitmap.so    libgrass_dlg.so     libgrass_gproj.so   
+> libgrass_raster.so
+> libgrass_btree.so     libgrass_D.so     libgrass_ibtree.so  
+> libgrass_rowio.so
+> libgrass_coorcnv.so   libgrass_g3d.so     libgrass_icon.so    
+> libgrass_segment.so
+> libgrass_datetime.so  libgrass_gedit.so  libgrass_I.so         
+> libgrass_vask.so
+> libgrass_dig_atts.so  libgrass_gis.so     libgrass_linkm.so   
+> libgrass_vect_combined.so
+> libgrass_display.so   libgrass_gmath.so  libgrass_lock.so
+> 
+> lx7-tir:adams> cd ../include
+> lx7-tir:adams> ls
+> datetime.h  gisdefs.h  gis.h  P_datetime.h  P_site.h  site.h
+> 
+> I get repeated "undefined reference" to various functions 'G_***' during 
+> make. Everything seems to build OK up to:
+> 
+> data.o: In function `read_grass_data':
+> /awips/rep/lx/local_apps/gstat-2.4.3/src/data.c:2202: undefined 
+> reference to `G_projection'
+> 
+> I'm trying to make GRASS, R, & GSTAT available on other Linux machines 
+> different from what I was using previously.
+
+Tom:
+
+Maybe get to gstat through R rather than directly until you can resolve 
+this, since gstat is available as an R package, and the compiled interface 
+still works between R and GRASS <= 5.4.0.
+
+Roger
+
+> 
+> Regards,
+> Tom
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Breiviksveien 40, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 93 93
+e-mail: Roger.Bivand@nhh.no
+
+
+
+
+From bogus@does.not.exist.com  Wed Nov 14 16:58:11 2007
+From: bogus@does.not.exist.com ()
+Date: Wed Nov 14 16:58:14 2007
+Subject: No subject
+Message-ID: <mailman.4.1195077494.13292.grass-stats@lists.osgeo.org>
+
+moran.test(my_shape$variable_of_interest, listw=nb2listw(my_nb, style="W", 
+zero.policy=TRUE), zero.policy=TRUE)
+
+roughly, depending on whether you have cells that have zero neighbours. 
+But we can get back to this once the shapefile is on board.
+
+Roger
+
+> 
+> > How had you considered handling the unconnected islands? It looks as
+> > though most of the map has low values, and only a few higher values - this
+> > is effectively saying that the variable is predicted by its mean, and
+> > since most of the map is below the mean, and the rest above, the result is
+> > a foregone conclusion, that is the data do not look mean-stationary. So I
+> > don't think Moran's I will tell you much you don't know, but I could be
+> > wrong.
+> 
+> I don't know about the shape files, I guess that they could either be 
+> neighbours to the nearest cells or then as separate.
+> You are right in this case, but not all cases are so easily interpreted. 
+> I'd like to learn how to do this on this material (I have done the 
+> analysis in ArcInfo, but would like to know how to do it with free tools.
+> 
+> I think that I should also reveal that I am a programmer, and I have very 
+> little geoinformatics or geography education, so please bear with me. At 
+> the moment I need this for a course in geoinformatics, and I'm trying to 
+> learn more.
+> 
+> --Wolf
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From Roger.Bivand at nhh.no  Thu Nov  1 04:10:56 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:18 2007
+Subject: [STATSGRASS] problems with installing maptools package (due to
+	Foreign package)
+In-Reply-To: <493190.90714.qm@web52702.mail.re2.yahoo.com>
+References: <493190.90714.qm@web52702.mail.re2.yahoo.com>
+Message-ID: <Pine.LNX.4.64.0711010845160.23377@reclus.nhh.no>
+
+On Wed, 31 Oct 2007, Hamish wrote:
+
+>> G. Allegri wrote:
+>>> The problem has come with maptools setup which har raised an error
+>>> when trying to load "foreign" package for lazy loading. The exit error
+>>> said
+>>>
+>>> "This is R 2.5.1, package 'foreing' needs >= 2.6.0"
+>
+> Daniel McInerney wrote:
+>> The current version of foreign on CRAN is 0.8-23,
+>> which depends on R >= 2.6.0
+>> You could try and install a previous version of
+>> foreign either (0.8-22 or 0.8-21) available under
+>> the Archived Packages on the cran.r-project website.
+>>
+>> If you don't want to compile R 2.6, you could add
+>> the sid repository to your apt-sources. You should be
+>> able to safely build for lenny using the sid sources.
+>
+>
+> R 2.6.0 should arrive in testing in the next day or few,
+>  http://packages.qa.debian.org/r/r-base.html
+>
+> I hope there is a good reason for the version dep (which there well may be), as
+> it is very annoying when things are not backwards compatible for trival
+> reasons. Not everyone is running or wants to run the latest Gentoo.
+>
+
+The foreign package is "recommended", so is distributed as part of the 
+2.6.0 release, and should not be present in a 2.5.1 install. The maptools 
+package (which spgrass6 depends on) depends on foreign, because the 
+shapelib dbf read/write functions are (now) in foreign. The current 
+foreign 0.8-23 depends on R >= 2.6.0, so running update.packages() in R 
+2.5.1 will *not* update it. "Recommended" packages are typically freshened 
+at a release, so as to utilise improvements in "base" packages and in the 
+R engine itself.
+
+This means that the real question is how a 2.5.1 system got polluted with 
+a version of foreign that is too "new", where update.packages() could not 
+do it. It looks either like packaging slackness, or user intervention to 
+force an update. Looking at:
+
+Package: r-cran-foreign
+Priority: optional
+Section: math
+Installed-Size: 652
+Maintainer: Dirk Eddelbuettel <edd@debian.org>
+Architecture: i386
+Source: foreign
+Version: 0.8.22-1~etchcran.2.6.0
+Replaces: r-recommended (<< 1.9.0)
+Depends: libc6 (>= 2.3.6-6), r-base-core (>> 2.5.1)
+Filename: etch/r-cran-foreign_0.8.22-1~etchcran.2.6.0_i386.deb
+Size: 147498
+MD5sum: 8961360323b9cbff2e1a701e31057640
+SHA1: 749e3fe450a5419f6fe30191b413ea310bc5ffde
+SHA256: 244857df424a8b4394466cfcda27c8d7cfec09bba3702776f88bb40e5b4ab1f6
+Description: GNU R package to read/write data from other stat. systems
+  This package provides functions for reading and writing data stored by
+  statistical packages such as Minitab, S, SAS, SPSS, Stata, ...
+  .
+  This package is part of the set of packages that are 'recommended'
+  by R Core and shipped with upstream source releases of R itself.
+
+on http://cran.r-project.org/bin/linux/debian/etch/Packages
+
+the condition on this 0.8-22 build is R strictly greater than 2.5.1, which 
+looks OK, and will prevent updating (same for stable).
+
+Roger
+
+>
+> Hamish
+>
+>
+> __________________________________________________
+> Do You Yahoo!?
+> Tired of spam?  Yahoo! Mail has the best spam protection around
+> http://mail.yahoo.com
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From neteler at fbk.eu  Thu Nov 15 06:29:30 2007
+From: neteler at fbk.eu (Markus Neteler)
+Date: Thu Nov 15 06:29:32 2007
+Subject: [GRASS-stats] Mailing list transferred to OSGeo
+Message-ID: <20071115112930.GI16689@fbk.eu>
+
+Dear user,
+
+we have migrated this list to OSGeo.org last night in
+a transparent way.
+Due to (temporary) domain errors of itc.it, we have
+anticipated this planned change and could not announce it
+ahead. The lists operate as usual, all users have been
+migrated to the new server of the OSGeo infrastructure.
+
+What changes?
+
+Just update your address book to use
+  grass-stats@lists.osgeo.org
+instead of
+  statsgrass@grass.itc.it
+
+We have used the occasion to standardize the list name.
+
+In case you still write accidentally to the old address,
+it will be auto-forwarded to the new list address. So
+nothing gets lost.
+
+Special thanks to Frank Warmerdam for setting up the
+new Mailman instance for the GRASS project at OSGeo.
+
+Kind regards
+Markus Neteler
+
+From jarekj at amu.edu.pl  Wed Nov 21 15:40:03 2007
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Wed Nov 21 15:40:14 2007
+Subject: [GRASS-stats] Load data multiple data from grass to R 
+Message-ID: <474497A3.4000205@amu.edu.pl>
+
+I'd like to write R sript to read more rasters from grass to R and 
+writeh them to objects with unique
+
+what I try to do:
+
+system("g.mlist type=rast pattern=a_* >tmp_file")
+k=c(scan("temp_file, what="string")) //maybe is simpler way
+
+for (i in k) {
+here_I_need_obect_with_unique_name=readRAST6(i, paste(i))
+}
+operations_on_obiects
+
+I expect it could be more complicated than one line, but I complelty 
+cannot find solution. It seems very unintuitive
+
+I know that I can use:
+
+obiect <-readRAST6(k)
+
+but how to split it on separate obiects
+maybe this is better solution?
+
+Jarek
+From Roger.Bivand at nhh.no  Wed Nov 21 17:14:55 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 21 17:14:58 2007
+Subject: [GRASS-stats] Load data multiple data from grass to R 
+In-Reply-To: <474497A3.4000205@amu.edu.pl>
+References: <474497A3.4000205@amu.edu.pl>
+Message-ID: <Pine.LNX.4.64.0711212311240.15895@reclus.nhh.no>
+
+On Wed, 21 Nov 2007, Jarek Jasiewicz wrote:
+
+> I'd like to write R sript to read more rasters from grass to R and writeh 
+> them to objects with unique
+>
+> what I try to do:
+>
+> system("g.mlist type=rast pattern=a_* >tmp_file")
+> k=c(scan("temp_file, what="string")) //maybe is simpler way
+>
+> for (i in k) {
+> here_I_need_obect_with_unique_name=readRAST6(i, paste(i))
+> }
+> operations_on_obiects
+
+Could you use the fact that the first argument to readRAST6() can be a 
+character vector of raster layer names? If k is such a character vector, 
+you could try readRAST6(k). The second argument is a logical vector, not 
+vname= as you seem to think - that is in writeRAST6().
+
+Hope this helps,
+
+Roger
+
+>
+> I expect it could be more complicated than one line, but I complelty cannot 
+> find solution. It seems very unintuitive
+>
+> I know that I can use:
+>
+> obiect <-readRAST6(k)
+>
+> but how to split it on separate obiects
+> maybe this is better solution?
+>
+> Jarek
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From jarekj at amu.edu.pl  Thu Nov 22 03:00:49 2007
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Thu Nov 22 03:01:03 2007
+Subject: [GRASS-stats] Load data multiple data from grass to R
+In-Reply-To: <Pine.LNX.4.64.0711212311240.15895@reclus.nhh.no>
+References: <474497A3.4000205@amu.edu.pl>
+	<Pine.LNX.4.64.0711212311240.15895@reclus.nhh.no>
+Message-ID: <47453731.8090206@amu.edu.pl>
+
+Roger Bivand wrote:
+> On Wed, 21 Nov 2007, Jarek Jasiewicz wrote:
+>
+>> I'd like to write R sript to read more rasters from grass to R and 
+>> writeh them to objects with unique
+>>
+>> what I try to do:
+>>
+>> system("g.mlist type=rast pattern=a_* >tmp_file")
+>> k=c(scan("temp_file, what="string")) //maybe is simpler way
+>>
+>> for (i in k) {
+>> here_I_need_obect_with_unique_name=readRAST6(i, paste(i))
+>> }
+>> operations_on_obiects
+>
+> Could you use the fact that the first argument to readRAST6() can be a 
+> character vector of raster layer names? If k is such a character 
+> vector, you could try readRAST6(k). The second argument is a logical 
+> vector, not vname= as you seem to think - that is in writeRAST6().
+>
+> Hope this helps,
+>
+> Roger
+>
+> obiect <-readRAST6(k)
+well maybe presented problem not enough clear
+First - there is en mistake in code i typed
+shuoud be:
+
+for (i in k) {
+here_I_need_obect_with_unique_name=readRAST6(i)
+}
+
+but in that way I recive obiect which every iteration will be 
+overwritten by nex raster map. At the end I will have obiect with last 
+raster map in string vector
+
+How to preserve obiect created in the loop and control its name?
+I think about something like this (for example) in the loop ??
+
+ob_a=readRAST6("a")
+ob_b=readRAST6("b")
+ob_c=readRAST6("c")
+...
+ob_z=readRAST6("z")
+
+if I use this
+
+obiect <-readRAST6(k)
+
+there will be the problem with converting every layer (I mean: 
+"obiect@data$raster_name" i SpGridDataFrame) in multilayer 
+SpGridDataFrame to "im" class obiect
+
+In general it is the problem how to control names of obiect if in the 
+loop we need to create more than one obiect
+
+Hope I presented it clear
+
+greetings
+Jarek
+From hamish_nospam at yahoo.com  Thu Nov 22 03:03:37 2007
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Thu Nov 22 03:03:38 2007
+Subject: [GRASS-stats] Load data multiple data from grass to R
+In-Reply-To: <47453731.8090206@amu.edu.pl>
+Message-ID: <434175.22026.qm@web52704.mail.re2.yahoo.com>
+
+Jarek Jasiewicz wrote:
+
+> >> I'd like to write R sript to read more rasters from grass to R and 
+> >> writeh them to objects with unique
+> >>
+> >> what I try to do:
+> >>
+> >> system("g.mlist type=rast pattern=a_* >tmp_file")
+> >> k=c(scan("temp_file, what="string")) //maybe is simpler way
+> >>
+> >> for (i in k) {
+> >> here_I_need_obect_with_unique_name=readRAST6(i, paste(i))
+> >> }
+> >> operations_on_obiects
+
+
+does R have an "eval" operator?
+
+
+Hamish
+
+
+
+      ____________________________________________________________________________________
+Get easy, one-click access to your favorites. 
+Make Yahoo! your homepage.
+http://www.yahoo.com/r/hs 
+From Roger.Bivand at nhh.no  Thu Nov 22 03:34:09 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Nov 22 03:34:12 2007
+Subject: [GRASS-stats] Load data multiple data from grass to R
+In-Reply-To: <434175.22026.qm@web52704.mail.re2.yahoo.com>
+References: <434175.22026.qm@web52704.mail.re2.yahoo.com>
+Message-ID: <Pine.LNX.4.64.0711220933100.17540@reclus.nhh.no>
+
+On Thu, 22 Nov 2007, Hamish wrote:
+
+> Jarek Jasiewicz wrote:
+>
+>>>> I'd like to write R sript to read more rasters from grass to R and
+>>>> writeh them to objects with unique
+>>>>
+>>>> what I try to do:
+>>>>
+>>>> system("g.mlist type=rast pattern=a_* >tmp_file")
+>>>> k=c(scan("temp_file, what="string")) //maybe is simpler way
+>>>>
+>>>> for (i in k) {
+>>>> here_I_need_obect_with_unique_name=readRAST6(i, paste(i))
+>>>> }
+>>>> operations_on_obiects
+>
+>
+> does R have an "eval" operator?
+
+Yes, but it isn't often needed at the user level, and is considered poor 
+practice.
+
+Roger
+
+>
+>
+> Hamish
+>
+>
+>
+>      ____________________________________________________________________________________
+> Get easy, one-click access to your favorites.
+> Make Yahoo! your homepage.
+> http://www.yahoo.com/r/hs
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From Roger.Bivand at nhh.no  Thu Nov 22 03:37:09 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Nov 22 03:37:11 2007
+Subject: [GRASS-stats] Load data multiple data from grass to R
+In-Reply-To: <47453731.8090206@amu.edu.pl>
+References: <474497A3.4000205@amu.edu.pl>
+	<Pine.LNX.4.64.0711212311240.15895@reclus.nhh.no>
+	<47453731.8090206@amu.edu.pl>
+Message-ID: <Pine.LNX.4.64.0711220934130.17540@reclus.nhh.no>
+
+On Thu, 22 Nov 2007, Jarek Jasiewicz wrote:
+
+> Roger Bivand wrote:
+>>  On Wed, 21 Nov 2007, Jarek Jasiewicz wrote:
+>> 
+>> >  I'd like to write R sript to read more rasters from grass to R and 
+>> >  writeh them to objects with unique
+>> > 
+>> >  what I try to do:
+>> > 
+>> >  system("g.mlist type=rast pattern=a_* >tmp_file")
+>> >  k=c(scan("temp_file, what="string")) //maybe is simpler way
+>> > 
+>> >  for (i in k) {
+>> >  here_I_need_obect_with_unique_name=readRAST6(i, paste(i))
+>>> }
+>> >  operations_on_obiects
+>>
+>>  Could you use the fact that the first argument to readRAST6() can be a
+>>  character vector of raster layer names? If k is such a character vector,
+>>  you could try readRAST6(k). The second argument is a logical vector, not
+>>  vname= as you seem to think - that is in writeRAST6().
+>>
+>>  Hope this helps,
+>>
+>>  Roger
+>>
+>>  obiect <-readRAST6(k)
+> well maybe presented problem not enough clear
+> First - there is en mistake in code i typed
+> shuoud be:
+>
+> for (i in k) {
+> here_I_need_obect_with_unique_name=readRAST6(i)
+> }
+>
+> but in that way I recive obiect which every iteration will be overwritten by 
+> nex raster map. At the end I will have obiect with last raster map in string 
+> vector
+>
+> How to preserve obiect created in the loop and control its name?
+> I think about something like this (for example) in the loop ??
+
+What I suggested was putting all the rasters into the same object - their 
+names become the column names of the object. Since the current region is 
+respected, they will be conformal. If you want multiple objects, use 
+assign() which takes a character string as the name if the object being 
+assigned to, but watch the scoping if you are doing this in a function.
+
+Roger
+
+>
+> ob_a=readRAST6("a")
+> ob_b=readRAST6("b")
+> ob_c=readRAST6("c")
+> ...
+> ob_z=readRAST6("z")
+>
+> if I use this
+>
+> obiect <-readRAST6(k)
+>
+> there will be the problem with converting every layer (I mean: 
+> "obiect@data$raster_name" i SpGridDataFrame) in multilayer SpGridDataFrame to 
+> "im" class obiect
+>
+> In general it is the problem how to control names of obiect if in the loop we 
+> need to create more than one obiect
+>
+> Hope I presented it clear
+>
+> greetings
+> Jarek
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From jarekj at amu.edu.pl  Thu Nov 22 03:38:25 2007
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Thu Nov 22 03:38:35 2007
+Subject: [GRASS-stats] Load data multiple data from grass to R
+In-Reply-To: <434175.22026.qm@web52704.mail.re2.yahoo.com>
+References: <434175.22026.qm@web52704.mail.re2.yahoo.com>
+Message-ID: <47454001.4000100@amu.edu.pl>
+
+Hamish wrote:
+> Jarek Jasiewicz wrote:
+>
+>   
+>>>> I'd like to write R sript to read more rasters from grass to R and 
+>>>> writeh them to objects with unique
+>>>>
+>>>> what I try to do:
+>>>>
+>>>> system("g.mlist type=rast pattern=a_* >tmp_file")
+>>>> k=c(scan("temp_file, what="string")) //maybe is simpler way
+>>>>
+>>>> for (i in k) {
+>>>> here_I_need_obect_with_unique_name=readRAST6(i, paste(i))
+>>>> }
+>>>> operations_on_obiects
+>>>>         
+>
+>
+> does R have an "eval" operator?
+>
+>
+> Hamish
+>
+>
+>
+>       ____________________________________________________________________________________
+> Get easy, one-click access to your favorites. 
+> Make Yahoo! your homepage.
+> http://www.yahoo.com/r/hs 
+>   
+yas, but it not work with "paste" as we can expected base on other languages
+Jarek
+From jarekj at amu.edu.pl  Thu Nov 22 03:49:23 2007
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Thu Nov 22 03:49:35 2007
+Subject: [GRASS-stats] Load data multiple data from grass to R
+In-Reply-To: <Pine.LNX.4.64.0711220934130.17540@reclus.nhh.no>
+References: <474497A3.4000205@amu.edu.pl>
+	<Pine.LNX.4.64.0711212311240.15895@reclus.nhh.no>
+	<47453731.8090206@amu.edu.pl>
+	<Pine.LNX.4.64.0711220934130.17540@reclus.nhh.no>
+Message-ID: <47454293.8050007@amu.edu.pl>
+
+Roger Bivand wrote:
+> On Thu, 22 Nov 2007, Jarek Jasiewicz wrote:
+>
+>> Roger Bivand wrote:
+>>>  On Wed, 21 Nov 2007, Jarek Jasiewicz wrote:
+>>>
+>>> >  I'd like to write R sript to read more rasters from grass to R 
+>>> and >  writeh them to objects with unique
+>>> > >  what I try to do:
+>>> > >  system("g.mlist type=rast pattern=a_* >tmp_file")
+>>> >  k=c(scan("temp_file, what="string")) //maybe is simpler way
+>>> > >  for (i in k) {
+>>> >  here_I_need_obect_with_unique_name=readRAST6(i, paste(i))
+>>>> }
+>>> >  operations_on_obiects
+>>>
+>>>  Could you use the fact that the first argument to readRAST6() can be a
+>>>  character vector of raster layer names? If k is such a character 
+>>> vector,
+>>>  you could try readRAST6(k). The second argument is a logical 
+>>> vector, not
+>>>  vname= as you seem to think - that is in writeRAST6().
+>>>
+>>>  Hope this helps,
+>>>
+>>>  Roger
+>>>
+>>>  obiect <-readRAST6(k)
+>> well maybe presented problem not enough clear
+>> First - there is en mistake in code i typed
+>> shuoud be:
+>>
+>> for (i in k) {
+>> here_I_need_obect_with_unique_name=readRAST6(i)
+>> }
+>>
+>> but in that way I recive obiect which every iteration will be 
+>> overwritten by nex raster map. At the end I will have obiect with 
+>> last raster map in string vector
+>>
+>> How to preserve obiect created in the loop and control its name?
+>> I think about something like this (for example) in the loop ??
+>
+> What I suggested was putting all the rasters into the same object - 
+> their names become the column names of the object. Since the current 
+> region is respected, they will be conformal. If you want multiple 
+> objects, use assign() which takes a character string as the name if 
+> the object being assigned to, but watch the scoping if you are doing 
+> this in a function.
+>
+> Roger
+>
+>>
+>> ob_a=readRAST6("a")
+>> ob_b=readRAST6("b")
+>> ob_c=readRAST6("c")
+>> ...
+>> ob_z=readRAST6("z")
+>>
+>> if I use this
+>>
+>> obiect <-readRAST6(k)
+>>
+>> there will be the problem with converting every layer (I mean: 
+>> "obiect@data$raster_name" i SpGridDataFrame) in multilayer 
+>> SpGridDataFrame to "im" class obiect
+>>
+>> In general it is the problem how to control names of obiect if in the 
+>> loop we need to create more than one obiect
+>>
+>> Hope I presented it clear
+>>
+>> greetings
+>> Jarek
+>>
+>>
+>
+that is solution!!
+
+many thanks Roger!
+Jarek
+From jarekj at amu.edu.pl  Fri Nov 23 09:08:02 2007
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Fri Nov 23 09:08:15 2007
+Subject: [GRASS-stats] Load data multiple data from grass to R
+In-Reply-To: <47454293.8050007@amu.edu.pl>
+References: <474497A3.4000205@amu.edu.pl>	<Pine.LNX.4.64.0711212311240.15895@reclus.nhh.no>	<47453731.8090206@amu.edu.pl>	<Pine.LNX.4.64.0711220934130.17540@reclus.nhh.no>
+	<47454293.8050007@amu.edu.pl>
+Message-ID: <4746DEC2.4040001@amu.edu.pl>
+
+This another wuestion which probably has very simple solution:
+
+I try to create single object wich is list of list (from the result of 
+density() function
+
+it is very simple:
+raster_dens=list(dens_1, dens_2...,dens_78)
+
+except that I must to do it manually
+
+I try to do it with script:
+
+raster_dens=list()
+
+for (i in seq(1:78)) {
+append(raster_dens, 
+density(na.omit(raster[[i]]),bw=(max(na.omit(raster[[i]]))-min(na.omit(raster[[i]]))/50)))
+}
+density() returns list of 7, but I cannot ad it to raster_dens
+
+If I do it with SpGridDataFrame, all go OK
+
+So why I cannot do this there?
+
+Jarek
+From Roger.Bivand at nhh.no  Fri Nov 23 09:15:16 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri Nov 23 09:15:20 2007
+Subject: [GRASS-stats] Load data multiple data from grass to R
+In-Reply-To: <4746DEC2.4040001@amu.edu.pl>
+References: <474497A3.4000205@amu.edu.pl>
+	<Pine.LNX.4.64.0711212311240.15895@reclus.nhh.no>
+	<47453731.8090206@amu.edu.pl>
+	<Pine.LNX.4.64.0711220934130.17540@reclus.nhh.no>
+	<47454293.8050007@amu.edu.pl> <4746DEC2.4040001@amu.edu.pl>
+Message-ID: <Pine.LNX.4.64.0711231513020.21607@reclus.nhh.no>
+
+On Fri, 23 Nov 2007, Jarek Jasiewicz wrote:
+
+> This another wuestion which probably has very simple solution:
+>
+> I try to create single object wich is list of list (from the result of 
+> density() function
+>
+> it is very simple:
+> raster_dens=list(dens_1, dens_2...,dens_78)
+>
+> except that I must to do it manually
+>
+> I try to do it with script:
+>
+> raster_dens=list()
+>
+> for (i in seq(1:78)) {
+> append(raster_dens, 
+> density(na.omit(raster[[i]]),bw=(max(na.omit(raster[[i]]))-min(na.omit(raster[[i]]))/50)))
+> }
+> density() returns list of 7, but I cannot ad it to raster_dens
+>
+> If I do it with SpGridDataFrame, all go OK
+>
+> So why I cannot do this there?
+
+In general, create a list of the right length first, and do
+
+raster_dens[[i]] <- density(na.omit(raster[[i]]), ...
+
+to avoid object copying on appending or concatenation. Then you'll get a 
+list of lists.
+
+Hope this helps,
+
+Roger
+
+>
+> Jarek
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From jarekj at amu.edu.pl  Mon Nov 26 13:17:33 2007
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Mon Nov 26 13:17:46 2007
+Subject: [GRASS-stats] readVECT6 problem fo importing null data
+Message-ID: <474B0DBD.9050501@amu.edu.pl>
+
+Dear Collages!
+
+I found some Issue (seems problematic) with readVECT6 (there are all 
+commands I used, complete my answer)
+
+I have vector file attached table (pgSQL) with null values both for int4 
+and char columns (example table):
+I import the table via RdbiPgSQL
+
+ >library(RdbiPgSQL)
+ >conn=dbConnect(PgSQL(), host="localhost", ........)
+ >sql="SELECT * FROM t"
+ >quer=dbSendQuery(conn, sql)
+ >table=dbGetResult(quer)
+ >table
+  cat int4 char
+1   2     1   <NA>
+2   4    NA   <NA>
+3   6     5   <NA>
+4   7    NA   <NA>
+5   1     0      n
+6   3    NA      b
+7   5     4      p
+8   8     6      c
+
+As you see, there are two columns int4 and char with null values, which 
+are imported to R as shoud be.
+
+But what happend if we import data b y readVECT6:
+
+ > readVECT6("t")
+Exporting 8 points/lines...
+ 100%
+8 features written
+OGR data source with driver: ESRI Shapefile
+Source: "/home/jarekj/grassdata/azp/PERMANENT/.tmp/jarekj-desktop", 
+layer: "t"
+with  8  rows and  3  columns
+         coordinates         cat int4 char
+1 (3688170, 5673160)   1     0      n
+2 (3694430, 5674130)   2     1      
+3 (3701530, 5665800)   3     0      b
+4 (3690110, 5660580)   4     0      
+5 (3706040, 5668900)   5     4      p
+6 (3693660, 5665800)   6     5      
+7 (3704170, 5674130)   7     0      
+8 (3705460, 5660450)   8     6      c
+
+null values for char are preserved but for int, has been changed to 0.
+
+AFAIK, it is due to v.out.ogr use shapefile and dbf which  treat null in 
+integer as 0 during export.
+
+So, it is a problem??? Or May I forgot do something.
+best regards
+Jarek
+
+From Roger.Bivand at nhh.no  Mon Nov 26 15:20:23 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Mon Nov 26 15:20:26 2007
+Subject: [GRASS-stats] readVECT6 problem fo importing null data
+In-Reply-To: <474B0DBD.9050501@amu.edu.pl>
+References: <474B0DBD.9050501@amu.edu.pl>
+Message-ID: <Pine.LNX.4.64.0711262054110.23687@reclus.nhh.no>
+
+On Mon, 26 Nov 2007, Jarek Jasiewicz wrote:
+
+> Dear Collages!
+>
+> I found some Issue (seems problematic) with readVECT6 (there are all commands 
+> I used, complete my answer)
+>
+> I have vector file attached table (pgSQL) with null values both for int4 and 
+> char columns (example table):
+> I import the table via RdbiPgSQL
+>
+>> library(RdbiPgSQL)
+>> conn=dbConnect(PgSQL(), host="localhost", ........)
+>> sql="SELECT * FROM t"
+>> quer=dbSendQuery(conn, sql)
+>> table=dbGetResult(quer)
+>> table
+> cat int4 char
+> 1   2     1   <NA>
+> 2   4    NA   <NA>
+> 3   6     5   <NA>
+> 4   7    NA   <NA>
+> 5   1     0      n
+> 6   3    NA      b
+> 7   5     4      p
+> 8   8     6      c
+>
+> As you see, there are two columns int4 and char with null values, which are 
+> imported to R as shoud be.
+
+I can reproduce the problem, which seems related to DBFIsAttributeNULL not 
+being handled adequately on either side (both are using the OGR library). 
+Could you please try to write the temporary shapefile directly using 
+v.out.ogr, and then try to read it with readOGR() and with readShape*() 
+with * as Points, Lines, or Poly depending on what getinfo.shape() says? 
+I'll try to debug using the DBF code in the foreign package to start with 
+- numeric fields should have value /* NULL numeric fields have value 
+"****************" */ from dbfopen.c, but do not seem to.
+
+Roger
+
+>
+> But what happend if we import data b y readVECT6:
+>
+>>  readVECT6("t")
+> Exporting 8 points/lines...
+> 100%
+> 8 features written
+> OGR data source with driver: ESRI Shapefile
+> Source: "/home/jarekj/grassdata/azp/PERMANENT/.tmp/jarekj-desktop", layer: 
+> "t"
+> with  8  rows and  3  columns
+>        coordinates         cat int4 char
+> 1 (3688170, 5673160)   1     0      n
+> 2 (3694430, 5674130)   2     1      3 (3701530, 5665800)   3     0      b
+> 4 (3690110, 5660580)   4     0      5 (3706040, 5668900)   5     4      p
+> 6 (3693660, 5665800)   6     5      7 (3704170, 5674130)   7     0      8 
+> (3705460, 5660450)   8     6      c
+>
+> null values for char are preserved but for int, has been changed to 0.
+>
+> AFAIK, it is due to v.out.ogr use shapefile and dbf which  treat null in 
+> integer as 0 during export.
+>
+> So, it is a problem??? Or May I forgot do something.
+> best regards
+> Jarek
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From Roger.Bivand at nhh.no  Tue Nov 27 04:02:29 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Nov 27 04:02:36 2007
+Subject: [GRASS-stats] readVECT6 problem fo importing null data
+In-Reply-To: <474B0DBD.9050501@amu.edu.pl>
+References: <474B0DBD.9050501@amu.edu.pl>
+Message-ID: <Pine.LNX.4.64.0711270947250.25744@reclus.nhh.no>
+
+On Mon, 26 Nov 2007, Jarek Jasiewicz wrote:
+
+> Dear Collages!
+>
+> I found some Issue (seems problematic) with readVECT6 (there are all commands 
+> I used, complete my answer)
+>
+> I have vector file attached table (pgSQL) with null values both for int4 and 
+> char columns (example table):
+> I import the table via RdbiPgSQL
+
+Dear Jarek,
+
+Could you please try readOGR() directly from the PostgreSQL/PostGIS 
+source? This will remove the imposition of the intermediary DBF format, 
+and if it succeeds provides a feasible solution, and if it doesn't, 
+suggests that OGR drivers have problems with missing value handling in 
+some implementations (in GRASS and in rgdal, where v.in.ogr and readOGR() 
+use the same basic approach, as do v.out.ogr and writeOGR()).
+
+Roger
+
+>
+>> library(RdbiPgSQL)
+>> conn=dbConnect(PgSQL(), host="localhost", ........)
+>> sql="SELECT * FROM t"
+>> quer=dbSendQuery(conn, sql)
+>> table=dbGetResult(quer)
+>> table
+> cat int4 char
+> 1   2     1   <NA>
+> 2   4    NA   <NA>
+> 3   6     5   <NA>
+> 4   7    NA   <NA>
+> 5   1     0      n
+> 6   3    NA      b
+> 7   5     4      p
+> 8   8     6      c
+>
+> As you see, there are two columns int4 and char with null values, which are 
+> imported to R as shoud be.
+>
+> But what happend if we import data b y readVECT6:
+>
+>>  readVECT6("t")
+> Exporting 8 points/lines...
+> 100%
+> 8 features written
+> OGR data source with driver: ESRI Shapefile
+> Source: "/home/jarekj/grassdata/azp/PERMANENT/.tmp/jarekj-desktop", layer: 
+> "t"
+> with  8  rows and  3  columns
+>        coordinates         cat int4 char
+> 1 (3688170, 5673160)   1     0      n
+> 2 (3694430, 5674130)   2     1      3 (3701530, 5665800)   3     0      b
+> 4 (3690110, 5660580)   4     0      5 (3706040, 5668900)   5     4      p
+> 6 (3693660, 5665800)   6     5      7 (3704170, 5674130)   7     0      8 
+> (3705460, 5660450)   8     6      c
+>
+> null values for char are preserved but for int, has been changed to 0.
+>
+> AFAIK, it is due to v.out.ogr use shapefile and dbf which  treat null in 
+> integer as 0 during export.
+>
+> So, it is a problem??? Or May I forgot do something.
+> best regards
+> Jarek
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From jarekj at amu.edu.pl  Tue Nov 27 07:03:00 2007
+From: jarekj at amu.edu.pl (=?UTF-8?B?SmFyb3PFgmF3IEphc2lld2ljeg==?=)
+Date: Tue Nov 27 07:03:18 2007
+Subject: [GRASS-stats] readVECT6 problem fo importing null data
+In-Reply-To: <Pine.LNX.4.64.0711270947250.25744@reclus.nhh.no>
+References: <474B0DBD.9050501@amu.edu.pl>
+	<Pine.LNX.4.64.0711270947250.25744@reclus.nhh.no>
+Message-ID: <474C0774.9090202@amu.edu.pl>
+
+Roger Bivand pisze:
+> On Mon, 26 Nov 2007, Jarek Jasiewicz wrote:
+>
+>> Dear Collages!
+>>
+>> I found some Issue (seems problematic) with readVECT6 (there are all 
+>> commands I used, complete my answer)
+>>
+>> I have vector file attached table (pgSQL) with null values both for 
+>> int4 and char columns (example table):
+>> I import the table via RdbiPgSQL
+>
+> Dear Jarek,
+>
+> Could you please try readOGR() directly from the PostgreSQL/PostGIS 
+> source? This will remove the imposition of the intermediary DBF 
+> format, and if it succeeds provides a feasible solution, and if it 
+> doesn't, suggests that OGR drivers have problems with missing value 
+> handling in some implementations (in GRASS and in rgdal, where 
+> v.in.ogr and readOGR() use the same basic approach, as do v.out.ogr 
+> and writeOGR()).
+>
+> Roger
+>
+>
+
+
+So the problem is in r.out.ogr?. There are some other methods as you 
+describe. So I solved problem easyly. I rather point out issue, maybe 
+for some other R and GRASS users.
+Best ragards
+
+Jarek
+From Roger.Bivand at nhh.no  Tue Nov 27 07:28:16 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Tue Nov 27 07:28:18 2007
+Subject: [GRASS-stats] readVECT6 problem fo importing null data
+In-Reply-To: <474C0774.9090202@amu.edu.pl>
+References: <474B0DBD.9050501@amu.edu.pl>
+	<Pine.LNX.4.64.0711270947250.25744@reclus.nhh.no>
+	<474C0774.9090202@amu.edu.pl>
+Message-ID: <Pine.LNX.4.64.0711271308050.25744@reclus.nhh.no>
+
+On Tue, 27 Nov 2007, Jarosaw Jasiewicz wrote:
+
+> Roger Bivand pisze:
+>>  On Mon, 26 Nov 2007, Jarek Jasiewicz wrote:
+>> 
+>> >  Dear Collages!
+>> > 
+>> >  I found some Issue (seems problematic) with readVECT6 (there are all 
+>> >  commands I used, complete my answer)
+>> > 
+>> >  I have vector file attached table (pgSQL) with null values both for int4 
+>> >  and char columns (example table):
+>> >  I import the table via RdbiPgSQL
+>>
+>>  Dear Jarek,
+>>
+>>  Could you please try readOGR() directly from the PostgreSQL/PostGIS
+>>  source? This will remove the imposition of the intermediary DBF format,
+>>  and if it succeeds provides a feasible solution, and if it doesn't,
+>>  suggests that OGR drivers have problems with missing value handling in
+>>  some implementations (in GRASS and in rgdal, where v.in.ogr and readOGR()
+>>  use the same basic approach, as do v.out.ogr and writeOGR()).
+>>
+>>  Roger
+>> 
+>> 
+>
+>
+> So the problem is in r.out.ogr?
+
+No, we do not know that (v.out.ogr). It could just as easily be readOGR() 
+using the "ESRI Shapefile" driver. In fact the root of the problem is that 
+there is no standard for setting missing values in DBF files. The one used 
+in the OGR library and in its included shapelib is only one of many, and 
+the header does not encode any information about missing values, so that 
+DBF files are not self-describing.
+
+> There are some other methods as you 
+> describe. So I solved problem easyly. I rather point out issue, maybe for 
+> some other R and GRASS users.
+
+Certainly - I will add a warning to the readOGR() help page. What was your 
+solution - reading from PostgreSQL directly or using readOGR() on the 
+PostGIS data source?
+
+Roger
+
+> Best ragards
+>
+> Jarek
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From jarekj at amu.edu.pl  Thu Nov 29 03:28:46 2007
+From: jarekj at amu.edu.pl (=?UTF-8?B?SmFyb3PFgmF3IEphc2lld2ljeg==?=)
+Date: Thu Nov 29 03:28:57 2007
+Subject: [GRASS-stats] readVECT6 problem fo importing null data
+In-Reply-To: <Pine.LNX.4.64.0711262054110.23687@reclus.nhh.no>
+References: <474B0DBD.9050501@amu.edu.pl>
+	<Pine.LNX.4.64.0711262054110.23687@reclus.nhh.no>
+Message-ID: <474E783E.8020005@amu.edu.pl>
+
+
+>
+> I can reproduce the problem, which seems related to DBFIsAttributeNULL 
+> not being handled adequately on either side (both are using the OGR 
+> library). Could you please try to write the temporary shapefile 
+> directly using v.out.ogr, and then try to read it with readOGR() and 
+> with readShape*() with * as Points, Lines, or Poly depending on what 
+> getinfo.shape() says? I'll try to debug using the DBF code in the 
+> foreign package to start with - numeric fields should have value /* 
+> NULL numeric fields have value "****************" */ from dbfopen.c, 
+> but do not seem to.
+>
+I tried what you sugested. I can't probably help more, but I found that:
+
+- v.out.ogr produce dbf with 0 instead null;
+- readOGR() reads dbf with 0 instead null;
+- if grass dbf table null are treated as 0, but displayed as null;
+
+I use RdbiPgSQL to import data with null values and nad readVECT6 to 
+import vector and use  substitute () to merge them (if needed). it is a 
+temporary solution
+
+Jarek
+From jarekj at amu.edu.pl  Thu Nov 29 03:47:47 2007
+From: jarekj at amu.edu.pl (=?ISO-8859-2?Q?Jaros=B3aw_Jasiewicz?=)
+Date: Thu Nov 29 03:47:57 2007
+Subject: [GRASS-stats] Reclassyify in R
+Message-ID: <474E7CB3.7020601@amu.edu.pl>
+
+Dear all.
+
+
+Working on my problem I stopped on another issue.
+I try to reclassify SpatialGridDataFrame acording to vector file:
+let say:
+- slope imported from GRASS (sp_layer, numeric vector from 
+SpGridDataFrame  slope$slope)
+-density obiect made in R (iloraz_obiect, with density$x with ald values 
+and density$y with new vlues)
+
+And I have very primitive (step by step) solution:
+
+reclass<-function(sp_layer,dens_iloraz_object) {
+
+tmp_k<-0
+layer_length<-length(sp_layer) #number of values in reclasified vector, 
+about million
+dens_length<-length(dens_iloraz_object$x) #number of class of reclassify
+
+for (i in seq(1:layer_length)) {  #loop for million iteration
+    if (is.na(sp_layer[i])) tmp_k[i]<-NA else { #test if there is NA value
+        if (sp_layer[i]==dens_iloraz_object$x[dens_length]) #test if it 
+is max and last value of recllsifying vector
+            {tmp_k[i]<-dens_iloraz_object$y[dens_length] } else {
+                for (j in seq(1:(dens_length-1))) { #reclasify according 
+rules loop about 32 or 64 rules
+                if (!is.na(tmp_k[i])) break #if done! break!
+                    if (sp_layer[i]>=dens_iloraz_object$x[j] & 
+sp_layer[i]<dens_iloraz_object$x[j+1]) tmp_k[i]<-dens_iloraz_object$y[j]
+                }
+        }
+    }
+}
+return (tmp_k)
+
+} #end funcion
+
+What is the problem If works?      it is komputer killer.
+
+
+I have solution which seems faster:
+
+reclass<-function(sp_layer,dens_iloraz_object) {
+
+tmp_k<-NA
+dens_length<-length(dens_iloraz_object$x)
+
+    if (sp_layer==dens_iloraz_object$x[dens_length]) 
+{tmp_k<-dens_iloraz_object$y[dens_length] } else {
+        for (j in seq(1:(dens_length-1))) {
+            if (!is.na(tmp_k)) break
+                if (sp_layer>=dens_iloraz_object$x[j] & 
+sp_layer<dens_iloraz_object$x[j+1]) tmp_k<-dens_iloraz_object$y[j]
+        }
+    }
+   
+return (tmp_k)
+}
+ and next:
+k=ifelse(is.na(sp_layer),NA,reclass(sp_layer,iloraz_dens))
+
+but I cannot handle if (sp_layer==......) in function, which proceeds on 
+vector and use only first element
+
+
+
+I look for little faster solution
+Maybe someone can help me?
+
+Jarek
+From Roger.Bivand at nhh.no  Thu Nov 29 04:02:17 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Nov 29 04:02:27 2007
+Subject: [GRASS-stats] readVECT6 problem fo importing null data
+In-Reply-To: <474E783E.8020005@amu.edu.pl>
+References: <474B0DBD.9050501@amu.edu.pl>
+	<Pine.LNX.4.64.0711262054110.23687@reclus.nhh.no>
+	<474E783E.8020005@amu.edu.pl>
+Message-ID: <Pine.LNX.4.64.0711290931270.31808@reclus.nhh.no>
+
+On Thu, 29 Nov 2007, Jarosaw Jasiewicz wrote:
+
+>
+>>
+>>  I can reproduce the problem, which seems related to DBFIsAttributeNULL not
+>>  being handled adequately on either side (both are using the OGR library).
+>>  Could you please try to write the temporary shapefile directly using
+>>  v.out.ogr, and then try to read it with readOGR() and with readShape*()
+>>  with * as Points, Lines, or Poly depending on what getinfo.shape() says?
+>>  I'll try to debug using the DBF code in the foreign package to start with
+>>  - numeric fields should have value /* NULL numeric fields have value
+>>  "****************" */ from dbfopen.c, but do not seem to.
+>> 
+> I tried what you sugested. I can't probably help more, but I found that:
+>
+> - v.out.ogr produce dbf with 0 instead null;
+> - readOGR() reads dbf with 0 instead null;
+> - if grass dbf table null are treated as 0, but displayed as null;
+>
+> I use RdbiPgSQL to import data with null values and nad readVECT6 to import 
+> vector and use  substitute () to merge them (if needed). it is a temporary 
+> solution
+
+Jarek,
+
+Thanks - I am adding comments to the readOGR() and readVECT6() help pages. 
+OGR does not promise to handle missing values at all, because there are no 
+standards as such - so this affects GRASS vector handling generally.
+
+Two questions if you have time:
+
+1) can you try to read from PostgreSQL directly using readOGR() - I guess 
+that your GDAL/OGR includes the PostgreSQL/PostGIS driver?
+
+2) can you see whether the missing values are visible correctly within 
+GRASS, maybe with db.select (the v.db.univar script assumes that there 
+are no missing values)? If they are seen, then the problem is in 
+v.out.ogr not checking.
+
+I can see isNull fields in dbmi.h; they seem to be used in the fetch.c 
+files for mysql, odbc, ogr, postgres, and sqlite drivers in db/drivers/. I 
+can only see this retrieved in vector/v.univar/main - but Martin Landa 
+probably added this recently, and he is active. There are traces in 
+lib/db/dbmi_base/value.c, lib/db/dbmi_base/xdrvalue.c, and 
+lib/db/dbmi_client/select.c.
+
+I think that Martin will be interested in this, so maybe it's worth 
+checking. I do not run PostgreSQL, so I'm afraid I can't check myself. If 
+you do, maybe post to grass-dev?
+
+Roger
+
+
+>
+> Jarek
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From Roger.Bivand at nhh.no  Thu Nov 29 04:42:28 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Nov 29 04:42:31 2007
+Subject: [GRASS-stats] Reclassyify in R
+In-Reply-To: <474E7CB3.7020601@amu.edu.pl>
+References: <474E7CB3.7020601@amu.edu.pl>
+Message-ID: <Pine.LNX.4.64.0711291033010.31808@reclus.nhh.no>
+
+On Thu, 29 Nov 2007, Jaros?aw Jasiewicz wrote:
+
+> Dear all.
+>
+>
+> Working on my problem I stopped on another issue.
+> I try to reclassify SpatialGridDataFrame acording to vector file:
+> let say:
+> - slope imported from GRASS (sp_layer, numeric vector from SpGridDataFrame 
+> slope$slope)
+> -density obiect made in R (iloraz_obiect, with density$x with ald values and 
+> density$y with new vlues)
+>
+> And I have very primitive (step by step) solution:
+>
+> reclass<-function(sp_layer,dens_iloraz_object) {
+>
+> tmp_k<-0
+> layer_length<-length(sp_layer) #number of values in reclasified vector, about 
+> million
+> dens_length<-length(dens_iloraz_object$x) #number of class of reclassify
+>
+> for (i in seq(1:layer_length)) {  #loop for million iteration
+>    if (is.na(sp_layer[i])) tmp_k[i]<-NA else { #test if there is NA value
+>       if (sp_layer[i]==dens_iloraz_object$x[dens_length]) #test if it is max 
+> and last value of recllsifying vector
+>            {tmp_k[i]<-dens_iloraz_object$y[dens_length] } else {
+>               for (j in seq(1:(dens_length-1))) { #reclasify according rules 
+> loop about 32 or 64 rules
+>                if (!is.na(tmp_k[i])) break #if done! break!
+>                   if (sp_layer[i]>=dens_iloraz_object$x[j] & 
+> sp_layer[i]<dens_iloraz_object$x[j+1]) tmp_k[i]<-dens_iloraz_object$y[j]
+>                }
+>        }
+>   }
+> }
+> return (tmp_k)
+>
+> } #end funcion
+>
+> What is the problem If works?      it is komputer killer.
+>
+>
+> I have solution which seems faster:
+>
+> reclass<-function(sp_layer,dens_iloraz_object) {
+>
+> tmp_k<-NA
+> dens_length<-length(dens_iloraz_object$x)
+>
+>   if (sp_layer==dens_iloraz_object$x[dens_length]) 
+> {tmp_k<-dens_iloraz_object$y[dens_length] } else {
+>        for (j in seq(1:(dens_length-1))) {
+>            if (!is.na(tmp_k)) break
+>               if (sp_layer>=dens_iloraz_object$x[j] & 
+> sp_layer<dens_iloraz_object$x[j+1]) tmp_k<-dens_iloraz_object$y[j]
+>        }
+>    }
+>  return (tmp_k)
+> }
+> and next:
+> k=ifelse(is.na(sp_layer),NA,reclass(sp_layer,iloraz_dens))
+>
+> but I cannot handle if (sp_layer==......) in function, which proceeds on 
+> vector and use only first element
+>
+>
+>
+> I look for little faster solution
+
+Try cut():
+
+library(spgrass6)
+slope <- readRAST6("slope@PERMANENT")
+names(slope)
+summary(slope)
+library(classInt)
+t1 <- classIntervals(slope$slope.PERMANENT, n=32, "pretty")
+t2 <- print(t1)
+slope$slcut <- cut(slope$slope.PERMANENT, breaks=t1$brks,
+   labels=names(t2), include.lowest=TRUE)
+table(slope$slcut)
+t2
+
+where you would construct breaks= and labels= from your x and y (here I 
+just used classIntervals() as an easy way to creat some breaks). An 
+alternative to cut() is findInterval(), and assign the labels 
+subsequently.
+
+Roger
+
+> Maybe someone can help me?
+>
+> Jarek
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no

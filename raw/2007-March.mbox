@@ -1,0 +1,748 @@
+From Andruit at gmx.de  Thu Mar  1 03:35:57 2007
+From: Andruit at gmx.de (Andruit@gmx.de)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] Similar Areas Cluster analysis
+In-Reply-To: <Pine.LNX.4.44.0702281855370.15830-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0702281855370.15830-100000@reclus.nhh.no>
+Message-ID: <20070301083557.228720@gmx.net>
+
+Hi, 
+I`m a newbie in R and haven?t used it many times....
+
+I have several Rastermaps of the same area (vegetation, geology, wetness, aspect, slope ....)
+Now i would like to find areas having similar characteristics...
+How can I do it??? 
+I was thinking about cluster analysis in R.
+Has anybody done it before? I think so.
+
+Andi
+
+-- 
+Ist Ihr Browser Vista-kompatibel? Jetzt die neuesten 
+Browser-Versionen downloaden: http://www.gmx.net/de/go/browser
+
+
+From wegmann at biozentrum.uni-wuerzburg.de  Thu Mar  1 04:08:22 2007
+From: wegmann at biozentrum.uni-wuerzburg.de (Martin Wegmann)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] Similar Areas Cluster analysis
+In-Reply-To: <20070301083557.228720@gmx.net>
+References: <Pine.LNX.4.44.0702281855370.15830-100000@reclus.nhh.no>
+	<20070301083557.228720@gmx.net>
+Message-ID: <200703011008.22461.wegmann@biozentrum.uni-wuerzburg.de>
+
+Hello Andi, 
+
+have a look at http://casoilresource.lawr.ucdavis.edu/drupal/node/221
+that might be what you are looking for. 
+
+Martin
+
+On Thursday 01 March 2007 09:35, Andruit@gmx.de wrote:
+> Hi,
+> I`m a newbie in R and haven?t used it many times....
+>
+> I have several Rastermaps of the same area (vegetation, geology, wetness,
+> aspect, slope ....) Now i would like to find areas having similar
+> characteristics...
+> How can I do it???
+> I was thinking about cluster analysis in R.
+> Has anybody done it before? I think so.
+>
+> Andi
+
+
+From Roger.Bivand at nhh.no  Thu Mar  1 05:13:02 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] Similar Areas Cluster analysis
+In-Reply-To: <200703011008.22461.wegmann@biozentrum.uni-wuerzburg.de>
+Message-ID: <Pine.LNX.4.44.0703011103570.16568-100000@reclus.nhh.no>
+
+On Thu, 1 Mar 2007, Martin Wegmann wrote:
+
+> Hello Andi, 
+> 
+> have a look at http://casoilresource.lawr.ucdavis.edu/drupal/node/221
+> that might be what you are looking for. 
+
+Yes, the clara() function in the cluster standard package is good for
+large data sets, for continuous variables. You will need to watch the fact
+that many of your variables are categorical, though - look at the
+supporting documentation for the package. There is also the question of
+the desired number of classes - the example uses 5, but it could have been
+something else.
+
+If you have "ground truth" - some classified data - you can fit a
+classification tree (rpart() function in the standard package of the same
+name), but without a "true" starting classification, it isn't easy.
+
+So you'll need to read up on classification with categorical variables, 
+I'm afraid.
+
+Roger
+
+> 
+> Martin
+> 
+> On Thursday 01 March 2007 09:35, Andruit@gmx.de wrote:
+> > Hi,
+> > I`m a newbie in R and haven?t used it many times....
+> >
+> > I have several Rastermaps of the same area (vegetation, geology, wetness,
+> > aspect, slope ....) Now i would like to find areas having similar
+> > characteristics...
+> > How can I do it???
+> > I was thinking about cluster analysis in R.
+> > Has anybody done it before? I think so.
+> >
+> > Andi
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From tilmann.steinmetz at geo.uni-halle.de  Thu Mar  1 07:40:41 2007
+From: tilmann.steinmetz at geo.uni-halle.de (Tilmann Steinmetz)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] Re: gmeta6() returns empty string
+In-Reply-To: <Pine.LNX.4.44.0702281855370.15830-100000@reclus.nhh.no>
+References: <f99aab2946a.46af99aab29@uni-halle.de>
+	<Pine.LNX.4.44.0702281855370.15830-100000@reclus.nhh.no>
+Message-ID: <fa69c6811d34.1d34fa69c681@uni-halle.de>
+
+Hi Roger and all,
+
+> 
+> Very strange, maybe when Stromboli calms down? 
+> 
+
+I'm still covered with tephra but starting to see clearer: I tried executing 
+system("g.region -p") in R on a similar machine, running R 2.2.1 on FreeBSD 
+5.4 and GRASS6.0.2,2 which _does not_ have similar problems- so the shell 
+thing definitely is not a general FreeBSD problem. I am still thankful for 
+every hint that may lead to the wanted rogue environment variable or 
+whatever.
+
+> > 
+> > Is there any way I can go from here without running Grass on, 
+> say, Linux?
+> 
+> Yes, of course. Just run them side-by-side, with GRASS using 
+> r.in.gdal and 
+> v.in.ogr to read files written from R by writeGDAL() and writeOGR() 
+> in 
+> rgdal, and r.out.* and v.out.ogr wrt. readOGR() and readGDAL() in 
+> rgdal in 
+
+oh great! I wasn't aware of that.
+
+> R. This is almost what the interface does anyway, but because the 
+> new 
+> stand-alone r.out.gdal is in 6.3, you may need to choose your 
+> prefered 6.2 
+> raster output format avoiding the older scripted r.out.gdal if you 
+> are not 
+> running the GDAL GRASS plugin (best not to, IMO). All the interface 
+> gives 
+> over and above this is handling the intermediate files as temporary 
+> files, 
+> and adding GRASS categories as factor levels to R factors.
+> 
+> How did you install R, I assume you built from source? Did you 
+> notice any 
+> worrying messages?
+
+yes - it was installed from the FreeBSD ports collection (i.e. a source 
+install which resolves dependencies, or: is meant to ..) I am now updating - 
+lets see what happens.
+
+Tilmann
+> > 
+> > ----- Originalnachricht -----
+> > Von: Roger Bivand <Roger.Bivand@nhh.no>
+> > Datum: Mittwoch, Februar 28, 2007 14:46
+> > Betreff: Re: WG: Re: WG: Re: gmeta6() returns empty string
+> > An: Tilmann Steinmetz <tilmann.steinmetz@geo.uni-halle.de>
+> > 
+> > > Does this usually correlate with activity on Stromboli?
+> > 
+> > "g.list rast" rather points to rushmore or even better: bugsites :}
+> > 
+> > 
+> 
+> -- 
+> Roger Bivand
+> Economic Geography Section, Department of Economics, Norwegian 
+> School of
+> Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+> 
+> 
+
+
+From Roger.Bivand at nhh.no  Thu Mar  1 07:51:07 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] Re: gmeta6() returns empty string
+In-Reply-To: <fa69c6811d34.1d34fa69c681@uni-halle.de>
+Message-ID: <Pine.LNX.4.44.0703011344480.16568-100000@reclus.nhh.no>
+
+On Thu, 1 Mar 2007, Tilmann Steinmetz wrote:
+
+> Hi Roger and all,
+> 
+> > 
+> > Very strange, maybe when Stromboli calms down? 
+> > 
+> 
+> I'm still covered with tephra but starting to see clearer: I tried executing 
+> system("g.region -p") in R on a similar machine, running R 2.2.1 on FreeBSD 
+> 5.4 and GRASS6.0.2,2 which _does not_ have similar problems- so the shell 
+> thing definitely is not a general FreeBSD problem. I am still thankful for 
+> every hint that may lead to the wanted rogue environment variable or 
+> whatever.
+
+G_gettext is also in GRASS 6.0.2, I just checked.
+
+> 
+> > > 
+> > > Is there any way I can go from here without running Grass on, 
+> > say, Linux?
+> > 
+> > Yes, of course. Just run them side-by-side, with GRASS using 
+> > r.in.gdal and 
+> > v.in.ogr to read files written from R by writeGDAL() and writeOGR() 
+> > in 
+> > rgdal, and r.out.* and v.out.ogr wrt. readOGR() and readGDAL() in 
+> > rgdal in 
+> 
+> oh great! I wasn't aware of that.
+>
+
+Then that may be the easiest way to go forward.
+ 
+> > R. This is almost what the interface does anyway, but because the 
+> > new 
+> > stand-alone r.out.gdal is in 6.3, you may need to choose your 
+> > prefered 6.2 
+> > raster output format avoiding the older scripted r.out.gdal if you 
+> > are not 
+> > running the GDAL GRASS plugin (best not to, IMO). All the interface 
+> > gives 
+> > over and above this is handling the intermediate files as temporary 
+> > files, 
+> > and adding GRASS categories as factor levels to R factors.
+> > 
+> > How did you install R, I assume you built from source? Did you 
+> > notice any 
+> > worrying messages?
+> 
+> yes - it was installed from the FreeBSD ports collection (i.e. a source 
+> install which resolves dependencies, or: is meant to ..) I am now updating - 
+> lets see what happens.
+> 
+
+OK. Please say if you see anything there. The r.out.gdal in GRASS 6.3 is a 
+big improvement over the scripted version in GRASS 6.2 and earlier.
+
+Roger
+
+> Tilmann
+> > > 
+> > > ----- Originalnachricht -----
+> > > Von: Roger Bivand <Roger.Bivand@nhh.no>
+> > > Datum: Mittwoch, Februar 28, 2007 14:46
+> > > Betreff: Re: WG: Re: WG: Re: gmeta6() returns empty string
+> > > An: Tilmann Steinmetz <tilmann.steinmetz@geo.uni-halle.de>
+> > > 
+> > > > Does this usually correlate with activity on Stromboli?
+> > > 
+> > > "g.list rast" rather points to rushmore or even better: bugsites :}
+> > > 
+> > > 
+> > 
+> > -- 
+> > Roger Bivand
+> > Economic Geography Section, Department of Economics, Norwegian 
+> > School of
+> > Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+> > Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+> > e-mail: Roger.Bivand@nhh.no
+> > 
+> > 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From sisma66 at tiscali.it  Fri Mar 23 14:09:28 2007
+From: sisma66 at tiscali.it (Pierluigi De Rosa)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] problem on trend surface calculation
+Message-ID: <200703231909.28452.sisma66@tiscali.it>
+
+Dear all,
+
+I wont to try to define a trend surface, now I'm just tring with meude dataset 
+to learn it but I have an error. I do this:
+
+ gs<-gstat(id="zinc.uk",formula=zinc~x+y,location=meuse,degree=2)
+then
+ pgs=predict.gstat(gs,newdata=meuse.grid) 
+
+but I have this error:
+polynomial degree only works when no other predictors are given
+
+It seems everythink  fine but I don't know where I wrong...
+Can anyone help me??
+Thaks
+Pierluigi
+
+
+-- 
+
+Pierluigi De Rosa
+
+Department of Enviromental & Civil engineering 
+Faculty of Engineering 
+Perugia (Italy)
+
+
+From Roger.Bivand at nhh.no  Fri Mar 23 14:32:26 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] problem on trend surface calculation
+In-Reply-To: <200703231909.28452.sisma66@tiscali.it>
+Message-ID: <Pine.LNX.4.44.0703231923140.25728-100000@reclus.nhh.no>
+
+On Fri, 23 Mar 2007, Pierluigi De Rosa wrote:
+
+> Dear all,
+> 
+> I wont to try to define a trend surface, now I'm just tring with meude
+> dataset to learn it but I have an error. I do this:
+> 
+>  gs<-gstat(id="zinc.uk",formula=zinc~x+y,location=meuse,degree=2)
+
+Try:
+
+> library(gstat)
+Loading required package: sp
+> data(meuse)
+> coordinates(meuse) <- c("x", "y")
+> data(meuse.grid)
+> coordinates(meuse.grid) <- c("x", "y")
+> gridded(meuse.grid) <- TRUE
+> gs <- gstat(id="zinc.uk", formula=zinc ~ 1, data=meuse, degree=2)
+> pgs <- predict.gstat(gs, newdata=meuse.grid)
+[ordinary or weighted least squares prediction]
+
+degree= and the coordinates x+y given explicity will lead to collinearity. 
+It also seems that you cannot mix a trend surface and extra predictors.
+
+Roger
+
+> then
+>  pgs=predict.gstat(gs,newdata=meuse.grid) 
+> 
+> but I have this error:
+> polynomial degree only works when no other predictors are given
+> 
+> It seems everythink  fine but I don't know where I wrong...
+> Can anyone help me??
+> Thaks
+> Pierluigi
+> 
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From sisma66 at tiscali.it  Fri Mar 23 15:16:10 2007
+From: sisma66 at tiscali.it (Pierluigi De Rosa)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] problem on trend surface calculation
+In-Reply-To: <Pine.LNX.4.44.0703231923140.25728-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0703231923140.25728-100000@reclus.nhh.no>
+Message-ID: <200703232016.11056.sisma66@tiscali.it>
+
+Ok  It works!!
+
+Thanks Roger :)
+
+
+Alle 19:32, venerd? 23 marzo 2007, Roger Bivand ha scritto:
+> On Fri, 23 Mar 2007, Pierluigi De Rosa wrote:
+> > Dear all,
+> >
+> > I wont to try to define a trend surface, now I'm just tring with meude
+> > dataset to learn it but I have an error. I do this:
+> >
+> >  gs<-gstat(id="zinc.uk",formula=zinc~x+y,location=meuse,degree=2)
+>
+> Try:
+> > library(gstat)
+>
+> Loading required package: sp
+>
+> > data(meuse)
+> > coordinates(meuse) <- c("x", "y")
+> > data(meuse.grid)
+> > coordinates(meuse.grid) <- c("x", "y")
+> > gridded(meuse.grid) <- TRUE
+> > gs <- gstat(id="zinc.uk", formula=zinc ~ 1, data=meuse, degree=2)
+> > pgs <- predict.gstat(gs, newdata=meuse.grid)
+>
+> [ordinary or weighted least squares prediction]
+>
+> degree= and the coordinates x+y given explicity will lead to collinearity.
+> It also seems that you cannot mix a trend surface and extra predictors.
+>
+> Roger
+>
+> > then
+> >  pgs=predict.gstat(gs,newdata=meuse.grid)
+> >
+> > but I have this error:
+> > polynomial degree only works when no other predictors are given
+> >
+> > It seems everythink  fine but I don't know where I wrong...
+> > Can anyone help me??
+> > Thaks
+> > Pierluigi
+
+-- 
+
+Pierluigi De Rosa
+
+Department of Enviromental & Civil engineering 
+Faculty of Engineering 
+Perugia (Italy)
+
+
+From sisma66 at tiscali.it  Tue Mar 27 11:18:34 2007
+From: sisma66 at tiscali.it (Pierluigi De Rosa)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] gstat probability maps
+Message-ID: <200703271718.34808.sisma66@tiscali.it>
+
+Dear All,
+
+I need to prepare a probability map of exceeding a value...
+I can make the simulation, for example I tried to make it with data meuse:
+
+v <- variogram(log(zinc)~1,loc= meuse) 
+m <- vgm(.59, "Sph", 874, .04)
+sim <- krige(formula = log(zinc)~1, locations = meuse, model = m, newdata = 
+meuse.grid, nmax = 15, nsim = 5)
+names(sim)
+[1] "sim1" "sim2" "sim3" "sim4" "sim5"
+
+Now How can I create a probabilility map of exceding a value (for example 5)??
+
+Thanks
+Pierluigi
+
+-- 
+
+Pierluigi De Rosa
+
+Department of Enviromental & Civil engineering 
+Faculty of Engineering 
+Perugia (Italy)
+
+
+From e.pebesma at geo.uu.nl  Tue Mar 27 11:16:29 2007
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] gstat probability maps
+In-Reply-To: <200703271718.34808.sisma66@tiscali.it>
+References: <200703271718.34808.sisma66@tiscali.it>
+Message-ID: <4609354D.9010808@geo.uu.nl>
+
+Pierluigi,
+
+it is a (not uncommon) misunderstanding that you would need simulation 
+for this. Try:
+
+ > v <- variogram(log(zinc)~1,loc= meuse)
+ > m <- vgm(.59, "Sph", 874, .04)
+ > sim <- krige(formula = log(zinc)~1, locations = meuse, model = m, 
+newdata =
++ meuse.grid, nmax = 15)
+[using ordinary kriging]
+ > sim$p500 = 1-pnorm(log(500),sim$var1.pred,sqrt(sim$var1.var))
+ > spplot(sim["p500"], main = "Pr(zn > 500)")
+
+You could of course create a large number of simulations, count the 
+fraction above 500 for each cell, but the answer would only approximate 
+the one you get here, under the same model, fast and analytical.
+--
+Edzer
+
+Pierluigi De Rosa wrote:
+> Dear All,
+>
+> I need to prepare a probability map of exceeding a value...
+> I can make the simulation, for example I tried to make it with data meuse:
+>
+> v <- variogram(log(zinc)~1,loc= meuse) 
+> m <- vgm(.59, "Sph", 874, .04)
+> sim <- krige(formula = log(zinc)~1, locations = meuse, model = m, newdata = 
+> meuse.grid, nmax = 15, nsim = 5)
+> names(sim)
+> [1] "sim1" "sim2" "sim3" "sim4" "sim5"
+>
+> Now How can I create a probabilility map of exceding a value (for example 5)??
+>
+> Thanks
+> Pierluigi
+>
+>   
+
+
+From wolf+grass at bergenheim.net  Tue Mar 27 11:24:07 2007
+From: wolf+grass at bergenheim.net (Wolf Bergenheim)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] gstat probability maps
+In-Reply-To: <200703271718.34808.sisma66@tiscali.it>
+References: <200703271718.34808.sisma66@tiscali.it>
+Message-ID: <46093717.9040101@bergenheim.net>
+
+Pierluigi,
+
+That would be indicator kriging:
+
+I use gstat, so I can't give you any specific R commands, but the
+principle is the same: You have to create a new dataset which is 1 if
+the threshold is exceeded, and 0 if not. Now your data is 0 or 1. Then
+do normal ordinary kriging on that new data column. The resulting map
+shows the probability of exceeding the threshold. In gstat you have to
+add  extra checks to see that your result is strictly [0.0 - 1.0]
+
+--Wolf
+
+On 27.03.2007 18:18, Pierluigi De Rosa wrote:
+> Dear All,
+> 
+> I need to prepare a probability map of exceeding a value...
+> I can make the simulation, for example I tried to make it with data meuse:
+> 
+> v <- variogram(log(zinc)~1,loc= meuse) 
+> m <- vgm(.59, "Sph", 874, .04)
+> sim <- krige(formula = log(zinc)~1, locations = meuse, model = m, newdata = 
+> meuse.grid, nmax = 15, nsim = 5)
+> names(sim)
+> [1] "sim1" "sim2" "sim3" "sim4" "sim5"
+> 
+> Now How can I create a probabilility map of exceding a value (for example 5)??
+> 
+> Thanks
+> Pierluigi
+> 
+
+-- 
+
+<:3 )---- Wolf Bergenheim ----( 8:>
+
+
+From e.pebesma at geo.uu.nl  Tue Mar 27 13:34:49 2007
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] gstat probability maps
+In-Reply-To: <46093717.9040101@bergenheim.net>
+References: <200703271718.34808.sisma66@tiscali.it>
+	<46093717.9040101@bergenheim.net>
+Message-ID: <460955B9.6020904@geo.uu.nl>
+
+Dear Wolf & Pierluigi,
+
+I believe that it is another common misunderstanding to believe that 
+indicator kriging is needed to obtain (estimates of) probabilities. You 
+can of course do it, try something along the lines of
+
+v <- variogram(I(zinc>500)~1, meuse) 
+m <- vgm(.15, "Sph", 874, .1) # just filling in some values here
+ik <- krige(I(zinc>500)~1, meuse, meuse.grid, m)
+
+but then you give up any information on how far an observation is below 
+or above 500, as data are transformed to 0 (below 500) and 1 (above 500) 
+values. IMO this is valuable information, and although you may criticize 
+the Gaussian assumption (on the log-scale) underlying my previous 
+suggestion, at least it leads to "true" probabilities, instead of 
+interpolated 0 and 1 values that may (and will) as well lie outside the 
+interval [0,1].
+
+I wouldn't go as far as advising never to use indicator kriging, but the 
+automatic "for probabilities you need indicator kriging" clearly misses 
+important essentials of geostatistics.
+
+Both issues, the need to simulate or the need for indicator transforms 
+to obtain probabilities, have been pushed by certain authors that know 
+better, and re-arise from time to time. A third and related issue is the 
+suggestion that the (ordinary) kriging variance is not a measure for 
+prediction error; see the following ai-geostats thread:
+http://www.mail-archive.com/ai-geostats%40jrc.it/msg02890.html
+
+Best wishes,
+--
+Edzer
+
+Wolf Bergenheim wrote:
+> Pierluigi,
+>
+> That would be indicator kriging:
+>
+> I use gstat, so I can't give you any specific R commands, but the
+> principle is the same: You have to create a new dataset which is 1 if
+> the threshold is exceeded, and 0 if not. Now your data is 0 or 1. Then
+> do normal ordinary kriging on that new data column. The resulting map
+> shows the probability of exceeding the threshold. In gstat you have to
+> add  extra checks to see that your result is strictly [0.0 - 1.0]
+>
+> --Wolf
+>
+> On 27.03.2007 18:18, Pierluigi De Rosa wrote:
+>   
+>> Dear All,
+>>
+>> I need to prepare a probability map of exceeding a value...
+>> I can make the simulation, for example I tried to make it with data meuse:
+>>
+>> v <- variogram(log(zinc)~1,loc= meuse) 
+>> m <- vgm(.59, "Sph", 874, .04)
+>> sim <- krige(formula = log(zinc)~1, locations = meuse, model = m, newdata = 
+>> meuse.grid, nmax = 15, nsim = 5)
+>> names(sim)
+>> [1] "sim1" "sim2" "sim3" "sim4" "sim5"
+>>
+>> Now How can I create a probabilility map of exceding a value (for example 5)??
+>>
+>> Thanks
+>> Pierluigi
+>>
+>>     
+>
+>   
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20070327/ae314308/attachment.html
+From sisma66 at tiscali.it  Wed Mar 28 04:24:28 2007
+From: sisma66 at tiscali.it (Pierluigi De Rosa)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] gstat probability maps
+In-Reply-To: <460955B9.6020904@geo.uu.nl>
+References: <200703271718.34808.sisma66@tiscali.it>
+	<46093717.9040101@bergenheim.net> <460955B9.6020904@geo.uu.nl>
+Message-ID: <200703281024.28609.sisma66@tiscali.it>
+
+Dear Edzer & Wolf
+
+I read the all thread and some papers... At the end I think Edzer is right, so 
+you can use the kriging variance to evaluate a propability map of exceeding a 
+value!
+Thanks to all for your help!
+Pierluigi
+
+Alle 19:34, marted? 27 marzo 2007, Edzer J. Pebesma ha scritto:
+> Dear Wolf & Pierluigi,
+>
+> I believe that it is another common misunderstanding to believe that
+> indicator kriging is needed to obtain (estimates of) probabilities. You
+> can of course do it, try something along the lines of
+>
+> v <- variogram(I(zinc>500)~1, meuse)
+> m <- vgm(.15, "Sph", 874, .1) # just filling in some values here
+> ik <- krige(I(zinc>500)~1, meuse, meuse.grid, m)
+>
+> but then you give up any information on how far an observation is below
+> or above 500, as data are transformed to 0 (below 500) and 1 (above 500)
+> values. IMO this is valuable information, and although you may criticize
+> the Gaussian assumption (on the log-scale) underlying my previous
+> suggestion, at least it leads to "true" probabilities, instead of
+> interpolated 0 and 1 values that may (and will) as well lie outside the
+> interval [0,1].
+>
+> I wouldn't go as far as advising never to use indicator kriging, but the
+> automatic "for probabilities you need indicator kriging" clearly misses
+> important essentials of geostatistics.
+>
+> Both issues, the need to simulate or the need for indicator transforms
+> to obtain probabilities, have been pushed by certain authors that know
+> better, and re-arise from time to time. A third and related issue is the
+> suggestion that the (ordinary) kriging variance is not a measure for
+> prediction error; see the following ai-geostats thread:
+> http://www.mail-archive.com/ai-geostats%40jrc.it/msg02890.html
+>
+> Best wishes,
+> --
+> Edzer
+>
+> Wolf Bergenheim wrote:
+> > Pierluigi,
+> >
+> > That would be indicator kriging:
+> >
+> > I use gstat, so I can't give you any specific R commands, but the
+> > principle is the same: You have to create a new dataset which is 1 if
+> > the threshold is exceeded, and 0 if not. Now your data is 0 or 1. Then
+> > do normal ordinary kriging on that new data column. The resulting map
+> > shows the probability of exceeding the threshold. In gstat you have to
+> > add  extra checks to see that your result is strictly [0.0 - 1.0]
+> >
+> > --Wolf
+> >
+> > On 27.03.2007 18:18, Pierluigi De Rosa wrote:
+> >> Dear All,
+> >>
+> >> I need to prepare a probability map of exceeding a value...
+> >> I can make the simulation, for example I tried to make it with data
+> >> meuse:
+> >>
+> >> v <- variogram(log(zinc)~1,loc= meuse)
+> >> m <- vgm(.59, "Sph", 874, .04)
+> >> sim <- krige(formula = log(zinc)~1, locations = meuse, model = m,
+> >> newdata = meuse.grid, nmax = 15, nsim = 5)
+> >> names(sim)
+> >> [1] "sim1" "sim2" "sim3" "sim4" "sim5"
+> >>
+> >> Now How can I create a probabilility map of exceding a value (for
+> >> example 5)??
+> >>
+> >> Thanks
+> >> Pierluigi
+
+-- 
+
+Pierluigi De Rosa
+
+Department of Enviromental & Civil engineering 
+Faculty of Engineering 
+Perugia (Italy)
+
+

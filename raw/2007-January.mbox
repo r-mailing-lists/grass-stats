@@ -1,0 +1,1044 @@
+From jarekj at amu.edu.pl  Fri Jan  5 15:27:13 2007
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] spatstat to grass
+Message-ID: <200701052127.13999.jarekj@amu.edu.pl>
+
+Hi
+My new problem: how to simply convert obiect of class im (spatstat) to 
+SpatialGridDataFrame (sp) to put it to grass.
+I found im maptools packages as.ppp function to convert spatial sp obiects to 
+spatstat (ppp) and now I'm looking for function to convert it back. 
+It seems that I know how to do manualy (little works), but If there is 
+something tool do to it autoimaticaly, I will be welcome
+
+Jarek
+
+
+From carlos.grohmann at gmail.com  Sat Jan  6 12:03:14 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] problems with kriging latlong areas
+Message-ID: <bd07447b0701060903h3b647dc8xbe08afd6f7fb673d@mail.gmail.com>
+
+First of all, Happy 2007 for everyone.
+
+Well, gstat 0.9-35 came out, and I went to try it, since I want to do
+some kriging interpolation on some latlong areas. I did exactly what I
+was doing before with utm areas. The variogram modeling went well
+(er.. not so well as I expected, see below for more on this), but when
+it came to the kriging step, I get an erros msg about dynamic
+memory... the area is quite small (about 15x15km, 167x167 rows/cols),
+and I have 1.5Gb of ram, so maybe we have a bug here?
+
+this is the hole thing:
+
+> srtm<-readGDAL("/home/guano/artigos/DEM_krigagem/Los_Angeles/srtm_LA_90.tif");
+/home/guano/artigos/DEM_krigagem/Los_Angeles/srtm_LA_90.tif has GDAL
+driver GTiff
+and has 167 rows and 167 columns
+Closing GDAL dataset handle 0x191a9d0...  destroyed ... done.
+>
+>  summary(srtm)
+Object of class SpatialGridDataFrame
+Coordinates:
+        min        max
+x -118.77208 -118.63292
+y   34.83958   34.97875
+Is projected: FALSE
+proj4string : [+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs]
+Number of points: 2
+Grid attributes:
+ cellcentre.offset     cellsize cells.dim
+x         -118.7717 0.0008333333       167
+y           34.8400 0.0008333333       167
+Data attributes:
+    band1
+ Min.   : 622
+ 1st Qu.:1135
+ Median :1299
+ Mean   :1312
+ 3rd Qu.:1478
+ Max.   :1993
+>
+>
+> offset<- c(srtm@grid@cellcentre.offset[1]+ (srtm@grid@cellsize[1]/3), srtm@grid@cellcentre.offset[2]+ (srtm@grid@cellsize[2]/3));
+> size<- c((srtm@grid@cellsize[1]/3), (srtm@grid@cellsize[2]/3));
+> dim<- c((srtm@grid@cells.dim[1]*3), (srtm@grid@cells.dim[2]*3));
+> grd <- GridTopology(offset,size,dim);
+> mask_SG <- SpatialGridDataFrame(grd, data=list(k=rep(1, dim[1]*dim[2])), proj4string=CRS(srtm@proj4string@projargs));
+Closing GDAL dataset handle (nil)... done.
+>
+> coords<-coordinates(srtm);
+> jcoords <- cbind(jitter(coords[,1]), jitter(coords[,2]));
+> band1<-as.data.frame(srtm$band1);
+> srtm2<-SpatialPointsDataFrame(jcoords,band1,proj4string=CRS(srtm@proj4string@projargs));
+>
+> variog1 <-variogram(srtm$band1~coords[,1]+coords[,2], loc=srtm, srtm);
+>
+> plot(variog1);
+>
+> plot(variog1, xlim=c(0,1), ylim=c(0,10000));
+>
+> vrg.eye<-(vgm(psill=9500, model="Gau", range=0.55, nugget=10));
+>
+> plot(variog1, model=vrg.eye, xlim=c(0,1), ylim=c(0,10000));
+>
+> OK_pred_n8 <- krige(srtm$band1 ~ 1, loc=srtm2, newdata=mask_SG, model=vrg.eye, nmax=8);
+[using ordinary kriging]
+Error in predict.gstat(g, newdata = newdata, block = block, nsim = nsim,  :
+       gstat: out of dynamic memory
+>
+
+
+That's for kriging. about the variogram, if I just call variogram()
+without specifing a width value (as in above), I get a normal
+variogram. but if I call variogram() with a width=0.0004 (half cell,
+as I do with utm regions), I get a cloud of points. Is this normal? I
+don't think so. (see image in the link)
+
+http://www.igc.usp.br/pessoais/guano/temp/variogram_cloud.jpg
+
+
+
+Hope to hear from you guys
+
+Carlos
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+
+From carlos.grohmann at gmail.com  Sun Jan  7 13:51:28 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] rgdal doesn't work with GDAL 1.4.0
+Message-ID: <bd07447b0701071051g773ef419q601a7af0e85b7f70@mail.gmail.com>
+
+Hello all
+I have just made a fresh install, using Ubuntu Feisty for upgrade, so
+now I have GDAL 1.4.0 and R 2.4.1. when I tryed to install rgdal, I
+get this error:
+
+* Installing *source* package 'rgdal' ...
+gdal-config: gdal-config
+GDAL version 1.4.0 found ...
+For building this version, at least GDAL version 1.3.1 is required.
+ERROR: configuration failed for package 'rgdal'
+** Removing '/usr/local/lib/R/site-library/rgdal'
+
+
+I don't get it. If my version is higher than the required one, why it
+doesn't work?
+
+Carlos
+
+
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+
+From jarekj at amu.edu.pl  Sun Jan  7 14:40:40 2007
+From: jarekj at amu.edu.pl (jarekj@amu.edu.pl)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] rgdal doesn't work with GDAL 1.4.0
+In-Reply-To: <bd07447b0701071051g773ef419q601a7af0e85b7f70@mail.gmail.com>
+Message-ID: <Cdcsk03S.1168198838.5262000.jarekj@webmail.amu.edu.pl>
+
+
+Carlos!
+
+I mentioned it two weeks ago!
+
+It it effect of simple configure check test wchich test only if gdal is
+of version 1.3.x
+
+to solve it:
+download rgdal to local computer,
+unpack tar package,
+edit cofigure, go to line 1334,
+change REQ_GDAL from "1.3" to "1.4"),
+pack it again (name must be the same!),
+and istall extension with R CMD INSTALL 'rgdalxxxx"
+
+it had help on my computer (btw, on fresh edgy be prepered for some
+surprises with nviz)
+
+btw2: rgdal maitainer shall change configure.in file to maintain both
+1.3.x and 1.4.x gdal wersion imediatelly
+
+regards
+Jarek
+
+7/1/2007, ""Carlos \"Gu?no\" Grohmann"
+carlos.grohmann@gmail.com"
+<"=?ISO-8859-1?Q?Carlos_\"Gu=E2no\"_Grohmann?="
+carlos.grohmann@gmail.com> napisa?/a:
+
+>Hello all
+>I have just made a fresh install, using Ubuntu Feisty for upgrade, so
+>now I have GDAL 1.4.0 and R 2.4.1. when I tryed to install rgdal, I
+>get this error:
+>
+>* Installing *source* package 'rgdal' ...
+>gdal-config: gdal-config
+>GDAL version 1.4.0 found ...
+>For building this version, at least GDAL version 1.3.1 is required.
+>ERROR: configuration failed for package 'rgdal'
+>** Removing '/usr/local/lib/R/site-library/rgdal'
+>
+>
+>I don't get it. If my version is higher than the required one, why it
+>doesn't work?
+>
+>Carlos
+>
+>
+>
+>--
+>+-----------------------------------------------------------+
+>              Carlos Henrique Grohmann - Guano
+>  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+>Linux User #89721  - carlos dot grohmann at gmail dot com
+>+-----------------------------------------------------------+
+>_________________
+>"Good morning, doctors. I have taken the liberty of removing Windows
+>95 from my hard drive."
+>--The winning entry in a "What were HAL's first words" contest judged
+>by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+>
+>_______________________________________________
+>statsgrass mailing list
+>statsgrass@grass.itc.it
+>http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+From Roger.Bivand at nhh.no  Sun Jan  7 15:25:31 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] rgdal doesn't work with GDAL 1.4.0
+In-Reply-To: <Cdcsk03S.1168198838.5262000.jarekj@webmail.amu.edu.pl>
+Message-ID: <Pine.LNX.4.44.0701072113520.6979-100000@reclus.nhh.no>
+
+On Sun, 7 Jan 2007 jarekj@amu.edu.pl wrote:
+
+> 
+> Carlos!
+> 
+> I mentioned it two weeks ago!
+
+GDAL 1.4.0 was released 6 January 2007 13:10:21 -0500, so early evening
+CET yesterday. No mention reached me (please do write directly to the
+package maintainer in such cases, mailing lists can be subject to
+back-ups). rgdal has tracked GDAL cvs, and I am now looking at the issue,
+which I do not consider critical - anyone wanting to be on the bleeding
+edge has to be prepared to handle these slippages from time to time.
+
+If you have a working patch (that works for both 1.3.* and 1.4.0), I would 
+be grateful. What you propose below is not acceptable, because both have 
+to be accommodated.
+
+Roger
+
+> 
+> It it effect of simple configure check test wchich test only if gdal is
+> of version 1.3.x
+> 
+> to solve it:
+> download rgdal to local computer,
+> unpack tar package,
+> edit cofigure, go to line 1334,
+> change REQ_GDAL from "1.3" to "1.4"),
+> pack it again (name must be the same!),
+> and istall extension with R CMD INSTALL 'rgdalxxxx"
+> 
+> it had help on my computer (btw, on fresh edgy be prepered for some
+> surprises with nviz)
+> 
+> btw2: rgdal maitainer shall change configure.in file to maintain both
+> 1.3.x and 1.4.x gdal wersion imediatelly
+> 
+> regards
+> Jarek
+> 
+> 7/1/2007, ""Carlos \"Gu?no\" Grohmann"
+> carlos.grohmann@gmail.com"
+> <"=?ISO-8859-1?Q?Carlos_\"Gu=E2no\"_Grohmann?="
+> carlos.grohmann@gmail.com> napisa?/a:
+> 
+> >Hello all
+> >I have just made a fresh install, using Ubuntu Feisty for upgrade, so
+> >now I have GDAL 1.4.0 and R 2.4.1. when I tryed to install rgdal, I
+> >get this error:
+> >
+> >* Installing *source* package 'rgdal' ...
+> >gdal-config: gdal-config
+> >GDAL version 1.4.0 found ...
+> >For building this version, at least GDAL version 1.3.1 is required.
+> >ERROR: configuration failed for package 'rgdal'
+> >** Removing '/usr/local/lib/R/site-library/rgdal'
+> >
+> >
+> >I don't get it. If my version is higher than the required one, why it
+> >doesn't work?
+> >
+> >Carlos
+> >
+> >
+> >
+> >--
+> >+-----------------------------------------------------------+
+> >              Carlos Henrique Grohmann - Guano
+> >  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+> >Linux User #89721  - carlos dot grohmann at gmail dot com
+> >+-----------------------------------------------------------+
+> >_________________
+> >"Good morning, doctors. I have taken the liberty of removing Windows
+> >95 from my hard drive."
+> >--The winning entry in a "What were HAL's first words" contest judged
+> >by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+> >
+> >_______________________________________________
+> >statsgrass mailing list
+> >statsgrass@grass.itc.it
+> >http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+
+From Roger.Bivand at nhh.no  Sun Jan  7 16:32:01 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] rgdal doesn't work with GDAL 1.4.0
+In-Reply-To: <Pine.LNX.4.44.0701072113520.6979-100000@reclus.nhh.no>
+Message-ID: <Pine.LNX.4.44.0701072229460.6979-100000@reclus.nhh.no>
+
+On Sun, 7 Jan 2007, Roger Bivand wrote:
+
+> On Sun, 7 Jan 2007 jarekj@amu.edu.pl wrote:
+> 
+> > 
+> > Carlos!
+> > 
+> > I mentioned it two weeks ago!
+> 
+> GDAL 1.4.0 was released 6 January 2007 13:10:21 -0500, so early evening
+> CET yesterday. No mention reached me (please do write directly to the
+> package maintainer in such cases, mailing lists can be subject to
+> back-ups). rgdal has tracked GDAL cvs, and I am now looking at the issue,
+> which I do not consider critical - anyone wanting to be on the bleeding
+> edge has to be prepared to handle these slippages from time to time.
+> 
+> If you have a working patch (that works for both 1.3.* and 1.4.0), I would 
+> be grateful. What you propose below is not acceptable, because both have 
+> to be accommodated.
+
+Replacing configure and configure.in from:
+
+http://rgdal.cvs.sourceforge.net/rgdal/rgdal/
+
+or checking out the current CVS version from sourceforge will resolve the 
+issue. rgdal 0.5-5 will be released to CRAN when a Windows version of GDAL 
+1.4.0 has been built and checked (several days).
+
+Roger
+
+> 
+> Roger
+> 
+> > 
+> > It it effect of simple configure check test wchich test only if gdal is
+> > of version 1.3.x
+> > 
+> > to solve it:
+> > download rgdal to local computer,
+> > unpack tar package,
+> > edit cofigure, go to line 1334,
+> > change REQ_GDAL from "1.3" to "1.4"),
+> > pack it again (name must be the same!),
+> > and istall extension with R CMD INSTALL 'rgdalxxxx"
+> > 
+> > it had help on my computer (btw, on fresh edgy be prepered for some
+> > surprises with nviz)
+> > 
+> > btw2: rgdal maitainer shall change configure.in file to maintain both
+> > 1.3.x and 1.4.x gdal wersion imediatelly
+> > 
+> > regards
+> > Jarek
+> > 
+> > 7/1/2007, ""Carlos \"Gu?no\" Grohmann"
+> > carlos.grohmann@gmail.com"
+> > <"=?ISO-8859-1?Q?Carlos_\"Gu=E2no\"_Grohmann?="
+> > carlos.grohmann@gmail.com> napisa?/a:
+> > 
+> > >Hello all
+> > >I have just made a fresh install, using Ubuntu Feisty for upgrade, so
+> > >now I have GDAL 1.4.0 and R 2.4.1. when I tryed to install rgdal, I
+> > >get this error:
+> > >
+> > >* Installing *source* package 'rgdal' ...
+> > >gdal-config: gdal-config
+> > >GDAL version 1.4.0 found ...
+> > >For building this version, at least GDAL version 1.3.1 is required.
+> > >ERROR: configuration failed for package 'rgdal'
+> > >** Removing '/usr/local/lib/R/site-library/rgdal'
+> > >
+> > >
+> > >I don't get it. If my version is higher than the required one, why it
+> > >doesn't work?
+> > >
+> > >Carlos
+> > >
+> > >
+> > >
+> > >--
+> > >+-----------------------------------------------------------+
+> > >              Carlos Henrique Grohmann - Guano
+> > >  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+> > >Linux User #89721  - carlos dot grohmann at gmail dot com
+> > >+-----------------------------------------------------------+
+> > >_________________
+> > >"Good morning, doctors. I have taken the liberty of removing Windows
+> > >95 from my hard drive."
+> > >--The winning entry in a "What were HAL's first words" contest judged
+> > >by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+> > >
+> > >_______________________________________________
+> > >statsgrass mailing list
+> > >statsgrass@grass.itc.it
+> > >http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From Roger.Bivand at nhh.no  Sun Jan 14 16:27:57 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] spatstat to grass
+In-Reply-To: <200701052127.13999.jarekj@amu.edu.pl>
+Message-ID: <Pine.LNX.4.44.0701142225380.26037-100000@reclus.nhh.no>
+
+On Fri, 5 Jan 2007, Jarek Jasiewicz wrote:
+
+> Hi
+> My new problem: how to simply convert obiect of class im (spatstat) to 
+> SpatialGridDataFrame (sp) to put it to grass.
+> I found im maptools packages as.ppp function to convert spatial sp obiects to 
+> spatstat (ppp) and now I'm looking for function to convert it back. 
+> It seems that I know how to do manualy (little works), but If there is 
+> something tool do to it autoimaticaly, I will be welcome
+
+Thanks for an interesting question. For SpatialGridDataFrame to im, these 
+work, and can be packaged:
+
+library(maptools)
+library(spatstat)
+x <- readAsciiGrid(system.file("grids/test.ag", package="maptools")[1])
+image(x)
+xi <- sp:::as.image.SpatialGridDataFrame(x)
+im_x <- im(t(xi$z), xcol=xi$x, yrow=xi$y)
+plot(im_x)
+
+and I'm working on the reverse wrapper.
+
+Sorry not to have replied sooner - if you have ideas please share them.
+
+Best wishes,
+
+Roger
+
+> 
+> Jarek
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From Roger.Bivand at nhh.no  Mon Jan 15 14:30:57 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] spatstat to grass
+In-Reply-To: <Pine.LNX.4.44.0701142225380.26037-100000@reclus.nhh.no>
+Message-ID: <Pine.LNX.4.44.0701152026240.27224-200000@reclus.nhh.no>
+
+On Sun, 14 Jan 2007, Roger Bivand wrote:
+
+> On Fri, 5 Jan 2007, Jarek Jasiewicz wrote:
+> 
+> > Hi
+> > My new problem: how to simply convert obiect of class im (spatstat) to 
+> > SpatialGridDataFrame (sp) to put it to grass.
+> > I found im maptools packages as.ppp function to convert spatial sp obiects to 
+> > spatstat (ppp) and now I'm looking for function to convert it back. 
+> > It seems that I know how to do manualy (little works), but If there is 
+> > something tool do to it autoimaticaly, I will be welcome
+> 
+> Thanks for an interesting question. For SpatialGridDataFrame to im, these 
+> work, and can be packaged:
+> 
+> library(maptools)
+> library(spatstat)
+> x <- readAsciiGrid(system.file("grids/test.ag", package="maptools")[1])
+> image(x)
+> xi <- sp:::as.image.SpatialGridDataFrame(x)
+> im_x <- im(t(xi$z), xcol=xi$x, yrow=xi$y)
+> plot(im_x)
+> 
+> and I'm working on the reverse wrapper.
+> 
+> Sorry not to have replied sooner - if you have ideas please share them.
+
+I've attached a file for source()ing, with object x as above and example:
+
+source("as_im.R")
+xi2 <- as(x, "im") # like the as.image method, it takes the first column;
+                   # drop other columns first if need be
+plot(xi2)
+x2 <- as(xi2, "SpatialGridDataFrame") # based on the method for masks
+image(x2, axes=TRUE)
+
+Please let me know if this does what you need. I'll probably add it to 
+maptools for the next release.
+
+Best wishes,
+
+Roger
+
+> 
+> Best wishes,
+> 
+> Roger
+> 
+> > 
+> > Jarek
+> > 
+> > _______________________________________________
+> > statsgrass mailing list
+> > statsgrass@grass.itc.it
+> > http://grass.itc.it/mailman/listinfo/statsgrass
+> > 
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+-------------- next part --------------
+if (!isClass("im"))
+    setClass("im")
+
+as.SpatialGridDataFrame.im = function(from) {
+    require(spatstat)
+    offset = c(from$xrange[1] + 0.5 * from$xstep, from$yrange[1] + 
+        0.5 * from$ystep)
+    cellsize = c(diff(from$xrange)/from$dim[2], diff(from$yrange)/from$dim[1])
+    dim = c(from$dim[2], from$dim[1])
+    gt = GridTopology(offset, cellsize, dim)
+    m = t(from$v[nrow(from$v):1,])
+    data = data.frame(v = as.vector(m))
+    SpatialGridDataFrame(gt, data)
+}
+setAs("im", "SpatialGridDataFrame", as.SpatialGridDataFrame.im)
+
+
+as.im.SpatialGridDataFrame = function(from) {
+    require(spatstat)
+    xi <- sp:::as.image.SpatialGridDataFrame(from)
+    im(t(xi$z), xcol=xi$x, yrow=xi$y)
+}
+setAs("SpatialGridDataFrame", "im", as.im.SpatialGridDataFrame)
+
+
+From jarekj at amu.edu.pl  Mon Jan 22 14:49:16 2007
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] gstat: problem with prediction value at point location
+Message-ID: <45B5153C.7010200@amu.edu.pl>
+
+Hi
+when I tested prediction values kirging result I found that values at 
+pixel exactly at point location has the same values as points. It gives 
+that in points appear thin peaks with values strongly different from 
+neigbours. It looks like gstat do not use prediction values but used 
+exact values.
+Variogram I used had the nugget
+
+Jarek
+
+
+From e.pebesma at geo.uu.nl  Mon Jan 22 15:11:25 2007
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] gstat: problem with prediction value at point
+	location
+In-Reply-To: <45B5153C.7010200@amu.edu.pl>
+References: <45B5153C.7010200@amu.edu.pl>
+Message-ID: <45B51A6D.5090503@geo.uu.nl>
+
+This is a well-known property of kriging if locations coincide exactly: 
+if measured, the best estimate is the measurement itself. It's also 
+cause of the problem that you can't have duplicate observations in 
+kriging. Even with a nugget, gamma(0)=0. You may want to shift your 
+points or your grid e.g. a few centimeters to get rid of it.
+--
+Edzer
+
+Jarek Jasiewicz wrote:
+> Hi
+> when I tested prediction values kirging result I found that values at 
+> pixel exactly at point location has the same values as points. It 
+> gives that in points appear thin peaks with values strongly different 
+> from neigbours. It looks like gstat do not use prediction values but 
+> used exact values.
+> Variogram I used had the nugget
+>
+> Jarek
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+From jarekj at amu.edu.pl  Tue Jan 23 02:25:27 2007
+From: jarekj at amu.edu.pl (=?ISO-8859-2?Q?Jaros=B3aw_Jasiewicz?=)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] gstat: problem with prediction value at point
+	location
+In-Reply-To: <45B51A6D.5090503@geo.uu.nl>
+References: <45B5153C.7010200@amu.edu.pl> <45B51A6D.5090503@geo.uu.nl>
+Message-ID: <45B5B867.2010106@amu.edu.pl>
+
+Edzer J. Pebesma napisa?(a):
+> This is a well-known property of kriging if locations coincide 
+> exactly: if measured, the best estimate is the measurement itself. 
+Hmm. yes and no. As I remember form other program (like geostatistic 
+analist in arc info) in point value wasn't exact. the difference between 
+exact and predicted values in point location were used to calculate the 
+RMS total (I can be wrong here, I didn't used Arc Info for over 2 years) 
+before final calculation.
+
+I I attached samples, how it looks like with point location.
+
+It was found  during disscution when I presended some data. I was asked 
+about RMS Total for my prediction (in arc info mode  - as sum of 
+differences between exact and predicted values in point location). I 
+tried to do this with sampling points at predicted map. In that way the 
+RMS Total was 0!. I consult result with others and it seems variogram is 
+OK,
+(it was automatically fitted expotential vaiogram, for gaussian 
+variogram result was worse).
+> It's also cause of the problem that you can't have duplicate 
+> observations in kriging. Even with a nugget, gamma(0)=0. You may want 
+> to shift your points or your grid e.g. a few centimeters to get rid of 
+> it.
+it gives the same results
+ regards
+Jarek
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: krig.jpg
+Type: image/jpeg
+Size: 2159 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20070123/08c56f0f/krig.jpg
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: krigp.jpg
+Type: image/jpeg
+Size: 8646 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20070123/08c56f0f/krigp.jpg
+From e.pebesma at geo.uu.nl  Tue Jan 23 02:30:17 2007
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] gstat: problem with prediction value at point
+	location
+In-Reply-To: <45B5B867.2010106@amu.edu.pl>
+References: <45B5153C.7010200@amu.edu.pl> <45B51A6D.5090503@geo.uu.nl>
+	<45B5B867.2010106@amu.edu.pl>
+Message-ID: <45B5B989.1010002@geo.uu.nl>
+
+My guess is that the technique you're referring to (and used by 
+Geostatistical Analyst, afaik) is [kriging in] cross 
+validation---observations are left out to obtain a kriging estimate for 
+which it makes sense to compare it with the observation. Definitely 
+distinct from kriging, which does not leave observations out.
+--
+Edzer
+
+Jaros?aw Jasiewicz wrote:
+> Edzer J. Pebesma napisa?(a):
+>> This is a well-known property of kriging if locations coincide 
+>> exactly: if measured, the best estimate is the measurement itself. 
+> Hmm. yes and no. As I remember form other program (like geostatistic 
+> analist in arc info) in point value wasn't exact. the difference 
+> between exact and predicted values in point location were used to 
+> calculate the RMS total (I can be wrong here, I didn't used Arc Info 
+> for over 2 years) before final calculation.
+>
+> I I attached samples, how it looks like with point location.
+>
+> It was found  during disscution when I presended some data. I was 
+> asked about RMS Total for my prediction (in arc info mode  - as sum of 
+> differences between exact and predicted values in point location). I 
+> tried to do this with sampling points at predicted map. In that way 
+> the RMS Total was 0!. I consult result with others and it seems 
+> variogram is OK,
+> (it was automatically fitted expotential vaiogram, for gaussian 
+> variogram result was worse).
+>> It's also cause of the problem that you can't have duplicate 
+>> observations in kriging. Even with a nugget, gamma(0)=0. You may want 
+>> to shift your points or your grid e.g. a few centimeters to get rid 
+>> of it.
+> it gives the same results
+> regards
+> Jarek
+>
+>
+> ------------------------------------------------------------------------
+>
+>
+> ------------------------------------------------------------------------
+>
+
+
+From Roger.Bivand at nhh.no  Tue Jan 23 07:10:42 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] gstat: problem with prediction value at point
+	location
+In-Reply-To: <45B5B989.1010002@geo.uu.nl>
+Message-ID: <Pine.LNX.4.44.0701231309080.32198-100000@reclus.nhh.no>
+
+On Tue, 23 Jan 2007, Edzer J. Pebesma wrote:
+
+> My guess is that the technique you're referring to (and used by 
+> Geostatistical Analyst, afaik) is [kriging in] cross 
+> validation---observations are left out to obtain a kriging estimate for 
+> which it makes sense to compare it with the observation. Definitely 
+> distinct from kriging, which does not leave observations out.
+
+When run head to head, gstat CV LOO (leave one out) on trend surfaces and 
+GA give the same results, so, yes, GA seems by default to do LOO CV.
+
+Roger
+
+> --
+> Edzer
+> 
+> Jaros?aw Jasiewicz wrote:
+> > Edzer J. Pebesma napisa?(a):
+> >> This is a well-known property of kriging if locations coincide 
+> >> exactly: if measured, the best estimate is the measurement itself. 
+> > Hmm. yes and no. As I remember form other program (like geostatistic 
+> > analist in arc info) in point value wasn't exact. the difference 
+> > between exact and predicted values in point location were used to 
+> > calculate the RMS total (I can be wrong here, I didn't used Arc Info 
+> > for over 2 years) before final calculation.
+> >
+> > I I attached samples, how it looks like with point location.
+> >
+> > It was found  during disscution when I presended some data. I was 
+> > asked about RMS Total for my prediction (in arc info mode  - as sum of 
+> > differences between exact and predicted values in point location). I 
+> > tried to do this with sampling points at predicted map. In that way 
+> > the RMS Total was 0!. I consult result with others and it seems 
+> > variogram is OK,
+> > (it was automatically fitted expotential vaiogram, for gaussian 
+> > variogram result was worse).
+> >> It's also cause of the problem that you can't have duplicate 
+> >> observations in kriging. Even with a nugget, gamma(0)=0. You may want 
+> >> to shift your points or your grid e.g. a few centimeters to get rid 
+> >> of it.
+> > it gives the same results
+> > regards
+> > Jarek
+> >
+> >
+> > ------------------------------------------------------------------------
+> >
+> >
+> > ------------------------------------------------------------------------
+> >
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From jarekj at amu.edu.pl  Tue Jan 23 09:11:57 2007
+From: jarekj at amu.edu.pl (=?UTF-8?B?SmFyb3PFgmF3IEphc2lld2ljeg==?=)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] gstat: problem with prediction value at point
+	location
+In-Reply-To: <Pine.LNX.4.44.0701231309080.32198-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0701231309080.32198-100000@reclus.nhh.no>
+Message-ID: <45B617AD.20001@amu.edu.pl>
+
+Roger Bivand napisa?(a):
+> On Tue, 23 Jan 2007, Edzer J. Pebesma wrote:
+>
+>   
+>> My guess is that the technique you're referring to (and used by 
+>> Geostatistical Analyst, afaik) is [kriging in] cross 
+>> validation---observations are left out to obtain a kriging estimate for 
+>> which it makes sense to compare it with the observation. Definitely 
+>> distinct from kriging, which does not leave observations out.
+>>     
+>
+> When run head to head, gstat CV LOO (leave one out) on trend surfaces and 
+> GA give the same results, so, yes, GA seems by default to do LOO CV.
+>
+> Roger
+>
+>   
+Sorry I didn't uderstand that...
+Jarek
+
+
+From Roger.Bivand at nhh.no  Tue Jan 23 09:38:51 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] gstat: problem with prediction value at point
+	location
+In-Reply-To: <45B617AD.20001@amu.edu.pl>
+Message-ID: <Pine.LNX.4.44.0701231533510.32268-100000@reclus.nhh.no>
+
+On Tue, 23 Jan 2007, [UTF-8] Jaros??aw Jasiewicz wrote:
+
+> Roger Bivand napisa??(a):
+> > On Tue, 23 Jan 2007, Edzer J. Pebesma wrote:
+> >
+> >   
+> >> My guess is that the technique you're referring to (and used by 
+> >> Geostatistical Analyst, afaik) is [kriging in] cross 
+> >> validation---observations are left out to obtain a kriging estimate for 
+> >> which it makes sense to compare it with the observation. Definitely 
+> >> distinct from kriging, which does not leave observations out.
+> >>     
+> >
+> > When run head to head, gstat CV LOO (leave one out) on trend surfaces and 
+> > GA give the same results, so, yes, GA seems by default to do LOO CV.
+
+Leave-one-out cross validation is when you make a prediction for data 
+point j, using the data for point i=1,...,n; i!=j (leave out j). That 
+means that you can validly compare the observed value at j with its 
+prediction made using all the rest of the data (and the same variogram 
+model for all cases). Then you do RMSE on the LOO CV residuals. See 
+?gstat.cv in the gstat package.
+
+Roger
+
+> >
+> > Roger
+> >
+> >   
+> Sorry I didn't uderstand that...
+> Jarek
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From jarekj at amu.edu.pl  Tue Jan 23 12:08:54 2007
+From: jarekj at amu.edu.pl (Jarek Jasiewicz)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] gstat: problem with prediction value at point
+	location
+In-Reply-To: <Pine.LNX.4.44.0701231533510.32268-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0701231533510.32268-100000@reclus.nhh.no>
+Message-ID: <45B64126.5090801@amu.edu.pl>
+
+Roger Bivand napisa?(a):
+> On Tue, 23 Jan 2007, [UTF-8] Jaros??aw Jasiewicz wrote:
+>
+>   
+>> Roger Bivand napisa??(a):
+>>     
+>>> On Tue, 23 Jan 2007, Edzer J. Pebesma wrote:
+>>>
+>>>   
+>>>       
+>>>> My guess is that the technique you're referring to (and used by 
+>>>> Geostatistical Analyst, afaik) is [kriging in] cross 
+>>>> validation---observations are left out to obtain a kriging estimate for 
+>>>> which it makes sense to compare it with the observation. Definitely 
+>>>> distinct from kriging, which does not leave observations out.
+>>>>     
+>>>>         
+>>> When run head to head, gstat CV LOO (leave one out) on trend surfaces and 
+>>> GA give the same results, so, yes, GA seems by default to do LOO CV.
+>>>       
+>
+> Leave-one-out cross validation is when you make a prediction for data 
+> point j, using the data for point i=1,...,n; i!=j (leave out j). That 
+> means that you can validly compare the observed value at j with its 
+> prediction made using all the rest of the data (and the same variogram 
+> model for all cases). Then you do RMSE on the LOO CV residuals. See 
+> ?gstat.cv in the gstat package.
+>
+> Roger
+>
+>   
+>>> Roger
+>>>
+>>>   
+>>>       
+>> Sorry I didn't uderstand that...
+>> Jarek
+>>
+>>     
+>
+>   
+thanks, all clear
+reagrds
+Jarek
+
+
+From carlos.grohmann at gmail.com  Tue Jan 23 16:14:16 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] gstat: witdh tolerance for non-regular space points?
+Message-ID: <bd07447b0701231314t6735621dx67fb783f5ec3aefe@mail.gmail.com>
+
+I was doing some tests on interpolating DEM data, and since gstat is
+giving errors in lat-long regions, I decided to convert the DEM to
+vector points, project the points to UTM and then kriging the
+projected points. The thing is that now my points are no longer
+regularly spaced, (as in square cells) but like rectangular cells.
+I was thinking, can I use some kind of tolerance for the width
+distance in variogram() function? with this I would be able to use all
+the points in my dataset, because if I use a fixed width, some of the
+points won't be used.
+
+Carlos
+
+
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+
+From jgarcia at ija.csic.es  Thu Jan 25 08:14:40 2007
+From: jgarcia at ija.csic.es (javier garcia-pintado)
+Date: Wed Nov 14 16:58:16 2007
+Subject: [STATSGRASS] semivariogram as local variance estimator
+Message-ID: <45B8AD40.9000808@ija.csic.es>
+
+Hello,
+
+Could you indicate me about any reference with a procedure (if exists) available to estimate a within block variance on base of a semivariogram?:
+ 
+Lets say that we obtain a semivariogram with a specific support size (e.g. each support point representing a 100x100m cell).
+Is it posible to use the semivariogram in someway as an unbiased estimator of the expected variance of the 10x10m subcells (100 cells) contained in any of the coarse scale 100x100m cells in the grid?  
+
+Wishes,
+Javier
+
+PD:  Jon, this is about the point related to "uncertainties associated
+to estimates" I told you I still need to resolve about rainfall estimates.
+     Best regards.
+
+-- 
+Javier Garc?a-Pintado
+Institute of Earth Sciences Jaume Almera (CSIC)
+Lluis Sole Sabaris s/n, 08028 Barcelona
+Phone: +34 934095410
+Fax:   +34 934110012
+e-mail:jgarcia@ija.csic.es 
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: jgarcia.vcf
+Type: text/x-vcard
+Size: 337 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20070125/bed01ded/jgarcia.vcf

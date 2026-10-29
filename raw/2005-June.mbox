@@ -1,0 +1,2051 @@
+From Thomas.Adams at noaa.gov  Fri Jun  3 07:58:29 2005
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] GSTAT 2.4.4 compile problem with GRASS 6.0.0
+In-Reply-To: <4237E1F0.9000706@geog.uu.nl>
+References: <Pine.LNX.4.44.0503152141320.3419-100000@reclus.nhh.no> <4237E1F0.9000706@geog.uu.nl>
+Message-ID: <42A045E5.4090400@noaa.gov>
+
+Edzer ,
+
+I attempted to build gstat 2.4.4 on Mac OS X 10.4 with GRASS support. I 
+get an error during the link phase of the build:
+
+ld: -L: directory name missing
+make[1]: *** [gstat] Error 1
+make: *** [src/gstat] Error 2
+
+Below is more detail of the configure process and the final steps 
+leading up to the error. I'm attempting to link against Lorenzo 
+Moretti's GRASS 6.0.0 build for Mac OS X. When I run make without GRASS 
+support, I get no errors.
+
+Regards,
+Tom
+
+
+
+[Thomas-Adamss-Computer:FireWire58600/Geostatistics/gstat-2.4.4]  
+teaiii% ./configure --with-grass=/Applications/Grass/grass60.app/ 
+Contents/Resources/grass-6.0.0
+checking for gcc... gcc
+checking for C compiler default output file name... a.out
+checking whether the C compiler works... yes
+checking whether we are cross compiling... no
+checking for suffix of executables...
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether gcc accepts -g... yes
+checking for gcc option to accept ANSI C... none needed
+checking for ranlib... ranlib
+checking for a BSD-compatible install... /usr/bin/install -c
+checking how to run the C preprocessor... gcc -E
+checking for egrep... grep -E
+checking for ANSI C header files... yes
+checking for gcc option to accept ANSI C...
+checking for sys/types.h... yes
+checking for sys/stat.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for memory.h... yes
+checking for strings.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for unistd.h... yes
+checking for function prototypes... yes
+checking for an ANSI C-conforming const... yes
+checking for flex... flex
+checking for yywrap in -lfl... yes
+checking lex output file root... lex.yy
+checking whether yytext is a pointer... yes
+checking for bison... bison -y
+checking stat.h usability... no
+checking stat.h presence... no
+checking for stat.h... no
+checking for unistd.h... yes
+checking getopt.h usability... yes
+checking getopt.h presence... yes
+checking for getopt.h... yes
+checking whether time.h and sys/time.h may both be included... yes
+checking for working memcmp... yes
+checking for vprintf... yes
+checking for _doprnt... no
+checking for strstr... yes
+checking for strtod... yes
+checking for strtol... yes
+checking for popen... yes
+checking for drand48... yes
+checking for gettimeofday... yes
+checking for snprintf... yes
+checking for vsnprintf... yes
+checking for getopt_long... yes
+checking for getopt... yes
+checking whether byte ordering is bigendian... yes
+checking for main in -lncurses... yes
+checking for gdImagePng in -lgd... no
+checking for gdImageGif in -lgd... no
+checking for main in -lnetcdf... yes
+checking for GDALAllRegister in -lgdal... no
+checking for QRfactor in -lmeschach... no
+checking for MgetVersion in -lcsf... no
+checking for G_gisinit in -lgrass_gis... no
+checking for G_gisinit in -lgis... no
+checking for main in -lgsl... no
+configure: creating ./config.status
+config.status: creating makefile
+config.status: creating src/makefile
+config.status: creating doc/tex/makefile
+config.status: creating src/config.h
+
+
+
+gcc -c -g -O2 -I../include -I/usr/include/ncurses -I/Applications/ 
+Grass/grass60.app/Contents/Resources/grass-6.0.0/include - 
+DHAVE_CONFIG_H utils.c
+gcc -c -g -O2 -I../include -I/usr/include/ncurses -I/Applications/ 
+Grass/grass60.app/Contents/Resources/grass-6.0.0/include - 
+DHAVE_CONFIG_H vario.c
+gcc -c -g -O2 -I../include -I/usr/include/ncurses -I/Applications/ 
+Grass/grass60.app/Contents/Resources/grass-6.0.0/include - 
+DHAVE_CONFIG_H vario_fn.c
+gcc -c -g -O2 -I../include -I/usr/include/ncurses -I/Applications/ 
+Grass/grass60.app/Contents/Resources/grass-6.0.0/include - 
+DHAVE_CONFIG_H vario_io.c
+gcc -c -g -O2 -I../include -I/usr/include/ncurses -I/Applications/ 
+Grass/grass60.app/Contents/Resources/grass-6.0.0/include - 
+DHAVE_CONFIG_H writecmd.c
+gcc -c -g -O2 -I../include -I/usr/include/ncurses -I/Applications/ 
+Grass/grass60.app/Contents/Resources/grass-6.0.0/include - 
+DHAVE_CONFIG_H xvalid.c
+gcc -o gstat block.o data.o direct.o fig.o fit.o getest.o gls.o  
+glvars.o gstat.o lex.o lm.o map2fig.o map2gd.o mapio.o maputils.o  
+msim.o nsearch.o ossfim.o palet.o parse.o plot.o polygon.o pqueue.o  
+predict.o random.o read.o reml.o report.o sample.o select.o sem.o  
+sem_main.o sim.o stat.o ui.o userio.o utils.o vario.o vario_fn.o  
+vario_io.o writecmd.o xvalid.o  -flat_namespace -L../lib  -lmeschach - 
+lnetcdf  -lncurses -L /Applications/Grass/grass60.app/Contents/ 
+Resources/grass-6.0.0/lib /usr/local/grass5/lib -lz -lm
+ld: -L: directory name missing
+make[1]: *** [gstat] Error 1
+make: *** [src/gstat] Error 2
+
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20050603/bad07adb/attachment.html
+From hamish_nospam at yahoo.com  Sat Jun  4 01:42:57 2005
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] GSTAT 2.4.4 compile problem with GRASS 6.0.0
+In-Reply-To: <42A045E5.4090400@noaa.gov>
+References: <Pine.LNX.4.44.0503152141320.3419-100000@reclus.nhh.no>
+	<4237E1F0.9000706@geog.uu.nl>
+	<42A045E5.4090400@noaa.gov>
+Message-ID: <20050604174257.75e5a85d.hamish_nospam@yahoo.com>
+
+> gcc -o gstat block.o data.o direct.o fig.o fit.o getest.o gls.o  
+> glvars.o gstat.o lex.o lm.o map2fig.o map2gd.o mapio.o maputils.o  
+> msim.o nsearch.o ossfim.o palet.o parse.o plot.o polygon.o pqueue.o  
+> predict.o random.o read.o reml.o report.o sample.o select.o sem.o  
+> sem_main.o sim.o stat.o ui.o userio.o utils.o vario.o vario_fn.o  
+> vario_io.o writecmd.o xvalid.o  -flat_namespace -L../lib  -lmeschach - 
+> lnetcdf  -lncurses -L /Applications/Grass/grass60.app/Contents/ 
+> Resources/grass-6.0.0/lib /usr/local/grass5/lib -lz -lm
+> ld: -L: directory name missing
+> make[1]: *** [gstat] Error 1
+> make: *** [src/gstat] Error 2
+
+
+The problem is this:
+
+> -L /Applications/Grass/grass60.app/Contents/ 
+> Resources/grass-6.0.0/lib /usr/local/grass5/lib
+
+
+No whitespace after -L. Needs to look something like this:
+
+-L/Applications/Grass/grass60.app/Contents/Resources/grass-6.0.0/lib
+-L/usr/local/grass5/lib
+
+as "-L../lib" just before.
+
+
+
+Hamish
+
+
+From Thomas.Adams at noaa.gov  Sat Jun  4 06:06:49 2005
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] GSTAT 2.4.4 compile problem with GRASS 6.0.0
+In-Reply-To: <20050604174257.75e5a85d.hamish_nospam@yahoo.com>
+References: <Pine.LNX.4.44.0503152141320.3419-100000@reclus.nhh.no>	<4237E1F0.9000706@geog.uu.nl>	<42A045E5.4090400@noaa.gov> <20050604174257.75e5a85d.hamish_nospam@yahoo.com>
+Message-ID: <42A17D39.9080102@noaa.gov>
+
+Hamish,
+
+Thanks! Odd, since the make file is generated by 'configure'.
+
+Tom
+
+
+Hamish wrote:
+
+>>gcc -o gstat block.o data.o direct.o fig.o fit.o getest.o gls.o  
+>>glvars.o gstat.o lex.o lm.o map2fig.o map2gd.o mapio.o maputils.o  
+>>msim.o nsearch.o ossfim.o palet.o parse.o plot.o polygon.o pqueue.o  
+>>predict.o random.o read.o reml.o report.o sample.o select.o sem.o  
+>>sem_main.o sim.o stat.o ui.o userio.o utils.o vario.o vario_fn.o  
+>>vario_io.o writecmd.o xvalid.o  -flat_namespace -L../lib  -lmeschach - 
+>>lnetcdf  -lncurses -L /Applications/Grass/grass60.app/Contents/ 
+>>Resources/grass-6.0.0/lib /usr/local/grass5/lib -lz -lm
+>>ld: -L: directory name missing
+>>make[1]: *** [gstat] Error 1
+>>make: *** [src/gstat] Error 2
+>>    
+>>
+>
+>
+>The problem is this:
+>
+>  
+>
+>>-L /Applications/Grass/grass60.app/Contents/ 
+>>Resources/grass-6.0.0/lib /usr/local/grass5/lib
+>>    
+>>
+>
+>
+>No whitespace after -L. Needs to look something like this:
+>
+>-L/Applications/Grass/grass60.app/Contents/Resources/grass-6.0.0/lib
+>-L/usr/local/grass5/lib
+>
+>as "-L../lib" just before.
+>
+>
+>
+>Hamish
+>  
+>
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20050604/da265de8/attachment.html
+From temiz at deprem.gov.tr  Fri Jun 10 04:53:25 2005
+From: temiz at deprem.gov.tr (orkun)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] more  about cross validation
+Message-ID: <42A95505.3030606@deprem.gov.tr>
+
+hello
+
+I used  v.surf.rst and produced cross validation map.
+But I want to  know more  about cross validation.
+
+any document,link, etc related to grass usage or
+general usage will be useful
+
+
+thanks in advance
+
+Ahmet Temiz
+
+______________________________________
+XamimeLT - installed on mailserver for domain @deprem.gov.tr
+Queries to: postmaster@deprem.gov.tr
+______________________________________
+The views and opinions expressed in this e-mail message are the sender's own
+and do not necessarily represent the views and the opinions of Earthquake Research Dept.
+of General Directorate of Disaster Affairs.
+
+Bu e-postadaki fikir ve gorusler gonderenin sahsina ait olup, yasal olarak T.C.
+B.I.B. Afet Isleri Gn.Mud. Deprem Arastirma Dairesi'ni baglayici nitelikte degildir.
+
+
+From temiz at deprem.gov.tr  Fri Jun 10 04:57:41 2005
+From: temiz at deprem.gov.tr (orkun)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] using cross validation values
+Message-ID: <42A95605.3000606@deprem.gov.tr>
+
+hello
+
+I produced cross validation map using  v.surf.rst.
+But I am not sure about how I can use it.
+
+can anyone  tell me what I should do with these values ?
+
+regards
+
+Ahmet Temiz
+
+______________________________________
+XamimeLT - installed on mailserver for domain @deprem.gov.tr
+Queries to: postmaster@deprem.gov.tr
+______________________________________
+The views and opinions expressed in this e-mail message are the sender's own
+and do not necessarily represent the views and the opinions of Earthquake Research Dept.
+of General Directorate of Disaster Affairs.
+
+Bu e-postadaki fikir ve gorusler gonderenin sahsina ait olup, yasal olarak T.C.
+B.I.B. Afet Isleri Gn.Mud. Deprem Arastirma Dairesi'ni baglayici nitelikte degildir.
+
+
+From skouk at geo.aegean.gr  Mon Jun 20 11:04:41 2005
+From: skouk at geo.aegean.gr (S. Koukoulas)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] GSTAT 2.4.5 compile problem with GRASS 6
+Message-ID: <42B6DB09.5080202@geo.aegean.gr>
+
+I get an error when I am trying to compile GSTAT 2.4.5 with the grass 
+option. Any solutions?
+Many thanks in advance
+Sotiris 
+
+
+gcc -o gstat block.o data.o direct.o fig.o fit.o getest.o gls.o glvars.o 
+gstat.o lex.o lm.o map2fig.o map2gd.o mapio.o maputils.o msim.o nsear
+ch.o ossfim.o palet.o parse.o plot.o polygon.o pqueue.o predict.o 
+random.o read.o reml.o report.o sample.o select.o sem.o sem_main.o sim.o sta
+t.o ui.o userio.o utils.o vario.o vario_fn.o vario_io.o writecmd.o 
+xvalid.o  -L../lib  -lmeschach -lnetcdf  -lncurses -lgd -lpng -lz -lgdal -L
+ /usr/local/grass-6.0.0beta2/lib -lgrass_gis -lgrass_datetime 
+-lgrass_sites -lz -lm
+/usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+warning: libgrass_dbmiclient.so, needed by /usr/local/grass-6.0.0be
+ta2/lib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+/usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+warning: libgrass_dbmibase.so, needed by /usr/local/grass-6.0.0beta
+2/lib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+/usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+warning: libgrass_vect.so, needed by /usr/local/grass-6.0.0beta2/li
+b/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+/usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+warning: libgrass_dig2.so, needed by /usr/local/grass-6.0.0beta2/li
+b/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+/usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+warning: libgrass_dgl.so, needed by /usr/local/grass-6.0.0beta2/lib
+/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+/usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+warning: libgrass_rtree.so, needed by /usr/local/grass-6.0.0beta2/l
+ib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+/usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+warning: libgrass_linkm.so, needed by /usr/local/grass-6.0.0beta2/l
+ib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_reset_line'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `db_get_num_rows'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_set_open_level'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_get_field'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_is_3d'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_set_map_name'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `db_init_string'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `db_get_column_sqltype'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_open_old'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `db_open_select_cursor'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_new_cats_struct'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_get_name'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `db_start_driver_open_database'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_get_date'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_write_line'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_close'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `db_get_value_double'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `db_sqltype_to_Ctype'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `db_close_database_shutdown_driver'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `db_get_value_string'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `db_get_column_value'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `db_append_string'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_cat_get'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_read_next_line'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `db_get_column_name'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `db_get_value_int'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_append_point'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_set_date'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_set_comment'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `db_get_table_column'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_cat_set'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `db_fetch'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `db_get_table_number_of_columns'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `db_set_string'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `db_get_cursor_table'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_reset_cats'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_get_comment'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_new_line_struct'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_build'
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+to `Vect_open_new'
+collect2: ld returned 1 exit status
+make[1]: *** [gstat] Error 1
+make[1]: Leaving directory `/local/phome/Installs/gstat-2.4.5/src'
+make: *** [src/gstat] Error 2
+
+
+From Thomas.Adams at noaa.gov  Mon Jun 20 12:27:32 2005
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] GSTAT 2.4.5 compile problem with GRASS 6
+In-Reply-To: <42B6DB09.5080202@geo.aegean.gr>
+References: <42B6DB09.5080202@geo.aegean.gr>
+Message-ID: <42B6EE74.9000400@noaa.gov>
+
+Sotiris,
+
+It looks like the build process does not know where the GRASS libs are 
+located starting just a few lines down:
+
+warning: libgrass_dbmiclient.so, needed by 
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so, not found
+warning: libgrass_vect.so, needed by 
+/usr/local/grass-6.0.0beta2/lib/libgrass_sites.so, not found
+.
+.
+.
+etc.
+
+Tom
+
+
+S. Koukoulas wrote:
+
+>
+> I get an error when I am trying to compile GSTAT 2.4.5 with the grass 
+> option. Any solutions?
+> Many thanks in advance
+> Sotiris
+>
+> gcc -o gstat block.o data.o direct.o fig.o fit.o getest.o gls.o 
+> glvars.o gstat.o lex.o lm.o map2fig.o map2gd.o mapio.o maputils.o 
+> msim.o nsear
+> ch.o ossfim.o palet.o parse.o plot.o polygon.o pqueue.o predict.o 
+> random.o read.o reml.o report.o sample.o select.o sem.o sem_main.o 
+> sim.o sta
+> t.o ui.o userio.o utils.o vario.o vario_fn.o vario_io.o writecmd.o 
+> xvalid.o  -L../lib  -lmeschach -lnetcdf  -lncurses -lgd -lpng -lz 
+> -lgdal -L
+> /usr/local/grass-6.0.0beta2/lib -lgrass_gis -lgrass_datetime 
+> -lgrass_sites -lz -lm
+> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+> warning: libgrass_dbmiclient.so, needed by /usr/local/grass-6.0.0be
+> ta2/lib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+> warning: libgrass_dbmibase.so, needed by /usr/local/grass-6.0.0beta
+> 2/lib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+> warning: libgrass_vect.so, needed by /usr/local/grass-6.0.0beta2/li
+> b/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+> warning: libgrass_dig2.so, needed by /usr/local/grass-6.0.0beta2/li
+> b/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+> warning: libgrass_dgl.so, needed by /usr/local/grass-6.0.0beta2/lib
+> /libgrass_sites.so, not found (try using -rpath or -rpath-link)
+> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+> warning: libgrass_rtree.so, needed by /usr/local/grass-6.0.0beta2/l
+> ib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+> warning: libgrass_linkm.so, needed by /usr/local/grass-6.0.0beta2/l
+> ib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_reset_line'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_num_rows'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_set_open_level'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_get_field'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_is_3d'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_set_map_name'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_init_string'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_column_sqltype'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_open_old'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_open_select_cursor'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_new_cats_struct'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_get_name'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_start_driver_open_database'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_get_date'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_write_line'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_close'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_value_double'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_sqltype_to_Ctype'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_close_database_shutdown_driver'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_value_string'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_column_value'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_append_string'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_cat_get'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_read_next_line'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_column_name'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_value_int'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_append_point'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_set_date'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_set_comment'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_table_column'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_cat_set'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_fetch'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_table_number_of_columns'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_set_string'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_cursor_table'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_reset_cats'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_get_comment'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_new_line_struct'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_build'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_open_new'
+> collect2: ld returned 1 exit status
+> make[1]: *** [gstat] Error 1
+> make[1]: Leaving directory `/local/phome/Installs/gstat-2.4.5/src'
+> make: *** [src/gstat] Error 2
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+
+
+From e.pebesma at geog.uu.nl  Mon Jun 20 12:36:50 2005
+From: e.pebesma at geog.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] GSTAT 2.4.5 compile problem with GRASS 6
+In-Reply-To: <42B6DB09.5080202@geo.aegean.gr>
+References: <42B6DB09.5080202@geo.aegean.gr>
+Message-ID: <42B6F0A2.1090807@geog.uu.nl>
+
+Could you please give us the ./configure command you gave?
+
+Could you try to give the make command in a grass6 session?
+I have had success with this in the past. Recently, I didn't
+succeed with this anymore (for reasons unclear to me; must
+have to do with my memory because I didn't change the grass
+installation inbetween!), but last week I managed with
+
+./configure --with-grass6=PATH
+
+Please report back which ones did, or didn't work.
+
+Best regards,
+--
+Edzer
+
+S. Koukoulas wrote:
+> 
+> I get an error when I am trying to compile GSTAT 2.4.5 with the grass 
+> option. Any solutions?
+> Many thanks in advance
+> Sotiris
+> 
+> gcc -o gstat block.o data.o direct.o fig.o fit.o getest.o gls.o glvars.o 
+> gstat.o lex.o lm.o map2fig.o map2gd.o mapio.o maputils.o msim.o nsear
+> ch.o ossfim.o palet.o parse.o plot.o polygon.o pqueue.o predict.o 
+> random.o read.o reml.o report.o sample.o select.o sem.o sem_main.o sim.o 
+> sta
+> t.o ui.o userio.o utils.o vario.o vario_fn.o vario_io.o writecmd.o 
+> xvalid.o  -L../lib  -lmeschach -lnetcdf  -lncurses -lgd -lpng -lz -lgdal -L
+> /usr/local/grass-6.0.0beta2/lib -lgrass_gis -lgrass_datetime 
+> -lgrass_sites -lz -lm
+> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+> warning: libgrass_dbmiclient.so, needed by /usr/local/grass-6.0.0be
+> ta2/lib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+> warning: libgrass_dbmibase.so, needed by /usr/local/grass-6.0.0beta
+> 2/lib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+> warning: libgrass_vect.so, needed by /usr/local/grass-6.0.0beta2/li
+> b/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+> warning: libgrass_dig2.so, needed by /usr/local/grass-6.0.0beta2/li
+> b/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+> warning: libgrass_dgl.so, needed by /usr/local/grass-6.0.0beta2/lib
+> /libgrass_sites.so, not found (try using -rpath or -rpath-link)
+> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+> warning: libgrass_rtree.so, needed by /usr/local/grass-6.0.0beta2/l
+> ib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+> warning: libgrass_linkm.so, needed by /usr/local/grass-6.0.0beta2/l
+> ib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_reset_line'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_num_rows'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_set_open_level'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_get_field'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_is_3d'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_set_map_name'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_init_string'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_column_sqltype'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_open_old'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_open_select_cursor'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_new_cats_struct'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_get_name'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_start_driver_open_database'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_get_date'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_write_line'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_close'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_value_double'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_sqltype_to_Ctype'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_close_database_shutdown_driver'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_value_string'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_column_value'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_append_string'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_cat_get'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_read_next_line'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_column_name'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_value_int'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_append_point'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_set_date'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_set_comment'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_table_column'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_cat_set'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_fetch'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_table_number_of_columns'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_set_string'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `db_get_cursor_table'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_reset_cats'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_get_comment'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_new_line_struct'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_build'
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined reference 
+> to `Vect_open_new'
+> collect2: ld returned 1 exit status
+> make[1]: *** [gstat] Error 1
+> make[1]: Leaving directory `/local/phome/Installs/gstat-2.4.5/src'
+> make: *** [src/gstat] Error 2
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+From skouk at geo.aegean.gr  Mon Jun 20 12:38:24 2005
+From: skouk at geo.aegean.gr (S. Koukoulas)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] GSTAT 2.4.5 compile problem with GRASS 6
+In-Reply-To: <42B6EE74.9000400@noaa.gov>
+References: <42B6DB09.5080202@geo.aegean.gr> <42B6EE74.9000400@noaa.gov>
+Message-ID: <42B6F100.2000401@geo.aegean.gr>
+
+Thomas et al,
+
+Since my first email I thought that I have actually sorted the problem 
+by using the -grass6 option instead of -grass.
+The "make" finished without apparent errors, but now I get the following 
+message when I run
+gstat -v
+
+sotiris@linux:~>gstat: error while loading shared libraries: 
+libgrass_sites.so: cannot open shared object file: No such file or directory
+
+It is still looking for grass5 libraries where it should not...  I don't 
+have grass5 installed in my system...
+
+Any help would be appreciated
+Sotiris
+
+P.S: gstat 2.4.4 did not work either. When I use the -grass options it 
+can't find the libs, it ignores --grass6 option
+
+
+Thomas Adams wrote:
+
+> Sotiris,
+>
+> It looks like the build process does not know where the GRASS libs are 
+> located starting just a few lines down:
+>
+> warning: libgrass_dbmiclient.so, needed by 
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so, not found
+> warning: libgrass_vect.so, needed by 
+> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so, not found
+> .
+> .
+> .
+> etc.
+>
+> Tom
+>
+>
+> S. Koukoulas wrote:
+>
+>>
+>> I get an error when I am trying to compile GSTAT 2.4.5 with the grass 
+>> option. Any solutions?
+>> Many thanks in advance
+>> Sotiris
+>>
+>> gcc -o gstat block.o data.o direct.o fig.o fit.o getest.o gls.o 
+>> glvars.o gstat.o lex.o lm.o map2fig.o map2gd.o mapio.o maputils.o 
+>> msim.o nsear
+>> ch.o ossfim.o palet.o parse.o plot.o polygon.o pqueue.o predict.o 
+>> random.o read.o reml.o report.o sample.o select.o sem.o sem_main.o 
+>> sim.o sta
+>> t.o ui.o userio.o utils.o vario.o vario_fn.o vario_io.o writecmd.o 
+>> xvalid.o  -L../lib  -lmeschach -lnetcdf  -lncurses -lgd -lpng -lz 
+>> -lgdal -L
+>> /usr/local/grass-6.0.0beta2/lib -lgrass_gis -lgrass_datetime 
+>> -lgrass_sites -lz -lm
+>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>> warning: libgrass_dbmiclient.so, needed by /usr/local/grass-6.0.0be
+>> ta2/lib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>> warning: libgrass_dbmibase.so, needed by /usr/local/grass-6.0.0beta
+>> 2/lib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>> warning: libgrass_vect.so, needed by /usr/local/grass-6.0.0beta2/li
+>> b/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>> warning: libgrass_dig2.so, needed by /usr/local/grass-6.0.0beta2/li
+>> b/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>> warning: libgrass_dgl.so, needed by /usr/local/grass-6.0.0beta2/lib
+>> /libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>> warning: libgrass_rtree.so, needed by /usr/local/grass-6.0.0beta2/l
+>> ib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>> warning: libgrass_linkm.so, needed by /usr/local/grass-6.0.0beta2/l
+>> ib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_reset_line'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `db_get_num_rows'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_set_open_level'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_get_field'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_is_3d'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_set_map_name'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `db_init_string'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `db_get_column_sqltype'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_open_old'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `db_open_select_cursor'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_new_cats_struct'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_get_name'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `db_start_driver_open_database'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_get_date'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_write_line'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_close'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `db_get_value_double'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `db_sqltype_to_Ctype'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `db_close_database_shutdown_driver'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `db_get_value_string'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `db_get_column_value'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `db_append_string'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_cat_get'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_read_next_line'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `db_get_column_name'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `db_get_value_int'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_append_point'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_set_date'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_set_comment'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `db_get_table_column'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_cat_set'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `db_fetch'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `db_get_table_number_of_columns'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `db_set_string'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `db_get_cursor_table'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_reset_cats'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_get_comment'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_new_line_struct'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_build'
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>> reference to `Vect_open_new'
+>> collect2: ld returned 1 exit status
+>> make[1]: *** [gstat] Error 1
+>> make[1]: Leaving directory `/local/phome/Installs/gstat-2.4.5/src'
+>> make: *** [src/gstat] Error 2
+>>
+>> _______________________________________________
+>> statsgrass mailing list
+>> statsgrass@grass.itc.it
+>> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+>
+>
+
+
+From e.pebesma at geog.uu.nl  Mon Jun 20 12:40:45 2005
+From: e.pebesma at geog.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] GSTAT 2.4.5 compile problem with GRASS 6
+In-Reply-To: <42B6F100.2000401@geo.aegean.gr>
+References: <42B6DB09.5080202@geo.aegean.gr> <42B6EE74.9000400@noaa.gov> <42B6F100.2000401@geo.aegean.gr>
+Message-ID: <42B6F18D.7020007@geog.uu.nl>
+
+
+S. Koukoulas wrote:
+> Thomas et al,
+> 
+> Since my first email I thought that I have actually sorted the problem 
+> by using the -grass6 option instead of -grass.
+> The "make" finished without apparent errors, but now I get the following 
+> message when I run
+> gstat -v
+> 
+> sotiris@linux:~>gstat: error while loading shared libraries: 
+> libgrass_sites.so: cannot open shared object file: No such file or 
+> directory
+
+Sotiris,
+
+You need to run gstat with grass support within a grass session, so
+first start grass, then run gstat on the grass prompt.
+--
+Edzer
+
+> 
+> It is still looking for grass5 libraries where it should not...  I don't 
+> have grass5 installed in my system...
+> 
+> Any help would be appreciated
+> Sotiris
+> 
+> P.S: gstat 2.4.4 did not work either. When I use the -grass options it 
+> can't find the libs, it ignores --grass6 option
+> 
+> 
+> Thomas Adams wrote:
+> 
+>> Sotiris,
+>>
+>> It looks like the build process does not know where the GRASS libs are 
+>> located starting just a few lines down:
+>>
+>> warning: libgrass_dbmiclient.so, needed by 
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so, not found
+>> warning: libgrass_vect.so, needed by 
+>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so, not found
+>> .
+>> .
+>> .
+>> etc.
+>>
+>> Tom
+>>
+>>
+>> S. Koukoulas wrote:
+>>
+>>>
+>>> I get an error when I am trying to compile GSTAT 2.4.5 with the grass 
+>>> option. Any solutions?
+>>> Many thanks in advance
+>>> Sotiris
+>>>
+>>> gcc -o gstat block.o data.o direct.o fig.o fit.o getest.o gls.o 
+>>> glvars.o gstat.o lex.o lm.o map2fig.o map2gd.o mapio.o maputils.o 
+>>> msim.o nsear
+>>> ch.o ossfim.o palet.o parse.o plot.o polygon.o pqueue.o predict.o 
+>>> random.o read.o reml.o report.o sample.o select.o sem.o sem_main.o 
+>>> sim.o sta
+>>> t.o ui.o userio.o utils.o vario.o vario_fn.o vario_io.o writecmd.o 
+>>> xvalid.o  -L../lib  -lmeschach -lnetcdf  -lncurses -lgd -lpng -lz 
+>>> -lgdal -L
+>>> /usr/local/grass-6.0.0beta2/lib -lgrass_gis -lgrass_datetime 
+>>> -lgrass_sites -lz -lm
+>>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>>> warning: libgrass_dbmiclient.so, needed by /usr/local/grass-6.0.0be
+>>> ta2/lib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>>> warning: libgrass_dbmibase.so, needed by /usr/local/grass-6.0.0beta
+>>> 2/lib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>>> warning: libgrass_vect.so, needed by /usr/local/grass-6.0.0beta2/li
+>>> b/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>>> warning: libgrass_dig2.so, needed by /usr/local/grass-6.0.0beta2/li
+>>> b/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>>> warning: libgrass_dgl.so, needed by /usr/local/grass-6.0.0beta2/lib
+>>> /libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>>> warning: libgrass_rtree.so, needed by /usr/local/grass-6.0.0beta2/l
+>>> ib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>>> warning: libgrass_linkm.so, needed by /usr/local/grass-6.0.0beta2/l
+>>> ib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_reset_line'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `db_get_num_rows'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_set_open_level'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_get_field'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_is_3d'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_set_map_name'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `db_init_string'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `db_get_column_sqltype'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_open_old'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `db_open_select_cursor'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_new_cats_struct'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_get_name'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `db_start_driver_open_database'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_get_date'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_write_line'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_close'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `db_get_value_double'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `db_sqltype_to_Ctype'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `db_close_database_shutdown_driver'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `db_get_value_string'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `db_get_column_value'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `db_append_string'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_cat_get'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_read_next_line'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `db_get_column_name'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `db_get_value_int'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_append_point'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_set_date'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_set_comment'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `db_get_table_column'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_cat_set'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `db_fetch'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `db_get_table_number_of_columns'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `db_set_string'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `db_get_cursor_table'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_reset_cats'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_get_comment'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_new_line_struct'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_build'
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>> reference to `Vect_open_new'
+>>> collect2: ld returned 1 exit status
+>>> make[1]: *** [gstat] Error 1
+>>> make[1]: Leaving directory `/local/phome/Installs/gstat-2.4.5/src'
+>>> make: *** [src/gstat] Error 2
+>>>
+>>> _______________________________________________
+>>> statsgrass mailing list
+>>> statsgrass@grass.itc.it
+>>> http://grass.itc.it/mailman/listinfo/statsgrass
+>>
+>>
+>>
+>>
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+From skouk at geo.aegean.gr  Mon Jun 20 12:46:40 2005
+From: skouk at geo.aegean.gr (S. Koukoulas)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] GSTAT 2.4.5 compile problem with GRASS 6
+In-Reply-To: <42B6F18D.7020007@geog.uu.nl>
+References: <42B6DB09.5080202@geo.aegean.gr> <42B6EE74.9000400@noaa.gov> <42B6F100.2000401@geo.aegean.gr> <42B6F18D.7020007@geog.uu.nl>
+Message-ID: <42B6F2F0.7020202@geo.aegean.gr>
+
+Edzer many thanks!
+
+That was the problem ... I didn't realise that it would not run ouside 
+grass at all !
+  
+Sotiris
+
+PS:
+The ./configure command:
+  ./configure --with-grass6=/usr/local/grass-6.0.0beta2 --with-gdal 
+--with-gsl
+
+
+Edzer J. Pebesma wrote:
+
+>
+>
+> S. Koukoulas wrote:
+>
+>> Thomas et al,
+>>
+>> Since my first email I thought that I have actually sorted the 
+>> problem by using the -grass6 option instead of -grass.
+>> The "make" finished without apparent errors, but now I get the 
+>> following message when I run
+>> gstat -v
+>>
+>> sotiris@linux:~>gstat: error while loading shared libraries: 
+>> libgrass_sites.so: cannot open shared object file: No such file or 
+>> directory
+>
+>
+> Sotiris,
+>
+> You need to run gstat with grass support within a grass session, so
+> first start grass, then run gstat on the grass prompt.
+> -- 
+> Edzer
+>
+>>
+>> It is still looking for grass5 libraries where it should not...  I 
+>> don't have grass5 installed in my system...
+>>
+>> Any help would be appreciated
+>> Sotiris
+>>
+>> P.S: gstat 2.4.4 did not work either. When I use the -grass options 
+>> it can't find the libs, it ignores --grass6 option
+>>
+>>
+>> Thomas Adams wrote:
+>>
+>>> Sotiris,
+>>>
+>>> It looks like the build process does not know where the GRASS libs 
+>>> are located starting just a few lines down:
+>>>
+>>> warning: libgrass_dbmiclient.so, needed by 
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so, not found
+>>> warning: libgrass_vect.so, needed by 
+>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so, not found
+>>> .
+>>> .
+>>> .
+>>> etc.
+>>>
+>>> Tom
+>>>
+>>>
+>>> S. Koukoulas wrote:
+>>>
+>>>>
+>>>> I get an error when I am trying to compile GSTAT 2.4.5 with the 
+>>>> grass option. Any solutions?
+>>>> Many thanks in advance
+>>>> Sotiris
+>>>>
+>>>> gcc -o gstat block.o data.o direct.o fig.o fit.o getest.o gls.o 
+>>>> glvars.o gstat.o lex.o lm.o map2fig.o map2gd.o mapio.o maputils.o 
+>>>> msim.o nsear
+>>>> ch.o ossfim.o palet.o parse.o plot.o polygon.o pqueue.o predict.o 
+>>>> random.o read.o reml.o report.o sample.o select.o sem.o sem_main.o 
+>>>> sim.o sta
+>>>> t.o ui.o userio.o utils.o vario.o vario_fn.o vario_io.o writecmd.o 
+>>>> xvalid.o  -L../lib  -lmeschach -lnetcdf  -lncurses -lgd -lpng -lz 
+>>>> -lgdal -L
+>>>> /usr/local/grass-6.0.0beta2/lib -lgrass_gis -lgrass_datetime 
+>>>> -lgrass_sites -lz -lm
+>>>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>>>> warning: libgrass_dbmiclient.so, needed by /usr/local/grass-6.0.0be
+>>>> ta2/lib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>>>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>>>> warning: libgrass_dbmibase.so, needed by /usr/local/grass-6.0.0beta
+>>>> 2/lib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>>>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>>>> warning: libgrass_vect.so, needed by /usr/local/grass-6.0.0beta2/li
+>>>> b/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>>>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>>>> warning: libgrass_dig2.so, needed by /usr/local/grass-6.0.0beta2/li
+>>>> b/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>>>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>>>> warning: libgrass_dgl.so, needed by /usr/local/grass-6.0.0beta2/lib
+>>>> /libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>>>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>>>> warning: libgrass_rtree.so, needed by /usr/local/grass-6.0.0beta2/l
+>>>> ib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>>>> /usr/lib/gcc-lib/i586-suse-linux/3.3.4/../../../../i586-suse-linux/bin/ld: 
+>>>> warning: libgrass_linkm.so, needed by /usr/local/grass-6.0.0beta2/l
+>>>> ib/libgrass_sites.so, not found (try using -rpath or -rpath-link)
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_reset_line'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `db_get_num_rows'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_set_open_level'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_get_field'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_is_3d'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_set_map_name'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `db_init_string'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `db_get_column_sqltype'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_open_old'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `db_open_select_cursor'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_new_cats_struct'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_get_name'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `db_start_driver_open_database'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_get_date'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_write_line'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_close'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `db_get_value_double'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `db_sqltype_to_Ctype'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `db_close_database_shutdown_driver'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `db_get_value_string'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `db_get_column_value'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `db_append_string'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_cat_get'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_read_next_line'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `db_get_column_name'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `db_get_value_int'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_append_point'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_set_date'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_set_comment'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `db_get_table_column'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_cat_set'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `db_fetch'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `db_get_table_number_of_columns'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `db_set_string'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `db_get_cursor_table'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_reset_cats'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_get_comment'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_new_line_struct'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_build'
+>>>> /usr/local/grass-6.0.0beta2/lib/libgrass_sites.so: undefined 
+>>>> reference to `Vect_open_new'
+>>>> collect2: ld returned 1 exit status
+>>>> make[1]: *** [gstat] Error 1
+>>>> make[1]: Leaving directory `/local/phome/Installs/gstat-2.4.5/src'
+>>>> make: *** [src/gstat] Error 2
+>>>>
+>>>> _______________________________________________
+>>>> statsgrass mailing list
+>>>> statsgrass@grass.itc.it
+>>>> http://grass.itc.it/mailman/listinfo/statsgrass
+>>>
+>>>
+>>>
+>>>
+>>>
+>>
+>> _______________________________________________
+>> statsgrass mailing list
+>> statsgrass@grass.itc.it
+>> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+
+
+From temiz at deprem.gov.tr  Fri Jun 24 03:15:22 2005
+From: temiz at deprem.gov.tr (orkun)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] definition of  variogram
+Message-ID: <42BBB30A.60403@deprem.gov.tr>
+
+hello
+
+I need basic explanation of  variogram
+and how to  use in  R.
+
+I will appreciate if you supply them.
+
+regards
+
+Ahmet Temiz
+
+______________________________________
+XamimeLT - installed on mailserver for domain @deprem.gov.tr
+Queries to: postmaster@deprem.gov.tr
+______________________________________
+The views and opinions expressed in this e-mail message are the sender's own
+and do not necessarily represent the views and the opinions of Earthquake Research Dept.
+of General Directorate of Disaster Affairs.
+
+Bu e-postadaki fikir ve gorusler gonderenin sahsina ait olup, yasal olarak T.C.
+B.I.B. Afet Isleri Gn.Mud. Deprem Arastirma Dairesi'ni baglayici nitelikte degildir.
+
+
+From Roger.Bivand at nhh.no  Fri Jun 24 10:32:44 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] sp 0.7-10, spgrass6 0.1-4
+Message-ID: <Pine.LNX.4.44.0506241624360.20986-100000@reclus.nhh.no>
+
+The necessary revisions have been made in the sp package for spgrass6 to
+work again, and sp_0.7-10 is now on CRAN. The matching spgrass6_0.1-4 is
+on the R-spatial repository on Sourceforge. The code underlying the
+GRASS-News article has been run without problems on this combination - not
+that spgrass6_0.1-4 depends on sp >= 0.7-10.
+
+The difficulties were caused by retrofiiting something we learned with the 
+original GRASS package to sp, that using data frames for storing larger 
+rasters is not efficient, and that an attribute list is a better 
+alternative.
+
+We are still looking for ways to get the interface working under 
+Cygwin/Windows.
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From rn001 at cebas.csic.es  Fri Jun 24 14:44:28 2005
+From: rn001 at cebas.csic.es (javier garcia)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] R - GRASS 6.0
+Message-ID: <200506242044.28746.rn001@cebas.csic.es>
+
+Hello!
+
+I guess this mail is mainly intented to be answered by Roger Bivand.
+
+I use very often the R-GRASS interface and my system has just crashed.
+So I've reinstalled everything but GRASS.
+For me to choose between GRASS5.4 or GRASS6.0 is dependent on its 
+functionality with R.
+
+Please Roger, Could you tell me if the package R-GRASS for GRASS5.0 works with 
+GRASS6.0?
+If not, I'd rather install GRASS5.4 again
+
+Thanks and best regards,
+
+Javier
+
+-- 
+A. Javier Garcia
+Water and Soil conservation department
+CEBAS-CSIC
+Campus Universitario Espinardo
+PO BOX 164
+30100 Murcia (SPAIN)
+Phone: +34 968 39 62 57
+Fax: +34 968 39 62 13
+email: rn001@cebas.csic.es
+
+
+From Roger.Bivand at nhh.no  Fri Jun 24 15:05:42 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: R - GRASS 6.0
+In-Reply-To: <200506242044.28746.rn001@cebas.csic.es>
+Message-ID: <Pine.LNX.4.44.0506242100010.21517-100000@reclus.nhh.no>
+
+On Fri, 24 Jun 2005, javier garcia wrote:
+
+> Hello!
+> 
+> I guess this mail is mainly intented to be answered by Roger Bivand.
+> 
+> I use very often the R-GRASS interface and my system has just crashed.
+> So I've reinstalled everything but GRASS.
+> For me to choose between GRASS5.4 or GRASS6.0 is dependent on its 
+> functionality with R.
+> 
+> Please Roger, Could you tell me if the package R-GRASS for GRASS5.0
+> works with GRASS6.0? If not, I'd rather install GRASS5.4 again
+
+No, the GRASS package on CRAN is for GRASS 5, supports sites, and 
+understands regions like 5.4. It works with all GRASS platforms.
+
+The new spgrass6 package as described in GRASS-News only works with GRASS 
+6, and is not as stable as the earlier version (yet). It will be 
+loose-coupled, using file transfer or the GRASS plugin to GDAL for file 
+transfer. This does not work (yet) with Cygwin, but will use the more 
+advanced data structures of the sp package. It can already move vector 
+data via shapefiles. It is available from the r-spatial sourceforge site, 
+and if someone needs write access to CVS, please just contact me.
+
+Hope this helps,
+
+Roger
+
+> 
+> Thanks and best regards,
+> 
+> Javier
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+From Thomas.Adams at noaa.gov  Sat Jun 25 11:20:05 2005
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] sp 0.7-10, spgrass6 0.1-4
+In-Reply-To: <Pine.LNX.4.44.0506241624360.20986-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0506241624360.20986-100000@reclus.nhh.no>
+Message-ID: <42BD7625.7050509@noaa.gov>
+
+Roger,
+
+Sourceforge only has spgrass6_0.1-3 at this point that I can find. I don't see spgrass6_0.1-4.
+
+
+Regards,
+Tom
+
+
+Roger Bivand wrote:
+
+>The necessary revisions have been made in the sp package for spgrass6 to
+>work again, and sp_0.7-10 is now on CRAN. The matching spgrass6_0.1-4 is
+>on the R-spatial repository on Sourceforge. The code underlying the
+>GRASS-News article has been run without problems on this combination - not
+>that spgrass6_0.1-4 depends on sp >= 0.7-10.
+>
+>The difficulties were caused by retrofiiting something we learned with the 
+>original GRASS package to sp, that using data frames for storing larger 
+>rasters is not efficient, and that an attribute list is a better 
+>alternative.
+>
+>We are still looking for ways to get the interface working under 
+>Cygwin/Windows.
+>
+>  
+>
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+
+
+From Roger.Bivand at nhh.no  Sat Jun 25 11:38:36 2005
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] sp 0.7-10, spgrass6 0.1-4
+In-Reply-To: <42BD7625.7050509@noaa.gov>
+Message-ID: <Pine.LNX.4.44.0506251732190.22153-100000@reclus.nhh.no>
+
+On Sat, 25 Jun 2005, Thomas Adams wrote:
+
+> Roger,
+> 
+> Sourceforge only has spgrass6_0.1-3 at this point that I can find. I
+> don't see spgrass6_0.1-4.
+
+Thanks, corrected. This was because the instructions on this list were 
+interim, the correct ones are those in GRASS-News:
+
+rS <- "http://r-spatial.sourceforge.net/R"
+install.packages("spgrass6", repos=rS)
+
+rather than the deprecated source branch (which is where you were looking 
+- will be removed before long).
+
+Thanks for reporting this,
+
+Best wishes,
+
+Roger
+
+> 
+> 
+> Regards,
+> Tom
+> 
+> 
+> Roger Bivand wrote:
+> 
+> >The necessary revisions have been made in the sp package for spgrass6 to
+> >work again, and sp_0.7-10 is now on CRAN. The matching spgrass6_0.1-4 is
+> >on the R-spatial repository on Sourceforge. The code underlying the
+> >GRASS-News article has been run without problems on this combination - not
+> >that spgrass6_0.1-4 depends on sp >= 0.7-10.
+> >
+> >The difficulties were caused by retrofiiting something we learned with the 
+> >original GRASS package to sp, that using data frames for storing larger 
+> >rasters is not efficient, and that an attribute list is a better 
+> >alternative.
+> >
+> >We are still looking for ways to get the interface working under 
+> >Cygwin/Windows.
+> >
+> >  
+> >
+> 
+> 
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+
+
+From Thomas.Adams at noaa.gov  Sat Jun 25 13:05:25 2005
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] sp 0.7-10, spgrass6 0.1-4
+In-Reply-To: <Pine.LNX.4.44.0506251732190.22153-100000@reclus.nhh.no>
+References: <Pine.LNX.4.44.0506251732190.22153-100000@reclus.nhh.no>
+Message-ID: <42BD8ED5.4030502@noaa.gov>
+
+Roger,
+
+So, then, if I followed the GRASS-News instructions, I should be current?
+
+BTW, I'm making plans to attend (and present a paper at) a meeting in 
+Tromso in mid-October. Will I be able to get by OK speaking only english 
+(american version)?
+
+Regards,
+Tom
+
+
+
+Roger Bivand wrote:
+
+>On Sat, 25 Jun 2005, Thomas Adams wrote:
+>
+>  
+>
+>>Roger,
+>>
+>>Sourceforge only has spgrass6_0.1-3 at this point that I can find. I
+>>don't see spgrass6_0.1-4.
+>>    
+>>
+>
+>Thanks, corrected. This was because the instructions on this list were 
+>interim, the correct ones are those in GRASS-News:
+>
+>rS <- "http://r-spatial.sourceforge.net/R"
+>install.packages("spgrass6", repos=rS)
+>
+>rather than the deprecated source branch (which is where you were looking 
+>- will be removed before long).
+>
+>Thanks for reporting this,
+>
+>Best wishes,
+>
+>Roger
+>
+>  
+>
+>>Regards,
+>>Tom
+>>
+>>
+>>Roger Bivand wrote:
+>>
+>>    
+>>
+>>>The necessary revisions have been made in the sp package for spgrass6 to
+>>>work again, and sp_0.7-10 is now on CRAN. The matching spgrass6_0.1-4 is
+>>>on the R-spatial repository on Sourceforge. The code underlying the
+>>>GRASS-News article has been run without problems on this combination - not
+>>>that spgrass6_0.1-4 depends on sp >= 0.7-10.
+>>>
+>>>The difficulties were caused by retrofiiting something we learned with the 
+>>>original GRASS package to sp, that using data frames for storing larger 
+>>>rasters is not efficient, and that an attribute list is a better 
+>>>alternative.
+>>>
+>>>We are still looking for ways to get the interface working under 
+>>>Cygwin/Windows.
+>>>
+>>> 
+>>>
+>>>      
+>>>
+>>    
+>>
+>
+>  
+>
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20050625/ffc414f0/attachment.html
+From temiz at deprem.gov.tr  Tue Jun 28 02:09:32 2005
+From: temiz at deprem.gov.tr (orkun)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] debian-R-grass
+Message-ID: <42C0E99C.4010203@deprem.gov.tr>
+
+hello
+
+I am using debian and have installed R as debian packages.
+Now I want to install grass package (and dependent packages).
+
+How can I  do that ?
+
+regards
+
+
+Ahmet Temiz
+
+______________________________________
+XamimeLT - installed on mailserver for domain @deprem.gov.tr
+Queries to: postmaster@deprem.gov.tr
+______________________________________
+The views and opinions expressed in this e-mail message are the sender's own
+and do not necessarily represent the views and the opinions of Earthquake Research Dept.
+of General Directorate of Disaster Affairs.
+
+Bu e-postadaki fikir ve gorusler gonderenin sahsina ait olup, yasal olarak T.C.
+B.I.B. Afet Isleri Gn.Mud. Deprem Arastirma Dairesi'ni baglayici nitelikte degildir.
+
+
+From sholl at gmx.net  Tue Jun 28 02:21:55 2005
+From: sholl at gmx.net (Stephan Holl)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] debian-R-grass
+In-Reply-To: <42C0E99C.4010203@deprem.gov.tr>
+References: <42C0E99C.4010203@deprem.gov.tr>
+Message-ID: <20050628082155.5220d6a4@localhost>
+
+Hello orkun, 
+
+On Tue, 28 Jun 2005 09:09:32 +0300 orkun <temiz@deprem.gov.tr> wrote:
+
+> hello
+> 
+> I am using debian and have installed R as debian packages.
+> Now I want to install grass package (and dependent packages).
+
+You need to get the tar.gz-Packages and use the Command
+R CMD INSTALL <packages>
+
+This compiles the packages and installes them.
+
+Best
+	Stephan
+
+-- 
+Stephan Holl
+
+Check headers for GnuPG Key!
+http://www.gdf-hannover.de
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 189 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20050628/72b900d9/attachment.bin
+From neteler at itc.it  Tue Jun 28 03:57:11 2005
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] Re: [Pkg-grass-general] debian-R-grass
+In-Reply-To: <42C0E99C.4010203@deprem.gov.tr>
+References: <42C0E99C.4010203@deprem.gov.tr>
+Message-ID: <20050628075711.GB21145@thuille.itc.it>
+
+On Tue, Jun 28, 2005 at 09:09:32AM +0300, orkun wrote:
+> hello
+> 
+> I am using debian and have installed R as debian packages.
+> Now I want to install grass package (and dependent packages).
+> 
+> How can I  do that ?
+> 
+
+I have documented the installation of the new GRASS 6 R-interface
+here:
+
+ http://grass.itc.it/statsgrass/index.php
+ -> Short draft introduction to R/GRASS interface
+    -> 2. Installation of R and R/GRASS 6 interface
+          http://grass.itc.it/statsgrass/grass6_r_install.html
+
+See also the latest GRASS Newsletter.
+
+Hope this helps
+
+ Markus
+
+
+From tom_colson at ncsu.edu  Wed Jun 29 10:07:23 2005
+From: tom_colson at ncsu.edu (Tom Colson)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] making R and grass(6.1) play well together.
+In-Reply-To: <200506291352.j5TDq0d14591@grass.itc.it>
+References: <200506291352.j5TDq0d14591@grass.itc.it>
+Message-ID: <1120054043.21748.0.camel@localhost.localdomain>
+
+I managed to get R compiled and all the packages talking to grass as it
+should, and all the "demos" seem to work. There is a neat tutorial on
+working with DEM (grass raster) in R
+http://grass.itc.it/statsgrass/learning_r2.html#Working_with_elevation
+
+Tutorial works great with the sample data provided...yet I can't figure
+out how to get "current" raster dems in my mapset/location into a format
+that is acceptable to R...re: the tutorial syntax. Been looking through
+all the man pages, but there doesn't seem to be any documentation on
+raster import that would allow one to go through that tutorial using
+one's own data....
+
+thanks. 
+
+
+
+From e.pebesma at geog.uu.nl  Wed Jun 29 11:30:10 2005
+From: e.pebesma at geog.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] making R and grass(6.1) play well together.
+In-Reply-To: <1120054043.21748.0.camel@localhost.localdomain>
+References: <200506291352.j5TDq0d14591@grass.itc.it> <1120054043.21748.0.camel@localhost.localdomain>
+Message-ID: <42C2BE82.6020607@geog.uu.nl>
+
+Tom, there has been quite a bit of development in this area;
+first we have made an R package (sp) which has classes and
+methods for dealing with spatial points, lines, polygons and grid
+objects in R, and then Roger rewrote the grass R package to
+work with these data. You can read about it in the latest
+grass news, and you can see (more) examples on
+http://r-spatial.sourceforge.net/ , follow the link "sp and other
+packages" which has examples on spgrass6.
+
+Best regards,
+--
+Edzer
+
+Tom Colson wrote:
+
+>I managed to get R compiled and all the packages talking to grass as it
+>should, and all the "demos" seem to work. There is a neat tutorial on
+>working with DEM (grass raster) in R
+>http://grass.itc.it/statsgrass/learning_r2.html#Working_with_elevation
+>
+>Tutorial works great with the sample data provided...yet I can't figure
+>out how to get "current" raster dems in my mapset/location into a format
+>that is acceptable to R...re: the tutorial syntax. Been looking through
+>all the man pages, but there doesn't seem to be any documentation on
+>raster import that would allow one to go through that tutorial using
+>one's own data....
+>  
+>
+
+
+From tom_colson at ncsu.edu  Wed Jun 29 11:33:30 2005
+From: tom_colson at ncsu.edu (Tom Colson)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] making R and grass(6.1) play well together.
+In-Reply-To: <42C2BE82.6020607@geog.uu.nl>
+References: <200506291352.j5TDq0d14591@grass.itc.it>
+	 <1120054043.21748.0.camel@localhost.localdomain>
+	 <42C2BE82.6020607@geog.uu.nl>
+Message-ID: <1120059210.22230.4.camel@localhost.localdomain>
+
+Thanks for the quick reply. 
+
+I did install spgrass6 and all its dependencies and have managed to
+reproduce this:
+
+> library(spgrass6)
+
+> G <- gmeta6()
+
+> dem <- readFLOAT6sp("ncfpm_2694")
+
+
+
+Specifically, though, I am seeking how to import the raster DEM into
+some sort of format that the stats library will recognize so I can plot
+the ecdf cruves......ie..
+
+library(stats)
+plot(ecdf(dem))
+plot(ecdf(dem), verticals=T, do.points=F)
+
+
+On Wed, 2005-06-29 at 17:30 +0200, Edzer J. Pebesma wrote:
+> Tom, there has been quite a bit of development in this area;
+> first we have made an R package (sp) which has classes and
+> methods for dealing with spatial points, lines, polygons and grid
+> objects in R, and then Roger rewrote the grass R package to
+> work with these data. You can read about it in the latest
+> grass news, and you can see (more) examples on
+> http://r-spatial.sourceforge.net/ , follow the link "sp and other
+> packages" which has examples on spgrass6.
+> 
+> Best regards,
+> --
+> Edzer
+> 
+> Tom Colson wrote:
+> 
+> >I managed to get R compiled and all the packages talking to grass as it
+> >should, and all the "demos" seem to work. There is a neat tutorial on
+> >working with DEM (grass raster) in R
+> >http://grass.itc.it/statsgrass/learning_r2.html#Working_with_elevation
+> >
+> >Tutorial works great with the sample data provided...yet I can't figure
+> >out how to get "current" raster dems in my mapset/location into a format
+> >that is acceptable to R...re: the tutorial syntax. Been looking through
+> >all the man pages, but there doesn't seem to be any documentation on
+> >raster import that would allow one to go through that tutorial using
+> >one's own data....
+> >  
+> >
+
+
+From e.pebesma at geog.uu.nl  Wed Jun 29 11:39:30 2005
+From: e.pebesma at geog.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:13 2007
+Subject: [STATSGRASS] making R and grass(6.1) play well together.
+In-Reply-To: <1120059210.22230.4.camel@localhost.localdomain>
+References: <200506291352.j5TDq0d14591@grass.itc.it>	 <1120054043.21748.0.camel@localhost.localdomain>	 <42C2BE82.6020607@geog.uu.nl> <1120059210.22230.4.camel@localhost.localdomain>
+Message-ID: <42C2C0B2.6090402@geog.uu.nl>
+
+Tom Colson wrote:
+
+>Thanks for the quick reply. 
+>
+>I did install spgrass6 and all its dependencies and have managed to
+>reproduce this:
+>
+>  
+>
+>>library(spgrass6)
+>>    
+>>
+>
+>  
+>
+>>G <- gmeta6()
+>>    
+>>
+>
+>  
+>
+>>dem <- readFLOAT6sp("ncfpm_2694")
+>>    
+>>
+>
+>
+>
+>Specifically, though, I am seeking how to import the raster DEM into
+>some sort of format that the stats library will recognize so I can plot
+>the ecdf cruves......ie..
+>
+>library(stats)
+>  
+>
+I think library stats is attached by default, so can be omitted.
+
+>plot(ecdf(dem))
+>plot(ecdf(dem), verticals=T, do.points=F)
+>  
+>
+
+Please try:
+
+dem.df = as.data.frame(dem)
+plot(ecdf(dem.df[["ncfpm_2694"]]))
+
+--
+Edzer
+
+>
+>On Wed, 2005-06-29 at 17:30 +0200, Edzer J. Pebesma wrote:
+>  
+>
+>>Tom, there has been quite a bit of development in this area;
+>>first we have made an R package (sp) which has classes and
+>>methods for dealing with spatial points, lines, polygons and grid
+>>objects in R, and then Roger rewrote the grass R package to
+>>work with these data. You can read about it in the latest
+>>grass news, and you can see (more) examples on
+>>http://r-spatial.sourceforge.net/ , follow the link "sp and other
+>>packages" which has examples on spgrass6.
+>>
+>>Best regards,
+>>--
+>>Edzer
+>>
+>>Tom Colson wrote:
+>>
+>>    
+>>
+>>>I managed to get R compiled and all the packages talking to grass as it
+>>>should, and all the "demos" seem to work. There is a neat tutorial on
+>>>working with DEM (grass raster) in R
+>>>http://grass.itc.it/statsgrass/learning_r2.html#Working_with_elevation
+>>>
+>>>Tutorial works great with the sample data provided...yet I can't figure
+>>>out how to get "current" raster dems in my mapset/location into a format
+>>>that is acceptable to R...re: the tutorial syntax. Been looking through
+>>>all the man pages, but there doesn't seem to be any documentation on
+>>>raster import that would allow one to go through that tutorial using
+>>>one's own data....
+>>> 
+>>>
+>>>      
+>>>
+>
+>_______________________________________________
+>statsgrass mailing list
+>statsgrass@grass.itc.it
+>http://grass.itc.it/mailman/listinfo/statsgrass
+>  
+>
+
+

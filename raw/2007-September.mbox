@@ -1,0 +1,1654 @@
+From Agustin.Lobo at ija.csic.es  Sat Sep  1 03:41:43 2007
+From: Agustin.Lobo at ija.csic.es (Agustin Lobo)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Re: [R-sig-Geo] R (JGR)+ GRASS in QGIS linux
+	ubuntu-feisty
+In-Reply-To: <Pine.LNX.4.64.0709010033340.18662@reclus.nhh.no>
+References: <Prayer.1.0.12.0708252048510.22914@amos.qub.ac.uk>
+	<Pine.LNX.4.64.0708260757320.30138@reclus.nhh.no>
+	<Pine.LNX.4.64.0708262027550.2525@reclus.nhh.no>
+	<46D7DC8B.2000201@ija.csic.es>
+	<Pine.LNX.4.64.0709010033340.18662@reclus.nhh.no>
+Message-ID: <46D917B7.5030805@ija.csic.es>
+
+It works fine on linux ubuntu feisty.
+If R is run
+using the JGR script (from the qgis/grasstools/grass terminal ) and then 
+spgrass6, I get a nice environment with separate terminals for R (JGR)
+and grass. Too bad that, at least for me, the qgis/grasstools terminal
+is not working correctly (cannot paste, cannot edit commands, does not 
+return the prompt after completion of sh scripts...). But this is 
+another story.
+
+Agus
+
+Roger Bivand escribi?:
+> On Fri, 31 Aug 2007, Agustin Lobo wrote:
+> 
+>> Roger,
+>>
+>> Roger Bivand escribi?:
+>>>  On Sun, 26 Aug 2007, Roger Bivand wrote:
+>>
+>>>  It was a combination of path variables with spaces and the apparent 
+>>> need
+>>>  to call GRASS commands with *.exe extensions from within R in the GRASS
+>>>  shell under GRASS Tools (QGIS 0.8.1). From spgrass6-0.4-1, 
+>>> QGIS/msys/GRASS
+>>>  is supported - package revision just submitted to CRAN.
+>>>
+>>>  Roger
+>>>
+>>
+>> what does "QGIS/msys/GRASS is supported" mean? Can R be used as a Qgis 
+>> pluggin? Also for linux?
+> 
+> No, only that R will work when run in the GRASS Tools -> GRASS shell 
+> inside QGIS under Windows with the MSYS-built GRASS modules. I do not 
+> know whether the QGIS Linux version includes a similar GRASS Tools, but 
+> if so, the shell ought to run R in the normal way. Running 
+> library(spgrass6) gives access to GRASS.
+> 
+> Roger
+> 
+>>
+>> Thanks
+>>
+>> Agus
+>>
+> 
+
+-- 
+Dr. Agustin Lobo
+Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+LLuis Sole Sabaris s/n
+08028 Barcelona
+Spain
+Tel. 34 934095410
+Fax. 34 934110012
+email: Agustin.Lobo@ija.csic.es
+http://www.ija.csic.es/gt/obster
+
+
+From lanczos at t-zones.sk  Sat Sep  1 19:01:46 2007
+From: lanczos at t-zones.sk (Tomas Lanczos)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] kriging - too long time
+Message-ID: <46D9EF5A.6080809@t-zones.sk>
+
+I am performing some kriging following the procedure as it is here:
+http://casoilresource.lawr.ucdavis.edu/drupal/node/438
+
+My problem is that the kriging proces is very slow, it takes approx. 7 
+hours. Is the problem a too high resolution, or too much sampling points 
+(2234)? How can I optimalize the process?
+
+My region setup is the following:
+
+projection: 1 (UTM)
+zone:       33
+datum:      ** unknown (default: WGS84) **
+ellipsoid:  bessel
+north:      5387295.0553002
+south:      5288130.42061478
+west:       652025.98376024
+east:       786301.92841404
+nsres:      150.02214022
+ewres:      150.02898844
+rows:       661
+cols:       895
+cells:      591595
+
+Many thanks
+
+Tomas
+
+
+From e.pebesma at geo.uu.nl  Sun Sep  2 03:20:48 2007
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] kriging - too long time
+In-Reply-To: <46D9EF5A.6080809@t-zones.sk>
+References: <46D9EF5A.6080809@t-zones.sk>
+Message-ID: <46DA6450.5000000@geo.uu.nl>
+
+Perhaps add nmax = 50 to the krige step -- use kriging in a local 
+neighbourhood.
+--
+Edzer
+
+Tomas Lanczos wrote:
+> I am performing some kriging following the procedure as it is here:
+> http://casoilresource.lawr.ucdavis.edu/drupal/node/438
+>
+> My problem is that the kriging proces is very slow, it takes approx. 7 
+> hours. Is the problem a too high resolution, or too much sampling 
+> points (2234)? How can I optimalize the process?
+>
+> My region setup is the following:
+>
+> projection: 1 (UTM)
+> zone:       33
+> datum:      ** unknown (default: WGS84) **
+> ellipsoid:  bessel
+> north:      5387295.0553002
+> south:      5288130.42061478
+> west:       652025.98376024
+> east:       786301.92841404
+> nsres:      150.02214022
+> ewres:      150.02898844
+> rows:       661
+> cols:       895
+> cells:      591595
+>
+> Many thanks
+>
+> Tomas
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+
+From carlos.grohmann at gmail.com  Sun Sep  2 05:44:21 2007
+From: carlos.grohmann at gmail.com (=?ISO-8859-1?Q?Carlos_"Gu=E2no"_Grohmann?=)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] kriging - too long time
+In-Reply-To: <46D9EF5A.6080809@t-zones.sk>
+References: <46D9EF5A.6080809@t-zones.sk>
+Message-ID: <bd07447b0709020244p65a84ab0g3500cdc281270c47@mail.gmail.com>
+
+Tomas,
+
+nmax has a strong influence on kriging time. In some tests I've done,
+interpolation time for and area with 520 rows x 430 cols ranged from
+about 20 seconds for nmax=8 up to 20 HOURS for nmax =399.
+
+best
+
+Carlos
+
+
+
+
+On 9/2/07, Tomas Lanczos <lanczos@t-zones.sk> wrote:
+> I am performing some kriging following the procedure as it is here:
+> http://casoilresource.lawr.ucdavis.edu/drupal/node/438
+>
+> My problem is that the kriging proces is very slow, it takes approx. 7
+> hours. Is the problem a too high resolution, or too much sampling points
+> (2234)? How can I optimalize the process?
+>
+> My region setup is the following:
+>
+> projection: 1 (UTM)
+> zone:       33
+> datum:      ** unknown (default: WGS84) **
+> ellipsoid:  bessel
+> north:      5387295.0553002
+> south:      5288130.42061478
+> west:       652025.98376024
+> east:       786301.92841404
+> nsres:      150.02214022
+> ewres:      150.02898844
+> rows:       661
+> cols:       895
+> cells:      591595
+>
+> Many thanks
+>
+> Tomas
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+
+
+-- 
++-----------------------------------------------------------+
+              Carlos Henrique Grohmann - Guano
+  Visiting Researcher at Kingston University London - UK
+  Geologist M.Sc  - Doctorate Student at IGc-USP - Brazil
+Linux User #89721  - carlos dot grohmann at gmail dot com
++-----------------------------------------------------------+
+_________________
+"Good morning, doctors. I have taken the liberty of removing Windows
+95 from my hard drive."
+--The winning entry in a "What were HAL's first words" contest judged
+by 2001: A SPACE ODYSSEY creator Arthur C. Clarke
+
+Can't stop the signal.
+
+
+From e.pebesma at geo.uu.nl  Sun Sep  2 07:37:21 2007
+From: e.pebesma at geo.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] kriging - too long time
+In-Reply-To: <bd07447b0709020244p65a84ab0g3500cdc281270c47@mail.gmail.com>
+References: <46D9EF5A.6080809@t-zones.sk>
+	<bd07447b0709020244p65a84ab0g3500cdc281270c47@mail.gmail.com>
+Message-ID: <46DAA071.4040608@geo.uu.nl>
+
+That might be "explained" as follows: 8 to 400 is a factor 25, solving a 
+covariance matrix is an O(N^2) operation so would slow down by a factor 
+25*25 = 625. The remaining factor 6 (seconds to hours: 3600/625) should 
+be attributable to the load of finding the nearest 400 neighbours 
+instead of 8 nearest neighbours. I don't know that behaviour (a 
+bucket-PR quadtree search index is used), but am not surprised.
+
+Best wishes,
+--
+Edzer
+
+Carlos "Gu?no" Grohmann wrote:
+> Tomas,
+>
+> nmax has a strong influence on kriging time. In some tests I've done,
+> interpolation time for and area with 520 rows x 430 cols ranged from
+> about 20 seconds for nmax=8 up to 20 HOURS for nmax =399.
+>
+> best
+>
+> Carlos
+>
+>
+>
+>
+> On 9/2/07, Tomas Lanczos <lanczos@t-zones.sk> wrote:
+>   
+>> I am performing some kriging following the procedure as it is here:
+>> http://casoilresource.lawr.ucdavis.edu/drupal/node/438
+>>
+>> My problem is that the kriging proces is very slow, it takes approx. 7
+>> hours. Is the problem a too high resolution, or too much sampling points
+>> (2234)? How can I optimalize the process?
+>>
+>> My region setup is the following:
+>>
+>> projection: 1 (UTM)
+>> zone:       33
+>> datum:      ** unknown (default: WGS84) **
+>> ellipsoid:  bessel
+>> north:      5387295.0553002
+>> south:      5288130.42061478
+>> west:       652025.98376024
+>> east:       786301.92841404
+>> nsres:      150.02214022
+>> ewres:      150.02898844
+>> rows:       661
+>> cols:       895
+>> cells:      591595
+>>
+>> Many thanks
+>>
+>> Tomas
+>>
+>> _______________________________________________
+>> statsgrass mailing list
+>> statsgrass@grass.itc.it
+>> http://grass.itc.it/mailman/listinfo/statsgrass
+>>
+>>     
+>
+>
+>   
+
+
+From hzambran.newsgroups at gmail.com  Mon Sep 24 14:26:10 2007
+From: hzambran.newsgroups at gmail.com (Mauricio Zambrano)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] problem installing spgrass6 with R 2.5.1
+Message-ID: <63d616b0709241126h69986efbke9f21a99bc898e00@mail.gmail.com>
+
+Hi,
+I had R 2.4.1 with spgrass6 library running OK in my machine, but
+after an upgrade from 2.4.1 to 2.5.1 problems have started.
+
+When I loaded the SPGRASS6 library, I got the following:
+
+> library(spgrass6)
+Loading required package: sp
+Loading required package: maptools
+Loading required package: foreign
+Loading required package: rgdal
+Error in .Internal(putenv(x)) : no hay ninguna funci?n interna "putenv"
+Error : .onLoad failed in 'loadNamespace' for 'rgdal'
+Error: package 'rgdal' could not be loaded
+
+When I tried to re-install the SPGRASS6 library I got this:
+
+> install.packages("spgrass6", dependencies=TRUE)
+Aviso en install.packages("spgrass6", dependencies = TRUE) :
+         argument 'lib' is missing: using
+'/home/hzambran/R/i486-pc-linux-gnu-library/2.5'
+probando la URL 'http://cran.fhcrc.org/src/contrib/spgrass6_0.4-2.tar.gz'
+Content type 'application/x-gzip' length 319712 bytes
+URL abierta
+==================================================
+downloaded 312Kb
+
+* Installing *source* package 'spgrass6' ...
+** R
+** inst
+** preparing package for lazy loading
+Loading required package: sp
+Loading required package: maptools
+Loading required package: foreign
+Loading required package: rgdal
+Error in .Internal(putenv(x)) : no internal function "putenv"
+Error : .onLoad failed in 'loadNamespace' for 'rgdal'
+Error: package 'rgdal' could not be loaded
+Execution halted
+ERROR: lazy loading failed for package 'spgrass6'
+** Removing '/home/hzambran/R/i486-pc-linux-gnu-library/2.5/spgrass6'
+
+The downloaded packages are in
+        /tmp/RtmptdSn7W/downloaded_packages
+Warning message:
+installation of package 'spgrass6' had non-zero exit status in:
+install.packages("spgrass6", dependencies = TRUE)
+
+
+Somebody has an idea about how to solve it ?.
+
+Thanks in advance
+
+Mauricio
+
+
+From Roger.Bivand at nhh.no  Mon Sep 24 17:44:36 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] problem installing spgrass6 with R 2.5.1
+In-Reply-To: <63d616b0709241126h69986efbke9f21a99bc898e00@mail.gmail.com>
+References: <63d616b0709241126h69986efbke9f21a99bc898e00@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0709242343170.21606@reclus.nhh.no>
+
+On Mon, 24 Sep 2007, Mauricio Zambrano wrote:
+
+> Hi,
+> I had R 2.4.1 with spgrass6 library running OK in my machine, but
+> after an upgrade from 2.4.1 to 2.5.1 problems have started.
+>
+> When I loaded the SPGRASS6 library, I got the following:
+>
+>> library(spgrass6)
+> Loading required package: sp
+> Loading required package: maptools
+> Loading required package: foreign
+> Loading required package: rgdal
+> Error in .Internal(putenv(x)) : no hay ninguna funci?n interna "putenv"
+> Error : .onLoad failed in 'loadNamespace' for 'rgdal'
+> Error: package 'rgdal' could not be loaded
+>
+> When I tried to re-install the SPGRASS6 library I got this:
+>
+>> install.packages("spgrass6", dependencies=TRUE)
+> Aviso en install.packages("spgrass6", dependencies = TRUE) :
+>         argument 'lib' is missing: using
+> '/home/hzambran/R/i486-pc-linux-gnu-library/2.5'
+> probando la URL 'http://cran.fhcrc.org/src/contrib/spgrass6_0.4-2.tar.gz'
+> Content type 'application/x-gzip' length 319712 bytes
+> URL abierta
+> ==================================================
+> downloaded 312Kb
+>
+> * Installing *source* package 'spgrass6' ...
+> ** R
+> ** inst
+> ** preparing package for lazy loading
+> Loading required package: sp
+> Loading required package: maptools
+> Loading required package: foreign
+> Loading required package: rgdal
+> Error in .Internal(putenv(x)) : no internal function "putenv"
+> Error : .onLoad failed in 'loadNamespace' for 'rgdal'
+> Error: package 'rgdal' could not be loaded
+> Execution halted
+> ERROR: lazy loading failed for package 'spgrass6'
+> ** Removing '/home/hzambran/R/i486-pc-linux-gnu-library/2.5/spgrass6'
+>
+> The downloaded packages are in
+>        /tmp/RtmptdSn7W/downloaded_packages
+> Warning message:
+> installation of package 'spgrass6' had non-zero exit status in:
+> install.packages("spgrass6", dependencies = TRUE)
+>
+>
+> Somebody has an idea about how to solve it ?.
+
+update.packages()
+
+to update rgdal - it is the outdated version of rgdal which is causing the 
+problem.
+
+Roger
+
+>
+> Thanks in advance
+>
+> Mauricio
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From hamish_nospam at yahoo.com  Tue Sep 25 05:02:57 2007
+From: hamish_nospam at yahoo.com (Hamish)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Re: [GRASS-user] Simulation in grass 6
+In-Reply-To: <46F8C023.6040909@krugs.de>
+Message-ID: <510934.76663.qm@web52711.mail.re2.yahoo.com>
+
+Rainer M. Krug wrote:
+
+> I am planning to write a spatial simulation model, simulating the spread 
+> of alien species on a landscape scale by using grass.
+> My question how I should write the simulation model, i.e. in which 
+> scripting language. I am using Linux and have quite a bit of experience 
+> with R, so I thought that R (together with spgrass6) would be a nice 
+> scripting language to write the simulation and sending the grass 
+> commands through to grass, because it offers me quite a bit more 
+> concerning strtucturing on the modelling side then using a normal shell 
+> script
+> But the simulation should also run under Windows and I don't have any 
+> experience with grass and R under windows.
+
+It sounds very well suited for Linux or MacOSX, but I've little idea about the
+GRASS+R Windows situation. Maybe someone on the statsgrass mailing list knows?
+(taking the liberty to cc)
+
+> I have the following questions:
+..
+> 3) Is any other scripting language more suitable for what I want to 
+> achieve (I have no experience with C / C++, but quite a bit with Delphi. 
+> I have never used the likes of perl et al. and bash scrips seem a bit 
+> awkward to me for bigger projects.)?
+
+You could try python. The next version of GRASS will use python heavily for the
+GUI, so expect lots of example scripts, help on the mailing list from fellow
+travelers, and tight integration with the code.
+
+Learn python in 10 min:  http://www.poromenos.org/tutorials/python
+
+Also there is a SWIG/Python interface to any needed GIS library functions,
+which is pretty cool, although the grass modules generally give you what you
+need without having to resort to using any low-level libgis functions.
+
+see  http://grass.gdf-hannover.de/wiki/GRASS_and_Python
+     http://freegis.org/cgi-bin/viewcvs.cgi/grass6/swig/python/
+
+Hamish
+
+
+
+      ____________________________________________________________________________________
+Luggage? GPS? Comic books? 
+Check out fitting gifts for grads at Yahoo! Search
+http://search.yahoo.com/search?fr=oni_on_mail&p=graduation+gifts&cs=bz
+
+
+From hzambran.newsgroups at gmail.com  Tue Sep 25 05:04:40 2007
+From: hzambran.newsgroups at gmail.com (Mauricio Zambrano)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] problem installing spgrass6 with R 2.5.1
+In-Reply-To: <Pine.LNX.4.64.0709242343170.21606@reclus.nhh.no>
+References: <63d616b0709241126h69986efbke9f21a99bc898e00@mail.gmail.com>
+	<Pine.LNX.4.64.0709242343170.21606@reclus.nhh.no>
+Message-ID: <63d616b0709250204i68191b00rf3b21b7c477fcedc@mail.gmail.com>
+
+Thanks, but I tried several times with update.packages() and the
+problem still persisted.
+
+I uninstall R and all the installed packages and I re-installed only:
+
+-) r-base,
+-) r-recommended
+-) r-base-dev
+
+Then I did update.packages() and again I tried to install SPGRASS6 with:
+
+> install.packages("spgrass6", dependencies=TRUE)
+
+but again it was impossible and the next screen appeared:
+
+Aviso en install.packages("spgrass6", dependencies = TRUE) :
+         argument 'lib' is missing: using
+'/home/hzambran/R/i486-pc-linux-gnu-library/2.5'
+probando la URL 'http://cran.fhcrc.org/src/contrib/spgrass6_0.4-2.tar.gz'
+Content type 'application/x-gzip' length 319712 bytes
+URL abierta
+==================================================
+downloaded 312Kb
+
+* Installing *source* package 'spgrass6' ...
+** R
+** inst
+** preparing package for lazy loading
+Loading required package: sp
+Loading required package: maptools
+Loading required package: foreign
+Loading required package: rgdal
+Error in .Internal(putenv(x)) : no internal function "putenv"
+Error : .onLoad failed in 'loadNamespace' for 'rgdal'
+Error: package 'rgdal' could not be loaded
+Execution halted
+ERROR: lazy loading failed for package 'spgrass6'
+** Removing '/home/hzambran/R/i486-pc-linux-gnu-library/2.5/spgrass6'
+
+The downloaded packages are in
+        /tmp/RtmpYuI8s2/downloaded_packages
+Warning message:
+installation of package 'spgrass6' had non-zero exit status in:
+install.packages("spgrass6", dependencies = TRUE)
+
+Do somebody know if the problem is with the 'lib' parameter or it
+could be anything else ?
+
+Thanks
+
+Mauricio
+(running Ubuntu feisty 7.04)
+
+
+From Agustin.Lobo at ija.csic.es  Tue Sep 25 05:22:39 2007
+From: Agustin.Lobo at ija.csic.es (Agustin Lobo)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Re: [GRASS-user] Simulation in grass 6
+In-Reply-To: <510934.76663.qm@web52711.mail.re2.yahoo.com>
+References: <510934.76663.qm@web52711.mail.re2.yahoo.com>
+Message-ID: <46F8D35F.5000903@ija.csic.es>
+
+Actually, I often use R as an scripting language
+for grass. The problem is that grass commands have
+to be issued using system(), which, for a complex code,
+becomes inconvenient (lots of paste() for generating the
+actual grass command).
+Not being an expert at all on python, I wonder
+if making R able of executing grass commands without
+having to use system() could not be a valid alternative
+to python, at least in some cases.
+
+Anyway, I think that the real solution would be having a GIS
+able of displaying R objects, sort of RGis.
+
+Agus
+
+Hamish escribi?:
+> Rainer M. Krug wrote:
+> 
+>> I am planning to write a spatial simulation model, simulating the spread 
+>> of alien species on a landscape scale by using grass.
+>> My question how I should write the simulation model, i.e. in which 
+>> scripting language. I am using Linux and have quite a bit of experience 
+>> with R, so I thought that R (together with spgrass6) would be a nice 
+>> scripting language to write the simulation and sending the grass 
+>> commands through to grass, because it offers me quite a bit more 
+>> concerning strtucturing on the modelling side then using a normal shell 
+>> script
+>> But the simulation should also run under Windows and I don't have any 
+>> experience with grass and R under windows.
+> 
+> It sounds very well suited for Linux or MacOSX, but I've little idea about the
+> GRASS+R Windows situation. Maybe someone on the statsgrass mailing list knows?
+> (taking the liberty to cc)
+> 
+>> I have the following questions:
+> ..
+>> 3) Is any other scripting language more suitable for what I want to 
+>> achieve (I have no experience with C / C++, but quite a bit with Delphi. 
+>> I have never used the likes of perl et al. and bash scrips seem a bit 
+>> awkward to me for bigger projects.)?
+> 
+> You could try python. The next version of GRASS will use python heavily for the
+> GUI, so expect lots of example scripts, help on the mailing list from fellow
+> travelers, and tight integration with the code.
+> 
+> Learn python in 10 min:  http://www.poromenos.org/tutorials/python
+> 
+> Also there is a SWIG/Python interface to any needed GIS library functions,
+> which is pretty cool, although the grass modules generally give you what you
+> need without having to resort to using any low-level libgis functions.
+> 
+> see  http://grass.gdf-hannover.de/wiki/GRASS_and_Python
+>      http://freegis.org/cgi-bin/viewcvs.cgi/grass6/swig/python/
+> 
+> Hamish
+> 
+> 
+> 
+>       ____________________________________________________________________________________
+> Luggage? GPS? Comic books? 
+> Check out fitting gifts for grads at Yahoo! Search
+> http://search.yahoo.com/search?fr=oni_on_mail&p=graduation+gifts&cs=bz
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+> 
+
+-- 
+Dr. Agustin Lobo
+Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+LLuis Sole Sabaris s/n
+08028 Barcelona
+Spain
+Tel. 34 934095410
+Fax. 34 934110012
+email: Agustin.Lobo@ija.csic.es
+http://www.ija.csic.es/gt/obster
+
+
+From hzambran.newsgroups at gmail.com  Tue Sep 25 05:24:51 2007
+From: hzambran.newsgroups at gmail.com (Mauricio Zambrano)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] problem installing spgrass6 with R 2.5.1
+In-Reply-To: <63d616b0709250204i68191b00rf3b21b7c477fcedc@mail.gmail.com>
+References: <63d616b0709241126h69986efbke9f21a99bc898e00@mail.gmail.com>
+	<Pine.LNX.4.64.0709242343170.21606@reclus.nhh.no>
+	<63d616b0709250204i68191b00rf3b21b7c477fcedc@mail.gmail.com>
+Message-ID: <63d616b0709250224m5542fa3cxb630d3e5622912e7@mail.gmail.com>
+
+Thanks anyway.Strangely, I solved the problem doing:
+
+1) > install.packages("rgdal", dependencies=TRUE)
+
+2) quit R (I don't know if it was necessary)
+
+3) > install.packages("spgrass6", dependencies=TRUE)
+
+and everything it is OK now:
+
+Aviso en install.packages("spgrass6", dependencies = TRUE) :
+         argument 'lib' is missing: using
+'/home/hzambran/R/i486-pc-linux-gnu-library/2.5'
+probando la URL 'http://cran.fhcrc.org/src/contrib/spgrass6_0.4-2.tar.gz'
+Content type 'application/x-gzip' length 319712 bytes
+URL abierta
+==================================================
+downloaded 312Kb
+
+* Installing *source* package 'spgrass6' ...
+** R
+** inst
+** preparing package for lazy loading
+Loading required package: sp
+Loading required package: maptools
+Loading required package: foreign
+Loading required package: rgdal
+Geospatial Data Abstraction Library extensions to R successfully loaded
+** help
+ >>> Building/Updating help pages for package 'spgrass6'
+     Formats: text html latex example
+  gmeta6                            text    html    latex   example
+  readRAST6                         text    html    latex   example
+  readVECT6                         text    html    latex   example
+  spgrass6                          text    html    latex   example
+** building package indices ...
+* DONE (spgrass6)
+
+The downloaded packages are in
+        /tmp/RtmpRS0qGw/downloaded_packages
+
+Mauricio
+
+
+From jgarcia at ija.csic.es  Tue Sep 25 05:57:39 2007
+From: jgarcia at ija.csic.es (javier garcia-pintado)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Re: [GRASS-user] Simulation in grass 6
+In-Reply-To: <46F8D35F.5000903@ija.csic.es>
+References: <510934.76663.qm@web52711.mail.re2.yahoo.com>
+	<46F8D35F.5000903@ija.csic.es>
+Message-ID: <46F8DB93.5020909@ija.csic.es>
+
+I don't know if this will help you.
+Just thinking about your reasons to use windows, maybe it's because you
+need to execute some windows program.
+My solution is to use R-GRASS in Linux for simulation, what is excellent
+beacuse of the wealth of R functions for statistical evaluation of the
+models, and the matrix operations in R. Also you can call C compiled
+code from your R script to speed up bottlenecks in your code, as pieces
+with a lot of loopings etc.
+And if you need to execute some windows program, you can also execute
+them remotely in a windows machina via ssh and get bak your results to
+your linux machine. This also works right.
+Good luck
+Javier
+----------------------------------------
+
+Agustin Lobo wrote:
+> Actually, I often use R as an scripting language
+> for grass. The problem is that grass commands have
+> to be issued using system(), which, for a complex code,
+> becomes inconvenient (lots of paste() for generating the
+> actual grass command).
+> Not being an expert at all on python, I wonder
+> if making R able of executing grass commands without
+> having to use system() could not be a valid alternative
+> to python, at least in some cases.
+>
+> Anyway, I think that the real solution would be having a GIS
+> able of displaying R objects, sort of RGis.
+>
+> Agus
+>
+> Hamish escribi?:
+>> Rainer M. Krug wrote:
+>>
+>>> I am planning to write a spatial simulation model, simulating the
+>>> spread of alien species on a landscape scale by using grass.
+>>> My question how I should write the simulation model, i.e. in which
+>>> scripting language. I am using Linux and have quite a bit of
+>>> experience with R, so I thought that R (together with spgrass6)
+>>> would be a nice scripting language to write the simulation and
+>>> sending the grass commands through to grass, because it offers me
+>>> quite a bit more concerning strtucturing on the modelling side then
+>>> using a normal shell script
+>>> But the simulation should also run under Windows and I don't have
+>>> any experience with grass and R under windows.
+>>
+>> It sounds very well suited for Linux or MacOSX, but I've little idea
+>> about the
+>> GRASS+R Windows situation. Maybe someone on the statsgrass mailing
+>> list knows?
+>> (taking the liberty to cc)
+>>
+>>> I have the following questions:
+>> ..
+>>> 3) Is any other scripting language more suitable for what I want to
+>>> achieve (I have no experience with C / C++, but quite a bit with
+>>> Delphi. I have never used the likes of perl et al. and bash scrips
+>>> seem a bit awkward to me for bigger projects.)?
+>>
+>> You could try python. The next version of GRASS will use python
+>> heavily for the
+>> GUI, so expect lots of example scripts, help on the mailing list from
+>> fellow
+>> travelers, and tight integration with the code.
+>>
+>> Learn python in 10 min:  http://www.poromenos.org/tutorials/python
+>>
+>> Also there is a SWIG/Python interface to any needed GIS library
+>> functions,
+>> which is pretty cool, although the grass modules generally give you
+>> what you
+>> need without having to resort to using any low-level libgis functions.
+>>
+>> see  http://grass.gdf-hannover.de/wiki/GRASS_and_Python
+>>      http://freegis.org/cgi-bin/viewcvs.cgi/grass6/swig/python/
+>>
+>> Hamish
+>>
+>>
+>>
+>>      
+>> ____________________________________________________________________________________
+>>
+>> Luggage? GPS? Comic books? Check out fitting gifts for grads at
+>> Yahoo! Search
+>> http://search.yahoo.com/search?fr=oni_on_mail&p=graduation+gifts&cs=bz
+>>
+>> _______________________________________________
+>> statsgrass mailing list
+>> statsgrass@grass.itc.it
+>> http://grass.itc.it/mailman/listinfo/statsgrass
+>>
+>
+
+
+-- 
+Javier Garc?a-Pintado
+Institute of Earth Sciences Jaume Almera (CSIC)
+Lluis Sole Sabaris s/n, 08028 Barcelona
+Phone: +34 934095410
+Fax:   +34 934110012
+e-mail:jgarcia@ija.csic.es 
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: jgarcia.vcf
+Type: text/x-vcard
+Size: 337 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20070925/893b8d5e/jgarcia.vcf
+From Rainer at krugs.de  Tue Sep 25 05:20:48 2007
+From: Rainer at krugs.de (Rainer M. Krug)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Re: [GRASS-user] Simulation in grass 6
+In-Reply-To: <510934.76663.qm@web52711.mail.re2.yahoo.com>
+References: <510934.76663.qm@web52711.mail.re2.yahoo.com>
+Message-ID: <46F8D2F0.2080402@krugs.de>
+
+Hamish wrote:
+> Rainer M. Krug wrote:
+> 
+>> I am planning to write a spatial simulation model, simulating the spread 
+>> of alien species on a landscape scale by using grass.
+>> My question how I should write the simulation model, i.e. in which 
+>> scripting language. I am using Linux and have quite a bit of experience 
+>> with R, so I thought that R (together with spgrass6) would be a nice 
+>> scripting language to write the simulation and sending the grass 
+>> commands through to grass, because it offers me quite a bit more 
+>> concerning strtucturing on the modelling side then using a normal shell 
+>> script
+>> But the simulation should also run under Windows and I don't have any 
+>> experience with grass and R under windows.
+> 
+> It sounds very well suited for Linux or MacOSX, but I've little idea about the
+> GRASS+R Windows situation. Maybe someone on the statsgrass mailing list knows?
+> (taking the liberty to cc)
+
+Thanks a lot - I am subscribed to this list now - strange that I 
+overlooked that lisat before...
+
+> 
+>> I have the following questions:
+> ..
+>> 3) Is any other scripting language more suitable for what I want to 
+>> achieve (I have no experience with C / C++, but quite a bit with Delphi. 
+>> I have never used the likes of perl et al. and bash scrips seem a bit 
+>> awkward to me for bigger projects.)?
+> 
+> You could try python. The next version of GRASS will use python heavily for the
+> GUI, so expect lots of example scripts, help on the mailing list from fellow
+> travelers, and tight integration with the code.
+
+Sounds very interesting - I'll take a look at it.
+
+> 
+> Learn python in 10 min:  http://www.poromenos.org/tutorials/python
+
+Python doesn't look as difficult as I thought the first time I looked at 
+it (a few years back...). Looks similar to what I am used to in Delphi.
+
+> 
+> Also there is a SWIG/Python interface to any needed GIS library functions,
+> which is pretty cool, although the grass modules generally give you what you
+> need without having to resort to using any low-level libgis functions.
+> 
+> see  http://grass.gdf-hannover.de/wiki/GRASS_and_Python
+
+Looking at the document, I must say it seems to be a usefull approach to 
+use Python - and it is crossplatform. One thing which I did not see that 
+quickly is how I can execute grass commands from python - I guess it is 
+easy, but I didn't find it when I looked at the document.
+
+Thanks a lot for your usefull and very helpfull hints,
+
+Rainer
+
+
+>      http://freegis.org/cgi-bin/viewcvs.cgi/grass6/swig/python/
+> 
+> Hamish
+> 
+> 
+> 
+>       ____________________________________________________________________________________
+> Luggage? GPS? Comic books? 
+> Check out fitting gifts for grads at Yahoo! Search
+> http://search.yahoo.com/search?fr=oni_on_mail&p=graduation+gifts&cs=bz
+> 
+> _______________________________________________
+> grassuser mailing list
+> grassuser@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/grassuser
+
+
+-- 
+NEW EMAIL ADDRESS AND ADDRESS:
+
+Rainer.Krug@uct.ac.za
+
+RKrug@sun.ac.za WILL BE DISCONTINUED END OF MARCH
+
+Rainer M. Krug, Dipl. Phys. (Germany), MSc Conservation
+Biology (UCT)
+
+Plant Conservation Unit
+Department of Botany
+University of Cape Town
+Rondebosch 7701
+South Africa
+
+Tel:		+27 - (0)21 650 5776 (w)
+Fax:		+27 - (0)86 516 2782
+Fax:		+27 - (0)21 650 2440 (w)
+Cell:		+27 - (0)83 9479 042
+
+Skype:		RMkrug
+
+email:	Rainer.Krug@uct.ac.za
+       	Rainer@krugs.de
+
+
+From Rainer at krugs.de  Tue Sep 25 05:33:44 2007
+From: Rainer at krugs.de (Rainer M. Krug)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Re: [GRASS-user] Simulation in grass 6
+In-Reply-To: <46F8D35F.5000903@ija.csic.es>
+References: <510934.76663.qm@web52711.mail.re2.yahoo.com>
+	<46F8D35F.5000903@ija.csic.es>
+Message-ID: <46F8D5F8.3060209@krugs.de>
+
+Agustin Lobo wrote:
+> Actually, I often use R as an scripting language
+> for grass. The problem is that grass commands have
+> to be issued using system(), which, for a complex code,
+> becomes inconvenient (lots of paste() for generating the
+> actual grass command).
+
+This is indeed a hassle, but I wrote a small R function which is pasting 
+all the parameters supplied together and executing them via system() - 
+still not perfect, but it works nicer then the system(paste(...)) approach.
+
+> Not being an expert at all on python, I wonder
+> if making R able of executing grass commands without
+> having to use system() could not be a valid alternative
+> to python, at least in some cases.
+
+I think this would, at least, make using grass from R much easier. And 
+it shouldn't be to dificult to do that - just defining a function with 
+the same name as in R and execute it via system() - I think about using 
+this in my simulation.
+
+
+Thanks,
+
+Rainer
+
+> 
+> Anyway, I think that the real solution would be having a GIS
+> able of displaying R objects, sort of RGis.
+> 
+> Agus
+> 
+> Hamish escribi?:
+>> Rainer M. Krug wrote:
+>>
+>>> I am planning to write a spatial simulation model, simulating the 
+>>> spread of alien species on a landscape scale by using grass.
+>>> My question how I should write the simulation model, i.e. in which 
+>>> scripting language. I am using Linux and have quite a bit of 
+>>> experience with R, so I thought that R (together with spgrass6) would 
+>>> be a nice scripting language to write the simulation and sending the 
+>>> grass commands through to grass, because it offers me quite a bit 
+>>> more concerning strtucturing on the modelling side then using a 
+>>> normal shell script
+>>> But the simulation should also run under Windows and I don't have any 
+>>> experience with grass and R under windows.
+>>
+>> It sounds very well suited for Linux or MacOSX, but I've little idea 
+>> about the
+>> GRASS+R Windows situation. Maybe someone on the statsgrass mailing 
+>> list knows?
+>> (taking the liberty to cc)
+>>
+>>> I have the following questions:
+>> ..
+>>> 3) Is any other scripting language more suitable for what I want to 
+>>> achieve (I have no experience with C / C++, but quite a bit with 
+>>> Delphi. I have never used the likes of perl et al. and bash scrips 
+>>> seem a bit awkward to me for bigger projects.)?
+>>
+>> You could try python. The next version of GRASS will use python 
+>> heavily for the
+>> GUI, so expect lots of example scripts, help on the mailing list from 
+>> fellow
+>> travelers, and tight integration with the code.
+>>
+>> Learn python in 10 min:  http://www.poromenos.org/tutorials/python
+>>
+>> Also there is a SWIG/Python interface to any needed GIS library 
+>> functions,
+>> which is pretty cool, although the grass modules generally give you 
+>> what you
+>> need without having to resort to using any low-level libgis functions.
+>>
+>> see  http://grass.gdf-hannover.de/wiki/GRASS_and_Python
+>>      http://freegis.org/cgi-bin/viewcvs.cgi/grass6/swig/python/
+>>
+>> Hamish
+>>
+>>
+>>
+>>       
+>> ____________________________________________________________________________________ 
+>>
+>> Luggage? GPS? Comic books? Check out fitting gifts for grads at Yahoo! 
+>> Search
+>> http://search.yahoo.com/search?fr=oni_on_mail&p=graduation+gifts&cs=bz
+>>
+>> _______________________________________________
+>> statsgrass mailing list
+>> statsgrass@grass.itc.it
+>> http://grass.itc.it/mailman/listinfo/statsgrass
+>>
+> 
+
+
+-- 
+NEW EMAIL ADDRESS AND ADDRESS:
+
+Rainer.Krug@uct.ac.za
+
+RKrug@sun.ac.za WILL BE DISCONTINUED END OF MARCH
+
+Rainer M. Krug, Dipl. Phys. (Germany), MSc Conservation
+Biology (UCT)
+
+Plant Conservation Unit
+Department of Botany
+University of Cape Town
+Rondebosch 7701
+South Africa
+
+Tel:		+27 - (0)21 650 5776 (w)
+Fax:		+27 - (0)86 516 2782
+Fax:		+27 - (0)21 650 2440 (w)
+Cell:		+27 - (0)83 9479 042
+
+Skype:		RMkrug
+
+email:	Rainer.Krug@uct.ac.za
+       	Rainer@krugs.de
+
+
+From michael.barton at asu.edu  Tue Sep 25 10:22:13 2007
+From: michael.barton at asu.edu (Michael Barton)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Re: [GRASS-user] Simulation in grass 6
+In-Reply-To: <510934.76663.qm@web52711.mail.re2.yahoo.com>
+Message-ID: <C31E67A5.268B4%michael.barton@asu.edu>
+
+Ranier,
+
+
+On 9/25/07 2:02 AM, "Hamish" <hamish_nospam@yahoo.com> wrote:
+
+> Rainer M. Krug wrote:
+> 
+>> I am planning to write a spatial simulation model, simulating the spread
+>> of alien species on a landscape scale by using grass.
+>> My question how I should write the simulation model, i.e. in which
+>> scripting language. I am using Linux and have quite a bit of experience
+>> with R, so I thought that R (together with spgrass6) would be a nice
+>> scripting language to write the simulation and sending the grass
+>> commands through to grass, because it offers me quite a bit more
+>> concerning strtucturing on the modelling side then using a normal shell
+>> script
+>> But the simulation should also run under Windows and I don't have any
+>> experience with grass and R under windows.
+
+You might want to take a look at the wildfire modeling routines already in
+GRASS. I think that with minimal work, these could be modified to become
+general spread-modeling routines. I've used these (with some difficulty) to
+model the spread of other phenomena than wildfires and would love to have
+general spread routines in GRASS.
+
+> 
+> It sounds very well suited for Linux or MacOSX, but I've little idea about the
+> GRASS+R Windows situation. Maybe someone on the statsgrass mailing list knows?
+> (taking the liberty to cc)
+> 
+>> I have the following questions:
+> ..
+>> 3) Is any other scripting language more suitable for what I want to
+>> achieve (I have no experience with C / C++, but quite a bit with Delphi.
+>> I have never used the likes of perl et al. and bash scrips seem a bit
+>> awkward to me for bigger projects.)?
+> 
+> You could try python. The next version of GRASS will use python heavily for
+> the
+> GUI, so expect lots of example scripts, help on the mailing list from fellow
+> travelers, and tight integration with the code.
+> 
+> Learn python in 10 min:  http://www.poromenos.org/tutorials/python
+> 
+> Also there is a SWIG/Python interface to any needed GIS library functions,
+> which is pretty cool, although the grass modules generally give you what you
+> need without having to resort to using any low-level libgis functions.
+> 
+> see  http://grass.gdf-hannover.de/wiki/GRASS_and_Python
+>      http://freegis.org/cgi-bin/viewcvs.cgi/grass6/swig/python/
+> 
+> Hamish
+
+I also want to second Hamish's mention of Python. It is a powerful and
+(relatively) easy to learn language that will become increasingly important
+to GRASS in the future. Extensions scipy and numpy give it additional
+abilities.
+
+Michael
+
+> 
+> 
+> 
+>       
+> ______________________________________________________________________________
+> ______
+> Luggage? GPS? Comic books?
+> Check out fitting gifts for grads at Yahoo! Search
+> http://search.yahoo.com/search?fr=oni_on_mail&p=graduation+gifts&cs=bz
+> 
+> 
+
+__________________________________________
+Michael Barton, Professor of Anthropology
+Director of Graduate Studies
+School of Human Evolution & Social Change
+Center for Social Dynamics & Complexity
+Arizona State University
+
+phone: 480-965-6213
+fax: 480-965-7671
+www: http://www.public.asu.edu/~cmbarton
+
+
+
+From Rainer at krugs.de  Tue Sep 25 10:29:48 2007
+From: Rainer at krugs.de (Rainer M. Krug)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Re: [GRASS-user] Simulation in grass 6
+In-Reply-To: <46F8DB93.5020909@ija.csic.es>
+References: <510934.76663.qm@web52711.mail.re2.yahoo.com>
+	<46F8D35F.5000903@ija.csic.es> <46F8DB93.5020909@ija.csic.es>
+Message-ID: <46F91B5C.1060700@krugs.de>
+
+javier garcia-pintado wrote:
+> I don't know if this will help you.
+> Just thinking about your reasons to use windows, maybe it's because you
+> need to execute some windows program.
+
+No - I am absolutely happy with Linux and would prefer to not have to 
+think about windows any more - but there is always somebody who is 
+paying you, in my pase the one who contracted us. They want to use it 
+finally under windows...
+
+Rainer
+
+SNIP
+-- 
+NEW EMAIL ADDRESS AND ADDRESS:
+
+Rainer.Krug@uct.ac.za
+
+RKrug@sun.ac.za WILL BE DISCONTINUED END OF MARCH
+
+Rainer M. Krug, Dipl. Phys. (Germany), MSc Conservation
+Biology (UCT)
+
+Plant Conservation Unit
+Department of Botany
+University of Cape Town
+Rondebosch 7701
+South Africa
+
+Tel:		+27 - (0)21 650 5776 (w)
+Fax:		+27 - (0)86 516 2782
+Fax:		+27 - (0)21 650 2440 (w)
+Cell:		+27 - (0)83 9479 042
+
+Skype:		RMkrug
+
+email:	Rainer.Krug@uct.ac.za
+       	Rainer@krugs.de
+
+
+From Rainer at krugs.de  Tue Sep 25 10:30:08 2007
+From: Rainer at krugs.de (Rainer M. Krug)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Re: [GRASS-user] Simulation in grass 6
+In-Reply-To: <46F8DB93.5020909@ija.csic.es>
+References: <510934.76663.qm@web52711.mail.re2.yahoo.com>
+	<46F8D35F.5000903@ija.csic.es> <46F8DB93.5020909@ija.csic.es>
+Message-ID: <46F91B70.7050100@krugs.de>
+
+javier garcia-pintado wrote:
+> I don't know if this will help you.
+> Just thinking about your reasons to use windows, maybe it's because you
+> need to execute some windows program.
+
+No - I am absolutely happy with Linux and would prefer to not have to 
+think about windows any more - but there is always somebody who is 
+paying you, in my pase the one who contracted us. They want to use it 
+finally under windows...
+
+Rainer
+
+SNIP
+-- 
+NEW EMAIL ADDRESS AND ADDRESS:
+
+Rainer.Krug@uct.ac.za
+
+RKrug@sun.ac.za WILL BE DISCONTINUED END OF MARCH
+
+Rainer M. Krug, Dipl. Phys. (Germany), MSc Conservation
+Biology (UCT)
+
+Plant Conservation Unit
+Department of Botany
+University of Cape Town
+Rondebosch 7701
+South Africa
+
+Tel:		+27 - (0)21 650 5776 (w)
+Fax:		+27 - (0)86 516 2782
+Fax:		+27 - (0)21 650 2440 (w)
+Cell:		+27 - (0)83 9479 042
+
+Skype:		RMkrug
+
+email:	Rainer.Krug@uct.ac.za
+       	Rainer@krugs.de
+
+
+From Rainer at krugs.de  Tue Sep 25 10:34:25 2007
+From: Rainer at krugs.de (Rainer M. Krug)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Re: [GRASS-user] Simulation in grass 6
+In-Reply-To: <C31E67A5.268B4%michael.barton@asu.edu>
+References: <C31E67A5.268B4%michael.barton@asu.edu>
+Message-ID: <46F91C71.4020206@krugs.de>
+
+Michael Barton wrote:
+> Ranier,
+> 
+> 
+> On 9/25/07 2:02 AM, "Hamish" <hamish_nospam@yahoo.com> wrote:
+> 
+>> Rainer M. Krug wrote:
+>>
+>>> I am planning to write a spatial simulation model, simulating the spread
+>>> of alien species on a landscape scale by using grass.
+>>> My question how I should write the simulation model, i.e. in which
+>>> scripting language. I am using Linux and have quite a bit of experience
+>>> with R, so I thought that R (together with spgrass6) would be a nice
+>>> scripting language to write the simulation and sending the grass
+>>> commands through to grass, because it offers me quite a bit more
+>>> concerning strtucturing on the modelling side then using a normal shell
+>>> script
+>>> But the simulation should also run under Windows and I don't have any
+>>> experience with grass and R under windows.
+> 
+> You might want to take a look at the wildfire modeling routines already in
+> GRASS. I think that with minimal work, these could be modified to become
+> general spread-modeling routines. I've used these (with some difficulty) to
+> model the spread of other phenomena than wildfires and would love to have
+> general spread routines in GRASS.
+
+Good idea - I haven't thought about them. I'll see what I can do with them.
+
+> 
+>> It sounds very well suited for Linux or MacOSX, but I've little idea about the
+>> GRASS+R Windows situation. Maybe someone on the statsgrass mailing list knows?
+>> (taking the liberty to cc)
+>>
+>>> I have the following questions:
+>> ..
+>>> 3) Is any other scripting language more suitable for what I want to
+>>> achieve (I have no experience with C / C++, but quite a bit with Delphi.
+>>> I have never used the likes of perl et al. and bash scrips seem a bit
+>>> awkward to me for bigger projects.)?
+>> You could try python. The next version of GRASS will use python heavily for
+>> the
+>> GUI, so expect lots of example scripts, help on the mailing list from fellow
+>> travelers, and tight integration with the code.
+>>
+>> Learn python in 10 min:  http://www.poromenos.org/tutorials/python
+>>
+>> Also there is a SWIG/Python interface to any needed GIS library functions,
+>> which is pretty cool, although the grass modules generally give you what you
+>> need without having to resort to using any low-level libgis functions.
+>>
+>> see  http://grass.gdf-hannover.de/wiki/GRASS_and_Python
+>>      http://freegis.org/cgi-bin/viewcvs.cgi/grass6/swig/python/
+>>
+>> Hamish
+> 
+> I also want to second Hamish's mention of Python. It is a powerful and
+> (relatively) easy to learn language that will become increasingly important
+> to GRASS in the future. Extensions scipy and numpy give it additional
+> abilities.
+> 
+> Michael
+> 
+>>
+>>
+>>       
+>> ______________________________________________________________________________
+>> ______
+>> Luggage? GPS? Comic books?
+>> Check out fitting gifts for grads at Yahoo! Search
+>> http://search.yahoo.com/search?fr=oni_on_mail&p=graduation+gifts&cs=bz
+>>
+>>
+> 
+> __________________________________________
+> Michael Barton, Professor of Anthropology
+> Director of Graduate Studies
+> School of Human Evolution & Social Change
+> Center for Social Dynamics & Complexity
+> Arizona State University
+> 
+> phone: 480-965-6213
+> fax: 480-965-7671
+> www: http://www.public.asu.edu/~cmbarton
+> 
+> 
+
+
+-- 
+NEW EMAIL ADDRESS AND ADDRESS:
+
+Rainer.Krug@uct.ac.za
+
+RKrug@sun.ac.za WILL BE DISCONTINUED END OF MARCH
+
+Rainer M. Krug, Dipl. Phys. (Germany), MSc Conservation
+Biology (UCT)
+
+Plant Conservation Unit
+Department of Botany
+University of Cape Town
+Rondebosch 7701
+South Africa
+
+Tel:		+27 - (0)21 650 5776 (w)
+Fax:		+27 - (0)86 516 2782
+Fax:		+27 - (0)21 650 2440 (w)
+Cell:		+27 - (0)83 9479 042
+
+Skype:		RMkrug
+
+email:	Rainer.Krug@uct.ac.za
+       	Rainer@krugs.de
+
+
+From deleeuw at stat.ucla.edu  Tue Sep 25 10:56:07 2007
+From: deleeuw at stat.ucla.edu (Jan de Leeuw)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] Journal of Statistical Software
+Message-ID: <1AC600F3-B695-41C3-BE37-3C6BE5ECDBEB@stat.ucla.edu>
+
+I just wanted to point out
+
+http://www.jstatsoft.org
+
+This is an Open Access journal, it reviews and publishes both article
+and software, it is published by the American Statistical Association,
+ISBN, CODEC, indexed by the usual suspects. We only publish open
+source software, and support the idea of reproducible research.
+
+We would love to have some GRASS, and or even a special volume
+on "GRASS and Statistics" or "Open GIS and Statistics". For
+special volumes, someone has to volunteer as a guest editor,
+and then collect and coordinate the review process for about 10
+submissions.
+
+
+===
+Jan de Leeuw; Distinguished Professor and Chair, UCLA Department of  
+Statistics;
+Director: UCLA Center for Environmental Statistics (CES);
+Editor: Journal of Multivariate Analysis, Journal of Statistical  
+Software;
+US mail: 8125 Math Sciences Bldg, Box 951554, Los Angeles, CA 90095-1554
+phone (310)-825-9550;  fax (310)-206-5658;  email: deleeuw@stat.ucla.edu
+.mac: jdeleeuw +++ skype: j_deleeuw +++ homepage: http:// 
+www.cuddyvalley.org
+   
+------------------------------------------------------------------------ 
+-------------------------
+           No matter where you go, there you are. --- Buckaroo Banzai
+                    http://gifi.stat.ucla.edu/sounds/nomatter.au
+   
+------------------------------------------------------------------------ 
+-------------------------
+
+
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20070925/674fb61f/attachment.html
+From deleeuw at stat.ucla.edu  Tue Sep 25 11:17:54 2007
+From: deleeuw at stat.ucla.edu (Jan de Leeuw)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] jumpstation
+Message-ID: <22F3141F-E7BC-4BFD-A09D-4DD4C1EADB09@stat.ucla.edu>
+
+We have created (and will maintain) info pages for the
+three musketeers R, GRASS, and LaTeX at
+
+http://info.stat.ucla.edu/grad/
+
+This is intended for our grads (and undergrads) but it may
+be of more general use. Suggestions/corrections welcome,
+of course.
+
+===
+Jan de Leeuw; Distinguished Professor and Chair, UCLA Department of  
+Statistics;
+Director: UCLA Center for Environmental Statistics (CES);
+Editor: Journal of Multivariate Analysis, Journal of Statistical  
+Software;
+US mail: 8125 Math Sciences Bldg, Box 951554, Los Angeles, CA 90095-1554
+phone (310)-825-9550;  fax (310)-206-5658;  email: deleeuw@stat.ucla.edu
+.mac: jdeleeuw +++ skype: j_deleeuw +++ homepage: http:// 
+www.cuddyvalley.org
+   
+------------------------------------------------------------------------ 
+-------------------------
+           No matter where you go, there you are. --- Buckaroo Banzai
+                    http://gifi.stat.ucla.edu/sounds/nomatter.au
+   
+------------------------------------------------------------------------ 
+-------------------------
+
+
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20070925/9324b371/attachment.html
+From Agustin.Lobo at ija.csic.es  Wed Sep 26 12:37:41 2007
+From: Agustin.Lobo at ija.csic.es (Agustin Lobo)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] R, gras, qgis etc in gentoo?
+Message-ID: <46FA8AD5.1080200@ija.csic.es>
+
+Sorry if this is too off-topic for this list.
+
+I'm thinking on a new machine
+and wonder if gentoo linux would make
+difference for running R, grass, qgis...
+Anyone out there has any experience with or has
+information on this distribution
+in which all packages have to be compiled?
+
+Thanks!
+
+Agus
+-- 
+Dr. Agustin Lobo
+Institut de Ciencies de la Terra "Jaume Almera" (CSIC)
+LLuis Sole Sabaris s/n
+08028 Barcelona
+Spain
+Tel. 34 934095410
+Fax. 34 934110012
+email: Agustin.Lobo@ija.csic.es
+http://www.ija.csic.es/gt/obster
+
+
+From daniel.mcinerney at ucd.ie  Wed Sep 26 17:57:55 2007
+From: daniel.mcinerney at ucd.ie (Daniel McInerney)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] R, gras, qgis etc in gentoo?
+In-Reply-To: <46FA8AD5.1080200@ija.csic.es>
+References: <46FA8AD5.1080200@ija.csic.es>
+Message-ID: <46FAD5E3.9050007@ucd.ie>
+
+Hi Agus,
+
+> Sorry if this is too off-topic for this list.
+
+You might get more feedback about specifics
+of software on various linux distributions
+from the Freegis mailing list [1], as this
+list deals specifically with issues relating to
+GRASS-GIS interfaces to stats software, in particular R.
+
+> I'm thinking on a new machine
+> and wonder if gentoo linux would make
+> difference for running R, grass, qgis...
+> Anyone out there has any experience with or has
+> information on this distribution
+> in which all packages have to be compiled?
+
+To briefly answer your query, I would make the following observations:
+
+If your work entails monitoring system performance and how OS tuning 
+will influence processing speeds you might find that you have more 
+control over a system that is entirely installed from source, such as 
+Gentoo. However, if the objective is to do statistical analysis of 
+spatial data using FOSS, a distribution shouldn't make any difference - 
+you should expect (& hope) to reproduce the same results on all 
+operating systems.
+
+My own personal experience is with Debian. All of the packages that
+you identify are available through APT and many more. You can also 
+install all of them from source if required. I'm not advocating one 
+distribution over the other, the choice is down to your needs, 
+preference and experience.
+
+I hope that this is of use to you in deciding on your distribution.
+
+Best regards,
+
+Daniel.
+
+
+[1] http://news.gmane.org/group/gmane.comp.gis.freegis
+
+
+-----------
+Daniel McInerney
+School of Biology & Env. Science,
+University College Dublin,
+Belfield, Dublin 4.
+Ireland
+
+daniel.mcinerney @ ucd.ie
+++ 353 1 716 7787 / 2698
+
+
+From Roger.Bivand at nhh.no  Thu Sep 27 13:49:28 2007
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Nov 14 16:58:17 2007
+Subject: [STATSGRASS] R, gras, qgis etc in gentoo?
+In-Reply-To: <46FAD5E3.9050007@ucd.ie>
+References: <46FA8AD5.1080200@ija.csic.es> <46FAD5E3.9050007@ucd.ie>
+Message-ID: <Pine.LNX.4.64.0709271940510.7163@reclus.nhh.no>
+
+On Wed, 26 Sep 2007, Daniel McInerney wrote:
+
+> Hi Agus,
+>
+>>  Sorry if this is too off-topic for this list.
+>
+> You might get more feedback about specifics
+> of software on various linux distributions
+> from the Freegis mailing list [1], as this
+> list deals specifically with issues relating to
+> GRASS-GIS interfaces to stats software, in particular R.
+>
+>>  I'm thinking on a new machine
+>>  and wonder if gentoo linux would make
+>>  difference for running R, grass, qgis...
+>>  Anyone out there has any experience with or has
+>>  information on this distribution
+>>  in which all packages have to be compiled?
+>
+> To briefly answer your query, I would make the following observations:
+>
+> If your work entails monitoring system performance and how OS tuning will 
+> influence processing speeds you might find that you have more control over a 
+> system that is entirely installed from source, such as Gentoo. However, if 
+> the objective is to do statistical analysis of spatial data using FOSS, a 
+> distribution shouldn't make any difference - you should expect (& hope) to 
+> reproduce the same results on all operating systems.
+
+I think this sums things up well. As far as speed is concerned, you can 
+make R go faster by using a tuned BLAS, because most of the heavier 
+numerical code in R base will benefit from the tuning. For contributed 
+packages, mileage will vary, if they use the same BLAS as R base, they 
+will benefit too. So the differences are not at the distribution level 
+really, given the same hardware, OS kernel, and compile train.
+
+>
+> My own personal experience is with Debian. All of the packages that
+> you identify are available through APT and many more. You can also install 
+> all of them from source if required. I'm not advocating one distribution over 
+> the other, the choice is down to your needs, preference and experience.
+>
+
+I feel that compiling as many of the key software components as you feel 
+necessary does help, because the build environment is (more or less) the 
+same. The more components one depends on, the more likely it is that some 
+should be compiled from source, say to keep all the bits using the same 
+GDAL, rather than depending on different versions. The real benefit of 
+access to source code is however being able to read it when necessary, to 
+see what is going on.
+
+Roger
+
+> I hope that this is of use to you in deciding on your distribution.
+>
+> Best regards,
+>
+> Daniel.
+>
+>
+> [1] http://news.gmane.org/group/gmane.comp.gis.freegis
+>
+>
+> -----------
+> Daniel McInerney
+> School of Biology & Env. Science,
+> University College Dublin,
+> Belfield, Dublin 4.
+> Ireland
+>
+> daniel.mcinerney @ ucd.ie
+> ++ 353 1 716 7787 / 2698
+>
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+

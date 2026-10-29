@@ -1,0 +1,230 @@
+From Roger.Bivand at nhh.no  Wed Oct  6 04:54:24 2010
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Oct  6 04:53:26 2010
+Subject: [GRASS-stats] Anyone still using GRASS 5?
+In-Reply-To: <alpine.LRH.2.00.1009292113080.29781@reclus.nhh.no>
+References: <alpine.LRH.2.00.1009292113080.29781@reclus.nhh.no>
+Message-ID: <alpine.LRH.2.00.1010061050250.6226@reclus.nhh.no>
+
+On Wed, 29 Sep 2010, Roger Bivand wrote:
+
+> Is anyone still using GRASS 5 and the R "GRASS" package? With GRASS 6.*, the 
+> spgrass6 package is actively maintained. If nobody is using GRASS 5, I would 
+> like to archive and retire the R "GRASS" package. However, if someone is 
+> actively using GRASS5 and the matching R "GRASS" package, I'll keep it active 
+> until you let me know that you are through.
+
+As no response has been forthcoming, the R GRASS package for interfacing 
+GRASS 5 has been retired from active CRAN distribution, but will remain 
+available as a source package at:
+
+http://cran.r-project.org/src/contrib/Archive/GRASS/
+
+Roger
+
+>
+> Roger
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From gis.gn at libero.it  Thu Oct  7 06:53:35 2010
+From: gis.gn at libero.it (Gabriele N.)
+Date: Thu Oct  7 06:53:36 2010
+Subject: [GRASS-stats] R, Moran index, getis e ord.....
+Message-ID: <1286448815316-5610836.post@n2.nabble.com>
+
+
+Hy everyone.
+
+I have a raster which is the result of calculating an index of remote
+sensing (with decimals).
+
+I would like to calculate the Moran's index and the index of Getis and Ord
+
+To do this I installed R (following
+http://grass.fbk.eu/statsgrass/grass6_r_install.html).
+Then I installed the packages
+
+install.packages("spdep",dependencies=TRUE)
+install.packages("maptools",dependencies=TRUE)
+
+Then from the shell:
+
+R
+
+Then load these libraries
+
+library(spgrass6)
+library(spdep)
+library(maptools)
+library(boot)
+library(Matrix)
+library(lattice)
+
+I read the raster
+
+index_water_2009<-readRAST6("index_water_2009")
+
+At this point I stopped. I saw on the mailing list and some tutorials.
+
+I can not understand the syntax to use.
+
+It only works on vector?
+
+Someone can give me some help?
+
+Thanks 
+-- 
+View this message in context: http://osgeo-org.1803224.n2.nabble.com/R-Moran-index-getis-e-ord-tp5610836p5610836.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+From Roger.Bivand at nhh.no  Thu Oct  7 07:25:22 2010
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Oct  7 07:24:25 2010
+Subject: [GRASS-stats] R, Moran index, getis e ord.....
+In-Reply-To: <1286448815316-5610836.post@n2.nabble.com>
+References: <1286448815316-5610836.post@n2.nabble.com>
+Message-ID: <alpine.LRH.2.00.1010071316080.10428@reclus.nhh.no>
+
+On Thu, 7 Oct 2010, Gabriele N. wrote:
+
+>
+> Hy everyone.
+>
+> I have a raster which is the result of calculating an index of remote
+> sensing (with decimals).
+>
+> I would like to calculate the Moran's index and the index of Getis and Ord
+>
+> To do this I installed R (following
+> http://grass.fbk.eu/statsgrass/grass6_r_install.html).
+> Then I installed the packages
+>
+> install.packages("spdep",dependencies=TRUE)
+> install.packages("maptools",dependencies=TRUE)
+>
+> Then from the shell:
+>
+> R
+>
+> Then load these libraries
+>
+> library(spgrass6)
+> library(spdep)
+> library(maptools)
+> library(boot)
+> library(Matrix)
+> library(lattice)
+>
+> I read the raster
+>
+> index_water_2009<-readRAST6("index_water_2009")
+>
+> At this point I stopped. I saw on the mailing list and some tutorials.
+>
+> I can not understand the syntax to use.
+
+Well, in rasters the number of "observations" is typically very large, 
+probably artificially so, depending on the "natural" resolution of the 
+phenomena of interest. Consequently, in rasters one almost always finds 
+strong positive spatial autocorrelation, because the cells do not 
+represent well the actual entities. If you need to do this, you can try 
+in Spearfish:
+
+library(spgrass6)
+gmeta6()
+execGRASS("g.region", parameters=list(res="150"))
+# to coarsen the input resolution
+gmeta6()
+elev <- readRAST6("elevation.dem")
+GT <- slot(elev, "grid")
+library(spdep)
+nb_rook <- dnearneigh(coordinates(elev), 0, mean(slot(GT,
+   "cellsize"))*1.05)
+summary(elev)
+# note NAs, need to subset to handle:
+mt <- moran.test(elev$elevation.dem, nb2listw(nb_rook), na.action=na.omit)
+# using spatial weights row standardisation
+mt
+
+Hope this helps,
+
+Roger
+
+>
+> It only works on vector?
+>
+> Someone can give me some help?
+>
+> Thanks
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From gis.gn at libero.it  Tue Oct 12 10:54:06 2010
+From: gis.gn at libero.it (Gabriele N.)
+Date: Tue Oct 12 10:54:07 2010
+Subject: [GRASS-stats] Re: R, Moran index, getis e ord.....
+In-Reply-To: <alpine.LRH.2.00.1010071316080.10428@reclus.nhh.no>
+References: <1286448815316-5610836.post@n2.nabble.com>
+	<alpine.LRH.2.00.1010071316080.10428@reclus.nhh.no>
+Message-ID: <1286895246138-5627018.post@n2.nabble.com>
+
+
+Hi Roger....and thanks.
+It works ....  :)
+I have 3 other questions.
+
+I followed your instructions (raster index_water_2009):
+> library(spgrass6)
+> gmeta6()
+> execGRASS("g.region", parameters=list(res="150"))
+> iw<-readRAST6("index_water_2009")
+> GT <- slot(iw, "grid")
+> library(spdep)
+> # Distance-based nearest neighbors list = dnearneigh
+> nb_rook <- dnearneigh(coordinates(iw), 0, mean(slot(GT,"cellsize"))*1.05) 
+
+
+1) here I did not understand how is used the function Neighbourhood
+contiguity by distance (I have seen the help(dnearneigh) )
+
+> summary(iw)
+> mt <- moran.test(iw$index_water_2009, nb2listw(nb_rook),
+> na.action=na.omit)
+> mt
+	Moran's I test under randomisation
+
+data:  iw$index_water_2009  
+weights: nb2listw(nb_rook)  
+ 
+Moran I statistic standard deviate = 633.2733, p-value < 2.2e-16
+alternative hypothesis: greater 
+sample estimates:
+Moran I statistic       Expectation          Variance 
+     9.745175e-01     -4.723063e-06      2.368106e-06 
+
+
+2) I would now create a new raster (always starting with index_water_2009)
+containing in the pixel the value of Moran (from -1 to 1).
+3) I would do the same for Getis and Ord.
+
+How can I do this?
+
+Thank you very much.
+
+Gabriele
+-- 
+View this message in context: http://osgeo-org.1803224.n2.nabble.com/R-Moran-index-getis-e-ord-tp5610836p5627018.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.

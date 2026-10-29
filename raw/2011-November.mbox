@@ -1,0 +1,1180 @@
+From tepp at life.ku.dk  Wed Nov  2 12:05:19 2011
+From: tepp at life.ku.dk (toke)
+Date: Thu Nov  3 02:21:36 2011
+Subject: [GRASS-stats] Re: Problem with v.distance in spgrass6 package in R
+In-Reply-To: <1319791305536-6939286.post@n2.nabble.com>
+References: <1319791305536-6939286.post@n2.nabble.com>
+Message-ID: <1320249919929-6955833.post@n2.nabble.com>
+
+Hi Roger and everybody else 
+
+I finally found time to translate the problem into spearfish data. 
+
+To recapitulate I would like to use the v.distance command to transfer
+information from polygons to point data.
+ 
+The problem is that the v.distance command do not update the column
+specified to receive the calculation done by the v.distance command.  
+
+Here is my script     
+
+grass
+
+g.gisenv
+g.mapset mapset=user1
+
+g.copy vect='fields@PERMANENT',fields1 # adding  polygon to mapset 
+
+g.copy vect='archsites@PERMANENT',archsites1 # adding points to mapset 
+
+v.db.addcol map=archsites1 columns="fields double precision"  # adding
+column to points data 
+
+v.distance from=archsites1 to=fields1 from_type=point
+to_type=point,line,area dmax=1 upload=to_attr column=fields to_column=cat #
+adding cat information from polygon to point data  
+
+### v.distance works in GRASS  ### 
+
+### trying to do the same thing in R ###
+
+v.db.dropcol archsites1 column=fields ## removing column 
+
+v.db.addcol map=archsites1 columns="fields double precision"  ## adding a
+clean column  
+
+
+R # starting R within grass 
+
+library(spgrass6) # calling library 
+
+gmeta6()
+
+fields1<-readVECT6("fields1") # reading polygon into R  
+
+archsites1<-readVECT6("archsites1") # reading points into R 
+
+archsites1 # looking at data 
+
+# Trying to do the same v.distance calculation in R. 
+### The specified column is not updated ###
+
+execGRASS("v.distance", from="archsites1", 
+to="fields1", from_type="point", to_type="point,line,area",
+dmax=as.integer(1),
+upload="to_attr", column="fields", to_column="cat") 
+
+ 
+### However if the flags ?p? is add to the v.distance calculation it is
+possible to see that v.distance 
+### actually do the calculations. 
+   
+execGRASS("v.distance", flags="p", from="archsites1", 
+to="fields1", from_type="point", to_type="point,line,area",
+dmax=as.integer(1),
+upload="to_attr", column="fields", to_column="cat")
+
+### script finished ###
+
+There seems to be a bug in spgrass6. 
+
+ Cheers Toke 
+
+
+--
+View this message in context: http://osgeo-org.1803224.n2.nabble.com/Problem-with-v-distance-in-spgrass6-package-in-R-tp6939286p6955833.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+From Roger.Bivand at nhh.no  Thu Nov  3 03:11:09 2011
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Nov  3 18:17:07 2011
+Subject: [GRASS-stats] Re: Problem with v.distance in spgrass6 package in R
+In-Reply-To: <1320249919929-6955833.post@n2.nabble.com>
+References: <1319791305536-6939286.post@n2.nabble.com>
+	<1320249919929-6955833.post@n2.nabble.com>
+Message-ID: <alpine.LRH.2.00.1111030758120.18836@reclus.nhh.no>
+
+On Wed, 2 Nov 2011, toke wrote:
+
+> Hi Roger and everybody else
+>
+> I finally found time to translate the problem into spearfish data.
+>
+> To recapitulate I would like to use the v.distance command to transfer
+> information from polygons to point data.
+>
+> The problem is that the v.distance command do not update the column
+> specified to receive the calculation done by the v.distance command.
+>
+
+I do not see the same problem, and the command works for me - can others 
+please try to reproduce it?
+
+Roger
+
+My output in R:
+
+> library(spgrass6)
+Loading required package: sp
+Loading required package: rgdal
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Loaded GDAL runtime: GDAL 1.8.1, released 2011/07/09
+Path to GDAL shared files: /usr/local/share/gdal
+Loaded PROJ.4 runtime: Rel. 4.7.1, 23 September 2009, [PJ_VERSION: 470]
+Path to PROJ.4 shared files: (autodetected)
+Loading required package: XML
+GRASS GIS interface loaded with GRASS version: GRASS 6.4.2svn47586 (2011)
+and location: spearfish60
+> execGRASS("g.copy", vect="'fields@PERMANENT',fields1")
+Copy vector <fields@PERMANENT> to current mapset as <fields1>
+> execGRASS("g.copy", vect="'archsites@PERMANENT',archsites1")
+Copy vector <archsites@PERMANENT> to current mapset as <archsites1>
+> execGRASS("v.db.addcol", map="archsites1",
++ columns="\"fields double precision\"")
+> fields1<-readVECT6("fields1")
+WARNING: The map contains islands. To preserve them in the output map, 
+use
+          the -c flag
+Exporting 65 areas (may take some time)...
+  100%
+v.out.ogr complete. 67 features written to <fields1> (ESRI_Shapefile).
+OGR data source with driver: ESRI Shapefile
+Source: "/home/rsb/topics/grassdata/spearfish60/rsb/.tmp/reclus2", layer: 
+"fields1"
+with 67 features and 2 fields
+Feature type: wkbPolygon with 2 dimensions
+> archsites1<-readVECT6("archsites1")
+Exporting 25 geometries...
+  100%
+v.out.ogr complete. 25 features written to <archsite> (ESRI_Shapefile).
+OGR data source with driver: ESRI Shapefile
+Source: "/home/rsb/topics/grassdata/spearfish60/rsb/.tmp/reclus2", layer: 
+"archsite"
+with 25 features and 3 fields
+Feature type: wkbPoint with 2 dimensions
+> summary(archsites1)
+Object of class SpatialPointsDataFrame
+Coordinates:
+               min     max
+coords.x1  589860  608355
+coords.x2 4914479 4926490
+Is projected: TRUE
+proj4string :
+[+proj=utm +zone=13 +datum=NAD27 +units=m +no_defs +ellps=clrk66
++nadgrids=@conus,@alaska,@ntv2_0.gsb,@ntv1_can.dat]
+Number of points: 25
+Data attributes:
+       cat                      str1        fields
+  Min.   : 1   No Name            :12   Min.   : NA
+  1st Qu.: 7   Bob Miller         : 1   1st Qu.: NA
+  Median :13   Boulder Creek Cabin: 1   Median : NA
+  Mean   :13   Canyon Station     : 1   Mean   :NaN
+  3rd Qu.:19   Cole Creek Mine    : 1   3rd Qu.: NA
+  Max.   :25   Elkhorn Peak       : 1   Max.   : NA
+               (Other)            : 8   NA's   : 25
+> set.echoCmdOption(TRUE)
+[1] FALSE
+> execGRASS("v.distance", flags="p", from="archsites1", to="fields1", 
+from_type="point", to_type="point,line,area", dmax=as.integer(1), 
+upload="to_attr", column="fields", to_column="cat")
+GRASS command: v.distance -p from=archsites1 to=fields1 from_type=point 
+to_type=point,line,area dmax=1 upload=to_attr column=fields to_column=cat
+  100%
+  100%
+  100%
+from_cat|fields
+1|63
+2|63
+3|63
+4|63
+5|null
+6|null
+7|null
+8|null
+9|25
+10|63
+11|null
+12|null
+13|63
+14|63
+15|null
+16|63
+17|null
+18|63
+19|63
+20|63
+21|null
+22|63
+23|63
+24|null
+25|63
+v.distance complete.
+> set.echoCmdOption(FALSE)
+[1] TRUE
+> archsites1<-readVECT6("archsites1")
+Exporting 25 geometries...
+  100%
+v.out.ogr complete. 25 features written to <archsite> (ESRI_Shapefile).
+OGR data source with driver: ESRI Shapefile
+Source: "/home/rsb/topics/grassdata/spearfish60/rsb/.tmp/reclus2", layer: 
+"archsite"
+with 25 features and 3 fields
+Feature type: wkbPoint with 2 dimensions
+> summary(archsites1)
+Object of class SpatialPointsDataFrame
+Coordinates:
+               min     max
+coords.x1  589860  608355
+coords.x2 4914479 4926490
+Is projected: TRUE
+proj4string :
+[+proj=utm +zone=13 +datum=NAD27 +units=m +no_defs +ellps=clrk66
++nadgrids=@conus,@alaska,@ntv2_0.gsb,@ntv1_can.dat]
+Number of points: 25
+Data attributes:
+       cat                      str1        fields
+  Min.   : 1   No Name            :12   Min.   :25.00
+  1st Qu.: 7   Bob Miller         : 1   1st Qu.:63.00
+  Median :13   Boulder Creek Cabin: 1   Median :63.00
+  Mean   :13   Canyon Station     : 1   Mean   :60.47
+  3rd Qu.:19   Cole Creek Mine    : 1   3rd Qu.:63.00
+  Max.   :25   Elkhorn Peak       : 1   Max.   :63.00
+               (Other)            : 8   NA's   :10.00
+> table(archsites1$fields)
+
+25 63
+  1 14
+## alternatively:
+> execGRASS("v.distance", from="archsites1", to="fields1", 
+from_type="point", to_type="point,line,area", dmax=as.integer(1), 
+upload="to_attr", column="fields", to_column="cat")
+GRASS command: v.distance from=archsites1 to=fields1 from_type=point 
+to_type=point,line,area dmax=1 upload=to_attr column=fields to_column=cat
+  100%
+  100%
+  100%
+25 categories read from the map
+25 categories exist in the table
+25 categories read from the map exist in the table
+25 records updated
+v.distance complete.
+## also OK (overwriting field values)
+> sessionInfo()
+R version 2.14.0 (2011-10-31)
+Platform: x86_64-unknown-linux-gnu (64-bit)
+
+locale:
+  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
+  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8
+  [7] LC_PAPER=C                 LC_NAME=C
+  [9] LC_ADDRESS=C               LC_TELEPHONE=C
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] spgrass6_0.7-4 XML_3.4-3      rgdal_0.7-1    sp_0.9-91
+
+loaded via a namespace (and not attached):
+[1] grid_2.14.0    lattice_0.20-0
+
+
+
+> Here is my script
+>
+> grass
+>
+> g.gisenv
+> g.mapset mapset=user1
+>
+> g.copy vect='fields@PERMANENT',fields1 # adding  polygon to mapset
+>
+> g.copy vect='archsites@PERMANENT',archsites1 # adding points to mapset
+>
+> v.db.addcol map=archsites1 columns="fields double precision"  # adding
+> column to points data
+>
+> v.distance from=archsites1 to=fields1 from_type=point
+> to_type=point,line,area dmax=1 upload=to_attr column=fields to_column=cat #
+> adding cat information from polygon to point data
+>
+> ### v.distance works in GRASS  ###
+>
+> ### trying to do the same thing in R ###
+>
+> v.db.dropcol archsites1 column=fields ## removing column
+>
+> v.db.addcol map=archsites1 columns="fields double precision"  ## adding a
+> clean column
+>
+>
+> R # starting R within grass
+>
+> library(spgrass6) # calling library
+>
+> gmeta6()
+>
+> fields1<-readVECT6("fields1") # reading polygon into R
+>
+> archsites1<-readVECT6("archsites1") # reading points into R
+>
+> archsites1 # looking at data
+>
+> # Trying to do the same v.distance calculation in R.
+> ### The specified column is not updated ###
+>
+> execGRASS("v.distance", from="archsites1",
+> to="fields1", from_type="point", to_type="point,line,area",
+> dmax=as.integer(1),
+> upload="to_attr", column="fields", to_column="cat")
+>
+>
+> ### However if the flags ?p? is add to the v.distance calculation it is
+> possible to see that v.distance
+> ### actually do the calculations.
+>
+> execGRASS("v.distance", flags="p", from="archsites1",
+> to="fields1", from_type="point", to_type="point,line,area",
+> dmax=as.integer(1),
+> upload="to_attr", column="fields", to_column="cat")
+>
+> ### script finished ###
+>
+> There seems to be a bug in spgrass6.
+>
+> Cheers Toke
+>
+>
+> --
+> View this message in context: http://osgeo-org.1803224.n2.nabble.com/Problem-with-v-distance-in-spgrass6-package-in-R-tp6939286p6955833.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Department of Economics, NHH Norwegian School of Economics,
+Helleveien 30, N-5045 Bergen, Norway.
+voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From markus.metz.giswork at googlemail.com  Thu Nov  3 03:19:39 2011
+From: markus.metz.giswork at googlemail.com (Markus Metz)
+Date: Thu Nov  3 18:26:24 2011
+Subject: [GRASS-stats] Re: Problem with v.distance in spgrass6 package in R
+In-Reply-To: <alpine.LRH.2.00.1111030758120.18836@reclus.nhh.no>
+References: <1319791305536-6939286.post@n2.nabble.com>
+	<1320249919929-6955833.post@n2.nabble.com>
+	<alpine.LRH.2.00.1111030758120.18836@reclus.nhh.no>
+Message-ID: <CAG+h=FGsDBze3yE0i8s+B2G1LhzcG-pVe_zaYr9iBVazJqT63g@mail.gmail.com>
+
+2011/11/3 Roger Bivand <Roger.Bivand@nhh.no>:
+> On Wed, 2 Nov 2011, toke wrote:
+>
+>> Hi Roger and everybody else
+>>
+>> I finally found time to translate the problem into spearfish data.
+>>
+>> To recapitulate I would like to use the v.distance command to transfer
+>> information from polygons to point data.
+>>
+>> The problem is that the v.distance command do not update the column
+>> specified to receive the calculation done by the v.distance command.
+>>
+>
+> I do not see the same problem, and the command works for me - can others
+> please try to reproduce it?
+
+The spearfish example works for me too, exactly the same result like yours.
+
+Markus M
+
+>
+> Roger
+>
+> My output in R:
+>
+>> library(spgrass6)
+>
+> Loading required package: sp
+> Loading required package: rgdal
+> Geospatial Data Abstraction Library extensions to R successfully loaded
+> Loaded GDAL runtime: GDAL 1.8.1, released 2011/07/09
+> Path to GDAL shared files: /usr/local/share/gdal
+> Loaded PROJ.4 runtime: Rel. 4.7.1, 23 September 2009, [PJ_VERSION: 470]
+> Path to PROJ.4 shared files: (autodetected)
+> Loading required package: XML
+> GRASS GIS interface loaded with GRASS version: GRASS 6.4.2svn47586 (2011)
+> and location: spearfish60
+>>
+>> execGRASS("g.copy", vect="'fields@PERMANENT',fields1")
+>
+> Copy vector <fields@PERMANENT> to current mapset as <fields1>
+>>
+>> execGRASS("g.copy", vect="'archsites@PERMANENT',archsites1")
+>
+> Copy vector <archsites@PERMANENT> to current mapset as <archsites1>
+>>
+>> execGRASS("v.db.addcol", map="archsites1",
+>
+> + columns="\"fields double precision\"")
+>>
+>> fields1<-readVECT6("fields1")
+>
+> WARNING: The map contains islands. To preserve them in the output map, use
+> ? ? ? ? the -c flag
+> Exporting 65 areas (may take some time)...
+> ?100%
+> v.out.ogr complete. 67 features written to <fields1> (ESRI_Shapefile).
+> OGR data source with driver: ESRI Shapefile
+> Source: "/home/rsb/topics/grassdata/spearfish60/rsb/.tmp/reclus2", layer:
+> "fields1"
+> with 67 features and 2 fields
+> Feature type: wkbPolygon with 2 dimensions
+>>
+>> archsites1<-readVECT6("archsites1")
+>
+> Exporting 25 geometries...
+> ?100%
+> v.out.ogr complete. 25 features written to <archsite> (ESRI_Shapefile).
+> OGR data source with driver: ESRI Shapefile
+> Source: "/home/rsb/topics/grassdata/spearfish60/rsb/.tmp/reclus2", layer:
+> "archsite"
+> with 25 features and 3 fields
+> Feature type: wkbPoint with 2 dimensions
+>>
+>> summary(archsites1)
+>
+> Object of class SpatialPointsDataFrame
+> Coordinates:
+> ? ? ? ? ? ? ?min ? ? max
+> coords.x1 ?589860 ?608355
+> coords.x2 4914479 4926490
+> Is projected: TRUE
+> proj4string :
+> [+proj=utm +zone=13 +datum=NAD27 +units=m +no_defs +ellps=clrk66
+> +nadgrids=@conus,@alaska,@ntv2_0.gsb,@ntv1_can.dat]
+> Number of points: 25
+> Data attributes:
+> ? ? ?cat ? ? ? ? ? ? ? ? ? ? ?str1 ? ? ? ?fields
+> ?Min. ? : 1 ? No Name ? ? ? ? ? ?:12 ? Min. ? : NA
+> ?1st Qu.: 7 ? Bob Miller ? ? ? ? : 1 ? 1st Qu.: NA
+> ?Median :13 ? Boulder Creek Cabin: 1 ? Median : NA
+> ?Mean ? :13 ? Canyon Station ? ? : 1 ? Mean ? :NaN
+> ?3rd Qu.:19 ? Cole Creek Mine ? ?: 1 ? 3rd Qu.: NA
+> ?Max. ? :25 ? Elkhorn Peak ? ? ? : 1 ? Max. ? : NA
+> ? ? ? ? ? ? ?(Other) ? ? ? ? ? ?: 8 ? NA's ? : 25
+>>
+>> set.echoCmdOption(TRUE)
+>
+> [1] FALSE
+>>
+>> execGRASS("v.distance", flags="p", from="archsites1", to="fields1",
+>
+> from_type="point", to_type="point,line,area", dmax=as.integer(1),
+> upload="to_attr", column="fields", to_column="cat")
+> GRASS command: v.distance -p from=archsites1 to=fields1 from_type=point
+> to_type=point,line,area dmax=1 upload=to_attr column=fields to_column=cat
+> ?100%
+> ?100%
+> ?100%
+> from_cat|fields
+> 1|63
+> 2|63
+> 3|63
+> 4|63
+> 5|null
+> 6|null
+> 7|null
+> 8|null
+> 9|25
+> 10|63
+> 11|null
+> 12|null
+> 13|63
+> 14|63
+> 15|null
+> 16|63
+> 17|null
+> 18|63
+> 19|63
+> 20|63
+> 21|null
+> 22|63
+> 23|63
+> 24|null
+> 25|63
+> v.distance complete.
+>>
+>> set.echoCmdOption(FALSE)
+>
+> [1] TRUE
+>>
+>> archsites1<-readVECT6("archsites1")
+>
+> Exporting 25 geometries...
+> ?100%
+> v.out.ogr complete. 25 features written to <archsite> (ESRI_Shapefile).
+> OGR data source with driver: ESRI Shapefile
+> Source: "/home/rsb/topics/grassdata/spearfish60/rsb/.tmp/reclus2", layer:
+> "archsite"
+> with 25 features and 3 fields
+> Feature type: wkbPoint with 2 dimensions
+>>
+>> summary(archsites1)
+>
+> Object of class SpatialPointsDataFrame
+> Coordinates:
+> ? ? ? ? ? ? ?min ? ? max
+> coords.x1 ?589860 ?608355
+> coords.x2 4914479 4926490
+> Is projected: TRUE
+> proj4string :
+> [+proj=utm +zone=13 +datum=NAD27 +units=m +no_defs +ellps=clrk66
+> +nadgrids=@conus,@alaska,@ntv2_0.gsb,@ntv1_can.dat]
+> Number of points: 25
+> Data attributes:
+> ? ? ?cat ? ? ? ? ? ? ? ? ? ? ?str1 ? ? ? ?fields
+> ?Min. ? : 1 ? No Name ? ? ? ? ? ?:12 ? Min. ? :25.00
+> ?1st Qu.: 7 ? Bob Miller ? ? ? ? : 1 ? 1st Qu.:63.00
+> ?Median :13 ? Boulder Creek Cabin: 1 ? Median :63.00
+> ?Mean ? :13 ? Canyon Station ? ? : 1 ? Mean ? :60.47
+> ?3rd Qu.:19 ? Cole Creek Mine ? ?: 1 ? 3rd Qu.:63.00
+> ?Max. ? :25 ? Elkhorn Peak ? ? ? : 1 ? Max. ? :63.00
+> ? ? ? ? ? ? ?(Other) ? ? ? ? ? ?: 8 ? NA's ? :10.00
+>>
+>> table(archsites1$fields)
+>
+> 25 63
+> ?1 14
+> ## alternatively:
+>>
+>> execGRASS("v.distance", from="archsites1", to="fields1",
+>
+> from_type="point", to_type="point,line,area", dmax=as.integer(1),
+> upload="to_attr", column="fields", to_column="cat")
+> GRASS command: v.distance from=archsites1 to=fields1 from_type=point
+> to_type=point,line,area dmax=1 upload=to_attr column=fields to_column=cat
+> ?100%
+> ?100%
+> ?100%
+> 25 categories read from the map
+> 25 categories exist in the table
+> 25 categories read from the map exist in the table
+> 25 records updated
+> v.distance complete.
+> ## also OK (overwriting field values)
+>>
+>> sessionInfo()
+>
+> R version 2.14.0 (2011-10-31)
+> Platform: x86_64-unknown-linux-gnu (64-bit)
+>
+> locale:
+> ?[1] LC_CTYPE=en_US.UTF-8 ? ? ? LC_NUMERIC=C
+> ?[3] LC_TIME=en_US.UTF-8 ? ? ? ?LC_COLLATE=en_US.UTF-8
+> ?[5] LC_MONETARY=en_US.UTF-8 ? ?LC_MESSAGES=en_US.UTF-8
+> ?[7] LC_PAPER=C ? ? ? ? ? ? ? ? LC_NAME=C
+> ?[9] LC_ADDRESS=C ? ? ? ? ? ? ? LC_TELEPHONE=C
+> [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+>
+> attached base packages:
+> [1] stats ? ? graphics ?grDevices utils ? ? datasets ?methods ? base
+>
+> other attached packages:
+> [1] spgrass6_0.7-4 XML_3.4-3 ? ? ?rgdal_0.7-1 ? ?sp_0.9-91
+>
+> loaded via a namespace (and not attached):
+> [1] grid_2.14.0 ? ?lattice_0.20-0
+>
+>
+>
+>> Here is my script
+>>
+>> grass
+>>
+>> g.gisenv
+>> g.mapset mapset=user1
+>>
+>> g.copy vect='fields@PERMANENT',fields1 # adding ?polygon to mapset
+>>
+>> g.copy vect='archsites@PERMANENT',archsites1 # adding points to mapset
+>>
+>> v.db.addcol map=archsites1 columns="fields double precision" ?# adding
+>> column to points data
+>>
+>> v.distance from=archsites1 to=fields1 from_type=point
+>> to_type=point,line,area dmax=1 upload=to_attr column=fields to_column=cat
+>> #
+>> adding cat information from polygon to point data
+>>
+>> ### v.distance works in GRASS ?###
+>>
+>> ### trying to do the same thing in R ###
+>>
+>> v.db.dropcol archsites1 column=fields ## removing column
+>>
+>> v.db.addcol map=archsites1 columns="fields double precision" ?## adding a
+>> clean column
+>>
+>>
+>> R # starting R within grass
+>>
+>> library(spgrass6) # calling library
+>>
+>> gmeta6()
+>>
+>> fields1<-readVECT6("fields1") # reading polygon into R
+>>
+>> archsites1<-readVECT6("archsites1") # reading points into R
+>>
+>> archsites1 # looking at data
+>>
+>> # Trying to do the same v.distance calculation in R.
+>> ### The specified column is not updated ###
+>>
+>> execGRASS("v.distance", from="archsites1",
+>> to="fields1", from_type="point", to_type="point,line,area",
+>> dmax=as.integer(1),
+>> upload="to_attr", column="fields", to_column="cat")
+>>
+>>
+>> ### However if the flags ?p? is add to the v.distance calculation it is
+>> possible to see that v.distance
+>> ### actually do the calculations.
+>>
+>> execGRASS("v.distance", flags="p", from="archsites1",
+>> to="fields1", from_type="point", to_type="point,line,area",
+>> dmax=as.integer(1),
+>> upload="to_attr", column="fields", to_column="cat")
+>>
+>> ### script finished ###
+>>
+>> There seems to be a bug in spgrass6.
+>>
+>> Cheers Toke
+>>
+>>
+>> --
+>> View this message in context:
+>> http://osgeo-org.1803224.n2.nabble.com/Problem-with-v-distance-in-spgrass6-package-in-R-tp6939286p6955833.html
+>> Sent from the Grass - Stats mailing list archive at Nabble.com.
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>
+> --
+> Roger Bivand
+> Department of Economics, NHH Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; fax +47 55 95 95 43
+> e-mail: Roger.Bivand@nhh.no
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+>
+From tepp at life.ku.dk  Thu Nov  3 06:57:35 2011
+From: tepp at life.ku.dk (toke)
+Date: Thu Nov  3 22:16:21 2011
+Subject: [GRASS-stats] Re: Problem with v.distance in spgrass6 package in R
+In-Reply-To: <CAG+h=FGsDBze3yE0i8s+B2G1LhzcG-pVe_zaYr9iBVazJqT63g@mail.gmail.com>
+References: <1319791305536-6939286.post@n2.nabble.com>
+	<1320249919929-6955833.post@n2.nabble.com>
+	<alpine.LRH.2.00.1111030758120.18836@reclus.nhh.no>
+	<CAG+h=FGsDBze3yE0i8s+B2G1LhzcG-pVe_zaYr9iBVazJqT63g@mail.gmail.com>
+Message-ID: <1320317855902-6958600.post@n2.nabble.com>
+
+Hi tanks for your interest 
+ 
+Im still not able to make it work. It must be the programs I am using which
+do not comply. 
+
+Im using 
+R version 2.14.0
+And 
+Grass 6.4.1
+And 
+Ubunutu 11.10 
+
+All installed recently installed. I will let you know if I find the problem. 
+
+Cheers Toke  
+
+
+
+--
+View this message in context: http://osgeo-org.1803224.n2.nabble.com/Problem-with-v-distance-in-spgrass6-package-in-R-tp6939286p6958600.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+From r.m.krug at gmail.com  Thu Nov  3 07:18:16 2011
+From: r.m.krug at gmail.com (Rainer M Krug)
+Date: Thu Nov  3 22:38:07 2011
+Subject: [GRASS-stats] Re: Problem with v.distance in spgrass6 package in R
+In-Reply-To: <1320317855902-6958600.post@n2.nabble.com>
+References: <1319791305536-6939286.post@n2.nabble.com>
+	<1320249919929-6955833.post@n2.nabble.com>
+	<alpine.LRH.2.00.1111030758120.18836@reclus.nhh.no>
+	<CAG+h=FGsDBze3yE0i8s+B2G1LhzcG-pVe_zaYr9iBVazJqT63g@mail.gmail.com>
+	<1320317855902-6958600.post@n2.nabble.com>
+Message-ID: <CAGhLh6F9CkcFny6njMi672=gxsj2NegvHg0zP+VZOa_U4_2bxQ@mail.gmail.com>
+
+On Thu, Nov 3, 2011 at 11:57 AM, toke <tepp@life.ku.dk> wrote:
+
+> Hi tanks for your interest
+>
+> Im still not able to make it work. It must be the programs I am using which
+> do not comply.
+>
+> Im using
+> R version 2.14.0
+> And
+> Grass 6.4.1
+> And
+> Ubunutu 11.10
+>
+> All installed recently installed. I will let you know if I find the
+> problem.
+>
+
+Sorry - came late to the discussion, but it seems to work here to - but
+please check:
+
+Same configuration - Ubuntu Oneiric, here is the transcript:
+
+ GRASS 6.4.1 (spearfish60):~ > R
+
+R version 2.14.0 (2011-10-31)
+Copyright (C) 2011 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+Platform: i686-pc-linux-gnu (32-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> library(spgrass6)
+Loading required package: sp
+Loading required package: rgdal
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Loaded GDAL runtime: GDAL 1.8.1, released 2011/07/09
+Path to GDAL shared files: /home/rkrug/share/gdal
+Loaded PROJ.4 runtime: Rel. 4.7.1, 23 September 2009, [PJ_VERSION: 470]
+Path to PROJ.4 shared files: (autodetected)
+Loading required package: XML
+GRASS GIS interface loaded with GRASS version: GRASS 6.4.1 (2011)
+and location: spearfish60
+> gmeta6()
+gisdbase    /home/rkrug/Downloads
+location    spearfish60
+mapset      user1
+rows        477
+columns     634
+north       4928010
+south       4913700
+west        589980
+east        609000
+nsres       30
+ewres       30
+projection  +proj=utm +zone=13 +a=6378206.4 +rf=294.9786982 +no_defs
++nadgrids=/home/rkrug/grass-6.4.1/etc/nad/conus +to_meter=1.0
+> fields1<-readVECT6("fields1")
+Available OGR Drivers:
+WARNING: The map contains islands. To preserve them in the output map, use
+         the -c flag
+Exporting 65 areas (may take some time)...
+ 100%
+67 features written
+OGR data source with driver: ESRI Shapefile
+Source: "/home/rkrug/Downloads/spearfish60/user1/.tmp/ecolmod", layer:
+"fields1"
+with 67 features and 2 fields
+Feature type: wkbPolygon with 2 dimensions
+> archsites1<-readVECT6("archsites1")
+Available OGR Drivers:
+Exporting 25 points/lines...
+ 100%
+25 features written
+OGR data source with driver: ESRI Shapefile
+Source: "/home/rkrug/Downloads/spearfish60/user1/.tmp/ecolmod", layer:
+"archsite"
+with 25 features and 3 fields
+Feature type: wkbPoint with 2 dimensions
+> archsites1
+         coordinates cat                 str1 fields
+1  (593493, 4914730)   1       Signature Rock     NA
+2  (591950, 4923000)   2              No Name     NA
+3  (589860, 4922000)   3       Canyon Station     NA
+4  (590400, 4922820)   4      Spearfish Creek     NA
+5  (593549, 4925500)   5              No Name     NA
+6  (600375, 4925240)   6         Prairie Site     NA
+7  (606635, 4920770)   7          Jensen Pass     NA
+8  (595755, 4925300)   8              No Name     NA
+9  (601000, 4926310)   9              No Name     NA
+10 (602550, 4917370)  10 Slaughterhouse Gulch     NA
+11 (591635, 4924340)  11              No Name     NA
+12 (603000, 4925250)  12         Elkhorn Peak     NA
+13 (592100, 4921200)  13              No Name     NA
+14 (592600, 4922000)  14              No Name     NA
+15 (604194, 4925980)  15              No Name     NA
+16 (608200, 4915900)  16  Boulder Creek Cabin     NA
+17 (601400, 4925450)  17                Ridge     NA
+18 (591000, 4916000)  18      Cole Creek Mine     NA
+19 (607150, 4916650)  19              No Name     NA
+20 (593690, 4914480)  20              No Name     NA
+21 (608355, 4926490)  21      Whitewood Flats     NA
+22 (597945, 4918950)  22           Bob Miller     NA
+23 (607159, 4917000)  23              No Name     NA
+24 (591583, 4925280)  24         Hanson Ranch     NA
+25 (602580, 4918480)  25              No Name     NA
+> set.echoCmdOption(TRUE)
+[1] FALSE
+> set.echoCmdOption(TRUE)
+[1] TRUE
+> execGRASS("v.distance", from="archsites1", to="fields1",
+from_type="point", to_type="point,line,area", dmax=as.integer(1),
+upload="to_attr", column="fields", to_column="cat")
+GRASS command: v.distance from=archsites1 to=fields1 from_type=point
+to_type=point,line,area dmax=1 upload=to_attr column=fields to_column=cat
+ 100%
+ 100%
+ 100%
+25 categories read from the map
+25 categories exist in the table
+25 categories read from the map exist in the table
+25 records updated
+v.distance complete.
+> execGRASS("v.distance", flags="p", from="archsites1",
++ to="fields1", from_type="point", to_type="point,line,area",
++ dmax=as.integer(1),
++ upload="to_attr", column="fields", to_column="cat")
+GRASS command: v.distance -p from=archsites1 to=fields1 from_type=point
+to_type=point,line,area dmax=1 upload=to_attr column=fields to_column=cat
+ 100%
+ 100%
+ 100%
+from_cat|fields
+1|63
+2|63
+3|63
+4|63
+5|null
+6|null
+7|null
+8|null
+9|25
+10|63
+11|null
+12|null
+13|63
+14|63
+15|null
+16|63
+17|null
+18|63
+19|63
+20|63
+21|null
+22|63
+23|63
+24|null
+25|63
+v.distance complete.
+>     execGRASS("v.distance", flags="p", from="archsites1", to="fields1",
++
++ from_type="point", to_type="point,line,area", dmax=as.integer(1),
+upload="to_attr", column="fields", to_column="cat")
+GRASS command: v.distance -p from=archsites1 to=fields1 from_type=point
+to_type=point,line,area dmax=1 upload=to_attr column=fields to_column=cat
+ 100%
+ 100%
+ 100%
+from_cat|fields
+1|63
+2|63
+3|63
+4|63
+5|null
+6|null
+7|null
+8|null
+9|25
+10|63
+11|null
+12|null
+13|63
+14|63
+15|null
+16|63
+17|null
+18|63
+19|63
+20|63
+21|null
+22|63
+23|63
+24|null
+25|63
+v.distance complete.
+> sessionInfo()
+R version 2.14.0 (2011-10-31)
+Platform: i686-pc-linux-gnu (32-bit)
+
+locale:
+ [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C
+ [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8
+ [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8
+ [7] LC_PAPER=C                 LC_NAME=C
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C
+[11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] spgrass6_0.7-4 XML_3.4-3      rgdal_0.7-1    sp_0.9-91
+
+loaded via a namespace (and not attached):
+[1] grid_2.14.0     lattice_0.19-33
+> q()
+Save workspace image? [y/n/c]: n
+GRASS 6.4.1 (spearfish60):~ >
+
+
+
+> Cheers Toke
+>
+>
+>
+> --
+> View this message in context:
+> http://osgeo-org.1803224.n2.nabble.com/Problem-with-v-distance-in-spgrass6-package-in-R-tp6939286p6958600.html
+> Sent from the Grass - Stats mailing list archive at Nabble.com.
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+
+
+-- 
+Rainer M. Krug, PhD (Conservation Ecology, SUN), MSc (Conservation Biology,
+UCT), Dipl. Phys. (Germany)
+
+Centre of Excellence for Invasion Biology
+Stellenbosch University
+South Africa
+
+Tel :       +33 - (0)9 53 10 27 44
+Cell:       +33 - (0)6 85 62 59 98
+Fax (F):       +33 - (0)9 58 10 27 44
+
+Fax (D):    +49 - (0)3 21 21 25 22 44
+
+email:      Rainer@krugs.de
+
+Skype:      RMkrug
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20111103/cfec471d/attachment-0001.html
+From markus.metz.giswork at googlemail.com  Fri Nov  4 06:53:50 2011
+From: markus.metz.giswork at googlemail.com (Markus Metz)
+Date: Fri Nov  4 23:31:50 2011
+Subject: [GRASS-stats] i.pca fixes in trunk
+Message-ID: <CAG+h=FFiq2_-LeO3N1mZippD4fYDNfxtCGOn+CX0V7OmBC6SdQ@mail.gmail.com>
+
+Hi all,
+
+based on the wiki for Principal Components Analysis [0], numerous
+discussions in the mailing lists [1,2,3,4], particularly a comment by
+Edzer Pebesma [5], and personal demand, I have fixed a few issues in
+i.pca in trunk r49090.
+
+- the faulty or missing centering of the input bands described in [0]
+for should be fixed
+- i.pca has a new flag -n to normalize input bands with (x - mean) / stddev
+- values of the output maps are now calculated depending on the input
+band transformation (centering or normalization). Is this OK?
+- Eigen values, (vectors), and [percent importance] are now written to
+stdout instead of stderr
+
+The results of i.pca for the examples using SPOT imagery in the wiki
+[0] are now identical to R's princomp() results. If the new -n flag is
+used, the results of i.pca are identical to princomp(center = TRUE,
+scale = TRUE).
+
+Tested also with 9 input maps in a region with 400 million cells.
+
+Markus M
+
+
+[0] http://grass.osgeo.org/wiki/Principal_Components_Analysis
+[1] http://lists.osgeo.org/pipermail/grass-user/2009-February/048722.html
+[2] http://lists.osgeo.org/pipermail/grass-stats/2009-March/000933.html
+[3] http://lists.osgeo.org/pipermail/grass-stats/2009-March/000942.html
+[4] http://lists.osgeo.org/pipermail/grass-stats/2009-April/001028.html
+[5] http://lists.osgeo.org/pipermail/grass-stats/2009-April/000977.html
+From debeaudette at ucdavis.edu  Mon Nov  7 11:05:06 2011
+From: debeaudette at ucdavis.edu (Dylan Beaudette)
+Date: Tue Nov  8 08:03:22 2011
+Subject: [GRASS-stats] new module for multiple regression with large
+	raster maps
+In-Reply-To: <CAG+h=FF=G7bMgt8QnAF8LfM9HTUBUd2e0tBU4WyRgPDP_7ZXRw@mail.gmail.com>
+References: <CAG+h=FF=G7bMgt8QnAF8LfM9HTUBUd2e0tBU4WyRgPDP_7ZXRw@mail.gmail.com>
+Message-ID: <201111070805.06882.dylan.beaudette@gmail.com>
+
+On Friday, October 07, 2011, Markus Metz wrote:
+> There is a new module r.regression.multi as grass7 add-on to calculate
+> multiple regressions with raster maps. The motivation for this module
+> is to calculate regression coefficients and statistics for very large
+> datasets, too large for e.g. R. The module uses less than 3 MB memory
+> for 400 million cells with one response variable and 8 predictors.
+> Including residuals, this makes a total of 4 billion numbers.
+> Calculation takes about 4 minutes for this dataset on my laptop. In
+> addition to the slope estimates, statistics provided are R squared,
+> adjusted R squared, F, AIC, corrected AIC, BIC for the full model, and
+> F, AIC, corrected AIC, BIC for each predictor. Results are identical
+> to those produced by R (with smaller test datasets).
+> 
+> Markus M
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+> 
+
+Very cool. Can this module fit models from point data, and produce predictions 
+in the form of a raster?
+
+Dylan
+
+
+-- 
+Dylan E. Beaudette
+USDA-NRCS Soil Scientist
+California Soil Resource Lab
+http://casoilresource.lawr.ucdavis.edu/
+From markus.metz.giswork at googlemail.com  Tue Nov  8 04:28:59 2011
+From: markus.metz.giswork at googlemail.com (Markus Metz)
+Date: Wed Nov  9 02:20:01 2011
+Subject: [GRASS-stats] new module for multiple regression with large
+	raster maps
+In-Reply-To: <201111070805.06882.dylan.beaudette@gmail.com>
+References: <CAG+h=FF=G7bMgt8QnAF8LfM9HTUBUd2e0tBU4WyRgPDP_7ZXRw@mail.gmail.com>
+	<201111070805.06882.dylan.beaudette@gmail.com>
+Message-ID: <CAG+h=FHBUoYPZ5SAKTXoLXdKHcgi0ELD0_zrZVaVwT+-fr8iDg@mail.gmail.com>
+
+Dylan Beaudette wrote:
+> On Friday, October 07, 2011, Markus Metz wrote:
+>> There is a new module r.regression.multi as grass7 add-on to calculate
+>> multiple regressions with raster maps. The motivation for this module
+>> is to calculate regression coefficients and statistics for very large
+>> datasets, too large for e.g. R. The module uses less than 3 MB memory
+>> for 400 million cells with one response variable and 8 predictors.
+>> Including residuals, this makes a total of 4 billion numbers.
+>> Calculation takes about 4 minutes for this dataset on my laptop. In
+>> addition to the slope estimates, statistics provided are R squared,
+>> adjusted R squared, F, AIC, corrected AIC, BIC for the full model, and
+>> F, AIC, corrected AIC, BIC for each predictor. Results are identical
+>> to those produced by R (with smaller test datasets).
+>>
+>> Markus M
+>> _______________________________________________
+>> grass-stats mailing list
+>> grass-stats@lists.osgeo.org
+>> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>>
+>
+> Very cool. Can this module fit models from point data, and produce predictions
+> in the form of a raster?
+
+Yes, as of r49130. Residuals are also available as output raster.
+
+Markus M
+From dylan.beaudette at gmail.com  Tue Nov  8 17:28:14 2011
+From: dylan.beaudette at gmail.com (Dylan Beaudette)
+Date: Wed Nov  9 16:01:38 2011
+Subject: [GRASS-stats] new module for multiple regression with large
+	raster maps
+In-Reply-To: <CAG+h=FHBUoYPZ5SAKTXoLXdKHcgi0ELD0_zrZVaVwT+-fr8iDg@mail.gmail.com>
+References: <CAG+h=FF=G7bMgt8QnAF8LfM9HTUBUd2e0tBU4WyRgPDP_7ZXRw@mail.gmail.com>
+	<201111070805.06882.dylan.beaudette@gmail.com>
+	<CAG+h=FHBUoYPZ5SAKTXoLXdKHcgi0ELD0_zrZVaVwT+-fr8iDg@mail.gmail.com>
+Message-ID: <CAOGWcH+GLBwByc+SdwUFBVKjz_ad2beotnFOK3n7hfD6vRG3RQ@mail.gmail.com>
+
+Excellent! Can't wait to test it out. Already have several applications in
+mind.
+On Nov 8, 2011 1:28 AM, "Markus Metz" <markus.metz.giswork@googlemail.com>
+wrote:
+
+> Dylan Beaudette wrote:
+> > On Friday, October 07, 2011, Markus Metz wrote:
+> >> There is a new module r.regression.multi as grass7 add-on to calculate
+> >> multiple regressions with raster maps. The motivation for this module
+> >> is to calculate regression coefficients and statistics for very large
+> >> datasets, too large for e.g. R. The module uses less than 3 MB memory
+> >> for 400 million cells with one response variable and 8 predictors.
+> >> Including residuals, this makes a total of 4 billion numbers.
+> >> Calculation takes about 4 minutes for this dataset on my laptop. In
+> >> addition to the slope estimates, statistics provided are R squared,
+> >> adjusted R squared, F, AIC, corrected AIC, BIC for the full model, and
+> >> F, AIC, corrected AIC, BIC for each predictor. Results are identical
+> >> to those produced by R (with smaller test datasets).
+> >>
+> >> Markus M
+> >> _______________________________________________
+> >> grass-stats mailing list
+> >> grass-stats@lists.osgeo.org
+> >> http://lists.osgeo.org/mailman/listinfo/grass-stats
+> >>
+> >
+> > Very cool. Can this module fit models from point data, and produce
+> predictions
+> > in the form of a raster?
+>
+> Yes, as of r49130. Residuals are also available as output raster.
+>
+> Markus M
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20111108/ef336ef7/attachment.html
+From nik at nikosalexandris.net  Sat Nov 19 12:36:01 2011
+From: nik at nikosalexandris.net (Nikos Alexandris)
+Date: Sat Nov 19 17:06:56 2011
+Subject: [GRASS-stats] i.pca fixes in trunk
+In-Reply-To: <CAG+h=FFiq2_-LeO3N1mZippD4fYDNfxtCGOn+CX0V7OmBC6SdQ@mail.gmail.com>
+References: <CAG+h=FFiq2_-LeO3N1mZippD4fYDNfxtCGOn+CX0V7OmBC6SdQ@mail.gmail.com>
+Message-ID: <3519697.o0M8LcpjO9@vertikal>
+
+MM:
+
+> based on the wiki for Principal Components Analysis [0], numerous
+> discussions in the mailing lists [1,2,3,4], particularly a comment by
+> Edzer Pebesma [5], and personal demand, I have fixed a few issues in
+> i.pca in trunk r49090.
+
+[...]
+
+This is GrEaT :-)
+
+Nikos

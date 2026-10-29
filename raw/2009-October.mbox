@@ -1,0 +1,1583 @@
+From havyhidalgo at hotmail.com  Thu Oct  1 05:18:26 2009
+From: havyhidalgo at hotmail.com (Javi Hidalgo)
+Date: Thu Oct  1 05:19:28 2009
+Subject: [GRASS-stats]  Calculating adirectional slopes
+Message-ID: <SNT128-W211C41FCB01F11D9089346A9D30@phx.gbl>
+
+
+Hello,
+
+I have a raster file created in R using the gstat package and already exported this raster elevation file in GRASS.
+I would like to know how to compute the adirectional slopes of this raster. Meaning of adirectional slope is the maximum slope in a region (i.e 3x3 neighborhood around each cell in the elevation file). Can I do that using GRASS? Is it what the function "r.slope.aspect" does, maximum slope in the region? Can I set the size of the windows, 3x3 or 5x5 etc...? 
+Thank you very much for your reply.
+
+Regards,
+
+Javier.
+ 		 	   		  
+_________________________________________________________________
+Ll?vate Messenger en el m?vil a todas partes ?Con?ctate!
+http://www.microsoft.com/spain/windowsmobile/messenger/default.mspx
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20091001/133c7b12/attachment.html
+From timothyholland at gmail.com  Sun Oct  4 08:18:43 2009
+From: timothyholland at gmail.com (Tim Holland)
+Date: Sun Oct  4 08:18:45 2009
+Subject: [GRASS-stats] problem installing spgrass6 in R
+In-Reply-To: <alpine.LRH.2.00.0909301100190.25552@reclus.nhh.no>
+References: <1254141611034-3729191.post@n2.nabble.com>
+	<alpine.LRH.2.00.0909282046180.19591@reclus.nhh.no>
+	<618804.54210.qm@web110009.mail.gq1.yahoo.com>
+	<alpine.LRH.2.00.0909290941560.21950@reclus.nhh.no>
+	<1254283014413-3740547.post@n2.nabble.com>
+	<alpine.LRH.2.00.0909301100190.25552@reclus.nhh.no>
+Message-ID: <1254658723020-3763720.post@n2.nabble.com>
+
+
+Dear Roger, 
+
+I am sorry to keep asking for your time, but I have (what I hope is) a
+fairly simple question if you have a moment.  
+
+I reinstalled everything from scratch, using all binaries from KyngChaos and
+what I think was the correct order of installation.  And I still had the
+same problem with spgrass6 and rgdal failing on installation.  So now I want
+to try what you suggested about using the configure arguments in
+install.packages.  
+
+In GRASS, I did the following
+
+GRASS 6.4.0RC5 (mapset):~ > gdal-config --libs
+-L/Library/Frameworks/GDAL.framework/Versions/1.6/unix/lib -lgdal
+GRASS 6.4.0RC5 (mapset):~ > gdal-config --cflags
+-I/Library/Frameworks/GDAL.framework/Versions/1.6/Headers
+
+I then wanted to use those paths in R in install.packages.  I tried
+
+>install.packages("spgrass6", type="source", dependencies=TRUE,
+configure.args=c("-L/Library/Frameworks/GDAL.framework/Versions/1.6/unix/lib
+-lgdal","-I/Library/Frameworks/GDAL.framework/Versions/1.6/Headers"))
+
+However, I ended up with the same error messages as always regarding
+spgrass6 and rgdal failing to install.  Was I doing the right thing with
+'configure.args'?  Was that the right syntax / the right elements? 
+
+Thanks for the help, 
+Best, 
+Tim
+
+
+
+Tim,
+
+One way of handling this might be - if you will only use rgdal from 
+"within" GRASS, is to run the install from the rgdal source package in 
+that environment. Alternatively, use gdal-config within GRASS to find the 
+the GDAL libs (--libs) and headers (--cflags) strings to pass to the 
+configure arguments in install.packages() in R outside GRASS. Here rgdal 
+will fail after installation if the GDAL shared objects are not on the 
+PATH R can see.
+
+Hope this helps,
+
+Roger
+
+
+-- 
+View this message in context: http://n2.nabble.com/problem-installing-spgrass6-in-R-tp3729191p3763720.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+From timothyholland at gmail.com  Sun Oct  4 08:21:04 2009
+From: timothyholland at gmail.com (Tim Holland)
+Date: Sun Oct  4 08:21:05 2009
+Subject: [GRASS-stats] problem installing spgrass6 in R
+In-Reply-To: <alpine.LRH.2.00.0909301100190.25552@reclus.nhh.no>
+References: <1254141611034-3729191.post@n2.nabble.com>
+	<alpine.LRH.2.00.0909282046180.19591@reclus.nhh.no>
+	<618804.54210.qm@web110009.mail.gq1.yahoo.com>
+	<alpine.LRH.2.00.0909290941560.21950@reclus.nhh.no>
+	<1254283014413-3740547.post@n2.nabble.com>
+	<alpine.LRH.2.00.0909301100190.25552@reclus.nhh.no>
+Message-ID: <1254658864432-3763726.post@n2.nabble.com>
+
+
+
+
+Roger Bivand wrote:
+> 
+> 
+> One way of handling this might be - if you will only use rgdal from 
+> "within" GRASS, is to run the install from the rgdal source package in 
+> that environment. Alternatively, use gdal-config within GRASS to find the 
+> the GDAL libs (--libs) and headers (--cflags) strings to pass to the 
+> configure arguments in install.packages() in R outside GRASS. Here rgdal 
+> will fail after installation if the GDAL shared objects are not on the 
+> PATH R can see.
+> 
+> 
+
+Dear all, 
+
+Sorry to keep asking for your time on this, but I am still running into some
+problems.  
+
+I reinstalled everything from scratch, using all binaries from KyngChaos and
+what I think was the correct order of installation.  And I still had the
+same problem with spgrass6 and rgdal failing on installation.  So then I
+tried what Roger suggested regarding using the configure arguments in
+install.packages.  
+
+In GRASS, I did the following
+
+GRASS 6.4.0RC5 (mapset):~ > gdal-config --libs
+-L/Library/Frameworks/GDAL.framework/Versions/1.6/unix/lib -lgdal
+GRASS 6.4.0RC5 (mapset):~ > gdal-config --cflags
+-I/Library/Frameworks/GDAL.framework/Versions/1.6/Headers
+
+I then wanted to use those paths in R in install.packages.  I tried
+
+>install.packages("spgrass6", type="source", dependencies=TRUE,
+configure.args=c("-L/Library/Frameworks/GDAL.framework/Versions/1.6/unix/lib
+-lgdal","-I/Library/Frameworks/GDAL.framework/Versions/1.6/Headers"))
+
+However, I ended up with the same error messages as always regarding
+spgrass6 and rgdal failing to install.  Was I doing the right thing with
+'configure.args'?  Was that the right syntax / the right elements?
+
+Thanks for the help,
+Best,
+Tim 
+-- 
+View this message in context: http://n2.nabble.com/problem-installing-spgrass6-in-R-tp3729191p3763726.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+From Roger.Bivand at nhh.no  Sun Oct  4 08:31:48 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Sun Oct  4 08:31:51 2009
+Subject: [GRASS-stats] problem installing spgrass6 in R
+In-Reply-To: <1254658723020-3763720.post@n2.nabble.com>
+References: <1254141611034-3729191.post@n2.nabble.com>
+	<alpine.LRH.2.00.0909282046180.19591@reclus.nhh.no>
+	<618804.54210.qm@web110009.mail.gq1.yahoo.com>
+	<alpine.LRH.2.00.0909290941560.21950@reclus.nhh.no>
+	<1254283014413-3740547.post@n2.nabble.com>
+	<alpine.LRH.2.00.0909301100190.25552@reclus.nhh.no>
+	<1254658723020-3763720.post@n2.nabble.com>
+Message-ID: <alpine.LRH.2.00.0910041421160.27331@reclus.nhh.no>
+
+On Sun, 4 Oct 2009, Tim Holland wrote:
+
+>
+> Dear Roger,
+>
+> I am sorry to keep asking for your time, but I have (what I hope is) a
+> fairly simple question if you have a moment.
+>
+> I reinstalled everything from scratch, using all binaries from KyngChaos and
+> what I think was the correct order of installation.  And I still had the
+> same problem with spgrass6 and rgdal failing on installation.  So now I want
+> to try what you suggested about using the configure arguments in
+> install.packages.
+>
+> In GRASS, I did the following
+>
+> GRASS 6.4.0RC5 (mapset):~ > gdal-config --libs
+> -L/Library/Frameworks/GDAL.framework/Versions/1.6/unix/lib -lgdal
+> GRASS 6.4.0RC5 (mapset):~ > gdal-config --cflags
+> -I/Library/Frameworks/GDAL.framework/Versions/1.6/Headers
+>
+> I then wanted to use those paths in R in install.packages.  I tried
+>
+
+Install rgdal first:
+
+install.packages("rgdal", type="source",
+
+configure.args=c(--with-gdal-config="<where gdal-config is>", 
+--with-proj-include="<where the proj headers are>",
+--with-proj-lib=<where the proj libs are>"))
+
+or something like that. Didn't it seem sensible to install the rgdal OSX 
+binaries from kyngchaos?
+
+Once rgdal is installed, just install spgrass6 as a source package, no 
+dependencies, please, and no configure arguments. These are two separate 
+packages, where rgdal is what spgrass6 uses to do some of its work.
+
+Hope this helps.
+
+Roger
+
+>
+> However, I ended up with the same error messages as always regarding
+> spgrass6 and rgdal failing to install.  Was I doing the right thing with
+> 'configure.args'?  Was that the right syntax / the right elements?
+>
+> Thanks for the help,
+> Best,
+> Tim
+>
+>
+>
+> Tim,
+>
+> One way of handling this might be - if you will only use rgdal from
+> "within" GRASS, is to run the install from the rgdal source package in
+> that environment. Alternatively, use gdal-config within GRASS to find the
+> the GDAL libs (--libs) and headers (--cflags) strings to pass to the
+> configure arguments in install.packages() in R outside GRASS. Here rgdal
+> will fail after installation if the GDAL shared objects are not on the
+> PATH R can see.
+>
+> Hope this helps,
+>
+> Roger
+>
+>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From timothyholland at gmail.com  Mon Oct  5 00:22:18 2009
+From: timothyholland at gmail.com (Tim Holland)
+Date: Mon Oct  5 00:22:20 2009
+Subject: [GRASS-stats] problem installing spgrass6 in R
+In-Reply-To: <alpine.LRH.2.00.0910041421160.27331@reclus.nhh.no>
+References: <1254141611034-3729191.post@n2.nabble.com>
+	<alpine.LRH.2.00.0909282046180.19591@reclus.nhh.no>
+	<618804.54210.qm@web110009.mail.gq1.yahoo.com>
+	<alpine.LRH.2.00.0909290941560.21950@reclus.nhh.no>
+	<1254283014413-3740547.post@n2.nabble.com>
+	<alpine.LRH.2.00.0909301100190.25552@reclus.nhh.no>
+	<alpine.LRH.2.00.0910041421160.27331@reclus.nhh.no>
+Message-ID: <1254716538709-3766876.post@n2.nabble.com>
+
+
+
+
+Roger Bivand wrote:
+> 
+> 
+> Install rgdal first:
+> 
+> install.packages("rgdal", type="source",
+> 
+> configure.args=c(--with-gdal-config="<where gdal-config is>", 
+> --with-proj-include="<where the proj headers are>",
+> --with-proj-lib=<where the proj libs are>"))
+> 
+> or something like that. Didn't it seem sensible to install the rgdal OSX 
+> binaries from kyngchaos?
+> 
+> Once rgdal is installed, just install spgrass6 as a source package, no 
+> dependencies, please, and no configure arguments. These are two separate 
+> packages, where rgdal is what spgrass6 uses to do some of its work.
+> 
+> 
+
+
+ Thanks again for the help.  It installed successfully! After your comment
+about the rgdal binaries from kyngchaos, I installed them independently (I
+guess until then I thought that using the 'dependencies' argument for
+install packages would work for rgdal automatically), and it now works. 
+Sorry if that should have been obvious.  
+Best, 
+Tim
+
+
+-- 
+View this message in context: http://n2.nabble.com/problem-installing-spgrass6-in-R-tp3729191p3766876.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+From timothyholland at gmail.com  Wed Oct  7 04:11:57 2009
+From: timothyholland at gmail.com (Tim Holland)
+Date: Wed Oct  7 04:12:00 2009
+Subject: [GRASS-stats] "g.region: command not found" using readRAST6 command
+Message-ID: <1254903117846-3780384.post@n2.nabble.com>
+
+
+Hello, 
+
+I'm sorry to keep making so much noise on the list for what I'm sure are
+basic questions.  
+
+I am having trouble loading in a GRASS raster into R using the readRAST6
+command.  
+
+Using: 
+>readRAST6("rasterMap",mapset="/Users/etc/my_mapset")
+
+I get the following error:
+>Error in if (file.exists(file) == FALSE) if (!missing(asText) && asText == 
+: 
+  argument is of length zero
+>Error in parseGRASS(cmd) : g.region not parsed
+>sh: g.region: command not found
+
+Is there something I am doing wrong here?  
+
+Also, when I am working with spgrass6 in general, should I have my working
+directory set to the GRASS DBase I am using, or does that matter?  
+
+Thank you for the help, 
+Tim
+
+
+> sessionInfo()
+R version 2.9.2 (2009-08-24) 
+i386-apple-darwin8.11.1 
+
+locale:
+en_US.UTF-8/en_US.UTF-8/C/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] spgrass6_0.6-9 XML_2.6-0      rgdal_0.6-12   sp_0.9-44     
+
+loaded via a namespace (and not attached):
+[1] grid_2.9.2      lattice_0.17-25
+
+
+-- 
+View this message in context: http://n2.nabble.com/g-region-command-not-found-using-readRAST6-command-tp3780384p3780384.html
+Sent from the Grass - Stats mailing list archive at Nabble.com.
+From timothyholland at gmail.com  Wed Oct  7 05:08:50 2009
+From: timothyholland at gmail.com (Tim Holland)
+Date: Wed Oct  7 05:08:53 2009
+Subject: [GRASS-stats] "g.region: command not found" using readRAST6 
+	command
+In-Reply-To: <4ACC56D7.1030809@ucd.ie>
+References: <1254903117846-3780384.post@n2.nabble.com>
+	<4ACC56D7.1030809@ucd.ie>
+Message-ID: <1dba89130910070208t5c1bdddeoe27c8913a6c4cd07@mail.gmail.com>
+
+Hi Daniel,
+
+No, as it was I was trying to run things through R.  Grass was (is) running,
+but just incidentally.  Your comment made me think I needed to run
+initGRASS() first, so I tried, but got the following:
+
+> initGRASS(gisBase="/Library/GRASS/6.4",
+gisDbase="/Users/timholland/Documents/GIS/Vietnam_General/VN_GrassDbase")
+Error in initGRASS(gisBase = "/Library/GRASS/6.4", gisDbase =
+"/Users/timholland/Documents/GIS/Vietnam_General/VN_GrassDbase") :
+  A GISRC file already exists; to override, set override=TRUE
+
+Should I be running R through GRASS?  (as opposed to vice-versa, as had been
+my understanding).  If so, how do I do that?
+
+Again, sorry for really basic questions, but thank you for the help.
+
+Best,
+Tim
+
+
+
+On Wed, Oct 7, 2009 at 3:52 PM, Daniel McInerney <daniel.mcinerney@ucd.ie>wrote:
+
+> Hi Tim,
+> Is R running within a GRASS session?
+>
+> Regards,
+> Daniel.
+>
+> Tim Holland wrote:
+>
+>> Hello,
+>> I'm sorry to keep making so much noise on the list for what I'm sure are
+>> basic questions.
+>> I am having trouble loading in a GRASS raster into R using the readRAST6
+>> command.
+>> Using:
+>>
+>>> readRAST6("rasterMap",mapset="/Users/etc/my_mapset")
+>>>
+>>>
+>>
+>> I get the following error:
+>>
+>>
+>>> Error in if (file.exists(file) == FALSE) if (!missing(asText) && asText
+>>> ==
+>>>
+>> :  argument is of length zero
+>>
+>>
+>>> Error in parseGRASS(cmd) : g.region not parsed
+>>> sh: g.region: command not found
+>>>
+>>>
+>>
+>> Is there something I am doing wrong here?
+>> Also, when I am working with spgrass6 in general, should I have my working
+>> directory set to the GRASS DBase I am using, or does that matter?
+>> Thank you for the help, Tim
+>>
+>>
+>>
+>>
+>>> sessionInfo()
+>>>
+>>>
+>> R version 2.9.2 (2009-08-24) i386-apple-darwin8.11.1
+>> locale:
+>> en_US.UTF-8/en_US.UTF-8/C/C/en_US.UTF-8/en_US.UTF-8
+>>
+>> attached base packages:
+>> [1] stats     graphics  grDevices utils     datasets  methods   base
+>> other attached packages:
+>> [1] spgrass6_0.6-9 XML_2.6-0      rgdal_0.6-12   sp_0.9-44
+>> loaded via a namespace (and not attached):
+>> [1] grid_2.9.2      lattice_0.17-25
+>>
+>>
+>>
+>>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20091007/c58d58fd/attachment.html
+From daniel.mcinerney at ucd.ie  Wed Oct  7 04:52:39 2009
+From: daniel.mcinerney at ucd.ie (Daniel McInerney)
+Date: Wed Oct  7 05:53:39 2009
+Subject: [GRASS-stats] "g.region: command not found" using readRAST6
+	command
+In-Reply-To: <1254903117846-3780384.post@n2.nabble.com>
+References: <1254903117846-3780384.post@n2.nabble.com>
+Message-ID: <4ACC56D7.1030809@ucd.ie>
+
+Hi Tim,
+Is R running within a GRASS session?
+
+Regards,
+Daniel.
+
+Tim Holland wrote:
+> Hello, 
+>
+> I'm sorry to keep making so much noise on the list for what I'm sure are
+> basic questions.  
+>
+> I am having trouble loading in a GRASS raster into R using the readRAST6
+> command.  
+>
+> Using: 
+>   
+>> readRAST6("rasterMap",mapset="/Users/etc/my_mapset")
+>>     
+>
+> I get the following error:
+>   
+>> Error in if (file.exists(file) == FALSE) if (!missing(asText) && asText == 
+>>     
+> : 
+>   argument is of length zero
+>   
+>> Error in parseGRASS(cmd) : g.region not parsed
+>> sh: g.region: command not found
+>>     
+>
+> Is there something I am doing wrong here?  
+>
+> Also, when I am working with spgrass6 in general, should I have my working
+> directory set to the GRASS DBase I am using, or does that matter?  
+>
+> Thank you for the help, 
+> Tim
+>
+>
+>   
+>> sessionInfo()
+>>     
+> R version 2.9.2 (2009-08-24) 
+> i386-apple-darwin8.11.1 
+>
+> locale:
+> en_US.UTF-8/en_US.UTF-8/C/C/en_US.UTF-8/en_US.UTF-8
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base     
+>
+> other attached packages:
+> [1] spgrass6_0.6-9 XML_2.6-0      rgdal_0.6-12   sp_0.9-44     
+>
+> loaded via a namespace (and not attached):
+> [1] grid_2.9.2      lattice_0.17-25
+>
+>
+>   
+
+From daniel.mcinerney at ucd.ie  Wed Oct  7 07:06:03 2009
+From: daniel.mcinerney at ucd.ie (Daniel McInerney)
+Date: Wed Oct  7 07:06:27 2009
+Subject: [GRASS-stats] "g.region: command not found" using
+	readRAST6	command
+In-Reply-To: <1dba89130910070208t5c1bdddeoe27c8913a6c4cd07@mail.gmail.com>
+References: <1254903117846-3780384.post@n2.nabble.com>
+	<4ACC56D7.1030809@ucd.ie>
+	<1dba89130910070208t5c1bdddeoe27c8913a6c4cd07@mail.gmail.com>
+Message-ID: <4ACC761B.10500@ucd.ie>
+
+Hi Tim,
+You should run R from within the GRASS shell
+environment.  So launch a terminal and run GRASS,
+select a GRASS location and mapset, and then from
+within the GRASS shell, run R. You should then be able
+to read/write GRASS rasters from R.
+
+Regards,
+Daniel.
+
+Tim Holland wrote:
+> Hi Daniel,
+>
+> No, as it was I was trying to run things through R.  Grass was (is) 
+> running, but just incidentally.  Your comment made me think I needed 
+> to run initGRASS() first, so I tried, but got the following:
+>
+> > initGRASS(gisBase="/Library/GRASS/6.4", 
+> gisDbase="/Users/timholland/Documents/GIS/Vietnam_General/VN_GrassDbase")
+> Error in initGRASS(gisBase = "/Library/GRASS/6.4", gisDbase = 
+> "/Users/timholland/Documents/GIS/Vietnam_General/VN_GrassDbase") :
+>   A GISRC file already exists; to override, set override=TRUE
+>
+> Should I be running R through GRASS?  (as opposed to vice-versa, as 
+> had been my understanding).  If so, how do I do that? 
+>
+> Again, sorry for really basic questions, but thank you for the help.
+>
+> Best,
+> Tim
+>
+>
+>
+> On Wed, Oct 7, 2009 at 3:52 PM, Daniel McInerney 
+> <daniel.mcinerney@ucd.ie <mailto:daniel.mcinerney@ucd.ie>> wrote:
+>
+>     Hi Tim,
+>     Is R running within a GRASS session?
+>
+>     Regards,
+>     Daniel.
+>
+>     Tim Holland wrote:
+>
+>         Hello,
+>         I'm sorry to keep making so much noise on the list for what
+>         I'm sure are
+>         basic questions.  
+>         I am having trouble loading in a GRASS raster into R using the
+>         readRAST6
+>         command.  
+>         Using:  
+>
+>             readRAST6("rasterMap",mapset="/Users/etc/my_mapset")
+>                
+>
+>
+>         I get the following error:
+>          
+>
+>             Error in if (file.exists(file) == FALSE) if
+>             (!missing(asText) && asText ==    
+>
+>         :  argument is of length zero
+>          
+>
+>             Error in parseGRASS(cmd) : g.region not parsed
+>             sh: g.region: command not found
+>                
+>
+>
+>         Is there something I am doing wrong here?  
+>         Also, when I am working with spgrass6 in general, should I
+>         have my working
+>         directory set to the GRASS DBase I am using, or does that
+>         matter?  
+>         Thank you for the help, Tim
+>
+>
+>          
+>
+>             sessionInfo()
+>                
+>
+>         R version 2.9.2 (2009-08-24) i386-apple-darwin8.11.1
+>         locale:
+>         en_US.UTF-8/en_US.UTF-8/C/C/en_US.UTF-8/en_US.UTF-8
+>
+>         attached base packages:
+>         [1] stats     graphics  grDevices utils     datasets  methods
+>           base    
+>         other attached packages:
+>         [1] spgrass6_0.6-9 XML_2.6-0      rgdal_0.6-12   sp_0.9-44    
+>         loaded via a namespace (and not attached):
+>         [1] grid_2.9.2      lattice_0.17-25
+>
+>
+>          
+>
+>
+>
+
+From Roger.Bivand at nhh.no  Wed Oct  7 08:42:39 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Wed Oct  7 08:42:42 2009
+Subject: [GRASS-stats] "g.region: command not found" using readRAST6 
+	command
+In-Reply-To: <1dba89130910070208t5c1bdddeoe27c8913a6c4cd07@mail.gmail.com>
+References: <1254903117846-3780384.post@n2.nabble.com>
+	<4ACC56D7.1030809@ucd.ie>
+	<1dba89130910070208t5c1bdddeoe27c8913a6c4cd07@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.0910071431510.16558@reclus.nhh.no>
+
+On Wed, 7 Oct 2009, Tim Holland wrote:
+
+> Hi Daniel,
+>
+> No, as it was I was trying to run things through R.  Grass was (is) running,
+> but just incidentally.  Your comment made me think I needed to run
+> initGRASS() first, so I tried, but got the following:
+>
+>> initGRASS(gisBase="/Library/GRASS/6.4",
+> gisDbase="/Users/timholland/Documents/GIS/Vietnam_General/VN_GrassDbase")
+> Error in initGRASS(gisBase = "/Library/GRASS/6.4", gisDbase =
+> "/Users/timholland/Documents/GIS/Vietnam_General/VN_GrassDbase") :
+>  A GISRC file already exists; to override, set override=TRUE
+>
+> Should I be running R through GRASS?  (as opposed to vice-versa, as had been
+> my understanding).  If so, how do I do that?
+
+Whether you run spgrass6 freestanding or within a running GRASS depends on 
+what you want to do. If you only need to use GRASS analytical modules 
+(programs) on data that are "on the R side", the freestanding possibility 
+may be sufficient, as initGRASS() essentially sets up the GRASS 
+environment variables for you and creates a throw-away location in a 
+temporary directory. Then you can use write*6() to populate it, and work 
+from there, probably bringing the results back with read*6().
+
+If on the other hand you have (or ought to have) a GRASS location and wish 
+to analyse the data in R (other way round), you start R within a running 
+GRASS shell, so that it inherits the environment variables and existing 
+location.
+
+Beware of the GRASS/GDAL plugin - if you get odd things happening with 
+readRAST6(), use the plugin=FALSE argument, as this will read your data 
+using a temporary file instead. If you are not using the plugin, setting 
+the mapset should not be needed. In addition, your mapset path looks 
+highly non-standard - mapsets are typically within the GISDBASE and 
+LOCATION in a hierarchy.
+
+When you get non-obvious error messages, please do include the output of 
+traceback() run immediately after the error. This permits the 
+identification of where in the call tree (sequence of functions called by 
+the function you used) the problem arose. The output of sessionInfo() is 
+also potentially useful.
+
+Hope this clarifies a little.
+
+Roger
+
+>
+> Again, sorry for really basic questions, but thank you for the help.
+>
+> Best,
+> Tim
+>
+>
+>
+> On Wed, Oct 7, 2009 at 3:52 PM, Daniel McInerney <daniel.mcinerney@ucd.ie>wrote:
+>
+>> Hi Tim,
+>> Is R running within a GRASS session?
+>>
+>> Regards,
+>> Daniel.
+>>
+>> Tim Holland wrote:
+>>
+>>> Hello,
+>>> I'm sorry to keep making so much noise on the list for what I'm sure are
+>>> basic questions.
+>>> I am having trouble loading in a GRASS raster into R using the readRAST6
+>>> command.
+>>> Using:
+>>>
+>>>> readRAST6("rasterMap",mapset="/Users/etc/my_mapset")
+>>>>
+>>>>
+>>>
+>>> I get the following error:
+>>>
+>>>
+>>>> Error in if (file.exists(file) == FALSE) if (!missing(asText) && asText
+>>>> ==
+>>>>
+>>> :  argument is of length zero
+>>>
+>>>
+>>>> Error in parseGRASS(cmd) : g.region not parsed
+>>>> sh: g.region: command not found
+>>>>
+>>>>
+>>>
+>>> Is there something I am doing wrong here?
+>>> Also, when I am working with spgrass6 in general, should I have my working
+>>> directory set to the GRASS DBase I am using, or does that matter?
+>>> Thank you for the help, Tim
+>>>
+>>>
+>>>
+>>>
+>>>> sessionInfo()
+>>>>
+>>>>
+>>> R version 2.9.2 (2009-08-24) i386-apple-darwin8.11.1
+>>> locale:
+>>> en_US.UTF-8/en_US.UTF-8/C/C/en_US.UTF-8/en_US.UTF-8
+>>>
+>>> attached base packages:
+>>> [1] stats     graphics  grDevices utils     datasets  methods   base
+>>> other attached packages:
+>>> [1] spgrass6_0.6-9 XML_2.6-0      rgdal_0.6-12   sp_0.9-44
+>>> loaded via a namespace (and not attached):
+>>> [1] grid_2.9.2      lattice_0.17-25
+>>>
+>>>
+>>>
+>>>
+>>
+>>
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From alobolistas at gmail.com  Wed Oct  7 09:18:27 2009
+From: alobolistas at gmail.com (Agustin Lobo)
+Date: Wed Oct  7 09:24:36 2009
+Subject: [GRASS-stats] "g.region: command not found" using readRAST6 
+	command
+In-Reply-To: <1dba89130910070208t5c1bdddeoe27c8913a6c4cd07@mail.gmail.com>
+References: <1254903117846-3780384.post@n2.nabble.com>	<4ACC56D7.1030809@ucd.ie>
+	<1dba89130910070208t5c1bdddeoe27c8913a6c4cd07@mail.gmail.com>
+Message-ID: <4ACC9523.40602@gmail.com>
+
+Tim,
+
+Please try this:
+1. run grass,
+2. start an xterm from the grass console
+xterm &
+3.  cd to the directory where you have your .RData file
+4. Start R
+5. require(spgrass6)
+6. gmeta6()
+
+If you get the same error, then I think you have the same problem I had
+few weeks ago and was solved thanks to Markus Nettler. It's a grass problem
+and has nothing to see with R. Actually, if at step 4 you run
+g.region -p
+you would get the same error.
+Do the following:
+
+1. Locate  your grass.conf file (mine is under /etc/ld.so.conf.d)
+2. Change
+/usr/lib/grass/lib
+to
+/usr/lib/grass64/lib
+
+(check where the lib directory of your grass is, mine is under 
+/usr/lib/grass64)
+
+3. run
+sudo ldconfig
+
+4. gmeta() should work now.
+
+I tried to get the ubuntugis packagers to fix this, but apparently
+nobody cares. See:
+http://n2.nabble.com/Fwd-Re-R-sig-Geo-Errror-with-gmeta6-tp3610348p3610348.html
+
+for more info.
+
+Hope this helps.
+Agus
+
+
+Tim Holland wrote:
+> Hi Daniel,
+>
+> No, as it was I was trying to run things through R.  Grass was (is) 
+> running, but just incidentally.  Your comment made me think I needed 
+> to run initGRASS() first, so I tried, but got the following:
+>
+> > initGRASS(gisBase="/Library/GRASS/6.4", 
+> gisDbase="/Users/timholland/Documents/GIS/Vietnam_General/VN_GrassDbase")
+> Error in initGRASS(gisBase = "/Library/GRASS/6.4", gisDbase = 
+> "/Users/timholland/Documents/GIS/Vietnam_General/VN_GrassDbase") :
+>   A GISRC file already exists; to override, set override=TRUE
+>
+> Should I be running R through GRASS?  (as opposed to vice-versa, as 
+> had been my understanding).  If so, how do I do that? 
+>
+> Again, sorry for really basic questions, but thank you for the help.
+>
+> Best,
+> Tim
+>
+>
+>
+> On Wed, Oct 7, 2009 at 3:52 PM, Daniel McInerney 
+> <daniel.mcinerney@ucd.ie <mailto:daniel.mcinerney@ucd.ie>> wrote:
+>
+>     Hi Tim,
+>     Is R running within a GRASS session?
+>
+>     Regards,
+>     Daniel.
+>
+>     Tim Holland wrote:
+>
+>         Hello,
+>         I'm sorry to keep making so much noise on the list for what
+>         I'm sure are
+>         basic questions.  
+>         I am having trouble loading in a GRASS raster into R using the
+>         readRAST6
+>         command.  
+>         Using:  
+>
+>             readRAST6("rasterMap",mapset="/Users/etc/my_mapset")
+>                
+>
+>
+>         I get the following error:
+>          
+>
+>             Error in if (file.exists(file) == FALSE) if
+>             (!missing(asText) && asText ==    
+>
+>         :  argument is of length zero
+>          
+>
+>             Error in parseGRASS(cmd) : g.region not parsed
+>             sh: g.region: command not found
+>                
+>
+>
+>         Is there something I am doing wrong here?  
+>         Also, when I am working with spgrass6 in general, should I
+>         have my working
+>         directory set to the GRASS DBase I am using, or does that
+>         matter?  
+>         Thank you for the help, Tim
+>
+>
+>          
+>
+>             sessionInfo()
+>                
+>
+>         R version 2.9.2 (2009-08-24) i386-apple-darwin8.11.1
+>         locale:
+>         en_US.UTF-8/en_US.UTF-8/C/C/en_US.UTF-8/en_US.UTF-8
+>
+>         attached base packages:
+>         [1] stats     graphics  grDevices utils     datasets  methods
+>           base    
+>         other attached packages:
+>         [1] spgrass6_0.6-9 XML_2.6-0      rgdal_0.6-12   sp_0.9-44    
+>         loaded via a namespace (and not attached):
+>         [1] grid_2.9.2      lattice_0.17-25
+>
+>
+>          
+>
+>
+>
+> ------------------------------------------------------------------------
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>   
+
+From hamish_b at yahoo.com  Wed Oct  7 22:21:12 2009
+From: hamish_b at yahoo.com (Hamish)
+Date: Wed Oct  7 22:21:15 2009
+Subject: [GRASS-stats] "g.region: command not found" using readRAST6
+	command
+In-Reply-To: <4ACC9523.40602@gmail.com>
+Message-ID: <72396.86245.qm@web110003.mail.gq1.yahoo.com>
+
+Agustin wrote:
+> Do the following:
+> 
+> 1. Locate  your grass.conf file (mine is under /etc/ld.so.conf.d)
+> 2. Change
+> /usr/lib/grass/lib
+> to
+> /usr/lib/grass64/lib
+> 
+> (check where the lib directory of your grass is, mine is
+> under /usr/lib/grass64)
+> 
+> 3. run
+> sudo ldconfig
+> 
+> 4. gmeta() should work now.
+> 
+> I tried to get the ubuntugis packagers to fix this, but apparently
+> nobody cares. See:
+> http://n2.nabble.com/Fwd-Re-R-sig-Geo-Errror-with-gmeta6-tp3610348p3610348.html
+> for more info.
+
+
+in the DebianGIS package the lib dir was renamed in 6.4.0~rc3-3 back in
+late March. AFAIK UbuntuGIS often just rebuilds the Debian package for
+their world.
+
+http://packages.debian.org/changelogs/pool/main/g/grass/grass_6.4.0~rc5-3/changelog
+
+are you using a newer version of grass than rc3?
+
+
+it looks like Karmic's package has the versioned dirs:
+  http://packages.ubuntu.com/karmic/i386/grass/filelist
+
+(rc5-1 is buggy and should not ship without the patch from Debian's rc5-2!!
+but that is another matter..
+ https://bugs.launchpad.net/ubuntu/+source/grass/+bug/435177
+)
+
+
+Hamish
+
+
+
+      
+From timothyholland at gmail.com  Thu Oct  8 00:03:32 2009
+From: timothyholland at gmail.com (Tim Holland)
+Date: Thu Oct  8 00:03:34 2009
+Subject: [GRASS-stats] "g.region: command not found" using readRAST6 
+	command
+In-Reply-To: <72396.86245.qm@web110003.mail.gq1.yahoo.com>
+References: <4ACC9523.40602@gmail.com>
+	<72396.86245.qm@web110003.mail.gq1.yahoo.com>
+Message-ID: <1dba89130910072103t1102715dh615d0b9c1ed6ea3@mail.gmail.com>
+
+Dear all,
+
+Thank you very much for the help.  In the end, my problem was more basic
+than Augustin's suggestion.  Starting R from within GRASS was basically all
+I needed to do.  Also, Roger, thank you for the 'pre-emptive' help with your
+comment about setting 'plugin=FALSE': sure enough, when I tried without that
+command, I got the following and R exited:
+
+> x<-readRAST6("GLC2000_Landcover_SEAsia")
+ERROR: Incompatible library version for module. You need to rebuild GRASS
+       or untangle multiple installations.
+
+But it worked fine with plugin=FALSE.
+
+Best,
+Tim
+
+
+On Thu, Oct 8, 2009 at 9:21 AM, Hamish <hamish_b@yahoo.com> wrote:
+
+> Agustin wrote:
+> > Do the following:
+> >
+> > 1. Locate  your grass.conf file (mine is under /etc/ld.so.conf.d)
+> > 2. Change
+> > /usr/lib/grass/lib
+> > to
+> > /usr/lib/grass64/lib
+> >
+> > (check where the lib directory of your grass is, mine is
+> > under /usr/lib/grass64)
+> >
+> > 3. run
+> > sudo ldconfig
+> >
+> > 4. gmeta() should work now.
+> >
+> > I tried to get the ubuntugis packagers to fix this, but apparently
+> > nobody cares. See:
+> >
+> http://n2.nabble.com/Fwd-Re-R-sig-Geo-Errror-with-gmeta6-tp3610348p3610348.html
+> > for more info.
+>
+>
+> in the DebianGIS package the lib dir was renamed in 6.4.0~rc3-3 back in
+> late March. AFAIK UbuntuGIS often just rebuilds the Debian package for
+> their world.
+>
+>
+> http://packages.debian.org/changelogs/pool/main/g/grass/grass_6.4.0~rc5-3/changelog<http://packages.debian.org/changelogs/pool/main/g/grass/grass_6.4.0%7Erc5-3/changelog>
+>
+> are you using a newer version of grass than rc3?
+>
+>
+> it looks like Karmic's package has the versioned dirs:
+>  http://packages.ubuntu.com/karmic/i386/grass/filelist
+>
+> (rc5-1 is buggy and should not ship without the patch from Debian's rc5-2!!
+> but that is another matter..
+>  https://bugs.launchpad.net/ubuntu/+source/grass/+bug/435177
+> )
+>
+>
+> Hamish
+>
+>
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20091008/b8df33da/attachment.html
+From neteler.osgeo at gmail.com  Fri Oct  9 14:12:37 2009
+From: neteler.osgeo at gmail.com (Markus Neteler)
+Date: Fri Oct  9 14:12:44 2009
+Subject: [GRASS-stats] "g.region: command not found" using readRAST6 
+	command
+In-Reply-To: <1dba89130910072103t1102715dh615d0b9c1ed6ea3@mail.gmail.com>
+References: <4ACC9523.40602@gmail.com>	<72396.86245.qm@web110003.mail.gq1.yahoo.com>
+	<1dba89130910072103t1102715dh615d0b9c1ed6ea3@mail.gmail.com>
+Message-ID: <4ACF7D15.7070205@gmail.com>
+
+Tim Holland wrote:
+> Dear all,
+>
+> Thank you very much for the help.  In the end, my problem was more
+> basic than Augustin's suggestion.  Starting R from within GRASS was
+> basically all I needed to do.  Also, Roger, thank you for the
+> 'pre-emptive' help with your comment about setting 'plugin=FALSE':
+> sure enough, when I tried without that command, I got the following
+> and R exited:
+>
+> > x<-readRAST6("GLC2000_Landcover_SEAsia")
+> ERROR: Incompatible library version for module. You need to rebuild GRASS
+>        or untangle multiple installations.
+>
+> But it worked fine with plugin=FALSE.
+
+AFAIK this indicates in this case that the GRASS-GDAL plugin is out of sync
+with GRASS. Rebuilding the plugin should help.
+
+Background:
+- first compile GDAL without GRASS support
+- then compile GRASS (needs GDAL)
+- then compile the GRASS-GDAL plugin (needs GDAL and GRASS)
+- use R
+
+Hope this helps,
+Markus
+
+From Roger.Bivand at nhh.no  Fri Oct  9 14:24:14 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Fri Oct  9 14:24:17 2009
+Subject: [GRASS-stats] "g.region: command not found" using readRAST6 
+	command
+In-Reply-To: <4ACF7D15.7070205@gmail.com>
+References: <4ACC9523.40602@gmail.com>
+	<72396.86245.qm@web110003.mail.gq1.yahoo.com>
+	<1dba89130910072103t1102715dh615d0b9c1ed6ea3@mail.gmail.com>
+	<4ACF7D15.7070205@gmail.com>
+Message-ID: <alpine.LRH.2.00.0910092018340.24403@reclus.nhh.no>
+
+On Fri, 9 Oct 2009, Markus Neteler wrote:
+
+> Tim Holland wrote:
+>> Dear all,
+>>
+>> Thank you very much for the help.  In the end, my problem was more
+>> basic than Augustin's suggestion.  Starting R from within GRASS was
+>> basically all I needed to do.  Also, Roger, thank you for the
+>> 'pre-emptive' help with your comment about setting 'plugin=FALSE':
+>> sure enough, when I tried without that command, I got the following
+>> and R exited:
+>>
+>>> x<-readRAST6("GLC2000_Landcover_SEAsia")
+>> ERROR: Incompatible library version for module. You need to rebuild GRASS
+>>        or untangle multiple installations.
+>>
+>> But it worked fine with plugin=FALSE.
+>
+> AFAIK this indicates in this case that the GRASS-GDAL plugin is out of sync
+> with GRASS. Rebuilding the plugin should help.
+>
+> Background:
+> - first compile GDAL without GRASS support
+> - then compile GRASS (needs GDAL)
+> - then compile the GRASS-GDAL plugin (needs GDAL and GRASS)
+> - use R
+
+Markus,
+
+The plugin is great for those who build from source, but here Tim is using 
+the Kyngchaos OSX binaries, and seems to have a working system. It may be 
+that some plugin directory is hanging around from a failed install, but 
+for relatively many otherwise able users, this is too hard to fix. We've 
+seen numerous Debian/Ubuntu users with similar version mismatches, and 
+they aren't easy to settle - I get tripped up by the plugin myself when 
+updating GDAL or GRASS. So for people who find that it helps, not using 
+the plugin provides a solution avoiding building from source.
+
+Best wishes,
+
+Roger
+
+>
+> Hope this helps,
+> Markus
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+
+From onicescu at musc.edu  Fri Oct 16 12:16:07 2009
+From: onicescu at musc.edu (Onicescu, Georgiana)
+Date: Fri Oct 16 12:17:11 2009
+Subject: [GRASS-stats] GEOMED2009 Call for participation
+Message-ID: <2D49A40FD22C514DA86E7F25BF83B555F379086179@EVS4.clinlan.local>
+
+Dear All,
+
+
+Please see below the details about the international GEOMED 2009 conference that will take place November 14-16 2009 in Charleston:
+
+
+
+**FINAL NOTIFICATION**
+
+
+
+GEOMED 2009, MUSC, Charleston, South Carolina USA
+
+
+
+GEOMED 2009 is the 6th international, interdisciplinary
+
+conference on geomedical systems. This meeting will be held
+
+on November 14-16, 2009 at the Institute of Psychiatry
+
+auditorium on the Medical University of South Carolina
+
+campus in Charleston SC, USA. The Institute of Psychiatry
+
+is located at 67 President Street, (corner of President
+
+and Doughty Streets), Charleston. This meeting is a jointly
+
+sponsored event with SAMSI and so the meeting also represents
+
+a SAMSI workshop on spatial epidemiology forming part of the
+
+2009 - 2010 Program on Space-time Analysis for Environmental
+
+Mapping, Epidemiology and Climate Change. Today, more and more
+
+issues are arising in public health involving geography and
+
+medicine. GEOMED brings together statisticians, geographers,
+
+epidemiologists, computer scientists, and public health
+
+professionals to discuss methods of spatial analysis, as well
+
+as present and debate the results of such analyses.
+
+
+
+Website for further information and registration:
+
+http://www.musc.edu/dbbe/geomed2009/
+
+
+
+The program consists of invited speaker sessions
+
+covering Clustering and Surveillance, GIS health science,
+
+misaligned data, Ecological analysis and infection
+
+and Disease Mapping. A contributed poster session
+
+is also available: details of how to offer a
+
+poster are given on the web site.
+
+
+
+_________________________________________
+Georgiana Onicescu
+Faculty Research Associate
+Hollings Cancer Center
+Medical University of South Carolina
+Department of Biostatistics, Bioinformatics and Epidemiology
+86 Jonathan Lucas Street,Ste 118
+Charleston, SC, 29425
+Ph: (843) 792-3337
+Email: onicescu@musc.edu<mailto:onicescu@musc.edu>
+Web page: http://people.musc.edu/~geo6/
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://lists.osgeo.org/pipermail/grass-stats/attachments/20091016/a6c57185/attachment.html
+From luggen at web.de  Thu Oct 22 12:55:20 2009
+From: luggen at web.de (Lukas Quehl)
+Date: Thu Oct 22 13:18:01 2009
+Subject: [GRASS-stats] readVECT6 not working
+Message-ID: <1018302672@web.de>
+
+Hi,
+I have a problem with transferring vector maps from GRASS into R. The "readVECT6" function is not working. I always get the message "Fehler in vInfo(vname) : Vector information not found" ("Fehler"=Error). I did everything exactly as described in "Using R-GRASS Interface". It is neither working with my own data nor with the spearfish data. Other commands like "readRAST6" or "system(...)" are working, at least the ones I tried. I have no clue how to fix this or what I should do differently. Thank you for any help.
+Sincerely Lukas
+
+PS: Sorry if you already got this message, I had some problems with the spam filter of my other e-mail address and therefore sent the message twice
+
+System: Linux OpenSuse 10.3
+
+GRASS 6.4.0RC5 (spearfish60):~ > R
+
+R version 2.9.0 (2009-04-17)
+Copyright (C) 2009 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+>library(spgrass6)
+Lade n?tiges Paket: sp Lade n?tiges Paket: rgdal
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Loaded GDAL runtime: GDAL 1.6.1, released 2009/05/11
+Path to GDAL shared files:
+Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+Path to PROJ.4 shared files: (autodetected)
+Lade n?tiges Paket: XML
+GRASS GIS interface loaded with GRASS version: 6.4.0RC5
+and location: nc_spm_08
+>sessionInfo()
+R version 2.9.0 (2009-04-17) i686-pc-linux-gnu
+
+locale:
+LC_CTYPE=de_DE.UTF-8;LC_NUMERIC=C;LC_TIME=de_DE.UTF-8;LC_COLLATE=de_DE.UTF-8;LC_MONETARY=C;LC_MESSAGES=de_DE.UTF-8;LC_PAPER=de_DE.UTF-8;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=de_DE.UTF-8;LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] spgrass6_0.6-9 XML_2.6-0      rgdal_0.6-19   sp_0.9-44
+
+loaded via a namespace (and not attached):
+[1] grid_2.9.0      lattice_0.17-22
+
+>test<-readVECT6("elev_lid792_bepts")
+Fehler in vInfo(vname) : Vector information not found
+
+>traceback()
+3: stop("Vector information not found") 2: vInfo(vname)
+1: readVECT6("elev_lid792_bepts")
+
+>execGRASS("g.list",parameters=list(type="vect"))
+---------------------------------------------- vector files available in mapset <PERMANENT>:
+P079214                   elev_lid792_bepts         poi_names_wake
+...                       ...                       ...
+#lists all available vector maps
+
+>execGRASS("v.info",parameters=list(map="elev_lid792_bepts"))
++----------------------------------------------------------------------------+  
+| Layer:           elev_lid792_bepts                                         |
+ | Mapset:          PERMANENT                                                 |
+ | Location:        nc_spm_08                                                 |
+ | Datenbank:       /home/lukas/grassdata                                     |
+ | Titel:           Rural area (in tile 792), bare earth lidar point cloud (p |
+ | Ma?stab:       1:1                                                        |
+ | Kartenformat:      native                                                  |
+ | Name des Erzeugers: helena                                                 |
+ | Organisation:    NC OneMap                                                 |
+ | Quelldatum:     Mon Nov  6 14:11:59 2006                                   |
+ |----------------------------------------------------------------------------|
+ |   Typ der Karte:  Vektor (Level: 2)                                        |
+ |                                                                            |
+ |   Anzahl Punkte:       118716          Anzahl Fl?chen:      0             |
+ |   Anzahl Linien:        0               Anzahl Inseln:    0                |
+ |   Anzhal Grenzen:   0               Anzahl faces:      0                   |
+ |   Anzahl Zentroid:    0               Anzahl Kerne:    0                   |
+ |                                                                            |
+ |   Karte ist 3D:              Yes                                           |
+ |   Anzahl der dblinks:      0                                               |
+ |                                                                            |
+ |         Projektion: x,y                                                    |
+ |               N:        221229.985    S:        219580.011                 |
+ |               E:         639529.99    W:        637740.009                 |
+ |               B:            88.514    T:           134.493                 |
+ |                                                                            |
+ |   Digitalisierungs-Schwellwert: 0                                          |
+ |   Kommentare:                                                              |
+ |                                                                            |
+ +----------------------------------------------------------------------------+ 
+______________________________________________________
+GRATIS f?r alle WEB.DE-Nutzer: Die maxdome Movie-FLAT!
+Jetzt freischalten unter http://movieflat.web.de
+
+From Roger.Bivand at nhh.no  Thu Oct 22 14:36:23 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Oct 22 14:36:27 2009
+Subject: [GRASS-stats] readVECT6 not working
+In-Reply-To: <1018302672@web.de>
+References: <1018302672@web.de>
+Message-ID: <alpine.LRH.2.00.0910222018550.17903@reclus.nhh.no>
+
+On Thu, 22 Oct 2009, Lukas Quehl wrote:
+
+> Hi, I have a problem with transferring vector maps from GRASS into R. 
+> The "readVECT6" function is not working. I always get the message 
+> "Fehler in vInfo(vname) : Vector information not found" 
+> ("Fehler"=Error). I did everything exactly as described in "Using 
+> R-GRASS Interface". It is neither working with my own data nor with the 
+> spearfish data. Other commands like "readRAST6" or "system(...)" are 
+> working, at least the ones I tried. I have no clue how to fix this or 
+> what I should do differently. Thank you for any help. Sincerely Lukas
+
+I guess one of my messages got through, since you've included useful 
+information. vInfo() expects the output of v.info to be in English, 
+otherwise it cannot be parsed. Change to an English locale and it will 
+work.
+
+By the way, does anyone know of a non-localised way of retrieving the 
+information needed - vInfo for bugsites returns:
+
+   points      lines boundaries  centroids      areas    islands      faces
+       90          0          0          0          0          0          0
+    kernels
+          0
+
+but if the points are called "Punkte", all bets are off!
+
+Without this information, it is not possible to distinguish between vector 
+types for composing the v.out.ogr command parameters.
+
+Will:
+
+v.info -t bugsites
+
+or
+
+execGRASS("v.info", flags="t", parameters=list(map="bugsites"))
+
+return English-parsable information irrespective of locale - it looks 
+like it does? If someone can confirm, I'll patch vInfo() to suit.
+
+Roger
+
+
+>
+> PS: Sorry if you already got this message, I had some problems with the spam filter of my other e-mail address and therefore sent the message twice
+>
+> System: Linux OpenSuse 10.3
+>
+> GRASS 6.4.0RC5 (spearfish60):~ > R
+>
+> R version 2.9.0 (2009-04-17)
+> Copyright (C) 2009 The R Foundation for Statistical Computing
+> ISBN 3-900051-07-0
+>> library(spgrass6)
+> Lade n?tiges Paket: sp Lade n?tiges Paket: rgdal
+> Geospatial Data Abstraction Library extensions to R successfully loaded
+> Loaded GDAL runtime: GDAL 1.6.1, released 2009/05/11
+> Path to GDAL shared files:
+> Loaded PROJ.4 runtime: Rel. 4.6.1, 21 August 2008
+> Path to PROJ.4 shared files: (autodetected)
+> Lade n?tiges Paket: XML
+> GRASS GIS interface loaded with GRASS version: 6.4.0RC5
+> and location: nc_spm_08
+>> sessionInfo()
+> R version 2.9.0 (2009-04-17) i686-pc-linux-gnu
+>
+> locale:
+> LC_CTYPE=de_DE.UTF-8;LC_NUMERIC=C;LC_TIME=de_DE.UTF-8;LC_COLLATE=de_DE.UTF-8;LC_MONETARY=C;LC_MESSAGES=de_DE.UTF-8;LC_PAPER=de_DE.UTF-8;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=de_DE.UTF-8;LC_IDENTIFICATION=C
+>
+> attached base packages:
+> [1] stats     graphics  grDevices utils     datasets  methods   base
+>
+> other attached packages:
+> [1] spgrass6_0.6-9 XML_2.6-0      rgdal_0.6-19   sp_0.9-44
+>
+> loaded via a namespace (and not attached):
+> [1] grid_2.9.0      lattice_0.17-22
+>
+>> test<-readVECT6("elev_lid792_bepts")
+> Fehler in vInfo(vname) : Vector information not found
+>
+>> traceback()
+> 3: stop("Vector information not found") 2: vInfo(vname)
+> 1: readVECT6("elev_lid792_bepts")
+>
+>> execGRASS("g.list",parameters=list(type="vect"))
+> ---------------------------------------------- vector files available in mapset <PERMANENT>:
+> P079214                   elev_lid792_bepts         poi_names_wake
+> ...                       ...                       ...
+> #lists all available vector maps
+>
+>> execGRASS("v.info",parameters=list(map="elev_lid792_bepts"))
+> +----------------------------------------------------------------------------+
+> | Layer:           elev_lid792_bepts                                         |
+> | Mapset:          PERMANENT                                                 |
+> | Location:        nc_spm_08                                                 |
+> | Datenbank:       /home/lukas/grassdata                                     |
+> | Titel:           Rural area (in tile 792), bare earth lidar point cloud (p |
+> | Ma?stab:       1:1                                                        |
+> | Kartenformat:      native                                                  |
+> | Name des Erzeugers: helena                                                 |
+> | Organisation:    NC OneMap                                                 |
+> | Quelldatum:     Mon Nov  6 14:11:59 2006                                   |
+> |----------------------------------------------------------------------------|
+> |   Typ der Karte:  Vektor (Level: 2)                                        |
+> |                                                                            |
+> |   Anzahl Punkte:       118716          Anzahl Fl?chen:      0             |
+> |   Anzahl Linien:        0               Anzahl Inseln:    0                |
+> |   Anzhal Grenzen:   0               Anzahl faces:      0                   |
+> |   Anzahl Zentroid:    0               Anzahl Kerne:    0                   |
+> |                                                                            |
+> |   Karte ist 3D:              Yes                                           |
+> |   Anzahl der dblinks:      0                                               |
+> |                                                                            |
+> |         Projektion: x,y                                                    |
+> |               N:        221229.985    S:        219580.011                 |
+> |               E:         639529.99    W:        637740.009                 |
+> |               B:            88.514    T:           134.493                 |
+> |                                                                            |
+> |   Digitalisierungs-Schwellwert: 0                                          |
+> |   Kommentare:                                                              |
+> |                                                                            |
+> +----------------------------------------------------------------------------+
+> ______________________________________________________
+> GRATIS f?r alle WEB.DE-Nutzer: Die maxdome Movie-FLAT!
+> Jetzt freischalten unter http://movieflat.web.de
+>
+> _______________________________________________
+> grass-stats mailing list
+> grass-stats@lists.osgeo.org
+> http://lists.osgeo.org/mailman/listinfo/grass-stats
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no
+From neteler at osgeo.org  Thu Oct 22 14:56:17 2009
+From: neteler at osgeo.org (Markus Neteler)
+Date: Thu Oct 22 14:56:42 2009
+Subject: [GRASS-stats] readVECT6 not working
+In-Reply-To: <alpine.LRH.2.00.0910222018550.17903@reclus.nhh.no>
+References: <1018302672@web.de>
+	<alpine.LRH.2.00.0910222018550.17903@reclus.nhh.no>
+Message-ID: <86782b610910221156g65fab634m636957ac803e65f3@mail.gmail.com>
+
+Dear Roger,
+
+2009/10/22 Roger Bivand <Roger.Bivand@nhh.no>:
+...
+> vInfo() expects the output of v.info to be in English,
+> otherwise it cannot be parsed. Change to an English locale and it will work.
+
+This should not be needed, if...
+
+> By the way, does anyone know of a non-localised way of retrieving the
+> information needed - vInfo for bugsites returns:
+>
+> ?points ? ? ?lines boundaries ?centroids ? ? ?areas ? ?islands ? ? ?faces
+> ? ? ?90 ? ? ? ? ?0 ? ? ? ? ?0 ? ? ? ? ?0 ? ? ? ? ?0 ? ? ? ? ?0 ? ? ? ? ?0
+> ? kernels
+> ? ? ? ? 0
+
+... you use the -t flag for v.info which is not localised.
+
+A related patch of vInfo should solve the problem. GRASS should
+always offer a non-localised way to output such kind of information,
+if missing please tell us and we add a related flag.
+
+Best
+Markus
+From Roger.Bivand at nhh.no  Thu Oct 22 15:39:46 2009
+From: Roger.Bivand at nhh.no (Roger Bivand)
+Date: Thu Oct 22 15:39:52 2009
+Subject: [GRASS-stats] readVECT6 not working
+In-Reply-To: <86782b610910221156g65fab634m636957ac803e65f3@mail.gmail.com>
+References: <1018302672@web.de>
+	<alpine.LRH.2.00.0910222018550.17903@reclus.nhh.no>
+	<86782b610910221156g65fab634m636957ac803e65f3@mail.gmail.com>
+Message-ID: <alpine.LRH.2.00.0910222137070.28722@reclus.nhh.no>
+
+On Thu, 22 Oct 2009, Markus Neteler wrote:
+
+> Dear Roger,
+>
+> 2009/10/22 Roger Bivand <Roger.Bivand@nhh.no>:
+> ...
+>> vInfo() expects the output of v.info to be in English,
+>> otherwise it cannot be parsed. Change to an English locale and it will work.
+>
+> This should not be needed, if...
+>
+>> By the way, does anyone know of a non-localised way of retrieving the
+>> information needed - vInfo for bugsites returns:
+>>
+>> ?points ? ? ?lines boundaries ?centroids ? ? ?areas ? ?islands ? ? ?faces
+>> ? ? ?90 ? ? ? ? ?0 ? ? ? ? ?0 ? ? ? ? ?0 ? ? ? ? ?0 ? ? ? ? ?0 ? ? ? ? ?0
+>> ? kernels
+>> ? ? ? ? 0
+>
+> ... you use the -t flag for v.info which is not localised.
+>
+> A related patch of vInfo should solve the problem. GRASS should
+> always offer a non-localised way to output such kind of information,
+> if missing please tell us and we add a related flag.
+
+Committed to r-spatial on sourceforge - could Lukas check out from:
+
+cvs -z3 
+-d:pserver:anonymous@r-spatial.cvs.sourceforge.net:/cvsroot/r-spatial co 
+-P spgrass6
+
+and install and test in his original locale?
+
+Thanks,
+
+Roger
+
+>
+> Best
+> Markus
+>
+
+-- 
+Roger Bivand
+Economic Geography Section, Department of Economics, Norwegian School of
+Economics and Business Administration, Helleveien 30, N-5045 Bergen,
+Norway. voice: +47 55 95 93 55; fax +47 55 95 95 43
+e-mail: Roger.Bivand@nhh.no

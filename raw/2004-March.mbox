@@ -1,0 +1,330 @@
+From Thomas.Adams at noaa.gov  Wed Mar  3 12:31:49 2004
+From: Thomas.Adams at noaa.gov (Thomas Adams)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] gstat problem on Linux
+Message-ID: <40461685.9000609@noaa.gov>
+
+I have been using GSTAT with GRASS successfully on a Mac OS X system 
+with no problems. When I move the **IDENTICAL** files to a Linux system 
+(RedHat Linux 7.3) the GSTAT variogram code works fine, but when I 
+attempt to generate a predicted map using ordinary kriging I get a 
+singled valued map, which is completely different from the results with 
+the same data on my Mac OS X system.
+
+I have attached 2 gif files that show the difference; the 
+"precip.200301_pr.map.gif" is generated on Linux (the one that is bad - 
+the single value everywhere is 1.528851), the "2003.pr.gif" was 
+generated on Mac OS X, which is correct.
+
+gstat kriging output:
+
+GRASS:/grass/data > gstat gstat.krige.200301.precip
+gstat: Linux version 2.4.3 (04 July 2003)
+Copyright (C) 1992, 2003 Edzer J. Pebesma
+using Marsaglia's random number generator
+name|sta.precip.200301.15k
+desc|s.in.ascii sites=sta.precip.200301.15k 
+input=sta.precip.200301.grass fs='|'
+GRASS site list sta.precip.200301.15k: 0 cat, 2 dim, 0 str, 1 dbl.
+data(precip.200301): gstat/grass: 414 sites read successfully.
+sta.precip.200301.15k     (GRASS site list)
+attribute:             col[1]     [x:] x_1        : [    
+193192,1.74381e+06]
+n:                        414     [y:] y_2        : [    
+992152,2.21716e+06]
+sample mean:          1.64865     sample std.:          0.87102    
+[using ordinary kriging]
+ncols 305
+nrows 242
+initializing maps ..
+84% done
+CREATING SUPPORT FILES FOR precip.200301_pr.map
+CREATING SUPPORT FILES FOR precip.200301_var.map
+100% done
+
+One twist is that during the gstat build I get the following:
+
+.
+.
+.
+gcc -c -O  -DHAVE_CONFIG_H hsehldr.c
+ar ru meschach.a lufactor.o chfactor.o qrfactor.o solve.o norm.o hsehldr.o
+ranlib meschach.a
+make[1]: warning:  Clock skew detected.  Your build may be incomplete.
+make[1]: Leaving directory `/grass/gstat-2.4.3/meschach'
+cp meschach/meschach.a lib/libmeschach.a
+(cd src; make)
+make[1]: Entering directory `/grass/gstat-2.4.3/src'
+.
+.
+.
+
+I have found on the internet that this type of warning can occur with 
+older versions of Gnu make, but I am using version 3.79.1.
+
+Any and all ideas are welcomed!
+
+Regards,
+Tom
+
+-- 
+Thomas E Adams
+National Weather Service
+Ohio River Forecast Center
+1901 South State Route 134
+Wilmington, OH 45177
+
+EMAIL:	thomas.adams@noaa.gov
+
+VOICE:	937-383-0528
+FAX:	937-383-0033
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: precip.200301_pr.map.jpg
+Type: image/jpeg
+Size: 11440 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20040303/667226d7/precip.200301_pr.map.jpg
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: 2003.pr.jpg
+Type: image/jpeg
+Size: 16734 bytes
+Desc: not available
+Url : http://lists.osgeo.org/pipermail/grass-stats/attachments/20040303/667226d7/2003.pr.jpg
+From e.pebesma at geog.uu.nl  Thu Mar  4 09:21:16 2004
+From: e.pebesma at geog.uu.nl (Edzer J. Pebesma)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] gstat problem on Linux
+In-Reply-To: <40461685.9000609@noaa.gov>
+References: <40461685.9000609@noaa.gov>
+Message-ID: <40473B5C.5010507@geog.uu.nl>
+
+Hi Thomas, I remember trying to look at your data about a
+month ago, but it required more GRASS expertise than I could manage.
+So my main question is: can you make a small, reproducable example
+that I could investigate (on linux only)?
+
+Do both your GRASS installations have the same version?
+--
+Edzer
+
+Thomas Adams wrote:
+
+> I have been using GSTAT with GRASS successfully on a Mac OS X system 
+> with no problems. When I move the **IDENTICAL** files to a Linux 
+> system (RedHat Linux 7.3) the GSTAT variogram code works fine, but 
+> when I attempt to generate a predicted map using ordinary kriging I 
+> get a singled valued map, which is completely different from the 
+> results with the same data on my Mac OS X system.
+>
+> I have attached 2 gif files that show the difference; the 
+> "precip.200301_pr.map.gif" is generated on Linux (the one that is bad 
+> - the single value everywhere is 1.528851), the "2003.pr.gif" was 
+> generated on Mac OS X, which is correct.
+>
+> gstat kriging output:
+>
+> GRASS:/grass/data > gstat gstat.krige.200301.precip
+> gstat: Linux version 2.4.3 (04 July 2003)
+> Copyright (C) 1992, 2003 Edzer J. Pebesma
+> using Marsaglia's random number generator
+> name|sta.precip.200301.15k
+> desc|s.in.ascii sites=sta.precip.200301.15k 
+> input=sta.precip.200301.grass fs='|'
+> GRASS site list sta.precip.200301.15k: 0 cat, 2 dim, 0 str, 1 dbl.
+> data(precip.200301): gstat/grass: 414 sites read successfully.
+> sta.precip.200301.15k     (GRASS site list)
+> attribute:             col[1]     [x:] x_1        : [    
+> 193192,1.74381e+06]
+> n:                        414     [y:] y_2        : [    
+> 992152,2.21716e+06]
+> sample mean:          1.64865     sample std.:          0.87102    
+> [using ordinary kriging]
+> ncols 305
+> nrows 242
+> initializing maps ..
+> 84% done
+> CREATING SUPPORT FILES FOR precip.200301_pr.map
+> CREATING SUPPORT FILES FOR precip.200301_var.map
+> 100% done
+>
+> One twist is that during the gstat build I get the following:
+>
+> .
+> .
+> .
+> gcc -c -O  -DHAVE_CONFIG_H hsehldr.c
+> ar ru meschach.a lufactor.o chfactor.o qrfactor.o solve.o norm.o 
+> hsehldr.o
+> ranlib meschach.a
+> make[1]: warning:  Clock skew detected.  Your build may be incomplete.
+> make[1]: Leaving directory `/grass/gstat-2.4.3/meschach'
+> cp meschach/meschach.a lib/libmeschach.a
+> (cd src; make)
+> make[1]: Entering directory `/grass/gstat-2.4.3/src'
+> .
+> .
+> .
+>
+> I have found on the internet that this type of warning can occur with 
+> older versions of Gnu make, but I am using version 3.79.1.
+>
+> Any and all ideas are welcomed!
+>
+> Regards,
+> Tom
+>
+>
+> ------------------------------------------------------------------------
+>
+>
+> ------------------------------------------------------------------------
+>
+-------------- next part --------------
+Skipped content of type multipart/related
+From rn001 at cebas.csic.es  Fri Mar 12 16:45:10 2004
+From: rn001 at cebas.csic.es (javier garcia - CEBAS)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] R-GRASS-Postgres
+Message-ID: <200403122144.i2CLig016351@natura.cebas.csic.es>
+
+Hi all;
+I know this is not the most proper place to pose this question. But perhaps 
+some has used these things successfully.
+I'm usin GRASS along with R and Postgres, and really my problem is with the 
+link between Postgres-R. I've written to the developer of the library but I 
+guess he is out of work these days.
+I just would like to know if someone has used R to write tables in Postgres. 
+I'm trying to do it (dbWriteTable() function) but the function not only 
+doesn't writes any data to the table but it also drops the table from the 
+database.
+
+I'm using it in the way:
+>>>>>>>>>>>>>>> 
+dbWriteTable(conn,sonda.unidata.valores,name=deparse(substitute("pueblaunidatainterp")))
+Error in dbAppendTable.PgSQL.conn(conn, name, data) :
+        Table "pueblaunidatainterp" does not exist
+>>>>>>>>>>>>>>>>
+
+And I can asure that the table existed but it is erased with the funtion.
+
+If now one knows anything about this, forgive to ask this here.
+
+Thanks and best wishes,
+
+Javier
+
+
+From neteler at itc.it  Fri Mar 12 17:27:57 2004
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] R-GRASS-Postgres
+In-Reply-To: <200403122144.i2CLig016351@natura.cebas.csic.es>
+References: <200403122144.i2CLig016351@natura.cebas.csic.es>
+Message-ID: <20040312222757.GA18797@thuille.itc.it>
+
+Javier,
+
+there is a bug in the old RDBI/RdbiPgSQL library on sourceforge. We have
+fixed it and it was included into the new version. But: 
+Fetch it from BioConductor, the new RDBI/RdbiPgSQL home.
+
+Remarks and link here:
+ http://mpa.itc.it/markus/tmp/rdbi/
+
+Note that the new 1.2 version will cause problems if you load an 
+old .RData file (since they change the name of a subfunction).
+Workaround unknown.
+
+Hope this helps,
+
+ Markus
+
+PS: Maybe also useful reading for newbies:
+http://grass.itc.it/statsgrass/r_and_dbms.html
+
+On Fri, Mar 12, 2004 at 10:45:10PM +0100, javier garcia - CEBAS wrote:
+> Hi all;
+> I know this is not the most proper place to pose this question. But perhaps 
+> some has used these things successfully.
+> I'm usin GRASS along with R and Postgres, and really my problem is with the 
+> link between Postgres-R. I've written to the developer of the library but I 
+> guess he is out of work these days.
+> I just would like to know if someone has used R to write tables in Postgres. 
+> I'm trying to do it (dbWriteTable() function) but the function not only 
+> doesn't writes any data to the table but it also drops the table from the 
+> database.
+> 
+> I'm using it in the way:
+> >>>>>>>>>>>>>>> 
+> dbWriteTable(conn,sonda.unidata.valores,name=deparse(substitute("pueblaunidatainterp")))
+> Error in dbAppendTable.PgSQL.conn(conn, name, data) :
+>         Table "pueblaunidatainterp" does not exist
+> >>>>>>>>>>>>>>>>
+> 
+> And I can asure that the table existed but it is erased with the funtion.
+> 
+> If now one knows anything about this, forgive to ask this here.
+> 
+> Thanks and best wishes,
+> 
+> Javier
+> 
+> _______________________________________________
+> statsgrass mailing list
+> statsgrass@grass.itc.it
+> http://grass.itc.it/mailman/listinfo/statsgrass
+
+-- 
+Markus Neteler     <neteler itc it>       http://mpa.itc.it
+ITC-irst -  Centro per la Ricerca Scientifica e Tecnologica
+MPBA - Predictive Models for Biol. & Environ. Data Analysis
+Via Sommarive, 18        -       38050 Povo (Trento), Italy
+
+
+From poizot at cnam.fr  Wed Mar 17 11:17:36 2004
+From: poizot at cnam.fr (Poizot Emmanuel)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] r.in.hdf
+Message-ID: <200403171717.36605.poizot@cnam.fr>
+
+Hi,
+does any body ever used r.in.hdf command.
+I'm working with grass 5 and seems to do not have this command install.
+How can I do it ?
+-- 
+Cordialy
+----------------------------------------
+Emmanuel POIZOT
+Cnam/Intechmer
+Digue de Collignon
+50110 Tourlaville
+T?l : (33)(0)2 33 88 73 42
+Fax : (33)(0)2 33 88 73 39
+-----------------------------------------
+
+
+From neteler at itc.it  Wed Mar 17 11:25:46 2004
+From: neteler at itc.it (Markus Neteler)
+Date: Wed Nov 14 16:58:11 2007
+Subject: [STATSGRASS] r.in.hdf
+In-Reply-To: <200403171717.36605.poizot@cnam.fr>
+References: <200403171717.36605.poizot@cnam.fr>
+Message-ID: <20040317162546.GC13407@thuille.itc.it>
+
+On Wed, Mar 17, 2004 at 05:17:36PM +0100, Poizot Emmanuel wrote:
+> Hi,
+> does any body ever used r.in.hdf command.
+> I'm working with grass 5 and seems to do not have this command install.
+> How can I do it ?
+
+r.in.gdal with a recent GDAL version (1.2) supports HDF.
+r.in.hdf is no longer supported.
+
+Regards
+
+ Markus Neteler
+
+

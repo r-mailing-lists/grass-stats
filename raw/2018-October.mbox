@@ -1,0 +1,389 @@
+From veroandreo at gmail.com  Mon Oct  1 18:13:35 2018
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Tue, 2 Oct 2018 03:13:35 +0200
+Subject: [GRASS-stats] Error when starting grass from R (grass installed
+ thru osgeo4w)
+In-Reply-To: <alpine.LFD.2.21.1809281023560.4654@reclus.nhh.no>
+References: <CAAMki4GURqesT0fLw3Pg_tqowxGnM9nGtegXhaFw80nSwG4AGg@mail.gmail.com>
+ <1537107955895-0.post@n6.nabble.com>
+ <CF511784783D0B52.6e60d335-ffb1-4b9a-9c17-0a9ff28df204@mail.outlook.com>
+ <1537108631724-0.post@n6.nabble.com>
+ <CF511784783D0B52.d4161a6a-b0e5-40e2-8c4e-9649d45adca3@mail.outlook.com>
+ <1537132546148-0.post@n6.nabble.com>
+ <CAAMki4GgFqcCdqL0RHeU-XQOq4CY4A5J0VsfrrFch3QgMoFaOQ@mail.gmail.com>
+ <CF511784783D0B52.66f0bd65-3b3e-4390-9688-24038a16bb89@mail.outlook.com>
+ <CAAMki4EPqHus_ysPP_gEPWfErDMa3CH6Ty4-zT2Mn0=kfhnd+Q@mail.gmail.com>
+ <alpine.LFD.2.21.1809232107240.12875@reclus.nhh.no>
+ <1537734280170-0.post@n6.nabble.com>
+ <alpine.LFD.2.21.1809241115420.32377@reclus.nhh.no>
+ <CAAMki4EAEnkTcG0nrMFnsMri4svxcGZdCvbdqEyO-Nz42sQpSA@mail.gmail.com>
+ <alpine.LFD.2.21.1809242110160.12868@reclus.nhh.no>
+ <CAAMki4Hv1e1aKj8WCcbSF+ybHWSr=JXU5iZHwpep2pAU=gwf4A@mail.gmail.com>
+ <alpine.LFD.2.21.1809251031300.28959@reclus.nhh.no>
+ <alpine.LFD.2.21.1809281023560.4654@reclus.nhh.no>
+Message-ID: <CAAMki4GeQwvMOkrH+dQ6Au_zdZkkM8tS2TT7gDKiOSULSOy1_w@mail.gmail.com>
+
+Thanks much, Roger!! (sorry for the delay in reacting ;))
+
+El vie., 28 sept. 2018 a las 10:25, Roger Bivand (<Roger.Bivand at nhh.no>)
+escribió:
+
+> Package rgrass7_0.1-12.tar.gz is on its way to CRAN, with work-around for
+> OSGeo4W no write access console startup directory.
+>
+> Roger
+>
+> On Tue, 25 Sep 2018, Roger Bivand wrote:
+>
+> > On Tue, 25 Sep 2018, Veronica Andreo wrote:
+> >
+> >>  Hi Roger,
+> >>
+> >>  [...]
+> >>
+> >>>  It should work even in a directory without write permission - now it
+> >>>  tests
+> >>>  first rather than failing. Probably the default should be to use a
+> >>>  temporary file for GISRC anyway, but ten years ago that seemed
+> >>>  challenging.
+> >>>>
+> >>>>>  I also corrected the PROJ shared files location for GRASS (I hope).
+> I
+> >>>  can
+> >>>>>  provide a Windows binary package
+> >>>>>  off-list if need be.
+> >>>>>
+> >>>>  How to find/test for the location of PROJ shared files?
+> >>>>
+> >>>  You don't need to, it's just to do with correcting a carry-over from
+> file
+> >>>  organization in GRASS 6 that had not been correct for GRASS 7 when
+> >>>  setting up environment variables for GRASS.
+> >>>
+> >>>>>  Please let me know if this gets things working.
+> >>>>>
+> >>>>>  I'm also concerned to know how rgrass7 should be maintained going
+> >>>  forward?
+> >>>>>  Should it be on github/r-spatial ? Should it migrate to sf/raster
+> >>>  classes?
+> >>>>>
+> >>>>
+> >>>>  IMHO, moving to sf/raster classes seems reasonable. However, if it is
+> >>>>  too
+> >>>>  much of a hassle or there's no consensus, going from sp to sf is just
+> >>>>  one
+> >>>>  line in R once a GRASS vector has been read in and, for the raster
+> data,
+> >>>  as
+> >>>>  well.
+> >>>
+> >>>  I already have a trial sf/raster github repo, but the recent edits are
+> >>>  not
+> >>>  present there. It only uses sf for vector, but is stuck with sp/raster
+> >>>  for
+> >>>  raster, so was waiting for stars or similar to provide something
+> newer.
+> >>>
+> >>
+> >>  star given :)
+> >>  Didn't know about this repo. I think github/r-spatial is also probably
+> the
+> >>  better place to hold the official rgrass7 in the (near?) future
+> >
+> > Yes, but until we know whether getClass("Raster") in the raster Package
+> is a
+> > stable target match for GRASS raster layers (as sp::SpatialGridDataFrame
+> has
+> > been), we don't know how to drop the sp dependency. raster still depends
+> on
+> > sp and suggests rgdal; it now also suggests sf, so maybe in a little
+> while an
+> > R/GRASS interface could be just sf/rgdal-based. To support existing
+> > workflows, a legacy mode would be needed, I think. So rgrass7 would load
+> in
+> > legacy mode, but pivot to sf/raster if legacy mode was set FALSE? The
+> > r-spatial/stars project is making some progress as Edzer described in
+> > Pruchonice, but is split between local arrays and/or cloud-based
+> > representations. When stars reaches a sweet spot, rgrass7 can follow it
+> for
+> > the R-side representation.
+> >
+> > Best wishes,
+> >
+> > Roger
+> >
+> >>
+> >>  Cheers,
+> >>  Vero
+> >>
+> >
+> >
+>
+> --
+> Roger Bivand
+> Department of Economics, Norwegian School of Economics,
+> Helleveien 30, N-5045 Bergen, Norway.
+> voice: +47 55 95 93 55; e-mail: Roger.Bivand at nhh.no
+> http://orcid.org/0000-0003-2392-6140
+> https://scholar.google.no/citations?user=AWeghB0AAAAJ&hl=en
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20181002/a61d6ade/attachment.html>
+
+From veroandreo at gmail.com  Sat Oct 27 07:41:42 2018
+From: veroandreo at gmail.com (Veronica Andreo)
+Date: Sat, 27 Oct 2018 11:41:42 -0300
+Subject: [GRASS-stats] error when trying to start GRASS from Rstudio in
+	Windows
+Message-ID: <CAAMki4H56kSFijKh2KnSegjOkdvkh2=tb65EJ2cBid3p2hCb+w@mail.gmail.com>
+
+Hi
+
+I taught a GRASS course last week and all students got the same error when
+trying to init GRASS from R or Rstudio (in all cases grass was installed
+through OSGeo4W installer).
+
+Here´s the command we used (paths must be adapted accordingly):
+
+initGRASS(gisBase = "C:/OSGeo4W64/apps/grass/grass-7.4.2RC2",
+          gisDbase = "C:/Users/RETA/Documents/grassdata",
+          location = "nc_spm_08_grass7",
+          mapset = "user1",
+          SG = "elevation")
+
+The pop-up error is a missing iconv.dll. See screenshot attached. I believe
+all locales were in Spanish as well as the laptop I am testing now. After
+many attempts to try to close the pop-up error, we got the following in the
+Rstudio console:
+
+Error in if (!compatible) { : argument is of length zeroIn addition:
+Warning messages:1: In system(paste("g.dirseps.exe -g",
+shQuote(Sys.getenv("GISRC"))),  :  running command 'g.dirseps.exe -g
+"junk"' had status 3092: In system(paste("g.dirseps.exe -g",
+shQuote(gisDbase)), intern = TRUE) :  running command 'g.dirseps.exe
+-g "C:/Users/RETA/Documents/grassdata"' had status 3093: In
+dir.create(loc_path) :  cannot create dir 'NA\nc_spm_08_grass7',
+reason 'No such file or directory'4: In dir.create(paste(loc_path,
+"PERMANENT", sep = "/")) :  cannot create dir
+'NA\nc_spm_08_grass7\PERMANENT', reason 'No such file or directory'5:
+In dir.create(paste(loc_path, mapset, sep = "/")) :  cannot create dir
+'NA\nc_spm_08_grass7\user1', reason 'No such file or directory'6: In
+system(paste("g.version", get("addEXE", envir = .GRASS_CACHE),  :
+running command 'g.version.exe' had status 309
+
+Is this grass or windows problem? I did not get this error in this same
+laptop a month ago when Roger fixed some other problems. Seems that
+something changed meanwhile.
+
+Cheers,
+Vero
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20181027/2fd80f83/attachment-0001.html>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: initGRASS_error_windows.png
+Type: image/png
+Size: 104878 bytes
+Desc: not available
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20181027/2fd80f83/attachment-0001.png>
+
+From mazatlanmexico at yahoo.com  Sat Oct 27 08:25:04 2018
+From: mazatlanmexico at yahoo.com (Felipe Carrillo)
+Date: Sat, 27 Oct 2018 15:25:04 +0000 (UTC)
+Subject: [GRASS-stats] error when trying to start GRASS from Rstudio
+	in	Windows
+In-Reply-To: <CAAMki4H56kSFijKh2KnSegjOkdvkh2=tb65EJ2cBid3p2hCb+w@mail.gmail.com>
+References: <CAAMki4H56kSFijKh2KnSegjOkdvkh2=tb65EJ2cBid3p2hCb+w@mail.gmail.com>
+Message-ID: <797908935.102548.1540653904876@mail.yahoo.com>
+
+Hi Vero;I got the same error a while back and I ended up finding a workaround by copying all of the .dll files from C:\OSGeo4W64\bin to C:\OSGeo4W64\apps\grass\grass-7.4.1\bin. I have grass installed on my C drive but follow the path to your installation path bin. It appears that the .dlls are different or incompatible. 
+
+
+
+Felipe D. CarrilloSupervisory Fishery BiologistDepartment of the InteriorUS Fish & Wildlife ServiceCalifornia, USAhttp://www.fws.gov/redbluff/rbdd_jsmp.html
+ 
+
+    On Saturday, October 27, 2018, 7:42:00 AM PDT, Veronica Andreo <veroandreo at gmail.com> wrote:  
+ 
+ Hi 
+
+I taught a GRASS course last week and all students got the same error when trying to init GRASS from R or Rstudio (in all cases grass was installed through OSGeo4W installer). 
+
+Here´s the command we used (paths must be adapted accordingly):
+initGRASS(gisBase = "C:/OSGeo4W64/apps/grass/grass-7.4.2RC2", 
+          gisDbase = "C:/Users/RETA/Documents/grassdata", 
+          location = "nc_spm_08_grass7", 
+          mapset = "user1", 
+          SG = "elevation")
+The pop-up error is a missing iconv.dll. See screenshot attached. I believe all locales were in Spanish as well as the laptop I am testing now. After many attempts to try to close the pop-up error, we got the following in the Rstudio console:
+
+Error in if (!compatible) { : argument is of length zero
+In addition: Warning messages:
+1: In system(paste("g.dirseps.exe -g", shQuote(Sys.getenv("GISRC"))),  :
+  running command 'g.dirseps.exe -g "junk"' had status 309
+2: In system(paste("g.dirseps.exe -g", shQuote(gisDbase)), intern = TRUE) :
+  running command 'g.dirseps.exe -g "C:/Users/RETA/Documents/grassdata"' had status 309
+3: In dir.create(loc_path) :
+  cannot create dir 'NA\nc_spm_08_grass7', reason 'No such file or directory'
+4: In dir.create(paste(loc_path, "PERMANENT", sep = "/")) :
+  cannot create dir 'NA\nc_spm_08_grass7\PERMANENT', reason 'No such file or directory'
+5: In dir.create(paste(loc_path, mapset, sep = "/")) :
+  cannot create dir 'NA\nc_spm_08_grass7\user1', reason 'No such file or directory'
+6: In system(paste("g.version", get("addEXE", envir = .GRASS_CACHE),  :
+  running command 'g.version.exe' had status 309
+
+Is this grass or windows problem? I did not get this error in this same laptop a month ago when Roger fixed some other problems. Seems that something changed meanwhile.
+Cheers,Vero
+
+_______________________________________________
+grass-stats mailing list
+grass-stats at lists.osgeo.org
+https://lists.osgeo.org/mailman/listinfo/grass-stats  
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.osgeo.org/pipermail/grass-stats/attachments/20181027/eb67c157/attachment.html>
+
+From hellik at web.de  Sat Oct 27 08:31:51 2018
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Sat, 27 Oct 2018 08:31:51 -0700 (MST)
+Subject: [GRASS-stats] error when trying to start GRASS from Rstudio in
+	Windows
+In-Reply-To: <CAAMki4H56kSFijKh2KnSegjOkdvkh2=tb65EJ2cBid3p2hCb+w@mail.gmail.com>
+References: <CAAMki4H56kSFijKh2KnSegjOkdvkh2=tb65EJ2cBid3p2hCb+w@mail.gmail.com>
+Message-ID: <1540654311674-0.post@n6.nabble.com>
+
+Veronica Andreo wrote
+> Hi
+> 
+> I taught a GRASS course last week and all students got the same error when
+> trying to init GRASS from R or Rstudio (in all cases grass was installed
+> through OSGeo4W installer).
+> 
+> Here´s the command we used (paths must be adapted accordingly):
+> 
+> initGRASS(gisBase = "C:/OSGeo4W64/apps/grass/grass-7.4.2RC2",
+>           gisDbase = "C:/Users/RETA/Documents/grassdata",
+>           location = "nc_spm_08_grass7",
+>           mapset = "user1",
+>           SG = "elevation")
+> 
+> The pop-up error is a missing iconv.dll. See screenshot attached. I
+> believe
+> all locales were in Spanish as well as the laptop I am testing now. After
+> many attempts to try to close the pop-up error, we got the following in
+> the
+> Rstudio console:
+> 
+> Error in if (!compatible) { : argument is of length zeroIn addition:
+> Warning messages:1: In system(paste("g.dirseps.exe -g",
+> shQuote(Sys.getenv("GISRC"))),  :  running command 'g.dirseps.exe -g
+> "junk"' had status 3092: In system(paste("g.dirseps.exe -g",
+> shQuote(gisDbase)), intern = TRUE) :  running command 'g.dirseps.exe
+> -g "C:/Users/RETA/Documents/grassdata"' had status 3093: In
+> dir.create(loc_path) :  cannot create dir 'NA\nc_spm_08_grass7',
+> reason 'No such file or directory'4: In dir.create(paste(loc_path,
+> "PERMANENT", sep = "/")) :  cannot create dir
+> 'NA\nc_spm_08_grass7\PERMANENT', reason 'No such file or directory'5:
+> In dir.create(paste(loc_path, mapset, sep = "/")) :  cannot create dir
+> 'NA\nc_spm_08_grass7\user1', reason 'No such file or directory'6: In
+> system(paste("g.version", get("addEXE", envir = .GRASS_CACHE),  :
+> running command 'g.version.exe' had status 309
+> 
+> Is this grass or windows problem? I did not get this error in this same
+> laptop a month ago when Roger fixed some other problems. Seems that
+> something changed meanwhile.
+
+tested here now with
+
+----------------
+System Info                                                                     
+GRASS version: 7.4.2                                                            
+GRASS SVN revision: r73591                                                      
+Build date: 2018-10-23                                                          
+Build platform: x86_64-w64-mingw32                                              
+GDAL: 2.3.2                                                                     
+PROJ.4: 5.2.0                                                                   
+GEOS: 3.7.0                                                                     
+SQLite: 3.17.0                                                                  
+Python: 2.7.14                                                                  
+wxPython: 2.8.12.1                                                              
+Platform: Windows-10-10.0.17134 (OSGeo4W) 
+-----------------
+
+----------------
+ > sessionInfo()
+R version 3.4.4 (2018-03-15)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 17134)
+
+Matrix products: default
+
+l
+[1] LC_COLLATE=German_Austria.1252  LC_CTYPE=German_Austria.1252   
+LC_MONETARY=German_Austria.1252 LC_NUMERIC=C                   
+LC_TIME=German_Austria.1252    
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] rgrass7_0.1-10 XML_3.98-1.11  sp_1.3-1      
+
+loaded via a namespace (and not attached):
+[1] compiler_3.4.4  grid_3.4.4      lattice_0.20-35
+                                          
+-----------------                                     
+
+confirmed, also here a iconv.dll-issue (missing iconv.dll); and also
+confirmed that it worked a month or so ago.
+
+closer look at the error message and the used dependencies:
+
+winGRASS 7.4.2 is now compiled against GDAL: 2.3.2 and PROJ.4: 5.2.0
+
+when I tried a month or so ago, winGRASS was compiled against GDAL 2.0.X (or
+similar) and PROJ.4 4.9. (or similar).
+
+it seems there could be a dll mismatch between old and new dependencies
+versions; hence the iconv.dll issue.                                                     
+
+
+
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+
+From hellik at web.de  Sat Oct 27 08:50:38 2018
+From: hellik at web.de (Helmut Kudrnovsky)
+Date: Sat, 27 Oct 2018 08:50:38 -0700 (MST)
+Subject: [GRASS-stats] error when trying to start GRASS from Rstudio
+	in	Windows
+In-Reply-To: <797908935.102548.1540653904876@mail.yahoo.com>
+References: <CAAMki4H56kSFijKh2KnSegjOkdvkh2=tb65EJ2cBid3p2hCb+w@mail.gmail.com>
+ <797908935.102548.1540653904876@mail.yahoo.com>
+Message-ID: <1540655438818-0.post@n6.nabble.com>
+
+>I got the same error a while back and I ended up finding a workaround by
+copying all of the .dll files from >C:\OSGeo4W64\bin to
+C:\OSGeo4W64\apps\grass\grass-7.4.1\bin. I have grass installed on my C
+drive >but follow the path to your installation path bin. It appears that
+the .dlls are different or incompatible.
+
+yes, it is a dll mismatch. please report this in the GRASS ML, or better
+open a ticket about this in the bugtracker
+
+
+
+-----
+best regards
+Helmut
+--
+Sent from: http://osgeo-org.1560.x6.nabble.com/Grass-Stats-f4049448.html
+
